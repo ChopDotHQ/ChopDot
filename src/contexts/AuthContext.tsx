@@ -91,6 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const account = useAccount();
+  const dataSource = import.meta.env.VITE_DATA_SOURCE || 'local';
+  const allowLocalGuestFallback = dataSource !== 'supabase';
 
   // Initial session check and subscription to Supabase auth changes
   useEffect(() => {
@@ -107,6 +109,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(mapped);
             setAuthItem(AUTH_USER_KEY, JSON.stringify(mapped));
             setAuthItem(AUTH_TOKEN_KEY, session.access_token);
+          } else if (allowLocalGuestFallback) {
+            const storedUser = getAuthItem(AUTH_USER_KEY);
+            const storedToken = getAuthItem(AUTH_TOKEN_KEY);
+            if (storedUser && storedToken) {
+              try {
+                const parsed = JSON.parse(storedUser) as User;
+                if (parsed.authMethod === 'guest') {
+                  setUser(parsed);
+                }
+              } catch {
+                // ignore malformed local guest payload
+              }
+            }
           }
 
           const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
@@ -116,6 +131,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               setAuthItem(AUTH_USER_KEY, JSON.stringify(mapped));
               setAuthItem(AUTH_TOKEN_KEY, newSession.access_token);
             } else {
+              if (allowLocalGuestFallback) {
+                const storedUser = getAuthItem(AUTH_USER_KEY);
+                const storedToken = getAuthItem(AUTH_TOKEN_KEY);
+                if (storedUser && storedToken) {
+                  try {
+                    const parsed = JSON.parse(storedUser) as User;
+                    if (parsed.authMethod === 'guest') {
+                      setUser(parsed);
+                      return;
+                    }
+                  } catch {
+                    // ignore malformed local guest payload
+                  }
+                }
+              }
               setUser(null);
               clearAuthItem(AUTH_USER_KEY);
               clearAuthItem(AUTH_TOKEN_KEY);
@@ -169,7 +199,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const storedToken = getAuthItem(AUTH_TOKEN_KEY);
       if (storedUser && storedToken) {
         const userData = JSON.parse(storedUser);
-        setUser(userData);
+        if (allowLocalGuestFallback || userData?.authMethod !== 'guest') {
+          setUser(userData);
+        } else {
+          setUser(null);
+        }
       } else {
         setUser(null);
       }

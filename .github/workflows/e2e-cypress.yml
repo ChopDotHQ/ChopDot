@@ -13,6 +13,7 @@ jobs:
     env:
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL || 'https://example.supabase.co' }}
       VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || vars.VITE_SUPABASE_ANON_KEY || 'test-anon-key' }}
+      MOCHA_FILE: cypress/results/junit-[hash].xml
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,7 +37,7 @@ jobs:
           start: npm run e2e:server
           wait-on: 'http://127.0.0.1:4173'
           wait-on-timeout: 180
-          command: npx cypress run --spec "cypress/e2e/**/*.cy.ts" --reporter junit --reporter-options "mochaFile=cypress/results/junit-[hash].xml,toConsole=true"
+          command: npx cypress run --spec "cypress/e2e/**/*.cy.ts" --reporter junit
 
       - name: Assert minimum E2E tests executed
         run: |

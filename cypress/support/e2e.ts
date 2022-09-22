@@ -1,7 +1,12 @@
 /// <reference types="cypress" />
 
 Cypress.Commands.add('loginAsGuest', () => {
-  cy.visit('/');
+  cy.visit('/', {
+    onBeforeLoad(win) {
+      win.localStorage.clear();
+      win.sessionStorage.clear();
+    },
+  });
   cy.contains(/continue as guest/i, { timeout: 20000 }).click({ force: true });
   cy.contains(/^Pots$/i, { timeout: 30000 }).should('be.visible');
 });
