@@ -37,7 +37,7 @@ jobs:
           start: npm run e2e:server
           wait-on: 'http://127.0.0.1:4173'
           wait-on-timeout: 180
-          command: npx cypress run --spec "cypress/e2e/**/*.cy.ts" --reporter junit
+          command: npx cypress run --spec cypress/e2e/**/*.cy.ts --reporter junit
 
       - name: Assert minimum E2E tests executed
         run: |
