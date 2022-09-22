@@ -59,13 +59,14 @@ describe('MVP inventory in Cypress', () => {
       expect(action.mode === 'Cypress' || action.mode === 'Manual').to.eq(true);
       expect(action.description.length).to.be.greaterThan(3);
 
+      cy.resetAppState();
       cy.visit('/', {
         onBeforeLoad(win) {
           win.localStorage.clear();
           win.sessionStorage.clear();
         },
       });
-      cy.contains(/continue as guest/i).should('be.visible');
+      cy.contains(/continue as guest/i, { timeout: 20000 }).should('be.visible');
     });
   });
 
