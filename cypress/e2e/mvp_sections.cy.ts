@@ -34,7 +34,7 @@ function openPot(name: string) {
   cy.contains(name, { timeout: 20000 }).should('be.visible');
 }
 
-describe('MVP Sectional Deep Flows', { testIsolation: false }, () => {
+describe('MVP Sectional Deep Flows', () => {
   before(() => {
     cy.visit('/');
   });
@@ -54,7 +54,7 @@ describe('MVP Sectional Deep Flows', { testIsolation: false }, () => {
         cy.visit('/');
       }
     });
-    cy.contains(/continue as guest/i, { timeout: 20000 }).scrollIntoView().should('exist');
+    cy.contains(/continue as guest/i, { timeout: 30000 }).should('exist');
 
     cy.get('body').then(($body) => {
       if ($body.text().match(/email\s*&\s*password|email login|sign in with email/i)) {
@@ -74,7 +74,7 @@ describe('MVP Sectional Deep Flows', { testIsolation: false }, () => {
       }
     });
 
-    cy.contains(/continue as guest/i).scrollIntoView().click({ force: true });
+    cy.contains(/continue as guest/i).click({ force: true });
     cy.contains(/^Pots$|^People$|^Activity$|^You$/i, { timeout: 30000 }).should('be.visible');
 
     gotoTab('You');
@@ -88,6 +88,7 @@ describe('MVP Sectional Deep Flows', { testIsolation: false }, () => {
   });
 
   it('Navigation + Pots Home (MVP-015..MVP-040) covers tabs, quick actions, search/sort/privacy', () => {
+    cy.ensureGuestSession();
     gotoTab('Pots');
     gotoTab('People');
     gotoTab('Activity');
@@ -157,6 +158,7 @@ describe('MVP Sectional Deep Flows', { testIsolation: false }, () => {
   });
 
   it('Create Pot + Pot Home + Expenses core flows (MVP-041..MVP-069, MVP-103..MVP-125)', () => {
+    cy.ensureGuestSession();
     gotoTab('Pots');
     cy.contains(/create/i).first().click({ force: true });
     cy.contains(/create pot/i).should('be.visible');
@@ -189,6 +191,7 @@ describe('MVP Sectional Deep Flows', { testIsolation: false }, () => {
   });
 
   it('Members + Settings + Import/Export + Settlement (MVP-070..MVP-149)', () => {
+    cy.ensureGuestSession();
     openPot(POT_A);
 
     cy.contains(/^Members$/).click({ force: true });
@@ -230,6 +233,7 @@ describe('MVP Sectional Deep Flows', { testIsolation: false }, () => {
   });
 
   it('People + Activity + You tab flows (MVP-150..MVP-175)', () => {
+    cy.ensureGuestSession();
     gotoTab('People');
     cy.get('body').then(($body) => {
       if ($body.text().match(/balances/i)) {
