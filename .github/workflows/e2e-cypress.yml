@@ -1,0 +1,94 @@
+name: E2E Cypress
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - '**'
+
+jobs:
+  cypress-e2e:
+    runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL || 'https://example.supabase.co' }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || vars.VITE_SUPABASE_ANON_KEY || 'test-anon-key' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate MVP Cypress inventory spec
+        run: npm run e2e:generate
+
+      - name: Run Cypress E2E suite
+        uses: cypress-io/github-action@v6
+        with:
+          install: false
+          start: npm run e2e:server
+          wait-on: 'http://127.0.0.1:4173'
+          wait-on-timeout: 180
+          command: npx cypress run --spec "cypress/e2e/**/*.cy.ts" --reporter junit --reporter-options "mochaFile=cypress/results/junit-[hash].xml,toConsole=true"
+
+      - name: Assert minimum E2E tests executed
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const dir = 'cypress/results';
+          if (!fs.existsSync(dir)) {
+            console.error('No Cypress JUnit results found');
+            process.exit(1);
+          }
+          const files = fs.readdirSync(dir).filter((f) => f.endsWith('.xml'));
+          if (files.length === 0) {
+            console.error('No Cypress JUnit XML files found');
+            process.exit(1);
+          }
+
+          let tests = 0;
+          for (const file of files) {
+            const xml = fs.readFileSync(path.join(dir, file), 'utf8');
+            const suiteMatches = [...xml.matchAll(/<testsuite\b[^>]*\btests="(\d+)"/g)];
+            for (const m of suiteMatches) tests += Number(m[1] || 0);
+          }
+
+          console.log(`Total Cypress tests executed: ${tests}`);
+          const minExpected = 175;
+          if (tests < minExpected) {
+            console.error(`Expected at least ${minExpected} Cypress tests to run, got ${tests}`);
+            process.exit(1);
+          }
+          NODE
+
+      - name: Upload Cypress screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore
+
+      - name: Upload Cypress videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          if-no-files-found: ignore
+
+      - name: Upload Cypress JUnit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-junit
+          path: cypress/results
+          if-no-files-found: ignore
