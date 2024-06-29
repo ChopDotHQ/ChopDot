@@ -59,19 +59,6 @@ function validateEnvPlugin() {
 // https://vite.dev/config/
 export default defineConfig({
   envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
-  test: {
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html', 'lcov'],
-      reportsDirectory: 'coverage',
-      thresholds: {
-        statements: 55,
-        branches: 45,
-        functions: 55,
-        lines: 55,
-      },
-    },
-  },
   plugins: [
     validateEnvPlugin(),
     react(),

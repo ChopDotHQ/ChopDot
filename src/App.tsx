@@ -1,6 +1,4 @@
 import {
-  lazy,
-  Suspense,
   useState,
   useMemo,
   useCallback,
@@ -16,19 +14,15 @@ const getPolkadotChainService = async () => {
   }
   return polkadotChainService;
 };
-import { AppRouter } from "./components/AppRouter";
-import { Screen, useNav } from "./nav";
+import { useNav, type Screen } from "./nav";
 import { useTheme } from "./utils/useTheme";
 import { triggerHaptic } from "./utils/haptics";
 import type { PersonSettlement, SettlementBreakdown } from "./utils/settlements";
-import Decimal from "decimal.js";
-import { InviteService } from "./services/InviteService";
-import { AcceptInviteModal } from "./components/modals/AcceptInviteModal";
 import {
   calculateSettlements,
   calculatePotSettlements,
 } from "./utils/settlements";
-import { getSupabase } from "./utils/supabase-client";
+import { getSupabase, getSupabaseConfig } from "./utils/supabase-client";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { FeatureFlagsProvider, useFeatureFlags } from "./contexts/FeatureFlagsContext";
 import { useAccount } from "./contexts/AccountContext";
@@ -39,128 +33,323 @@ import { AuthScreen } from "./components/screens/AuthScreen";
 import { ActivityHome } from "./components/screens/ActivityHome";
 import { PotsHome } from "./components/screens/PotsHome";
 import { PeopleHome } from "./components/screens/PeopleHome";
+import { Settings } from "./components/screens/Settings";
+import { PaymentMethods } from "./components/screens/PaymentMethods";
+import { CreatePot } from "./components/screens/CreatePot";
+import { PotHome } from "./components/screens/PotHome";
+import { AddExpense } from "./components/screens/AddExpense";
+import { ExpenseDetail } from "./components/screens/ExpenseDetail";
+import { SettleSelection } from "./components/screens/SettleSelection";
+import { SettleHome } from "./components/screens/SettleHome";
+import { SettlementHistory } from "./components/screens/SettlementHistory";
+import { SettlementConfirmation } from "./components/screens/SettlementConfirmation";
+import { InsightsScreen } from "./components/screens/InsightsScreen";
 import { BottomTabBar } from "./components/BottomTabBar";
 import { SwipeableScreen } from "./components/SwipeableScreen";
+import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
+import { ChoosePot } from "./components/screens/ChoosePot";
 import { useData } from "./services/data/DataContext";
 import { logDev, warnDev } from "./utils/logDev";
+import { MyQR } from "./components/screens/MyQR";
+import { ScanQR } from "./components/screens/ScanQR";
+import { AddPaymentMethod } from "./components/screens/AddPaymentMethod";
+import { AddMember } from "./components/screens/AddMember";
+import { ViewPaymentMethod } from "./components/screens/ViewPaymentMethod";
+import { NotificationCenter } from "./components/screens/NotificationCenter";
+import { MemberDetail } from "./components/screens/MemberDetail";
+import { AddContribution } from "./components/screens/AddContribution";
+import { WithdrawFunds } from "./components/screens/WithdrawFunds";
+import { YouSheet } from "./components/YouSheet";
 import { YouTab } from "./components/screens/YouTab";
-import { AppOverlays } from "./components/app/AppOverlays";
+import { TxToast } from "./components/TxToast";
+import { RequestPayment } from "./components/screens/RequestPayment";
+import { CrustStorage } from "./components/screens/CrustStorage";
+import { CrustAuthSetup } from "./components/screens/CrustAuthSetup";
+import { ReceiveQR } from "./components/screens/ReceiveQR";
+import { IPFSAuthOnboarding } from "./components/IPFSAuthOnboarding";
+import { WalletConnectionSheet } from "./components/WalletConnectionSheet";
+import { ImportPot } from "./components/screens/ImportPot";
 import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
 import { setOnboardingCallback, resetOnboardingFlag } from "./services/storage/ipfsWithOnboarding";
 import { usePots as useRemotePots } from "./hooks/usePots";
 import { usePot as useRemotePot } from "./hooks/usePot";
-import type { PaymentMethod } from "./components/screens/PaymentMethods";
-import type { Notification } from "./components/screens/NotificationCenter";
 
-const Settings = lazy(() =>
-  import("./components/screens/Settings").then((module) => ({ default: module.Settings }))
-);
-const PaymentMethods = lazy(() =>
-  import("./components/screens/PaymentMethods").then((module) => ({ default: module.PaymentMethods }))
-);
-const CreatePot = lazy(() =>
-  import("./components/screens/CreatePot").then((module) => ({ default: module.CreatePot }))
-);
-const PotHome = lazy(() =>
-  import("./components/screens/PotHome").then((module) => ({ default: module.PotHome }))
-);
-const AddExpense = lazy(() =>
-  import("./components/screens/AddExpense").then((module) => ({ default: module.AddExpense }))
-);
-const ExpenseDetail = lazy(() =>
-  import("./components/screens/ExpenseDetail").then((module) => ({ default: module.ExpenseDetail }))
-);
-const SettleSelection = lazy(() =>
-  import("./components/screens/SettleSelection").then((module) => ({ default: module.SettleSelection }))
-);
-const SettleHome = lazy(() =>
-  import("./components/screens/SettleHome").then((module) => ({ default: module.SettleHome }))
-);
-const SettlementHistory = lazy(() =>
-  import("./components/screens/SettlementHistory").then((module) => ({ default: module.SettlementHistory }))
-);
-const SettlementConfirmation = lazy(() =>
-  import("./components/screens/SettlementConfirmation").then((module) => ({ default: module.SettlementConfirmation }))
-);
-const InsightsScreen = lazy(() =>
-  import("./components/screens/InsightsScreen").then((module) => ({ default: module.InsightsScreen }))
-);
-const MemberDetail = lazy(() =>
-  import("./components/screens/MemberDetail").then((module) => ({ default: module.MemberDetail }))
-);
-const AddContribution = lazy(() =>
-  import("./components/screens/AddContribution").then((module) => ({ default: module.AddContribution }))
-);
-const WithdrawFunds = lazy(() =>
-  import("./components/screens/WithdrawFunds").then((module) => ({ default: module.WithdrawFunds }))
-);
-const RequestPayment = lazy(() =>
-  import("./components/screens/RequestPayment").then((module) => ({ default: module.RequestPayment }))
-);
-const CrustStorage = lazy(() =>
-  import("./components/screens/CrustStorage").then((module) => ({ default: module.CrustStorage }))
-);
-const CrustAuthSetup = lazy(() =>
-  import("./components/screens/CrustAuthSetup").then((module) => ({ default: module.CrustAuthSetup }))
-);
-const ReceiveQR = lazy(() =>
-  import("./components/screens/ReceiveQR").then((module) => ({ default: module.ReceiveQR }))
-);
-const ImportPot = lazy(() =>
-  import("./components/screens/ImportPot").then((module) => ({ default: module.ImportPot }))
-);
+interface Member {
+  id: string;
+  name: string;
+  role: "Owner" | "Member";
+  status: "active" | "pending";
+  address?: string;
+  verified?: boolean;
+}
 
-import {
-  Member,
-  Expense,
-  Contribution,
-  PotHistory,
-  Pot,
-  Settlement,
-  ActivityItem,
-  Person,
-  CheckpointConfirmation,
-  ExpenseCheckpoint
-} from "./types/app";
-import {
-  normalizeMembers,
-  normalizeExpenses,
-  normalizeConfirmations,
-  normalizeHistory
-} from "./utils/normalization";
+interface Expense {
+  id: string;
+  amount: number;
+  currency: string;
+  paidBy: string;
+  memo: string;
+  date: string;
+  split: { memberId: string; amount: number }[];
+  attestations: string[];
+  hasReceipt: boolean;
+  attestationTxHash?: string;
+  attestationTimestamp?: string;
+}
+
+interface Contribution {
+  id: string;
+  memberId: string;
+  amount: number;
+  date: string;
+  txHash?: string;
+}
+
+// Helpers to normalize data to strict types
+const normalizeMembers = (members: any[]): Member[] =>
+  (members || []).map((m) => ({
+    id: m.id,
+    name: m.name ?? "Member",
+    role: m.role === "Owner" ? "Owner" : "Member",
+    status: m.status === "pending" ? "pending" : "active",
+    address: m.address ?? undefined,
+    verified: m.verified,
+  }));
+
+const normalizeExpenses = (expenses: any[], fallbackCurrency: string): Expense[] =>
+  (expenses || []).map((e) => ({
+    id: e.id,
+    amount: Number(e.amount ?? 0),
+    currency: e.currency ?? fallbackCurrency ?? "USD",
+    paidBy: e.paidBy ?? "owner",
+    memo: e.memo ?? e.description ?? "",
+    date: e.date ?? new Date().toISOString(),
+    split: Array.isArray(e.split) ? e.split : [],
+    attestations: Array.isArray(e.attestations) ? e.attestations : [],
+    hasReceipt: Boolean(e.hasReceipt),
+    attestationTxHash: e.attestationTxHash,
+    attestationTimestamp: e.attestationTimestamp,
+  }));
+
+type CheckpointConfirmation = { confirmed: boolean; confirmedAt?: string };
+const normalizeConfirmations = (
+  confirmations?: Map<string, unknown> | Record<string, unknown>,
+): Map<string, CheckpointConfirmation> | Record<string, CheckpointConfirmation> | undefined => {
+  if (!confirmations) return undefined;
+  if (confirmations instanceof Map) {
+    const normalized = new Map<string, CheckpointConfirmation>();
+    confirmations.forEach((val, key) => {
+      if (typeof val === "object" && val !== null && "confirmed" in (val as any)) {
+        normalized.set(key, val as CheckpointConfirmation);
+      } else {
+        normalized.set(key, { confirmed: Boolean(val) });
+      }
+    });
+    return normalized;
+  }
+  const normalized: Record<string, CheckpointConfirmation> = {};
+  Object.entries(confirmations).forEach(([key, val]) => {
+    if (typeof val === "object" && val !== null && "confirmed" in (val as any)) {
+      normalized[key] = val as CheckpointConfirmation;
+    } else {
+      normalized[key] = { confirmed: Boolean(val) };
+    }
+  });
+  return normalized;
+};
+
+const normalizeHistory = (history: any[]): PotHistory[] =>
+  (history || [])
+    .map((h) => {
+      const status = h.status ?? "submitted";
+      if (h.type === "onchain_settlement") {
+        return {
+          id: h.id,
+          when: Number(h.when ?? Date.now()),
+          type: "onchain_settlement" as const,
+          fromMemberId: h.fromMemberId,
+          toMemberId: h.toMemberId,
+          fromAddress: h.fromAddress,
+          toAddress: h.toAddress,
+          amountDot: h.amountDot ?? "0",
+          txHash: h.txHash ?? "",
+          block: h.block,
+          status,
+          subscan: h.subscan ?? "",
+          note: h.note,
+        };
+      }
+      if (h.type === "remark_checkpoint") {
+        return {
+          id: h.id,
+          when: Number(h.when ?? Date.now()),
+          type: "remark_checkpoint" as const,
+          message: h.message ?? "",
+          potHash: h.potHash ?? "",
+          cid: h.cid,
+          txHash: h.txHash,
+          block: h.block,
+          status,
+          subscan: h.subscan,
+        };
+      }
+      return null;
+    })
+    .filter(Boolean) as PotHistory[];
+
+interface ExpenseCheckpoint {
+  id: string;
+  createdBy: string;
+  createdAt: string;
+  status: "pending" | "confirmed" | "bypassed";
+  confirmations: Map<
+    string,
+    { confirmed: boolean; confirmedAt?: string }
+  >;
+  expiresAt: string;
+  bypassedBy?: string;
+  bypassedAt?: string;
+}
+
+type PotHistoryBase = {
+  id: string;
+  when: number;
+  txHash?: string;
+  block?: string;
+  status: "submitted" | "in_block" | "finalized" | "failed";
+  subscan?: string;
+};
+
+export type PotHistory =
+  | (PotHistoryBase & {
+      type: "onchain_settlement";
+      fromMemberId: string;
+      toMemberId: string;
+      fromAddress: string;
+      toAddress: string;
+      amountDot?: string; // Optional - required if amountUsdc not present
+      amountUsdc?: string; // Optional - required if amountDot not present
+      assetId?: number; // Asset ID for USDC (1337), undefined for DOT
+      txHash: string;
+      subscan: string;
+      note?: string;
+    })
+  | (PotHistoryBase & {
+      type: "remark_checkpoint";
+      message: string;
+      potHash: string;
+      cid?: string;
+    });
+
+interface Pot {
+  id: string;
+  name: string;
+  type: "expense" | "savings";
+  baseCurrency: string;
+  members: Member[];
+  expenses: Expense[];
+  budget?: number;
+  budgetEnabled?: boolean;
+  contributions?: Contribution[];
+  totalPooled?: number;
+  yieldRate?: number;
+  defiProtocol?: string;
+  goalAmount?: number;
+  goalDescription?: string;
+  checkpointEnabled?: boolean;
+  currentCheckpoint?: ExpenseCheckpoint;
+  archived?: boolean;
+  history?: PotHistory[];
+  createdAt?: string;
+}
+
+interface Settlement {
+  id: string;
+  personId: string;
+  amount: number;
+  currency: string;
+  method: "cash" | "bank" | "paypal" | "twint" | "dot";
+  potIds?: string[];
+  date: string;
+  txHash?: string;
+}
+
+interface PaymentMethod {
+  id: string;
+  kind: "bank" | "twint" | "paypal" | "crypto";
+  iban?: string;
+  holder?: string;
+  note?: string;
+  phone?: string;
+  twintHandle?: string;
+  email?: string;
+  username?: string;
+  network?: "polkadot" | "assethub";
+  address?: string;
+  label?: string;
+}
+
+interface ActivityItem {
+  id: string;
+  type: "expense" | "settlement" | "attestation" | "member" | "pot_created";
+  timestamp: string;
+  title: string;
+  subtitle: string;
+  amount?: number;
+}
+
+interface Person {
+  id: string;
+  name: string;
+  balance: number;
+  trustScore: number;
+  paymentPreference: string;
+  potCount: number;
+}
+
+interface Notification {
+  id: string;
+  type: "attestation" | "settlement" | "invite";
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  actionLabel?: string;
+  onAction?: () => void;
+}
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 const builderPartyMembersTemplate: Member[] = [
-  {
-    id: "owner",
-    name: "You",
-    role: "Owner",
-    status: "active",
-    address: "15GrwkvKWLJUXwKZFXChsVGdfnRDEhinYMiGWXnV8Pfv7Hjq",
-  },
-  {
-    id: "alice",
-    name: "Alice",
-    role: "Member",
-    status: "active",
-    address: "15Jh2k3Xm29ry1CNtXNvzPTC2QgHYMnyqcG4cSnhpV9MrAbf",
-  },
-  {
-    id: "bob",
-    name: "Bob",
-    role: "Member",
-    status: "active",
-    address: "13FJ4i6TJyGXPRvWHzRvDDDeZPAHDq6cHruM3aMcDwZJWLEH",
-  },
-  {
-    id: "charlie",
-    name: "Charlie",
-    role: "Member",
-    status: "active",
-    address: "16Hk8qqBPGF6NQvM6PgZGZXzx9Dj2TqkBTsEz9wqgFudaGt3",
-  },
+        {
+          id: "owner",
+          name: "You",
+          role: "Owner",
+          status: "active",
+          address: "15GrwkvKWLJUXwKZFXChsVGdfnRDEhinYMiGWXnV8Pfv7Hjq",
+        },
+        {
+          id: "alice",
+          name: "Alice",
+          role: "Member",
+          status: "active",
+          address: "15Jh2k3Xm29ry1CNtXNvzPTC2QgHYMnyqcG4cSnhpV9MrAbf",
+        },
+        {
+          id: "bob",
+          name: "Bob",
+          role: "Member",
+          status: "active",
+          address: "13FJ4i6TJyGXPRvWHzRvDDDeZPAHDq6cHruM3aMcDwZJWLEH",
+        },
+        {
+          id: "charlie",
+          name: "Charlie",
+          role: "Member",
+          status: "active",
+          address: "16Hk8qqBPGF6NQvM6PgZGZXzx9Dj2TqkBTsEz9wqgFudaGt3",
+        },
 ];
 
 type BuilderPartyExpenseTemplate = Omit<Expense, "date"> & { daysAgo: number };
@@ -287,7 +476,7 @@ function AppContent() {
     if (cidParam) {
       return { type: 'import-pot' };
     }
-
+    
     // Read route from pathname
     const pathname = window.location.pathname;
     if (pathname === '/activity') {
@@ -299,7 +488,7 @@ function AppContent() {
     } else if (pathname === '/' || pathname === '/pots') {
       return { type: 'pots-home' };
     }
-
+    
     return { type: 'pots-home' };
   };
 
@@ -313,14 +502,14 @@ function AppContent() {
   } = useNav(getInitialScreen());
 
   const lastCidRef = useRef<string | null>(null);
-
+  
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const cidParam = urlParams.get('cid');
-
+    
     if (cidParam !== lastCidRef.current) {
       lastCidRef.current = cidParam;
-
+      
       if (cidParam && screen?.type !== 'import-pot') {
         reset({ type: 'import-pot' });
       } else if (!cidParam && screen?.type === 'import-pot') {
@@ -340,13 +529,13 @@ function AppContent() {
         '/people': 'people-home',
         '/you': 'you-tab',
       };
-
+      
       const screenType = routeToScreen[pathname];
       if (screenType && screen?.type !== screenType) {
         reset({ type: screenType } as Screen);
       }
     };
-
+    
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [screen?.type, reset]);
@@ -354,14 +543,14 @@ function AppContent() {
   // Sync URL with current screen for tab navigation
   useEffect(() => {
     if (!screen) return;
-
+    
     const screenToRoute: Record<string, string> = {
       'pots-home': '/pots',
       'activity-home': '/activity',
       'people-home': '/people',
       'you-tab': '/you',
     };
-
+    
     const newPath = screenToRoute[screen.type];
     if (newPath && window.location.pathname !== newPath && window.location.pathname !== '/') {
       // Use replaceState to avoid adding unnecessary history entries
@@ -371,7 +560,7 @@ function AppContent() {
         window.history.replaceState({}, '', newPath);
       }
     }
-
+    
     // Handle root path - redirect to /pots
     if (window.location.pathname === '/' && screen.type === 'pots-home') {
       window.history.replaceState({}, '', '/pots');
@@ -405,14 +594,10 @@ function AppContent() {
   const [showAddMember, setShowAddMember] = useState(false);
   const [pendingInviteToken, setPendingInviteToken] = useState<string | null>(null);
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [isProcessingInvite, setIsProcessingInvite] = useState(false);
   const [fabQuickAddPotId, setFabQuickAddPotId] = useState<string | null>(null);
   const clearFabQuickAddPotId = useCallback(() => setFabQuickAddPotId(null), [setFabQuickAddPotId]);
   const [showIPFSAuthOnboarding, setShowIPFSAuthOnboarding] = useState(false);
   const [pendingIPFSAction, setPendingIPFSAction] = useState<(() => Promise<void>) | null>(null);
-
-  // Initialize InviteService
-  const inviteService = useMemo(() => new InviteService(getSupabase()), []);
 
   const [currentPotId, setCurrentPotId] = useState<
     string | null
@@ -435,20 +620,37 @@ function AppContent() {
     | undefined
   >();
 
-
   const copyInviteLink = useCallback(
     async (potId: string) => {
-      const invites = await inviteService.getPotInvites(potId);
-      // Logic: find a valid one or use the latest
-      // For now, let's grab the latest pending one or just the latest one
-      const invite = invites[0];
+      const supabase = getSupabase();
+      const supabaseUrl = getSupabaseConfig().url;
+      if (!supabase) {
+        showToast("Supabase not configured", "error");
+        return;
+      }
+      if (!supabaseUrl) {
+        showToast("Supabase URL missing", "error");
+        return;
+      }
+      const { data, error } = await supabase
+        .from("invites")
+        .select("token, invitee_email, status")
+        .eq("pot_id", potId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-      if (!invite?.token) {
+      if (error) {
+        console.error("[Invite] copy link failed", error);
+        showToast("Failed to load invite link", "error");
+        return;
+      }
+      if (!data?.token) {
         showToast("No invite found. Add a member first.", "info");
         return;
       }
 
-      const link = `${window.location.origin}/join?token=${invite.token}`;
+      const link = `${window.location.origin}/join?token=${data.token}`;
       try {
         await navigator.clipboard?.writeText(link);
         showToast("Invite link copied", "success");
@@ -456,7 +658,7 @@ function AppContent() {
         showToast(`Invite link: ${link}`, "success");
       }
     },
-    [inviteService, showToast],
+    [showToast],
   );
 
   const joinProcessingRef = useRef(false);
@@ -465,9 +667,33 @@ function AppContent() {
   >([]);
 
   const refreshPendingInvites = useCallback(async () => {
-    const invites = await inviteService.getMyPendingInvites();
-    setPendingInvites(invites);
-  }, [inviteService]);
+    const supabase = getSupabase();
+    if (!supabase) {
+      setPendingInvites([]);
+      return;
+    }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const email = user?.email?.trim().toLowerCase();
+    if (!email) {
+      setPendingInvites([]);
+      return;
+    }
+    const { data, error } = await supabase
+      .from("invites")
+      .select("id, token, created_at, expires_at")
+      .ilike("invitee_email", email)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(10);
+    if (error) {
+      console.warn("[Invites] pending check failed", error.message);
+      setPendingInvites([]);
+      return;
+    }
+    setPendingInvites((data ?? []) as any);
+  }, []);
 
   useEffect(() => {
     if (authLoading) return;
@@ -503,13 +729,51 @@ function AppContent() {
     window.history.replaceState({}, "", cleaned.toString());
   }, []);
 
-
+  const renderInviteModal = () => {
+    if (!showInviteModal) return null;
+    return (
+      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 px-4">
+        <div className="bg-background card p-4 w-full max-w-sm shadow-lg">
+          <h3 className="text-section mb-2" style={{ fontWeight: 600 }}>
+            Accept invite?
+          </h3>
+          <p className="text-body text-secondary mb-4">
+            You were invited to join a pot. Accept to add it to your list.
+          </p>
+          <div className="flex items-center justify-end gap-2">
+            <button
+              onClick={cancelPendingInvite}
+              className="px-3 py-2 rounded-lg text-caption text-secondary hover:text-foreground hover:bg-muted/10 transition-all duration-200 active:scale-95"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmPendingInvite}
+              className="px-3 py-2 rounded-lg text-caption text-white"
+              style={{ background: 'var(--accent)' }}
+            >
+              Accept
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
   const fetchInvites = useCallback(
     async (potId: string) => {
-      const invites = await inviteService.getPotInvites(potId);
-      setInvitesByPot((prev) => ({ ...prev, [potId]: invites }));
+      const supabase = getSupabase();
+      if (!supabase) return;
+      const { data, error } = await supabase
+        .from("invites")
+        .select("id, invitee_email, status, token")
+        .eq("pot_id", potId);
+      if (error) {
+        console.warn("[Invites] fetch failed", error.message);
+        return;
+      }
+      setInvitesByPot((prev) => ({ ...prev, [potId]: data ?? [] }));
     },
-    [inviteService]
+    []
   );
   useEffect(() => {
     if (currentPotId) {
@@ -519,43 +783,96 @@ function AppContent() {
 
   const acceptInvite = useCallback(
     async (token: string) => {
-      setIsProcessingInvite(true);
-      const result = await inviteService.acceptInvite(token);
-      setIsProcessingInvite(false);
+      const supabase = getSupabase();
+      const supabaseUrl = getSupabaseConfig().url;
+      if (!supabase) {
+        showToast("Supabase not configured", "error");
+        return;
+      }
+      if (!supabaseUrl) {
+        showToast("Supabase URL missing", "error");
+        return;
+      }
 
-      if (!result.success) {
-        showToast(result.error || "Failed to accept invite", "error");
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) {
+        showToast("Log in to accept invite", "info");
+        return;
+      }
+
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/accept-invite`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ token }),
+        },
+      );
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result?.error) {
+        showToast(result?.error || "Failed to accept invite", "error");
       } else {
         showToast("Invite accepted!", "success");
-        if (result.potId) {
-          setCurrentPotId(result.potId);
-          reset({ type: "pot-home", potId: result.potId });
-          notifyPotRefresh(result.potId);
+        const potId = result?.potId as string | undefined;
+        if (potId) {
+          setCurrentPotId(potId);
+          reset({ type: "pot-home", potId });
+          notifyPotRefresh(potId);
         }
         refreshPendingInvites();
         cleanInviteParams();
-        setShowInviteModal(false);
       }
     },
-    [inviteService, showToast, reset, notifyPotRefresh, refreshPendingInvites, cleanInviteParams],
+    [showToast, reset, notifyPotRefresh, refreshPendingInvites, cleanInviteParams],
   );
 
   const declineInvite = useCallback(
     async (token: string) => {
-      setIsProcessingInvite(true);
-      const result = await inviteService.declineInvite(token);
-      setIsProcessingInvite(false);
+      const supabase = getSupabase();
+      const supabaseUrl = getSupabaseConfig().url;
+      if (!supabase) {
+        showToast("Supabase not configured", "error");
+        return;
+      }
+      if (!supabaseUrl) {
+        showToast("Supabase URL missing", "error");
+        return;
+      }
 
-      if (!result.success) {
-        showToast(result.error || "Failed to decline invite", "error");
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) {
+        showToast("Log in to decline invite", "info");
+        return;
+      }
+
+      const response = await fetch(
+        `${supabaseUrl}/functions/v1/decline-invite`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ token }),
+        },
+      );
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result?.error) {
+        showToast(result?.error || "Failed to decline invite", "error");
       } else {
         showToast("Invite declined", "success");
         refreshPendingInvites();
         cleanInviteParams();
-        setShowInviteModal(false);
       }
     },
-    [inviteService, showToast, refreshPendingInvites, cleanInviteParams],
+    [showToast, refreshPendingInvites, cleanInviteParams],
   );
 
   useEffect(() => {
@@ -569,14 +886,22 @@ function AppContent() {
   }, [cleanInviteParams]);
 
   const confirmPendingInvite = useCallback(async () => {
-    if (!pendingInviteToken) return;
-    await acceptInvite(pendingInviteToken);
-  }, [pendingInviteToken, acceptInvite]);
+    if (!pendingInviteToken) {
+      setShowInviteModal(false);
+      joinProcessingRef.current = false;
+      cleanInviteParams();
+      return;
+    }
+    try {
+      await acceptInvite(pendingInviteToken);
+    } finally {
+      setPendingInviteToken(null);
+      setShowInviteModal(false);
+      joinProcessingRef.current = false;
+    }
+  }, [pendingInviteToken, acceptInvite, cleanInviteParams]);
 
   const cancelPendingInvite = useCallback(() => {
-    // If we want to decline on cancel:
-    // if (pendingInviteToken) declineInvite(pendingInviteToken);
-    // OR just close modal:
     setPendingInviteToken(null);
     setShowInviteModal(false);
     joinProcessingRef.current = false;
@@ -591,7 +916,7 @@ function AppContent() {
     {
       id: "1",
       kind: "bank",
-      iban: "CH93 0000 0000 0000 0000 0", // Placeholder – replace with real IBAN
+      iban: "CH93 0076 2011 6238 5295 7",
     },
     {
       id: "2",
@@ -694,12 +1019,12 @@ function AppContent() {
     if (!expense.attestations || !Array.isArray(expense.attestations)) {
       return expense;
     }
-
+    
     if (expense.attestations.length > 0 && typeof expense.attestations[0] === 'object') {
       return expense; // Already migrated
     }
-
-
+    
+    
     return expense;
   };
 
@@ -737,7 +1062,7 @@ function AppContent() {
               confirmationsEnabled: pot.confirmationsEnabled ?? (import.meta.env.VITE_REQUIRE_CONFIRMATIONS_DEFAULT === '1'),
               lastEditAt: pot.lastEditAt ?? new Date().toISOString(),
             }));
-
+            
             const hasPolkadotBuilderParty = migrated.some((p: any) => p.id === "4");
             if (!hasPolkadotBuilderParty) {
               const polkadotBuilderPartyPot = {
@@ -758,14 +1083,14 @@ function AppContent() {
                 console.warn('[App] Failed to save updated pots:', saveErr);
               }
             }
-
+            
             setPots(migrated as Pot[]);
             setHasLoadedInitialData(true);
             window.dispatchEvent(new CustomEvent('pots-refresh'));
             return;
           }
         }
-
+        
         const backupPots = localStorage.getItem("chopdot_pots_backup");
         if (backupPots && backupPots.length < 1000000) {
           try {
@@ -793,27 +1118,27 @@ function AppContent() {
             console.error("[ChopDot] Failed to restore from backup:", e);
           }
         }
-
+        
         if (!hasLoadedInitialData) {
           const currentPots = pots.length > 0 ? pots : [
             {
               id: "1", name: "Devconnect Buenos Aires", type: "expense", baseCurrency: "USD",
-              members: [{ id: "owner", name: "You", role: "Owner", status: "active" }, { id: "alice", name: "Alice", role: "Member", status: "active" }, { id: "bob", name: "Bob", role: "Member", status: "active" }],
+              members: [{id: "owner", name: "You", role: "Owner", status: "active"}, {id: "alice", name: "Alice", role: "Member", status: "active"}, {id: "bob", name: "Bob", role: "Member", status: "active"}],
               expenses: [], budget: 500, budgetEnabled: true, checkpointEnabled: false
             },
             {
               id: "2", name: "Urbe Campus Rome", type: "expense", baseCurrency: "USD",
-              members: [{ id: "owner", name: "You", role: "Owner", status: "active" }, { id: "charlie", name: "Charlie", role: "Member", status: "active" }, { id: "diana", name: "Diana", role: "Member", status: "pending" }],
+              members: [{id: "owner", name: "You", role: "Owner", status: "active"}, {id: "charlie", name: "Charlie", role: "Member", status: "active"}, {id: "diana", name: "Diana", role: "Member", status: "pending"}],
               expenses: [], budget: 3000, budgetEnabled: true, checkpointEnabled: false
             },
             {
               id: "3", name: "💰 Emergency Fund", type: "savings", baseCurrency: "DOT",
-              members: [{ id: "owner", name: "You", role: "Owner", status: "active" }],
+              members: [{id: "owner", name: "You", role: "Owner", status: "active"}],
               expenses: [], contributions: [], totalPooled: 750, yieldRate: 12.5, defiProtocol: "Acala", goalAmount: 5000, goalDescription: "Build a 6-month emergency fund"
             },
             createPolkadotBuilderPartyPot()
           ];
-
+          
           try {
             const potsJson = JSON.stringify(currentPots);
             if (potsJson.length < 1000000) {
@@ -838,7 +1163,7 @@ function AppContent() {
           console.warn("[ChopDot] Failed to remove corrupted pots:", removeErr);
         }
       }
-
+      
       try {
         const savedSettlements = localStorage.getItem(
           "chopdot_settlements",
@@ -938,7 +1263,7 @@ function AppContent() {
           return;
         }
         const restoredPots = await attemptAutoRestore(account.address0);
-
+        
         if (restoredPots.length > 0) {
           setPots(restoredPots as Pot[]);
           showToast(`Restored ${restoredPots.length} pot(s) from backup`, 'success');
@@ -1102,12 +1427,12 @@ function AppContent() {
       activity: '/activity',
       you: '/you',
     };
-
+    
     const newPath = routes[tab];
     if (window.location.pathname !== newPath) {
       window.history.pushState({}, '', newPath);
     }
-
+    
     if (tab === "pots") {
       reset({ type: "pots-home" });
     } else if (tab === "people") {
@@ -1143,7 +1468,7 @@ function AppContent() {
     const activeTab = getActiveTab();
 
     if (screen && (screen.type === "settle-selection" || screen.type === "settle-home")) {
-      return { visible: false, icon: Receipt, color: "var(--accent)", action: () => { } };
+      return { visible: false, icon: Receipt, color: "var(--accent)", action: () => {} };
     }
 
     if (screen && screen.type === "pot-home") {
@@ -1179,7 +1504,7 @@ function AppContent() {
         visible: false,
         icon: Receipt,
         color: "var(--accent)",
-        action: () => { },
+        action: () => {},
       };
     }
 
@@ -1224,7 +1549,7 @@ function AppContent() {
       visible: false,
       icon: Receipt,
       color: "var(--accent)",
-      action: () => { },
+      action: () => {},
     };
   }, [
     getActiveTab,
@@ -1250,6 +1575,12 @@ function AppContent() {
   };
 
   const createPot = async () => {
+    const isSupabaseSyncMode = (import.meta.env.VITE_DATA_SOURCE || 'local') === 'supabase';
+    if (isSupabaseSyncMode && isGuest) {
+      showToast('Guest mode is local-only. Sign in to save to Supabase.', 'info');
+      return;
+    }
+
     let processedMembers = newPot.members || [];
     const { getMockAddressForMember, isSimulationMode } = await import('./utils/simulation');
     const rawBaseCurrency = newPot.baseCurrency || "USD";
@@ -1266,7 +1597,7 @@ function AppContent() {
         return m;
       });
     }
-
+    
     try {
       const createDto = {
         name: newPot.name || "Unnamed Pot",
@@ -1286,10 +1617,10 @@ function AppContent() {
           status: m.status,
         })),
       };
-
+      
       const createdPot = await potService.createPot(createDto);
       logDev(`Pot created via service`, { potId: createdPot.id });
-
+      
       // If using Supabase, trigger a refresh to show the new pot
       if (usingSupabaseSource) {
         window.dispatchEvent(new CustomEvent('pots-refresh'));
@@ -1297,7 +1628,7 @@ function AppContent() {
         // For local storage, update state directly
         setPots([...pots, createdPot as unknown as Pot]);
       }
-
+      
       setNewPot({
         name: "",
         type: "expense",
@@ -1326,17 +1657,22 @@ function AppContent() {
   const addExpenseToPot = (
     potId: string,
     data: {
-      amount: number;
-      currency: string;
-      paidBy: string;
-      memo: string;
-      date: string;
-      split: { memberId: string; amount: number }[];
-      hasReceipt: boolean;
-      receiptUrl?: string;
-    },
+    amount: number;
+    currency: string;
+    paidBy: string;
+    memo: string;
+    date: string;
+    split: { memberId: string; amount: number }[];
+    hasReceipt: boolean;
+    receiptUrl?: string;
+  },
   ) => {
     if (!potId) return;
+    const isSupabaseSyncMode = (import.meta.env.VITE_DATA_SOURCE || 'local') === 'supabase';
+    if (isSupabaseSyncMode && isGuest) {
+      showToast('Sign in to save expenses to Supabase.', 'info');
+      return;
+    }
 
     const expense: Expense = {
       id: Date.now().toString(),
@@ -1453,16 +1789,16 @@ function AppContent() {
           expenses: p.expenses.map((e) =>
             e.id === currentExpenseId
               ? {
-                ...e,
-                amount: data.amount,
-                currency: data.currency,
-                paidBy: data.paidBy,
-                memo: data.memo,
-                date: data.date,
-                split: data.split,
-                hasReceipt: data.hasReceipt,
-                receiptUrl: data.receiptUrl,
-              }
+                  ...e,
+                  amount: data.amount,
+                  currency: data.currency,
+                  paidBy: data.paidBy,
+                  memo: data.memo,
+                  date: data.date,
+                  split: data.split,
+                  hasReceipt: data.hasReceipt,
+                  receiptUrl: data.receiptUrl,
+                }
               : e,
           ),
           currentCheckpoint: updatedCheckpoint,
@@ -1505,11 +1841,11 @@ function AppContent() {
       pots.map((p) =>
         p.id === currentPotId
           ? {
-            ...p,
-            expenses: p.expenses.filter(
-              (e) => e.id !== targetExpenseId,
-            ),
-          }
+              ...p,
+              expenses: p.expenses.filter(
+                (e) => e.id !== targetExpenseId,
+              ),
+            }
           : p,
       ),
     );
@@ -1559,19 +1895,19 @@ function AppContent() {
       pots.map((p) =>
         p.id === currentPotId
           ? {
-            ...p,
-            expenses: p.expenses.map((e) =>
-              e.id === expenseId
-                ? {
-                  ...e,
-                  attestations: [
-                    ...(Array.isArray(attestations) ? attestations : []),
-                    "owner",
-                  ],
-                }
-                : e,
-            ),
-          }
+              ...p,
+              expenses: p.expenses.map((e) =>
+                e.id === expenseId
+                  ? {
+                      ...e,
+                      attestations: [
+                        ...(Array.isArray(attestations) ? attestations : []),
+                        "owner",
+                      ],
+                    }
+                  : e,
+              ),
+            }
           : p,
       ),
     );
@@ -1606,19 +1942,19 @@ function AppContent() {
       pots.map((p) =>
         p.id === currentPotId
           ? {
-            ...p,
-            expenses: p.expenses.map((e) =>
-              validExpenseIds.includes(e.id)
-                ? {
-                  ...e,
-                  attestations: [
-                    ...e.attestations,
-                    "owner",
-                  ],
-                }
-                : e,
-            ),
-          }
+              ...p,
+              expenses: p.expenses.map((e) =>
+                validExpenseIds.includes(e.id)
+                  ? {
+                      ...e,
+                      attestations: [
+                        ...e.attestations,
+                        "owner",
+                      ],
+                    }
+                  : e,
+              ),
+            }
           : p,
       ),
     );
@@ -1694,13 +2030,13 @@ function AppContent() {
       pots.map((p) =>
         p.id === currentPotId
           ? {
-            ...p,
-            contributions: [
-              ...(p.contributions || []),
-              contribution,
-            ],
-            totalPooled: (p.totalPooled || 0) + amount,
-          }
+              ...p,
+              contributions: [
+                ...(p.contributions || []),
+                contribution,
+              ],
+              totalPooled: (p.totalPooled || 0) + amount,
+            }
           : p,
       ),
     );
@@ -1742,13 +2078,13 @@ function AppContent() {
       pots.map((p) =>
         p.id === currentPotId
           ? {
-            ...p,
-            contributions: [
-              ...(p.contributions || []),
-              withdrawal,
-            ],
-            totalPooled: Math.max(0, newTotal),
-          }
+              ...p,
+              contributions: [
+                ...(p.contributions || []),
+                withdrawal,
+              ],
+              totalPooled: Math.max(0, newTotal),
+            }
           : p,
       ),
     );
@@ -1793,7 +2129,7 @@ function AppContent() {
           timestamp: expense.date,
           title: expense.memo,
           subtitle: `${pot.name} • Paid by ${expense.paidBy === "owner" ? "You" : expense.paidBy}`,
-          amount: String(expense.amount),
+          amount: expense.amount,
         });
 
         expense.attestations.forEach((attesterId, index) => {
@@ -1801,14 +2137,14 @@ function AppContent() {
 
           const attestationTime = new Date(
             new Date(expense.date).getTime() +
-            (index + 1) * 2 * 60 * 60 * 1000,
+              (index + 1) * 2 * 60 * 60 * 1000,
           ).toISOString();
 
           const attesterName =
             attesterId === "owner"
               ? "You"
               : pot.members.find((m) => m.id === attesterId)
-                ?.name || attesterId;
+                  ?.name || attesterId;
 
           items.push({
             id: attestationId,
@@ -1824,7 +2160,7 @@ function AppContent() {
 
     settlements.forEach((s) => {
       const name = personNames.get(s.personId) || s.personId;
-      const title = `Settled ${s.currency === 'DOT' ? new Decimal(s.amount).toFixed(6) + ' DOT' : '$' + new Decimal(s.amount).toFixed(2)} with ${name}`;
+      const title = `Settled ${s.currency === 'DOT' ? s.amount.toFixed(6) + ' DOT' : '$' + s.amount.toFixed(2)} with ${name}`;
       items.push({
         id: s.id,
         type: 'settlement',
@@ -1850,7 +2186,7 @@ function AppContent() {
   }, [pots]);
 
   const totalOwed = balances.owedToYou.reduce(
-    (sum, p) => sum + Number(p.totalAmount),
+    (sum, p) => sum + p.totalAmount,
     0,
   );
 
@@ -1891,14 +2227,14 @@ function AppContent() {
 
   const normalizedCurrentPot = potForView
     ? ({
-      ...potForView,
-      members: normalizeMembers(potForView.members),
-      expenses: normalizeExpenses(potForView.expenses, potForView.baseCurrency),
-      history: normalizeHistory(potForView.history || []),
-      budget: potForView.budget ?? undefined,
-      goalAmount: potForView.goalAmount ?? undefined,
-      totalPooled: potForView.totalPooled ?? undefined,
-    } as Pot)
+        ...potForView,
+        members: normalizeMembers(potForView.members),
+        expenses: normalizeExpenses(potForView.expenses, potForView.baseCurrency),
+        history: normalizeHistory(potForView.history || []),
+        budget: potForView.budget ?? undefined,
+        goalAmount: potForView.goalAmount ?? undefined,
+        totalPooled: potForView.totalPooled ?? undefined,
+      } as Pot)
     : undefined;
 
   useEffect(() => {
@@ -1926,51 +2262,45 @@ function AppContent() {
       showToast('Pot not found or you no longer have access.', 'error');
     }
   }, [usingSupabaseSource, currentPotId, currentPot, currentPotLoading, currentPotError, hasRemotePot, reset]);
-  // Calculate expenses stats for YouTab insights
-  const { expensesConfirmed, expensesNeedingConfirmation, monthlySpending } = useMemo(() => {
-    const currentUserId = user?.id || 'owner';
-    const allExpenses = pots.flatMap(p => p.expenses);
-
-    const confirmed = allExpenses.filter(e =>
-      e.attestations.includes(currentUserId)
-    ).length;
-
-    const needingConfirmation = allExpenses.filter(e =>
-      !e.attestations.includes(currentUserId) &&
-      e.paidBy !== currentUserId
-    ).length;
-
-    const currentMonthIndices = allExpenses
-      .filter(e => {
-        const d = new Date(e.date);
-        const now = new Date();
-        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-      });
-
-    const spending = currentMonthIndices
-      .filter(e => e.paidBy === currentUserId)
-      .reduce((sum, e) => sum + e.amount, 0);
-
-    return {
-      expensesConfirmed: confirmed,
-      expensesNeedingConfirmation: needingConfirmation,
-      monthlySpending: spending
-    };
-  }, [pots, user?.id]);
-
   const totalOwing = balances.youOwe.reduce(
-    (sum, p) => sum + Number(p.totalAmount),
+    (sum, p) => sum + p.totalAmount,
     0,
   );
 
-  // Calculate Insights for YouTab
   const youTabInsights = useMemo(() => {
+    const monthlySpending = pots.reduce((sum, pot) => {
+      if (pot.type === "expense") {
+        return (
+          sum +
+          pot.expenses.reduce(
+            (expSum, exp) => expSum + exp.amount,
+            0,
+          )
+        );
+      }
+      return sum;
+    }, 0);
+
+    let expensesNeedingConfirmation = 0;
+    let expensesConfirmed = 0;
+
+    pots.forEach((pot) => {
+      pot.expenses.forEach((expense) => {
+        if (expense.paidBy !== "owner") {
+          expensesNeedingConfirmation++;
+          if (expense.attestations.includes("owner")) {
+            expensesConfirmed++;
+          }
+        }
+      });
+    });
+
     const confirmationRate =
-      expensesConfirmed + expensesNeedingConfirmation > 0
+      expensesNeedingConfirmation > 0
         ? Math.round(
-          (expensesConfirmed / (expensesConfirmed + expensesNeedingConfirmation)) *
-          100,
-        )
+            (expensesConfirmed / expensesNeedingConfirmation) *
+              100,
+          )
         : 100;
 
     const activeGroups = pots.filter(
@@ -1991,267 +2321,6 @@ function AppContent() {
       activeGroups,
     };
   }, [pots, settlements]);
-
-  const existingContacts = useMemo(() => (
-    people.map((person) => ({
-      id: person.id,
-      name: person.name,
-      trustScore: person.trustScore,
-      paymentPreference: person.paymentPreference,
-      sharedPots: pots.filter((pot) =>
-        pot.members.some((member) => member.id === person.id),
-      ).length,
-    }))
-  ), [people, pots]);
-
-  const currentMemberIds = useMemo(
-    () => currentPot?.members.map((member) => member.id) || [],
-    [currentPot]
-  );
-
-  const handleWalletConnect = useCallback((provider: string) => {
-    setWalletConnected(true);
-    setConnectedWallet({
-      provider,
-      address: "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
-      name: "My Polkadot Wallet",
-    });
-    setShowWalletSheet(false);
-    showToast("Wallet connected successfully!", "success");
-  }, [showToast]);
-
-  const handleWalletDisconnect = useCallback(() => {
-    setWalletConnected(false);
-    setConnectedWallet(undefined);
-    setShowWalletSheet(false);
-    showToast("Wallet disconnected", "info");
-  }, [showToast]);
-
-  const handleWalletClose = useCallback(() => {
-    setShowWalletSheet(false);
-  }, []);
-
-  const handleNotificationsClose = useCallback(() => {
-    setShowNotifications(false);
-  }, []);
-
-  const handleNotificationsMarkAllRead = useCallback(() => {
-    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })));
-    triggerHaptic("light");
-  }, []);
-
-  const handleNotificationClick = useCallback((notification: Notification) => {
-    setNotifications((prev) =>
-      prev.map((item) =>
-        item.id === notification.id ? { ...item, read: true } : item,
-      ),
-    );
-    notification.onAction?.();
-  }, []);
-
-  const handleYouSheetClose = useCallback(() => {
-    setShowYouSheet(false);
-  }, []);
-
-  const handleYouShowQR = useCallback(() => {
-    setShowYouSheet(false);
-    setShowMyQR(true);
-  }, []);
-
-  const handleYouScanQR = useCallback(() => {
-    setShowYouSheet(false);
-    setShowScanQR(true);
-  }, []);
-
-  const handleYouPaymentMethods = useCallback(() => {
-    setShowYouSheet(false);
-    push({ type: "payment-methods" });
-  }, [push]);
-
-  const handleYouViewInsights = useCallback(() => {
-    setShowYouSheet(false);
-    push({ type: "insights" });
-  }, [push]);
-
-  const handleYouSettings = useCallback(() => {
-    setShowYouSheet(false);
-    push({ type: "settings" });
-  }, [push]);
-
-  const handleMyQRClose = useCallback(() => {
-    setShowMyQR(false);
-  }, []);
-
-  const handleCopyHandle = useCallback(() => {
-    showToast("Handle copied", "info");
-  }, [showToast]);
-
-  const handleScanQRClose = useCallback(() => {
-    setShowScanQR(false);
-  }, []);
-
-  const handleChoosePotClose = useCallback(() => {
-    setShowChoosePot(false);
-  }, []);
-
-  const handleChoosePotCreate = useCallback(() => {
-    push({ type: "create-pot" });
-  }, [push]);
-
-  const handleChoosePotSelect = useCallback((potId: string) => {
-    setCurrentPotId(potId);
-    setFabQuickAddPotId(potId);
-    setShowChoosePot(false);
-    push({ type: "pot-home", potId });
-  }, [push]);
-
-  const handleAddPaymentMethodClose = useCallback(() => {
-    setShowAddPaymentMethod(false);
-  }, []);
-
-  const handleAddPaymentMethodSave = useCallback((method: Omit<PaymentMethod, "id">, setAsPreferred: boolean) => {
-    const newId = Date.now().toString();
-    setPaymentMethods((prev) => [
-      ...prev,
-      { ...method, id: newId },
-    ]);
-    if (setAsPreferred) {
-      setPreferredMethodId(newId);
-    }
-    setShowAddPaymentMethod(false);
-    showToast("Payment method added", "success");
-  }, [showToast]);
-
-  const handleSelectedPaymentMethodClose = useCallback(() => {
-    setSelectedPaymentMethod(null);
-  }, []);
-
-  const handleAddMemberClose = useCallback(() => {
-    setShowAddMember(false);
-  }, []);
-
-  const handleAddMemberExisting = useCallback((contactId: string) => {
-    const person = people.find((candidate) => candidate.id === contactId);
-    if (!person || !currentPotId) {
-      return;
-    }
-
-    const newMember = {
-      id: person.id,
-      name: person.name,
-      role: "Member" as const,
-      status: "active" as const,
-    };
-
-    setPots((prev) =>
-      prev.map((pot) =>
-        pot.id === currentPotId
-          ? {
-            ...pot,
-            members: [...pot.members, newMember],
-          }
-          : pot,
-      ),
-    );
-
-    (async () => {
-      try {
-        const createMemberDTO = {
-          potId: currentPotId,
-          name: person.name,
-          role: "Member" as const,
-          status: "active" as const,
-          address: null,
-          verified: false,
-        };
-
-        await memberService.addMember(currentPotId, createMemberDTO);
-        logDev('[DataLayer] Member added via service', { potId: currentPotId, memberId: person.id });
-      } catch (error) {
-        warnDev('[DataLayer] Service addMember failed', error);
-        showToast('Saved locally (service write failed)', 'info');
-      }
-    })();
-
-    showToast(`${person.name} added to pot`, "success");
-  }, [currentPotId, memberService, people, showToast]);
-
-  const handleInviteNew = useCallback((nameOrEmail: string) => {
-    const email = nameOrEmail.trim().toLowerCase();
-    if (!currentPotId) {
-      showToast("Select a pot first", "error");
-      return;
-    }
-    if (!email || !email.includes("@")) {
-      showToast("Enter a valid email address", "error");
-      return;
-    }
-
-    (async () => {
-      try {
-        const { error, token } = await inviteService.createInvite(currentPotId, email);
-
-        if (error) {
-          showToast(error, "error");
-          return;
-        }
-
-        const link = `${window.location.origin}/join?token=${token}`;
-        try {
-          await navigator.clipboard?.writeText(link);
-          showToast(`Invite sent to ${email}. Link copied.`, "success");
-        } catch {
-          showToast(`Invite sent to ${email}`, "success");
-        }
-
-        fetchInvites(currentPotId);
-        setShowAddMember(false);
-      } catch (err) {
-        console.error("[Invite] unexpected error", err);
-        showToast("Failed to send invite", "error");
-      }
-    })();
-  }, [currentPotId, inviteService, fetchInvites, showToast]);
-
-  const handleRevokeInvite = useCallback(async (memberId: string) => {
-    // memberId for pending invites is "invite-{id}"
-    const inviteId = memberId.startsWith("invite-") ? memberId.replace("invite-", "") : memberId;
-
-    // Optimistic update?
-    // For now just wait for server
-    const { error } = await inviteService.revokeInvite(inviteId);
-    if (error) {
-      showToast(error, "error");
-    } else {
-      showToast("Invite revoked", "success");
-      if (currentPotId) fetchInvites(currentPotId);
-    }
-  }, [inviteService, currentPotId, fetchInvites, showToast]);
-
-  const handleAddMemberShowQR = useCallback(() => {
-    setShowAddMember(false);
-    setShowMyQR(true);
-  }, []);
-
-  const handleIPFSContinue = useCallback(async () => {
-    setShowIPFSAuthOnboarding(false);
-    if (pendingIPFSAction) {
-      try {
-        await pendingIPFSAction();
-      } catch (error) {
-        console.error('[App] Pending IPFS action failed:', error);
-        showToast('Upload failed. Please try again.', 'error');
-      } finally {
-        setPendingIPFSAction(null);
-      }
-    }
-  }, [pendingIPFSAction, showToast]);
-
-  const handleIPFSCancel = useCallback(() => {
-    setShowIPFSAuthOnboarding(false);
-    setPendingIPFSAction(null);
-    resetOnboardingFlag();
-  }, []);
 
   useEffect(() => {
     if (!screen) return;
@@ -2359,7 +2428,1407 @@ function AppContent() {
     }
   }, [screen, pots, people, currentPotId, reset, replace, currentPotLoading]);
 
+  const renderScreen = () => {
+    const pot: Pot | null | undefined = currentPot;
 
+    switch (screen!.type) {
+      case "activity-home":
+        return (
+          <ActivityHome
+            totalOwed={totalOwed}
+            totalOwing={totalOwing}
+            activities={activities}
+            pendingExpenses={pendingExpenses}
+            topPersonToSettle={undefined}
+            hasPendingAttestations={pendingExpenses.length > 0}
+            onActivityClick={(activity) => {
+              if (activity.type === "expense") {
+                const pot = pots.find((p) =>
+                  p.expenses.some((e) => e.id === activity.id),
+                );
+                if (pot) {
+                  setCurrentPotId(pot.id);
+                  setCurrentExpenseId(activity.id);
+                  push({
+                    type: "expense-detail",
+                    expenseId: activity.id,
+                  });
+                }
+              } else if (activity.type === "attestation") {
+                const expenseId =
+                  activity.id.split("-attestation-")[0];
+                const pot = pots.find((p) =>
+                  p.expenses.some((e) => e.id === expenseId),
+                );
+                if (pot) {
+                  setCurrentPotId(pot.id);
+                  setCurrentExpenseId(expenseId!);
+                  push({ type: "expense-detail", expenseId: expenseId! });
+                }
+              } else if (activity.type === "pot_created") {
+                const potId = activity.id.replace("pot-created-", "");
+                const pot = pots.find((p) => p.id === potId);
+                if (pot) {
+                  setCurrentPotId(pot.id);
+                  push({ type: "pot-home", potId: pot.id });
+                }
+              } else {
+                showToast(
+                  `${activity.type} activities coming soon`,
+                  "info",
+                );
+              }
+            }}
+            onNotificationClick={() => {
+              triggerHaptic("light");
+              setShowNotifications(true);
+            }}
+            onWalletClick={() => {
+              if (DEMO_MODE) {
+                showToast("Wallet disabled in demo", "info");
+                return;
+              }
+              if (!POLKADOT_APP_ENABLED) {
+                showToast("Wallet feature disabled", "info");
+                return;
+              }
+              triggerHaptic("light");
+              setShowWalletSheet(true);
+            }}
+            walletConnected={walletConnected}
+            onRefresh={async () => {
+              await new Promise((resolve) =>
+                setTimeout(resolve, 1000),
+              );
+            }}
+            notificationCount={
+              notifications.filter((n) => !n.read).length
+            }
+          />
+        );
+
+      case "pots-home":
+        const potSummaries = pots.filter(p => !p.archived).map((pot) => {
+          const myExpenses = pot.expenses
+            .filter((e) => e.paidBy === "owner")
+            .reduce((sum, e) => sum + e.amount, 0);
+
+          const totalExpenses = pot.expenses.reduce(
+            (sum, e) => sum + e.amount,
+            0,
+          );
+
+          const myShare = pot.expenses.reduce((sum, e) => {
+            const split = e.split.find(
+              (s) => s.memberId === "owner",
+            );
+            return sum + (split?.amount || 0);
+          }, 0);
+
+          const net = myExpenses - myShare;
+
+          return {
+            id: pot.id,
+            name: pot.name,
+            type: pot.type,
+            myExpenses,
+            totalExpenses,
+            net,
+            budget: pot.budget,
+            budgetEnabled: pot.budgetEnabled,
+            totalPooled: pot.totalPooled,
+            yieldRate: pot.yieldRate,
+          };
+        });
+
+        return (
+          <PotsHome
+            pots={potSummaries}
+            youOwe={balances.youOwe}
+            owedToYou={balances.owedToYou}
+            onCreatePot={() => push({ type: "create-pot" })}
+            onPotClick={(potId) => {
+              setCurrentPotId(potId);
+              push({ type: "pot-home", potId });
+            }}
+            pendingInvites={pendingInvites}
+            onAcceptInvite={(token) => {
+              joinProcessingRef.current = false;
+              acceptInvite(token);
+            }}
+            onDeclineInvite={(token: string) => {
+              joinProcessingRef.current = false;
+              declineInvite(token);
+            }}
+            onSettleWithPerson={(personId) => {
+              setSelectedCounterpartyId(personId);
+              push({ type: "settle-home" });
+            }}
+            onRemindSent={() => {
+              showToast("Reminder sent.");
+            }}
+            onNotificationClick={() => {
+              triggerHaptic("light");
+              setShowNotifications(true);
+            }}
+            onWalletClick={() => {
+              if (DEMO_MODE) {
+                showToast("Wallet disabled in demo", "info");
+                return;
+              }
+              if (!POLKADOT_APP_ENABLED) {
+                showToast("Wallet feature disabled", "info");
+                return;
+              }
+              triggerHaptic("light");
+              setShowWalletSheet(true);
+            }}
+            walletConnected={walletConnected}
+            notificationCount={
+              notifications.filter((n) => !n.read).length
+            }
+            onQuickAddExpense={() => {
+              triggerHaptic("light");
+              if (pots.length === 0) {
+                showToast("Create a pot first!", "info");
+                return;
+              }
+              if (pots.length === 1) {
+                const pid = pots[0]!.id;
+                setCurrentPotId(pid);
+                push({ type: "pot-home", potId: pid });
+              } else {
+                setShowChoosePot(true);
+              }
+            }}
+            onQuickSettle={() => {
+              triggerHaptic("light");
+              if (
+                balances.youOwe.length === 0 &&
+                balances.owedToYou.length === 0
+              ) {
+                showToast("Nothing to settle yet", "info");
+                return;
+              }
+              reset({ type: "people-home" });
+            }}
+            onQuickScan={() => {
+              triggerHaptic("light");
+              setShowScanQR(true);
+            }}
+            onQuickRequest={() => {
+              triggerHaptic("light");
+              if (balances.owedToYou.length === 0) {
+                showToast("Nobody owes you money yet", "info");
+                return;
+              }
+              push({ type: "request-payment" });
+            }}
+          />
+        );
+
+      case "settlements-home":
+      case "people-home":
+        return (
+          <PeopleHome
+            youOwe={balances.youOwe}
+            owedToYou={balances.owedToYou}
+            people={people}
+            isLoading={usingSupabaseSource ? remotePotsLoading : !hasLoadedInitialData}
+            walletConnected={walletConnected}
+            onConnectWallet={() => setWalletConnected(true)}
+            onSettle={(personId) => {
+              setSelectedCounterpartyId(personId);
+              push({ type: "settle-home" });
+            }}
+            onRemindSent={() => {
+              showToast("Reminder sent.");
+            }}
+            onPersonClick={(person) => {
+              push({
+                type: "member-detail",
+                memberId: person.id,
+              });
+            }}
+            onNotificationClick={() => {
+              triggerHaptic("light");
+              setShowNotifications(true);
+            }}
+            onWalletClick={() => {
+              if (DEMO_MODE) {
+                showToast("Wallet disabled in demo", "info");
+                return;
+              }
+              if (!POLKADOT_APP_ENABLED) {
+                showToast("Wallet feature disabled", "info");
+                return;
+              }
+              triggerHaptic("light");
+              setShowWalletSheet(true);
+            }}
+            notificationCount={
+              notifications.filter((n) => !n.read).length
+            }
+            isDarkMode={theme === "dark"}
+            onToggleTheme={() => {
+              triggerHaptic("light");
+              setTheme(theme === "dark" ? "light" : "dark");
+            }}
+          />
+        );
+
+      case "you-tab":
+        return (
+          <YouTab
+            onShowQR={() => {
+              setShowMyQR(true);
+            }}
+            onScanQR={() => {
+              setShowScanQR(true);
+            }}
+            onReceive={() => {
+              if (!connectedWallet && account.status !== 'connected') {
+                showToast("Connect wallet first", "info");
+                return;
+              }
+              triggerHaptic("light");
+              push({ type: "receive-qr" });
+            }}
+            onPaymentMethods={() => {
+              push({ type: "payment-methods" });
+            }}
+            onViewInsights={() => {
+              push({ type: "insights" });
+            }}
+            onSettings={() => {
+              push({ type: "settings" });
+            }}
+            onCrustStorage={() => {
+              push({ type: "crust-storage" });
+            }}
+            onNotificationClick={() => {
+              triggerHaptic("light");
+              setShowNotifications(true);
+            }}
+            onWalletClick={() => {
+              if (DEMO_MODE) {
+                showToast("Wallet disabled in demo", "info");
+                return;
+              }
+              if (!POLKADOT_APP_ENABLED) {
+                showToast("Wallet feature disabled", "info");
+                return;
+              }
+              triggerHaptic("light");
+              setShowWalletSheet(true);
+            }}
+            walletConnected={!!connectedWallet || account.status === 'connected'}
+            notificationCount={
+              notifications.filter((n) => !n.read).length
+            }
+            insights={youTabInsights}
+            theme={theme}
+            onThemeChange={setTheme}
+            onLogout={handleLogout}
+            onDeleteAccount={handleDeleteAccount}
+            userName={user?.name || "You"}
+            userEmail={user?.email}
+            isGuest={user?.isGuest || false}
+          />
+        );
+
+      case "settings":
+        return (
+          <Settings
+            onBack={back}
+            onPaymentMethods={() =>
+              push({ type: "payment-methods" })
+            }
+            onCrustStorage={() =>
+              push({ type: "crust-storage" })
+            }
+            onLogout={handleLogout}
+            onDeleteAccount={handleDeleteAccount}
+            theme={theme}
+            onThemeChange={setTheme}
+          />
+        );
+
+      case "payment-methods":
+        return (
+          <PaymentMethods
+            methods={paymentMethods}
+            preferredMethodId={preferredMethodId}
+            onBack={back}
+            onUpdateMethod={(kind, value) => {
+              const target = paymentMethods.find(m => m.kind === kind);
+              if (!target) return;
+              const updates: Partial<PaymentMethod> =
+                kind === 'bank' ? { iban: value } :
+                kind === 'twint' ? { phone: value } :
+                kind === 'paypal' ? { email: value } :
+                { address: value };
+              updatePaymentMethodValue(target.id, updates);
+            }}
+            onSetPreferred={(methodId: string | null) => {
+              if (methodId) setPreferredMethod(methodId);
+              else setPreferredMethodId("");
+            }}
+          />
+        );
+
+      case "create-pot":
+        return (
+          <CreatePot
+            potName={newPot.name || ""}
+            setPotName={(name) =>
+              setNewPot({ ...newPot, name })
+            }
+            potType={newPot.type || "expense"}
+            setPotType={(type) =>
+              setNewPot({ ...newPot, type })
+            }
+            baseCurrency={newPot.baseCurrency || "USD"}
+            setBaseCurrency={(currency) =>
+              setNewPot({ ...newPot, baseCurrency: currency })
+            }
+            members={newPot.members || []}
+            setMembers={(members) =>
+              setNewPot({
+                ...newPot,
+                members: members.map((m) => ({
+                  id: m.id,
+                  name: m.name,
+                  role: "Member",
+                  status: "active",
+                  address: m.address, // Preserve wallet address
+                  verified: m.verified, // Preserve verification status
+                })),
+              })
+            }
+            goalAmount={newPot.goalAmount}
+            setGoalAmount={(amount) =>
+              setNewPot({ ...newPot, goalAmount: amount })
+            }
+            goalDescription={newPot.goalDescription}
+            setGoalDescription={(description) =>
+              setNewPot({
+                ...newPot,
+                goalDescription: description,
+              })
+            }
+            onBack={back}
+            onCreate={createPot}
+          />
+        );
+
+      case "pot-home":
+        if (!pot) return null;
+        const potInvites = invitesByPot[pot.id] || [];
+        // Filter out accepted invites (they're now in pot.members via pot_members table)
+        const pendingMemberInvites = potInvites.filter((inv) => inv.status === "pending");
+        const inviteMembers = pendingMemberInvites.map((inv) => ({
+          id: `invite-${inv.token}`,
+          name: inv.invitee_email,
+          role: "Member" as const,
+          status: "pending" as const,
+        }));
+        const normalizedMembers = normalizeMembers(pot.members);
+        const mergedMembers = [...normalizedMembers, ...inviteMembers];
+        const normalizedExpenses = normalizeExpenses(pot.expenses, pot.baseCurrency);
+        const normalizedHistory = normalizeHistory(pot.history || []);
+        const normalizedCheckpointConfirmations = normalizeConfirmations(
+          pot.currentCheckpoint?.confirmations,
+        );
+        return (
+          <PotHome
+            potId={pot.id}
+            potType={pot.type}
+            potName={pot.name}
+            baseCurrency={pot.baseCurrency}
+            currentUserId={user?.id || 'owner'}
+            members={mergedMembers}
+            expenses={normalizedExpenses}
+            budget={pot.budget ?? undefined}
+            budgetEnabled={pot.budgetEnabled}
+            checkpointEnabled={pot.checkpointEnabled}
+            hasActiveCheckpoint={
+              pot.currentCheckpoint?.status === "pending"
+            }
+            checkpointConfirmations={
+              normalizedCheckpointConfirmations
+            }
+            contributions={pot.contributions}
+            totalPooled={pot.totalPooled ?? undefined}
+            yieldRate={pot.yieldRate ?? undefined}
+            defiProtocol={pot.defiProtocol}
+            goalAmount={pot.goalAmount ?? undefined}
+            goalDescription={pot.goalDescription}
+            onBack={back}
+            onImportPot={(importedPot) => {
+              setPots([...pots, importedPot as Pot]);
+              showToast("Pot imported successfully", "success");
+              replace({ type: "pot-home", potId: importedPot.id });
+            }}
+            onAddExpense={() => push({ type: "add-expense" })}
+            onExpenseClick={(expense) => {
+              setCurrentExpenseId(expense.id);
+              push({
+                type: "expense-detail",
+                expenseId: expense.id,
+              });
+            }}
+            onSettle={() => {
+              if (
+                pot.checkpointEnabled !== false &&
+                pot.type === "expense"
+              ) {
+                if (
+                  pot.currentCheckpoint &&
+                  pot.currentCheckpoint.status === "pending"
+                ) {
+                  push({ type: "checkpoint-status" });
+                } else {
+                  push({ type: "settle-selection" });
+                }
+              } else {
+                push({ type: "settle-selection" });
+              }
+            }}
+            onAddMember={() => setShowAddMember(true)}
+            onCopyInviteLink={() => copyInviteLink(pot.id)}
+            onRemoveMember={(memberId) => {
+              if (!currentPotId) return;
+              setPots(
+                pots.map((p) =>
+                  p.id === currentPotId
+                    ? {
+                        ...p,
+                        members: p.members.filter(
+                          (m) => m.id !== memberId,
+                        ),
+                      }
+                    : p,
+                ),
+              );
+
+              (async () => {
+                try {
+                  await memberService.removeMember(currentPotId, memberId);
+                  logDev('[DataLayer] Member removed via service', { potId: currentPotId, memberId });
+                  notifyPotRefresh(currentPotId);
+                } catch (error) {
+                  console.error("[Member] remove failed", error);
+                  warnDev('[DataLayer] Service removeMember failed', error);
+                  showToast(error instanceof Error ? error.message : 'Failed to remove member', 'error');
+                }
+              })();
+
+              showToast("Member removed", "info");
+            }}
+            onUpdateMember={(updatedMember) => {
+              if (!currentPotId) return;
+              const currentMember = pots.find(p => p.id === currentPotId)?.members.find(m => m.id === updatedMember.id);
+              const previousAddress = currentMember?.address ?? null;
+              const nextAddress = updatedMember.address ?? null;
+              let toastLabel = "Member updated";
+              if (previousAddress !== nextAddress) {
+                if (nextAddress) {
+                  toastLabel = previousAddress ? "DOT wallet updated" : "DOT wallet added";
+                } else if (previousAddress) {
+                  toastLabel = "Wallet removed";
+                }
+              }
+              setPots(
+                pots.map((p) =>
+                  p.id === currentPotId
+                    ? {
+                        ...p,
+                        members: p.members.map((m) =>
+                          m.id === updatedMember.id
+                            ? { ...m, ...updatedMember }
+                            : m,
+                        ),
+                      }
+                    : p,
+                ),
+              );
+
+              (async () => {
+                try {
+                  const existingMember = pots.find(p => p.id === currentPotId)?.members.find(m => m.id === updatedMember.id);
+                  const updateMemberDTO = {
+                    name: updatedMember.name,
+                    address: updatedMember.address || null,
+                    verified: updatedMember.verified,
+                    ...(existingMember?.status && { status: existingMember.status }),
+                  };
+
+                  await memberService.updateMember(currentPotId, updatedMember.id, updateMemberDTO);
+                  logDev('[DataLayer] Member updated via service', { potId: currentPotId, memberId: updatedMember.id });
+                  notifyPotRefresh(currentPotId);
+                } catch (error) {
+                  warnDev('[DataLayer] Service updateMember failed', error);
+                  showToast('Saved locally (service write failed)', 'info');
+                }
+              })();
+
+              showToast(toastLabel, "success");
+            }}
+            
+            onDeletePot={async () => {
+              if (!currentPotId || !pot) return;
+              if (!usingSupabaseSource) {
+                const currentUserId = user?.id || 'owner';
+                const isOwner = pot.members.some(
+                  (m) =>
+                    (m.role?.toLowerCase() === 'owner' || m.id === 'owner') &&
+                    m.id === currentUserId,
+                );
+                if (!isOwner) {
+                  showToast("Only the pot owner can delete this pot", "error");
+                  return;
+                }
+              }
+              try {
+                await potService.deletePot(currentPotId);
+                setPots(pots.filter((p) => p.id !== currentPotId));
+                showToast("Pot deleted", "success");
+                reset({ type: "pots-home" });
+              } catch (error: any) {
+                console.error("[Pot] delete failed", error);
+                showToast(error?.message || "Failed to delete pot", "error");
+              }
+            }}
+            onLeavePot={() => {
+              if (!currentPotId || !pot) return;
+              const currentUserId = user?.id || 'owner';
+              const shouldEnforceClientMembership = !usingSupabaseSource;
+              const isMember = pot.members.some((m) => m.id === currentUserId);
+              if (shouldEnforceClientMembership && !isMember) {
+                showToast("You are not a member of this pot", "error");
+                return;
+              }
+
+              setPots(
+                pots.map((p) =>
+                  p.id === currentPotId
+                    ? {
+                        ...p,
+                        members: p.members.filter((m) => m.id !== currentUserId),
+                      }
+                    : p,
+                ),
+              );
+
+              (async () => {
+                try {
+                  await memberService.removeMember(currentPotId, currentUserId);
+                  logDev('[Pot] Left pot via service', { potId: currentPotId });
+                  notifyPotRefresh(currentPotId);
+                } catch (error) {
+                  console.error("[Pot] leave failed", error);
+                  warnDev('[Pot] Service leave failed', error);
+                  showToast(error instanceof Error ? error.message : "Failed to leave pot", "error");
+                  return;
+                }
+                showToast("You left the pot", "info");
+                reset({ type: "pots-home" });
+              })();
+            }}
+            onArchivePot={() => {
+              if (!currentPotId) return;
+              setPots(
+                pots.map((p) =>
+                  p.id === currentPotId
+                    ? ({ ...p, archived: true } as any)
+                    : p,
+                ),
+              );
+              showToast("Pot archived", "info");
+              reset({ type: "pots-home" });
+            }}
+            potHistory={normalizedHistory}
+            onUpdatePot={(updates) => {
+              if (!currentPotId) return;
+              setPots(
+                pots.map((p) =>
+                  p.id === currentPotId
+                    ? {
+                        ...p,
+                        history: updates.history || p.history || [],
+                      }
+                    : p,
+                ),
+              );
+              try {
+                const stored = localStorage.getItem('pots');
+                if (stored) {
+                  const allPots = JSON.parse(stored);
+                  const updated = allPots.map((p: any) =>
+                    p.id === currentPotId
+                      ? { ...p, history: updates.history || p.history || [] }
+                      : p
+                  );
+                  localStorage.setItem('pots', JSON.stringify(updated));
+                }
+              } catch (e) {
+                console.error('[App] Failed to persist pot history:', e);
+              }
+            }}
+            onUpdateSettings={(settings) => {
+              if (!currentPotId) return;
+              setPots(
+                pots.map((p) =>
+                  p.id === currentPotId
+                    ? {
+                        ...p,
+                        name: settings.potName !== undefined ? settings.potName : p.name,
+                        baseCurrency:
+                          settings.baseCurrency !== undefined
+                            ? settings.baseCurrency
+                            : p.baseCurrency,
+                        budget: settings.budget !== undefined ? settings.budget : p.budget,
+                        budgetEnabled: settings.budgetEnabled !== undefined ? settings.budgetEnabled : p.budgetEnabled,
+                        checkpointEnabled:
+                          settings.checkpointEnabled !== undefined
+                            ? settings.checkpointEnabled
+                            : p.checkpointEnabled,
+                        archived:
+                          typeof (settings as any).archived === 'boolean' ? (settings as any).archived : (p as any).archived,
+                      }
+                    : p,
+                ),
+              );
+              if (settings.potName || settings.baseCurrency || settings.budget !== undefined) {
+              showToast("Settings updated", "success");
+              }
+            }}
+            onDeleteExpense={deleteExpense}
+            onAttestExpense={(expenseId, silent) => {
+              attestExpense(expenseId);
+              if (!silent) {
+                showToast("Expense confirmed", "success");
+              }
+            }}
+            onBatchAttestExpenses={batchAttestExpenses}
+            onShowToast={showToast}
+            onAddContribution={() =>
+              push({ type: "add-contribution" })
+            }
+            onWithdraw={() => push({ type: "withdraw-funds" })}
+            onViewCheckpoint={() =>
+              push({ type: "checkpoint-status" })
+            }
+            onQuickAddSave={(data) => {
+              setCurrentPotId(pot.id);
+              addExpenseToPot(pot.id, data);
+            }}
+            openQuickAdd={fabQuickAddPotId === pot.id}
+            onClearQuickAdd={clearFabQuickAddPotId}
+          />
+        );
+
+      case "add-expense":
+        if (!pot) return null;
+        const addExpenseMembers = normalizeMembers(pot.members);
+        return (
+          <AddExpense
+            potName={pot.name}
+            members={addExpenseMembers}
+            baseCurrency={pot.baseCurrency}
+            onBack={back}
+            onSave={(data) => addExpenseToPot(pot.id, data)}
+          />
+        );
+
+      case "edit-expense":
+        if (!pot) return null;
+        const editExpenseMembers = normalizeMembers(pot.members);
+        const editExpenses = normalizeExpenses(pot.expenses, pot.baseCurrency);
+        const editingExpense = editExpenses.find(
+          (e) => e.id === screen.expenseId,
+        );
+        if (!editingExpense) return null;
+
+        return (
+          <AddExpense
+            potName={pot.name}
+            members={editExpenseMembers}
+            baseCurrency={pot.baseCurrency}
+            existingExpense={editingExpense}
+            onBack={back}
+            onSave={updateExpense}
+          />
+        );
+
+      case "expense-detail":
+        if (!pot && (currentPotLoading || !hasLoadedInitialData)) {
+          return (
+            <ExpenseDetail
+              currentUserId={user?.id || 'owner'}
+              baseCurrency={(pot as Pot | null | undefined)?.baseCurrency || 'USD'}
+              walletConnected={walletConnected}
+              onBack={back}
+              isLoading
+              onEdit={() => undefined}
+              onDelete={() => undefined}
+              onAttest={() => undefined}
+              onCopyReceiptLink={() => undefined}
+              onConnectWallet={() => setWalletConnected(true)}
+            />
+          );
+        }
+        if (!pot) return null;
+        const detailMembers = normalizeMembers(pot.members);
+        const detailExpenses = normalizeExpenses(pot.expenses, pot.baseCurrency);
+        const expense = detailExpenses.find(
+          (e) => e.id === screen.expenseId,
+        );
+        if (!expense) return null;
+
+        return (
+          <ExpenseDetail
+            expense={expense}
+            members={detailMembers}
+            currentUserId={user?.id || 'owner'}
+            baseCurrency={pot.baseCurrency}
+            walletConnected={walletConnected}
+            onBack={back}
+            onEdit={() => {
+              setCurrentExpenseId(expense.id);
+              push({
+                type: "edit-expense",
+                expenseId: expense.id,
+              });
+            }}
+            onDelete={() => deleteExpense(expense.id, { navigateBack: true })}
+            onAttest={() => attestExpense(expense.id)}
+            onCopyReceiptLink={() =>
+              showToast("Receipt link copied", "success")
+            }
+            onUpdateExpense={(updates) => {
+              setPots(
+                pots.map((p) =>
+                  p.id === currentPotId
+                    ? {
+                        ...p,
+                        expenses: p.expenses.map((e) =>
+                          e.id === expense.id
+                            ? { ...e, ...updates }
+                            : e,
+                        ),
+                      }
+                    : p,
+                ),
+              );
+              showToast("Expense anchored on-chain", "success");
+            }}
+            onConnectWallet={() => setWalletConnected(true)}
+          />
+        );
+
+      case "settle-selection":
+        const settleCurrentUserId = user?.id || 'owner';
+        const potSettlements =
+          normalizedCurrentPot
+            ? calculatePotSettlements(normalizedCurrentPot, settleCurrentUserId)
+            : balances;
+
+        const selectionBalances = [
+          ...potSettlements.youOwe.map((p) => ({
+            id: p.id,
+            name: p.name,
+            amount: p.totalAmount,
+            direction: "owe" as const,
+            trustScore: p.trustScore,
+            paymentPreference: p.paymentPreference,
+          })),
+          ...potSettlements.owedToYou.map((p) => ({
+            id: p.id,
+            name: p.name,
+            amount: p.totalAmount,
+            direction: "owed" as const,
+            trustScore: p.trustScore,
+            paymentPreference: p.paymentPreference,
+          })),
+        ];
+
+        return (
+          <SettleSelection
+            potName={currentPot?.name}
+            balances={selectionBalances}
+            baseCurrency={currentPot?.baseCurrency || "USD"}
+            onBack={() => {
+              if (currentPotId) {
+                replace({ type: "pot-home", potId: currentPotId });
+              } else {
+                reset({ type: "people-home" });
+              }
+            }}
+            onSelectPerson={(personId) => {
+              setSelectedCounterpartyId(personId);
+              push({ type: "settle-home" });
+            }}
+          />
+        );
+
+      case "settle-home":
+        let personIdFromNav = screen.personId || selectedCounterpartyId;
+
+        const settleScope = currentPotId ? "pot" : "global";
+        const settleLabel = currentPotId
+          ? currentPot?.name
+          : "All pots";
+
+        const scopedSettlements =
+          normalizedCurrentPot
+            ? calculatePotSettlements(normalizedCurrentPot, user?.id || 'owner')
+            : balances;
+
+        if (!personIdFromNav) {
+          const candidates = [
+            ...scopedSettlements.youOwe.map((p) => ({ id: p.id, amount: Math.abs(p.totalAmount) })),
+            ...scopedSettlements.owedToYou.map((p) => ({ id: p.id, amount: Math.abs(p.totalAmount) })),
+          ];
+          const best = candidates.sort((a, b) => b.amount - a.amount)[0];
+          if (best && best.amount > 0) {
+            personIdFromNav = best.id;
+          }
+        }
+
+        const convertToSettlements = (
+          personSettlements: PersonSettlement[],
+          direction: "owe" | "owed",
+        ) => {
+          return personSettlements.map((p: PersonSettlement) => ({
+            id: p.id,
+            name: p.name,
+            totalAmount: p.totalAmount,
+            direction,
+            pots: p.breakdown.map((b: SettlementBreakdown) => ({
+              potId: "", // Not used in UI
+              potName: b.potName,
+              amount: b.amount,
+            })),
+          }));
+        };
+
+        const activeSettlements = personIdFromNav
+          ? [
+              ...convertToSettlements(
+                scopedSettlements.youOwe.filter(
+                  (p) => p.id === personIdFromNav,
+                ),
+                "owe",
+              ),
+              ...convertToSettlements(
+                scopedSettlements.owedToYou.filter(
+                  (p) => p.id === personIdFromNav,
+                ),
+                "owed",
+              ),
+            ]
+          : [
+              ...convertToSettlements(
+                scopedSettlements.youOwe,
+                "owe",
+              ),
+              ...convertToSettlements(
+                scopedSettlements.owedToYou,
+                "owed",
+              ),
+            ];
+
+        const settlementAmount = Math.abs(
+          activeSettlements.reduce((sum, s) => sum + s.totalAmount, 0),
+        );
+
+        const counterpartyName = personIdFromNav
+          ? activeSettlements.find(
+              (p) => p.id === personIdFromNav,
+            )?.name || "Unknown"
+          : activeSettlements[0]?.name || "Unknown";
+
+        const personData = personIdFromNav
+          ? people.find((p) => p.id === personIdFromNav)
+          : null;
+        const preferredPaymentMethod =
+          personData?.paymentPreference?.toLowerCase();
+
+        let recipientAddress: string | undefined = undefined;
+        if (personIdFromNav) {
+          if (currentPotId) {
+            const currentPotSnapshot = normalizedCurrentPot;
+            const recipientMember = currentPotSnapshot?.members.find(m => m.id === personIdFromNav);
+            recipientAddress = recipientMember?.address;
+          } else {
+            for (const pot of pots) {
+              const recipientMember = pot.members.find(m => m.id === personIdFromNav);
+              if (recipientMember?.address) {
+                recipientAddress = recipientMember.address;
+                break;
+              }
+            }
+          }
+        }
+
+        return (
+          <SettleHome
+            settlements={activeSettlements}
+            onBack={() => {
+              if (currentPotId) {
+                replace({ type: "settle-selection" });
+              } else {
+                reset({ type: "people-home" });
+              }
+            }}
+            scope={settleScope}
+            scopeLabel={settleLabel}
+            potId={currentPotId || undefined}
+            personId={personIdFromNav || undefined}
+            preferredMethod={preferredPaymentMethod}
+            recipientAddress={recipientAddress}
+            baseCurrency={currentPot?.baseCurrency || "USD"}
+            onShowToast={showToast}
+            pot={
+              normalizedCurrentPot
+                ? ({ ...normalizedCurrentPot, mode: "casual" as const } as any)
+                : undefined
+            }
+            onUpdatePot={currentPotId ? (updates) => {
+              if (currentPot) {
+                setPots(pots.map(p => p.id === currentPotId ? { ...p, ...updates } : p));
+              }
+            } : undefined}
+            onConfirm={async (method, reference) => {
+              const newSettlement: Settlement = {
+                id: Date.now().toString(),
+                personId:
+                  personIdFromNav ||
+                  activeSettlements[0]?.id ||
+                  "unknown",
+                amount: settlementAmount,
+                currency: (currentPot?.baseCurrency || "USD") as any,
+                method: method as any,
+                potIds: currentPotId
+                  ? [currentPotId]
+                  : undefined,
+                date: new Date().toISOString(),
+                txHash:
+                  method === "dot" ? reference : undefined,
+              };
+              setSettlements([newSettlement, ...settlements]);
+
+              if (settleScope === 'pot' && method === 'dot' && currentPotId && reference) {
+                const fromAddress = connectedWallet?.address || '';
+                const toAddress = recipientAddress || '';
+                const service = await getPolkadotChainService();
+                const baseCurrency = currentPot?.baseCurrency || 'USD';
+                const isUsdcPot = baseCurrency === 'USDC';
+                
+                const historyEntry: PotHistory = {
+                  id: `${Date.now()}`,
+                  type: 'onchain_settlement',
+                  fromMemberId: 'owner',
+                  toMemberId: personIdFromNav || 'unknown',
+                  fromAddress,
+                  toAddress,
+                  ...(isUsdcPot 
+                    ? { 
+                        amountUsdc: String(Number(settlementAmount.toFixed(6))),
+                        amountDot: undefined, // USDC settlement
+                        assetId: 1337 
+                      }
+                    : { 
+                        amountDot: String(Number(settlementAmount.toFixed(6))),
+                        amountUsdc: undefined, // DOT settlement
+                        assetId: undefined
+                      }
+                  ),
+                  txHash: reference,
+                  status: 'in_block',
+                  when: Date.now(),
+                  subscan: service.buildSubscanUrl(reference),
+                };
+                const updatedPots = pots.map(p => p.id === currentPotId ? { ...p, history: [historyEntry, ...(p.history || [])] } : p);
+                setPots(updatedPots);
+                try {
+                  localStorage.setItem('pots', JSON.stringify(updatedPots));
+                } catch (error) {
+                  console.warn('[App] Failed to persist pot history to localStorage:', error);
+                }
+              }
+
+              const methodLabels: Record<string, string> = {
+                cash: "cash",
+                bank: "bank transfer",
+                paypal: "PayPal",
+                twint: "TWINT",
+                dot: "DOT wallet",
+              };
+              const methodLabel =
+                methodLabels[method] || method;
+              const scopeText =
+                settleScope === "pot"
+                  ? ` (${settleLabel})`
+                  : "";
+              showToast(
+                `✓ Settled ${settlementAmount.toFixed(2)} with ${counterpartyName}${scopeText} via ${methodLabel}`,
+                "success",
+              );
+
+              push({
+                type: "settlement-confirmation",
+                result: {
+                  amount: Number(settlementAmount.toFixed(6)),
+                  method: method as any,
+                  counterpartyId: personIdFromNav || activeSettlements[0]?.id || "unknown",
+                  counterpartyName,
+                  scope: settleScope as "pot" | "person-all" | "expense",
+                  ref: method === "bank" ? reference : undefined,
+                  txHash: method === "dot" ? reference : undefined,
+                  pots: currentPot ? [{ id: currentPotId!, name: currentPot.name, amount: Number(settlementAmount.toFixed(6)) }] : [],
+                  at: Date.now(),
+                },
+              });
+            }}
+            onHistory={() => {
+              if (personIdFromNav) {
+                push({
+                  type: "settlement-history",
+                  personId: personIdFromNav,
+                });
+              } else {
+                push({ type: "settlement-history" });
+              }
+            }}
+          />
+        );
+
+      case "settlement-history":
+        const personNames = new Map<string, string>();
+        pots.forEach((pot) => {
+          pot.members.forEach((member) => {
+            if (!personNames.has(member.id)) {
+              personNames.set(member.id, member.name);
+            }
+          });
+        });
+
+        const enrichedSettlements = settlements.map((s) => ({
+          ...s,
+          personName: personNames.get(s.personId) || "Unknown",
+          potNames: s.potIds?.map((potId) => {
+            const pot = pots.find((p) => p.id === potId);
+            return pot?.name || "Unknown";
+          }),
+        }));
+
+        return (
+          <SettlementHistory
+            settlements={enrichedSettlements}
+            onBack={back}
+            personId={screen.personId}
+          />
+        );
+
+      case "settlement-confirmation":
+        return (
+          <SettlementConfirmation
+            result={screen.result}
+            onBack={back}
+            onViewHistory={() => {
+              push({ type: "settlement-history" });
+            }}
+            onDone={() => {
+              reset({ type: "pots-home" });
+              showToast("Settlement complete!", "success");
+            }}
+          />
+        );
+
+      case "insights":
+        const mockMonthlyData = [
+          { month: "Aug", amount: 420 },
+          { month: "Sep", amount: 510 },
+          { month: "Oct", amount: 545 },
+        ];
+
+        return (
+          <InsightsScreen
+            onBack={back}
+            monthlySpending={youTabInsights.monthlySpending}
+            activePots={
+              pots.filter((p) => p.type === "expense").length
+            }
+            totalSettled={youTabInsights.totalSettled}
+            monthlyData={mockMonthlyData}
+            confirmationRate={youTabInsights.confirmationRate}
+            expensesConfirmed={youTabInsights.expensesConfirmed}
+            settlementsCompleted={
+              youTabInsights.settlementsCompleted
+            }
+            activeGroups={youTabInsights.activeGroups}
+          />
+        );
+
+      case "member-detail":
+        let memberInfo:
+          | { id: string; name: string }
+          | undefined;
+
+        const personFromPeople = people.find(
+          (p) => p.id === screen.memberId,
+        );
+        if (personFromPeople) {
+          memberInfo = {
+            id: personFromPeople.id,
+            name: personFromPeople.name,
+          };
+        } else {
+          for (const p of pots) {
+            const foundMember = p.members.find(
+              (m) => m.id === screen.memberId,
+            );
+            if (foundMember) {
+              memberInfo = {
+                id: foundMember.id,
+                name: foundMember.name,
+              };
+              break;
+            }
+          }
+        }
+
+        if (!memberInfo) return null;
+
+        const memberSharedPots = pots
+          .filter((p) =>
+            p.members.some((m) => m.id === screen.memberId),
+          )
+          .map((p) => {
+            const memberExpenses = p.expenses
+              .filter((e) => e.paidBy === screen.memberId)
+              .reduce((sum, e) => sum + e.amount, 0);
+
+            const memberShare = p.expenses.reduce((sum, e) => {
+              const split = e.split.find(
+                (s) => s.memberId === screen.memberId,
+              );
+              return sum + (split?.amount || 0);
+            }, 0);
+
+            const yourExpenses = p.expenses
+              .filter((e) => e.paidBy === "owner")
+              .reduce((sum, e) => sum + e.amount, 0);
+
+            const yourShare = p.expenses.reduce((sum, e) => {
+              const split = e.split.find(
+                (s) => s.memberId === "owner",
+              );
+              return sum + (split?.amount || 0);
+            }, 0);
+
+            const yourBalance =
+              yourExpenses -
+              yourShare -
+              (memberExpenses - memberShare);
+
+            return {
+              id: p.id,
+              name: p.name,
+              yourBalance,
+            };
+          });
+
+        const totalBalance = memberSharedPots.reduce(
+          (sum, p) => sum + p.yourBalance,
+          0,
+        );
+
+        return (
+          <MemberDetail
+            memberId={memberInfo.id}
+            memberName={memberInfo.name}
+            trustScore={95}
+            sharedPots={memberSharedPots}
+            recentSettlements={[]}
+            totalBalance={totalBalance}
+            onBack={back}
+            onSettle={() => {
+              setSelectedCounterpartyId(memberInfo.id);
+              push({ type: "settle-home" });
+            }}
+            onCopyPaymentDetails={() => {
+              showToast("Payment details copied", "success");
+            }}
+          />
+        );
+
+      case "add-contribution":
+        if (!pot) return null;
+        return (
+          <AddContribution
+            potName={pot.name}
+            baseCurrency={pot.baseCurrency}
+            currentBalance={pot.totalPooled || 0}
+            yieldRate={pot.yieldRate || 0}
+            defiProtocol={pot.defiProtocol || "Acala"}
+            onBack={back}
+            onConfirm={addContribution}
+          />
+        );
+
+      case "withdraw-funds":
+        if (!pot) return null;
+
+        const userBalance = (pot.contributions || [])
+          .filter((c) => c.memberId === "owner")
+          .reduce((sum, c) => sum + c.amount, 0);
+
+        return (
+          <WithdrawFunds
+            potName={pot.name}
+            baseCurrency={pot.baseCurrency}
+            yourBalance={userBalance}
+            totalPooled={pot.totalPooled || 0}
+            yieldRate={pot.yieldRate || 0}
+            defiProtocol={pot.defiProtocol || "Acala"}
+            onBack={back}
+            onConfirm={withdrawFunds}
+          />
+        );
+
+      case "request-payment":
+        return (
+          <RequestPayment
+            people={balances.owedToYou.map((p) => ({
+              id: p.id,
+              name: p.name,
+              totalAmount: p.totalAmount,
+              breakdown: p.breakdown.map((b) => ({ potName: b.potName, amount: b.amount })),
+              trustScore: p.trustScore,
+              paymentPreference: p.paymentPreference ?? 'bank',
+            }))}
+            onBack={back}
+            onSendRequest={(personId, message) => {
+              const person = balances.owedToYou.find(
+                (p) => p.id === personId,
+              );
+              if (!person) return;
+
+              const notification: Notification = {
+                id: Date.now().toString(),
+                type: "settlement",
+                title: "Payment request",
+                message:
+                  message ||
+                  `You requested payment of ${person.totalAmount.toFixed(2)}`,
+                timestamp: new Date().toISOString(),
+                read: false,
+              };
+
+              setNotifications([
+                notification,
+                ...notifications,
+              ]);
+
+              showToast(
+                `Request sent to ${person.name}`,
+                "success",
+              );
+              triggerHaptic("light");
+            }}
+          />
+        );
+
+      case "crust-storage":
+        return (
+          <CrustStorage
+            onAuthSetup={() => push({ type: "crust-auth-setup" })}
+          />
+        );
+
+      case "crust-auth-setup":
+        return (
+          <CrustAuthSetup onBack={back} />
+        );
+
+      case "receive-qr": {
+        const address = connectedWallet?.address || account.address0 || '';
+        console.log('[receive-qr] Rendering with:', { 
+          address, 
+          hasConnectedWallet: !!connectedWallet,
+          accountStatus: account.status,
+          accountAddress: account.address0,
+          screenType: screen?.type 
+        });
+        
+        return (
+          <ReceiveQR
+            onClose={() => back()}
+            walletAddress={address || 'No address found'}
+          />
+        );
+      }
+
+      case "import-pot": {
+        const urlParams = new URLSearchParams(window.location.search);
+        const cidParam = urlParams.get('cid');
+        
+        return (
+          <ImportPot
+            initialCid={cidParam || undefined}
+            onBack={() => {
+              const url = new URL(window.location.href);
+              url.searchParams.delete('cid');
+              window.history.replaceState({}, '', url.toString());
+              reset({ type: 'pots-home' });
+            }}
+            onImport={(importedPot) => {
+              const newPot: Pot = {
+                ...importedPot,
+                id: `${Date.now()}-${importedPot.id}`, // Ensure unique ID
+                members: importedPot.members.map((m, idx) => ({
+                  id: m.id || `member-${idx}`,
+                  name: m.name,
+                  address: m.address ?? null,
+                  verified: m.verified ?? false,
+                  role: (m.role === 'Owner' ? 'Owner' : (m.role === 'Member' ? 'Member' : undefined)) as 'Owner' | 'Member' | undefined,
+                  status: (m.status || 'active') as string,
+                })),
+                expenses: importedPot.expenses.map((e, idx) => ({
+                  ...e,
+                  id: e.id || `expense-${idx}`,
+                  currency: e.currency || importedPot.baseCurrency,
+                })),
+              } as Pot;
+              
+              setPots([...pots, newPot]);
+              setCurrentPotId(newPot.id);
+              
+              const url = new URL(window.location.href);
+              url.searchParams.delete('cid');
+              window.history.replaceState({}, '', url.toString());
+              
+              replace({ type: 'pot-home', potId: newPot.id });
+              showToast('Pot imported successfully!', 'success');
+            }}
+            onShowToast={showToast}
+          />
+        );
+      }
+
+      case "settle-cash":
+      case "settle-bank":
+      case "settle-dot":
+        return null;
+
+      default:
+        return null;
+    }
+  };
 
   const fabState = getFabState();
 
@@ -2396,122 +3865,326 @@ function AppContent() {
 
   return (
     <div className="app-shell bg-background overflow-hidden">
-      <Suspense
-        fallback={(
-          <div className="flex h-full items-center justify-center text-sm text-secondary">
-            Loading...
-          </div>
-        )}
+      <SwipeableScreen
+        onSwipeBack={canSwipeBack() ? back : undefined}
+        key={screen?.type ?? 'screen'}
       >
-        <SwipeableScreen
-          onSwipeBack={canSwipeBack() ? back : undefined}
-          key={screen?.type ?? 'screen'}
-        >
-          <AppRouter
-            screen={screen || null}
-            nav={{ push, replace, back, reset }}
-            data={{
-              pots, currentPot: currentPot || null, currentPotId, currentPotLoading, hasLoadedInitialData,
-              people, balances, totalOwed, totalOwing, pendingExpenses, activities,
-              normalizedCurrentPot, youTabInsights, settlements
-            }}
-            userState={{
-              user, authLoading, isAuthenticated, isGuest, notifications,
-              walletConnected, connectedWallet
-            }}
-            uiState={{
-              theme, showNotifications, paymentMethods, preferredMethodId,
-              invitesByPot, pendingInviteToken, isProcessingInvite, pendingInvites,
-              fabQuickAddPotId
-            }}
-            actions={{
-              setPots, setCurrentPotId, setCurrentExpenseId, setWalletConnected,
-              setShowNotifications, setShowWalletSheet, setShowMyQR, setShowScanQR,
-              setShowChoosePot, setShowAddPaymentMethod, setPaymentMethods,
-              setPreferredMethodId, setTheme, setFabQuickAddPotId, setNewPot,
-              setSelectedCounterpartyId, setSettlements,
-              createPot, addExpenseToPot, updateExpense, deleteExpense, attestExpense,
-              batchAttestExpenses, addContribution, withdrawFunds, handleLogout,
-              handleDeleteAccount, updatePaymentMethodValue, setPreferredMethod,
-              handleInviteNew, acceptInvite, declineInvite, showToast,
-              newPotState: newPot, joinProcessingRef, selectedCounterpartyId
-            }}
-            flags={{ DEMO_MODE, POLKADOT_APP_ENABLED }}
-          />
-        </SwipeableScreen>
+        {renderScreen()}
+      </SwipeableScreen>
 
 
-
-        {shouldShowTabBar() && (
-          <BottomTabBar
-            activeTab={getActiveTab()}
-            onTabChange={handleTabChange}
-            onFabClick={fabState.action}
-            fabVisible={fabState.visible}
-            fabIcon={fabState.icon}
-            fabColor={fabState.color}
-          />
-        )}
-
-        <AppOverlays
-          inviteModal={
-            <AcceptInviteModal
-              isOpen={showInviteModal}
-              isProcessing={isProcessingInvite}
-              onAccept={confirmPendingInvite}
-              onDecline={() => {
-                if (pendingInviteToken) declineInvite(pendingInviteToken);
-                else cancelPendingInvite();
-              }}
-            />
-          }
-          showWalletSheet={showWalletSheet}
-          walletConnected={walletConnected}
-          connectedWallet={connectedWallet}
-          onWalletConnect={handleWalletConnect}
-          onWalletDisconnect={handleWalletDisconnect}
-          onWalletClose={handleWalletClose}
-          showNotifications={showNotifications}
-          notifications={notifications}
-          onNotificationsClose={handleNotificationsClose}
-          onNotificationsMarkAllRead={handleNotificationsMarkAllRead}
-          onNotificationClick={handleNotificationClick}
-          showYouSheet={showYouSheet}
-          youSheetInsights={youTabInsights}
-          onYouSheetClose={handleYouSheetClose}
-          onYouShowQR={handleYouShowQR}
-          onYouScanQR={handleYouScanQR}
-          onYouPaymentMethods={handleYouPaymentMethods}
-          onYouViewInsights={handleYouViewInsights}
-          onYouSettings={handleYouSettings}
-          showMyQR={showMyQR}
-          onMyQRClose={handleMyQRClose}
-          onCopyHandle={handleCopyHandle}
-          showScanQR={showScanQR}
-          onScanQRClose={handleScanQRClose}
-          showChoosePot={showChoosePot}
-          pots={pots}
-          onChoosePotClose={handleChoosePotClose}
-          onChoosePotCreate={handleChoosePotCreate}
-          onChoosePotSelect={handleChoosePotSelect}
-          showAddPaymentMethod={showAddPaymentMethod}
-          onAddPaymentMethodClose={handleAddPaymentMethodClose}
-          onAddPaymentMethodSave={handleAddPaymentMethodSave}
-          selectedPaymentMethod={selectedPaymentMethod}
-          onSelectedPaymentMethodClose={handleSelectedPaymentMethodClose}
-          showAddMember={showAddMember && !!currentPotId}
-          existingContacts={existingContacts}
-          currentMembers={currentMemberIds}
-          onAddMemberClose={handleAddMemberClose}
-          onAddMemberExisting={handleAddMemberExisting}
-          onInviteNew={handleInviteNew}
-          onAddMemberShowQR={handleAddMemberShowQR}
-          showIPFSAuthOnboarding={showIPFSAuthOnboarding}
-          walletAddress={account.address0}
-          onIPFSContinue={handleIPFSContinue}
-          onIPFSCancel={handleIPFSCancel}
+      
+      {shouldShowTabBar() && (
+        <BottomTabBar
+          activeTab={getActiveTab()}
+          onTabChange={handleTabChange}
+          onFabClick={fabState.action}
+          fabVisible={fabState.visible}
+          fabIcon={fabState.icon}
+          fabColor={fabState.color}
         />
-      </Suspense>
+      )}
+
+      {renderInviteModal()}
+
+
+      
+      {showWalletSheet && (
+        <WalletConnectionSheet
+          isConnected={walletConnected}
+          connectedWallet={connectedWallet}
+          onConnect={(provider) => {
+            setWalletConnected(true);
+            setConnectedWallet({
+              provider,
+              address:
+                "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+              name: "My Polkadot Wallet",
+            });
+            setShowWalletSheet(false);
+            showToast(
+              "Wallet connected successfully!",
+              "success",
+            );
+          }}
+          onDisconnect={() => {
+            setWalletConnected(false);
+            setConnectedWallet(undefined);
+            setShowWalletSheet(false);
+            showToast("Wallet disconnected", "info");
+          }}
+          onClose={() => setShowWalletSheet(false)}
+        />
+      )}
+
+      {showNotifications && (
+        <NotificationCenter
+          notifications={notifications}
+          onClose={() => setShowNotifications(false)}
+          onMarkAllRead={() => {
+            setNotifications(
+              notifications.map((n) => ({ ...n, read: true })),
+            );
+            triggerHaptic("light");
+          }}
+          onNotificationClick={(notification) => {
+            setNotifications(
+              notifications.map((n) =>
+                n.id === notification.id
+                  ? { ...n, read: true }
+                  : n,
+              ),
+            );
+            notification.onAction?.();
+          }}
+        />
+      )}
+
+      {showYouSheet && (
+        <YouSheet
+          onClose={() => setShowYouSheet(false)}
+          onShowQR={() => {
+            setShowYouSheet(false);
+            setShowMyQR(true);
+          }}
+          onScanQR={() => {
+            setShowYouSheet(false);
+            setShowScanQR(true);
+          }}
+          onPaymentMethods={() => {
+            setShowYouSheet(false);
+            push({ type: "payment-methods" });
+          }}
+          onViewInsights={() => {
+            setShowYouSheet(false);
+            push({ type: "insights" });
+          }}
+          onSettings={() => {
+            setShowYouSheet(false);
+            push({ type: "settings" });
+          }}
+          insights={youTabInsights}
+        />
+      )}
+
+      {showMyQR && (
+        <MyQR onClose={() => setShowMyQR(false)} onCopyHandle={() => showToast('Handle copied', 'info')} />
+      )}
+      {showScanQR && (
+        <ScanQR onClose={() => setShowScanQR(false)} />
+      )}
+
+      {showChoosePot && (
+        <ChoosePot
+          pots={pots.filter(p => !p.archived).map((p) => ({
+            id: p.id,
+            name: p.name,
+            myExpenses: p.expenses.filter(
+              (e) => e.paidBy === "owner",
+            ).length,
+            totalExpenses: p.expenses.length,
+            memberCount: p.members.length,
+          }))}
+          onClose={() => setShowChoosePot(false)}
+          onCreatePot={() => push({ type: "create-pot" })}
+          onSelectPot={(potId) => {
+            setCurrentPotId(potId);
+            setFabQuickAddPotId(potId);
+            setShowChoosePot(false);
+            push({ type: "pot-home", potId });
+          }}
+        />
+      )}
+
+      {showAddPaymentMethod && (
+        <AddPaymentMethod
+          onClose={() => setShowAddPaymentMethod(false)}
+          onSave={(method, setAsPreferred) => {
+            const newId = Date.now().toString();
+            setPaymentMethods([
+              ...paymentMethods,
+              { ...method, id: newId },
+            ]);
+            if (setAsPreferred) setPreferredMethodId(newId);
+            setShowAddPaymentMethod(false);
+            showToast("Payment method added", "success");
+          }}
+        />
+      )}
+
+      {selectedPaymentMethod && (
+        <ViewPaymentMethod
+          method={selectedPaymentMethod as PaymentMethod}
+          onClose={() => setSelectedPaymentMethod(null)}
+        />
+      )}
+
+      {showAddMember && currentPotId && (
+        <AddMember
+          onClose={() => setShowAddMember(false)}
+          onAddExisting={(contactId) => {
+            const person = people.find(
+              (p) => p.id === contactId,
+            );
+            if (!person) return;
+
+            const newMember = {
+              id: person.id,
+              name: person.name,
+              role: "Member" as const,
+              status: "active" as const,
+            };
+
+            setPots(
+              pots.map((p) =>
+                p.id === currentPotId
+                  ? {
+                      ...p,
+                      members: [
+                        ...p.members,
+                        newMember,
+                      ],
+                    }
+                  : p,
+              ),
+            );
+
+            (async () => {
+              try {
+                const createMemberDTO = {
+                  potId: currentPotId!,
+                  name: person.name,
+                  role: "Member" as const,
+                  status: "active" as const,
+                  address: null, // Existing contact may not have address
+                  verified: false,
+                };
+
+                await memberService.addMember(currentPotId!, createMemberDTO);
+                logDev('[DataLayer] Member added via service', { potId: currentPotId, memberId: person.id });
+              } catch (error) {
+                warnDev('[DataLayer] Service addMember failed', error);
+                showToast('Saved locally (service write failed)', 'info');
+              }
+            })();
+
+            showToast(`${person.name} added to pot`, "success");
+          }}
+          onInviteNew={(nameOrEmail) => {
+            const supabase = getSupabase();
+            const email = nameOrEmail.trim().toLowerCase();
+            if (!currentPotId) {
+              showToast("Select a pot first", "error");
+              return;
+            }
+            if (!email || !email.includes("@")) {
+              showToast("Enter a valid email address", "error");
+              return;
+            }
+            if (!supabase) {
+              showToast("Supabase is not configured", "error");
+              return;
+            }
+
+            (async () => {
+              try {
+                const { data: userData, error: userError } = await supabase.auth.getUser();
+                if (userError || !userData.user) {
+                  showToast("Log in to invite members", "error");
+                  return;
+                }
+
+                const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7 days
+                const { data, error } = await supabase
+                  .from("invites")
+                  .insert({
+                    pot_id: currentPotId!,
+                    invitee_email: email,
+                    expires_at: expiresAt,
+                    created_by: userData.user.id,
+                  })
+                  .select("token, pot_id")
+                  .maybeSingle();
+
+                if (error) {
+                  console.error("[Invite] failed to create invite", error);
+                  if ((error as any)?.code === '23505') {
+                    showToast("Invite already sent to this email for this pot.", "info");
+                  } else {
+                    showToast(error.message || "Failed to send invite", "error");
+                  }
+                  return;
+                }
+
+                const token = data?.token;
+                if (!token) {
+                  showToast("Invite created but no token returned", "error");
+                  return;
+                }
+
+                const link = `${window.location.origin}/join?token=${token}`;
+                try {
+                  await navigator.clipboard?.writeText(link);
+                  showToast(`Invite ready for ${email}. Link copied.`, "success");
+                } catch {
+                  showToast(`Invite ready for ${email}. Copy this link:\n${link}`, "success");
+                }
+
+                fetchInvites(currentPotId!);
+              } catch (err: any) {
+                console.error("[Invite] unexpected error", err);
+                showToast("Failed to send invite", "error");
+              }
+            })();
+          }}
+          onShowQR={() => {
+            setShowAddMember(false);
+            setShowMyQR(true);
+          }}
+          existingContacts={people.map((p) => ({
+            id: p.id,
+            name: p.name,
+            trustScore: p.trustScore,
+            paymentPreference: p.paymentPreference,
+            sharedPots: pots.filter((pot) =>
+              pot.members.some((m) => m.id === p.id),
+            ).length,
+          }))}
+          currentMembers={
+            currentPot?.members.map((m) => m.id) || []
+          }
+        />
+      )}
+
+      <Toaster />
+
+      <TxToast />
+
+      
+      {showIPFSAuthOnboarding && account.address0 && (
+        <IPFSAuthOnboarding
+          walletAddress={account.address0}
+          onContinue={async () => {
+            setShowIPFSAuthOnboarding(false);
+            if (pendingIPFSAction) {
+              try {
+                await pendingIPFSAction();
+              } catch (error) {
+                console.error('[App] Pending IPFS action failed:', error);
+                showToast('Upload failed. Please try again.', 'error');
+              } finally {
+                setPendingIPFSAction(null);
+              }
+            }
+          }}
+          onCancel={() => {
+            setShowIPFSAuthOnboarding(false);
+            setPendingIPFSAction(null);
+            resetOnboardingFlag(); // Reset flag so user can try again later
+          }}
+        />
+      )}
+
     </div>
   );
 }
