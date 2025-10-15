@@ -2087,7 +2087,6 @@ function AppContent() {
               triggerHaptic("light");
               setShowWalletSheet(true);
             }}
-            walletConnected={walletConnected}
             notificationCount={
               notifications.filter((n) => !n.read).length
             }
