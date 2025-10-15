@@ -1,11 +1,33 @@
+# ChopDot
 
-  # ChopDot Mobile Wireframe
+Mobile-first expense splitting and group financial management app prototype.
 
-  This is a code bundle for ChopDot Mobile Wireframe. The original project is available at https://www.figma.com/design/Gi4G5DAX4lMw1VpzALo1vS/ChopDot-Mobile-Wireframe.
+This repository consolidates the ChopDot Mobile Wireframe codebase and the existing GitHub repository metadata (README and license).
 
-  ## Running the code
+## Tech Stack
 
-  Run `npm i` to install the dependencies.
+- React 18 + TypeScript
+- Vite
+- Tailwind CSS v4
+- ShadCN UI components
 
-  Run `npm run dev` to start the development server.
-  
+## Run locally
+
+1. Install dependencies:
+   
+   ```bash
+   npm install
+   ```
+
+2. Start the dev server:
+   
+   ```bash
+   npm run dev
+   ```
+
+Then open `http://localhost:5173`.
+
+## Notes
+
+- Source originated from the ChopDot Mobile Wireframe export (see design reference) and is adapted for local development.
+
