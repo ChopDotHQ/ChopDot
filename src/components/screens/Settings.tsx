@@ -1,0 +1,262 @@
+import { User, LogOut, CreditCard, ChevronRight, Trash2 } from "lucide-react";
+import { TopBar } from "../TopBar";
+import { InputField } from "../InputField";
+import { SelectField } from "../SelectField";
+import { LinkButton } from "../LinkButton";
+import { useState } from "react";
+import { Theme } from "../../utils/useTheme";
+
+interface SettingsProps {
+  onBack?: () => void;
+  onPaymentMethods: () => void;
+  onLogout: () => void;
+  onDeleteAccount: () => void;
+  theme: Theme;
+  onThemeChange: (theme: Theme) => void;
+}
+
+export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, theme, onThemeChange }: SettingsProps) {
+  const [name, setName] = useState("You");
+  const [nickname, setNickname] = useState("");
+  const [email, setEmail] = useState("you@example.com");
+  const [notifications, setNotifications] = useState(true);
+  const [currency, setCurrency] = useState("USD");
+  const [language, setLanguage] = useState("English");
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const handleSave = () => {
+    // In a real app, this would save to backend/database
+    setHasChanges(false);
+    // Show toast via parent component
+  };
+
+  const markChanged = () => {
+    if (!hasChanges) setHasChanges(true);
+  };
+
+  return (
+    <div className="flex flex-col h-full pb-[68px]">
+      <TopBar title="Settings" onBack={onBack} />
+
+      <div className="flex-1 overflow-auto">
+        <div className="p-4 space-y-6">
+          {/* Profile Section */}
+          <div className="space-y-3">
+            <h2 className="text-label text-muted-foreground px-1">Profile</h2>
+
+            {/* Profile Image */}
+            <div className="p-3 glass-sm rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                  <User className="w-6 h-6 text-muted-foreground" />
+                </div>
+                <button 
+                  className="text-label text-primary hover:opacity-70 transition-opacity"
+                  onClick={markChanged}
+                >
+                  Change photo
+                </button>
+              </div>
+            </div>
+
+            <InputField
+              label="Name"
+              value={name}
+              onChange={(value) => {
+                setName(value);
+                markChanged();
+              }}
+              placeholder="Your name"
+            />
+
+            <InputField
+              label="Nickname"
+              value={nickname}
+              onChange={(value) => {
+                setNickname(value);
+                markChanged();
+              }}
+              placeholder="Optional"
+            />
+
+            <InputField
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(value) => {
+                setEmail(value);
+                markChanged();
+              }}
+              placeholder="your@email.com"
+            />
+          </div>
+
+          {/* Preferences Section */}
+          <div className="space-y-3">
+            <h2 className="text-label text-muted-foreground px-1">Preferences</h2>
+
+            {/* Notifications Toggle */}
+            <div className="p-3 glass-sm rounded-xl">
+              <div className="flex items-center justify-between">
+                <span className="text-body">Notifications</span>
+                <button
+                  onClick={() => {
+                    setNotifications(!notifications);
+                    markChanged();
+                  }}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    notifications ? "bg-primary" : "bg-switch-background"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      notifications ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+
+            <SelectField
+              label="Currency"
+              value={currency}
+              onChange={(value) => {
+                setCurrency(value);
+                markChanged();
+              }}
+              options={[
+                { value: "USD", label: "USD ($)" },
+                { value: "EUR", label: "EUR (€)" },
+                { value: "GBP", label: "GBP (£)" },
+                { value: "JPY", label: "JPY (¥)" },
+              ]}
+            />
+
+            <SelectField
+              label="Language"
+              value={language}
+              onChange={(value) => {
+                setLanguage(value);
+                markChanged();
+              }}
+              options={[
+                { value: "English", label: "English" },
+                { value: "Spanish", label: "Spanish" },
+                { value: "French", label: "French" },
+                { value: "German", label: "German" },
+              ]}
+            />
+
+            {/* Appearance Segmented Control */}
+            <div className="space-y-2">
+              <label className="text-label text-muted-foreground px-1">
+                Appearance
+              </label>
+              <div className="p-1 bg-secondary/50 dark:bg-secondary/30 rounded-xl flex gap-1">
+                <button
+                  onClick={() => {
+                    onThemeChange("light");
+                    markChanged();
+                  }}
+                  className={`flex-1 py-2 px-3 text-label rounded-lg transition-all duration-200 ${
+                    theme === "light"
+                      ? "bg-card shadow-sm text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Light
+                </button>
+                <button
+                  onClick={() => {
+                    onThemeChange("dark");
+                    markChanged();
+                  }}
+                  className={`flex-1 py-2 px-3 text-label rounded-lg transition-all duration-200 ${
+                    theme === "dark"
+                      ? "bg-card shadow-sm text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Dark
+                </button>
+                <button
+                  onClick={() => {
+                    onThemeChange("system");
+                    markChanged();
+                  }}
+                  className={`flex-1 py-2 px-3 text-label rounded-lg transition-all duration-200 ${
+                    theme === "system"
+                      ? "bg-card shadow-sm text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Auto
+                </button>
+              </div>
+              {theme === "system" && (
+                <p className="text-micro text-muted-foreground px-1">
+                  Follows your device theme
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Save Changes Button */}
+          {hasChanges && (
+            <button
+              onClick={handleSave}
+              className="w-full py-3.5 card flex items-center justify-center text-body font-medium text-foreground hover:text-foreground/70 transition-all duration-200 active:scale-[0.98]"
+            >
+              Save changes
+            </button>
+          )}
+
+          {/* Account Management */}
+          <div className="space-y-3">
+            <h2 className="text-label text-muted-foreground px-1">Account</h2>
+
+            {/* Payment Methods */}
+            <button
+              onClick={onPaymentMethods}
+              className="w-full p-3 glass-sm rounded-xl flex items-center justify-between hover:bg-muted/50 transition-all duration-200 active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-3">
+                <CreditCard className="w-5 h-5 text-foreground" />
+                <span className="text-body text-foreground">Payment methods</span>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+
+            {/* Sign Out */}
+            <button
+              onClick={onLogout}
+              className="w-full p-3 glass-sm rounded-xl flex items-center gap-3 hover:bg-muted/50 transition-all duration-200 active:scale-[0.98]"
+            >
+              <LogOut className="w-5 h-5 text-foreground" />
+              <span className="text-body text-foreground">Sign out</span>
+            </button>
+          </div>
+
+          {/* Danger Zone */}
+          <div className="space-y-3 pt-2">
+            <h2 className="text-label text-muted-foreground px-1">Danger zone</h2>
+            <button
+              onClick={onDeleteAccount}
+              className="w-full p-3 glass-sm rounded-xl flex items-center justify-between hover:bg-destructive/10 transition-all duration-200 active:scale-[0.98] group"
+            >
+              <div className="flex items-center gap-3">
+                <Trash2 className="w-5 h-5 text-destructive" />
+                <span className="text-body text-destructive">Delete account</span>
+              </div>
+              <ChevronRight className="w-5 h-5 text-destructive opacity-50 group-hover:opacity-100 transition-opacity" />
+            </button>
+          </div>
+
+          <p className="text-micro text-muted-foreground text-center pt-4 pb-2">
+            ChopDot v1.0.0
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

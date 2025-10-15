@@ -1,0 +1,669 @@
+/**
+ * CHOPDOT GLOBAL STYLES
+ * 
+ * Tailwind V4 configuration with CSS custom properties.
+ * Design system tokens for colors, spacing, typography, and shadows.
+ * 
+ * Key Features:
+ * - Light/dark mode with system preference support
+ * - 6-level semantic typography hierarchy
+ * - 3-level shadow system (sh-l1/l2/l3)
+ * - Clean iOS-style design tokens
+ * - No glass effects (pure cards with minimal shadows)
+ * 
+ * Last Updated: October 11, 2025
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* ===== PRIMARY DESIGN TOKENS (USE THESE IN CUSTOM COMPONENTS) ===== */
+  
+  /* COLOR (Light mode) - Clean iOS */
+  --bg: #F2F2F7;           /* App background - iOS system gray */
+  --card: #FFFFFF;         /* Card/surface background - Pure white */
+  --ink: #000000;          /* Primary text color */
+  --muted: #8E8E93;        /* Tertiary text / placeholders - iOS secondary label gray */
+  --text-secondary: #606066;  /* Secondary text (better contrast than --muted for important labels) */
+  --accent: #E6007A;       /* Polkadot pink - use sparingly for active states */
+  --accent-orange: #FF9500; /* Orange for financial actions (settlements, transactions) */
+  --success: #19C37D;      /* Success states */
+  --danger: #E5484D;       /* Error/destructive states */
+  --border: rgba(0, 0, 0, 0.06);  /* Very subtle separator */
+  
+  /* WHY TWO SECONDARY TEXT COLORS?
+   * --muted (#8E8E93):          De-emphasized text (timestamps, hints, placeholders)
+   * --text-secondary (#606066): Important but non-primary text (subtitles, secondary labels)
+   * Use --text-secondary when text is important, --muted when it's truly optional/supportive
+   */
+
+  /* RADII - iOS style */
+  --r-lg: 12px;            /* Buttons, inputs, list items */
+  --r-xl: 16px;            /* Cards */
+  --r-2xl: 24px;           /* Hero cards, modals */
+
+  /* SPACING */
+  --space-page: 16px;
+  --space-card: 16px;
+  --space-row: 12px;
+  --space-section: 24px;
+
+  /* ===== SHADOW SYSTEM (3-LEVEL HIERARCHY) ===== */
+  /* 
+   * LEVEL 1: Base Shadow Definitions (DO NOT USE DIRECTLY)
+   * These are the raw shadow values - use semantic aliases instead
+   */
+  --sh-l1: 0 0.5px 2px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);    /* Subtle elevation */
+  --sh-l2: 0 2px 8px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.06);       /* Medium elevation */
+  --sh-l3: 0 4px 16px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.08);     /* Strong elevation */
+  
+  /* 
+   * LEVEL 2: Semantic Aliases (USE IN CUSTOM CSS)
+   * Purpose-based names that map to shadow levels
+   */
+  --shadow-card: var(--sh-l1);   /* For cards, list rows, sheets */
+  --shadow-fab: var(--sh-l2);    /* For floating buttons, dropdowns */
+  --shadow-elev: var(--sh-l3);   /* For modals, dialogs (reserved for future use) */
+  
+  /* 
+   * LEVEL 3: Utility Classes (EASIEST - USE THESE)
+   * See @layer utilities section below for predefined classes:
+   * .card, .hero-card, .list-row → uses --shadow-card (sh-l1)
+   * .fab                         → uses --shadow-fab (sh-l2)
+   */
+
+  /* ===== TYPOGRAPHY SYSTEM ===== */
+  
+  /* 
+   * ACTIVE SYSTEM (USE THESE)
+   * These tokens are mapped to utility classes and used throughout the app
+   */
+  --text-screen-title: 17px;      /* .text-screen-title - Screen headers */
+  --text-section-heading: 15px;   /* .text-section - Section headers */
+  --text-body: 15px;              /* .text-body - Body text (default) */
+  --text-label: 13px;             /* .text-label - Form labels, small text */
+  --text-caption: 12px;           /* .text-caption - Supporting text */
+  --text-micro: 11px;             /* .text-micro - Tiny labels */
+  
+  /* 
+   * EXPERIMENTAL SYSTEM (NOT YET ACTIVE - RESERVED FOR FUTURE)
+   * Future consideration: Larger font sizes for accessibility enhancements
+   * To activate: Update utility classes in @layer utilities, then migrate components
+   * DO NOT USE THESE DIRECTLY - they are not connected to any utility classes yet
+   */
+  --fs-title-display: 32px;   /* [UNUSED] Future: Larger hero titles */
+  --fs-title-section: 20px;   /* [UNUSED] Future: Larger section headers */
+  --fs-body: 16px;            /* [UNUSED] Future: Larger body text */
+  --fs-label: 13px;           /* [UNUSED] Future: Same as current */
+  
+  --font-size: 16px;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  
+  /* ===== SHADCN COMPATIBILITY LAYER ===== */
+  /* 
+   * DO NOT USE DIRECTLY IN CUSTOM COMPONENTS
+   * These tokens auto-map to primary tokens above for ShadCN UI components to work correctly.
+   * Always use primary tokens (--bg, --card, --ink, etc.) in your custom CSS.
+   */
+  --background: var(--bg);           /* → --bg */
+  --foreground: var(--ink);          /* → --ink */
+  --card-foreground: var(--ink);     /* → --ink */
+  --muted-foreground: var(--muted);  /* → --muted */
+  
+  /* Additional legacy tokens */
+  --popover: #FFFFFF;
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: #ffffff;
+  --secondary: #F5F5F5;
+  --secondary-foreground: var(--ink);
+  --accent-foreground: #ffffff;
+  --destructive: var(--danger);
+  --destructive-foreground: #ffffff;
+  --input: transparent;
+  --input-background: #FFFFFF;
+  --switch-background: #E5E5EA;
+  --ring: var(--muted);
+  --chart-1: #737373;
+  --chart-2: #a3a3a3;
+  --chart-3: #525252;
+  --chart-4: #d4d4d4;
+  --chart-5: #e5e5e5;
+  --radius: var(--r-lg);
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #F5F5F5;
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--muted);
+  
+  /* Polkadot accent variations */
+  --accent-pink: var(--accent);
+  --accent-pink-soft: rgba(230, 0, 122, 0.1);
+  --accent-pink-medium: rgba(230, 0, 122, 0.2);
+  
+  /* Orange gradient (for premium CTAs) */
+  --gradient-orange-start: #FF9500;
+  --gradient-orange-end: #FF6B00;
+  
+  /* Orange accent variations */
+  --accent-orange-soft: rgba(255, 149, 0, 0.1);
+  --accent-orange-medium: rgba(255, 149, 0, 0.2);
+}
+
+/* ===== DARK MODE (Manual Toggle Support) ===== */
+.dark {
+  /* PRIMARY TOKENS (Dark mode overrides) */
+  --bg: #000000;                      /* Pure black background */
+  --card: #1C1C1E;                    /* iOS dark mode card color */
+  --ink: #FFFFFF;                     /* White text */
+  --muted: #8E8E93;                   /* Same gray as light mode */
+  --text-secondary: #AEAEB2;          /* Better contrast for dark mode secondary text */
+  --border: rgba(255, 255, 255, 0.08); /* Subtle white separator */
+  
+  /* SHADOW SYSTEM (Dark mode - adjusted for dark backgrounds) */
+  --sh-l1: 0 1px 3px rgba(0, 0, 0, 0.4);     /* Subtle elevation */
+  --sh-l2: 0 4px 12px rgba(0, 0, 0, 0.5);    /* Medium elevation */
+  --sh-l3: 0 6px 20px rgba(0, 0, 0, 0.6);    /* Strong elevation */
+  
+  /* Semantic aliases (same mapping as light mode) */
+  --shadow-card: var(--sh-l1);
+  --shadow-fab: var(--sh-l2);
+  --shadow-elev: var(--sh-l3);
+  
+  /* Legacy compatibility */
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --card-foreground: var(--ink);
+  --muted-foreground: var(--muted);
+  --popover: #1C1C1E;
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: #000000;
+  --secondary: #2C2C2E;
+  --secondary-foreground: var(--ink);
+  --accent-foreground: #ffffff;
+  --destructive: var(--danger);
+  --destructive-foreground: #ffffff;
+  --input: transparent;
+  --input-background: #1C1C1E;
+  --switch-background: #3A3A3C;
+  --ring: var(--muted);
+  --chart-1: #FF9500;
+  --chart-2: #FF6B00;
+  --chart-3: #E6007A;
+  --chart-4: #56F39A;
+  --chart-5: #8E8E93;
+  --sidebar: #1C1C1E;
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: var(--ink);
+  --sidebar-accent: #2C2C2E;
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--muted);
+  
+  /* Polkadot accent - dark mode */
+  --accent-pink-soft: rgba(230, 0, 122, 0.15);
+  --accent-pink-medium: rgba(230, 0, 122, 0.25);
+  
+  /* Orange accent - dark mode */
+  --accent-orange-soft: rgba(255, 149, 0, 0.15);
+  --accent-orange-medium: rgba(255, 149, 0, 0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    /* COLOR (Dark mode) */
+    --bg: #000000;
+    --card: #1C1C1E;
+    --ink: #FFFFFF;
+    --muted: #8E8E93;
+    --text-secondary: #AEAEB2;  /* NEW: Better contrast for dark mode secondary text */
+    --border: rgba(255, 255, 255, 0.08);
+    
+    /* SHADOWS (Dark mode) - Level-based system */
+    --sh-l1: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --sh-l2: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --sh-l3: 0 6px 20px rgba(0, 0, 0, 0.6);
+    
+    /* Semantic aliases */
+    --shadow-card: var(--sh-l1);
+    --shadow-fab: var(--sh-l2);
+    --shadow-elev: var(--sh-l3);
+    
+    /* Legacy compatibility */
+    --background: var(--bg);
+    --foreground: var(--ink);
+    --card-foreground: var(--ink);
+    --muted-foreground: var(--muted);
+    --popover: #1C1C1E;
+    --popover-foreground: var(--ink);
+    --primary: var(--ink);
+    --primary-foreground: #000000;
+    --secondary: #2C2C2E;
+    --secondary-foreground: var(--ink);
+    --accent-foreground: #ffffff;
+    --destructive: var(--danger);
+    --destructive-foreground: #ffffff;
+    --input: transparent;
+    --input-background: #1C1C1E;
+    --switch-background: #3A3A3C;
+    --ring: var(--muted);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: #1C1C1E;
+    --sidebar-foreground: var(--ink);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: var(--ink);
+    --sidebar-accent: #2C2C2E;
+    --sidebar-accent-foreground: var(--ink);
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--muted);
+    
+    /* Polkadot accent - dark mode */
+    --accent-pink-soft: rgba(230, 0, 122, 0.15);
+    --accent-pink-medium: rgba(230, 0, 122, 0.25);
+    
+    /* Orange accent - dark mode */
+    --accent-orange-soft: rgba(255, 149, 0, 0.15);
+    --accent-orange-medium: rgba(255, 149, 0, 0.25);
+  }
+}
+
+/* ===== TAILWIND THEME INLINE ===== */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ===== DESIGN SYSTEM HELPERS ===== */
+@layer utilities {
+  /* App-level utilities */
+  .bg-app {
+    background: var(--bg);
+    color: var(--ink);
+  }
+  
+  /* ===== CARD UTILITIES - Ultra clean iOS style ===== */
+  /* 
+   * NO borders, minimal shadows (uses shadow system defined above)
+   * All cards use --shadow-card (sh-l1) for consistent subtle elevation
+   */
+  
+  .card {
+    background: var(--card);         /* Pure white (light) / #1C1C1E (dark) */
+    border-radius: var(--r-xl);      /* 16px rounded corners */
+    box-shadow: var(--shadow-card);  /* sh-l1 - subtle elevation */
+  }
+  
+  .hero-card {
+    background: var(--card);
+    border-radius: var(--r-2xl);     /* 24px - more rounded for hero elements */
+    box-shadow: var(--shadow-card);  /* sh-l1 (reserved: could use sh-l3 for stronger hierarchy) */
+  }
+  
+  .list-row {
+    background: var(--card);
+    border-radius: var(--r-lg);      /* 12px - tighter radius for list items */
+    box-shadow: var(--shadow-card);  /* sh-l1 */
+  }
+  
+  /* ===== FAB (Floating Action Button) ===== */
+  /* Uses --shadow-fab (sh-l2) for elevated floating controls - higher than cards */
+  .fab {
+    border-radius: 50%;              /* Fully circular */
+    box-shadow: var(--shadow-fab);   /* sh-l2 - medium elevation (floats above cards) */
+  }
+  
+  /* Input fields - Clean white, NO internal shading */
+  .input-field {
+    background: var(--card);
+    border-radius: var(--r-lg);
+    border: 1px solid var(--border);
+  }
+  
+  /* Text utilities */
+  .text-muted {
+    color: var(--muted);
+  }
+  
+  .text-secondary {
+    color: var(--text-secondary);
+  }
+  
+  .text-accent {
+    color: var(--accent);
+  }
+  
+  /* Button utilities */
+  .btn-primary {
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: var(--r-lg);
+    font-weight: var(--font-weight-medium);
+  }
+  
+  .btn-accent {
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--r-lg);
+    font-weight: var(--font-weight-medium);
+  }
+  
+  /* Gradient button (premium CTAs) */
+  .btn-gradient-orange {
+    background: linear-gradient(135deg, var(--gradient-orange-start) 0%, var(--gradient-orange-end) 100%);
+    color: #fff;
+    border-radius: var(--r-lg);
+    font-weight: var(--font-weight-medium);
+    box-shadow: 0 2px 8px rgba(255, 149, 0, 0.25);
+  }
+  
+  .btn-gradient-orange:hover {
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.35);
+  }
+  
+  .btn-gradient-orange:active {
+    transform: scale(0.98);
+  }
+  
+  /* Spacing utilities */
+  .space-page {
+    padding: var(--space-page);
+  }
+  
+  .space-card {
+    padding: var(--space-card);
+  }
+  
+  /* Segmented control - iOS style (unused but kept for future) */
+  .segmented-control {
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: var(--r-lg);
+    padding: 2px;
+  }
+  
+  .segmented-control-dark {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+/**
+ * Typography hierarchy - Consistent text sizing across the app
+ */
+@layer utilities {
+  .text-screen-title {
+    font-size: var(--text-screen-title);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.4;
+  }
+  
+  .text-section {
+    font-size: var(--text-section-heading);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.4;
+  }
+  
+  .text-body {
+    font-size: var(--text-body);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.5;
+  }
+  
+  .text-label {
+    font-size: var(--text-label);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.4;
+  }
+  
+  .text-caption {
+    font-size: var(--text-caption);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.4;
+  }
+  
+  .text-micro {
+    font-size: var(--text-micro);
+    font-weight: var(--font-weight-normal);
+    line-height: 1.3;
+  }
+}
+
+/**
+ * Base typography defaults
+ */
+@layer base {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+    h1 {
+      font-size: var(--text-screen-title);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.4;
+    }
+
+    h2 {
+      font-size: var(--text-section-heading);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.4;
+    }
+
+    h3 {
+      font-size: var(--text-body);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-body);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    p {
+      font-size: var(--text-body);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-body);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-body);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input, textarea, select {
+      font-size: var(--text-body);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+/* Polkadot accent utilities */
+@layer utilities {
+  .accent-dot {
+    color: var(--accent-pink);
+  }
+  
+  .focus-ring-pink:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(230, 0, 122, 0.1), 0 0 0 4px rgba(230, 0, 122, 0.2);
+  }
+  
+  .active-ripple {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .active-ripple::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, var(--accent-pink-soft) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 120ms ease-out;
+    pointer-events: none;
+  }
+  
+  .active-ripple:active::after {
+    opacity: 1;
+  }
+}
+
+/* Screen transitions */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.screen-transition {
+  animation: slideIn 200ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.animate-slideUp {
+  animation: slideUp 200ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.animate-fadeIn {
+  animation: fadeIn 200ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.animate-slideDown {
+  animation: slideDown 200ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Mutation pending shimmer - for list rows */
+.mutation-shimmer {
+  position: relative;
+}
+
+.mutation-shimmer::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--accent);
+  animation: shimmer 2s ease-in-out infinite;
+  border-radius: 0 var(--r-lg) var(--r-lg) 0;
+}

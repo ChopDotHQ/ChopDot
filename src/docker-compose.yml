@@ -1,0 +1,133 @@
+# ChopDot Docker Compose Configuration
+# 
+# This configuration sets up:
+# - PostgreSQL database
+# - Backend API server
+# - Frontend development server
+# - Redis for caching (optional)
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: chopdot-postgres
+    environment:
+      POSTGRES_DB: chopdot
+      POSTGRES_USER: chopdot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-chopdot_dev_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chopdot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Backend API (Node.js/Express)
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: chopdot-api
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3001
+      
+      # Database
+      DATABASE_URL: postgresql://chopdot:${POSTGRES_PASSWORD:-chopdot_dev_password}@postgres:5432/chopdot
+      
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:-your_jwt_secret_change_in_production}
+      JWT_EXPIRES_IN: 7d
+      
+      # CORS
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      
+      # WalletConnect
+      WALLETCONNECT_PROJECT_ID: ${WALLETCONNECT_PROJECT_ID}
+      
+      # Redis (optional)
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: npm run dev
+    restart: unless-stopped
+
+  # Frontend (React/Vite)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: chopdot-frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
+      VITE_WALLETCONNECT_PROJECT_ID: ${WALLETCONNECT_PROJECT_ID}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    command: npm run dev
+    restart: unless-stopped
+
+  # Redis (for caching and session storage)
+  redis:
+    image: redis:7-alpine
+    container_name: chopdot-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # pgAdmin (optional - for database management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: chopdot-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@chopdot.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  default:
+    name: chopdot-network
