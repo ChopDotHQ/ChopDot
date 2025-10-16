@@ -278,7 +278,7 @@ export function SettleHome({
                   fontSize: '28px',
                   fontWeight: 600,
                   lineHeight: 1.2,
-                  color: isPaying ? 'var(--accent-orange)' : 'var(--success)'
+                  color: isPaying ? 'var(--foreground)' : 'var(--money)'
                 }}
               >
                 ${Math.abs(totalAmount).toFixed(2)}

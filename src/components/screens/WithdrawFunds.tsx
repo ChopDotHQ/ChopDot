@@ -141,8 +141,8 @@ export function WithdrawFunds({
             </div>
 
             {withdrawAll && (
-              <div className="flex items-start gap-2 p-3 rounded-lg bg-accent-orange-soft border border-accent-orange/20">
-                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-accent-orange" />
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/10 border border-border">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--foreground)' }} />
                 <div>
                   <p className="text-xs" style={{ fontWeight: 500 }}>Full withdrawal</p>
                   <p className="text-xs text-muted-foreground">

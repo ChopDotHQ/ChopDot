@@ -89,7 +89,7 @@ export function SettleSelection({
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-[15px] tabular-nums" style={{ fontWeight: 500, color: 'var(--accent-orange)' }}>
+                    <p className="text-[15px] tabular-nums" style={{ fontWeight: 500, color: 'var(--foreground)' }}>
                       -${person.amount.toFixed(2)}
                     </p>
                   </div>

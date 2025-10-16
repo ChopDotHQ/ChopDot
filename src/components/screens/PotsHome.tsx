@@ -179,7 +179,7 @@ export function PotsHome({
                   className="text-[20px] tabular-nums"
                   style={{ 
                     fontWeight: 600, 
-                    color: balancesVisible && youOweTotal > 0 ? 'var(--accent-orange)' : 'var(--foreground)' 
+                    color: balancesVisible && youOweTotal > 0 ? 'var(--foreground)' : 'var(--foreground)' 
                   }}
                 >
                   {balancesVisible ? `${youOweTotal.toFixed(0)}` : "•••"}
@@ -204,7 +204,7 @@ export function PotsHome({
                   style={{ 
                     fontWeight: 600, 
                     color: balancesVisible 
-                      ? (netTotal >= 0 ? 'var(--success)' : 'var(--accent-orange)') 
+                      ? (netTotal >= 0 ? 'var(--money)' : 'var(--foreground)') 
                       : 'var(--foreground)' 
                   }}
                 >
@@ -377,8 +377,8 @@ export function PotsHome({
                                   color: Math.abs(pot.net) < 0.01 
                                     ? 'var(--muted)' 
                                     : pot.net >= 0 
-                                      ? 'var(--success)' 
-                                      : 'var(--accent-orange)'
+                                      ? 'var(--money)' 
+                                      : 'var(--foreground)'
                                 }}
                               >
                                 {Math.abs(pot.net) < 0.01 

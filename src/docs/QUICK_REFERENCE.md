@@ -14,7 +14,8 @@
 --muted: #8E8E93       /* Secondary text/icons */
 --text-secondary: #606066  /* Important secondary text (better contrast) */
 --accent-pink: #E6007A     /* Polkadot pink (use sparingly) */
---accent-orange: #FF9500   /* Orange for financial actions */
+--money: #19C37D           /* Mint for money/positive values */
+--accent: #E6007A          /* Polkadot pink - brand CTAs */
 --success: #19C37D         /* Green for success */
 --danger: #E5484D          /* Red for destructive actions */
 ```

@@ -223,7 +223,7 @@ export function ActivityHome({
                   className="text-[20px] tabular-nums"
                   style={{ 
                     fontWeight: 600,
-                    color: balancesVisible && totalOwing > 0 ? 'var(--accent-orange)' : 'var(--foreground)'
+                    color: balancesVisible && totalOwing > 0 ? 'var(--foreground)' : 'var(--foreground)'
                   }}
                 >
                   {balancesVisible ? `${totalOwing.toFixed(0)}` : "•••"}
@@ -246,9 +246,9 @@ export function ActivityHome({
 
           {/* Pending Attestations Banner */}
           {hasPendingAttestations && showBanner && (
-            <div className="card p-3 bg-accent-orange-soft border border-accent-orange/20">
+            <div className="card p-3 bg-muted/10 border border-border">
               <div className="flex items-start gap-3">
-                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--accent-orange)' }} />
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--foreground)' }} />
                 <div className="flex-1 min-w-0">
                   <p className="text-body mb-1">
                     {pendingExpenses.length} expense{pendingExpenses.length > 1 ? 's' : ''} need confirmation
@@ -256,7 +256,7 @@ export function ActivityHome({
                   <button
                     onClick={() => setAttestationsExpanded(!attestationsExpanded)}
                     className="text-caption flex items-center gap-1"
-                    style={{ color: 'var(--accent-orange)' }}
+                    style={{ color: 'var(--accent)' }}
                   >
                     {attestationsExpanded ? "Hide" : "Review"}
                     {attestationsExpanded ? (
@@ -276,7 +276,7 @@ export function ActivityHome({
 
               {/* Expanded pending expenses */}
               {attestationsExpanded && (
-                <div className="mt-3 space-y-2 border-t border-accent-orange/20 pt-3">
+                <div className="mt-3 space-y-2 border-t border-border pt-3">
                   {pendingExpenses.map((expense) => (
                     <div key={expense.id} className="flex items-center justify-between p-2 bg-card rounded-lg">
                       <div className="flex-1 min-w-0">
@@ -290,10 +290,7 @@ export function ActivityHome({
                         <button
                           onClick={() => onConfirmExpense?.(expense.id)}
                           className="px-2 py-1 text-caption rounded-lg transition-colors"
-                          style={{ 
-                            background: 'var(--accent-orange-soft)',
-                            color: 'var(--accent-orange)'
-                          }}
+                          style={{ background: 'var(--accent-pink-soft)', color: 'var(--accent)' }}
                         >
                           Confirm
                         </button>

@@ -21,7 +21,7 @@ export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: 
       {people.map((person) => {
         // Determine variant based on balance
         const isPositive = person.balance >= 0;
-        const amountColor = isPositive ? 'var(--success)' : 'var(--accent-orange)';
+        const amountColor = isPositive ? 'var(--money)' : 'var(--foreground)';
         
         return (
           <button

@@ -177,7 +177,7 @@ export function PeopleHome({
               className="text-[13px] tabular-nums" 
               style={{ 
                 fontWeight: 500,
-                color: action === 'settle' ? 'var(--accent-orange)' : 'var(--success)'
+                color: action === 'settle' ? 'var(--foreground)' : 'var(--money)'
               }}
             >
               {action === 'settle' ? '-' : '+'}${person.totalAmount.toFixed(2)}
@@ -295,7 +295,7 @@ export function PeopleHome({
                     className="tabular-nums" 
                     style={{ 
                       fontWeight: 500,
-                      color: totalYouOwe > 0 ? 'var(--accent-orange)' : 'var(--foreground)' 
+                      color: totalYouOwe > 0 ? 'var(--foreground)' : 'var(--foreground)' 
                     }}
                   >
                     ${totalYouOwe.toFixed(0)}
@@ -321,7 +321,7 @@ export function PeopleHome({
                     className="tabular-nums" 
                     style={{ 
                       fontWeight: 500,
-                      color: net >= 0 ? 'var(--success)' : 'var(--accent-orange)' 
+                      color: net >= 0 ? 'var(--money)' : 'var(--foreground)' 
                     }}
                   >
                     {net >= 0 ? '+' : ''}${Math.abs(net).toFixed(0)}
