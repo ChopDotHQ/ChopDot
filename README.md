@@ -6,6 +6,30 @@ Mobile-first expense splitting and group financial management app prototype.
 
 This repository consolidates the ChopDot Mobile Wireframe codebase and the existing GitHub repository metadata (README and license).
 
+## Why ChopDot
+
+ChopDot brings familiar group-expense flows to a world where fairness and verifiability are the default. It marries a polished, mobile‑first UX with optional Web3 proofs so friends, teams and communities can settle up confidently—no spreadsheets, no guesswork.
+
+### Core principles
+- Transparency by default – optional, verifiable proofs when it matters
+- Fairness built‑in – clear splits, no hidden fees
+- Interoperability – works great without a wallet; even better with one
+- Ownership – your data lives with you
+
+## What’s in the MVP today
+- Mobile‑first PWA matching the wireframes (iPhone 15 viewport)
+- Group ledger UI: add expenses, see balances, prototype settlement flows
+- Local‑first persistence to keep state between sessions
+- Clean design system (CSS variables) and fast, modern stack (Vite + TS)
+
+## What’s next
+- Wallet connection (Polkadot.js / SubWallet) with smooth onboarding
+- On‑chain anchoring on Asset Hub for accountable settlements
+- Multi‑wallet options and exploration towards JAM‑native patterns
+
+## Built for Polkadot
+Designed for composability and multi‑chain collaboration. We start off‑chain for speed, and add on‑chain verification where it delivers real value.
+
 ## Tech Stack
 
 - React 18 + TypeScript
