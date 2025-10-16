@@ -64,16 +64,19 @@ export function SwipeableExpenseRow({
     if (!container) return;
 
     const handleTouchStart = (e: TouchEvent) => {
-      startX.current = e.touches[0].clientX;
-      currentX.current = e.touches[0].clientX;
+      const t = e.touches[0];
+      if (!t) return;
+      startX.current = t.clientX;
+      currentX.current = t.clientX;
       setIsSwiping(true);
       hasTriggeredHaptic.current = false;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (!isSwiping) return;
-      
-      currentX.current = e.touches[0].clientX;
+      const t = e.touches[0];
+      if (!t) return;
+      currentX.current = t.clientX;
       const diff = currentX.current - startX.current;
       
       // Apply resistance

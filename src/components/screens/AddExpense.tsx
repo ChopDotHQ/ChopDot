@@ -1,7 +1,7 @@
 import { TopBar } from "../TopBar";
 import { LinkButton } from "../LinkButton";
 import { BottomSheet } from "../BottomSheet";
-import { Upload, X, Camera } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import { useState } from "react";
 
 interface Member {
@@ -67,9 +67,7 @@ export function AddExpense({
     existingExpense?.memo || 
     ""
   );
-  const [date, setDate] = useState(
-    (existingExpense?.date || new Date().toISOString()).split('T')[0]
-  );
+  const [date, setDate] = useState<string>((existingExpense?.date || new Date().toISOString()).split('T')[0]);
   
   // Receipt state
   const [hasReceipt, setHasReceipt] = useState(existingExpense?.hasReceipt || false);
@@ -421,7 +419,7 @@ export function AddExpense({
 
       {/* Receipt Bottom Sheet */}
       {showReceiptSheet && (
-        <BottomSheet onClose={() => setShowReceiptSheet(false)}>
+        <BottomSheet isOpen title="Receipt" onClose={() => setShowReceiptSheet(false)}>
           <div className="flex flex-col h-[500px]">
             {/* Header */}
             <div className="flex items-center justify-between p-3 border-b border-border">

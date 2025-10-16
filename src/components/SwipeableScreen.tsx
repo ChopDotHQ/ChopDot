@@ -24,7 +24,7 @@ export function SwipeableScreen({
     
     const touch = e.touches[0];
     // Only start if touch begins near the left edge
-    if (touch.clientX <= EDGE_ZONE) {
+    if (touch && touch.clientX <= EDGE_ZONE) {
       setTouchStart(touch.clientX);
       setIsSwiping(true);
     }
@@ -34,6 +34,7 @@ export function SwipeableScreen({
     if (!isSwiping || touchStart === null) return;
     
     const touch = e.touches[0];
+    if (!touch) return;
     const diff = touch.clientX - touchStart;
     
     // Only allow rightward swipes

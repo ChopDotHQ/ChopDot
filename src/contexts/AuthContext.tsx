@@ -140,11 +140,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // });
         
         // Mock user data
+        const email = (credentials as any).email as string;
         userData = {
           id: `user_${Date.now()}`,
-          email: credentials.email,
+          email,
           authMethod: 'email',
-          name: credentials.email.split('@')[0],
+          name: email.split('@')[0],
           createdAt: new Date().toISOString(),
         };
       }

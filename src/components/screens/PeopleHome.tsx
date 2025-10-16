@@ -1,4 +1,4 @@
-import { User, Bell, HandCoins, Sun, Moon, ListFilter, Wallet } from "lucide-react";
+import { User, Bell, HandCoins, ListFilter, Wallet } from "lucide-react";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
 import { WalletBanner } from "../WalletBanner";

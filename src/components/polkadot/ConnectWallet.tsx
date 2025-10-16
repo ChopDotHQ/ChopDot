@@ -234,7 +234,7 @@ export function ConnectWallet({
       <PrimaryButton
         onClick={() => {
           triggerHaptic("medium");
-          onConnect?.(selectedWallet || WALLET_OPTIONS[0].id);
+          onConnect?.(selectedWallet ?? WALLET_OPTIONS[0]!.id);
         }}
         disabled={!selectedWallet}
         fullWidth

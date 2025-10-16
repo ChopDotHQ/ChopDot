@@ -35,7 +35,7 @@ export function ViewPaymentMethod({ method, onClose }: ViewPaymentMethodProps) {
   };
 
   return (
-    <BottomSheet onClose={onClose}>
+    <BottomSheet isOpen title="Payment method" onClose={onClose}>
       <div className="p-4 space-y-4">
         <div className="flex items-center gap-3 pb-2">
           <div className="text-foreground">{getMethodIcon(method.kind)}</div>

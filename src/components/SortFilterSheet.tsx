@@ -25,7 +25,7 @@ export function SortFilterSheet({
   title = "Sort by",
 }: SortFilterSheetProps) {
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} title={title}>
       <div className="px-4 pt-3 pb-4">
         <h2 className="text-center mb-3 text-body" style={{ fontWeight: 600 }}>
           {title}

@@ -109,9 +109,8 @@ export function RequestPayment({
                       : ''
                   }`}
                   style={selectedPersonId === person.id ? {
-                    ringColor: 'var(--accent)',
-                    background: 'var(--accent-pink-soft)',
-                  } : {}}
+                    background: 'var(--accent-pink-soft)'
+                  } : undefined}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 text-left">

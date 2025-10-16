@@ -1,4 +1,4 @@
-import { LayoutGrid, Home, Users, User, Receipt, CheckCircle, LucideIcon } from "lucide-react";
+import { LayoutGrid, Home, Users, User, Receipt, LucideIcon } from "lucide-react";
 import { triggerHaptic } from "../utils/haptics";
 
 interface BottomTabBarProps {

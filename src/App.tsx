@@ -21,6 +21,7 @@ import {
 import { useNav } from "./nav";
 import { useTheme } from "./utils/useTheme";
 import { triggerHaptic } from "./utils/haptics";
+import type { PersonSettlement, SettlementBreakdown } from "./utils/settlements";
 import {
   calculateSettlements,
   calculatePotSettlements,
@@ -71,8 +72,8 @@ import { Receipt, CheckCircle, LucideIcon } from "lucide-react";
 interface Member {
   id: string;
   name: string;
-  role?: "Owner" | "Member";
-  status?: "active" | "pending";
+  role: "Owner" | "Member";
+  status: "active" | "pending";
 }
 
 interface Expense {
@@ -144,11 +145,20 @@ interface Settlement {
 interface PaymentMethod {
   id: string;
   kind: "bank" | "twint" | "paypal" | "crypto";
+  // Bank
   iban?: string;
+  holder?: string;
+  note?: string;
+  // TWINT
   phone?: string;
+  twintHandle?: string;
+  // PayPal
   email?: string;
+  username?: string;
+  // Crypto
+  network?: "polkadot" | "assethub";
   address?: string;
-  network?: string;
+  label?: string;
 }
 
 interface ActivityItem {
@@ -205,7 +215,6 @@ function AppContent() {
     stack,
     push,
     back,
-    replace,
     reset,
   } = useNav({ type: "pots-home" });
 
@@ -568,9 +577,7 @@ function AppContent() {
   ]);
 
   // Payment methods - lazy initialization
-  const [paymentMethods, setPaymentMethods] = useState<
-    PaymentMethod[]
-  >(() => [
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => [
     {
       id: "1",
       kind: "bank",
@@ -580,7 +587,7 @@ function AppContent() {
       id: "2",
       kind: "crypto",
       address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
-      network: "Polkadot",
+      network: "polkadot",
     },
   ]);
 
@@ -897,18 +904,7 @@ function AppContent() {
     budgetEnabled: false,
   });
 
-  // New expense form
-  const [newExpense, setNewExpense] = useState<
-    Partial<Expense>
-  >({
-    amount: 0,
-    currency: "USD",
-    paidBy: "owner",
-    memo: "",
-    split: [],
-    attestations: [],
-    hasReceipt: false,
-  });
+  // (removed) New expense form state was unused
 
   // ========================================
   // NAVIGATION HELPERS
@@ -919,16 +915,18 @@ function AppContent() {
     | "people"
     | "activity"
     | "you" => {
-    if (screen.type === "activity-home") {
+    if (screen && screen.type === "activity-home") {
       return "activity";
     }
     if (
-      screen.type === "settlements-home" ||
-      screen.type === "people-home"
+      screen && (
+        screen.type === "settlements-home" ||
+        screen.type === "people-home"
+      )
     ) {
       return "people";
     }
-    if (screen.type === "you-tab") {
+    if (screen && screen.type === "you-tab") {
       return "you";
     }
     return "pots";
@@ -962,7 +960,7 @@ function AppContent() {
       "settle-selection",
       "settle-home",
     ];
-    return tabBarScreens.includes(screen.type);
+    return screen ? tabBarScreens.includes(screen.type) : false;
   };
 
   // ========================================
@@ -1011,7 +1009,7 @@ function AppContent() {
               return;
             }
             if (pots.length === 1) {
-              setCurrentPotId(pots[0].id);
+              setCurrentPotId(pots[0]!.id);
               push({ type: "add-expense" });
             } else {
               setShowChoosePot(true);
@@ -1034,7 +1032,7 @@ function AppContent() {
             return;
           }
           if (pots.length === 1) {
-            setCurrentPotId(pots[0].id);
+            setCurrentPotId(pots[0]!.id);
             push({ type: "add-expense" });
           } else {
             setShowChoosePot(true);
@@ -1070,9 +1068,7 @@ function AppContent() {
       "people-home",
       "you-tab",
     ];
-    return (
-      !rootScreens.includes(screen.type) && stack.length > 1
-    );
+    return screen ? !rootScreens.includes(screen.type) && stack.length > 1 : false;
   };
 
   // ========================================
@@ -1888,7 +1884,7 @@ function AppContent() {
   const renderScreen = () => {
     const pot = getCurrentPot();
 
-    switch (screen.type) {
+    switch (screen!.type) {
       case "activity-home":
         return (
           <ActivityHome
@@ -1921,8 +1917,8 @@ function AppContent() {
                 );
                 if (pot) {
                   setCurrentPotId(pot.id);
-                  setCurrentExpenseId(expenseId);
-                  push({ type: "expense-detail", expenseId });
+                  setCurrentExpenseId(expenseId!);
+                  push({ type: "expense-detail", expenseId: expenseId! });
                 }
               } else {
                 showToast(
@@ -2023,7 +2019,7 @@ function AppContent() {
                 return;
               }
               if (pots.length === 1) {
-                setCurrentPotId(pots[0].id);
+              setCurrentPotId(pots[0]!.id);
                 push({ type: "add-expense" });
               } else {
                 setShowChoosePot(true);
@@ -2158,8 +2154,20 @@ function AppContent() {
             methods={paymentMethods}
             preferredMethodId={preferredMethodId}
             onBack={back}
-            onUpdateMethod={updatePaymentMethodValue}
-            onSetPreferred={setPreferredMethod}
+            onUpdateMethod={(kind, value) => {
+              const target = paymentMethods.find(m => m.kind === kind);
+              if (!target) return;
+              const updates: Partial<PaymentMethod> =
+                kind === 'bank' ? { iban: value } :
+                kind === 'twint' ? { phone: value } :
+                kind === 'paypal' ? { email: value } :
+                { address: value };
+              updatePaymentMethodValue(target.id, updates);
+            }}
+            onSetPreferred={(methodId: string | null) => {
+              if (methodId) setPreferredMethod(methodId);
+              else setPreferredMethodId("");
+            }}
           />
         );
 
@@ -2180,7 +2188,15 @@ function AppContent() {
             }
             members={newPot.members || []}
             setMembers={(members) =>
-              setNewPot({ ...newPot, members })
+              setNewPot({
+                ...newPot,
+                members: members.map((m) => ({
+                  id: m.id,
+                  name: m.name,
+                  role: "Member",
+                  status: "active",
+                })),
+              })
             }
             goalAmount={newPot.goalAmount}
             setGoalAmount={(amount) =>
@@ -2359,7 +2375,6 @@ function AppContent() {
             onBack={back}
             onEdit={() => {
               setCurrentExpenseId(expense.id);
-              setNewExpense(expense);
               push({
                 type: "edit-expense",
                 expenseId: expense.id,
@@ -2434,7 +2449,7 @@ function AppContent() {
               clearCheckpoint(pot.id);
               push({ type: "settle-selection" });
             }}
-            onRemind={(memberId) => {
+            onRemind={(_) => {
               showToast("Reminder sent");
             }}
           />
@@ -2517,17 +2532,15 @@ function AppContent() {
 
         // Convert PersonSettlement to Settlement format with direction
         const convertToSettlements = (
-          personSettlements:
-            | typeof settlements.youOwe
-            | typeof settlements.owedToYou,
+          personSettlements: PersonSettlement[],
           direction: "owe" | "owed",
         ) => {
-          return personSettlements.map((p) => ({
+          return personSettlements.map((p: PersonSettlement) => ({
             id: p.id,
             name: p.name,
             totalAmount: p.totalAmount,
             direction,
-            pots: p.breakdown.map((b) => ({
+            pots: p.breakdown.map((b: SettlementBreakdown) => ({
               potId: "", // Not used in UI
               potName: b.potName,
               amount: b.amount,
@@ -2563,10 +2576,7 @@ function AppContent() {
             ];
 
         const settlementAmount = Math.abs(
-          activeSettlements.reduce(
-            (sum, s) => s.totalAmount,
-            0,
-          ),
+          activeSettlements.reduce((sum, s) => sum + s.totalAmount, 0),
         );
 
         const counterpartyName = personIdFromNav
@@ -2591,7 +2601,7 @@ function AppContent() {
             scope={settleScope}
             scopeLabel={settleLabel}
             potId={currentPotId || undefined}
-            personId={personIdFromNav}
+            personId={personIdFromNav || undefined}
             preferredMethod={preferredPaymentMethod}
             onConfirm={(method, reference) => {
               // Add settlement to history
@@ -2641,10 +2651,7 @@ function AppContent() {
                 reset({ type: "people-home" });
               }
             }}
-            onHistory={() =>
-              push({ type: "settlement-history" })
-            }
-            onViewHistory={() => {
+            onHistory={() => {
               // Navigate to history filtered by person if person-scoped
               if (personIdFromNav) {
                 push({
@@ -2862,7 +2869,14 @@ function AppContent() {
       case "request-payment":
         return (
           <RequestPayment
-            people={balances.owedToYou}
+            people={balances.owedToYou.map((p) => ({
+              id: p.id,
+              name: p.name,
+              totalAmount: p.totalAmount,
+              breakdown: p.breakdown.map((b) => ({ potName: b.potName, amount: b.amount })),
+              trustScore: p.trustScore,
+              paymentPreference: p.paymentPreference ?? 'bank',
+            }))}
             onBack={back}
             onSendRequest={(personId, message) => {
               const person = balances.owedToYou.find(
@@ -2870,7 +2884,6 @@ function AppContent() {
               );
               if (!person) return;
 
-              // Create notification for the person
               const notification: Notification = {
                 id: Date.now().toString(),
                 type: "settlement",
@@ -2943,7 +2956,7 @@ function AppContent() {
     <div className="relative w-[390px] h-[844px] mx-auto bg-background overflow-hidden">
       <SwipeableScreen
         onSwipeBack={canSwipeBack() ? back : undefined}
-        key={screen.type}
+        key={screen?.type ?? 'screen'}
       >
         {renderScreen()}
       </SwipeableScreen>
@@ -3051,7 +3064,9 @@ function AppContent() {
         />
       )}
 
-      {showMyQR && <MyQR onClose={() => setShowMyQR(false)} />}
+      {showMyQR && (
+        <MyQR onClose={() => setShowMyQR(false)} onCopyHandle={() => showToast('Handle copied', 'info')} />
+      )}
       {showScanQR && (
         <ScanQR onClose={() => setShowScanQR(false)} />
       )}
@@ -3068,6 +3083,7 @@ function AppContent() {
             memberCount: p.members.length,
           }))}
           onClose={() => setShowChoosePot(false)}
+          onCreatePot={() => push({ type: "create-pot" })}
           onSelectPot={(potId) => {
             setCurrentPotId(potId);
             setShowChoosePot(false);
@@ -3079,11 +3095,13 @@ function AppContent() {
       {showAddPaymentMethod && (
         <AddPaymentMethod
           onClose={() => setShowAddPaymentMethod(false)}
-          onAdd={(method) => {
+          onSave={(method, setAsPreferred) => {
+            const newId = Date.now().toString();
             setPaymentMethods([
               ...paymentMethods,
-              { ...method, id: Date.now().toString() },
+              { ...method, id: newId },
             ]);
+            if (setAsPreferred) setPreferredMethodId(newId);
             setShowAddPaymentMethod(false);
             showToast("Payment method added", "success");
           }}
@@ -3092,15 +3110,8 @@ function AppContent() {
 
       {selectedPaymentMethod && (
         <ViewPaymentMethod
-          method={selectedPaymentMethod}
+          method={selectedPaymentMethod as PaymentMethod}
           onClose={() => setSelectedPaymentMethod(null)}
-          onEdit={(updates) => {
-            updatePaymentMethodValue(
-              selectedPaymentMethod.id,
-              updates,
-            );
-            setSelectedPaymentMethod(null);
-          }}
         />
       )}
 
@@ -3180,7 +3191,7 @@ function AppContent() {
 
       {/* Toast */}
       {toast && (
-        <Toast message={toast.message} type={toast.type} />
+        <Toast message={toast.message} type={toast.type ?? 'info'} onClose={() => setToast(null)} />
       )}
 
       {/* Transaction Toast */}

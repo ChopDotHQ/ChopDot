@@ -86,7 +86,7 @@ export function AddPaymentMethod({
   }, [kind, existingMethod]);
 
   return (
-    <BottomSheet onClose={onClose}>
+    <BottomSheet isOpen title={existingMethod ? "Edit payment method" : "Add payment method"} onClose={onClose}>
       <div className="p-4 space-y-4">
         <div>
           <h3 className="text-foreground mb-4">

@@ -14,7 +14,7 @@ interface PotSummary {
   myExpenses: number;
   totalExpenses: number;
   memberCount: number;
-  lastUpdated: string;
+  lastUpdated?: string;
   recentExpenses?: RecentExpense[];
 }
 

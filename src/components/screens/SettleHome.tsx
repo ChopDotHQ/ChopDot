@@ -287,9 +287,9 @@ export function SettleHome({
           </div>
 
           {/* Breakdown */}
-          {settlements.length > 0 && settlements[0].pots && settlements[0].pots.length > 1 && (
+          {settlements.length > 0 && settlements[0]?.pots && settlements[0]?.pots.length > 1 && (
             <div className="pt-2 border-t border-border/50 space-y-1">
-              {settlements[0].pots.map(pot => (
+              {settlements[0]?.pots?.map(pot => (
                 <div key={pot.potId} className="flex justify-between text-caption text-secondary">
                   <span>{pot.potName}</span>
                   <span className="tabular-nums" style={{ fontWeight: 500 }}>${pot.amount.toFixed(2)}</span>
@@ -303,7 +303,7 @@ export function SettleHome({
         {selectedMethod === "dot" && !walletConnected && (
           <WalletBanner
             isConnected={false}
-            onConnect={onConnectWallet}
+            onConnect={onConnectWallet ?? (() => {})}
           />
         )}
 
