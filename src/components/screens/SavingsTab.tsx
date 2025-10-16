@@ -31,7 +31,7 @@ interface SavingsTabProps {
 export function SavingsTab({
   members,
   currentUserId,
-  baseCurrency,
+  baseCurrency: _baseCurrency,
   contributions,
   totalPooled,
   yieldRate,
@@ -54,7 +54,6 @@ export function SavingsTab({
     };
   });
 
-  const yourBalance = memberBalances.find(b => b.memberId === currentUserId)?.total || 0;
   const totalContributed = memberBalances.reduce((sum, b) => sum + b.total, 0);
   const yieldEarned = totalPooled - totalContributed;
 

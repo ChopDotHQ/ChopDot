@@ -6,7 +6,7 @@ import { TrustIndicator } from "../TrustIndicator";
 import { EmptyState } from "../EmptyState";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { useState, useMemo } from "react";
-import { BottomSheet } from "../BottomSheet";
+//
 import { PeopleView } from "./PeopleView";
 
 interface DebtBreakdown {
@@ -29,7 +29,7 @@ interface Person {
   balance: number;
   trustScore: number;
   paymentPreference?: string;
-  potCount: number;
+  potCount?: number;
 }
 
 interface PeopleHomeProps {
@@ -55,7 +55,7 @@ export function PeopleHome({
   walletConnected,
   onConnectWallet,
   onSettle,
-  onRemindSent,
+  onRemindSent: _onRemindSent,
   onPersonClick,
   onNotificationClick,
   onWalletClick,
@@ -65,6 +65,7 @@ export function PeopleHome({
 }: PeopleHomeProps) {
   const [remindOverlayOpen, setRemindOverlayOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<PersonDebt | null>(null);
+  void remindOverlayOpen; void selectedPerson; void onToggleTheme; void isDarkMode;
   const [activeTab, setActiveTab] = useState<"people" | "balances">("people"); // FLIPPED DEFAULT
   const [showSortSheet, setShowSortSheet] = useState(false);
   const [sortBy, setSortBy] = useState<string>("amount-high");
@@ -125,13 +126,6 @@ export function PeopleHome({
   const handleRemind = (person: PersonDebt) => {
     setSelectedPerson(person);
     setRemindOverlayOpen(true);
-  };
-
-  const handleSendReminder = () => {
-    // Mock sending reminder
-    setRemindOverlayOpen(false);
-    setSelectedPerson(null);
-    onRemindSent?.();
   };
 
   const renderPersonRow = (person: PersonDebt, action: "settle" | "remind") => {

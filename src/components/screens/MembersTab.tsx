@@ -32,7 +32,7 @@ export function MembersTab({
   currentUserId = "owner",
   onAddMember, 
   onRemoveMember,
-  onCopyInviteLink,
+  onCopyInviteLink: _onCopyInviteLink,
   onResendInvite,
 }: MembersTabProps) {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -95,10 +95,7 @@ export function MembersTab({
   };
 
   // Mock trust scores (in real app, would come from member data)
-  const getTrustScore = (memberId: string): number => {
-    // Default high trust for all members
-    return 9; // 3-10 scale, 9 = excellent
-  };
+  const getTrustScore = (_memberId: string): number => 9;
 
   return (
     <div className="p-3 space-y-3">

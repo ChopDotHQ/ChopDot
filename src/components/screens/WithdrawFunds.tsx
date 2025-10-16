@@ -1,6 +1,6 @@
 import { TopBar } from "../TopBar";
 import { useState } from "react";
-import { TrendingDown, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
 interface WithdrawFundsProps {
   potName: string;
@@ -17,7 +17,7 @@ export function WithdrawFunds({
   potName,
   baseCurrency,
   yourBalance,
-  totalPooled,
+  totalPooled: _totalPooled,
   yieldRate,
   defiProtocol,
   onBack,

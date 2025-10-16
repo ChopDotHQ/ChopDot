@@ -1,4 +1,4 @@
-import { X, Clock, Check, DollarSign, UserPlus, Bell } from "lucide-react";
+import { X, Clock, Check, DollarSign, UserPlus } from "lucide-react";
 import { EmptyState } from "../EmptyState";
 import { triggerHaptic } from "../../utils/haptics";
 
@@ -118,7 +118,7 @@ export function NotificationCenter({
         <div className="flex-1 overflow-y-auto">
           {notifications.length === 0 ? (
             <div className="p-8">
-              <EmptyState />
+              <EmptyState icon={UserPlus} message="No notifications yet" />
             </div>
           ) : (
             <div className="p-4 space-y-2">

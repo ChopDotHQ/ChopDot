@@ -49,7 +49,7 @@ export function ExpenseDetail({
   onAttest,
   onEdit,
   onDelete,
-  onSettle,
+  onSettle: _onSettle,
   onCopyReceiptLink,
   onUpdateExpense,
   onConnectWallet,
@@ -57,6 +57,7 @@ export function ExpenseDetail({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showReceiptViewer, setShowReceiptViewer] = useState(false);
   const [showAttestationDetail, setShowAttestationDetail] = useState(false);
+  void showAttestationDetail;
   const [isAttesting, setIsAttesting] = useState(false);
   const paidByMember = members.find(m => m.id === expense.paidBy);
   const hasAttested = expense.attestations.includes(currentUserId);
@@ -128,7 +129,7 @@ export function ExpenseDetail({
   };
 
   // Handle anchoring expense to blockchain
-  const handleAnchorNow = async () => {
+  const _handleAnchorNow = async () => {
     if (!walletConnected) {
       onConnectWallet?.();
       return;
@@ -138,7 +139,7 @@ export function ExpenseDetail({
     setShowAttestationDetail(false);
 
     // Build expense hash (mock - in production would use actual crypto library)
-    const expenseHash = `0x${Math.random().toString(16).substr(2, 64)}`;
+    // const expenseHash = `0x${Math.random().toString(16).substr(2, 64)}`;
 
     // State 1: Signing
     pushTxToast('signing', {
@@ -197,11 +198,13 @@ export function ExpenseDetail({
       }, 200);
     }, 1500);
   };
+  void _handleAnchorNow;
 
   const handleDelete = () => {
     setShowDeleteConfirm(false);
     onDelete();
   };
+  void handleDelete;
 
   const handleShareReceipt = () => {};
 

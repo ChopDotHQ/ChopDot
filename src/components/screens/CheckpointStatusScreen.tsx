@@ -27,7 +27,7 @@ export function CheckpointStatusScreen({
   members,
   confirmations,
   currentUserId,
-  expiresAt,
+  expiresAt: _expiresAt,
   onBack,
   onConfirm,
   onSettleAnyway,
@@ -39,10 +39,7 @@ export function CheckpointStatusScreen({
   const allConfirmed = confirmedCount === totalCount;
   const userConfirmed = confirmations.get(currentUserId)?.confirmed || false;
 
-  // Calculate time remaining
-  const now = new Date();
-  const expiryDate = new Date(expiresAt);
-  // const hoursRemaining = Math.max(0, Math.floor((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60)));
+  // Calculate time remaining (computed inline as needed)
 
   // Format date helper
   const formatConfirmationDate = (dateStr: string) => {

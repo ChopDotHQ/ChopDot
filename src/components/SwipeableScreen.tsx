@@ -1,4 +1,4 @@
-import { ReactNode, useRef, useState, useEffect } from "react";
+import { ReactNode, useRef, useState } from "react";
 
 interface SwipeableScreenProps {
   children: ReactNode;

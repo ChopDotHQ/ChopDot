@@ -1,4 +1,4 @@
-import { QrCode, Scan, CreditCard, TrendingUp, User as UserIcon, Bell, ChevronRight, ChevronDown, Globe, Languages, Palette, Shield, Lock, Database, Code, LogOut, Trash2, Download, Eye, EyeOff, Wallet, HelpCircle } from "lucide-react";
+import { QrCode, Scan, TrendingUp, User as UserIcon, Bell, ChevronRight, ChevronDown, Globe, Languages, Palette, Shield, Lock, Database, Code, LogOut, Trash2, Download, Wallet, HelpCircle } from "lucide-react";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { triggerHaptic } from "../../utils/haptics";
@@ -40,7 +40,7 @@ export function YouTab({
   onScanQR,
   onPaymentMethods,
   onViewInsights,
-  onSettings,
+  onSettings: _onSettings,
   onNotificationClick,
   onWalletClick,
   walletConnected = false,
@@ -56,6 +56,7 @@ export function YouTab({
   // Collapsible states
   const [openGeneral, setOpenGeneral] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
+  void openProfile; void setOpenProfile;
   const [openNotifications, setOpenNotifications] = useState(false);
   const [openSecurity, setOpenSecurity] = useState(false);
   const [openAdvanced, setOpenAdvanced] = useState(false);

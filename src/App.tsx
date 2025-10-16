@@ -2416,7 +2416,6 @@ function AppContent() {
             members={pot.members}
             confirmations={pot.currentCheckpoint.confirmations}
             currentUserId="owner"
-            createdAt={pot.currentCheckpoint.createdAt}
             expiresAt={pot.currentCheckpoint.expiresAt}
             onBack={back}
             onConfirm={() => {

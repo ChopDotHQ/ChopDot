@@ -16,7 +16,7 @@ interface InsightsScreenProps {
 export function InsightsScreen({
   onBack,
   monthlySpending,
-  activePots,
+  activePots: _activePots,
   totalSettled,
   monthlyData,
   confirmationRate,

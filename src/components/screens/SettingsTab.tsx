@@ -24,7 +24,7 @@ interface SettingsTabProps {
 export function SettingsTab({
   potName: initialPotName,
   baseCurrency: initialCurrency,
-  hasExpenses,
+  hasExpenses: _hasExpenses,
   budget: initialBudget,
   budgetEnabled: initialBudgetEnabled,
   checkpointEnabled: initialCheckpointEnabled,

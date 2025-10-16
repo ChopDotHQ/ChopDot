@@ -1,7 +1,6 @@
 import { TopBar } from "../TopBar";
 import { User } from "lucide-react";
 import { TrustIndicator } from "../TrustIndicator";
-import { PrimaryButton } from "../PrimaryButton";
 import { EmptyState } from "../EmptyState";
 import { HandCoins } from "lucide-react";
 

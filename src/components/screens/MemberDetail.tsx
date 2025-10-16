@@ -37,7 +37,7 @@ interface MemberDetailProps {
 }
 
 export function MemberDetail({
-  memberId,
+  memberId: _memberId,
   memberName,
   trustScore,
   sharedPots,
@@ -49,18 +49,6 @@ export function MemberDetail({
   onCopyPaymentDetails,
 }: MemberDetailProps) {
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
-
-  const getBalanceText = (balance: number) => {
-    if (balance > 0) return `owes you $${balance}`;
-    if (balance < 0) return `you owe $${Math.abs(balance)}`;
-    return "settled up";
-  };
-
-  const getBalanceColor = (balance: number) => {
-    if (balance > 0) return "text-green-600";
-    if (balance < 0) return "text-destructive";
-    return "text-muted-foreground";
-  };
 
   const getPaymentKindLabel = (kind: string) => {
     switch (kind) {

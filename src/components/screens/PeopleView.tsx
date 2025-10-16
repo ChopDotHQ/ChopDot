@@ -15,7 +15,7 @@ interface PeopleViewProps {
   onSettle: (personId: string) => void;
 }
 
-export function PeopleView({ people, onPersonClick, onSettle }: PeopleViewProps) {
+export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: PeopleViewProps) {
   return (
     <div className="p-3 space-y-2">
       {people.map((person) => {

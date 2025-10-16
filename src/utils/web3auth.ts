@@ -277,7 +277,7 @@ async function getPolkadotAddress(provider: any): Promise<string> {
   try {
     // Import Polkadot libraries dynamically
     const { Keyring } = await import('@polkadot/keyring');
-    const { u8aToHex } = await import('@polkadot/util');
+    const { u8aToHex: _u8aToHex } = await import('@polkadot/util');
     const { cryptoWaitReady } = await import('@polkadot/util-crypto');
 
     // Wait for crypto to be ready

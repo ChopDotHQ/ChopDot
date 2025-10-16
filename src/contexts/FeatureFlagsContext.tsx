@@ -36,12 +36,12 @@
  * ```
  */
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import { 
   getFlag, 
   setFlag as setFlagModule, 
   resetFlags as resetFlagsModule, 
-  subscribe, 
+  // subscribe, 
   FlagKey 
 } from '../utils/flags';
 

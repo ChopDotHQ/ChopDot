@@ -67,7 +67,7 @@ export function ExpensesTab({
   baseCurrency,
   budget,
   budgetEnabled,
-  totalExpenses: propTotalExpenses,
+  totalExpenses: _propTotalExpenses,
   contributions = [],
   onAddExpense, 
   onExpenseClick, 
@@ -75,7 +75,7 @@ export function ExpensesTab({
   onDeleteExpense,
   onAttestExpense,
   onBatchAttestExpenses,
-  onReviewPending,
+  onReviewPending: _onReviewPending,
   onShowToast,
 }: ExpensesTabProps) {
   const [showPendingOnly, setShowPendingOnly] = useState(false);
@@ -99,11 +99,7 @@ export function ExpensesTab({
   const balances = members.map(member => {
     if (member.id === currentUserId) return null;
     
-    const theyPaid = expenses.filter(e => e.paidBy === member.id).reduce((sum, e) => sum + e.amount, 0);
-    const theirShare = expenses.reduce((sum, e) => {
-      const share = e.split.find(s => s.memberId === member.id);
-      return sum + (share?.amount || 0);
-    }, 0);
+    //
     
     // Calculate what they owe you or what you owe them
     const myShareOfTheirExpenses = expenses
@@ -163,7 +159,7 @@ export function ExpensesTab({
     }
     
     if (!groups[label]) groups[label] = [];
-    groups[label].push(expense);
+    (groups[label] as Expense[]).push(expense);
     return groups;
   }, {} as Record<string, Expense[]>);
 

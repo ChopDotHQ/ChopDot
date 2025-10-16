@@ -79,22 +79,7 @@ export function PaymentMethods({
     },
   ];
 
-  // Get value for each method kind
-  const getValue = (kind: PaymentMethodKind) => {
-    const method = methods.find(m => m.kind === kind);
-    if (!method) return "";
-    
-    switch (kind) {
-      case "bank":
-        return method.iban || "";
-      case "twint":
-        return method.phone || "";
-      case "paypal":
-        return method.email || "";
-      case "crypto":
-        return method.address || "";
-    }
-  };
+  //
 
   // Find the existing method ID for each kind to determine if it's preferred
   const getMethodId = (kind: PaymentMethodKind) => {

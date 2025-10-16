@@ -83,7 +83,6 @@ export function exportPotExpensesToCSV(
       // Confirmed status
       const totalMembers = members.length;
       const confirmedCount = expense.attestations.length;
-      const isFullyConfirmed = confirmedCount === totalMembers - 1; // Exclude payer
       const confirmedStatus = expense.paidBy === currentUserId
         ? `${confirmedCount}/${totalMembers - 1}`
         : expense.attestations.includes(currentUserId)

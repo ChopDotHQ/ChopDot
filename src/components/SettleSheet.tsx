@@ -16,7 +16,7 @@ interface SettleSheetProps {
 }
 
 export function SettleSheet({
-  personId,
+  personId: _personId,
   personName,
   amount,
   preferredMethod,

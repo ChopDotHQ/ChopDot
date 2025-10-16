@@ -2,7 +2,6 @@ import { User, LogOut, CreditCard, ChevronRight, Trash2 } from "lucide-react";
 import { TopBar } from "../TopBar";
 import { InputField } from "../InputField";
 import { SelectField } from "../SelectField";
-import { LinkButton } from "../LinkButton";
 import { useState } from "react";
 import { Theme } from "../../utils/useTheme";
 

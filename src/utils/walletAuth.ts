@@ -19,7 +19,7 @@ export interface WalletConnection {
 export async function connectPolkadotWallet(): Promise<WalletConnection> {
   try {
     // Check if Polkadot extension is available
-    const { web3Enable, web3Accounts, web3FromAddress } = await import('@polkadot/extension-dapp');
+    const { web3Enable, web3Accounts, web3FromAddress: _web3FromAddress } = await import('@polkadot/extension-dapp');
     
     // Request access to extensions
     const extensions = await web3Enable('ChopDot');
@@ -147,7 +147,7 @@ async function getWalletConnectProvider() {
   }
 
   try {
-    const { EthereumProvider } = await import('@walletconnect/ethereum-provider');
+    const { EthereumProvider: _EthereumProvider } = await import('@walletconnect/ethereum-provider');
     
     // For now, WalletConnect is disabled until you add a valid project ID
     // Get one from https://cloud.walletconnect.com

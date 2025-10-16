@@ -37,8 +37,8 @@ export function SettleHome({
   onHistory,
   scope = "global",
   scopeLabel,
-  potId,
-  personId,
+  potId: _potId,
+  personId: _personId,
   preferredMethod,
 }: SettleHomeProps) {
   // Read feature flags

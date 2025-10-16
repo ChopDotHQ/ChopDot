@@ -117,7 +117,7 @@ export function PotHome({
   const tabs = potType === "savings" 
     ? ["Savings", "Members", "Settings"]
     : ["Expenses", "Members", "Settings"];
-  const [activeTab, setActiveTab] = useState<string>(tabs[0]);
+  const [activeTab, setActiveTab] = useState<string>(tabs[0] ?? "Expenses");
 
   // Calculate summary
   const currentUserId = "owner"; // Mock current user
@@ -131,16 +131,19 @@ export function PotHome({
     return sum + (share?.amount || 0);
   }, 0);
   const net = myExpenses - myShare;
+  void net;
 
   // Savings pot metrics
   const myContributions = contributions.filter(c => c.memberId === currentUserId).reduce((sum, c) => sum + c.amount, 0);
   const totalContributed = contributions.reduce((sum, c) => sum + c.amount, 0);
-  const yieldEarned = totalPooled - totalContributed;
+  const yieldEarned = (totalPooled ?? 0) - totalContributed;
+  void myContributions; void yieldEarned;
 
   // Budget calculations
   const budgetPercentage = budget ? Math.min((totalExpenses / budget) * 100, 100) : 0;
   const budgetRemaining = budget ? Math.max(budget - totalExpenses, 0) : 0;
   const isOverBudget = budget ? totalExpenses > budget : false;
+  void budgetPercentage; void budgetRemaining; void isOverBudget;
 
   // Checkpoint status
   const confirmedCount = checkpointConfirmations
