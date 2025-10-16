@@ -1,5 +1,7 @@
 # ChopDot
 
+> Status: Work in Progress (MVP). Features, architecture, and integrations are evolving. Some product choices are not final; wallet flows and on‑chain anchoring are planned but not yet finalised.
+
 Mobile-first expense splitting and group financial management app prototype.
 
 This repository consolidates the ChopDot Mobile Wireframe codebase and the existing GitHub repository metadata (README and license).
