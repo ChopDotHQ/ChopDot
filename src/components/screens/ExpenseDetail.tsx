@@ -1,9 +1,7 @@
 import { TopBar } from "../TopBar";
-import { MemberChip } from "../MemberChip";
 import { BottomSheet } from "../BottomSheet";
 import { ReceiptViewer } from "../ReceiptViewer";
-import { AttestationDetail } from "../AttestationDetail";
-import { Receipt, Check, Info } from "lucide-react";
+import { Receipt, Check } from "lucide-react";
 import { useState } from "react";
 import { pushTxToast, updateTxToast } from "../../hooks/useTxToasts";
 
@@ -205,9 +203,7 @@ export function ExpenseDetail({
     onDelete();
   };
 
-  const handleShareReceipt = () => {
-    // Share receipt link (handled by parent via onCopyReceiptLink)
-  };
+  const handleShareReceipt = () => {};
 
   const handleCopyReceiptLink = () => {
     navigator.clipboard.writeText(`https://chopdot.app/receipt/${expense.id}`);

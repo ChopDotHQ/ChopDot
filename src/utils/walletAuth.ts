@@ -37,6 +37,9 @@ export async function connectPolkadotWallet(): Promise<WalletConnection> {
     
     // Use the first account (in production, let user choose)
     const account = accounts[0];
+    if (!account) {
+      throw new Error('No accounts available');
+    }
     
     return {
       address: account.address,
@@ -59,6 +62,9 @@ export async function signPolkadotMessage(address: string, message: string): Pro
     
     // Get the injector for this address
     const injector = await web3FromAddress(address);
+    if (!injector || !injector.signer) {
+      throw new Error('No signer available for address');
+    }
     
     if (!injector.signer.signRaw) {
       throw new Error('Wallet does not support message signing');

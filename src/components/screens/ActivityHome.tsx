@@ -16,13 +16,7 @@ interface ActivityItem {
   avatarName?: string;
 }
 
-interface PendingExpense {
-  id: string;
-  memo: string;
-  amount: number;
-  paidBy: string;
-  potName: string;
-}
+//
 
 interface ActivityHomeProps {
   totalOwed: number;
@@ -90,7 +84,7 @@ export function ActivityHome({
   ];
 
   // Pull-to-refresh
-  const { scrollContainerRef, pullDistance, isRefreshing, shouldTrigger } = usePullToRefresh({
+  const { scrollContainerRef, pullDistance, shouldTrigger } = usePullToRefresh({
     onRefresh: async () => {
       if (onRefresh) {
         await onRefresh();
@@ -429,12 +423,18 @@ export function ActivityHome({
       {/* Settle Sheet */}
       {showSettleSheet && topPersonToSettle && (
         <SettleSheet
-          person={topPersonToSettle}
+          personId={topPersonToSettle.id}
+          personName={topPersonToSettle.name}
+          amount={topPersonToSettle.amount}
+          preferredMethod={topPersonToSettle.preferredMethod as any}
+          pots={topPersonToSettle.pots}
           onClose={() => setShowSettleSheet(false)}
-          onSettle={(method) => {
+          onConfirm={(method: "Bank" | "PayPal" | "DOT" | "Cash") => {
             onSettleClick?.(topPersonToSettle.id, method);
             setShowSettleSheet(false);
           }}
+          onReviewPending={() => {}}
+          onViewHistory={() => {}}
         />
       )}
 

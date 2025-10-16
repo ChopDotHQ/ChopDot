@@ -1,5 +1,3 @@
-import { TopBar } from "../TopBar";
-import { LinkButton } from "../LinkButton";
 import { BottomSheet } from "../BottomSheet";
 import { Upload, X } from "lucide-react";
 import { useState } from "react";
@@ -67,7 +65,11 @@ export function AddExpense({
     existingExpense?.memo || 
     ""
   );
-  const [date, setDate] = useState<string>((existingExpense?.date || new Date().toISOString()).split('T')[0]);
+  const [date, setDate] = useState<string>(() => {
+    const iso = existingExpense?.date ?? new Date().toISOString();
+    const first = iso.split('T')[0];
+    return first ?? '';
+  });
   
   // Receipt state
   const [hasReceipt, setHasReceipt] = useState(existingExpense?.hasReceipt || false);

@@ -9,7 +9,7 @@
  */
 
 import { useState } from 'react';
-import { Wallet, Mail, Lock, AlertCircle, Loader2 } from 'lucide-react';
+import { Wallet, Mail, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth, AuthMethod } from '../../contexts/AuthContext';
 import {
   connectPolkadotWallet,
@@ -23,7 +23,7 @@ import {
 import { triggerHaptic } from '../../utils/haptics';
 import { InputField } from '../InputField';
 import { PrimaryButton } from '../PrimaryButton';
-import { SecondaryButton } from '../SecondaryButton';
+//
 
 interface LoginScreenProps {
   onLoginSuccess?: () => void;

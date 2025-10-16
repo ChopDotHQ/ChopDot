@@ -33,7 +33,9 @@ export function usePullToRefresh({
     const handleTouchStart = (e: TouchEvent) => {
       // Only allow pull-to-refresh when scrolled to top
       if (container.scrollTop === 0) {
-        touchStartY.current = e.touches[0].clientY;
+        const t = e.touches[0];
+        if (!t) return;
+        touchStartY.current = t.clientY;
         isTouching = true;
         hasTriggeredHaptic.current = false;
       }
@@ -47,7 +49,9 @@ export function usePullToRefresh({
         return;
       }
 
-      const currentY = e.touches[0].clientY;
+      const t = e.touches[0];
+      if (!t) return;
+      const currentY = t.clientY;
       const diff = currentY - touchStartY.current;
 
       if (diff > 0) {

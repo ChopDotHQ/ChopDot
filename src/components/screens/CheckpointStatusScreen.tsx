@@ -15,7 +15,6 @@ interface CheckpointStatusScreenProps {
   members: Member[];
   confirmations: Map<string, CheckpointConfirmation>;
   currentUserId: string;
-  createdAt: string;
   expiresAt: string;
   onBack: () => void;
   onConfirm: () => void;
@@ -28,7 +27,6 @@ export function CheckpointStatusScreen({
   members,
   confirmations,
   currentUserId,
-  createdAt,
   expiresAt,
   onBack,
   onConfirm,
@@ -44,7 +42,7 @@ export function CheckpointStatusScreen({
   // Calculate time remaining
   const now = new Date();
   const expiryDate = new Date(expiresAt);
-  const hoursRemaining = Math.max(0, Math.floor((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60)));
+  // const hoursRemaining = Math.max(0, Math.floor((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60)));
 
   // Format date helper
   const formatConfirmationDate = (dateStr: string) => {
@@ -124,9 +122,9 @@ export function CheckpointStatusScreen({
                       <p className="text-sm" style={{ fontWeight: 500 }}>
                         {isCurrentUser ? "You" : member.name}
                       </p>
-                      {isConfirmed && confirmation.confirmedAt && (
+                      {isConfirmed && confirmation?.confirmedAt && (
                         <p className="text-xs text-secondary">
-                          Confirmed {formatConfirmationDate(confirmation.confirmedAt)}
+                          Confirmed {formatConfirmationDate(confirmation!.confirmedAt)}
                         </p>
                       )}
                       {!isConfirmed && !isCurrentUser && (

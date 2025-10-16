@@ -1,4 +1,4 @@
-import { Receipt, AlertCircle, Plus, X, TrendingUp, TrendingDown, Users, CheckCircle, ChevronDown, ChevronUp, History } from "lucide-react";
+import { Receipt, AlertCircle, Plus, TrendingUp, TrendingDown, CheckCircle, ChevronDown, ChevronUp, History } from "lucide-react";
 import { useState } from "react";
 import { SwipeableExpenseRow } from "../SwipeableExpenseRow";
 
@@ -162,9 +162,7 @@ export function ExpensesTab({
       label = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
     
-    if (!groups[label]) {
-      groups[label] = [];
-    }
+    if (!groups[label]) groups[label] = [];
     groups[label].push(expense);
     return groups;
   }, {} as Record<string, Expense[]>);

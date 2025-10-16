@@ -1,4 +1,4 @@
-import { ChevronLeft, TrendingUp, DollarSign, Users, Check, CheckCircle2, HandCoins } from "lucide-react";
+import { ChevronLeft, TrendingUp, DollarSign, Users, HandCoins } from "lucide-react";
 import { useState } from "react";
 
 interface InsightsScreenProps {
