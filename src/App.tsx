@@ -979,7 +979,7 @@ function AppContent() {
       return {
         visible: false,
         icon: Receipt,
-        color: "var(--accent-orange)",
+        color: "var(--accent)",
         action: () => {},
       };
     }
@@ -1001,7 +1001,7 @@ function AppContent() {
         return {
           visible: true,
           icon: Receipt,
-          color: "var(--accent-orange)",
+          color: "var(--accent)",
           action: () => {
             triggerHaptic("light");
             if (pots.length === 0) {
@@ -1024,7 +1024,7 @@ function AppContent() {
       return {
         visible: true,
         icon: Receipt,
-        color: "var(--accent-orange)",
+        color: "var(--accent)",
         action: () => {
           triggerHaptic("light");
           if (pots.length === 0) {
@@ -1045,7 +1045,7 @@ function AppContent() {
     return {
       visible: false,
       icon: Receipt,
-      color: "var(--accent-orange)",
+      color: "var(--accent)",
       action: () => {},
     };
   }, [
@@ -2925,8 +2925,7 @@ function AppContent() {
           <div
             className="w-16 h-16 mx-auto mb-4 rounded-3xl flex items-center justify-center"
             style={{
-              background:
-                "linear-gradient(135deg, var(--accent-pink) 0%, var(--accent-orange) 100%)",
+              background: 'var(--accent)',
             }}
           >
             <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />

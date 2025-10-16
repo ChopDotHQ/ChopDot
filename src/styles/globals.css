@@ -26,8 +26,11 @@
   --muted: #8E8E93;        /* Tertiary text / placeholders - iOS secondary label gray */
   --text-secondary: #606066;  /* Secondary text (better contrast than --muted for important labels) */
   --accent: #E6007A;       /* Polkadot pink - use sparingly for active states */
-  --accent-orange: #FF9500; /* Orange for financial actions (settlements, transactions) */
+  /* Deprecated: Orange accent is now aliased to pink for a monochrome + pink scheme */
+  --accent-orange: var(--accent);
   --success: #19C37D;      /* Success states */
+  /* Money alias for financial positives (use in UI as the canonical token) */
+  --money: var(--success);
   --danger: #E5484D;       /* Error/destructive states */
   --border: rgba(0, 0, 0, 0.06);  /* Very subtle separator */
   
@@ -146,12 +149,14 @@
   --accent-pink-medium: rgba(230, 0, 122, 0.2);
   
   /* Orange gradient (for premium CTAs) */
-  --gradient-orange-start: #FF9500;
-  --gradient-orange-end: #FF6B00;
+  /* Deprecated: map orange gradient to solid accent for consistency */
+  --gradient-orange-start: var(--accent);
+  --gradient-orange-end: var(--accent);
   
   /* Orange accent variations */
-  --accent-orange-soft: rgba(255, 149, 0, 0.1);
-  --accent-orange-medium: rgba(255, 149, 0, 0.2);
+  /* Deprecated: map to pink soft variants */
+  --accent-orange-soft: var(--accent-pink-soft);
+  --accent-orange-medium: var(--accent-pink-medium);
 }
 
 /* ===== DARK MODE (Manual Toggle Support) ===== */
@@ -211,8 +216,9 @@
   --accent-pink-medium: rgba(230, 0, 122, 0.25);
   
   /* Orange accent - dark mode */
-  --accent-orange-soft: rgba(255, 149, 0, 0.15);
-  --accent-orange-medium: rgba(255, 149, 0, 0.25);
+  /* Deprecated: map to pink soft variants */
+  --accent-orange-soft: var(--accent-pink-soft);
+  --accent-orange-medium: var(--accent-pink-medium);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -272,8 +278,9 @@
     --accent-pink-medium: rgba(230, 0, 122, 0.25);
     
     /* Orange accent - dark mode */
-    --accent-orange-soft: rgba(255, 149, 0, 0.15);
-    --accent-orange-medium: rgba(255, 149, 0, 0.25);
+    /* Deprecated: map to pink soft variants */
+    --accent-orange-soft: var(--accent-pink-soft);
+    --accent-orange-medium: var(--accent-pink-medium);
   }
 }
 
@@ -405,15 +412,16 @@
   
   /* Gradient button (premium CTAs) */
   .btn-gradient-orange {
-    background: linear-gradient(135deg, var(--gradient-orange-start) 0%, var(--gradient-orange-end) 100%);
+    /* Deprecated: use solid accent to align with monochrome + pink */
+    background: var(--accent);
     color: #fff;
     border-radius: var(--r-lg);
     font-weight: var(--font-weight-medium);
-    box-shadow: 0 2px 8px rgba(255, 149, 0, 0.25);
+    box-shadow: 0 2px 8px rgba(230, 0, 122, 0.25);
   }
   
   .btn-gradient-orange:hover {
-    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.35);
+    box-shadow: 0 4px 12px rgba(230, 0, 122, 0.35);
   }
   
   .btn-gradient-orange:active {
@@ -445,6 +453,14 @@
  * Typography hierarchy - Consistent text sizing across the app
  */
 @layer utilities {
+  /* Money helpers - canonical token for positive financial states */
+  .text-money {
+    color: var(--money);
+  }
+
+  .bg-money-soft {
+    background: color-mix(in oklab, var(--money) 10%, transparent);
+  }
   .text-screen-title {
     font-size: var(--text-screen-title);
     font-weight: var(--font-weight-medium);

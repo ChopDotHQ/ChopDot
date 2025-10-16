@@ -16,7 +16,7 @@ export function BottomTabBar({
   onFabClick,
   fabVisible = true,
   fabIcon: FabIcon = Receipt,
-  fabColor = "var(--accent-orange)",
+  fabColor = "var(--accent)",
 }: BottomTabBarProps) {
   return (
     <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-[390px] bg-card border-t border-border z-50">

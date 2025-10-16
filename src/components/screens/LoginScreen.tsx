@@ -269,7 +269,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       {/* Header */}
       <div className="p-4 pt-16 pb-8 text-center">
         <div className="w-20 h-20 mx-auto mb-4 rounded-3xl flex items-center justify-center" style={{
-          background: 'linear-gradient(135deg, var(--accent-pink) 0%, var(--accent-orange) 100%)',
+          background: 'var(--accent)',
         }}>
           <Wallet className="w-10 h-10 text-white" />
         </div>
