@@ -19,6 +19,8 @@ interface SettingsTabProps {
   onUpdateSettings: (settings: any) => void;
   onCopyInviteLink?: () => void;
   onResendInvite?: (memberId: string) => void;
+  onLeavePot?: () => void;
+  onArchivePot?: () => void;
 }
 
 export function SettingsTab({
@@ -33,6 +35,8 @@ export function SettingsTab({
   onUpdateSettings,
   onCopyInviteLink,
   onResendInvite,
+  onLeavePot,
+  onArchivePot,
 }: SettingsTabProps) {
   const [potName, setPotName] = useState(initialPotName);
   const [baseCurrency, setBaseCurrency] = useState(initialCurrency);
@@ -183,11 +187,17 @@ export function SettingsTab({
       {/* Pot Management */}
       <div className="pt-2 space-y-2 border-t border-border">
         <p className="text-label text-secondary">Pot management</p>
-        <button className="w-full glass-sm rounded-xl p-3 flex items-center justify-between hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left">
+        <button
+          onClick={() => onLeavePot?.()}
+          className="w-full glass-sm rounded-xl p-3 flex items-center justify-between hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left"
+        >
           <span className="text-body">Leave Pot</span>
           <span className="text-label text-secondary">›</span>
         </button>
-        <button className="w-full glass-sm rounded-xl p-3 flex items-center justify-between hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left">
+        <button
+          onClick={() => onArchivePot?.()}
+          className="w-full glass-sm rounded-xl p-3 flex items-center justify-between hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left"
+        >
           <span className="text-body">Archive Pot</span>
           <span className="text-label text-secondary">›</span>
         </button>

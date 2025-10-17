@@ -88,7 +88,7 @@ export function PotHome({
   budget,
   budgetEnabled,
   checkpointEnabled,
-  hasActiveCheckpoint,
+  hasActiveCheckpoint: _hasActiveCheckpoint,
   checkpointConfirmations,
   contributions = [],
   totalPooled = 0,
@@ -111,7 +111,7 @@ export function PotHome({
   onShowToast,
   onAddContribution,
   onWithdraw,
-  onViewCheckpoint,
+  onViewCheckpoint: _onViewCheckpoint,
 }: PotHomeProps) {
   // Dynamic tabs based on pot type
   const tabs = potType === "savings" 
@@ -277,6 +277,21 @@ export function PotHome({
             onUpdateSettings={onUpdateSettings}
             onCopyInviteLink={onCopyInviteLink}
             onResendInvite={onResendInvite}
+            onLeavePot={() => {
+              // Leave: remove current user from members and navigate back
+              const currentUserId = "owner";
+              const isMember = members.some(m => m.id === currentUserId);
+              if (!isMember) return;
+              onShowToast?.("You left the pot", "info");
+              onRemoveMember(currentUserId);
+              onBack();
+            }}
+            onArchivePot={() => {
+              // Archive: soft-delete by clearing expenses and disabling checkpoint/budget
+              onUpdateSettings({ budgetEnabled: false, checkpointEnabled: false });
+              onShowToast?.("Pot archived (soft)", "info");
+              onBack();
+            }}
           />
         )}
       </div>
