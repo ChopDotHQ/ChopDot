@@ -21,6 +21,7 @@ interface SettingsTabProps {
   onResendInvite?: (memberId: string) => void;
   onLeavePot?: () => void;
   onArchivePot?: () => void;
+  onDeletePot?: () => void;
 }
 
 export function SettingsTab({
@@ -37,6 +38,7 @@ export function SettingsTab({
   onResendInvite,
   onLeavePot,
   onArchivePot,
+  onDeletePot,
 }: SettingsTabProps) {
   const [potName, setPotName] = useState(initialPotName);
   const [baseCurrency, setBaseCurrency] = useState(initialCurrency);
@@ -200,6 +202,14 @@ export function SettingsTab({
         >
           <span className="text-body">Archive Pot</span>
           <span className="text-label text-secondary">›</span>
+        </button>
+        <button
+          onClick={() => onDeletePot && window.confirm('Delete this pot permanently? This cannot be undone.') && onDeletePot()}
+          className="w-full rounded-xl p-3 flex items-center justify-between transition-all duration-200 active:scale-[0.98] text-left"
+          style={{ background: 'var(--destructive-soft)', border: '1px solid var(--destructive)', color: 'var(--destructive)' }}
+        >
+          <span className="text-body">Delete Pot</span>
+          <span className="text-label">›</span>
         </button>
       </div>
     </div>

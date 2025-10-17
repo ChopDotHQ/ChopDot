@@ -129,6 +129,7 @@ interface Pot {
   goalDescription?: string;
   checkpointEnabled?: boolean; // Default: true
   currentCheckpoint?: ExpenseCheckpoint;
+  archived?: boolean;
 }
 
 interface Settlement {
@@ -1981,7 +1982,7 @@ function AppContent() {
 
       case "pots-home":
         // Calculate pot summaries
-        const potSummaries = pots.map((pot) => {
+        const potSummaries = pots.filter(p => !p.archived).map((pot) => {
           const myExpenses = pot.expenses
             .filter((e) => e.paidBy === "owner")
             .reduce((sum, e) => sum + e.amount, 0);
@@ -3117,7 +3118,7 @@ function AppContent() {
 
       {showChoosePot && (
         <ChoosePot
-          pots={pots.map((p) => ({
+          pots={pots.filter(p => !p.archived).map((p) => ({
             id: p.id,
             name: p.name,
             myExpenses: p.expenses.filter(

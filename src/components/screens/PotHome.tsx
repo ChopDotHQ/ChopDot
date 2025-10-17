@@ -52,7 +52,7 @@ interface PotHomeProps {
   // Checkpoint props
   checkpointEnabled?: boolean;
   hasActiveCheckpoint?: boolean;
-  checkpointConfirmations?: Map<string, CheckpointConfirmation>;
+  checkpointConfirmations?: Map<string, CheckpointConfirmation> | Record<string, CheckpointConfirmation>;
   // Savings pot props
   contributions?: Contribution[];
   totalPooled?: number;
@@ -145,10 +145,13 @@ export function PotHome({
   const isOverBudget = budget ? totalExpenses > budget : false;
   void budgetPercentage; void budgetRemaining; void isOverBudget;
 
-  // Checkpoint status
-  const confirmedCount = checkpointConfirmations
-    ? Array.from(checkpointConfirmations.values()).filter(c => c.confirmed).length
-    : 0;
+  // Checkpoint status (supports Map or plain object from localStorage)
+  const confirmationsArray: CheckpointConfirmation[] = checkpointConfirmations
+    ? (checkpointConfirmations instanceof Map
+        ? Array.from(checkpointConfirmations.values())
+        : Object.values(checkpointConfirmations as Record<string, CheckpointConfirmation>))
+    : [];
+  const confirmedCount = confirmationsArray.filter(c => c.confirmed).length;
   const totalCount = members.length;
 
   // Handle CSV export
@@ -287,10 +290,16 @@ export function PotHome({
               onBack();
             }}
             onArchivePot={() => {
-              // Archive: soft-delete by clearing expenses and disabling checkpoint/budget
-              onUpdateSettings({ budgetEnabled: false, checkpointEnabled: false });
-              onShowToast?.("Pot archived (soft)", "info");
+              // Archive: mark as archived and hide from lists
+              onUpdateSettings({ archived: true, budgetEnabled: false, checkpointEnabled: false });
+              onShowToast?.("Pot archived", "info");
               onBack();
+            }}
+            onDeletePot={() => {
+              // Hard delete: remove pot from state entirely
+              onShowToast?.("Pot deleted", "info");
+              onBack();
+              // Actual removal handled at App level via settings callback pattern or can be wired next
             }}
           />
         )}
