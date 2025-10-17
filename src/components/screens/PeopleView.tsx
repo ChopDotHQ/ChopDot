@@ -83,6 +83,14 @@ export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: 
                 >
                   {isPositive ? '+' : ''}${Math.abs(person.balance).toFixed(2)}
                 </p>
+                <div className="mt-1">
+                  <span
+                    className="inline-block px-2 py-0.5 rounded-md text-[11px] bg-muted/20 text-foreground"
+                    style={{ fontWeight: 500 }}
+                  >
+                    Settle with {person.name.split(' ')[0]}
+                  </span>
+                </div>
               </div>
             </div>
           </button>

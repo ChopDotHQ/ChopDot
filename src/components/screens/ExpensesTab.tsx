@@ -58,6 +58,8 @@ interface ExpensesTabProps {
   onBatchAttestExpenses?: (expenseIds: string[]) => void;
   onReviewPending?: () => void;
   onShowToast?: (message: string, type?: "success" | "info" | "error") => void;
+  checkpointConfirmedCount?: number;
+  checkpointTotalCount?: number;
 }
 
 export function ExpensesTab({ 
@@ -77,6 +79,8 @@ export function ExpensesTab({
   onBatchAttestExpenses,
   onReviewPending: _onReviewPending,
   onShowToast,
+  checkpointConfirmedCount,
+  checkpointTotalCount,
 }: ExpensesTabProps) {
   const [showPendingOnly, setShowPendingOnly] = useState(false);
   const [showActivity, setShowActivity] = useState(false);
@@ -275,6 +279,14 @@ export function ExpensesTab({
                     <span className="text-caption text-secondary">•</span>
                     <span className="text-caption text-secondary" style={{ color: isOverBudget ? 'var(--danger)' : undefined }}>
                       {isOverBudget ? `${(totalExpenses - budget).toFixed(0)} over` : `${budgetRemaining.toFixed(0)} left`} of ${budget.toFixed(0)}
+                    </span>
+                  </>
+                )}
+                {typeof checkpointConfirmedCount === 'number' && typeof checkpointTotalCount === 'number' && checkpointTotalCount > 0 && (
+                  <>
+                    <span className="text-caption text-secondary">•</span>
+                    <span className="text-caption text-secondary">
+                      {checkpointConfirmedCount}/{checkpointTotalCount} confirmed
                     </span>
                   </>
                 )}

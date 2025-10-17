@@ -145,6 +145,12 @@ export function ActivityHome({
       <div className="bg-background border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 z-10">
         <h1 className="text-screen-title">Activity</h1>
         <div className="flex items-center gap-2">
+          {/* Pending confirmations badge */}
+          {hasPendingAttestations && (
+            <div className="px-2 py-1 rounded-md text-[11px]" style={{ background: 'var(--accent-pink-soft)', color: 'var(--accent)' }}>
+              {pendingExpenses.length} pending
+            </div>
+          )}
           {/* Wallet icon */}
           <button
             onClick={() => {

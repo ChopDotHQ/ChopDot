@@ -4,7 +4,7 @@ import { ExpensesTab } from "./ExpensesTab";
 import { SavingsTab } from "./SavingsTab";
 import { MembersTab } from "./MembersTab";
 import { SettingsTab } from "./SettingsTab";
-import { Download } from "lucide-react";
+import { Download, Share2 } from "lucide-react";
 import { exportPotExpensesToCSV } from "../../utils/export";
 import { triggerHaptic } from "../../utils/haptics";
 
@@ -171,43 +171,34 @@ export function PotHome({
         title={potName} 
         onBack={onBack}
         rightAction={
-          potType === "expense" && expenses.length > 0 && (
-            <button
-              onClick={handleExportCSV}
-              className="p-2 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
-              title="Export to CSV"
-            >
-              <Download className="w-5 h-5" />
-            </button>
-          )
+          <div className="flex items-center gap-1.5">
+            {potType === "expense" && (
+              <button
+                onClick={() => {
+                  if (onCopyInviteLink) onCopyInviteLink();
+                }}
+                className="p-2 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
+                title="Share invite"
+              >
+                <Share2 className="w-5 h-5" />
+              </button>
+            )}
+            {potType === "expense" && expenses.length > 0 && (
+              <button
+                onClick={handleExportCSV}
+                className="p-2 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
+                title="Export to CSV"
+              >
+                <Download className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         }
       />
 
-      {/* Checkpoint Banner */}
-      {hasActiveCheckpoint && potType === "expense" && (
-        <button
-          onClick={onViewCheckpoint}
-          className="mx-4 mt-3 mb-2 card p-3 transition-all duration-200 active:scale-[0.98]"
-          style={{ background: 'var(--accent-pink-soft)' }}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-2 h-2 rounded-full" style={{ background: 'var(--accent)' }} />
-                <span className="text-caption" style={{ color: 'var(--accent)' }}>
-                  Settlement checkpoint active
-                </span>
-              </div>
-              <p className="text-xs text-secondary">
-                {confirmedCount}/{totalCount} members confirmed
-              </p>
-            </div>
-            <div className="text-caption" style={{ color: 'var(--accent)' }}>
-              View Status →
-            </div>
-          </div>
-        </button>
-      )}
+      {/* Checkpoint metric integrated into balance card (no banner) */}
+
+      {/* Settle plan preview removed to reduce redundancy with balances list; use Settle Up CTA */}
 
       {/* Tab Pills - Match People & Activity pages */}
       <div className="px-4 py-3 flex items-center gap-2 border-b border-border bg-background">
@@ -258,6 +249,8 @@ export function PotHome({
             onAttestExpense={onAttestExpense}
             onBatchAttestExpenses={onBatchAttestExpenses}
             onShowToast={onShowToast}
+            checkpointConfirmedCount={confirmedCount}
+            checkpointTotalCount={totalCount}
           />
         )}
         {activeTab === "Members" && (

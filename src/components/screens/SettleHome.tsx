@@ -203,9 +203,10 @@ export function SettleHome({
 
   const isValid = 
     selectedMethod === "cash" || 
-    (selectedMethod === "bank" && bankReference.length > 0) || 
+    // Bank reference is optional
+    selectedMethod === "bank" || 
     (selectedMethod === "paypal" && paypalEmail.length > 0) ||
-    (selectedMethod === "twint" && twintPhone.length > 0) ||(selectedMethod === "dot" && walletConnected);
+    (selectedMethod === "twint" && twintPhone.length > 0) || (selectedMethod === "dot" && walletConnected);
 
   // Check if transaction is currently active (disable confirm button)
   const txActive = isTxActive();
@@ -442,6 +443,20 @@ export function SettleHome({
             <p className="text-caption text-secondary">
               Bank transfer. Add a reference to help track this payment.
             </p>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={async () => {
+                  const amountStr = `$${Math.abs(totalAmount).toFixed(2)}`;
+                  const details = `Bank transfer details\nAmount: ${amountStr}\nReference: ${bankReference || '(none)'}\nCounterparty: ${counterparty}`;
+                  try {
+                    await navigator.clipboard.writeText(details);
+                  } catch {}
+                }}
+                className="px-3 py-2 rounded-lg bg-muted/20 text-caption hover:bg-muted/30 transition"
+              >
+                Copy bank details
+              </button>
+            </div>
           </div>
         )}
         
@@ -462,6 +477,26 @@ export function SettleHome({
             <p className="text-caption text-secondary">
               Send payment via PayPal to the recipient's email address.
             </p>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={async () => {
+                  const amountStr = `$${Math.abs(totalAmount).toFixed(2)}`;
+                  const text = `Pay ${amountStr} to ${counterparty} via PayPal (${paypalEmail || 'email'})`;
+                  try { await navigator.clipboard.writeText(text); } catch {}
+                }}
+                className="px-3 py-2 rounded-lg bg-muted/20 text-caption hover:bg-muted/30 transition"
+              >
+                Copy email + amount
+              </button>
+              {paypalEmail && (
+                <a
+                  href={`mailto:${encodeURIComponent(paypalEmail)}?subject=${encodeURIComponent('Payment via PayPal')}&body=${encodeURIComponent('Amount: $' + Math.abs(totalAmount).toFixed(2))}`}
+                  className="px-3 py-2 rounded-lg bg-background border border-border text-caption hover:bg-muted/10 transition"
+                >
+                  Open mail
+                </a>
+              )}
+            </div>
           </div>
         )}
         
@@ -482,6 +517,26 @@ export function SettleHome({
             <p className="text-caption text-secondary">
               Send payment via TWINT to the recipient's mobile number.
             </p>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={async () => {
+                  const amountStr = `$${Math.abs(totalAmount).toFixed(2)}`;
+                  const text = `TWINT payment: ${amountStr} to ${twintPhone || 'phone'} (${counterparty})`;
+                  try { await navigator.clipboard.writeText(text); } catch {}
+                }}
+                className="px-3 py-2 rounded-lg bg-muted/20 text-caption hover:bg-muted/30 transition"
+              >
+                Copy phone + amount
+              </button>
+              {twintPhone && (
+                <a
+                  href={`sms:${encodeURIComponent(twintPhone)}?&body=${encodeURIComponent('Amount: $' + Math.abs(totalAmount).toFixed(2))}`}
+                  className="px-3 py-2 rounded-lg bg-background border border-border text-caption hover:bg-muted/10 transition"
+                >
+                  Open SMS
+                </a>
+              )}
+            </div>
           </div>
         )}
 
