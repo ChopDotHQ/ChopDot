@@ -77,7 +77,7 @@ export function WalletConnectionSheet({
   };
 
   return (
-    <div className="fixed inset-0 z-50 animate-fadeIn">
+    <div className="fixed inset-0 z-40 animate-fadeIn">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"

@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "lint:tokens": "! rg -n \"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\" src --glob '!**/*.{png,jpg,jpeg,svg,webp,gif}' | rg -v 'var\(' && ! rg -n 'accent-orange|gradient-orange' src"
+    "lint:tokens": "! rg -n \"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\" src --glob '!**/*.{png,jpg,jpeg,svg,webp,gif}' | rg -v 'var\\(' && ! rg -n 'accent-orange|gradient-orange' src"
   },
   "dependencies": {
     "@polkadot/extension-dapp": "^0.62.2",

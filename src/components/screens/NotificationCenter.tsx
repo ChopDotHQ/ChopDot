@@ -28,60 +28,79 @@ export function NotificationCenter({
 }: NotificationCenterProps) {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
+  const formatTimestamp = (ts: string) => {
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return ts;
+    return d.toLocaleString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  };
+
   const getNotificationIcon = (type: Notification["type"]) => {
     switch (type) {
       case "attestation":
-        return <Check className="w-5 h-5" />;
+        return <Check className="w-5 h-5 text-white" />;
       case "settlement":
-        return <DollarSign className="w-5 h-5" />;
+        return <DollarSign className="w-5 h-5 text-white" />;
       case "reminder":
-        return <Clock className="w-5 h-5" />;
+        return <Clock className="w-5 h-5 text-white" />;
       case "invite":
-        return <UserPlus className="w-5 h-5" />;
+        return <UserPlus className="w-5 h-5 text-white" />;
     }
   };
 
-  const getNotificationColor = (type: Notification["type"]) => {
+  const getTypeStyles = (type: Notification["type"]) => {
+    // Centralise visual differentiation per type using design tokens
     switch (type) {
       case "attestation":
-        return "text-yellow-600";
+        return {
+          iconBg: 'var(--accent)',
+          tagBg: 'var(--accent-pink-soft)',
+          tagText: 'var(--accent)',
+          borderColor: 'var(--accent)'
+        } as const;
       case "settlement":
-        return "text-green-600";
+        return {
+          iconBg: 'var(--money)',
+          tagBg: 'color-mix(in oklab, var(--money) 15%, transparent)',
+          tagText: 'var(--money)',
+          borderColor: 'var(--money)'
+        } as const;
       case "reminder":
-        return "text-blue-600";
+        return {
+          iconBg: 'var(--foreground)',
+          tagBg: 'color-mix(in oklab, var(--foreground) 12%, transparent)',
+          tagText: 'var(--foreground)',
+          borderColor: 'var(--foreground)'
+        } as const;
       case "invite":
-        return "text-purple-600";
-    }
-  };
-
-  const getNotificationBg = (type: Notification["type"]) => {
-    switch (type) {
-      case "attestation":
-        return "bg-yellow-500/10";
-      case "settlement":
-        return "bg-green-500/10";
-      case "reminder":
-        return "bg-blue-500/10";
-      case "invite":
-        return "bg-purple-500/10";
+        return {
+          iconBg: 'var(--muted)',
+          tagBg: 'color-mix(in oklab, var(--muted) 15%, transparent)',
+          tagText: 'var(--muted)',
+          borderColor: 'var(--muted)'
+        } as const;
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 animate-fadeIn">
+    <div className="fixed inset-0 z-50 bg-foreground/20 backdrop-blur-sm animate-fadeIn">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" 
+        className="absolute inset-0" 
         onClick={() => {
           triggerHaptic('light');
           onClose();
         }} 
       />
       
-      {/* Bottom Sheet */}
-      <div className="absolute bottom-0 left-0 right-0 glass-sheet rounded-t-2xl animate-slideUp border-t-0 max-h-[85vh] flex flex-col">
+      {/* Modal Card - matches ChoosePot style */}
+      <div className="absolute inset-x-0 top-20 bottom-20 card flex flex-col animate-slideUp mx-4 w-[390px] left-1/2 -translate-x-1/2">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border/50 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-border flex-shrink-0 rounded-t-2xl">
           <div className="flex items-center gap-2">
             <h2 className="text-[17px]">Notifications</h2>
             {unreadCount > 0 && (
@@ -115,34 +134,38 @@ export function NotificationCenter({
         </div>
 
         {/* Notifications List */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {notifications.length === 0 ? (
             <div className="p-8">
               <EmptyState icon={UserPlus} message="No notifications yet" />
             </div>
           ) : (
-            <div className="p-4 space-y-2">
-              {notifications.map((notification) => (
+            <div className="space-y-2">
+              {notifications.map((notification) => {
+                const t = getTypeStyles(notification.type);
+                return (
                 <button
                   key={notification.id}
                   onClick={() => {
                     triggerHaptic('light');
                     onNotificationClick(notification);
                   }}
-                  className={`w-full bg-card/50 backdrop-blur-sm rounded-xl p-3 flex items-start gap-3 hover:bg-card/70 transition-all duration-200 active:scale-[0.98] border ${
-                    notification.read ? "border-border/30" : "border-primary/20"
-                  }`}
+                  className={`w-full bg-card/60 rounded-xl p-3 flex items-start gap-3 hover:bg-card/80 transition-all duration-200 active:scale-[0.98] border`}
+                  style={{ borderLeft: `3px solid ${t.borderColor}` }}
                 >
-                  <div className={`w-10 h-10 rounded-full ${getNotificationBg(notification.type)} flex items-center justify-center flex-shrink-0`}>
-                    <div className={getNotificationColor(notification.type)}>
-                      {getNotificationIcon(notification.type)}
-                    </div>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: t.iconBg }}>
+                    {getNotificationIcon(notification.type)}
                   </div>
                   <div className="flex-1 text-left min-w-0">
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <p className="text-[15px] text-foreground">{notification.title}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-[15px] text-foreground">{notification.title}</p>
+                        <span className="px-1.5 py-0.5 rounded text-[10px]" style={{ background: t.tagBg, color: t.tagText }}>
+                          {notification.type === 'settlement' ? 'Payment' : notification.type === 'attestation' ? 'Confirm' : notification.type === 'invite' ? 'Invite' : 'Reminder'}
+                        </span>
+                      </div>
                       <span className="text-[11px] text-muted-foreground flex-shrink-0">
-                        {notification.timestamp}
+                        {formatTimestamp(notification.timestamp)}
                       </span>
                     </div>
                     <p className="text-[13px] text-muted-foreground mb-2">
@@ -165,7 +188,7 @@ export function NotificationCenter({
                     <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-2" />
                   )}
                 </button>
-              ))}
+              )})}
             </div>
           )}
         </div>

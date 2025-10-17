@@ -129,13 +129,13 @@ export function ActivityHome({
   const getActivityIcon = (type: ActivityItem["type"]) => {
     switch (type) {
       case "expense":
-        return <DollarSign className="w-4 h-4" />;
+        return <DollarSign className="w-4 h-4 text-background" />;
       case "settlement":
-        return <TrendingUp className="w-4 h-4" />;
+        return <TrendingUp className="w-4 h-4 text-white" />;
       case "attestation":
-        return <Check className="w-4 h-4 text-success" />;
+        return <Check className="w-4 h-4 text-white" />;
       case "member":
-        return <UserPlus className="w-4 h-4" />;
+        return <UserPlus className="w-4 h-4 text-foreground" />;
     }
   };
 
@@ -381,9 +381,14 @@ export function ActivityHome({
                     <div 
                       className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                       style={{
-                        backgroundColor: activity.type === "attestation" 
-                          ? "var(--accent-pink-soft)"
-                          : "var(--secondary)"
+                        backgroundColor:
+                          activity.type === "expense"
+                            ? "var(--foreground)"
+                            : activity.type === "settlement"
+                              ? "var(--money)"
+                              : activity.type === "attestation"
+                                ? "var(--accent)"
+                                : "var(--secondary)",
                       }}
                     >
                       {getActivityIcon(activity.type)}

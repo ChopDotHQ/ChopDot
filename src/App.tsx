@@ -63,7 +63,7 @@ import { CheckpointStatusScreen } from "./components/screens/CheckpointStatusScr
 import { RequestPayment } from "./components/screens/RequestPayment";
 import { WalletConnectionSheet } from "./components/WalletConnectionSheet";
 import { BatchConfirmSheet } from "./components/BatchConfirmSheet";
-import { Receipt, CheckCircle, LucideIcon } from "lucide-react";
+import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -216,6 +216,7 @@ function AppContent() {
     push,
     back,
     reset,
+    replace,
   } = useNav({ type: "pots-home" });
 
   // ========================================
@@ -926,6 +927,15 @@ function AppContent() {
     ) {
       return "people";
     }
+    // Keep Activity context while in settle flows so FAB/icon don't switch to Pots
+    if (
+      screen && (
+        screen.type === "settle-selection" ||
+        screen.type === "settle-home"
+      )
+    ) {
+      return "activity";
+    }
     if (screen && screen.type === "you-tab") {
       return "you";
     }
@@ -974,6 +984,39 @@ function AppContent() {
   } => {
     const activeTab = getActiveTab();
 
+    // Hide FAB within settle flows to avoid confusion
+    if (screen && (screen.type === "settle-selection" || screen.type === "settle-home")) {
+      return { visible: false, icon: Receipt, color: "var(--accent)", action: () => {} };
+    }
+
+    // Pot detail: context action to add expense/contribution
+    if (screen && screen.type === "pot-home") {
+      const potForFab = pots.find(p => p.id === (currentPotId || screen.potId));
+      if (potForFab?.type === "savings") {
+        return {
+          visible: true,
+          icon: CheckCircle, // could use TrendingUp, but keep consistent icons set
+          color: "var(--money)",
+          action: () => {
+            triggerHaptic("light");
+            setCurrentPotId(potForFab.id);
+            push({ type: "add-contribution" });
+          },
+        };
+      }
+      // default: expense pot → add expense
+      return {
+        visible: true,
+        icon: Receipt,
+        color: "var(--accent)",
+        action: () => {
+          triggerHaptic("light");
+          setCurrentPotId(potForFab?.id || null);
+          push({ type: "add-expense" });
+        },
+      };
+    }
+
     // People & You tabs: Hide FAB completely
     if (activeTab === "people" || activeTab === "you") {
       return {
@@ -984,7 +1027,7 @@ function AppContent() {
       };
     }
 
-    // Activity tab: Show "Confirm All" if pending expenses, otherwise "Add Expense"
+    // Activity tab: Show "Confirm All" if pending expenses, otherwise "Quick Settle"
     if (activeTab === "activity") {
       if (pendingExpenses.length > 0) {
         return {
@@ -1000,43 +1043,28 @@ function AppContent() {
       } else {
         return {
           visible: true,
-          icon: Receipt,
+          icon: ArrowLeftRight,
           color: "var(--accent)",
           action: () => {
             triggerHaptic("light");
-            if (pots.length === 0) {
-              showToast("Create a pot first!", "info");
-              return;
-            }
-            if (pots.length === 1) {
-              setCurrentPotId(pots[0]!.id);
-              push({ type: "add-expense" });
-            } else {
-              setShowChoosePot(true);
-            }
+            // Global quick settle across all pots
+            setCurrentPotId(null);
+            setSelectedCounterpartyId(null);
+            push({ type: "settle-selection" });
           },
         };
       }
     }
 
-    // Pots tab: Always "Add Expense"
+    // Pots tab: "Create Pot"
     if (activeTab === "pots") {
       return {
         visible: true,
-        icon: Receipt,
+        icon: Plus,
         color: "var(--accent)",
         action: () => {
           triggerHaptic("light");
-          if (pots.length === 0) {
-            showToast("Create a pot first!", "info");
-            return;
-          }
-          if (pots.length === 1) {
-            setCurrentPotId(pots[0]!.id);
-            push({ type: "add-expense" });
-          } else {
-            setShowChoosePot(true);
-          }
+          push({ type: "create-pot" });
         },
       };
     }
@@ -1068,7 +1096,10 @@ function AppContent() {
       "people-home",
       "you-tab",
     ];
-    return screen ? !rootScreens.includes(screen.type) && stack.length > 1 : false;
+    // Defensive: avoid blank by enforcing a safe reset when stack length is 1
+    if (!screen) return false;
+    if (stack.length <= 1) return false;
+    return !rootScreens.includes(screen.type);
   };
 
   // ========================================
@@ -2504,7 +2535,16 @@ function AppContent() {
               currentPotId ? getCurrentPot()?.name : undefined
             }
             balances={selectionBalances}
-            onBack={back}
+            onBack={() => {
+              if (currentPotId) {
+                // Go back to pot detail explicitly to avoid blank states
+                push({ type: "pot-home", potId: currentPotId });
+                // Then remove the extra selection screen to keep stack tidy
+                back();
+              } else {
+                reset({ type: "people-home" });
+              }
+            }}
             onSelectPerson={(personId) => {
               setSelectedCounterpartyId(personId);
               push({ type: "settle-home" });
@@ -2596,7 +2636,13 @@ function AppContent() {
             settlements={activeSettlements}
             walletConnected={walletConnected}
             onConnectWallet={() => setWalletConnected(true)}
-            onBack={back}
+            onBack={() => {
+              if (currentPotId) {
+                replace({ type: "settle-selection" });
+              } else {
+                reset({ type: "people-home" });
+              }
+            }}
             scope={settleScope}
             scopeLabel={settleLabel}
             potId={currentPotId || undefined}

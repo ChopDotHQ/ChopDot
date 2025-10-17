@@ -142,8 +142,11 @@ export function ExpensesTab({
     ? expenses.filter(e => e.paidBy !== currentUserId && !e.attestations.includes(currentUserId))
     : expenses;
 
-  // Group expenses by date
-  const groupedExpenses = displayedExpenses.reduce((groups, expense) => {
+  // Group expenses by date (sorted desc within groups)
+  const groupedExpenses = displayedExpenses
+    .slice()
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .reduce((groups, expense) => {
     const date = new Date(expense.date);
     const today = new Date();
     const yesterday = new Date(today);
@@ -158,10 +161,10 @@ export function ExpensesTab({
       label = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
     
-    if (!groups[label]) groups[label] = [];
-    (groups[label] as Expense[]).push(expense);
-    return groups;
-  }, {} as Record<string, Expense[]>);
+      if (!groups[label]) groups[label] = [] as Expense[];
+      (groups[label] as Expense[]).push(expense);
+      return groups;
+    }, {} as Record<string, Expense[]>);
 
   // Generate activity events
   const activityEvents: ActivityEvent[] = [];

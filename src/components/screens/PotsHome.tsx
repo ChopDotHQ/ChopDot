@@ -219,14 +219,13 @@ export function PotsHome({
             {/* Add Expense */}
             <button
               onClick={onQuickAddExpense}
-              className="flex flex-col items-center gap-2 py-4 px-2 rounded-xl transition-all duration-200 active:scale-95"
-              style={{ background: 'var(--secondary)' }}
+              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card border border-border"
             >
               <div 
-                className="w-12 h-12 rounded-full flex items-center justify-center"
-                style={{ background: 'var(--accent-orange-soft)' }}
+                className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: 'var(--accent)' }}
               >
-                <Receipt className="w-5 h-5" style={{ color: 'var(--accent-orange)' }} />
+                <Receipt className="w-5 h-5 text-white" />
               </div>
               <span className="text-caption text-foreground">Add</span>
             </button>
@@ -234,14 +233,13 @@ export function PotsHome({
             {/* Settle */}
             <button
               onClick={onQuickSettle}
-              className="flex flex-col items-center gap-2 py-4 px-2 rounded-xl transition-all duration-200 active:scale-95"
-              style={{ background: 'var(--secondary)' }}
+              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card border border-border"
             >
               <div 
-                className="w-12 h-12 rounded-full flex items-center justify-center"
-                style={{ background: 'var(--accent-pink-soft)' }}
+                className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: 'var(--accent)' }}
               >
-                <ArrowLeftRight className="w-5 h-5" style={{ color: 'var(--accent)' }} />
+                <ArrowLeftRight className="w-5 h-5 text-white" />
               </div>
               <span className="text-caption text-foreground">Settle</span>
             </button>
@@ -249,14 +247,13 @@ export function PotsHome({
             {/* Scan QR */}
             <button
               onClick={onQuickScan}
-              className="flex flex-col items-center gap-2 py-4 px-2 rounded-xl transition-all duration-200 active:scale-95"
-              style={{ background: 'var(--secondary)' }}
+              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card border border-border"
             >
               <div 
-                className="w-12 h-12 rounded-full flex items-center justify-center"
-                style={{ background: 'rgba(142, 142, 147, 0.1)' }}
+                className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: 'rgba(142, 142, 147, 0.2)' }}
               >
-                <QrCode className="w-5 h-5" style={{ color: 'var(--muted)' }} />
+                <QrCode className="w-5 h-5" style={{ color: 'var(--foreground)', opacity: 0.8 }} />
               </div>
               <span className="text-caption text-foreground">Scan</span>
             </button>
@@ -264,14 +261,13 @@ export function PotsHome({
             {/* Request */}
             <button
               onClick={onQuickRequest}
-              className="flex flex-col items-center gap-2 py-4 px-2 rounded-xl transition-all duration-200 active:scale-95"
-              style={{ background: 'var(--secondary)' }}
+              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card border border-border"
             >
               <div 
-                className="w-12 h-12 rounded-full flex items-center justify-center"
-                style={{ background: 'rgba(25, 195, 125, 0.1)' }}
+                className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: 'var(--money)' }}
               >
-                <Send className="w-5 h-5" style={{ color: 'var(--success)' }} />
+                <Send className="w-5 h-5 text-white" />
               </div>
               <span className="text-caption text-foreground">Request</span>
             </button>

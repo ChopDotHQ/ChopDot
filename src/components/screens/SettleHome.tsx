@@ -77,10 +77,14 @@ export function SettleHome({
   // Settlement loading state
   const [isSettling, setIsSettling] = useState(false);
   
-  // Update selected method when preferredMethod or walletConnected changes
+  // Update selection only when the preferred method changes
+  // Do NOT change on wallet connect; preserve the user's current tab
   useEffect(() => {
-    setSelectedMethod(getPreselectedMethod());
-  }, [preferredMethod, walletConnected]);
+    setSelectedMethod((current) => {
+      // If user already chose a method, keep it unless we have no selection
+      return current ?? getPreselectedMethod();
+    });
+  }, [preferredMethod]);
 
   // Trigger fee estimation when DOT method selected + wallet connected
   useEffect(() => {
