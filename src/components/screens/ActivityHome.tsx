@@ -83,6 +83,12 @@ export function ActivityHome({
     { id: "type", label: "Group by type" },
   ];
 
+  // Lightweight currency formatter to keep UI consistent with PotsHome
+  const formatCurrency = (amount: number): string => {
+    const absoluteAmount = Math.abs(amount);
+    return `$${absoluteAmount.toFixed(0)}`;
+  };
+
   // Pull-to-refresh
   const { scrollContainerRef, pullDistance, shouldTrigger } = usePullToRefresh({
     onRefresh: async () => {
@@ -232,7 +238,7 @@ export function ActivityHome({
                     color: balancesVisible && totalOwing > 0 ? 'var(--foreground)' : 'var(--foreground)'
                   }}
                 >
-                  {balancesVisible ? `${totalOwing.toFixed(0)}` : "•••"}
+                  {balancesVisible ? formatCurrency(totalOwing) : "•••"}
                 </p>
               </div>
               <div>
@@ -244,7 +250,7 @@ export function ActivityHome({
                     color: balancesVisible && totalOwed > 0 ? 'var(--success)' : 'var(--foreground)'
                   }}
                 >
-                  {balancesVisible ? `${totalOwed.toFixed(0)}` : "•••"}
+                  {balancesVisible ? formatCurrency(totalOwed) : "•••"}
                 </p>
               </div>
             </div>
