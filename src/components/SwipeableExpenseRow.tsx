@@ -42,6 +42,7 @@ export function SwipeableExpenseRow({
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const [actionTriggered, setActionTriggered] = useState(false);
+  const [isFocused, setIsFocused] = useState<boolean>(false);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const startX = useRef(0);
@@ -145,8 +146,13 @@ export function SwipeableExpenseRow({
   return (
     <div 
       ref={containerRef}
-      className="relative overflow-hidden rounded-lg"
+      className="relative overflow-hidden list-row border border-border group"
     >
+      {/* Accent rail (shows on hover/focus) */}
+      <div 
+        className="absolute inset-y-0 left-0 w-1 rounded-r-lg opacity-0 transition-opacity pointer-events-none group-hover:opacity-100"
+        style={{ background: 'var(--accent-pink)', opacity: isFocused ? 1 : undefined }}
+      />
       {/* Left action (Delete) */}
       {onDelete && (
         <div 
@@ -176,7 +182,16 @@ export function SwipeableExpenseRow({
 
       {/* Main content */}
       <div
-        className="w-full p-2 glass-sm text-left hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] relative z-10 cursor-pointer"
+        className="w-full p-3 text-left transition-all duration-200 active:scale-[0.98] relative z-10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/20"
+        tabIndex={0}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (!showApproveButton) onClick();
+          }
+        }}
         style={{
           transform: `translateX(${swipeOffset}px)`,
           transition: isSwiping ? 'none' : 'transform 200ms ease-out',
