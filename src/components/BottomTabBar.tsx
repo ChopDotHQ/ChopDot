@@ -19,7 +19,7 @@ export function BottomTabBar({
   fabColor = "var(--accent)",
 }: BottomTabBarProps) {
   return (
-    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-[390px] bg-card border-t border-border z-50">
+    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[390px] bg-card border-t border-border z-50">
       <div className="flex items-center justify-around px-2 h-[68px] relative">
         {/* Pots Tab */}
         <button
