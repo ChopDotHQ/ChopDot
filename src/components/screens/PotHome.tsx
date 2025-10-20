@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { TopBar } from "../TopBar";
 import { ExpensesTab } from "./ExpensesTab";
 import { SavingsTab } from "./SavingsTab";
@@ -7,6 +7,7 @@ import { SettingsTab } from "./SettingsTab";
 import { Download, Share2 } from "lucide-react";
 import { exportPotExpensesToCSV } from "../../utils/export";
 import { triggerHaptic } from "../../utils/haptics";
+import { QuickKeypadSheet } from "../QuickKeypadSheet";
 
 interface Member {
   id: string;
@@ -77,6 +78,18 @@ interface PotHomeProps {
   onAddContribution?: () => void;
   onWithdraw?: () => void;
   onViewCheckpoint?: () => void;
+  onQuickAddSave?: (data: {
+    amount: number;
+    currency: string;
+    paidBy: string;
+    memo: string;
+    date: string;
+    split: { memberId: string; amount: number }[];
+    hasReceipt: boolean;
+  }) => void;
+  // When true, open the quick keypad on mount/update
+  openQuickAdd?: boolean;
+  onClearQuickAdd?: () => void;
 }
 
 export function PotHome({
@@ -97,7 +110,7 @@ export function PotHome({
   goalAmount,
   goalDescription,
   onBack,
-  onAddExpense,
+  // onAddExpense,
   onExpenseClick,
   onAddMember,
   onRemoveMember,
@@ -112,12 +125,24 @@ export function PotHome({
   onAddContribution,
   onWithdraw,
   onViewCheckpoint: _onViewCheckpoint,
+  onQuickAddSave,
+  openQuickAdd,
+  onClearQuickAdd,
 }: PotHomeProps) {
   // Dynamic tabs based on pot type
   const tabs = potType === "savings" 
     ? ["Savings", "Members", "Settings"]
     : ["Expenses", "Members", "Settings"];
   const [activeTab, setActiveTab] = useState<string>(tabs[0] ?? "Expenses");
+  const [keypadOpen, setKeypadOpen] = useState(false);
+
+  // Open keypad when requested by parent (e.g., FAB)
+  if (openQuickAdd && !keypadOpen) {
+    setTimeout(() => {
+      setKeypadOpen(true);
+      onClearQuickAdd && onClearQuickAdd();
+    }, 0);
+  }
 
   // Calculate summary
   const currentUserId = "owner"; // Mock current user
@@ -145,6 +170,51 @@ export function PotHome({
   const isOverBudget = budget ? totalExpenses > budget : false;
   void budgetPercentage; void budgetRemaining; void isOverBudget;
 
+  // Derive quick picks from recent expenses (per pot/person context)
+  const quickPicks = useMemo(() => {
+    type PickKey = string;
+    const stats = new Map<PickKey, { label: string; amount: number; participantIds?: string[]; count: number; lastTs: number }>();
+    const memberIdSet = new Set(members.map((m) => m.id));
+
+    // Iterate from newest to oldest
+    [...expenses].reverse().forEach((e) => {
+      const label = (e.memo || '').trim();
+      if (label.length === 0) return;
+      const participantIds = e.split
+        .filter((s) => s.amount > 0 && memberIdSet.has(s.memberId))
+        .map((s) => s.memberId)
+        .sort();
+      const key = `${label.toLowerCase()}|${participantIds.join(',')}` as PickKey;
+      const existing = stats.get(key);
+      const ts = new Date(e.date).getTime() || Date.now();
+      if (existing) {
+        existing.count += 1;
+        // Keep most recent amount/ts
+        if (ts > existing.lastTs) {
+          existing.amount = e.amount;
+          existing.lastTs = ts;
+        }
+      } else {
+        stats.set(key, {
+          label,
+          amount: e.amount,
+          participantIds: participantIds.length > 0 ? participantIds : undefined,
+          count: 1,
+          lastTs: ts,
+        });
+      }
+    });
+
+    // Rank by recency then frequency
+    const ranked = Array.from(stats.values()).sort((a, b) => {
+      if (b.lastTs !== a.lastTs) return b.lastTs - a.lastTs;
+      return b.count - a.count;
+    });
+
+    return ranked.slice(0, 8).map((r) => ({ label: r.label, amount: r.amount, participantIds: r.participantIds }));
+  }, [expenses, members]);
+  void quickPicks;
+
   // Checkpoint status (supports Map or plain object from localStorage)
   const confirmationsArray: CheckpointConfirmation[] = checkpointConfirmations
     ? (checkpointConfirmations instanceof Map
@@ -169,6 +239,7 @@ export function PotHome({
   };
 
   return (
+    <>
     <div className="flex flex-col h-full pb-[68px]">
       <TopBar 
         title={potName} 
@@ -245,7 +316,7 @@ export function PotHome({
             budgetEnabled={budgetEnabled}
             totalExpenses={totalExpenses}
             contributions={contributions}
-            onAddExpense={onAddExpense}
+            onAddExpense={() => setKeypadOpen(true)}
             onExpenseClick={onExpenseClick}
             onSettle={onSettle}
             onDeleteExpense={onDeleteExpense}
@@ -305,5 +376,24 @@ export function PotHome({
         )}
       </div>
     </div>
+
+    {/* Quick Keypad Sheet */}
+    {potType === "expense" && (
+      <QuickKeypadSheet
+        isOpen={keypadOpen}
+        onClose={() => setKeypadOpen(false)}
+        baseCurrency={baseCurrency}
+        members={members}
+        currentUserId={currentUserId}
+        defaultMode={expenses.length > 0 ? 'last' : 'equal'}
+        lastSplit={expenses.length > 0 ? expenses[expenses.length - 1]?.split : undefined}
+        onSave={(data) => {
+          triggerHaptic('light');
+          onQuickAddSave?.(data);
+          setKeypadOpen(false);
+        }}
+      />
+    )}
+  </>
   );
 }

@@ -338,7 +338,7 @@ export function ExpensesTab({
             )}
             
             {/* Quick Actions Row */}
-            <div className="flex gap-2 pt-2">
+            <div className="flex gap-2 pt-2 items-center">
               <button
                 onClick={onAddExpense}
                 className="btn-primary flex-1 py-2.5 transition-all active:scale-[0.98]"

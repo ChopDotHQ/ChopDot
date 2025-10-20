@@ -262,6 +262,8 @@ function AppContent() {
   const [showAddMember, setShowAddMember] = useState(false);
   const [showBatchConfirm, setShowBatchConfirm] =
     useState(false);
+  // Flag to hint PotHome to open quick keypad when navigated
+  const [fabQuickAddPotId, setFabQuickAddPotId] = useState<string | null>(null);
 
   // ========================================
   // DATA STATE
@@ -357,7 +359,7 @@ function AppContent() {
   const [pots, setPots] = useState<Pot[]>(() => [
     {
       id: "1",
-      name: "🏠 SF Roommates",
+      name: "Devconnect Buenos Aires",
       type: "expense",
       baseCurrency: "USD",
       members: [
@@ -490,7 +492,7 @@ function AppContent() {
     },
     {
       id: "2",
-      name: "🌴 Bali Trip 2025",
+      name: "Urbe Campus Rome",
       type: "expense",
       baseCurrency: "USD",
       members: [
@@ -1012,8 +1014,10 @@ function AppContent() {
         color: "var(--accent)",
         action: () => {
           triggerHaptic("light");
-          setCurrentPotId(potForFab?.id || null);
-          push({ type: "add-expense" });
+          if (potForFab) {
+            setCurrentPotId(potForFab.id);
+            setFabQuickAddPotId(potForFab.id);
+          }
         },
       };
     }
@@ -2051,8 +2055,10 @@ function AppContent() {
                 return;
               }
               if (pots.length === 1) {
-              setCurrentPotId(pots[0]!.id);
-                push({ type: "add-expense" });
+                const pid = pots[0]!.id;
+                setCurrentPotId(pid);
+                // Open pot keypad by navigating to pot then toggling keypad will be handled by tap Add
+                push({ type: "pot-home", potId: pid });
               } else {
                 setShowChoosePot(true);
               }
@@ -2358,6 +2364,12 @@ function AppContent() {
             onViewCheckpoint={() =>
               push({ type: "checkpoint-status" })
             }
+            onQuickAddSave={(data) => {
+              setCurrentPotId(pot.id);
+              addExpense(data);
+            }}
+            openQuickAdd={fabQuickAddPotId === pot.id}
+            onClearQuickAdd={() => setFabQuickAddPotId(null)}
           />
         );
 
@@ -3006,6 +3018,7 @@ function AppContent() {
         {renderScreen()}
       </SwipeableScreen>
 
+
       {/* Bottom Tab Bar with Context-Sensitive FAB */}
       {shouldShowTabBar() && (
         <BottomTabBar
@@ -3131,8 +3144,10 @@ function AppContent() {
           onCreatePot={() => push({ type: "create-pot" })}
           onSelectPot={(potId) => {
             setCurrentPotId(potId);
+            setFabQuickAddPotId(potId);
             setShowChoosePot(false);
-            push({ type: "add-expense" });
+            // Navigate to pot; the Add button will open keypad, or we can show keypad directly there
+            push({ type: "pot-home", potId });
           }}
         />
       )}

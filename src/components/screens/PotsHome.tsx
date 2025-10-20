@@ -81,6 +81,13 @@ export function PotsHome({
   const owedToYouTotal = owedToYou.reduce((sum, p) => sum + p.totalAmount, 0);
   const netTotal = owedToYouTotal - youOweTotal;
   
+  // Local currency formatter; keep lightweight and consistent across dashboard
+  const formatCurrency = (amount: number, withSign: boolean = false): string => {
+    const absoluteAmount = Math.abs(amount);
+    const sign = withSign ? (amount > 0 ? '+' : amount < 0 ? '-' : '') : '';
+    return `${sign}$${absoluteAmount.toFixed(0)}`;
+  };
+  
   // Filter and sort pots
   const filteredPots = useMemo(() => {
     let filtered = pots.filter(pot => 
@@ -182,7 +189,7 @@ export function PotsHome({
                     color: balancesVisible && youOweTotal > 0 ? 'var(--foreground)' : 'var(--foreground)' 
                   }}
                 >
-                  {balancesVisible ? `${youOweTotal.toFixed(0)}` : "•••"}
+                  {balancesVisible ? formatCurrency(youOweTotal) : "•••"}
                 </p>
               </div>
               <div>
@@ -194,7 +201,7 @@ export function PotsHome({
                     color: balancesVisible && owedToYouTotal > 0 ? 'var(--success)' : 'var(--foreground)' 
                   }}
                 >
-                  {balancesVisible ? `${owedToYouTotal.toFixed(0)}` : "•••"}
+                  {balancesVisible ? formatCurrency(owedToYouTotal) : "•••"}
                 </p>
               </div>
               <div>
@@ -208,7 +215,7 @@ export function PotsHome({
                       : 'var(--foreground)' 
                   }}
                 >
-                  {balancesVisible ? `${netTotal >= 0 ? '+' : ''}${Math.abs(netTotal).toFixed(0)}` : "•••"}
+                  {balancesVisible ? formatCurrency(netTotal, true) : "•••"}
                 </p>
               </div>
             </div>
@@ -440,6 +447,7 @@ export function PotsHome({
         selectedId={sortBy}
         onSelect={setSortBy}
       />
+
     </div>
   );
 }

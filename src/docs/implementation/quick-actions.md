@@ -116,13 +116,7 @@ interface PotsHomeProps {
 
 ## App.tsx Integration
 
-### onQuickAddExpense
-```typescript
-// Smart pot selection
-- 0 pots → Toast warning
-- 1 pot → Direct to AddExpense
-- 2+ pots → Show ChoosePot modal
-```
+Note: The older inline quick-add and keypad suggestions have been removed. Quick Add now opens a sheet that mirrors the Add/Edit Expense form for consistency.
 
 ### onQuickSettle
 ```typescript
