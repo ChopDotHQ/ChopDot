@@ -3003,7 +3003,7 @@ function AppContent() {
   // Show login screen if not authenticated
   if (!isAuthenticated) {
     return (
-      <div className="relative mx-auto bg-background overflow-hidden" style={{ width: 'min(420px, 95vw)', height: '100svh', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <div className="relative mx-auto bg-background overflow-auto" style={{ width: 'min(420px, 95vw)', height: '100svh', paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <LoginScreen />
       </div>
     );

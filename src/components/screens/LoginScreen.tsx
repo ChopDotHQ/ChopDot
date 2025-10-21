@@ -265,7 +265,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   }
 
   return (
-    <div className="h-full bg-background flex flex-col">
+    <div className="min-h-full bg-background flex flex-col overflow-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
       {/* Header */}
       <div className="p-4 pt-16 pb-8 text-center">
         <div className="w-20 h-20 mx-auto mb-4 rounded-3xl flex items-center justify-center" style={{
@@ -373,7 +373,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       </div>
 
       {/* Footer with Guest Option */}
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-3 pb-24">
         {/* Guest Login Hint */}
         <div className="text-center px-2 mb-2">
           <p className="text-xs text-secondary">
