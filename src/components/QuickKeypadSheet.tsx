@@ -129,7 +129,7 @@ export function QuickKeypadSheet({
         <div className="flex flex-col gap-2 mt-1">
           <label className="text-xs text-secondary">Amount</label>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-1.5 rounded bg-secondary text-secondary-foreground text-[14px]">{baseCurrency}</span>
+            <span className="px-2 py-1.5 rounded bg-secondary text-secondary text-label">{baseCurrency}</span>
             <input
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -139,7 +139,8 @@ export function QuickKeypadSheet({
               }}
               placeholder="0.00"
               type="number"
-              className="flex-1 px-2 py-2 input-field text-[20px] tabular-nums"
+              className="flex-1 px-2 py-2 input-field tabular-nums"
+              style={{ fontSize: '32px' }}
             />
           </div>
         </div>
@@ -176,9 +177,9 @@ export function QuickKeypadSheet({
         <div>
           <div className="text-caption text-secondary mb-1">Split mode</div>
           <div className="flex items-center gap-2">
-            <button onClick={() => setSplitType('equal')} className={`px-2 py-1 rounded-lg text-[13px] ${splitType==='equal' ? 'border bg-transparent' : 'bg-secondary text-secondary-foreground'}`} style={splitType==='equal' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Equal</button>
-            <button onClick={() => setSplitType('custom')} className={`px-2 py-1 rounded-lg text-[13px] ${splitType==='custom' ? 'border bg-transparent' : 'bg-secondary text-secondary-foreground'}`} style={splitType==='custom' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Custom %</button>
-            <button onClick={() => setSplitType('shares')} className={`px-2 py-1 rounded-lg text-[13px] ${splitType==='shares' ? 'border bg-transparent' : 'bg-secondary text-secondary-foreground'}`} style={splitType==='shares' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Shares</button>
+            <button onClick={() => setSplitType('equal')} className={`px-2 py-1 rounded-lg text-label ${splitType==='equal' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='equal' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Equal</button>
+            <button onClick={() => setSplitType('custom')} className={`px-2 py-1 rounded-lg text-label ${splitType==='custom' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='custom' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Custom %</button>
+            <button onClick={() => setSplitType('shares')} className={`px-2 py-1 rounded-lg text-label ${splitType==='shares' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='shares' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Shares</button>
           </div>
         </div>
 
@@ -190,7 +191,7 @@ export function QuickKeypadSheet({
               const count = Array.from(participantIds).length || 1;
               const perPerson = isIncluded ? (amountNum || 0) / count : 0;
               return (
-                <label key={m.id} className="flex items-center gap-2 p-1.5 glass-sm rounded-lg cursor-pointer">
+                <label key={m.id} className="flex items-center gap-2 p-2 rounded-lg border border-border bg-card cursor-pointer">
                   <input type="checkbox" className="w-3.5 h-3.5" checked={isIncluded} onChange={() => toggleMember(m.id)} />
                   <span className="flex-1 text-xs">{m.id === currentUserId ? 'You' : m.name}</span>
                   {isIncluded && <span className="text-xs text-secondary tabular-nums">{perPerson.toFixed(2)}</span>}

@@ -81,12 +81,13 @@
    * ACTIVE SYSTEM (USE THESE)
    * These tokens are mapped to utility classes and used throughout the app
    */
-  --text-screen-title: 17px;      /* .text-screen-title - Screen headers */
-  --text-section-heading: 15px;   /* .text-section - Section headers */
-  --text-body: 15px;              /* .text-body - Body text (default) */
-  --text-label: 13px;             /* .text-label - Form labels, small text */
-  --text-caption: 12px;           /* .text-caption - Supporting text */
-  --text-micro: 11px;             /* .text-micro - Tiny labels */
+  /* Clamp-based responsive typography; preserves 390px baseline */
+  --text-screen-title: clamp(17px, 1.8vw, 20px);      /* Screen headers */
+  --text-section-heading: clamp(15px, 1.6vw, 18px);   /* Section headers */
+  --text-body: clamp(15px, 1.5vw, 17px);              /* Body text */
+  --text-label: clamp(13px, 1.2vw, 14px);             /* Form labels */
+  --text-caption: clamp(12px, 1.1vw, 13px);           /* Supporting text */
+  --text-micro: clamp(11px, 1.0vw, 12px);             /* Tiny labels */
   
   /* 
    * EXPERIMENTAL SYSTEM (NOT YET ACTIVE - RESERVED FOR FUTURE)
