@@ -2979,7 +2979,7 @@ function AppContent() {
   // localStorage loads in background - no blocking!
   if (authLoading) {
     return (
-      <div className="relative w-[390px] h-[844px] mx-auto bg-background flex items-center justify-center">
+      <div className="relative mx-auto bg-background flex items-center justify-center" style={{ width: 'min(420px, 95vw)', height: '100svh', paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <div className="text-center">
           <div
             className="w-16 h-16 mx-auto mb-4 rounded-3xl flex items-center justify-center"
@@ -3003,14 +3003,14 @@ function AppContent() {
   // Show login screen if not authenticated
   if (!isAuthenticated) {
     return (
-      <div className="relative w-[390px] h-[844px] mx-auto bg-background overflow-hidden">
+      <div className="relative mx-auto bg-background overflow-hidden" style={{ width: 'min(420px, 95vw)', height: '100svh', paddingBottom: 'env(safe-area-inset-bottom)' }}>
         <LoginScreen />
       </div>
     );
   }
 
   return (
-    <div className="relative w-[390px] h-[844px] mx-auto bg-background overflow-hidden">
+    <div className="relative mx-auto bg-background overflow-hidden" style={{ width: 'min(420px, 95vw)', height: '100svh', paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <SwipeableScreen
         onSwipeBack={canSwipeBack() ? back : undefined}
         key={screen?.type ?? 'screen'}

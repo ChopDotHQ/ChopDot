@@ -19,8 +19,9 @@ export function BottomTabBar({
   fabColor = "var(--accent)",
 }: BottomTabBarProps) {
   return (
-    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[390px] bg-card border-t border-border z-50">
-      <div className="flex items-center justify-around px-2 h-[68px] relative">
+    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full z-50" style={{ maxWidth: '420px', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <div className="mx-3 mb-2 rounded-2xl border border-border bg-background/80 backdrop-blur-sm shadow-[var(--shadow-card)]">
+        <div className="flex items-center justify-around px-2 h-[68px] relative">
         {/* Pots Tab */}
         <button
           onClick={() => {
@@ -122,6 +123,7 @@ export function BottomTabBar({
             You
           </span>
         </button>
+        </div>
       </div>
     </div>
   );
