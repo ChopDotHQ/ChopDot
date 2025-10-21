@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { triggerHaptic } from '../utils/haptics';
 import { BottomSheet } from './BottomSheet';
 
 type Member = { id: string; name: string };
@@ -177,9 +178,9 @@ export function QuickKeypadSheet({
         <div>
           <div className="text-caption text-secondary mb-1">Split mode</div>
           <div className="flex items-center gap-2">
-            <button onClick={() => setSplitType('equal')} className={`px-2 py-1 rounded-lg text-label ${splitType==='equal' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='equal' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Equal</button>
-            <button onClick={() => setSplitType('custom')} className={`px-2 py-1 rounded-lg text-label ${splitType==='custom' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='custom' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Custom %</button>
-            <button onClick={() => setSplitType('shares')} className={`px-2 py-1 rounded-lg text-label ${splitType==='shares' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='shares' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Shares</button>
+            <button onClick={() => { triggerHaptic('selection'); setSplitType('equal'); }} className={`px-2 py-1 rounded-lg text-label transition-colors active:scale-95 ${splitType==='equal' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='equal' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Equal</button>
+            <button onClick={() => { triggerHaptic('selection'); setSplitType('custom'); }} className={`px-2 py-1 rounded-lg text-label transition-colors active:scale-95 ${splitType==='custom' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='custom' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Custom %</button>
+            <button onClick={() => { triggerHaptic('selection'); setSplitType('shares'); }} className={`px-2 py-1 rounded-lg text-label transition-colors active:scale-95 ${splitType==='shares' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='shares' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Shares</button>
           </div>
         </div>
 
@@ -248,7 +249,7 @@ export function QuickKeypadSheet({
 
         {/* Footer with full-width Save above nav bar */}
         <div className="pt-3 bg-card border-t border-border" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 96px)', backdropFilter: 'blur(6px)' }}>
-          <button disabled={!isValid} onClick={save} className="w-full px-4 py-3 rounded-lg btn-accent disabled:opacity-40">
+          <button disabled={!isValid} onClick={() => { triggerHaptic('success'); save(); }} className="w-full px-4 py-3 rounded-lg btn-accent disabled:opacity-40 active:scale-98 transition-transform">
             {isValid ? `Save ${baseCurrency} ${amountNum.toFixed(2)}` : 'Save'}
           </button>
           <div className="mt-1 text-center text-caption text-secondary">{sublabel}</div>
