@@ -50,7 +50,7 @@ Replaced the static center FAB (Floating Action Button) with a **context-sensiti
 
 ```tsx
 // Orange = Financial actions (expenses)
-fabColor: "var(--accent-orange)"  // #FF9500
+fabColor: "var(--accent)"  // Pink accent
 
 // Green = Success/Confirmation actions
 fabColor: "var(--success)"        // #19C37D
@@ -125,7 +125,7 @@ const getFabState = useCallback((): {
       return {
         visible: true,
         icon: Receipt,
-        color: "var(--accent-orange)",
+        color: "var(--accent)",
         action: () => openAddExpense(),
       };
     }
@@ -136,7 +136,7 @@ const getFabState = useCallback((): {
     return {
       visible: true,
       icon: Receipt,
-      color: "var(--accent-orange)",
+      color: "var(--accent)",
       action: () => openAddExpense(),
     };
   }
@@ -214,7 +214,7 @@ On Pots/Activity tabs:
 ```tsx
 // FAB shows "Add Expense"
 icon: Receipt
-color: var(--accent-orange)  // Orange
+color: var(--accent)  // Pink accent
 
 // Action: Context-aware expense creation
 action: () => {

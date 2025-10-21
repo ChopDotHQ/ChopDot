@@ -183,11 +183,12 @@ export function AddMember({
               <div className="pt-2 border-t border-border">
                 <button
                   onClick={() => setView("invite")}
-                  className="w-full p-3 bg-accent-orange/10 rounded-lg hover:bg-accent-orange/15 active:scale-[0.98] transition-all"
+                  className="w-full p-3 rounded-lg hover:bg-accent/15 active:scale-[0.98] transition-all"
+                  style={{ background: 'var(--accent-pink-soft)' }}
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <UserPlus className="w-4 h-4 text-accent-orange" />
-                    <span className="text-[14px] font-medium text-accent-orange">
+                    <UserPlus className="w-4 h-4" style={{ color: 'var(--accent)' }} />
+                    <span className="text-[14px] font-medium" style={{ color: 'var(--accent)' }}>
                       Invite new person instead
                     </span>
                   </div>

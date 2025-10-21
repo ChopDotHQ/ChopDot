@@ -17,7 +17,7 @@ We chose the **4 most relevant actions** for ChopDot:
 
 ### 1. **Add Expense** 🧾
 - **Icon:** Receipt
-- **Color:** Orange (`var(--accent-orange)`)
+- **Color:** Pink (`var(--accent)`)  // Orange deprecated; use accent
 - **Action:** Opens expense creation flow
   - Single pot → Go directly to AddExpense
   - Multiple pots → Show pot selector

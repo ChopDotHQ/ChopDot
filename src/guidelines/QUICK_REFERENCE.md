@@ -26,7 +26,8 @@ className="text-muted"                 // #8E8E93 (both modes)
 style={{ color: 'var(--success)' }}    // Green #19C37D
 
 // Money YOU owe (-)
-style={{ color: 'var(--accent-orange)' }}  // Orange #FF9500
+// Use default text colour (ink) with a leading minus sign; no red/orange
+style={{ color: 'var(--ink)' }}
 
 // Settled / neutral
 style={{ color: 'var(--muted)' }}      // Gray #8E8E93
@@ -71,7 +72,7 @@ className="text-micro"         // 11px, regular - Badges
 </p>
 
 // Negative balance (you owe)
-<p className="text-body tabular-nums" style={{ fontWeight: 500, color: 'var(--accent-orange)' }}>
+<p className="text-body tabular-nums" style={{ fontWeight: 500, color: 'var(--ink)' }}>
   -$32.00
 </p>
 
@@ -196,7 +197,7 @@ Automatically applied via CSS `prefers-color-scheme: dark`
 ```tsx
 <div className="card p-4">
   <p className="text-label text-secondary mb-2">You owe</p>
-  <p className="text-[24px] tabular-nums" style={{ fontWeight: 600, color: 'var(--accent-orange)' }}>
+  <p className="text-[24px] tabular-nums" style={{ fontWeight: 600, color: 'var(--ink)' }}>
     -$45.50
   </p>
   <p className="text-caption text-secondary mt-1">
@@ -245,7 +246,7 @@ className="text-[15px]"                // Use semantic classes
 
 // ❌ Generic green/red
 className="text-green-600"             // Use var(--success)
-className="text-red-600"               // Use var(--accent-orange)
+className="text-red-600"               // Avoid; use var(--ink) with minus
 
 // ❌ Currency suffix
 {baseCurrency} {amount}                // Use ${amount} instead

@@ -254,7 +254,7 @@ export function SwipeableExpenseRow({
               <p 
                 className="text-xs tabular-nums mt-0.5"
                 style={{
-                  color: yourNetBalance > 0 ? 'var(--success)' : yourNetBalance < 0 ? 'var(--accent-orange)' : undefined
+                  color: yourNetBalance > 0 ? 'var(--success)' : undefined
                 }}
               >
                 {yourNetBalance > 0 ? '+' : ''}{yourNetBalance.toFixed(2)}

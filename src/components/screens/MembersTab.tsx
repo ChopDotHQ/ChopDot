@@ -107,7 +107,7 @@ export function MembersTab({
           const paymentPref = getPaymentPreference(member.id);
           const trustScore = getTrustScore(member.id);
           const isPositive = balance >= 0;
-          const amountColor = isPositive ? 'var(--success)' : 'var(--accent-orange)';
+          const amountColor = isPositive ? 'var(--success)' : 'var(--ink)';
           const showMenu = openMenuId === member.id;
 
           return (

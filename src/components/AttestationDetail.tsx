@@ -150,9 +150,9 @@ export function AttestationDetail({
         {!anchored && (
           <div className="space-y-4">
             {/* Badge */}
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: "var(--accent-orange-soft)" }}>
-              <Clock className="w-4 h-4" style={{ color: "var(--accent-orange)" }} />
-              <span className="text-caption font-medium" style={{ color: "var(--accent-orange)" }}>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: "var(--accent-pink-soft)" }}>
+              <Clock className="w-4 h-4" style={{ color: "var(--accent)" }} />
+              <span className="text-caption font-medium" style={{ color: "var(--accent)" }}>
                 Anchoring pending
               </span>
             </div>

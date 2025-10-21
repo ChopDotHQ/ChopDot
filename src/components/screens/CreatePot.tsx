@@ -75,12 +75,12 @@ export function CreatePot({
               onClick={() => setPotType("expense")}
               className={`p-3 rounded-xl border-2 transition-all active:scale-[0.98] ${
                 potType === "expense"
-                  ? "border-accent-orange bg-accent-orange-soft"
+                  ? "border-[var(--accent)]"
                   : "border-border bg-card"
               }`}
             >
               <div className="flex items-center gap-2 mb-1">
-                <Receipt className="w-4 h-4" style={{ color: potType === "expense" ? "var(--accent-orange)" : "var(--muted)" }} />
+                <Receipt className="w-4 h-4" style={{ color: potType === "expense" ? "var(--accent)" : "var(--muted)" }} />
                 <p className="text-body text-foreground">Expense</p>
               </div>
               <p className="text-caption text-secondary text-left">

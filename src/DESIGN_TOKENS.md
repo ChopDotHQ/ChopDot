@@ -1,6 +1,6 @@
 # ChopDot Design Token Reference
 
-**Last Updated:** October 15, 2025  
+**Last Updated:** October 21, 2025  
 **Purpose:** Complete guide to ChopDot's design system tokens
 
 ---
@@ -12,7 +12,7 @@ ChopDot uses a **clean iOS-style design language** with:
 - ✅ Minimal shadows (3-level system)
 - ✅ No borders (except inputs)
 - ✅ Polkadot pink accent (used sparingly)
-- ✅ Orange for financial actions
+- ✅ Monochrome + Pink scheme (black/green/pink); orange is deprecated
 
 ---
 
@@ -27,8 +27,8 @@ ChopDot uses a **clean iOS-style design language** with:
 | `--ink` | `#000000` | Primary text color |
 | `--muted` | `#8E8E93` | Tertiary text (timestamps, hints, placeholders) |
 | `--text-secondary` | `#606066` | Secondary text (important labels, subtitles) |
-| `--accent` | `#E6007A` | Polkadot pink (active states, use sparingly) |
-| `--accent-orange` | `#FF9500` | Financial actions (settlements, transactions) |
+| `--accent` | `#E6007A` | Polkadot pink (active states, selections, focus) |
+| `--money` | `#19C37D` | Alias of success for positive balances |
 | `--success` | `#19C37D` | Success states |
 | `--danger` | `#E5484D` | Error/destructive states |
 | `--border` | `rgba(0, 0, 0, 0.06)` | Subtle separator |
@@ -227,17 +227,11 @@ The compatibility layer exists only so ShadCN components work out of the box.
 - Body text
 - Multiple elements on same screen
 
-### Orange (`--accent-orange`)
+### Orange (Deprecated)
 
-**Use for:**
-- Settlement buttons
-- Transaction CTAs
-- Financial action buttons
-- "Pay" / "Send" buttons
-
-**DO NOT use for:**
-- Non-financial actions
-- Destructive actions (use `--danger`)
+- Orange is deprecated in favour of a black/green/pink scheme.
+- Legacy `--accent-orange` is internally aliased to `--accent` to maintain backward compatibility in older components.
+- For negative amounts: use default text (`--ink`) with a leading minus sign. For positive amounts: use `--money`/`--success`.
 
 ---
 
@@ -251,7 +245,7 @@ The compatibility layer exists only so ShadCN components work out of the box.
 | Secondary text | `--text-secondary` | Subtitles, labels |
 | De-emphasized text | `--muted` | Timestamps, hints |
 | Active state | `--accent` | Selected tab |
-| Financial action | `--accent-orange` | Settle button |
+| Financial action | `--accent` | Settle button |
 | Success | `--success` | Confirmation toast |
 | Error | `--danger` | Validation error |
 | Card shadow | `--shadow-card` | Standard elevation |

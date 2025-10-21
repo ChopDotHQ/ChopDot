@@ -254,7 +254,7 @@ export function ExpensesTab({
                 {netBalance >= 0 ? (
                   <TrendingUp className="w-5 h-5" style={{ color: 'var(--success)' }} />
                 ) : (
-                  <TrendingDown className="w-5 h-5" style={{ color: 'var(--accent-orange)' }} />
+                  <TrendingDown className="w-5 h-5" style={{ color: 'var(--ink)' }} />
                 )}
                 <p 
                   className="tabular-nums"
@@ -262,7 +262,7 @@ export function ExpensesTab({
                     fontSize: '32px',
                     fontWeight: 600,
                     lineHeight: 1.2,
-                    color: netBalance >= 0 ? 'var(--success)' : 'var(--accent-orange)'
+                    color: netBalance >= 0 ? 'var(--success)' : 'var(--ink)'
                   }}
                 >
                   {netBalance >= 0 ? '+' : ''}${Math.abs(netBalance).toFixed(2)}
@@ -323,7 +323,7 @@ export function ExpensesTab({
                       <div className="text-right">
                         <span className="text-label tabular-nums" style={{ 
                           fontWeight: 500,
-                          color: balance > 0 ? 'var(--success)' : 'var(--accent-orange)'
+                          color: balance > 0 ? 'var(--success)' : 'var(--ink)'
                         }}>
                           {balance > 0 ? '+' : '-'}${Math.abs(balance).toFixed(2)}
                         </span>
@@ -500,7 +500,7 @@ export function ExpensesTab({
                         {event.type === "attestation" && <CheckCircle className="w-3 h-3" style={{ color: 'var(--success)' }} />}
                         {event.type === "expense_added" && <Receipt className="w-3 h-3" style={{ color: 'var(--accent-pink)' }} />}
                         {event.type === "contribution" && <TrendingUp className="w-3 h-3" style={{ color: 'var(--success)' }} />}
-                        {event.type === "withdrawal" && <TrendingDown className="w-3 h-3" style={{ color: 'var(--accent-orange)' }} />}
+                        {event.type === "withdrawal" && <TrendingDown className="w-3 h-3" style={{ color: 'var(--ink)' }} />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-caption leading-snug">{event.description}</p>
@@ -553,7 +553,7 @@ export function ExpensesTab({
             </div>
             <button
               onClick={() => setShowPendingOnly(false)}
-              className="mt-2 text-xs text-accent-orange underline"
+              className="mt-2 text-xs underline"
             >
               Show all expenses
             </button>

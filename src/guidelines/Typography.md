@@ -82,7 +82,7 @@ className="text-muted-foreground"  // Use text-secondary instead
 // Negative balance (you owe)
 <p className="text-body tabular-nums" style={{ 
   fontWeight: 500, 
-  color: 'var(--accent-orange)' 
+  color: 'var(--ink)' 
 }}>
   -$32.00
 </p>

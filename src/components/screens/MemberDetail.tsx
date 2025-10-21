@@ -93,7 +93,7 @@ export function MemberDetail({
               <p className="text-[12px] text-secondary mb-1">Overall balance</p>
               <p className="text-[15px]" style={{ 
                 fontWeight: 500,
-                color: totalBalance > 0 ? 'var(--success)' : totalBalance < 0 ? 'var(--accent-orange)' : 'var(--muted)'
+                color: totalBalance > 0 ? 'var(--success)' : totalBalance < 0 ? 'var(--ink)' : 'var(--muted)'
               }}>
                 {totalBalance > 0 ? `+${totalBalance.toFixed(2)}` : totalBalance < 0 ? `-${Math.abs(totalBalance).toFixed(2)}` : 'Settled'}
               </p>
@@ -132,7 +132,7 @@ export function MemberDetail({
                       <p className="text-[14px]">{pot.name}</p>
                       <p className="text-[13px] tabular-nums" style={{ 
                         fontWeight: 500,
-                        color: pot.yourBalance > 0 ? 'var(--success)' : pot.yourBalance < 0 ? 'var(--accent-orange)' : 'var(--muted)'
+                        color: pot.yourBalance > 0 ? 'var(--success)' : pot.yourBalance < 0 ? 'var(--ink)' : 'var(--muted)'
                       }}>
                         {pot.yourBalance > 0 ? `+${pot.yourBalance.toFixed(2)}` : pot.yourBalance < 0 ? `-${Math.abs(pot.yourBalance).toFixed(2)}` : '—'}
                       </p>
