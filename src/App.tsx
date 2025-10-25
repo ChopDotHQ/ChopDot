@@ -2363,6 +2363,42 @@ function AppContent() {
               );
               showToast("Member removed", "info");
             }}
+            
+            // Wire Pot destructive actions with consistent navigation
+            onDeletePot={() => {
+              if (!currentPotId) return;
+              setPots(pots.filter((p) => p.id !== currentPotId));
+              showToast("Pot deleted", "info");
+              reset({ type: "pots-home" });
+            }}
+            onLeavePot={() => {
+              if (!currentPotId) return;
+              const currentUserId = "owner";
+              setPots(
+                pots.map((p) =>
+                  p.id === currentPotId
+                    ? {
+                        ...p,
+                        members: p.members.filter((m) => m.id !== currentUserId),
+                      }
+                    : p,
+                ),
+              );
+              showToast("You left the pot", "info");
+              reset({ type: "pots-home" });
+            }}
+            onArchivePot={() => {
+              if (!currentPotId) return;
+              setPots(
+                pots.map((p) =>
+                  p.id === currentPotId
+                    ? ({ ...p, archived: true } as any)
+                    : p,
+                ),
+              );
+              showToast("Pot archived", "info");
+              reset({ type: "pots-home" });
+            }}
             onUpdateSettings={(settings) => {
               if (!currentPotId) return;
               setPots(
@@ -2378,6 +2414,8 @@ function AppContent() {
                         budgetEnabled: settings.budgetEnabled,
                         checkpointEnabled:
                           settings.checkpointEnabled,
+                        archived:
+                          typeof (settings as any).archived === 'boolean' ? (settings as any).archived : (p as any).archived,
                       }
                     : p,
                 ),
