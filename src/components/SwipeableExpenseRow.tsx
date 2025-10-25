@@ -43,6 +43,7 @@ export function SwipeableExpenseRow({
   const [isSwiping, setIsSwiping] = useState(false);
   const [actionTriggered, setActionTriggered] = useState(false);
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [isTouch, setIsTouch] = useState<boolean>(true);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const startX = useRef(0);
@@ -60,9 +61,23 @@ export function SwipeableExpenseRow({
   const MAX_SWIPE_LEFT = -100;
   const MAX_SWIPE_RIGHT = 100;
 
+  // Detect input modality (touch vs mouse/trackpad)
+  useEffect(() => {
+    try {
+      const hasCoarse = window.matchMedia && window.matchMedia('(any-pointer: coarse)').matches;
+      const hasFine = window.matchMedia && window.matchMedia('(any-pointer: fine)').matches;
+      const touchPoints = (navigator as any).maxTouchPoints || 0;
+      const isTouchDevice = (hasCoarse && !hasFine) || 'ontouchstart' in window || touchPoints > 0;
+      setIsTouch(!!isTouchDevice);
+    } catch {
+      setIsTouch(true);
+    }
+  }, []);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    if (!isTouch) return; // Disable swipe listeners on non-touch devices
 
     const handleTouchStart = (e: TouchEvent) => {
       const t = e.touches[0];
@@ -138,7 +153,7 @@ export function SwipeableExpenseRow({
       container.removeEventListener('touchend', handleTouchEnd);
       container.removeEventListener('touchcancel', handleTouchEnd);
     };
-  }, [isSwiping, swipeOffset, needsAttestation, onDelete, onAttest]);
+  }, [isSwiping, swipeOffset, needsAttestation, onDelete, onAttest, isTouch]);
 
   const deleteOpacity = Math.min(Math.abs(swipeOffset) / SWIPE_THRESHOLD, 1);
   const attestOpacity = Math.min(swipeOffset / SWIPE_THRESHOLD, 1);
@@ -153,7 +168,7 @@ export function SwipeableExpenseRow({
         className="absolute inset-y-0 left-0 w-1 rounded-r-lg opacity-0 transition-opacity pointer-events-none group-hover:opacity-100"
         style={{ background: 'var(--accent-pink)', opacity: isFocused ? 1 : undefined }}
       />
-      {/* Left action (Delete) */}
+      {/* Left action (Delete) - swipe visual on touch */}
       {onDelete && (
         <div 
           className="absolute inset-y-0 right-0 flex items-center justify-end px-4 bg-destructive rounded-lg"
@@ -166,7 +181,7 @@ export function SwipeableExpenseRow({
         </div>
       )}
 
-      {/* Right action (Confirm/Attest) */}
+      {/* Right action (Confirm/Attest) - swipe visual on touch */}
       {needsAttestation && onAttest && (
         <div 
           className="absolute inset-y-0 left-0 flex items-center justify-start px-4 rounded-lg"
@@ -193,8 +208,8 @@ export function SwipeableExpenseRow({
           }
         }}
         style={{
-          transform: `translateX(${swipeOffset}px)`,
-          transition: isSwiping ? 'none' : 'transform 200ms ease-out',
+          transform: isTouch ? `translateX(${swipeOffset}px)` : undefined,
+          transition: isTouch ? (isSwiping ? 'none' : 'transform 200ms ease-out') : undefined,
           opacity: actionTriggered ? 0.5 : 1,
         }}
       >
@@ -235,21 +250,10 @@ export function SwipeableExpenseRow({
               {new Date(expense.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · {paidByMember?.name}
             </p>
           </div>
-          
-          {/* Your share OR Approve button */}
-          {showApproveButton && onAttest ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onAttest();
-              }}
-              style={{ background: 'var(--accent-pink)' }}
-              className="px-3 py-1.5 hover:opacity-90 text-white text-xs rounded-lg transition-all flex-shrink-0"
-            >
-              Approve
-            </button>
-          ) : (
-            <div className="text-right flex-shrink-0">
+
+          {/* Right side: share value and inline actions (desktop) */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="text-right">
               <p className="text-xs text-muted-foreground">You</p>
               <p 
                 className="text-xs tabular-nums mt-0.5"
@@ -260,7 +264,36 @@ export function SwipeableExpenseRow({
                 {yourNetBalance > 0 ? '+' : ''}{yourNetBalance.toFixed(2)}
               </p>
             </div>
-          )}
+
+            {/* Inline actions visible on non-touch; hover/focus on touch keeps swipes */}
+            {!isTouch && (
+              <div 
+                className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ opacity: isFocused ? 1 : undefined }}
+              >
+                {needsAttestation && onAttest && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onAttest(); }}
+                    className="px-2 py-1 rounded-lg text-xs text-white hover:opacity-90"
+                    style={{ background: 'var(--accent-pink)' }}
+                    aria-label="Approve"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                {onDelete && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                    className="px-2 py-1 rounded-lg text-xs text-white hover:opacity-90"
+                    style={{ background: 'var(--destructive)' }}
+                    aria-label="Delete"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
