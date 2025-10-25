@@ -277,8 +277,8 @@ export const debugHelpers = {
   },
 };
 
-// Expose to window for console access - ALWAYS available for emergency debugging
+// Expose to window for console access (development only)
 // Silent load - type window.ChopDot to see available commands
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && import.meta.env.DEV) {
   (window as any).ChopDot = debugHelpers;
 }
