@@ -1275,8 +1275,10 @@ function AppContent() {
     showToast("Expense updated!", "success");
   };
 
-  const deleteExpense = () => {
-    if (!currentPotId || !currentExpenseId) return;
+  const deleteExpense = (expenseId?: string, { navigateBack = false }: { navigateBack?: boolean } = {}) => {
+    if (!currentPotId) return;
+    const targetExpenseId = expenseId || currentExpenseId;
+    if (!targetExpenseId) return;
 
     setPots(
       pots.map((p) =>
@@ -1284,14 +1286,15 @@ function AppContent() {
           ? {
               ...p,
               expenses: p.expenses.filter(
-                (e) => e.id !== currentExpenseId,
+                (e) => e.id !== targetExpenseId,
               ),
             }
           : p,
       ),
     );
-
-    back();
+    if (navigateBack) {
+      back();
+    }
     showToast("Expense deleted", "info");
   };
 
@@ -2457,7 +2460,7 @@ function AppContent() {
                 expenseId: expense.id,
               });
             }}
-            onDelete={deleteExpense}
+            onDelete={() => deleteExpense(expense.id, { navigateBack: true })}
             onAttest={() => attestExpense(expense.id)}
             onCopyReceiptLink={() =>
               showToast("Receipt link copied", "success")
