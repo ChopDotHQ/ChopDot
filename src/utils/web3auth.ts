@@ -75,6 +75,17 @@ let isInitializing = false;
  * Uses dynamic imports for graceful degradation
  */
 export async function initWeb3Auth(): Promise<any> {
+  // Hard-disable in demo mode
+  try {
+    const { getFlag } = await import('./flags');
+    const demo = getFlag<boolean>('DEMO_MODE');
+    if (demo) {
+      console.warn('[Web3Auth] Disabled in demo mode');
+      return null;
+    }
+  } catch (_) {
+    // ignore if flags cannot be loaded
+  }
   // Return existing instance if already initialized
   if (web3authInstance) {
     return web3authInstance;
@@ -188,6 +199,15 @@ export async function initWeb3Auth(): Promise<any> {
  */
 export async function loginWithGoogle(): Promise<SocialAuthResult> {
   try {
+    // Short-circuit in demo mode
+    try {
+      const { getFlag } = await import('./flags');
+      const demo = getFlag<boolean>('DEMO_MODE');
+      if (demo) {
+        return { success: false, provider: 'google', error: 'Disabled in demo' };
+      }
+    } catch (_) {}
+
     // Check if packages are available first
     const isAvailable = await checkWeb3AuthAvailable();
     if (!isAvailable) {
@@ -315,6 +335,15 @@ async function getPolkadotAddress(provider: any): Promise<string> {
  */
 export async function signMessage(message: string): Promise<string> {
   try {
+    // Short-circuit in demo mode
+    try {
+      const { getFlag } = await import('./flags');
+      const demo = getFlag<boolean>('DEMO_MODE');
+      if (demo) {
+        throw new Error('Signing disabled in demo mode');
+      }
+    } catch (_) {}
+
     // Check availability
     const isAvailable = await checkWeb3AuthAvailable();
     if (!isAvailable) {

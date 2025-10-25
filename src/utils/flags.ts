@@ -177,6 +177,14 @@ function removeFromStorage(key: FlagKey): void {
  * const feeCap = getFlag<number>('SERVICE_FEE_CAP_BPS'); // 250
  */
 export function getFlag<T = unknown>(key: FlagKey): T {
+  // Force DEMO_MODE in production builds, ignoring localStorage
+  if (key === 'DEMO_MODE') {
+    const isProd = import.meta.env.MODE === 'production';
+    if (isProd) {
+      cache.set('DEMO_MODE', true);
+      return true as unknown as T;
+    }
+  }
   // Check cache first
   if (cache.has(key)) {
     return cache.get(key) as T;
