@@ -31,7 +31,8 @@ export type FlagKey =
   | 'POLKADOT_APP_ENABLED' 
   | 'IPFS_RECEIPTS_ENABLED' 
   | 'PUSH_ENABLED' 
-  | 'SERVICE_FEE_CAP_BPS';
+  | 'SERVICE_FEE_CAP_BPS'
+  | 'DEMO_MODE';
 
 type FlagValue = boolean | number;
 
@@ -87,6 +88,15 @@ const FLAG_CONFIGS: Record<FlagKey, FlagConfig> = {
       return 250; // Default fallback
     },
   },
+  DEMO_MODE: {
+    defaultValue: false,
+    validate: (value: unknown): boolean => {
+      if (typeof value === 'boolean') return value;
+      if (typeof value === 'string') return value.toLowerCase() === 'true';
+      if (typeof value === 'number') return value !== 0;
+      return false;
+    }
+  }
 };
 
 // ============================================================================

@@ -53,6 +53,16 @@ Designed for composability and multi‑chain collaboration. We start off‑chain
 
 Then open `http://localhost:5173`.
 
+### Demo Mode
+
+For safe public demos, you can enable a restricted mode that disables wallet connections and message signing.
+
+- Set the feature flag in the browser:
+  - Open DevTools Console and run: `localStorage.setItem('flag_DEMO_MODE', 'true')` then reload.
+- Behaviour:
+  - Wallet UI buttons will show a harmless toast and not open the wallet sheet.
+  - Debug helpers are not exposed in production builds.
+
 ## Notes
 
 - Source originated from the ChopDot Mobile Wireframe export (see design reference) and is adapted for local development.

@@ -57,6 +57,7 @@ export type FeatureFlags = {
   IPFS_RECEIPTS_ENABLED: boolean;
   PUSH_ENABLED: boolean;
   SERVICE_FEE_CAP_BPS: number;
+  DEMO_MODE: boolean;
 };
 
 /**
@@ -97,6 +98,7 @@ export function FeatureFlagsProvider(props: { children: ReactNode }): JSX.Elemen
         IPFS_RECEIPTS_ENABLED: getFlag<boolean>('IPFS_RECEIPTS_ENABLED'),
         PUSH_ENABLED: getFlag<boolean>('PUSH_ENABLED'),
         SERVICE_FEE_CAP_BPS: getFlag<number>('SERVICE_FEE_CAP_BPS'),
+        DEMO_MODE: getFlag<boolean>('DEMO_MODE'),
       };
     } catch (error) {
       console.error('[FeatureFlags] Error loading flags:', error);
@@ -106,6 +108,7 @@ export function FeatureFlagsProvider(props: { children: ReactNode }): JSX.Elemen
         IPFS_RECEIPTS_ENABLED: false,
         PUSH_ENABLED: false,
         SERVICE_FEE_CAP_BPS: 250,
+        DEMO_MODE: false,
       };
     }
   });

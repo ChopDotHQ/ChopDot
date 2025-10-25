@@ -27,7 +27,7 @@ import {
   calculatePotSettlements,
 } from "./utils/settlements";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { FeatureFlagsProvider } from "./contexts/FeatureFlagsContext";
+import { FeatureFlagsProvider, useFeatureFlags } from "./contexts/FeatureFlagsContext";
 import { LoginScreen } from "./components/screens/LoginScreen";
 import { ActivityHome } from "./components/screens/ActivityHome";
 import { PotsHome } from "./components/screens/PotsHome";
@@ -196,6 +196,7 @@ interface Notification {
 // ============================================================================
 
 function AppContent() {
+  const { DEMO_MODE, POLKADOT_APP_ENABLED } = useFeatureFlags();
   // Theme management
   const { theme, setTheme } = useTheme();
 
@@ -1968,6 +1969,14 @@ function AppContent() {
               setShowNotifications(true);
             }}
             onWalletClick={() => {
+              if (DEMO_MODE) {
+                showToast("Wallet disabled in demo", "info");
+                return;
+              }
+              if (!POLKADOT_APP_ENABLED) {
+                showToast("Wallet feature disabled", "info");
+                return;
+              }
               triggerHaptic("light");
               setShowWalletSheet(true);
             }}
@@ -2041,6 +2050,14 @@ function AppContent() {
               setShowNotifications(true);
             }}
             onWalletClick={() => {
+              if (DEMO_MODE) {
+                showToast("Wallet disabled in demo", "info");
+                return;
+              }
+              if (!POLKADOT_APP_ENABLED) {
+                showToast("Wallet feature disabled", "info");
+                return;
+              }
               triggerHaptic("light");
               setShowWalletSheet(true);
             }}
@@ -2118,6 +2135,14 @@ function AppContent() {
               setShowNotifications(true);
             }}
             onWalletClick={() => {
+              if (DEMO_MODE) {
+                showToast("Wallet disabled in demo", "info");
+                return;
+              }
+              if (!POLKADOT_APP_ENABLED) {
+                showToast("Wallet feature disabled", "info");
+                return;
+              }
               triggerHaptic("light");
               setShowWalletSheet(true);
             }}
@@ -2155,6 +2180,14 @@ function AppContent() {
               setShowNotifications(true);
             }}
             onWalletClick={() => {
+              if (DEMO_MODE) {
+                showToast("Wallet disabled in demo", "info");
+                return;
+              }
+              if (!POLKADOT_APP_ENABLED) {
+                showToast("Wallet feature disabled", "info");
+                return;
+              }
               triggerHaptic("light");
               setShowWalletSheet(true);
             }}
