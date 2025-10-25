@@ -340,6 +340,28 @@
 /* ===== DESIGN SYSTEM HELPERS ===== */
 @layer utilities {
   /* App-level utilities */
+  .app-shell {
+    position: relative;
+    margin-inline: auto;
+    width: min(420px, 95vw);
+    /* Use small viewport height as fallback, dynamic viewport height where supported */
+    height: 100svh;
+    height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  @media (min-width: 600px) {
+    .app-shell { width: min(560px, 95vw); }
+  }
+  @media (min-width: 768px) {
+    .app-shell { width: min(640px, 95vw); }
+  }
+  @media (min-width: 1024px) {
+    .app-shell { width: min(720px, 92vw); }
+  }
+  @media (min-width: 1280px) {
+    .app-shell { width: min(840px, 88vw); }
+  }
   .bg-app {
     background: var(--bg);
     color: var(--ink);
