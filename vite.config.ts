@@ -14,6 +14,7 @@ export default defineConfig({
       buffer: 'buffer/',
       'bn.js/lib/bn.js': '/src/shims/bn.ts',
       'bn.js': '/src/shims/bn.ts',
+      '@polkadot/wasm-crypto-wasm/cjs/bytes.js': '/src/shims/polkadot-wasm-bytes.ts',
       '@': path.resolve(__dirname, './'),
       // Map version-suffixed imports (from generated UI files) to actual packages
       'vaul@1.1.2': 'vaul',
