@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { BN } from '@polkadot/util';
 import { useWallet } from '../../wallet/WalletProvider';
-import { dotToPlanck, planckToDot, PLANCK } from '../../utils/units';
+import { dotToPlanck, planckToDot } from '../../utils/units';
 import { TxSend } from '../polkadot/TxSend';
 import { recordSettlement, markVerified } from '../../repos/settlementsRepo';
 import { isValidAddress } from '../../utils/ss58';

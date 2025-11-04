@@ -19,7 +19,7 @@ export const LightClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     (async () => {
       try {
         const chain = preset.wellKnown === 'westend2' ? WellKnownChain.westend2 : WellKnownChain.polkadot;
-        const provider = new ScProvider(chain, undefined as unknown as any);
+        const provider = new (ScProvider as unknown as any)(chain as unknown as any);
         await provider.connect();
         const apiInst = await ApiPromise.create({ provider });
         if (!mounted) return;

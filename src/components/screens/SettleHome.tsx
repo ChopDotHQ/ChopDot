@@ -75,8 +75,8 @@ export function SettleHome({
   
   // Fee estimation state
   const [feeEstimate, setFeeEstimate] = useState<number | null>(null);
-  const [feeLoading, setFeeLoading] = useState(false);
-  const [feeError, setFeeError] = useState(false);
+  const [feeLoading, setFeeLoading] = useState(false); void feeLoading;
+  const [feeError, setFeeError] = useState(false); void feeError;
   
   // Settlement loading state
   const [isSettling, setIsSettling] = useState(false);
