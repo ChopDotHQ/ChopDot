@@ -83,6 +83,20 @@
     "typescript": "^5.6.3",
     "vite": "^6.0.3"
   },
+  "overrides": {
+    "@polkadot/api": "12.4.2",
+    "@polkadot/api-augment": "12.4.2",
+    "@polkadot/api-base": "12.4.2",
+    "@polkadot/api-derive": "12.4.2",
+    "@polkadot/rpc-augment": "12.4.2",
+    "@polkadot/rpc-core": "12.4.2",
+    "@polkadot/rpc-provider": "12.4.2",
+    "@polkadot/types": "12.4.2",
+    "@polkadot/types-augment": "12.4.2",
+    "@polkadot/types-codec": "12.4.2",
+    "@polkadot/types-create": "12.4.2",
+    "@polkadot/types-support": "12.4.2"
+  },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"

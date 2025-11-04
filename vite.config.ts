@@ -81,5 +81,15 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'lucide-react', 'buffer'],
+    exclude: [
+      '@polkadot/api',
+      '@polkadot/types',
+      '@polkadot/util',
+      '@polkadot/util-crypto',
+      '@polkadot/rpc-core',
+      '@polkadot/rpc-augment',
+      '@polkadot/rpc-provider',
+      '@polkadot/api-derive',
+    ],
   },
 })
