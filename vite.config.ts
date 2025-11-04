@@ -44,6 +44,7 @@ export default defineConfig({
       buffer: 'buffer/',
       'bn.js/lib/bn.js': '/src/shims/bn.ts',
       'bn.js': '/src/shims/bn.ts',
+      'eventemitter3': '/src/shims/eventemitter3.ts',
       '/node_modules/@polkadot/wasm-crypto/packageDetect.js': '/src/shims/polkadot-wasm-detect.ts',
       '/node_modules/@polkadot/wasm-crypto/packageDetect': '/src/shims/polkadot-wasm-detect.ts',
       '@polkadot/wasm-crypto-wasm': '/src/shims/polkadot-wasm-index.ts',
