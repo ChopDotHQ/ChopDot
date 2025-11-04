@@ -12,6 +12,8 @@ export default defineConfig({
   resolve: {
     alias: {
       buffer: 'buffer/',
+      'bn.js/lib/bn.js': '/src/shims/bn.ts',
+      'bn.js': '/src/shims/bn.ts',
       '@': path.resolve(__dirname, './'),
       // Map version-suffixed imports (from generated UI files) to actual packages
       'vaul@1.1.2': 'vaul',
