@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { ApiPromise } from '@polkadot/api';
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import { ScProvider } from '@polkadot/rpc-provider/substrate-connect';
+import { WellKnownChain } from '@substrate/connect';
 import { getCurrentChain, type ChainPreset } from './chains';
 
 interface ChainContextValue { api?: ApiPromise; isReady: boolean; error?: unknown; preset: ChainPreset; setChain: (key: 'westend'|'polkadot') => void }
@@ -16,39 +18,29 @@ export const LightClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     let mounted = true;
     (async () => {
       try {
-        // Dynamically import to tolerate API differences across @substrate/connect versions
-        const sc = await import('@substrate/connect');
-        const WellKnownChain = (sc as any).WellKnownChain;
-        const getWellKnownChain = (sc as any).getWellKnownChain;
-        const chainSpec = getWellKnownChain
-          ? getWellKnownChain(preset.wellKnown === 'westend2' ? WellKnownChain.westend2 : WellKnownChain.polkadot)
-          : undefined;
-
-        let provider: any;
-        if ((sc as any).ScProvider) {
-          provider = new (sc as any).ScProvider(chainSpec);
-        } else if ((sc as any).createScProvider) {
-          provider = (sc as any).createScProvider(chainSpec);
-        } else if ((sc as any).default) {
-          provider = new (sc as any).default(chainSpec);
-        } else {
-          throw new Error('Light client provider not available in @substrate/connect');
-        }
-
-        if (typeof provider.connect === 'function') {
-          await provider.connect();
-        }
-
-        const { ApiPromise } = await import('@polkadot/api');
-        const apiInst = await ApiPromise.create({ provider: provider as unknown as any });
+        const chain = preset.wellKnown === 'westend2' ? WellKnownChain.westend2 : WellKnownChain.polkadot;
+        const provider = new ScProvider(chain);
+        await provider.connect();
+        const apiInst = await ApiPromise.create({ provider });
         if (!mounted) return;
         setApi(apiInst);
         await apiInst.isReady;
         if (!mounted) return;
         setIsReady(true);
       } catch (e) {
-        if (!mounted) return;
-        setError(e);
+        // Dev fallback: attempt public RPC if light client fails (keeps UX unblocked)
+        try {
+          const ws = new WsProvider('wss://westend-rpc.polkadot.io');
+          const apiInst = await ApiPromise.create({ provider: ws });
+          if (!mounted) return;
+          setApi(apiInst);
+          await apiInst.isReady;
+          if (!mounted) return;
+          setIsReady(true);
+        } catch (e2) {
+          if (!mounted) return;
+          setError(e2);
+        }
       }
     })();
     return () => { mounted = false; api?.disconnect().catch(() => {}); };
