@@ -47,7 +47,7 @@ export const LightClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, [preset.key]);
 
   useEffect(() => {
-    const onChange = (e: any) => {
+    const onChange = (_e: any) => {
       const next = getCurrentChain();
       setIsReady(false);
       setPreset(next);
