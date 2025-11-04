@@ -64,6 +64,8 @@ import { RequestPayment } from "./components/screens/RequestPayment";
 import { WalletConnectionSheet } from "./components/WalletConnectionSheet";
 import { BatchConfirmSheet } from "./components/BatchConfirmSheet";
 import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
+// Local-first repos (Yjs)
+import { createPot as createYjsPot, getPot as getYjsPot } from './repos/potsRepo';
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -1109,48 +1111,68 @@ function AppContent() {
   // Get current pot
   const getCurrentPot = () =>
     pots.find((p) => p.id === currentPotId);
+  
+  // Minimal bridge: when navigating to a Yjs pot (not in demo array), fetch its name and inject a stub
+  useEffect(() => {
+    (async () => {
+      if (!currentPotId) return;
+      const exists = pots.some(p => p.id === currentPotId);
+      if (exists) return;
+      try {
+        const { root, destroy } = await getYjsPot(currentPotId);
+        const meta = root.get('meta') as any;
+        const yName = typeof meta?.get === 'function' ? meta.get('name') : undefined;
+        destroy();
+        // Inject a lightweight stub so existing screens render
+        setPots(prev => prev.concat([{
+          id: currentPotId,
+          name: yName || 'Pot',
+          type: 'expense',
+          baseCurrency: 'USD',
+          members: [],
+          expenses: [],
+          checkpointEnabled: true,
+        } as any]));
+      } catch {}
+    })();
+  }, [currentPotId, pots]);
 
   // ========================================
   // CRUD OPERATIONS
   // ========================================
-  const createPot = () => {
-    const pot: Pot = {
-      id: Date.now().toString(),
-      name: newPot.name || "Unnamed Pot",
-      type: newPot.type || "expense",
-      baseCurrency: newPot.baseCurrency || "USD",
-      members: newPot.members || [],
-      expenses: [],
-      budget: newPot.budget,
-      budgetEnabled: newPot.budgetEnabled,
-      contributions: newPot.type === "savings" ? [] : undefined,
-      totalPooled: newPot.type === "savings" ? 0 : undefined,
-      yieldRate: newPot.type === "savings" ? 0 : undefined,
-      goalAmount: newPot.goalAmount,
-      goalDescription: newPot.goalDescription,
-      checkpointEnabled:
-        newPot.type === "expense" ? true : undefined, // Default enabled for expense pots
-    };
-
-    setPots([...pots, pot]);
+  const createPot = async () => {
+    // Wallet required for ownership in local-first model
+    const addr = selected?.address;
+    if (!addr) {
+      showToast('Connect a wallet first', 'error');
+      return;
+    }
+    const name = newPot.name || 'Unnamed Pot';
+    const id = await createYjsPot(addr, name);
+    // Reset draft
     setNewPot({
-      name: "",
-      type: "expense",
-      baseCurrency: "USD",
+      name: '',
+      type: 'expense',
+      baseCurrency: 'USD',
       members: [
-        {
-          id: "owner",
-          name: "You",
-          role: "Owner",
-          status: "active",
-        },
+        { id: 'owner', name: 'You', role: 'Owner', status: 'active' },
       ],
       expenses: [],
       budgetEnabled: false,
     });
-
-    back();
-    showToast("Pot created successfully!", "success");
+    // Navigate into the new pot; inject a stub so current screens render
+    setCurrentPotId(id);
+    setPots(prev => prev.concat([{
+      id,
+      name,
+      type: 'expense',
+      baseCurrency: 'USD',
+      members: [],
+      expenses: [],
+      checkpointEnabled: true,
+    } as any]));
+    replace({ type: 'pot-home', potId: id });
+    showToast('Pot created successfully!', 'success');
   };
 
   const addExpense = (data: {

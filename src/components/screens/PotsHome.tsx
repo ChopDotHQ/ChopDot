@@ -188,6 +188,7 @@ export function PotsHome({
                     indexPot(id);
                     const ids = await listMyPots(selected.address);
                     setLocalPotIds(ids);
+                    if (onPotClick) onPotClick(id);
                   }}
                   className="px-2 py-1 rounded border text-xs"
                 >Create</button>
@@ -197,7 +198,14 @@ export function PotsHome({
               ) : (
                 <ul className="text-xs grid gap-1">
                   {localPotIds.map((id) => (
-                    <li key={id} className="truncate">{id}</li>
+                    <li key={id}>
+                      <button
+                        className="truncate w-full text-left hover:underline"
+                        onClick={() => onPotClick && onPotClick(id)}
+                      >
+                        {id}
+                      </button>
+                    </li>
                   ))}
                 </ul>
               )}
