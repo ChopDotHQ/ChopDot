@@ -20,7 +20,6 @@ export const SettleDot: React.FC<Props> = ({ potId, defaultTo }) => {
   const freeBn = useMemo(() => new BN(free || '0'), [free]);
   const hasBalance = useMemo(() => amountPlanck.add(feeBuffer).lte(freeBn), [amountPlanck, feeBuffer, freeBn]);
   const addrValid = isValidAddress(to);
-  const canSend = !!selected?.address && !!to && addrValid && amountPlanck.gt(new BN(0)) && hasBalance;
 
   const handleSuccess = async (txHash: string, includedBlock?: string) => {
     if (!selected) return;

@@ -27,7 +27,7 @@ export const LightClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
         await apiInst.isReady;
         if (!mounted) return;
         setIsReady(true);
-      } catch (e) {
+      } catch (_e) {
         // Dev fallback: attempt public RPC if light client fails (keeps UX unblocked)
         try {
           const ws = new WsProvider('wss://westend-rpc.polkadot.io');

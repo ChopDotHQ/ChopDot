@@ -12,8 +12,7 @@ export function useBalance() {
     let unsub: any;
     (async () => {
       const acc = await (api as any).query.system.account(selected.address);
-      // @ts-expect-error polkadot-js types
-      setFree(acc.data.free.toString());
+      setFree((acc as any).data.free.toString());
       unsub = await (api as any).query.system.account(selected.address, (acct: any) => {
         setFree(acct.data.free.toString());
       });
