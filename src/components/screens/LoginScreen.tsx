@@ -32,7 +32,7 @@ interface LoginScreenProps {
 type LoginMode = 'select' | 'email' | 'signup';
 
 export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
-  const { login, loginAsGuest } = useAuth();
+  const { login, signUp, loginAsGuest } = useAuth();
   const [mode, setMode] = useState<LoginMode>('select');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -132,11 +132,15 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         return;
       }
 
-      await login('email', {
-        type: 'email',
-        email,
-        password,
-      });
+      if (mode === 'signup') {
+        await signUp(email, password);
+      } else {
+        await login('email', {
+          type: 'email',
+          email,
+          password,
+        });
+      }
 
       triggerHaptic('medium');
       onLoginSuccess?.();

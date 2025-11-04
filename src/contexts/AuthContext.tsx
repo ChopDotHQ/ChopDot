@@ -9,6 +9,8 @@
  */
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { getSupabase } from '../utils/supabase-client';
+import { upsertProfile } from '../repos/profiles';
 
 export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'email' | 'guest';
 
@@ -27,6 +29,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (method: AuthMethod, credentials: LoginCredentials) => Promise<void>;
+  signUp: (email: string, password: string, username?: string) => Promise<void>;
   loginAsGuest: () => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -43,52 +46,101 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check for existing session on mount (once only)
+  // Initial session check and subscription to Supabase auth changes
   useEffect(() => {
-    // Synchronous auth check - no logging, instant
-    try {
-      const storedUser = localStorage.getItem('chopdot_user');
-      const storedToken = localStorage.getItem('chopdot_auth_token');
-      
-      if (storedUser && storedToken) {
-        try {
-          const userData = JSON.parse(storedUser);
-          setUser(userData);
-        } catch (parseError) {
-          console.error('[ChopDot] Failed to parse user data, clearing session');
-          localStorage.removeItem('chopdot_user');
-          localStorage.removeItem('chopdot_auth_token');
-        }
-      }
-    } catch (error) {
-      console.error('[ChopDot] Auth check failed:', error);
+    const supabase = getSupabase();
+    let unsubscribe: (() => void) | undefined;
+
+    (async () => {
       try {
-        localStorage.removeItem('chopdot_user');
-        localStorage.removeItem('chopdot_auth_token');
-      } catch (storageError) {
-        console.error('[ChopDot] Failed to clear localStorage:', storageError);
+        if (supabase) {
+          const { data } = await supabase.auth.getSession();
+          const session = data.session || null;
+          if (session?.user) {
+            const mapped: User = {
+              id: session.user.id,
+              email: session.user.email ?? undefined,
+              authMethod: 'email',
+              name: session.user.email?.split('@')[0],
+              createdAt: new Date().toISOString(),
+            };
+            setUser(mapped);
+            localStorage.setItem('chopdot_user', JSON.stringify(mapped));
+            localStorage.setItem('chopdot_auth_token', session.access_token);
+          }
+
+          const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
+            if (newSession?.user) {
+              const mapped: User = {
+                id: newSession.user.id,
+                email: newSession.user.email ?? undefined,
+                authMethod: 'email',
+                name: newSession.user.email?.split('@')[0],
+                createdAt: new Date().toISOString(),
+              };
+              setUser(mapped);
+              localStorage.setItem('chopdot_user', JSON.stringify(mapped));
+              localStorage.setItem('chopdot_auth_token', newSession.access_token);
+            } else {
+              setUser(null);
+              localStorage.removeItem('chopdot_user');
+              localStorage.removeItem('chopdot_auth_token');
+            }
+          });
+          unsubscribe = () => sub.subscription.unsubscribe();
+        } else {
+          // Fallback to local storage only when Supabase is not configured
+          const storedUser = localStorage.getItem('chopdot_user');
+          const storedToken = localStorage.getItem('chopdot_auth_token');
+          if (storedUser && storedToken) {
+            try {
+              const userData = JSON.parse(storedUser);
+              setUser(userData);
+            } catch {
+              localStorage.removeItem('chopdot_user');
+              localStorage.removeItem('chopdot_auth_token');
+            }
+          }
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
-    }
-  }, []); // Empty deps = run once on mount only
+    })();
+
+    return () => {
+      unsubscribe?.();
+    };
+  }, []);
 
   const checkAuth = async () => {
-    // Kept for refreshUser() calls
     setIsLoading(true);
-    
     try {
+      const supabase = getSupabase();
+      if (supabase) {
+        const { data } = await supabase.auth.getSession();
+        const session = data.session || null;
+        if (session?.user) {
+          const mapped: User = {
+            id: session.user.id,
+            email: session.user.email ?? undefined,
+            authMethod: 'email',
+            name: session.user.email?.split('@')[0],
+            createdAt: new Date().toISOString(),
+          };
+          setUser(mapped);
+          localStorage.setItem('chopdot_user', JSON.stringify(mapped));
+          localStorage.setItem('chopdot_auth_token', session.access_token);
+          return;
+        }
+      }
       const storedUser = localStorage.getItem('chopdot_user');
       const storedToken = localStorage.getItem('chopdot_auth_token');
-      
       if (storedUser && storedToken) {
         const userData = JSON.parse(storedUser);
         setUser(userData);
+      } else {
+        setUser(null);
       }
-    } catch (error) {
-      console.error('[ChopDot] Auth refresh failed:', error);
-      localStorage.removeItem('chopdot_user');
-      localStorage.removeItem('chopdot_auth_token');
     } finally {
       setIsLoading(false);
     }
@@ -97,12 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (method: AuthMethod, credentials: LoginCredentials) => {
     try {
       setIsLoading(true);
-
-      // In a real app, this would call your backend API
-      // For now, we'll simulate the auth flow
-      
       let userData: User;
-      
       if (credentials.type === 'wallet') {
         // Verify wallet signature
         // const isValid = await verifySignature(credentials.address, credentials.signature, credentials.message);
@@ -129,31 +176,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           createdAt: new Date().toISOString(),
         };
       } else {
-        // Email/password login
-        // const response = await fetch('/api/auth/email', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({
-        //     email: credentials.email,
-        //     password: credentials.password,
-        //   }),
-        // });
-        
-        // Mock user data
-        const email = (credentials as any).email as string;
+        const supabase = getSupabase();
+        if (!supabase) {
+          throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+        }
+        const { email, password } = credentials as { type: 'email'; email: string; password: string };
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        const session = data.session;
+        if (!session?.user) throw new Error('Login failed: no session.');
         userData = {
-          id: `user_${Date.now()}`,
-          email,
+          id: session.user.id,
+          email: session.user.email ?? undefined,
           authMethod: 'email',
-          name: email.split('@')[0],
+          name: session.user.email?.split('@')[0],
           createdAt: new Date().toISOString(),
         };
+
+        // Ensure profile row exists (non-blocking)
+        try {
+          await upsertProfile(supabase, session.user.id, session.user.user_metadata?.username ?? null);
+        } catch (e) {
+          console.warn('[auth.login] profile upsert failed:', (e as Error).message);
+        }
       }
       
-      // Store user and token
-      const mockToken = `mock_jwt_token_${Date.now()}`;
+      // Store user and token (keep legacy keys for now)
       localStorage.setItem('chopdot_user', JSON.stringify(userData));
-      localStorage.setItem('chopdot_auth_token', mockToken);
+      const supabase = getSupabase();
+      if (supabase) {
+        const { data } = await supabase.auth.getSession();
+        const token = data.session?.access_token ?? `mock_jwt_token_${Date.now()}`;
+        localStorage.setItem('chopdot_auth_token', token);
+      } else {
+        localStorage.setItem('chopdot_auth_token', `mock_jwt_token_${Date.now()}`);
+      }
       
       setUser(userData);
     } catch (error) {
@@ -164,18 +221,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signUp = async (email: string, password: string, username?: string) => {
+    try {
+      setIsLoading(true);
+      const supabase = getSupabase();
+      if (!supabase) {
+        throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+      }
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { username } },
+      });
+      if (error) throw error;
+      const session = data.session; // may be null if email confirmation enabled
+      if (session?.user) {
+        const mapped: User = {
+          id: session.user.id,
+          email: session.user.email ?? undefined,
+          authMethod: 'email',
+          name: session.user.email?.split('@')[0],
+          createdAt: new Date().toISOString(),
+        };
+        setUser(mapped);
+        localStorage.setItem('chopdot_user', JSON.stringify(mapped));
+        localStorage.setItem('chopdot_auth_token', session.access_token);
+
+        // Ensure profile row exists (non-blocking)
+        try {
+          await upsertProfile(supabase, session.user.id, username ?? null);
+        } catch (e) {
+          console.warn('[auth.signUp] profile upsert failed:', (e as Error).message);
+        }
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async () => {
     try {
       setIsLoading(true);
-      
-      // In a real app, call backend to invalidate token
-      // await fetch('/api/auth/logout', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Authorization': `Bearer ${localStorage.getItem('chopdot_auth_token')}`,
-      //   },
-      // });
-      
+      const supabase = getSupabase();
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
       // Clear local storage
       localStorage.removeItem('chopdot_user');
       localStorage.removeItem('chopdot_auth_token');
@@ -227,6 +317,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         isAuthenticated: !!user,
         login,
+        signUp,
         loginAsGuest,
         logout,
         refreshUser,

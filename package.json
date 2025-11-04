@@ -12,6 +12,8 @@
     "lint:tokens": "! rg -n \"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\" src --glob '!**/*.{png,jpg,jpeg,svg,webp,gif}' | rg -v 'var\\(' && ! rg -n 'accent-orange|gradient-orange' src"
   },
   "dependencies": {
+    "@polkadot/react-identicon": "^3.7.3",
+    "@supabase/supabase-js": "^2.45.4",
     "@polkadot/extension-dapp": "^0.62.2",
     "@polkadot/util": "^13.5.7",
     "@polkadot/util-crypto": "^13.5.7",
