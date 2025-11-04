@@ -2,7 +2,7 @@
 // We import the CJS module as a default and then re-export the named fields.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import bytesCjs from '/node_modules/@polkadot/wasm-crypto-wasm/cjs/bytes.js';
+import * as bytesCjs from '/node_modules/@polkadot/wasm-crypto-wasm/cjs/bytes.js';
 
 // In Vite, CJS interop usually places exports on the default object
 const mod: any = (bytesCjs as any) || {};
