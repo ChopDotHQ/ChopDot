@@ -25,9 +25,9 @@ export const TxSend: React.FC<TxSendProps> = ({ to, amountPlanck, onSuccess }) =
     try {
       setError(null); setStatus('signing');
       const injector = await web3FromAddress(selected.address);
-      const tx = api.tx.balances.transferKeepAlive(to, amountPlanck);
+      const tx = api!.tx.balances.transferKeepAlive(to, amountPlanck);
       setStatus('sending');
-      const unsub = await tx.signAndSend(selected.address, { signer: injector.signer }, (result) => {
+      const unsub = await tx.signAndSend(selected.address, { signer: injector.signer as any }, (result) => {
         if (result.status.isInBlock) {
           setStatus('inblock');
           setHash(tx.hash.toHex());

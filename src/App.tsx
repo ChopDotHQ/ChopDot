@@ -203,7 +203,7 @@ function AppContent() {
   const { theme, setTheme } = useTheme();
 
   // Wallet identity
-  const { selected, isConnected, selectAccount } = useWallet();
+  const { selected, selectAccount } = useWallet();
 
   // ========================================
   // NAVIGATION & ROUTING
@@ -1668,9 +1668,7 @@ function AppContent() {
   const handleDeleteAccount = async () => {
     try {
       triggerHaptic("medium");
-      // TODO: Implement account deletion API call
-      // await deleteAccount();
-      await logout();
+      // TODO: Implement account deletion (local-first: clear local data when needed)
       showToast("Account deleted", "info");
     } catch (error) {
       console.error("Account deletion failed:", error);

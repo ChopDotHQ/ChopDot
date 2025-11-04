@@ -1,7 +1,7 @@
 import { TopBar } from "../TopBar";
 import { PrimaryButton } from "../PrimaryButton";
 import { WalletBanner } from "../WalletBanner";
-import { Banknote, Building2, Wallet, CheckCircle2, CreditCard, Smartphone, Loader2 } from "lucide-react";
+import { Banknote, Building2, Wallet, CheckCircle2, CreditCard, Smartphone } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SettleDot } from "../settle/SettleDot";
 import { SettlementHistory as PotSettlementHistory } from "../settle/SettlementHistory";
@@ -46,7 +46,7 @@ export function SettleHome({
   preferredMethod,
 }: SettleHomeProps) {
   // Read feature flags
-  const { POLKADOT_APP_ENABLED, SERVICE_FEE_CAP_BPS } = useFeatureFlags();
+  const { POLKADOT_APP_ENABLED } = useFeatureFlags();
   
   // Fee estimator stub - simulates Polkadot network fee API
   const estimateNetworkFee = async (): Promise<number> => {

@@ -42,10 +42,10 @@ export const PotCheckpoint: React.FC<{ potId: string }> = ({ potId }) => {
         <button
           className="px-3 py-2 rounded-xl border"
           onClick={async () => {
-            const tx = api.tx.system.remark(payloadHex);
+            const tx = api!.tx.system.remark(payloadHex);
             const { web3FromAddress } = await import('@polkadot/extension-dapp');
             const injector = await web3FromAddress(selected.address);
-            const unsub = await tx.signAndSend(selected.address, { signer: injector.signer }, (result) => {
+            const unsub = await tx.signAndSend(selected.address, { signer: injector.signer as any }, (result) => {
               if (result.status.isInBlock) {
                 onSuccess(tx.hash.toHex(), result.status.asInBlock.toHex());
               } else if (result.status.isFinalized) {

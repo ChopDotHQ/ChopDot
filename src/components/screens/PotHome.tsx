@@ -69,6 +69,9 @@ interface PotHomeProps {
   onRemoveMember: (id: string) => void;
   onUpdateSettings: (settings: any) => void;
   onSettle: () => void;
+  onDeletePot?: () => void;
+  onLeavePot?: () => void;
+  onArchivePot?: () => void;
   onCopyInviteLink?: () => void;
   onResendInvite?: (memberId: string) => void;
   onDeleteExpense?: (expenseId: string) => void;
