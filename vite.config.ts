@@ -11,6 +11,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      buffer: 'buffer',
       '@': path.resolve(__dirname, './'),
       // Map version-suffixed imports (from generated UI files) to actual packages
       'vaul@1.1.2': 'vaul',
@@ -71,6 +72,6 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'lucide-react'],
+    include: ['react', 'react-dom', 'lucide-react', 'buffer'],
   },
 })
