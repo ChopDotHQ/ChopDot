@@ -22,6 +22,25 @@ export default defineConfig({
         });
       },
     },
+    {
+      name: 'polkadot-wasm-bytes-redirect',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          const url = req.url || '';
+          if (url.startsWith('/node_modules/@polkadot/wasm-crypto-wasm/cjs/bytes.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+            res.end("export { bytes, lenIn, lenOut } from '/src/shims/polkadot-wasm-bytes.ts';");
+            return;
+          }
+          if (url.startsWith('/node_modules/@polkadot/wasm-crypto-wasm/bundle.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+            res.end("export * from '/src/shims/polkadot-wasm-bundle.ts';");
+            return;
+          }
+          next();
+        });
+      },
+    },
   ],
   resolve: {
     alias: {
