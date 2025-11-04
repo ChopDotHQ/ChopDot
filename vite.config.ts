@@ -8,6 +8,22 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    {
+      name: 'polkadot-wasm-shims',
+      resolveId(id) {
+        if (id.includes('@polkadot/wasm-crypto/packageDetect.js') || id.includes('@polkadot/wasm-crypto/packageDetect')) {
+          return '/src/shims/polkadot-wasm-detect.ts';
+        }
+        if (id.includes('@polkadot/wasm-crypto-wasm/cjs/bytes.js')) {
+          return '/src/shims/polkadot-wasm-bytes.ts';
+        }
+        if (id === '@polkadot/wasm-crypto-wasm' || id.includes('@polkadot/wasm-crypto-wasm/bundle')) {
+          // Let explicit aliases below handle these, but keep fallback
+          return null;
+        }
+        return null;
+      },
+    },
   ],
   resolve: {
     alias: {
@@ -98,6 +114,11 @@ export default defineConfig({
       '@polkadot/rpc-augment',
       '@polkadot/rpc-provider',
       '@polkadot/api-derive',
+      '@polkadot/wasm-crypto',
+      '@polkadot/wasm-crypto-wasm',
+      '@polkadot/wasm-crypto-asmjs',
+      '@polkadot/wasm-crypto-init',
+      '@polkadot/wasm-util',
     ],
   },
 })
