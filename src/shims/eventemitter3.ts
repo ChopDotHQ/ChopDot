@@ -4,6 +4,7 @@
 // @ts-ignore
 import * as EE from 'eventemitter3';
 const EventEmitter: any = (EE as any).default ?? (EE as any);
+export { EventEmitter };
 export default EventEmitter;
 
 
