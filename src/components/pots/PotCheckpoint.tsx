@@ -3,8 +3,10 @@ import { useChain } from '../../chain/LightClientProvider';
 import { useWallet } from '../../wallet/WalletProvider';
 import { hashPotState } from '../../utils/hashState';
 import { openPotDoc } from '../../repos/y/store';
+import { flags } from '../../featureFlags';
 
 export const PotCheckpoint: React.FC<{ potId: string }> = ({ potId }) => {
+  if (!flags.checkpoint) return null;
   const { api, isReady } = useChain();
   const { selected } = useWallet();
   const [payloadHex, setPayloadHex] = useState<string | null>(null);

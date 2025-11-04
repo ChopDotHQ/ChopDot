@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Theme } from "../../utils/useTheme";
 import { useChain } from "../../chain/LightClientProvider";
 import { CHAINS } from "../../chain/chains";
+import { flags } from "../../featureFlags";
 
 interface SettingsProps {
   onBack?: () => void;
@@ -97,17 +98,19 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
           <div className="space-y-3">
             <h2 className="text-label text-muted-foreground px-1">Preferences</h2>
             {/* Dev: Chain switch */}
-            <SelectField
-              label="Target chain (dev)"
-              value={preset.key === 'westend' ? 'westend' : 'polkadot'}
-              onChange={(value) => {
-                setChain((value as 'westend'|'polkadot'));
-              }}
-              options={[
-                { value: 'westend', label: CHAINS.westend.label },
-                { value: 'polkadot', label: CHAINS.polkadot.label },
-              ]}
-            />
+            {flags.chainSwitch && (
+              <SelectField
+                label="Target chain (dev)"
+                value={preset.key === 'westend' ? 'westend' : 'polkadot'}
+                onChange={(value) => {
+                  setChain((value as 'westend'|'polkadot'));
+                }}
+                options={[
+                  { value: 'westend', label: CHAINS.westend.label },
+                  { value: 'polkadot', label: CHAINS.polkadot.label },
+                ]}
+              />
+            )}
 
 
             {/* Notifications Toggle */}
