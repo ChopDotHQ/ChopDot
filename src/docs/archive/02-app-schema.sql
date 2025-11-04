@@ -1,3 +1,8 @@
+-- Archived: Supabase app schema for optional server-backed sync
+-- Not used in wallet-only, light-client, local-first MVP
+
+-- (Content moved from src/database/init/02-app-schema.sql)
+
 -- App schema (no RLS), crypto-only for now
 -- Run this in Supabase SQL editor
 
@@ -92,7 +97,6 @@ create table if not exists public.expenses (
   description text null,
   receipt_path text null,
   receipt_thumb_path text null,
-  receipt_size integer null,
   created_at timestamptz not null default now()
 );
 
@@ -121,7 +125,7 @@ create table if not exists public.settlements (
   from_member_id uuid not null references public.pot_members(id) on delete cascade,
   to_member_id uuid not null references public.pot_members(id) on delete cascade,
   amount_minor bigint not null,
-  currency_code text not null default 'DOT',
+  currency code text not null default 'DOT',
   status text not null default 'pending' check (status in ('pending','broadcast','finalised','failed','cancelled')),
   tx_hash text null,
   confirmations integer not null default 0,
@@ -137,8 +141,8 @@ alter table public.settlements disable row level security;
 create table if not exists public.payments (
   id uuid primary key default gen_random_uuid(),
   settlement_id uuid not null references public.settlements(id) on delete cascade,
-  method text not null,           -- 'onchain','bank','cash', etc.
-  reference text null,            -- tx hash or external ref
+  method text not null,
+  reference text null,
   created_at timestamptz not null default now()
 );
 
