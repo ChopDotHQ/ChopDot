@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ApiPromise } from '@polkadot/api';
-import { ScProvider, WellKnownChain, getWellKnownChain } from '@substrate/connect';
 import { getCurrentChain, type ChainPreset } from './chains';
 
 interface ChainContextValue { api?: ApiPromise; isReady: boolean; error?: unknown; preset: ChainPreset; setChain: (key: 'westend'|'polkadot') => void }
@@ -17,9 +16,29 @@ export const LightClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     let mounted = true;
     (async () => {
       try {
-        const chainSpec = getWellKnownChain(preset.wellKnown === 'westend2' ? WellKnownChain.westend2 : WellKnownChain.polkadot);
-        const provider = new ScProvider(chainSpec);
-        await provider.connect();
+        // Dynamically import to tolerate API differences across @substrate/connect versions
+        const sc = await import('@substrate/connect');
+        const WellKnownChain = (sc as any).WellKnownChain;
+        const getWellKnownChain = (sc as any).getWellKnownChain;
+        const chainSpec = getWellKnownChain
+          ? getWellKnownChain(preset.wellKnown === 'westend2' ? WellKnownChain.westend2 : WellKnownChain.polkadot)
+          : undefined;
+
+        let provider: any;
+        if ((sc as any).ScProvider) {
+          provider = new (sc as any).ScProvider(chainSpec);
+        } else if ((sc as any).createScProvider) {
+          provider = (sc as any).createScProvider(chainSpec);
+        } else if ((sc as any).default) {
+          provider = new (sc as any).default(chainSpec);
+        } else {
+          throw new Error('Light client provider not available in @substrate/connect');
+        }
+
+        if (typeof provider.connect === 'function') {
+          await provider.connect();
+        }
+
         const { ApiPromise } = await import('@polkadot/api');
         const apiInst = await ApiPromise.create({ provider: provider as unknown as any });
         if (!mounted) return;
