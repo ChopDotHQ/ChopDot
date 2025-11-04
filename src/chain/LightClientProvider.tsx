@@ -18,6 +18,7 @@ export const LightClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
     let mounted = true;
     (async () => {
       try {
+        console.warn('[CHOPDOT-DEBUG] LightClient init start', { preset });
         const chain = preset.wellKnown === 'westend2' ? WellKnownChain.westend2 : WellKnownChain.polkadot;
         const provider = new (ScProvider as unknown as any)(chain as unknown as any);
         await provider.connect();
@@ -27,9 +28,11 @@ export const LightClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
         await apiInst.isReady;
         if (!mounted) return;
         setIsReady(true);
+        console.warn('[CHOPDOT-DEBUG] LightClient ready');
       } catch (_e) {
         // Dev fallback: attempt public RPC if light client fails (keeps UX unblocked)
         try {
+          console.warn('[CHOPDOT-DEBUG] LightClient failed, fallback to WsProvider');
           const ws = new WsProvider('wss://westend-rpc.polkadot.io');
           const apiInst = await ApiPromise.create({ provider: ws });
           if (!mounted) return;
@@ -40,6 +43,7 @@ export const LightClientProvider: React.FC<{ children: React.ReactNode }> = ({ c
         } catch (e2) {
           if (!mounted) return;
           setError(e2);
+          console.error('[CHOPDOT-DEBUG] Fallback failed', e2);
         }
       }
     })();
