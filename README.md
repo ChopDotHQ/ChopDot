@@ -53,6 +53,25 @@ Designed for composability and multi‑chain collaboration. We start off‑chain
 
 Then open `http://localhost:5173`.
 
+### Wallet-only & local-first (MVP)
+
+- Connect a Polkadot extension (Polkadot.js, SubWallet, or Talisman)
+- A light client (Substrate Connect) is used by default (no hosted RPC)
+- Data is stored locally via Yjs (IndexedDB) with optional P2P sync via y-webrtc
+
+### Test on Westend (WND)
+
+- Get WND from the Westend faucet (search "Westend faucet") and send to your test address.
+- In Settings → Target chain (dev), you can switch between Westend and Asset Hub (Polkadot). The light client reconnects automatically.
+
+### Invites (serverless)
+
+- Invites are signed payloads you can share as links. The recipient verifies the signature and joins the pot; no server needed.
+
+### Local data & reset
+
+- All data is stored in your browser (IndexedDB + localStorage). To reset in dev, clear site data in your browser for this origin.
+
 ### Demo Mode
 
 For safe public demos, you can enable a restricted mode that disables wallet connections and message signing.

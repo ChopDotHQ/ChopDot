@@ -11,10 +11,7 @@ declare module 'next-themes@0.4.6' { export * from 'next-themes'; }
 declare module 'lucide-react@0.487.0' { export * from 'lucide-react'; }
 declare module 'input-otp@1.4.2' { export * from 'input-otp'; }
 declare module 'embla-carousel-react@8.6.0' { export * from 'embla-carousel-react'; }
-// Web3Auth shims (optional integration in prototype)
-declare module '@web3auth/modal' { const x: any; export = x; }
-declare module '@web3auth/base' { export const CHAIN_NAMESPACES: any; export const WEB3AUTH_NETWORK: any; export const WALLET_ADAPTERS: any; }
-declare module '@web3auth/base-provider' { export const CommonPrivateKeyProvider: any; }
+// (removed) web3auth shims
 declare module 'cmdk@1.1.1' { export * from 'cmdk'; }
 declare module 'class-variance-authority@0.7.1' { export * from 'class-variance-authority'; }
 declare module '@radix-ui/react-tooltip@1.1.8' { export * from '@radix-ui/react-tooltip'; }

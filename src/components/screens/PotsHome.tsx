@@ -1,6 +1,9 @@
 import { Plus, Bell, TrendingUp, Search, Eye, EyeOff, ListFilter, Receipt, ArrowLeftRight, QrCode, Send, Wallet } from "lucide-react";
 import { WalletBanner } from "../WalletBanner";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
+import { useWallet } from "../../wallet/WalletProvider";
+import { AccountMenu } from "../polkadot/AccountMenu";
+import { listMyPots, createPot, indexPot } from "../../repos/potsRepo";
 import { useState, useMemo } from "react";
 
 interface Pot {
@@ -67,6 +70,21 @@ export function PotsHome({
   const [searchQuery, setSearchQuery] = useState("");
   const [showSortSheet, setShowSortSheet] = useState(false);
   const [sortBy, setSortBy] = useState<string>("recent");
+  const { selected, isConnected } = useWallet();
+  const [localPotIds, setLocalPotIds] = useState<string[]>([]);
+
+  // Minimal local-first wiring: show pot ids for the selected account and allow quick create
+  // This does not replace existing rich UI; it's a temporary dev block.
+  useMemo(() => {
+    (async () => {
+      if (selected?.address) {
+        const ids = await listMyPots(selected.address);
+        setLocalPotIds(ids);
+      } else {
+        setLocalPotIds([]);
+      }
+    })();
+  }, [selected?.address]);
 
   const sortOptions: SortOption[] = [
     { id: "recent", label: "Recent activity" },
@@ -122,7 +140,8 @@ export function PotsHome({
       {/* Unified Header */}
       <div className="bg-background border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 z-10">
         <h1 className="text-screen-title">Pots</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <AccountMenu />
           {/* Wallet icon */}
           {onWalletClick && (
             <button
@@ -156,6 +175,34 @@ export function PotsHome({
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="p-4 space-y-3">
+          {/* Dev: Local pots (Yjs index) */}
+          {isConnected && (
+            <div className="card p-3">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-label text-secondary">Local pots (dev)</p>
+                <button
+                  onClick={async () => {
+                    if (!selected?.address) return;
+                    const name = prompt('New pot name') || 'New Pot';
+                    const id = await createPot(selected.address, name);
+                    indexPot(id);
+                    const ids = await listMyPots(selected.address);
+                    setLocalPotIds(ids);
+                  }}
+                  className="px-2 py-1 rounded border text-xs"
+                >Create</button>
+              </div>
+              {localPotIds.length === 0 ? (
+                <p className="text-xs opacity-70">No pots yet</p>
+              ) : (
+                <ul className="text-xs grid gap-1">
+                  {localPotIds.map((id) => (
+                    <li key={id} className="truncate">{id}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
           {/* Wallet Connection Banner */}
           {!walletConnected && (
             <WalletBanner

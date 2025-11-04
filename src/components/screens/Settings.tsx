@@ -4,6 +4,8 @@ import { InputField } from "../InputField";
 import { SelectField } from "../SelectField";
 import { useState } from "react";
 import { Theme } from "../../utils/useTheme";
+import { useChain } from "../../chain/LightClientProvider";
+import { CHAINS } from "../../chain/chains";
 
 interface SettingsProps {
   onBack?: () => void;
@@ -22,6 +24,7 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
   const [currency, setCurrency] = useState("USD");
   const [language, setLanguage] = useState("English");
   const [hasChanges, setHasChanges] = useState(false);
+  const { preset, setChain } = useChain();
 
   const handleSave = () => {
     // In a real app, this would save to backend/database
@@ -93,6 +96,19 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
           {/* Preferences Section */}
           <div className="space-y-3">
             <h2 className="text-label text-muted-foreground px-1">Preferences</h2>
+            {/* Dev: Chain switch */}
+            <SelectField
+              label="Target chain (dev)"
+              value={preset.key === 'westend' ? 'westend' : 'polkadot'}
+              onChange={(value) => {
+                setChain((value as 'westend'|'polkadot'));
+              }}
+              options={[
+                { value: 'westend', label: CHAINS.westend.label },
+                { value: 'polkadot', label: CHAINS.polkadot.label },
+              ]}
+            />
+
 
             {/* Notifications Toggle */}
             <div className="p-3 glass-sm rounded-xl">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AddressDisplay } from "../AddressDisplay";
 import { Wallet, Check, AlertCircle } from "lucide-react";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
@@ -73,7 +74,7 @@ export function ConnectWallet({
           
           <div className="flex-1 min-w-0">
             <p className="text-label text-muted truncate">Connected Wallet</p>
-            <p className="text-body font-medium truncate">{address}</p>
+            {address ? <AddressDisplay address={address} /> : null}
           </div>
           
           {/* Network Badge */}

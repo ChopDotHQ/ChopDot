@@ -12,6 +12,12 @@
     "lint:tokens": "! rg -n \"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\" src --glob '!**/*.{png,jpg,jpeg,svg,webp,gif}' | rg -v 'var\\(' && ! rg -n 'accent-orange|gradient-orange' src"
   },
   "dependencies": {
+    "@polkadot/react-identicon": "^3.7.3",
+    "@polkadot/api": "^12.2.1",
+    "@substrate/connect": "^0.10.9",
+    "y-indexeddb": "^9.0.12",
+    "y-webrtc": "^10.6.3",
+    "yjs": "^13.6.15",
     "@polkadot/extension-dapp": "^0.62.2",
     "@polkadot/util": "^13.5.7",
     "@polkadot/util-crypto": "^13.5.7",
@@ -42,13 +48,13 @@
     "@radix-ui/react-toggle": "^1.1.1",
     "@radix-ui/react-toggle-group": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
-    "@walletconnect/ethereum-provider": "^2.22.4",
+    
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.5.1",
-    "ethers": "^6.15.0",
+    
     "input-otp": "^1.4.1",
     "lucide-react": "^0.460.0",
     "motion": "^12.23.24",

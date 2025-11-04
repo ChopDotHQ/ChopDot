@@ -26,9 +26,9 @@ import {
   calculateSettlements,
   calculatePotSettlements,
 } from "./utils/settlements";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+// Auth runtime removed; wallet is identity
+import { useWallet } from "./wallet/WalletProvider";
 import { FeatureFlagsProvider, useFeatureFlags } from "./contexts/FeatureFlagsContext";
-import { LoginScreen } from "./components/screens/LoginScreen";
 import { ActivityHome } from "./components/screens/ActivityHome";
 import { PotsHome } from "./components/screens/PotsHome";
 import { PeopleHome } from "./components/screens/PeopleHome";
@@ -200,13 +200,8 @@ function AppContent() {
   // Theme management
   const { theme, setTheme } = useTheme();
 
-  // Authentication
-  const {
-    user,
-    isLoading: authLoading,
-    isAuthenticated,
-    logout,
-  } = useAuth();
+  // Wallet identity
+  const { selected, isConnected, selectAccount } = useWallet();
 
   // ========================================
   // NAVIGATION & ROUTING
@@ -1639,12 +1634,12 @@ function AppContent() {
   const handleLogout = async () => {
     try {
       triggerHaptic("medium");
-      await logout();
-      showToast("Logged out successfully", "success");
-      // User will be redirected to login screen by auth state change
+      localStorage.removeItem('selectedAddr');
+      selectAccount('');
+      showToast("Disconnected", "success");
     } catch (error) {
-      console.error("Logout failed:", error);
-      showToast("Logout failed", "error");
+      console.error("Disconnect failed:", error);
+      showToast("Disconnect failed", "error");
     }
   };
 
@@ -2203,8 +2198,8 @@ function AppContent() {
             onThemeChange={setTheme}
             onLogout={handleLogout}
             onDeleteAccount={handleDeleteAccount}
-            userName={user?.name || "You"}
-            isGuest={user?.isGuest || false}
+            userName={selected?.meta?.name || (selected?.address ? `${selected.address.slice(0,6)}…${selected.address.slice(-4)}` : 'You')}
+            isGuest={false}
           />
         );
 
@@ -3049,39 +3044,7 @@ function AppContent() {
   // Get FAB state for current context
   const fabState = getFabState();
 
-  // Show loading screen ONLY while checking auth
-  // localStorage loads in background - no blocking!
-  if (authLoading) {
-    return (
-      <div className="app-shell bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div
-            className="w-16 h-16 mx-auto mb-4 rounded-3xl flex items-center justify-center"
-            style={{
-              background: 'var(--accent)',
-            }}
-          >
-            <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
-          </div>
-          <p className="text-sm text-secondary">
-            Loading ChopDot...
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">
-            Check console for debug info
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show login screen if not authenticated
-  if (!isAuthenticated) {
-    return (
-      <div className="app-shell bg-background overflow-auto">
-        <LoginScreen />
-      </div>
-    );
-  }
+  // No auth gate; wallet connect handled in UI
 
   return (
     <div className="app-shell bg-background overflow-hidden">
@@ -3338,9 +3301,7 @@ function AppContent() {
 export default function App() {
   return (
     <FeatureFlagsProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
+      <AppContent />
     </FeatureFlagsProvider>
   );
 }

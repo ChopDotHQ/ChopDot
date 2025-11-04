@@ -3,6 +3,10 @@ import { PrimaryButton } from "../PrimaryButton";
 import { WalletBanner } from "../WalletBanner";
 import { Banknote, Building2, Wallet, CheckCircle2, CreditCard, Smartphone, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { SettleDot } from "../settle/SettleDot";
+import { SettlementHistory as PotSettlementHistory } from "../settle/SettlementHistory";
+import { SettleOffchain } from "../settle/SettleOffchain";
+import { PotCheckpoint } from "../pots/PotCheckpoint";
 import { pushTxToast, updateTxToast, isTxActive } from "../../hooks/useTxToasts";
 import { useFeatureFlags } from "../../contexts/FeatureFlagsContext";
 
@@ -76,6 +80,7 @@ export function SettleHome({
   
   // Settlement loading state
   const [isSettling, setIsSettling] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   
   // Update selection only when the preferred method changes
   // Do NOT change on wallet connect; preserve the user's current tab
@@ -540,100 +545,47 @@ export function SettleHome({
           </div>
         )}
 
-        {POLKADOT_APP_ENABLED && selectedMethod === "dot" && (
-          <div className="card p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-gradient-to-br from-pink-400 to-purple-500" />
-              <p className="text-body font-medium">Polkadot Settlement</p>
-            </div>
-            <p className="text-caption text-secondary">
-              {walletConnected 
-                ? `Send ${Math.abs(totalAmount).toFixed(2)} USDT on Polkadot. This will create an on-chain transaction.`
-                : 'Connect your Polkadot wallet to settle on-chain in USDT.'
-              }
-            </p>
+        {POLKADOT_APP_ENABLED && selectedMethod === "dot" && walletConnected && _potId && (
+          <SettleDot potId={_potId} />
+        )}
 
-            {/* Fee & Total Section - Only visible when wallet connected */}
-            {walletConnected && (
-              <div className="pt-3 space-y-3">
-                {/* Loading State */}
-                {feeLoading && (
-                  <div className="flex items-center gap-2 text-caption text-muted">
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    <span>Estimating…</span>
-                  </div>
-                )}
+        {_potId && (
+          <PotSettlementHistory potId={_potId} />
+        )}
 
-                {/* Success State - Fee Row */}
-                {!feeLoading && feeEstimate !== null && !feeError && (
-                  <div className="flex justify-between text-caption">
-                    <span className="text-muted">Network fee (est.):</span>
-                    <span className="tabular-nums text-muted">~{feeEstimate.toFixed(4)} DOT</span>
-                  </div>
-                )}
+        {/* Off-chain cash/bank */}
+        {_potId && (selectedMethod === 'cash' || selectedMethod === 'bank') && (
+          <SettleOffchain potId={_potId} />
+        )}
 
-                {/* Error State */}
-                {!feeLoading && feeError && (
-                  <div className="flex justify-between text-caption">
-                    <span className="text-muted">Network fee (est.):</span>
-                    <span style={{ color: 'var(--danger)', opacity: 0.6 }}>Fee unavailable</span>
-                  </div>
-                )}
-
-                {/* Service Fee Row */}
-                {!feeLoading && (() => {
-                  const bps = Math.max(0, Number(SERVICE_FEE_CAP_BPS) || 0);
-                  const serviceFee = Math.max(0, Math.abs(totalAmount)) * (bps / 10_000);
-                  const servicePct = (bps / 100).toFixed(2);
-                  
-                  return (
-                    <div className="flex justify-between text-caption">
-                      <span className="text-muted">Service fee ({servicePct}%):</span>
-                      <span className="tabular-nums text-muted">{serviceFee.toFixed(2)} USD</span>
-                    </div>
-                  );
-                })()}
-
-                {/* Divider */}
-                {!feeLoading && (
-                  <div className="border-t border-border/50" />
-                )}
-
-                {/* Total Row - Always show when not loading */}
-                {!feeLoading && (
-                  <div className="flex justify-between items-start">
-                    <span className="text-body font-medium">Total you'll send:</span>
-                    <div className="text-right">
-                      <p className="text-body font-medium tabular-nums">{Math.abs(totalAmount).toFixed(2)} USDT</p>
-                      <p className="text-caption text-muted tabular-nums">
-                        {feeEstimate !== null && !feeError 
-                          ? `+ ~${feeEstimate.toFixed(4)} DOT`
-                          : '+ network fee'
-                        }
-                      </p>
-                    </div>
-                  </div>
-                )}
+        {/* Advanced: optional checkpoint anchor */}
+        {_potId && (
+          <div className="pt-2">
+            <button className="text-xs underline opacity-70" onClick={() => setShowAdvanced(!showAdvanced)}>
+              {showAdvanced ? 'Hide advanced' : 'Show advanced'}
+            </button>
+            {showAdvanced && (
+              <div className="mt-2">
+                <PotCheckpoint potId={_potId} />
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* Bottom CTA */}
-      <div className="p-4 bg-background border-t border-border">
-        <PrimaryButton
-          fullWidth
-          onClick={handleConfirm}
-          disabled={!isValid || isLoading}
-          loading={isLoading}
-        >
-          {selectedMethod === "dot" && !walletConnected 
-            ? "Connect Wallet" 
-            : `Confirm ${selectedMethod === "cash" ? "Cash" : selectedMethod === "bank" ? "Bank" : selectedMethod === "paypal" ? "PayPal" : selectedMethod === "twint" ? "TWINT" : "DOT"} Settlement`
-          }
-        </PrimaryButton>
-      </div>
+      {/* Bottom CTA (hidden when DOT flow is active, handled by SettleDot) */}
+      {selectedMethod !== 'dot' && (
+        <div className="p-4 bg-background border-t border-border">
+          <PrimaryButton
+            fullWidth
+            onClick={handleConfirm}
+            disabled={!isValid || isLoading}
+            loading={isLoading}
+          >
+            {`Confirm ${selectedMethod === "cash" ? "Cash" : selectedMethod === "bank" ? "Bank" : selectedMethod === "paypal" ? "PayPal" : selectedMethod === "twint" ? "TWINT" : "DOT"} Settlement`}
+          </PrimaryButton>
+        </div>
+      )}
     </div>
   );
 }
