@@ -8,50 +8,14 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    {
-      name: 'polkadot-wasm-shims',
-      resolveId(id) {
-        if (id.includes('@polkadot/wasm-crypto/packageDetect.js') || id.includes('@polkadot/wasm-crypto/packageDetect')) {
-          return '/src/shims/polkadot-wasm-detect.ts';
-        }
-        if (id.includes('@polkadot/wasm-crypto-wasm/cjs/bytes.js')) {
-          return '/src/shims/polkadot-wasm-bytes.ts';
-        }
-        if (id === '@polkadot/wasm-crypto-wasm' || id.includes('@polkadot/wasm-crypto-wasm/bundle')) {
-          // Let explicit aliases below handle these, but keep fallback
-          return null;
-        }
-        return null;
-      },
-    },
-    {
-      name: 'polkadot-wasm-redirect',
-      configureServer(server) {
-        server.middlewares.use((req, res, next) => {
-          const url = req.url || '';
-          if (url.startsWith('/node_modules/@polkadot/wasm-crypto/packageDetect')) {
-            res.setHeader('Content-Type', 'application/javascript');
-            res.end('export {};');
-            return;
-          }
-          next();
-        });
-      },
-    },
   ],
   resolve: {
     alias: {
       buffer: 'buffer/',
+      'bn.js/lib/bn.js': '/src/shims/bn.ts',
       
       'eventemitter3': '/src/shims/eventemitter3.ts',
-      '/node_modules/@polkadot/wasm-crypto/packageDetect.js': '/src/shims/polkadot-wasm-detect.ts',
-      '/node_modules/@polkadot/wasm-crypto/packageDetect': '/src/shims/polkadot-wasm-detect.ts',
-      '@polkadot/wasm-crypto-wasm': '/src/shims/polkadot-wasm-index.ts',
-      '@polkadot/wasm-crypto-wasm/bundle.js': '/src/shims/polkadot-wasm-bundle.ts',
-      '@polkadot/wasm-crypto-wasm/bundle': '/src/shims/polkadot-wasm-bundle.ts',
-      '@polkadot/wasm-crypto-wasm/cjs/bytes.js': '/src/shims/polkadot-wasm-bytes.ts',
-      '@polkadot/wasm-crypto/packageDetect.js': '/src/shims/polkadot-wasm-detect.ts',
-      '@polkadot/wasm-crypto/packageDetect': '/src/shims/polkadot-wasm-detect.ts',
+      // Keep only essential aliases
       '@': path.resolve(__dirname, './'),
       // Map version-suffixed imports (from generated UI files) to actual packages
       'vaul@1.1.2': 'vaul',
@@ -130,11 +94,6 @@ export default defineConfig({
       '@polkadot/rpc-augment',
       '@polkadot/rpc-provider',
       '@polkadot/api-derive',
-      '@polkadot/wasm-crypto',
-      '@polkadot/wasm-crypto-wasm',
-      '@polkadot/wasm-crypto-asmjs',
-      '@polkadot/wasm-crypto-init',
-      '@polkadot/wasm-util',
     ],
   },
 })
