@@ -53,11 +53,14 @@ Designed for composability and multi‑chain collaboration. We start off‑chain
 
 Then open `http://localhost:5173`.
 
-### Wallet-only & local-first (MVP)
+### Wallet-only & local-first (MVP‑1)
 
-- Connect a Polkadot extension (Polkadot.js, SubWallet, or Talisman)
-- A light client (Substrate Connect) is used by default (no hosted RPC)
-- Data is stored locally via Yjs (IndexedDB) with optional P2P sync via y-webrtc
+- Wallet = identity (Polkadot extensions: Polkadot.js / SubWallet / Talisman)
+- Light client by default (Substrate Connect, no hosted RPC)
+- Storage = Yjs + IndexedDB (+ optional P2P via y‑webrtc)
+- Settlements: DOT on-chain via `transferKeepAlive` + off‑chain (cash/bank)
+- Optional checkpoint (on-chain `system.remark` with pot state hash)
+- Reset local data in dev: clear site data (localStorage + IndexedDB)
 
 ### Test on Westend (WND)
 
