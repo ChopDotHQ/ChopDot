@@ -24,12 +24,28 @@ export default defineConfig({
         return null;
       },
     },
+    {
+      name: 'polkadot-wasm-redirect',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          const url = req.url || '';
+          if (url.startsWith('/node_modules/@polkadot/wasm-crypto/packageDetect')) {
+            res.setHeader('Content-Type', 'application/javascript');
+            res.end('export {};');
+            return;
+          }
+          next();
+        });
+      },
+    },
   ],
   resolve: {
     alias: {
       buffer: 'buffer/',
       'bn.js/lib/bn.js': '/src/shims/bn.ts',
       'bn.js': '/src/shims/bn.ts',
+      '/node_modules/@polkadot/wasm-crypto/packageDetect.js': '/src/shims/polkadot-wasm-detect.ts',
+      '/node_modules/@polkadot/wasm-crypto/packageDetect': '/src/shims/polkadot-wasm-detect.ts',
       '@polkadot/wasm-crypto-wasm': '/src/shims/polkadot-wasm-index.ts',
       '@polkadot/wasm-crypto-wasm/bundle.js': '/src/shims/polkadot-wasm-bundle.ts',
       '@polkadot/wasm-crypto-wasm/bundle': '/src/shims/polkadot-wasm-bundle.ts',
