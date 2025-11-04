@@ -14,9 +14,9 @@
   "dependencies": {
     "@polkadot/react-identicon": "^3.7.3",
     "@polkadot/api": "^12.2.1",
-    "@substrate/connect": "^0.10.9",
+    "@substrate/connect": "^2.1.8",
     "y-indexeddb": "^9.0.12",
-    "y-webrtc": "^10.6.3",
+    "y-webrtc": "^10.5.0",
     "yjs": "^13.6.15",
     "@polkadot/extension-dapp": "^0.62.2",
     "@polkadot/util": "^13.5.7",
