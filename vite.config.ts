@@ -11,7 +11,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      buffer: 'buffer',
+      buffer: 'buffer/',
       '@': path.resolve(__dirname, './'),
       // Map version-suffixed imports (from generated UI files) to actual packages
       'vaul@1.1.2': 'vaul',

@@ -6,7 +6,7 @@ import './styles/globals.css'
 import { WalletProvider } from './wallet/WalletProvider'
 import { LightClientProvider } from './chain/LightClientProvider'
 // Polyfill Node Buffer for libraries that expect it in the browser
-import { Buffer } from 'buffer'
+import { Buffer } from 'buffer/'
 ;(window as any).Buffer = (window as any).Buffer || Buffer
 
 // Hide loading spinner
