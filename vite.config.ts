@@ -8,6 +8,20 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    {
+      name: 'bn-redirect',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          const url = req.url || '';
+          if (url.startsWith('/node_modules/bn.js/lib/bn.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+            res.end("export { default as BN, BN as default } from '/src/shims/bn.ts';");
+            return;
+          }
+          next();
+        });
+      },
+    },
   ],
   resolve: {
     alias: {
