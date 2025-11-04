@@ -5,6 +5,7 @@
 import * as BNCommon from '/node_modules/bn.js/lib/bn.js';
 // bn.js is CJS; default may or may not exist depending on transform
 const BN: any = (BNCommon as any).default ?? (BNCommon as any);
+export { BN };
 export default BN;
 
 

@@ -13,6 +13,7 @@ export default defineConfig({
     alias: {
       buffer: 'buffer/',
       'bn.js/lib/bn.js': '/src/shims/bn.ts',
+      '/node_modules/bn.js/lib/bn.js': '/src/shims/bn.ts',
       
       'eventemitter3': '/src/shims/eventemitter3.ts',
       // Keep only essential aliases
@@ -94,6 +95,7 @@ export default defineConfig({
       '@polkadot/rpc-augment',
       '@polkadot/rpc-provider',
       '@polkadot/api-derive',
+      'bn.js',
     ],
   },
 })
