@@ -7,6 +7,8 @@ interface Person {
   trustScore: number;
   paymentPreference?: string;
   potCount?: number;
+  address?: string; // Optional DOT wallet address
+  currency?: string; // Optional display currency (e.g., 'DOT')
 }
 
 interface PeopleViewProps {
@@ -81,7 +83,14 @@ export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: 
                   className="text-body font-medium tabular-nums"
                   style={{ color: amountColor }}
                 >
-                  {isPositive ? '+' : ''}${Math.abs(person.balance).toFixed(2)}
+                  {(() => {
+                    const isDot = person.currency === 'DOT';
+                    const amt = Math.abs(person.balance);
+                    if (isDot) {
+                      return `${isPositive ? '' : ''}${amt.toFixed(6)} DOT`;
+                    }
+                    return `${isPositive ? '+' : ''}$${amt.toFixed(2)}`;
+                  })()}
                 </p>
                 <div className="mt-1">
                   <span

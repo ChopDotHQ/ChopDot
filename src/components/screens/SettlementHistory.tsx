@@ -24,7 +24,13 @@ export function SettlementHistory({ settlements, onBack, personId }: SettlementH
   // Filter settlements by personId if provided
   const filteredSettlements = useMemo(() => {
     if (!personId) return settlements;
-    return settlements.filter(s => s.personName.toLowerCase() === personId.toLowerCase());
+    // Prefer matching by stored personId if present; fallback to name match for legacy entries
+    return settlements.filter((s: any) => {
+      const hasId = typeof s.personId === 'string' && s.personId.length > 0;
+      const matchById = hasId ? s.personId === personId : false;
+      const matchByName = s.personName && s.personName.toLowerCase() === personId.toLowerCase();
+      return matchById || matchByName;
+    });
   }, [settlements, personId]);
 
   // Format method name for display
@@ -74,7 +80,7 @@ export function SettlementHistory({ settlements, onBack, personId }: SettlementH
                 </div>
                 <div className="text-right">
                   <p className="text-body tabular-nums" style={{ fontWeight: 500 }}>
-                    ${settlement.amount.toFixed(2)}
+                    {settlement.currency === 'DOT' ? `${settlement.amount.toFixed(6)} DOT` : `$${settlement.amount.toFixed(2)}`}
                   </p>
                 </div>
               </div>
@@ -91,10 +97,15 @@ export function SettlementHistory({ settlements, onBack, personId }: SettlementH
                 )}
                 {settlement.txHash && (
                   <div className="flex justify-between text-caption text-secondary">
-                    <span>Tx Hash</span>
-                    <button className="text-micro underline font-mono text-secondary">
+                    <span>Tx</span>
+                    <a
+                      className="text-micro underline font-mono text-secondary"
+                      href={`https://assethub-polkadot.subscan.io/extrinsic/${settlement.txHash}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       {settlement.txHash.slice(0, 10)}...{settlement.txHash.slice(-8)}
-                    </button>
+                    </a>
                   </div>
                 )}
               </div>

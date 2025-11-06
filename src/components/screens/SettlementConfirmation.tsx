@@ -32,10 +32,10 @@ export function SettlementConfirmation({
           </div>
 
           <div className="text-center mb-8">
-            <h1 className="mb-2">
-              Settled ${result.amount} with {result.counterpartyName}
+            <h1 className="mb-1 text-screen-title" style={{ fontWeight: 600 }}>
+              Settled {typeof result.amount === 'number' ? `$${result.amount.toFixed(2)}` : String(result.amount)} with {result.counterpartyName}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-caption">
               {new Date(result.at).toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
@@ -63,9 +63,14 @@ export function SettlementConfirmation({
             {result.txHash && (
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Transaction</span>
-                <span className="font-mono text-sm truncate max-w-[180px]">
+                <a
+                  className="font-mono text-sm truncate max-w-[180px] underline"
+                  href={`https://assethub-polkadot.subscan.io/extrinsic/${result.txHash}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   {result.txHash}
-                </span>
+                </a>
               </div>
             )}
           </div>

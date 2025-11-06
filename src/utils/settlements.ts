@@ -41,6 +41,13 @@ interface Pot {
   baseCurrency: string;
   members: Member[];
   expenses: Expense[];
+  // Optional on-chain history for DOT settlements (when available)
+  history?: Array<{
+    fromMemberId: string;
+    toMemberId: string;
+    amountDot: string;
+    status: 'in_block' | 'finalized' | 'failed';
+  }>;
 }
 
 export interface Person {
@@ -134,9 +141,11 @@ export function calculateSettlements(
     const breakdown: SettlementBreakdown[] = [];
 
     for (const [potId, balance] of potBalances.entries()) {
-      if (Math.abs(balance) < 0.01) continue; // Skip negligible amounts
-
       const pot = pots.find((p) => p.id === potId);
+      // Currency-aware negligible threshold: DOT uses micro precision
+      const threshold = pot?.baseCurrency === 'DOT' ? 0.000001 : 0.01;
+      if (Math.abs(balance) < threshold) continue; // Skip negligible amounts
+
       if (!pot) continue;
 
       // From current user's perspective:
@@ -144,9 +153,26 @@ export function calculateSettlements(
       // Negative balance = current user owes person
       const currentUserBalance =
         personPotBalances.get(currentUserId)?.get(potId) || 0;
-      const netBalance = currentUserBalance - balance;
+      let netBalance = currentUserBalance - balance;
 
-      if (Math.abs(netBalance) >= 0.01) {
+      // Apply on-chain DOT settlements for this pot to move balances toward zero
+      if (pot.history && pot.history.length > 0) {
+        const relevant = pot.history.filter(h => h.status !== 'failed');
+        for (const h of relevant) {
+          const amt = Number(h.amountDot || '0');
+          if (!Number.isFinite(amt) || amt <= 0) continue;
+          if (h.fromMemberId === currentUserId && h.toMemberId === personId) {
+            // You paid them → you owe less → net increases toward zero
+            netBalance += amt;
+          } else if (h.fromMemberId === personId && h.toMemberId === currentUserId) {
+            // They paid you → they owe less → net decreases toward zero
+            netBalance -= amt;
+          }
+        }
+      }
+
+      const netThreshold = pot.baseCurrency === 'DOT' ? 0.000001 : 0.01;
+      if (Math.abs(netBalance) >= netThreshold) {
         breakdown.push({
           potName: pot.name,
           potId: pot.id,
@@ -258,9 +284,27 @@ export function calculatePotSettlements(
 
     // Calculate net balance
     // Positive = they owe you, Negative = you owe them
-    const balance = theirShareOfMyExpenses - myShareOfTheirExpenses;
+    let balance = theirShareOfMyExpenses - myShareOfTheirExpenses;
 
-    if (Math.abs(balance) < 0.01) continue; // Skip negligible amounts
+    // Apply DOT history offsets to move balance toward zero
+    if (pot.history && pot.history.length > 0) {
+      const relevant = pot.history.filter(h => h.status !== 'failed');
+      for (const h of relevant) {
+        const amt = Number(h.amountDot || '0');
+        if (!Number.isFinite(amt) || amt <= 0) continue;
+        if (h.fromMemberId === currentUserId && h.toMemberId === member.id) {
+          // You paid them → you owe less → reduce how much you owe (increase balance)
+          balance += amt;
+        } else if (h.fromMemberId === member.id && h.toMemberId === currentUserId) {
+          // They paid you → they owe less → decrease balance
+          balance -= amt;
+        }
+      }
+    }
+
+    // Currency-aware negligible threshold: DOT uses micro precision
+    const threshold = pot.baseCurrency === 'DOT' ? 0.000001 : 0.01;
+    if (Math.abs(balance) < threshold) continue; // Skip negligible amounts
 
     byPerson.set(member.id, balance);
 

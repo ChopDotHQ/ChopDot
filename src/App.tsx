@@ -679,9 +679,18 @@ function AppContent() {
             name: member.name,
             balance: 0,
             trustScore: 95,
-            paymentPreference: "Bank",
+            paymentPreference: member.address ? "DOT" : "Bank",
             potCount: 0,
           });
+        }
+        // Upgrade existing entry if we discover a wallet address in any pot
+        if (member.id !== 'owner') {
+          const existing = peopleMap.get(member.id);
+          if (existing && member.address) {
+            existing.paymentPreference = 'DOT';
+            // @ts-expect-error augment at runtime for People screens that read address
+            existing.address = member.address;
+          }
         }
       });
     });
@@ -1840,6 +1849,14 @@ function AppContent() {
     const start = performance.now();
     const items: ActivityItem[] = [];
 
+    // Build person name map for quick lookup
+    const personNames = new Map<string, string>();
+    pots.forEach((pot) => {
+      pot.members.forEach((m) => {
+        if (!personNames.has(m.id)) personNames.set(m.id, m.name);
+      });
+    });
+
     pots.forEach((pot) => {
       pot.expenses.forEach((expense) => {
         // Add expense activity
@@ -1879,6 +1896,20 @@ function AppContent() {
             amount: undefined,
           });
         });
+      });
+    });
+
+    // Add settlement activities from settlements state
+    settlements.forEach((s) => {
+      const name = personNames.get(s.personId) || s.personId;
+      const title = `Settled ${s.currency === 'DOT' ? s.amount.toFixed(6) + ' DOT' : '$' + s.amount.toFixed(2)} with ${name}`;
+      items.push({
+        id: s.id,
+        type: 'settlement',
+        timestamp: s.date,
+        title,
+        subtitle: s.potIds && s.potIds.length > 0 ? `${s.potIds.map(pid => pots.find(p => p.id === pid)?.name || 'Unknown').join(', ')}` : 'All pots',
+        amount: s.amount,
       });
     });
 
@@ -2772,9 +2803,8 @@ function AppContent() {
         );
 
       case "settle-home":
-        // Extract personId from screen params
-        const personIdFromNav =
-          screen.personId || selectedCounterpartyId;
+        // Determine the selected counterparty (explicit selection or auto-select the largest)
+        let personIdFromNav = screen.personId || selectedCounterpartyId;
 
         // Determine if this is pot-scoped or global
         const settleScope = currentPotId ? "pot" : "global";
@@ -2787,6 +2817,18 @@ function AppContent() {
           currentPotId && getCurrentPot()
             ? calculatePotSettlements(getCurrentPot()!, "owner")
             : balances;
+
+        // If no person explicitly selected, auto-select the counterparty with the largest absolute amount
+        if (!personIdFromNav) {
+          const candidates = [
+            ...scopedSettlements.youOwe.map((p) => ({ id: p.id, amount: Math.abs(p.totalAmount) })),
+            ...scopedSettlements.owedToYou.map((p) => ({ id: p.id, amount: Math.abs(p.totalAmount) })),
+          ];
+          const best = candidates.sort((a, b) => b.amount - a.amount)[0];
+          if (best && best.amount > 0) {
+            personIdFromNav = best.id;
+          }
+        }
 
         // Convert PersonSettlement to Settlement format with direction
         const convertToSettlements = (
@@ -2898,7 +2940,7 @@ function AppContent() {
                   activeSettlements[0]?.id ||
                   "unknown",
                 amount: settlementAmount,
-                currency: "USD",
+                currency: (currentPotId && getCurrentPot() ? getCurrentPot()!.baseCurrency : "USD") as any,
                 method: method as any,
                 potIds: currentPotId
                   ? [currentPotId]
@@ -2908,6 +2950,31 @@ function AppContent() {
                   method === "dot" ? reference : undefined,
               };
               setSettlements([newSettlement, ...settlements]);
+
+              // If this was a DOT pot-scoped settlement, append to the pot's on-chain history for UI visibility
+              if (settleScope === 'pot' && method === 'dot' && currentPotId && reference) {
+                const fromAddress = connectedWallet?.address || '';
+                const toAddress = recipientAddress || '';
+                const historyEntry: PotHistory = {
+                  id: `${Date.now()}`,
+                  type: 'onchain_settlement',
+                  fromMemberId: 'owner',
+                  toMemberId: personIdFromNav || 'unknown',
+                  fromAddress,
+                  toAddress,
+                  amountDot: String(Number(settlementAmount.toFixed(6))),
+                  txHash: reference,
+                  status: 'in_block',
+                  when: Date.now(),
+                  subscan: `https://assethub-polkadot.subscan.io/extrinsic/${reference}`,
+                };
+                const updatedPots = pots.map(p => p.id === currentPotId ? { ...p, history: [historyEntry, ...(p.history || [])] } : p);
+                setPots(updatedPots);
+                // Persist to localStorage so it survives reload and is visible on return
+                try {
+                  localStorage.setItem('pots', JSON.stringify(updatedPots));
+                } catch {}
+              }
 
               // Show toast and navigate back
               const methodLabels: Record<string, string> = {
@@ -2928,14 +2995,19 @@ function AppContent() {
                 "success",
               );
 
-              // Reset based on scope
-              if (settleScope === "pot") {
-                // Go back to pot detail
-                back();
-              } else {
-                // Reset to people home
-                reset({ type: "people-home" });
-              }
+              // Navigate to confirmation screen with tx data
+              push({
+                type: "settlement-confirmation",
+                result: {
+                  amount: Number(settlementAmount.toFixed(6)),
+                  method: method as any,
+                  ref: method === "bank" ? reference : undefined,
+                  txHash: method === "dot" ? reference : undefined,
+                  pots: currentPotId && getCurrentPot() ? [{ id: currentPotId, name: getCurrentPot()!.name, amount: Number(settlementAmount.toFixed(6)) }] : [],
+                  at: Date.now(),
+                  counterpartyName,
+                },
+              });
             }}
             onHistory={() => {
               // Navigate to history filtered by person if person-scoped

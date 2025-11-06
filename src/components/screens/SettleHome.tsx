@@ -136,9 +136,15 @@ export function SettleHome({
     }
   }, [selectedMethod, walletConnected]);
 
-  const totalAmount = settlements.reduce((sum, s) => {
-    return s.direction === "owe" ? sum + s.totalAmount : sum - s.totalAmount;
-  }, 0);
+  // Compute directionally so we don't accidentally net to 0 when both directions exist
+  const amountYouOwe = settlements
+    .filter(s => s.direction === "owe")
+    .reduce((sum, s) => sum + s.totalAmount, 0);
+  const amountOwedToYou = settlements
+    .filter(s => s.direction === "owed")
+    .reduce((sum, s) => sum + s.totalAmount, 0);
+  // Choose the active side: if you owe anything, you are paying; otherwise you are receiving
+  const totalAmount = amountYouOwe > 0 ? amountYouOwe : -amountOwedToYou;
 
   const isPaying = totalAmount > 0;
   // Get counterparty name from settlements - if multiple, use the first one
@@ -203,14 +209,12 @@ export function SettleHome({
                 currency: 'DOT',
               });
             } else if (status === 'inBlock' && ctx?.txHash) {
-              const config = polkadotChainService.getConfig();
               updateTxToast('inBlock', {
                 amount: amountDot,
                 currency: 'DOT',
                 txHash: ctx.txHash,
                 fee: feeEstimate || 0.0024,
                 feeCurrency: 'DOT',
-                subscan: `${config.subscanExtrinsicBase}/${ctx.txHash}`,
               });
             } else if (status === 'finalized' && ctx?.blockHash) {
               updateTxToast('finalized', {
@@ -219,7 +223,6 @@ export function SettleHome({
                 txHash: result.txHash,
                 fee: feeEstimate || 0.0024,
                 feeCurrency: 'DOT',
-                blockHash: ctx.blockHash,
               });
             }
           },
@@ -261,6 +264,7 @@ export function SettleHome({
 
   // Check if DOT settlement is valid (requires wallet connected AND recipient address)
   const isDotValid = selectedMethod === "dot" && walletConnected && !!recipientAddress;
+  const showDotMethod = isDotPot && !!recipientAddress;
   
   const isValid = 
     selectedMethod === "cash" || 
@@ -376,7 +380,7 @@ export function SettleHome({
           <label className="text-caption text-secondary">Payment Method</label>
           
           {/* Tab Buttons - 4-5 methods: Cash, Bank, PayPal, TWINT, DOT (conditional) */}
-          <div className={`card p-1 grid gap-1 ${POLKADOT_APP_ENABLED ? 'grid-cols-5' : 'grid-cols-4'}`}>
+          <div className={`card p-1 grid gap-1 ${POLKADOT_APP_ENABLED && showDotMethod ? 'grid-cols-5' : 'grid-cols-4'}`}>
             <button
               onClick={() => setSelectedMethod("cash")}
               className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${
@@ -453,7 +457,7 @@ export function SettleHome({
               </div>
             </button>
             
-            {POLKADOT_APP_ENABLED && (
+            {POLKADOT_APP_ENABLED && showDotMethod && (
               <button
                 onClick={() => setSelectedMethod("dot")}
                 className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${
@@ -474,6 +478,11 @@ export function SettleHome({
               </button>
             )}
           </div>
+          {!showDotMethod && isDotPot && (
+            <p className="text-caption text-secondary mt-2">
+              Add a wallet address for this person in Members to enable DOT settlement.
+            </p>
+          )}
         </div>
 
         {/* Method Details */}
@@ -611,6 +620,46 @@ export function SettleHome({
                         : `Connect your Polkadot wallet to settle on-chain in ${baseCurrency}.`
                       }
                     </p>
+
+            {/* From/To details when wallet connected and address available */}
+            {walletConnected && recipientAddress && (
+              <div className="pt-3 grid gap-2 text-caption">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted">From</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-sm truncate max-w-[180px]">
+                      {(account.address0 || '').slice(0, 6)}...{(account.address0 || '').slice(-6)}
+                    </span>
+                    <button
+                      className="text-micro underline opacity-70 hover:opacity-100"
+                      onClick={() => {
+                        navigator.clipboard.writeText(account.address0 || '').catch(() => {});
+                        onShowToast?.('Copied sender address', 'info');
+                      }}
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-muted">To</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-sm truncate max-w-[180px]">
+                      {recipientAddress.slice(0, 6)}...{recipientAddress.slice(-6)}
+                    </span>
+                    <button
+                      className="text-micro underline opacity-70 hover:opacity-100"
+                      onClick={() => {
+                        navigator.clipboard.writeText(recipientAddress).catch(() => {});
+                        onShowToast?.('Copied recipient address', 'info');
+                      }}
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Fee & Total Section - Only visible when wallet connected */}
             {walletConnected && (
