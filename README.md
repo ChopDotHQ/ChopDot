@@ -53,6 +53,13 @@ Designed for composability and multi‑chain collaboration. We start off‑chain
 
 Then open `http://localhost:5173`.
 
+### Mainnet transfer test
+
+- Temporary page to test a real DOT transfer on Polkadot mainnet.
+- Open `/chain-test` (e.g., `http://localhost:5173/chain-test`). You need a Substrate wallet extension (SubWallet, Talisman, or Polkadot.js) and real DOT.
+- Suggested test amount: 0.01 DOT. Network fees apply.
+- After sending, view the transaction on Polkadot Subscan: `https://polkadot.subscan.io/extrinsic/<txHash>`.
+
 ### Demo Mode
 
 For safe public demos, you can enable a restricted mode that disables wallet connections and message signing.
