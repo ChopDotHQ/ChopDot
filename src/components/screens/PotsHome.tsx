@@ -2,6 +2,7 @@ import { Plus, Bell, TrendingUp, Search, Eye, EyeOff, ListFilter, Receipt, Arrow
 import { WalletBanner } from "../WalletBanner";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { useState, useMemo } from "react";
+import { AccountMenu } from "../AccountMenu";
 
 interface Pot {
   id: string;
@@ -123,18 +124,8 @@ export function PotsHome({
       <div className="bg-background border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 z-10">
         <h1 className="text-screen-title">Pots</h1>
         <div className="flex items-center gap-2">
-          {/* Wallet icon */}
-          {onWalletClick && (
-            <button
-              onClick={onWalletClick}
-              className="relative p-1.5 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
-            >
-              <Wallet className="w-4 h-4 text-foreground" />
-              {walletConnected && (
-                <div className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full" style={{ background: 'var(--success)' }} />
-              )}
-            </button>
-          )}
+          {/* Account Menu - unified wallet connection */}
+          <AccountMenu />
           
           {/* Notification bell */}
           {onNotificationClick && (
@@ -156,13 +147,8 @@ export function PotsHome({
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="p-4 space-y-3">
-          {/* Wallet Connection Banner */}
-          {!walletConnected && (
-            <WalletBanner
-              isConnected={false}
-              onConnect={() => onWalletClick && onWalletClick()}
-            />
-          )}
+          {/* Wallet Balance Banner - Shows when connected */}
+          <WalletBanner />
 
           {/* Balance Summary with Privacy Toggle */}
           <div className="card p-4">

@@ -16,11 +16,12 @@ ChopDot brings familiar group-expense flows to a world where fairness and verifi
 - Interoperability – works great without a wallet; even better with one
 - Ownership – your data lives with you
 
-## What’s in the MVP today
+## What's in the MVP today
 - Mobile‑first PWA matching the wireframes (iPhone 15 viewport)
 - Group ledger UI: add expenses, see balances, prototype settlement flows
 - Local‑first persistence to keep state between sessions
 - Clean design system (CSS variables) and fast, modern stack (Vite + TS)
+- Member wallet addresses: Members can have an optional Polkadot wallet address. Any SS58 address is accepted; addresses are normalized to SS58-0 (Polkadot format) for display and settlements.
 
 ## What’s next
 - Wallet connection (Polkadot.js / SubWallet) with smooth onboarding

@@ -1,12 +1,15 @@
-import { UserPlus, MoreVertical, UserMinus, Send } from "lucide-react";
+import { UserPlus, MoreVertical, UserMinus, Send, Edit, Copy, CheckCircle } from "lucide-react";
 import { TrustDots } from "../TrustDots";
 import { useState } from "react";
+import { EditMemberModal } from "../EditMemberModal";
 
 interface Member {
   id: string;
   name: string;
   role: "Owner" | "Member";
   status: "active" | "pending";
+  address?: string;
+  verified?: boolean;
 }
 
 interface Expense {
@@ -20,8 +23,10 @@ interface MembersTabProps {
   members: Member[];
   expenses?: Expense[]; // Optional for calculating balances
   currentUserId?: string;
+  baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
   onAddMember: () => void;
   onRemoveMember: (id: string) => void;
+  onUpdateMember?: (member: { id: string; name: string; address?: string; verified?: boolean }) => void;
   onCopyInviteLink?: () => void;
   onResendInvite?: (memberId: string) => void;
 }
@@ -30,12 +35,16 @@ export function MembersTab({
   members, 
   expenses = [],
   currentUserId = "owner",
+  baseCurrency = "USD",
   onAddMember, 
   onRemoveMember,
+  onUpdateMember,
   onCopyInviteLink: _onCopyInviteLink,
   onResendInvite,
 }: MembersTabProps) {
+  const isDotPot = baseCurrency === 'DOT';
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [editingMember, setEditingMember] = useState<Member | null>(null);
 
   // Calculate balance for each member relative to current user
   const getMemberBalance = (memberId: string): number => {
@@ -168,8 +177,8 @@ export function MembersTab({
                         </span>
                       </div>
                       
-                      {/* Payment Preference Pill */}
-                      {paymentPref && (
+                      {/* Payment Preference Pill - Only show for non-DOT pots or when no address */}
+                      {paymentPref && !isDotPot && !member.address && (
                         <div className="flex items-center gap-1 mt-1">
                           <span 
                             className="inline-block px-2 py-0.5 rounded-md text-caption"
@@ -183,6 +192,34 @@ export function MembersTab({
                           </span>
                         </div>
                       )}
+                      
+                      {/* Wallet Address Display - Show for DOT pots or any pot with address */}
+                      {member.address && (
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
+                            <span className="text-[10px] font-mono text-foreground">
+                              {member.address.slice(0, 8)}...{member.address.slice(-6)}
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(member.address!);
+                              }}
+                              className="p-0.5 hover:bg-muted rounded transition-colors"
+                              title="Copy address"
+                            >
+                              <Copy className="w-3 h-3 text-muted-foreground" />
+                            </button>
+                            {member.verified && (
+                              <div className="flex items-center gap-0.5 px-1 py-0.5 bg-green-500/20 rounded text-[10px] text-green-600 dark:text-green-400">
+                                <CheckCircle className="w-2.5 h-2.5" />
+                                <span>Verified</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
                       
                       {/* Status for pending members */}
                       {member.status === "pending" && (
@@ -198,23 +235,34 @@ export function MembersTab({
                     {/* Balance (if not current user and there are expenses) */}
                     {!isCurrentUser && expenses.length > 0 && (
                       <div className="text-right">
-                        <p 
-                          className="text-body tabular-nums"
-                          style={{ 
-                            fontWeight: 500,
-                            color: Math.abs(balance) < 0.01 ? 'var(--muted)' : amountColor,
-                          }}
-                        >
-                          {Math.abs(balance) < 0.01 
+                        {(() => {
+                          // Use currency-aware threshold for "Settled" status
+                          const settleThreshold = isDotPot ? 0.000001 : 0.01;
+                          const isSettled = Math.abs(balance) < settleThreshold;
+                          const decimals = isDotPot ? 6 : 2;
+                          const balanceDisplay = isSettled 
                             ? "Settled" 
-                            : `${isPositive ? '+' : ''}$${Math.abs(balance).toFixed(2)}`
-                          }
-                        </p>
-                        {Math.abs(balance) >= 0.01 && (
-                          <p className="text-caption text-secondary">
-                            {isPositive ? "owes you" : "you owe"}
-                          </p>
-                        )}
+                            : `${isPositive ? '+' : ''}${isDotPot ? `${Math.abs(balance).toFixed(decimals)} DOT` : `$${Math.abs(balance).toFixed(decimals)}`}`;
+                          
+                          return (
+                            <>
+                              <p 
+                                className="text-body tabular-nums"
+                                style={{ 
+                                  fontWeight: 500,
+                                  color: isSettled ? 'var(--muted)' : amountColor,
+                                }}
+                              >
+                                {balanceDisplay}
+                              </p>
+                              {!isSettled && (
+                                <p className="text-caption text-secondary">
+                                  {isPositive ? "owes you" : "you owe"}
+                                </p>
+                              )}
+                            </>
+                          );
+                        })()}
                       </div>
                     )}
                     
@@ -245,6 +293,19 @@ export function MembersTab({
                     className="absolute right-0 top-full mt-1 w-48 card p-1 z-50"
                     style={{ boxShadow: 'var(--shadow-fab)' }}
                   >
+                    {onUpdateMember && (
+                      <button
+                        onClick={() => {
+                          setEditingMember(member);
+                          setOpenMenuId(null);
+                        }}
+                        className="w-full px-3 py-2 text-left rounded-lg hover:bg-muted/30 transition-colors flex items-center gap-2"
+                      >
+                        <Edit className="w-4 h-4 text-secondary" />
+                        <span className="text-body">Edit member</span>
+                      </button>
+                    )}
+                    
                     {member.status === "pending" && onResendInvite && (
                       <button
                         onClick={() => {
@@ -287,6 +348,19 @@ export function MembersTab({
         <UserPlus className="w-4 h-4" style={{ color: 'var(--accent)' }} />
         <span className="text-body" style={{ color: 'var(--accent)' }}>Add Member</span>
       </button>
+
+      {/* Edit Member Modal */}
+      {onUpdateMember && (
+        <EditMemberModal
+          isOpen={editingMember !== null}
+          member={editingMember}
+          onClose={() => setEditingMember(null)}
+          onSave={(updatedMember) => {
+            onUpdateMember(updatedMember);
+            setEditingMember(null);
+          }}
+        />
+      )}
     </div>
   );
 }

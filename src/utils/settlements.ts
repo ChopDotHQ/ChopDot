@@ -18,6 +18,8 @@ interface Member {
   name: string;
   role: "Owner" | "Member";
   status: "active" | "pending";
+  address?: string; // Optional Polkadot wallet address
+  verified?: boolean; // Optional verification status
 }
 
 interface Expense {
@@ -53,6 +55,7 @@ export interface Person {
 export interface SettlementBreakdown {
   potName: string;
   amount: number;
+  currency?: string; // Currency for this breakdown item (e.g., "DOT", "USD")
 }
 
 export interface PersonSettlement {
@@ -62,6 +65,7 @@ export interface PersonSettlement {
   breakdown: SettlementBreakdown[];
   trustScore: number;
   paymentPreference?: string;
+  address?: string; // Optional Polkadot wallet address (from any pot member)
 }
 
 export interface CalculatedSettlements {
@@ -145,7 +149,9 @@ export function calculateSettlements(
       if (Math.abs(netBalance) >= 0.01) {
         breakdown.push({
           potName: pot.name,
+          potId: pot.id,
           amount: Math.abs(netBalance),
+          currency: pot.baseCurrency,
         });
         totalBalance += netBalance;
       }
@@ -168,6 +174,23 @@ export function calculateSettlements(
 
     const breakdown = personBreakdowns.get(personId) || [];
 
+    // Find member address from any pot (prioritize pots with larger balances)
+    let memberAddress: string | undefined;
+    const breakdownWithAmounts = breakdown.map(b => {
+      const pot = pots.find(p => p.name === b.potName);
+      return { pot, amount: b.amount };
+    }).sort((a, b) => b.amount - a.amount); // Sort by amount descending
+    
+    for (const { pot } of breakdownWithAmounts) {
+      if (pot) {
+        const member = pot.members.find(m => m.id === personId);
+        if (member?.address) {
+          memberAddress = member.address;
+          break; // Use first address found (from pot with largest balance)
+        }
+      }
+    }
+
     const settlement: PersonSettlement = {
       id: personId,
       name: person.name,
@@ -175,6 +198,7 @@ export function calculateSettlements(
       breakdown,
       trustScore: person.trustScore,
       paymentPreference: person.paymentPreference,
+      address: memberAddress,
     };
 
     if (totalBalance < 0) {

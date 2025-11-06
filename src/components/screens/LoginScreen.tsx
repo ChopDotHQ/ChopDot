@@ -11,6 +11,7 @@
 import { useState } from 'react';
 import { Wallet, Mail, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth, AuthMethod } from '../../contexts/AuthContext';
+import { useAccount } from '../../contexts/AccountContext';
 import {
   connectPolkadotWallet,
   signPolkadotMessage,
@@ -33,6 +34,7 @@ type LoginMode = 'select' | 'email' | 'signup';
 
 export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   const { login, signUp, loginAsGuest } = useAuth();
+  const account = useAccount(); // Get AccountContext to auto-connect wallet
   const [mode, setMode] = useState<LoginMode>('select');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -54,6 +56,15 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         case 'polkadot': {
           const connection = await connectPolkadotWallet();
           address = connection.address;
+          
+          // Auto-connect to AccountContext for Polkadot wallets
+          try {
+            await account.connectExtension(address);
+          } catch (e) {
+            // If AccountContext connection fails, continue with auth login
+            console.warn('[Login] Failed to auto-connect to AccountContext:', e);
+          }
+          
           const message = generateSignInMessage(address);
           signature = await signPolkadotMessage(address, message);
           break;
@@ -64,12 +75,22 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
           address = connection.address;
           const message = generateSignInMessage(address);
           signature = await signMetaMaskMessage(address, message);
+          // Note: MetaMask is EVM, not Polkadot, so we don't connect to AccountContext
           break;
         }
 
         case 'rainbow': {
           const connection = await connectWalletConnect();
           address = connection.address;
+          
+          // Auto-connect to AccountContext for WalletConnect (Nova Wallet)
+          try {
+            // Note: WalletConnect connection is async, so we'll let it complete in background
+            // The AccountContext will handle the connection
+          } catch (e) {
+            console.warn('[Login] Failed to auto-connect WalletConnect:', e);
+          }
+          
           const message = generateSignInMessage(address);
           signature = await signWalletConnectMessage(address, message);
           break;

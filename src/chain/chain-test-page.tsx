@@ -188,22 +188,6 @@ export function ChainTestPage() {
       // Group accounts by extension/source
       const accountsByExtension = new Map<string, Array<{ address: string; name?: string; source?: string }>>();
       
-      // Debug: Log all extensions and their source identifiers
-      console.log('[Wallet Connection] Available extensions:', extensions.map(ext => ({ name: ext.name, version: ext.version })));
-      console.log('[Wallet Connection] Accounts from extensions:', accounts.map(acc => ({ 
-        name: acc.meta.name, 
-        source: acc.meta.source,
-        address: acc.address.slice(0, 10) + '...'
-      })));
-      
-      // Expand the arrays in console for easier debugging
-      console.log('[Wallet Connection] Full extension details:', extensions);
-      console.log('[Wallet Connection] Full account details:', accounts.map(acc => ({
-        name: acc.meta.name,
-        source: acc.meta.source,
-        address: acc.address,
-        meta: acc.meta
-      })));
       
       accounts.forEach(acc => {
         const source = acc.meta.source || 'unknown';
@@ -283,34 +267,7 @@ export function ChainTestPage() {
         }))
         .sort((a, b) => a.priority - b.priority); // Sort by priority (Nova first)
       
-      // Debug: Log the final extension list
-      console.log('[Wallet Connection] Extension list (sorted):', extensionList.map(ext => ({ 
-        name: ext.name, 
-        source: ext.source, 
-        priority: ext.priority,
-        accountCount: ext.accounts.length 
-      })));
-      
-      // Always show wallet selector to give user choice (even if only one option)
-      // This allows users to see all available wallets and choose which one to use
-      // Comment out auto-connect to always show selection modal
-      // if (extensionList.length === 1 && extensionList[0]?.accounts.length === 1) {
-      //   const account = extensionList[0]?.accounts[0];
-      //   if (!account) {
-      //     throw new Error('No accounts available');
-      //   }
-      //   const { normalizeToPolkadot } = await import('../services/chain/address');
-      //   const normalized = normalizeToPolkadot(account.address);
-      //   setConnectedWallet({
-      //     address: normalized,
-      //     name: account.name,
-      //     provider: account.source || 'polkadot'
-      //   });
-      //   setFreeBalance(null);
-      //   setAvailableExtensions([]);
-      //   setBusy(false);
-      //   return;
-      // }
+      // Always show wallet selector to give user choice
       
       // Add Nova Wallet as a WalletConnect option (always available)
       const extensionListWithNova = [
@@ -373,13 +330,25 @@ export function ChainTestPage() {
       const { uri, onConnect } = await connectNovaWallet();
       
       // Generate QR code
-      const qrCodeDataUrl = await QRCode.toDataURL(uri);
+      const qrCodeDataUrl = await QRCode.toDataURL(uri, {
+        errorCorrectionLevel: 'M',
+        width: 300,
+        margin: 2,
+      });
+      
       setWalletConnectUri(uri);
       setWalletConnectQrCode(qrCodeDataUrl);
       setShowNovaWalletConnect(true);
+      
+      // Wait for connection with timeout
+      const connectionTimeout = setTimeout(() => {
+        setError('Connection taking longer than expected. Please ensure Nova Wallet is open and try scanning again.');
+      }, 60000);
 
       // Wait for connection
       const { address, accounts } = await onConnect;
+      
+      clearTimeout(connectionTimeout);
       
       // Normalize address
       const { normalizeToPolkadot } = await import('../services/chain/address');
@@ -396,10 +365,12 @@ export function ChainTestPage() {
       setWalletConnectQrCode(null);
     } catch (e: any) {
       const m = e?.message || '';
-      if (m.includes('User rejected') || m.includes('cancelled')) {
-        setError('Connection cancelled');
+      if (m.includes('User rejected') || m.includes('cancelled') || m.includes('rejected')) {
+        setError('Connection cancelled by user. Please try again.');
+      } else if (m.includes('timeout') || m.includes('expired')) {
+        setError('Connection timeout. Please try scanning the QR code again.');
       } else {
-        setError(m || 'Failed to connect Nova Wallet');
+        setError(m || 'Failed to connect Nova Wallet.');
       }
       setShowNovaWalletConnect(false);
       setWalletConnectUri(null);
@@ -429,7 +400,17 @@ export function ChainTestPage() {
     }
   };
 
-  const handleDisconnectWallet = () => {
+  const handleDisconnectWallet = async () => {
+    // Disconnect WalletConnect if connected
+    if (connectedWallet?.provider === 'nova-walletconnect') {
+      try {
+        const { disconnectWalletConnect } = await import('../services/chain/walletconnect');
+        await disconnectWalletConnect();
+      } catch (e) {
+        console.error('[Disconnect] Error disconnecting WalletConnect:', e);
+      }
+    }
+    
     // Clear all wallet-related data from memory
     setConnectedWallet(null);
     setFreeBalance(null);
@@ -453,26 +434,8 @@ export function ChainTestPage() {
     setBusy(true);
     try {
       const { polkadotChainService } = await import('../services/chain/polkadot');
-      const { detectSs58Prefix } = await import('../services/chain/address');
-      
-      console.log('[Balance Check] Checking address:', connectedWallet.address);
-      const originalPrefix = detectSs58Prefix(connectedWallet.address);
-      console.log('[Balance Check] Address SS58 prefix:', originalPrefix);
-      console.log('[Balance Check] Querying Polkadot mainnet...');
-      
-      const config = polkadotChainService.getConfig();
-      console.log('[Balance Check] Querying chain:', config.name);
       const planck = await polkadotChainService.getFreeBalance(connectedWallet.address);
-      console.log('[Balance Check] Free balance (planck):', planck);
-      console.log('[Balance Check] Free balance (DOT):', fmt(planck));
-      
       setFreeBalance(planck);
-      
-      if (planck === '0') {
-        // Don't show error for 0 balance - it's a valid state
-        // The warning message in the UI already explains this
-        console.log('[Balance Check] 💡 Tip: If you have DOT on Asset Hub, make sure "Asset Hub" is selected above.');
-      }
     } catch (e: any) {
       console.error('[Balance Check] Error:', e);
       const errorMsg = e?.message || 'Failed to fetch balance';
@@ -543,9 +506,8 @@ export function ChainTestPage() {
         throw new Error('Invalid amount');
       }
       
-      // Security: Re-check balance immediately before sending (not cached)
-      console.log('[Security] Re-checking balance before transaction...');
-      const currentBalance = await polkadotChainService.getFreeBalance(connectedWallet.address);
+              // Security: Re-check balance immediately before sending (not cached)
+              const currentBalance = await polkadotChainService.getFreeBalance(connectedWallet.address);
       setFreeBalance(currentBalance); // Update display
       
       // Show status immediately when starting
@@ -585,10 +547,15 @@ export function ChainTestPage() {
       
       setShowConfirmDialog(false);
       
+      // Try browser extension first for faster approval, but auto-fallback to WalletConnect if needed
+      // The chain service will automatically check if browser extension has matching address
+      // If not, it will fall back to WalletConnect (Nova Wallet)
+      
       const res = await polkadotChainService.sendDot({ 
         from: connectedWallet.address, 
         to: normalizeToPolkadot(to), 
-        amountDot: amt, 
+        amountDot: amt,
+        forceBrowserExtension: false, // Don't force - let it auto-detect and fall back if needed
         onStatus: (s, ctx) => {
           clearTimeout(timeoutId); // Clear timeout on status update
           setTxStatus(s);
@@ -633,9 +600,19 @@ export function ChainTestPage() {
     } catch (e: any) {
       clearTimeout(timeoutId);
       const m = e?.message || '';
-      if (/No wallet extension/.test(m)) setError('No wallet detected. Install SubWallet, Talisman, or Polkadot.js.');
-      else if (/User rejected/.test(m)) {
-        setError('Transaction cancelled by user.');
+      if (/NO_WALLET/.test(m) || /No wallet extension/.test(m)) {
+        // If connected via Nova Wallet, show different message
+        if (connectedWallet?.provider === 'nova-walletconnect') {
+          setError('Transaction failed. Please ensure Nova Wallet is connected and try again.');
+        } else {
+          setError('No wallet detected. Install SubWallet, Talisman, or Polkadot.js.');
+        }
+      } else if (/NO_ACCOUNT/.test(m) || /No.*account/.test(m)) {
+        // Browser extension doesn't have matching address
+        setError('Selected account not found in wallet extension. If using Nova Wallet, it will automatically use WalletConnect.');
+        setTxStatus('idle');
+      } else if (/User rejected/.test(m)) {
+        setError('Transaction cancelled. If you approved in Nova Wallet but it still shows "Rejected", Nova Wallet may be rejecting because it shows "Polkadot Relay" while you selected Asset Hub. This is a WalletConnect limitation - the transaction will still go to Asset Hub. Try approving anyway or switch to Relay Chain.');
         setTxStatus('idle');
       } else if (/Insufficient balance/.test(m)) setError('Insufficient balance.');
       else if (/RPC connection failed/.test(m)) setError('RPC seems down. Try again later.');
@@ -1026,41 +1003,48 @@ export function ChainTestPage() {
             delete (window as any).__confirmTxResolve;
           }
         }}>
-          <div className="bg-background rounded-xl p-6 max-w-md w-full mx-4 border-2" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-semibold mb-4">Confirm Transaction</h3>
-            <div className="space-y-3 mb-6">
-              <div className="flex justify-between">
-                <span className="text-sm opacity-70">From:</span>
-                <span className="text-sm font-mono">{connectedWallet?.address.slice(0, 10)}...{connectedWallet?.address.slice(-8)}</span>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 border-2 shadow-xl" onClick={(e) => e.stopPropagation()} style={{ background: 'var(--card)', color: 'var(--foreground)', borderColor: 'var(--border)' }}>
+            <h3 className="text-xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>Confirm Transaction</h3>
+            <div className="space-y-4 mb-6">
+              <div className="flex justify-between items-center py-2 border-b" style={{ borderColor: 'var(--border)' }}>
+                <span className="text-sm font-medium opacity-70">From:</span>
+                <span className="text-sm font-mono font-semibold">{connectedWallet?.address.slice(0, 12)}...{connectedWallet?.address.slice(-10)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm opacity-70">To:</span>
-                <span className="text-sm font-mono">{to.slice(0, 10)}...{to.slice(-8)}</span>
+              <div className="flex justify-between items-center py-2 border-b" style={{ borderColor: 'var(--border)' }}>
+                <span className="text-sm font-medium opacity-70">To:</span>
+                <span className="text-sm font-mono font-semibold">{to.slice(0, 12)}...{to.slice(-10)}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm opacity-70">Amount:</span>
-                <span className="text-sm font-semibold">{amount} DOT</span>
+              <div className="flex justify-between items-center py-2 border-b" style={{ borderColor: 'var(--border)' }}>
+                <span className="text-sm font-medium opacity-70">Amount:</span>
+                <span className="text-base font-bold" style={{ color: 'var(--foreground)' }}>{amount} DOT</span>
               </div>
               {estimatedFee && (
-                <div className="flex justify-between">
-                  <span className="text-sm opacity-70">Fee:</span>
-                  <span className="text-sm">{fmt(estimatedFee)} DOT</span>
+                <div className="flex justify-between items-center py-2 border-b" style={{ borderColor: 'var(--border)' }}>
+                  <span className="text-sm font-medium opacity-70">Fee:</span>
+                  <span className="text-sm font-semibold">{fmt(estimatedFee)} DOT</span>
                 </div>
               )}
-              <div className="flex justify-between pt-2 border-t">
-                <span className="text-sm font-medium">Total:</span>
-                <span className="text-sm font-semibold">
+              <div className="flex justify-between items-center pt-3 border-t-2" style={{ borderColor: 'var(--border)' }}>
+                <span className="text-base font-bold">Total:</span>
+                <span className="text-lg font-bold" style={{ color: 'var(--accent)' }}>
                   {(Number(amount) + Number(estimatedFee ? fmt(estimatedFee) : 0)).toFixed(10).replace(/\.?0+$/, '')} DOT
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-xs opacity-60">Network:</span>
-                <span className="text-xs opacity-60">{selectedChain === 'relay' ? 'Relay Chain' : 'Asset Hub'}</span>
+              <div className="flex justify-between items-center pt-2">
+                <span className="text-xs font-medium opacity-60">Network:</span>
+                <span className="text-xs font-semibold px-2 py-1 rounded" style={{ background: 'var(--muted)', color: 'var(--foreground)' }}>
+                  {selectedChain === 'relay' ? 'Polkadot Relay Chain' : 'Polkadot Asset Hub'}
+                </span>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 pt-2">
               <button
-                className="px-4 py-2 rounded-lg border flex-1 hover:bg-muted transition-colors"
+                className="px-6 py-3 rounded-lg border-2 font-semibold flex-1 hover:opacity-80 transition-opacity"
+                style={{ 
+                  borderColor: 'var(--border)', 
+                  background: 'var(--card)',
+                  color: 'var(--foreground)'
+                }}
                 onClick={() => {
                   setShowConfirmDialog(false);
                   if ((window as any).__confirmTxResolve) {
@@ -1072,7 +1056,12 @@ export function ChainTestPage() {
                 Cancel
               </button>
               <button
-                className="px-4 py-2 rounded-lg bg-accent text-white flex-1 hover:opacity-90 transition-opacity"
+                className="px-6 py-3 rounded-lg font-bold flex-1 transition-all hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                style={{ 
+                  background: 'var(--accent)', 
+                  color: '#ffffff',
+                  boxShadow: '0 4px 14px 0 rgba(230, 0, 122, 0.4)'
+                }}
                 onClick={() => {
                   setShowConfirmDialog(false);
                   if ((window as any).__confirmTxResolve) {
@@ -1205,10 +1194,23 @@ export function ChainTestPage() {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-sm w-full mx-4" onClick={(e) => e.stopPropagation()} style={{ background: 'var(--background)', color: 'var(--foreground)' }}>
             <h3 className="text-lg font-semibold mb-2">Connect Nova Wallet</h3>
             <p className="text-sm opacity-70 mb-4">Scan this QR code with your Nova Wallet app to connect</p>
+            <p className="text-xs opacity-60 mb-4 bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">
+              ⚠️ After scanning, check your browser console for pairing events. If nothing appears, Nova Wallet might not be connecting.
+            </p>
+            <p className="text-xs opacity-60 mb-4 bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
+              ℹ️ <strong>Note:</strong> Nova Wallet may show "Polkadot Relay" in the connection prompt, but transactions will go to the chain you select above (Asset Hub or Relay Chain). This is a WalletConnect limitation.
+            </p>
             
             <div className="flex justify-center mb-4 p-4 bg-white rounded-lg">
               <img src={walletConnectQrCode} alt="WalletConnect QR Code" className="w-64 h-64" />
             </div>
+            
+            {walletConnectUri && (
+              <div className="mb-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs font-mono break-all opacity-70">
+                <div className="font-semibold mb-1">URI (for debugging):</div>
+                {walletConnectUri.substring(0, 80)}...
+              </div>
+            )}
             
             <div className="flex flex-col gap-2">
               <button

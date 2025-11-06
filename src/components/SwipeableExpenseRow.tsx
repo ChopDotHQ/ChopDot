@@ -24,6 +24,7 @@ interface SwipeableExpenseRowProps {
   expense: Expense;
   members: Member[];
   currentUserId: string;
+  baseCurrency?: string; // Add baseCurrency to determine decimal precision
   onClick: () => void;
   onDelete?: () => void;
   onAttest?: () => void;
@@ -34,11 +35,14 @@ export function SwipeableExpenseRow({
   expense,
   members,
   currentUserId,
+  baseCurrency = 'USD',
   onClick,
   onDelete,
   onAttest,
   showApproveButton = false,
 }: SwipeableExpenseRowProps) {
+  // Use 6 decimals for DOT, 2 for other currencies
+  const decimals = baseCurrency === 'DOT' ? 6 : 2;
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const [actionTriggered, setActionTriggered] = useState(false);
@@ -231,7 +235,7 @@ export function SwipeableExpenseRow({
                 }} 
               />
               <p className="text-sm tabular-nums">
-                {expense.currency} {expense.amount.toFixed(2)}
+                {expense.currency} {expense.amount.toFixed(decimals)}
               </p>
               {expense.hasReceipt && (
                 <Receipt className="w-3 h-3 text-muted-foreground" />
@@ -261,7 +265,7 @@ export function SwipeableExpenseRow({
                   color: yourNetBalance > 0 ? 'var(--success)' : undefined
                 }}
               >
-                {yourNetBalance > 0 ? '+' : ''}{yourNetBalance.toFixed(2)}
+                {yourNetBalance > 0 ? '+' : ''}{yourNetBalance.toFixed(decimals)}
               </p>
             </div>
 

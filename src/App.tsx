@@ -74,6 +74,8 @@ interface Member {
   name: string;
   role: "Owner" | "Member";
   status: "active" | "pending";
+  address?: string; // Optional Polkadot wallet address (SS58, normalized to SS58-0)
+  verified?: boolean; // Optional verification status (for future use)
 }
 
 interface Expense {
@@ -112,6 +114,22 @@ interface ExpenseCheckpoint {
   bypassedAt?: string;
 }
 
+export type PotHistory = {
+  id: string;
+  type: "onchain_settlement";
+  fromMemberId: string;
+  toMemberId: string;
+  fromAddress: string; // SS58-0
+  toAddress: string; // SS58-0
+  amountDot: string; // e.g. "0.017"
+  txHash: string; // 0x…
+  block?: string;
+  status: "in_block" | "finalized" | "failed";
+  when: number; // Date.now()
+  subscan: string; // https://assethub-polkadot.subscan.io/extrinsic/<hash>
+  note?: string; // optional
+};
+
 interface Pot {
   id: string;
   name: string;
@@ -130,6 +148,7 @@ interface Pot {
   checkpointEnabled?: boolean; // Default: true
   currentCheckpoint?: ExpenseCheckpoint;
   archived?: boolean;
+  history?: PotHistory[]; // On-chain settlement history
 }
 
 interface Settlement {
@@ -892,6 +911,28 @@ function AppContent() {
     }
   }, [notifications, hasLoadedInitialData]);
 
+  // Sync currentPotId with screen.potId when navigating to pot-related screens
+  useEffect(() => {
+    if (screen?.type === "pot-home" && screen.potId) {
+      setCurrentPotId(screen.potId);
+    } else if (screen?.type === "add-expense" && !currentPotId) {
+      // If we're on add-expense but currentPotId isn't set, try to get it from screen context
+      // This shouldn't normally happen, but handle it gracefully
+      // Find last pot-home screen in stack (reverse iteration for compatibility)
+      let lastPotHomeScreen: { type: "pot-home"; potId: string } | undefined;
+      for (let i = stack.length - 1; i >= 0; i--) {
+        const s = stack[i];
+        if (s && s.type === "pot-home" && "potId" in s) {
+          lastPotHomeScreen = s as { type: "pot-home"; potId: string };
+          break;
+        }
+      }
+      if (lastPotHomeScreen && lastPotHomeScreen.potId) {
+        setCurrentPotId(lastPotHomeScreen.potId);
+      }
+    }
+  }, [screen, stack, currentPotId]);
+
   // New pot form
   const [newPot, setNewPot] = useState<Partial<Pot>>({
     name: "",
@@ -1154,7 +1195,9 @@ function AppContent() {
       budgetEnabled: false,
     });
 
-    back();
+    // Navigate to the newly created pot instead of going back
+    setCurrentPotId(pot.id);
+    replace({ type: "pot-home", potId: pot.id });
     showToast("Pot created successfully!", "success");
   };
 
@@ -1212,7 +1255,9 @@ function AppContent() {
       }),
     );
 
-    back();
+    // Navigate to pot-home instead of just going back
+    // This ensures we're on the correct pot screen even if navigation stack is inconsistent
+    replace({ type: "pot-home", potId: currentPotId });
     showToast("Expense added successfully!", "success");
   };
 
@@ -1271,7 +1316,9 @@ function AppContent() {
       }),
     );
 
-    back();
+    // Navigate to pot-home instead of just going back
+    // This ensures we're on the correct pot screen even if navigation stack is inconsistent
+    replace({ type: "pot-home", potId: currentPotId });
     showToast("Expense updated!", "success");
   };
 
@@ -2269,6 +2316,8 @@ function AppContent() {
                   name: m.name,
                   role: "Member",
                   status: "active",
+                  address: m.address, // Preserve wallet address
+                  verified: m.verified, // Preserve verification status
                 })),
               })
             }
@@ -2292,6 +2341,7 @@ function AppContent() {
         if (!pot) return null;
         return (
           <PotHome
+            potId={pot.id}
             potType={pot.type}
             potName={pot.name}
             baseCurrency={pot.baseCurrency}
@@ -2313,6 +2363,40 @@ function AppContent() {
             goalAmount={pot.goalAmount}
             goalDescription={pot.goalDescription}
             onBack={back}
+            onImportPot={(importedPot) => {
+              // Add imported pot to pots list
+              setPots([...pots, {
+                id: importedPot.id,
+                name: importedPot.name,
+                type: "expense", // Imported pots are expense pots
+                baseCurrency: "USD",
+                members: importedPot.members.map((m: { id: string; name: string; address?: string; verified?: boolean }) => ({
+                  id: m.id,
+                  name: m.name,
+                  role: "Member" as const,
+                  status: "active" as const,
+                  address: m.address,
+                  verified: m.verified,
+                })),
+                expenses: importedPot.expenses.map((e: { id: string; amount: number; paidBy: string; description: string; createdAt: number }) => ({
+                  id: e.id,
+                  amount: e.amount,
+                  currency: "USD",
+                  paidBy: e.paidBy,
+                  memo: e.description,
+                  date: new Date(e.createdAt).toISOString(),
+                  split: importedPot.members.map((m: { id: string }) => ({
+                    memberId: m.id,
+                    amount: e.amount / importedPot.members.length, // Equal split
+                  })),
+                  attestations: [],
+                  hasReceipt: false,
+                })),
+              }]);
+              showToast("Pot imported successfully", "success");
+              // Navigate to the imported pot
+              replace({ type: "pot-home", potId: importedPot.id });
+            }}
             onAddExpense={() => push({ type: "add-expense" })}
             onExpenseClick={(expense) => {
               setCurrentExpenseId(expense.id);
@@ -2363,6 +2447,24 @@ function AppContent() {
               );
               showToast("Member removed", "info");
             }}
+            onUpdateMember={(updatedMember) => {
+              if (!currentPotId) return;
+              setPots(
+                pots.map((p) =>
+                  p.id === currentPotId
+                    ? {
+                        ...p,
+                        members: p.members.map((m) =>
+                          m.id === updatedMember.id
+                            ? { ...m, ...updatedMember }
+                            : m,
+                        ),
+                      }
+                    : p,
+                ),
+              );
+              showToast("Member updated", "success");
+            }}
             
             // Wire Pot destructive actions with consistent navigation
             onDeletePot={() => {
@@ -2398,6 +2500,35 @@ function AppContent() {
               );
               showToast("Pot archived", "info");
               reset({ type: "pots-home" });
+            }}
+            potHistory={pot.history || []}
+            onUpdatePot={(updates) => {
+              if (!currentPotId) return;
+              setPots(
+                pots.map((p) =>
+                  p.id === currentPotId
+                    ? {
+                        ...p,
+                        history: updates.history || p.history || [],
+                      }
+                    : p,
+                ),
+              );
+              // Persist to localStorage
+              try {
+                const stored = localStorage.getItem('pots');
+                if (stored) {
+                  const allPots = JSON.parse(stored);
+                  const updated = allPots.map((p: any) =>
+                    p.id === currentPotId
+                      ? { ...p, history: updates.history || p.history || [] }
+                      : p
+                  );
+                  localStorage.setItem('pots', JSON.stringify(updated));
+                }
+              } catch (e) {
+                console.error('[App] Failed to persist pot history:', e);
+              }
             }}
             onUpdateSettings={(settings) => {
               if (!currentPotId) return;
@@ -2489,6 +2620,7 @@ function AppContent() {
             expense={expense}
             members={pot.members}
             currentUserId="owner"
+            baseCurrency={pot.baseCurrency}
             walletConnected={walletConnected}
             onBack={back}
             onEdit={() => {
@@ -2718,11 +2850,30 @@ function AppContent() {
         const preferredPaymentMethod =
           personData?.paymentPreference?.toLowerCase();
 
+        // Find recipient's wallet address from pots
+        // If pot-scoped, check current pot; otherwise check all pots
+        let recipientAddress: string | undefined = undefined;
+        if (personIdFromNav) {
+          if (currentPotId) {
+            // Pot-scoped: check current pot
+            const currentPot = pots.find(p => p.id === currentPotId);
+            const recipientMember = currentPot?.members.find(m => m.id === personIdFromNav);
+            recipientAddress = recipientMember?.address;
+          } else {
+            // Global-scoped: check all pots (take first match)
+            for (const pot of pots) {
+              const recipientMember = pot.members.find(m => m.id === personIdFromNav);
+              if (recipientMember?.address) {
+                recipientAddress = recipientMember.address;
+                break;
+              }
+            }
+          }
+        }
+
         return (
           <SettleHome
             settlements={activeSettlements}
-            walletConnected={walletConnected}
-            onConnectWallet={() => setWalletConnected(true)}
             onBack={() => {
               if (currentPotId) {
                 replace({ type: "settle-selection" });
@@ -2735,6 +2886,9 @@ function AppContent() {
             potId={currentPotId || undefined}
             personId={personIdFromNav || undefined}
             preferredMethod={preferredPaymentMethod}
+            recipientAddress={recipientAddress}
+            baseCurrency={currentPotId && getCurrentPot() ? getCurrentPot()!.baseCurrency : "USD"}
+            onShowToast={showToast}
             onConfirm={(method, reference) => {
               // Add settlement to history
               const newSettlement: Settlement = {

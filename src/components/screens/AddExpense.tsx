@@ -1,6 +1,7 @@
 import { BottomSheet } from "../BottomSheet";
-import { Upload, X } from "lucide-react";
+import { Upload, X, AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { validateExpense } from "../../schema/pot";
 
 interface Member {
   id: string;
@@ -58,7 +59,9 @@ export function AddExpense({
     existingExpense?.amount.toString() || 
     ""
   );
-  const [currency, setCurrency] = useState(existingExpense?.currency || baseCurrency);
+  // For DOT pots, currency is locked to DOT; for others, allow selection but default to baseCurrency
+  const [currency, setCurrency] = useState(baseCurrency === 'DOT' ? 'DOT' : (existingExpense?.currency || baseCurrency));
+  const currencyLocked = baseCurrency === 'DOT'; // Lock currency for DOT pots
   const [paidBy, setPaidBy] = useState(existingExpense?.paidBy || members[0]?.id || "");
   const [memo, setMemo] = useState(
     prefilledData?.memo || 
@@ -92,6 +95,9 @@ export function AddExpense({
   // Loading state
   const [isSaving, setIsSaving] = useState(false);
 
+  // Use 6 decimals for DOT, 2 for other currencies
+  const decimals = baseCurrency === 'DOT' ? 6 : 2;
+
   const toggleMember = (id: string) => {
     const newSet = new Set(includedMembers);
     if (newSet.has(id)) {
@@ -109,14 +115,14 @@ export function AddExpense({
       const perPerson = numAmount / includedMembers.size;
       return Array.from(includedMembers).map(memberId => ({
         memberId,
-        amount: perPerson,
+        amount: Number(perPerson.toFixed(decimals)),
       }));
     } else if (splitType === "custom") {
       return members
         .filter(m => includedMembers.has(m.id))
         .map(m => ({
           memberId: m.id,
-          amount: (numAmount * parseFloat(customPercents[m.id] || "0")) / 100,
+          amount: Number(((numAmount * parseFloat(customPercents[m.id] || "0")) / 100).toFixed(decimals)),
         }));
     } else {
       const totalShares = Array.from(includedMembers).reduce(
@@ -125,7 +131,7 @@ export function AddExpense({
       );
       return Array.from(includedMembers).map(memberId => ({
         memberId,
-        amount: (numAmount * parseInt(shares[memberId] || "0")) / totalShares,
+        amount: Number(((numAmount * parseInt(shares[memberId] || "0")) / totalShares).toFixed(decimals)),
       }));
     }
   };
@@ -135,22 +141,81 @@ export function AddExpense({
     0
   );
   const isSplitValid = splitType !== "custom" || Math.abs(totalPercent - 100) < 0.01;
-  const isValid = parseFloat(amount) > 0 && paidBy !== "" && isSplitValid;
+  
+  // Validation with inline error messages
+  const amountValue = parseFloat(amount) || 0;
+  // For DOT pots, allow smaller amounts (0.000001 DOT = 1 micro-DOT)
+  // For USD pots, maintain minimum of 0.01
+  const minAmount = baseCurrency === 'DOT' ? 0.000001 : 0.01;
+  const amountValid = amountValue >= minAmount - 0.0000001; // Handle floating point precision
+  const descriptionValid = memo.trim().length > 0;
+  const paidByValid = paidBy !== "" && members.some(m => m.id === paidBy);
+  const membersIncludedValid = includedMembers.size > 0;
+  
+  const isValid = amountValid && descriptionValid && paidByValid && isSplitValid && membersIncludedValid;
+  
+  // Error messages
+  const amountError = amount.trim() !== "" && !amountValid 
+    ? `Amount must be at least ${minAmount} ${baseCurrency}` 
+    : null;
+  const descriptionError = memo.trim().length === 0 ? "Description is required" : null;
+  const paidByError = !paidByValid ? "Please select who paid" : null;
+  const membersError = !membersIncludedValid ? "At least one member must be included" : null;
+  const splitError = !isSplitValid ? "Percentages must total 100%" : null;
 
   const handleSave = async () => {
+    if (!isValid) return;
+    
     setIsSaving(true);
-    // Simulate save delay (in real app, this would be an API call)
-    await new Promise(resolve => setTimeout(resolve, 800));
-    onSave({
-      amount: parseFloat(amount),
-      currency: currency,
-      paidBy,
-      memo,
-      date,
-      split: calculateSplit(),
-      hasReceipt,
-    });
-    // Note: isSaving will reset when component unmounts on navigation back
+    
+    try {
+      // Validate using schema
+      const split = calculateSplit();
+      const memberIds = members.map(m => m.id);
+      const expenseData = {
+        id: existingExpense?.id || `exp-${Date.now()}`,
+        potId: '', // Will be set by parent
+        description: memo.trim(),
+        amount: parseFloat(amount),
+        paidBy,
+        createdAt: existingExpense ? 0 : Date.now(),
+      };
+      
+      const validation = validateExpense(expenseData, memberIds);
+      if (!validation.success) {
+        setIsSaving(false);
+        // Show error toast if available
+        const errorMsg = validation.error || 'Validation failed';
+        console.error('Validation error:', errorMsg);
+        // Show alert if validation fails (temporary - should use toast)
+        alert(`Validation error: ${errorMsg}`);
+        return;
+      }
+      
+      // Simulate save delay (in real app, this would be an API call)
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+              // Call onSave - this should trigger navigation
+              // Always use baseCurrency for consistency (especially for DOT pots)
+              onSave({
+                amount: Number(parseFloat(amount).toFixed(decimals)),
+                currency: baseCurrency, // Use baseCurrency instead of selected currency for consistency
+                paidBy,
+                memo: memo.trim(),
+                date,
+                split,
+                hasReceipt,
+              });
+      
+      // Reset saving state after a short delay to ensure navigation happens
+      // If navigation doesn't happen, this prevents the UI from being stuck
+      setTimeout(() => {
+        setIsSaving(false);
+      }, 100);
+    } catch (error) {
+      console.error('Error saving expense:', error);
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -192,59 +257,102 @@ export function AddExpense({
         <div>
           <label className="text-xs text-muted-foreground mb-1 block">Amount</label>
           <div className="flex items-center gap-2">
-            <select
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              disabled={isSaving}
-              className="px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="GBP">GBP</option>
-              <option value="CHF">CHF</option>
-              <option value="JPY">JPY</option>
-              <option value="CAD">CAD</option>
-              <option value="AUD">AUD</option>
-            </select>
+            {currencyLocked ? (
+              <span className="px-2 py-1.5 bg-input-background border border-border rounded-lg text-sm">
+                {baseCurrency}
+              </span>
+            ) : (
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                disabled={isSaving}
+                className="px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="CHF">CHF</option>
+                <option value="JPY">JPY</option>
+                <option value="CAD">CAD</option>
+                <option value="AUD">AUD</option>
+                <option value="DOT">DOT</option>
+              </select>
+            )}
             <input
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              onBlur={() => {
+                const n = Number(amount);
+                if (!Number.isNaN(n) && n >= minAmount) {
+                  setAmount(n.toFixed(decimals));
+                } else if (!Number.isNaN(n) && n > 0 && n < minAmount) {
+                  // Round up to minimum if below threshold
+                  setAmount(minAmount.toFixed(decimals));
+                }
+              }}
               type="number"
-              placeholder="0.00"
+              step={baseCurrency === 'DOT' ? '0.000001' : '0.01'}
+              min={minAmount.toString()}
+              placeholder={baseCurrency === 'DOT' ? '0.000000' : '0.00'}
               disabled={isSaving}
-              className="flex-1 px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-base disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`flex-1 px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-base disabled:opacity-50 disabled:cursor-not-allowed ${
+                amountError ? 'border-destructive' : 'border-border'
+              }`}
             />
           </div>
+          {amountError && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-destructive">
+              <AlertCircle className="w-3 h-3" />
+              <span>{amountError}</span>
+            </div>
+          )}
         </div>
 
         {/* Title/Memo */}
         <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Title</label>
+          <label className="text-xs text-muted-foreground mb-1 block">Description <span className="text-destructive">*</span></label>
           <div className="flex items-center gap-2">
             <input
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
-              placeholder="Optional"
+              placeholder="Enter description"
               disabled={isSaving}
-              className="flex-1 px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`flex-1 px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                descriptionError ? 'border-destructive' : 'border-border'
+              }`}
             />
           </div>
+          {descriptionError && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-destructive">
+              <AlertCircle className="w-3 h-3" />
+              <span>{descriptionError}</span>
+            </div>
+          )}
         </div>
 
         {/* Two-column: Paid By + Date */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Paid by</label>
+            <label className="text-xs text-muted-foreground mb-1 block">Paid by <span className="text-destructive">*</span></label>
             <select
               value={paidBy}
               onChange={(e) => setPaidBy(e.target.value)}
               disabled={isSaving}
-              className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`w-full px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-sm appearance-none disabled:opacity-50 disabled:cursor-not-allowed ${
+                paidByError ? 'border-destructive' : 'border-border'
+              }`}
             >
+              <option value="">Select member</option>
               {members.map(m => (
                 <option key={m.id} value={m.id}>{m.name}</option>
               ))}
             </select>
+            {paidByError && (
+              <div className="flex items-center gap-1 mt-1 text-xs text-destructive">
+                <AlertCircle className="w-3 h-3" />
+                <span>{paidByError}</span>
+              </div>
+            )}
           </div>
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Date</label>
@@ -317,12 +425,18 @@ export function AddExpense({
                     <span className="flex-1 text-xs">{member.name}</span>
                     {isIncluded && (
                       <span className="text-xs text-muted-foreground tabular-nums">
-                        {perPerson.toFixed(2)}
+                        {perPerson.toFixed(decimals)}
                       </span>
                     )}
                   </label>
                 );
               })}
+              {membersError && (
+                <div className="flex items-center gap-1 mt-1 text-xs text-destructive">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>{membersError}</span>
+                </div>
+              )}
             </div>
           )}
 
@@ -348,14 +462,22 @@ export function AddExpense({
                     />
                     <span className="text-xs text-muted-foreground">%</span>
                     <span className="text-xs text-muted-foreground tabular-nums w-14 text-right">
-                      {memberAmount.toFixed(2)}
+                      {memberAmount.toFixed(decimals)}
                     </span>
                   </div>
                 );
               })}
-              <p className={`text-xs px-1.5 ${isSplitValid ? "text-muted-foreground" : "text-destructive"}`}>
+              <div className="px-1.5">
+                <p className={`text-xs ${isSplitValid ? "text-muted-foreground" : "text-destructive"}`}>
                 Total: {totalPercent.toFixed(1)}% {!isSplitValid && "(must equal 100%)"}
               </p>
+                {splitError && (
+                  <div className="flex items-center gap-1 mt-1 text-xs text-destructive">
+                    <AlertCircle className="w-3 h-3" />
+                    <span>{splitError}</span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -383,7 +505,7 @@ export function AddExpense({
                     />
                     <span className="text-xs text-muted-foreground">shares</span>
                     <span className="text-xs text-muted-foreground tabular-nums w-14 text-right">
-                      {memberAmount.toFixed(2)}
+                      {memberAmount.toFixed(decimals)}
                     </span>
                   </div>
                 );

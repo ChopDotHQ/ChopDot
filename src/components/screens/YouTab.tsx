@@ -4,6 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/colla
 import { triggerHaptic } from "../../utils/haptics";
 import { HelpSheet } from "../HelpSheet";
 import { Theme } from "../../utils/useTheme";
+import { AccountMenu } from "../AccountMenu";
 
 interface YouTabProps {
   onShowQR: () => void;
@@ -75,16 +76,8 @@ export function YouTab({
       <div className="p-4 flex items-center justify-between">
         <h1 className="text-screen-title">You</h1>
         <div className="flex items-center gap-2">
-          {/* Wallet icon */}
-          <button
-            onClick={onWalletClick}
-            className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted/50 transition-all duration-200 active:scale-95"
-          >
-            <Wallet className="w-5 h-5" />
-            {walletConnected && (
-              <div className="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full" style={{ background: 'var(--success)' }} />
-            )}
-          </button>
+          {/* Account Menu - unified wallet connection */}
+          <AccountMenu />
           
           {/* Notification bell */}
           <button

@@ -6,12 +6,14 @@ import { TrustIndicator } from "../TrustIndicator";
 import { EmptyState } from "../EmptyState";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { useState, useMemo } from "react";
+import { AccountMenu } from "../AccountMenu";
 //
 import { PeopleView } from "./PeopleView";
 
 interface DebtBreakdown {
   potName: string;
   amount: number;
+  currency?: string; // Currency for this breakdown item
 }
 
 interface PersonDebt {
@@ -21,6 +23,7 @@ interface PersonDebt {
   breakdown: DebtBreakdown[];
   trustScore?: number; // 3-10
   paymentPreference?: string; // e.g., "Bank", "PayPal", "TWINT", "DOT"
+  address?: string; // Optional Polkadot wallet address
 }
 
 interface Person {
@@ -70,6 +73,24 @@ export function PeopleHome({
   const [showSortSheet, setShowSortSheet] = useState(false);
   const [sortBy, setSortBy] = useState<string>("amount-high");
 
+  // Helper to format amounts based on currency
+  const formatAmount = (amount: number, currency?: string): string => {
+    const isDot = currency === 'DOT';
+    const decimals = isDot ? 6 : 2;
+    if (isDot) {
+      return `${amount.toFixed(decimals)} DOT`;
+    }
+    return `$${amount.toFixed(decimals)}`;
+  };
+
+  // Helper to get display currency from person (use first breakdown currency or default to USD)
+  const getDisplayCurrency = (person: PersonDebt): string => {
+    if (person.breakdown.length > 0 && person.breakdown[0]?.currency) {
+      return person.breakdown[0].currency;
+    }
+    return 'USD';
+  };
+
   const sortOptions: SortOption[] = [
     { id: "amount-high", label: "Amount (high to low)" },
     { id: "amount-low", label: "Amount (low to high)" },
@@ -77,10 +98,17 @@ export function PeopleHome({
     { id: "name-desc", label: "Name (Z-A)" },
   ];
 
-  // Calculate totals
+  // Calculate totals - but these are tricky when mixing currencies
+  // For now, we'll show aggregated totals, but individual rows show their currency
   const totalYouOwe = youOwe.reduce((sum, person) => sum + person.totalAmount, 0);
   const totalOwedToYou = owedToYou.reduce((sum, person) => sum + person.totalAmount, 0);
   const net = totalOwedToYou - totalYouOwe;
+  
+  // Determine if we should show DOT or USD for totals (use first breakdown currency if all same)
+  const allCurrencies = [...youOwe, ...owedToYou]
+    .flatMap(p => p.breakdown.map(b => b.currency || 'USD'))
+    .filter((c, i, arr) => arr.indexOf(c) === i); // unique
+  const totalCurrency = allCurrencies.length === 1 ? allCurrencies[0] : 'USD'; // Use single currency if all same
 
   // Sort settlements
   const sortedYouOwe = useMemo(() => {
@@ -129,8 +157,12 @@ export function PeopleHome({
   };
 
   const renderPersonRow = (person: PersonDebt, action: "settle" | "remind") => {
+    const displayCurrency = getDisplayCurrency(person);
     const breakdownText = person.breakdown
-      .map((b) => `${b.potName} ${b.amount}`)
+      .map((b) => {
+        const currency = b.currency || 'USD';
+        return `${b.potName} ${formatAmount(b.amount, currency)}`;
+      })
       .join(" • ");
 
     return (
@@ -170,6 +202,11 @@ export function PeopleHome({
                   {breakdownText}
                 </p>
               )}
+              {person.address && (
+                <p className="text-[9px] text-secondary font-mono mt-0.5 truncate">
+                  {person.address.slice(0, 8)}...{person.address.slice(-6)}
+                </p>
+              )}
             </div>
           </div>
           <div className="text-right flex-shrink-0">
@@ -180,7 +217,7 @@ export function PeopleHome({
                 color: action === 'settle' ? 'var(--foreground)' : 'var(--money)'
               }}
             >
-              {action === 'settle' ? '-' : '+'}${person.totalAmount.toFixed(2)}
+              {action === 'settle' ? '-' : '+'}{formatAmount(Math.abs(person.totalAmount), displayCurrency)}
             </p>
           </div>
         </button>
@@ -213,18 +250,8 @@ export function PeopleHome({
           <div className="px-4 py-3 flex items-center justify-between">
             <h1 className="text-screen-title">People</h1>
             <div className="flex items-center gap-2">
-              {/* Wallet icon */}
-              {onWalletClick && (
-                <button
-                  onClick={onWalletClick}
-                  className="relative p-1.5 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
-                >
-                  <Wallet className="w-4 h-4 text-foreground" />
-                  {walletConnected && (
-                    <div className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full" style={{ background: 'var(--success)' }} />
-                  )}
-                </button>
-              )}
+            {/* Account Menu - unified wallet connection */}
+            <AccountMenu />
               
               {/* Notification bell */}
               {onNotificationClick && (
@@ -280,11 +307,8 @@ export function PeopleHome({
           />
         ) : (
           <div className="p-3 space-y-3">
-            {/* Wallet Banner */}
-            <WalletBanner
-              isConnected={walletConnected}
-              onConnect={onConnectWallet}
-            />
+            {/* Wallet Balance Banner - Shows when connected */}
+            <WalletBanner />
 
             {/* Overview Chips */}
             <div className="card p-3">
@@ -298,7 +322,7 @@ export function PeopleHome({
                       color: totalYouOwe > 0 ? 'var(--foreground)' : 'var(--foreground)' 
                     }}
                   >
-                    ${totalYouOwe.toFixed(0)}
+                    {formatAmount(totalYouOwe, totalCurrency)}
                   </span>
                 </div>
                 <span className="text-secondary">•</span>
@@ -311,7 +335,7 @@ export function PeopleHome({
                       color: totalOwedToYou > 0 ? 'var(--success)' : 'var(--foreground)' 
                     }}
                   >
-                    ${totalOwedToYou.toFixed(0)}
+                    {formatAmount(totalOwedToYou, totalCurrency)}
                   </span>
                 </div>
                 <span className="text-secondary">•</span>
@@ -324,7 +348,7 @@ export function PeopleHome({
                       color: net >= 0 ? 'var(--money)' : 'var(--foreground)' 
                     }}
                   >
-                    {net >= 0 ? '+' : ''}${Math.abs(net).toFixed(0)}
+                    {net >= 0 ? '+' : ''}{formatAmount(Math.abs(net), totalCurrency)}
                   </span>
                 </div>
               </div>

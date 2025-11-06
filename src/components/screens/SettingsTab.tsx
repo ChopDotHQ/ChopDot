@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Copy, Send } from "lucide-react";
+import { useState, useRef } from "react";
+import { Copy, Send, Download, Upload } from "lucide-react";
+import { downloadPotAsJSON, readPotFile } from "../../utils/pot-export";
+import type { Pot } from "../../schema/pot";
 
 interface Member {
   id: string;
@@ -16,12 +18,16 @@ interface SettingsTabProps {
   checkpointEnabled?: boolean;
   potType?: "expense" | "savings";
   members?: Member[];
+  potId?: string;
+  pot?: Pot; // Full pot object for export
   onUpdateSettings: (settings: any) => void;
   onCopyInviteLink?: () => void;
   onResendInvite?: (memberId: string) => void;
   onLeavePot?: () => void;
   onArchivePot?: () => void;
   onDeletePot?: () => void;
+  onImportPot?: (pot: Pot) => void; // Callback when pot is imported
+  onShowToast?: (message: string, type?: "success" | "info" | "error") => void;
 }
 
 export function SettingsTab({
@@ -33,20 +39,66 @@ export function SettingsTab({
   checkpointEnabled: initialCheckpointEnabled,
   potType = "expense",
   members = [],
+  potId,
+  pot,
   onUpdateSettings,
   onCopyInviteLink,
   onResendInvite,
   onLeavePot,
   onArchivePot,
   onDeletePot,
+  onImportPot,
+  onShowToast,
 }: SettingsTabProps) {
   const [potName, setPotName] = useState(initialPotName);
   const [baseCurrency, setBaseCurrency] = useState(initialCurrency);
   const [budgetEnabled, setBudgetEnabled] = useState(initialBudgetEnabled || false);
   const [budget, setBudget] = useState(initialBudget?.toString() || "");
   const [checkpointEnabled, setCheckpointEnabled] = useState(initialCheckpointEnabled !== false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const pendingMembers = members.filter(m => m.status === "pending");
+  
+  const handleExportPot = () => {
+    if (!pot) {
+      onShowToast?.('Cannot export: pot data not available', 'error');
+      return;
+    }
+    try {
+      downloadPotAsJSON(pot);
+      onShowToast?.('Pot exported successfully', 'success');
+    } catch (error) {
+      onShowToast?.('Failed to export pot', 'error');
+      console.error('Export error:', error);
+    }
+  };
+  
+  const handleImportPot = async () => {
+    fileInputRef.current?.click();
+  };
+  
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    try {
+      const result = await readPotFile(file);
+      if (result.success && result.pot) {
+        onImportPot?.(result.pot);
+        onShowToast?.('Pot imported successfully', 'success');
+      } else {
+        onShowToast?.(result.error || 'Failed to import pot', 'error');
+      }
+    } catch (error) {
+      onShowToast?.('Failed to import pot', 'error');
+      console.error('Import error:', error);
+    } finally {
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   const handleSave = () => {
     onUpdateSettings({ 
@@ -185,6 +237,33 @@ export function SettingsTab({
           </button>
         </div>
       )}
+
+      {/* Export/Import */}
+      <div className="pt-2 space-y-2 border-t border-border">
+        <p className="text-label text-secondary">Export/Import</p>
+        <button
+          onClick={handleExportPot}
+          disabled={!pot}
+          className="w-full glass-sm rounded-xl p-3 flex items-center gap-2 hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Download className="w-4 h-4" />
+          <span className="text-body">Export Pot (JSON)</span>
+        </button>
+        <button
+          onClick={handleImportPot}
+          className="w-full glass-sm rounded-xl p-3 flex items-center gap-2 hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left"
+        >
+          <Upload className="w-4 h-4" />
+          <span className="text-body">Import Pot (JSON)</span>
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,application/json"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+      </div>
 
       {/* Pot Management */}
       <div className="pt-2 space-y-2 border-t border-border">

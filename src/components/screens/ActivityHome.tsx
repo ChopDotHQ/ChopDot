@@ -4,6 +4,7 @@ import { SettleSheet } from "../SettleSheet";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { usePullToRefresh } from "../../utils/usePullToRefresh";
 import { triggerHaptic } from "../../utils/haptics";
+import { AccountMenu } from "../AccountMenu";
 
 interface ActivityItem {
   id: string;
@@ -157,19 +158,8 @@ export function ActivityHome({
               {pendingExpenses.length} pending
             </div>
           )}
-          {/* Wallet icon */}
-          <button
-            onClick={() => {
-              triggerHaptic('light');
-              onWalletClick();
-            }}
-            className="relative p-1.5 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
-          >
-            <Wallet className="w-4 h-4 text-foreground" />
-            {walletConnected && (
-              <div className="absolute bottom-0.5 right-0.5 w-2 h-2 rounded-full" style={{ background: 'var(--success)' }} />
-            )}
-          </button>
+          {/* Account Menu - unified wallet connection */}
+          <AccountMenu />
           
           {/* Notification bell */}
           <button

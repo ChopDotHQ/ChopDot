@@ -12,6 +12,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './'),
+      buffer: 'buffer',
       // Map version-suffixed imports (from generated UI files) to actual packages
       'vaul@1.1.2': 'vaul',
       'sonner@2.0.3': 'sonner',
@@ -71,6 +72,9 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'lucide-react'],
+    include: ['react', 'react-dom', 'lucide-react', 'buffer'],
+  },
+  define: {
+    global: 'globalThis',
   },
 })

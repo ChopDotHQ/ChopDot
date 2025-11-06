@@ -14,6 +14,8 @@ interface Member {
   name: string;
   role: "Owner" | "Member";
   status: "active" | "pending";
+  address?: string; // Optional Polkadot wallet address
+  verified?: boolean; // Optional verification status
 }
 
 interface Expense {
@@ -43,6 +45,7 @@ interface CheckpointConfirmation {
 }
 
 interface PotHomeProps {
+  potId?: string;
   potType: "expense" | "savings";
   potName: string;
   baseCurrency: string;
@@ -67,6 +70,7 @@ interface PotHomeProps {
   onExpenseClick: (expense: Expense) => void;
   onAddMember: () => void;
   onRemoveMember: (id: string) => void;
+  onUpdateMember?: (member: { id: string; name: string; address?: string; verified?: boolean }) => void;
   onUpdateSettings: (settings: any) => void;
   onSettle: () => void;
   onCopyInviteLink?: () => void;
@@ -90,9 +94,19 @@ interface PotHomeProps {
   // When true, open the quick keypad on mount/update
   openQuickAdd?: boolean;
   onClearQuickAdd?: () => void;
+  // Export/Import
+  onImportPot?: (pot: import('../../schema/pot').Pot) => void;
+  // Pot management actions
+  onDeletePot?: () => void;
+  onLeavePot?: () => void;
+  onArchivePot?: () => void;
+  // Pot history (on-chain settlements)
+  potHistory?: import('../../App').PotHistory[];
+  onUpdatePot?: (updates: { history?: import('../../App').PotHistory[] }) => void;
 }
 
 export function PotHome({
+  potId,
   potType,
   potName,
   baseCurrency,
@@ -114,6 +128,7 @@ export function PotHome({
   onExpenseClick,
   onAddMember,
   onRemoveMember,
+  onUpdateMember,
   onUpdateSettings,
   onSettle,
   onCopyInviteLink,
@@ -128,6 +143,12 @@ export function PotHome({
   onQuickAddSave,
   openQuickAdd,
   onClearQuickAdd,
+  onImportPot,
+  onDeletePot,
+  onLeavePot,
+  onArchivePot,
+  potHistory = [],
+  onUpdatePot,
 }: PotHomeProps) {
   // Dynamic tabs based on pot type
   const tabs = potType === "savings" 
@@ -316,6 +337,8 @@ export function PotHome({
             budgetEnabled={budgetEnabled}
             totalExpenses={totalExpenses}
             contributions={contributions}
+            potId={potId}
+            potHistory={potHistory}
             onAddExpense={() => setKeypadOpen(true)}
             onExpenseClick={onExpenseClick}
             onSettle={onSettle}
@@ -323,6 +346,7 @@ export function PotHome({
             onAttestExpense={onAttestExpense}
             onBatchAttestExpenses={onBatchAttestExpenses}
             onShowToast={onShowToast}
+            onUpdatePot={onUpdatePot}
             checkpointConfirmedCount={confirmedCount}
             checkpointTotalCount={totalCount}
           />
@@ -332,8 +356,10 @@ export function PotHome({
             members={members}
             expenses={expenses}
             currentUserId={currentUserId}
+            baseCurrency={baseCurrency}
             onAddMember={onAddMember}
             onRemoveMember={onRemoveMember}
+            onUpdateMember={onUpdateMember}
             onCopyInviteLink={onCopyInviteLink}
             onResendInvite={onResendInvite}
           />
@@ -348,30 +374,30 @@ export function PotHome({
             checkpointEnabled={checkpointEnabled}
             potType={potType}
             members={members}
+            potId={potId}
+            pot={onImportPot ? {
+              id: potId || '',
+              name: potName,
+              members: members.map(m => ({ id: m.id, name: m.name })),
+              expenses: expenses.map(e => ({
+                id: e.id,
+                potId: potId || '',
+                description: e.memo,
+                amount: e.amount,
+                paidBy: e.paidBy,
+                createdAt: new Date(e.date).getTime(),
+              })),
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
+            } : undefined}
             onUpdateSettings={onUpdateSettings}
             onCopyInviteLink={onCopyInviteLink}
             onResendInvite={onResendInvite}
-            onLeavePot={() => {
-              // Leave: remove current user from members and navigate back
-              const currentUserId = "owner";
-              const isMember = members.some(m => m.id === currentUserId);
-              if (!isMember) return;
-              onShowToast?.("You left the pot", "info");
-              onRemoveMember(currentUserId);
-              onBack();
-            }}
-            onArchivePot={() => {
-              // Archive: mark as archived and hide from lists
-              onUpdateSettings({ archived: true, budgetEnabled: false, checkpointEnabled: false });
-              onShowToast?.("Pot archived", "info");
-              onBack();
-            }}
-            onDeletePot={() => {
-              // Hard delete: remove pot from state entirely
-              onShowToast?.("Pot deleted", "info");
-              onBack();
-              // Actual removal handled at App level via settings callback pattern or can be wired next
-            }}
+            onImportPot={onImportPot}
+            onShowToast={onShowToast}
+            onLeavePot={onLeavePot}
+            onArchivePot={onArchivePot}
+            onDeletePot={onDeletePot}
           />
         )}
       </div>

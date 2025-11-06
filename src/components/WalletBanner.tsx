@@ -1,44 +1,42 @@
-import { PrimaryButton } from "./PrimaryButton";
+import { useAccount } from "../contexts/AccountContext";
 
-interface WalletBannerProps {
-  isConnected: boolean;
-  dotBalance?: number;
-  usdtBalance?: number;
-  onConnect: () => void;
-}
+/**
+ * WalletBanner - Shows wallet balance when connected
+ * 
+ * Note: We removed the "Connect wallet" button from here since AccountMenu in the header
+ * handles all wallet connection. This banner now only shows balance when connected.
+ */
+export function WalletBanner() {
+  const account = useAccount();
 
-export function WalletBanner({
-  isConnected,
-  dotBalance = 245.8,
-  usdtBalance = 1204,
-  onConnect,
-}: WalletBannerProps) {
-  if (isConnected) {
+  // Only show banner when wallet is connected - show balance prominently
+  if (account.status === 'connected' && account.balanceHuman) {
+    const balance = parseFloat(account.balanceHuman);
     return (
-      <div className="p-2 glass-sm rounded-lg">
+      <div className="p-3 glass-sm rounded-lg border" style={{ borderColor: 'var(--border)' }}>
+        <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 text-[11px] text-foreground">
-            <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex-shrink-0" />
-            <span>{dotBalance} DOT</span>
+            <div className="w-3 h-3 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex-shrink-0" />
+            <div>
+              <p className="text-[10px] text-secondary uppercase tracking-wide">Wallet Balance</p>
+              <p className="text-base font-semibold tabular-nums" style={{ color: 'var(--foreground)' }}>
+                      {balance.toFixed(6)} DOT
+              </p>
+            </div>
           </div>
-          <span style={{ color: 'var(--text-secondary)' }}>•</span>
-          <div className="flex items-center gap-1 text-[11px] text-foreground">
-            <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-br from-green-400 to-teal-500 flex-shrink-0" />
-            <span>{usdtBalance.toLocaleString()} USDT</span>
+          <div className="text-right">
+            <p className="text-[10px] text-secondary uppercase tracking-wide">Network</p>
+            <p className="text-xs font-medium" style={{ color: 'var(--foreground)' }}>
+              {account.network === 'asset-hub' ? 'Asset Hub' : 
+               account.network === 'polkadot' ? 'Relay Chain' : 
+               account.network}
+            </p>
           </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="p-2 glass-sm rounded-lg">
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-[11px] flex-1" style={{ color: "var(--text-secondary)" }}>
-          Connect wallet to settle on-chain
-        </p>
-        <PrimaryButton onClick={onConnect}>Connect wallet</PrimaryButton>
-      </div>
-    </div>
-  );
+  // Don't show anything when disconnected - AccountMenu handles connection
+  return null;
 }

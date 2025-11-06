@@ -5,6 +5,7 @@ import { Banknote, Building2, Wallet, CheckCircle2, CreditCard, Smartphone, Load
 import { useState, useEffect } from "react";
 import { pushTxToast, updateTxToast, isTxActive } from "../../hooks/useTxToasts";
 import { useFeatureFlags } from "../../contexts/FeatureFlagsContext";
+import { useAccount } from "../../contexts/AccountContext";
 
 interface Settlement {
   id: string;
@@ -16,8 +17,6 @@ interface Settlement {
 
 interface SettleHomeProps {
   settlements: Settlement[];
-  walletConnected?: boolean;
-  onConnectWallet?: () => void;
   onBack: () => void;
   onConfirm: (method: "cash" | "bank" | "paypal" | "twint" | "dot", reference?: string) => void;
   onHistory?: () => void;
@@ -26,12 +25,13 @@ interface SettleHomeProps {
   potId?: string;
   personId?: string;
   preferredMethod?: string;
+  recipientAddress?: string; // Optional recipient wallet address for DOT settlements
+  baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
+  onShowToast?: (message: string, type?: "success" | "error" | "info") => void; // Optional toast callback
 }
 
 export function SettleHome({
   settlements,
-  walletConnected = false,
-  onConnectWallet,
   onBack,
   onConfirm,
   onHistory,
@@ -40,14 +40,40 @@ export function SettleHome({
   potId: _potId,
   personId: _personId,
   preferredMethod,
+  recipientAddress,
+  baseCurrency = "USD", // Default to USD if not provided
+  onShowToast,
 }: SettleHomeProps) {
+  const isDotPot = baseCurrency === 'DOT';
   // Read feature flags
   const { POLKADOT_APP_ENABLED, SERVICE_FEE_CAP_BPS } = useFeatureFlags();
+  // Use Account context for wallet connection status
+  const account = useAccount();
+  const walletConnected = account.status === 'connected';
   
-  // Fee estimator stub - simulates Polkadot network fee API
+  // Fee estimator - uses real chain service for DOT, stub for others
   const estimateNetworkFee = async (): Promise<number> => {
-    await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API delay
-    return 0.0015 + Math.random() * 0.002; // Random fee between 0.0015-0.0035 DOT
+    if (isDotPot && walletConnected && account.address0 && recipientAddress && totalAmount > 0) {
+      try {
+        const { polkadotChainService } = await import('../../services/chain/polkadot');
+        const feePlanck = await polkadotChainService.estimateFee({
+          from: account.address0,
+          to: recipientAddress,
+          amountDot: Math.abs(totalAmount),
+        });
+        const config = polkadotChainService.getConfig();
+        // Convert planck to DOT (10 decimals)
+        const feeDot = parseFloat(feePlanck) / Math.pow(10, config.dotDecimals);
+        return feeDot;
+      } catch (error) {
+        console.error('[SettleHome] Fee estimation error:', error);
+        // Fallback to conservative estimate
+        return 0.0025;
+      }
+    }
+    // Stub for non-DOT or when not connected
+    await new Promise(resolve => setTimeout(resolve, 800));
+    return 0.0015 + Math.random() * 0.002;
   };
 
   // Preselection logic
@@ -115,11 +141,24 @@ export function SettleHome({
   }, 0);
 
   const isPaying = totalAmount > 0;
-  const counterparty = settlements[0]?.name || "Unknown";
+  // Get counterparty name from settlements - if multiple, use the first one
+  // If settlements array is empty, try to get from the personId context
+  const counterparty = settlements.length > 0 
+    ? settlements[0]?.name || "Unknown"
+    : "Unknown";
+  
+  // Format amount based on currency
+  const formatAmount = (amount: number): string => {
+    if (isDotPot) {
+      return `${Math.abs(amount).toFixed(6)} DOT`;
+    }
+    return `$${Math.abs(amount).toFixed(2)}`;
+  };
 
   const handleConfirm = async () => {
+    // For DOT method, wallet must be connected (handled by AccountMenu in header)
     if (selectedMethod === "dot" && !walletConnected) {
-      onConnectWallet?.();
+      // Wallet connection is handled by AccountMenu - user should connect via header
       return;
     }
 
@@ -138,58 +177,77 @@ export function SettleHome({
       return;
     }
 
-    // DOT settlement - emit transaction toast sequence
-    if (selectedMethod === "dot" && walletConnected) {
-      // State 1: Signing
-      pushTxToast('signing', {
-        amount: Math.abs(totalAmount),
-        currency: 'USDT',
-      });
+    // DOT settlement - use real chain service from Prompt 1
+    if (selectedMethod === "dot" && walletConnected && isDotPot && recipientAddress && account.address0) {
+      try {
+        setIsSettling(true);
+        
+        const { polkadotChainService } = await import('../../services/chain/polkadot');
+        const amountDot = Math.abs(totalAmount);
+        
+        // State 1: Signing
+        pushTxToast('signing', {
+          amount: amountDot,
+          currency: 'DOT',
+        });
 
-      // Simulate signing delay (500ms)
-      await new Promise(resolve => setTimeout(resolve, 500));
+        // Send real DOT transaction
+        const result = await polkadotChainService.sendDot({
+          from: account.address0,
+          to: recipientAddress,
+          amountDot,
+          onStatus: (status, ctx) => {
+            if (status === 'submitted') {
+              updateTxToast('broadcast', {
+                amount: amountDot,
+                currency: 'DOT',
+              });
+            } else if (status === 'inBlock' && ctx?.txHash) {
+              const config = polkadotChainService.getConfig();
+              updateTxToast('inBlock', {
+                amount: amountDot,
+                currency: 'DOT',
+                txHash: ctx.txHash,
+                fee: feeEstimate || 0.0024,
+                feeCurrency: 'DOT',
+                subscan: `${config.subscanExtrinsicBase}/${ctx.txHash}`,
+              });
+            } else if (status === 'finalized' && ctx?.blockHash) {
+              updateTxToast('finalized', {
+                amount: amountDot,
+                currency: 'DOT',
+                txHash: result.txHash,
+                fee: feeEstimate || 0.0024,
+                feeCurrency: 'DOT',
+                blockHash: ctx.blockHash,
+              });
+            }
+          },
+        });
 
-      // State 2: Broadcasting
-      updateTxToast('broadcast', {
-        amount: Math.abs(totalAmount),
-        currency: 'USDT',
-      });
+        // Refresh balance after successful transaction
+        account.refreshBalance();
 
-      // Simulate broadcast delay (800ms)
-      await new Promise(resolve => setTimeout(resolve, 800));
+        // Wait a bit for finalization status, then call onConfirm with txHash
+        setTimeout(() => {
+          setIsSettling(false);
+          onConfirm(selectedMethod, result.txHash);
+        }, 2000);
 
-      // Generate mock tx hash
-      const mockTxHash = `0x${Math.random().toString(16).substr(2, 64)}`;
-      
-      // State 3: In block
-      updateTxToast('inBlock', {
-        amount: Math.abs(totalAmount),
-        currency: 'USDT',
-        txHash: mockTxHash,
-        fee: feeEstimate || 0.0024,
-        feeCurrency: 'DOT',
-      });
-
-      // Simulate in-block delay (1200ms)
-      await new Promise(resolve => setTimeout(resolve, 1200));
-
-      // State 4: Finalized (auto-dismiss after 1.5s)
-      const mockBlockNumber = Math.floor(Math.random() * 1000000) + 18000000;
-      updateTxToast('finalized', {
-        amount: Math.abs(totalAmount),
-        currency: 'USDT',
-        txHash: mockTxHash,
-        fee: feeEstimate || 0.0024,
-        feeCurrency: 'DOT',
-        blockNumber: mockBlockNumber,
-      });
-
-      // Wait for auto-dismiss, then call onConfirm
-      setTimeout(() => {
-        onConfirm(selectedMethod, undefined);
-      }, 1500);
-
-      return;
+        return;
+      } catch (error: any) {
+        console.error('[SettleHome] DOT transfer error:', error);
+        setIsSettling(false);
+        
+        if (error?.message === 'USER_REJECTED') {
+          onShowToast?.('Transaction cancelled', 'info');
+        } else if (error?.message?.includes('Insufficient')) {
+          onShowToast?.('Insufficient balance for transaction', 'error');
+        } else {
+          onShowToast?.(`Settlement failed: ${error?.message || 'Unknown error'}`, 'error');
+        }
+        return;
+      }
     }
 
     // Non-DOT methods: direct confirmation
@@ -201,12 +259,16 @@ export function SettleHome({
     onConfirm(selectedMethod, reference);
   };
 
+  // Check if DOT settlement is valid (requires wallet connected AND recipient address)
+  const isDotValid = selectedMethod === "dot" && walletConnected && !!recipientAddress;
+  
   const isValid = 
     selectedMethod === "cash" || 
     // Bank reference is optional
     selectedMethod === "bank" || 
     (selectedMethod === "paypal" && paypalEmail.length > 0) ||
-    (selectedMethod === "twint" && twintPhone.length > 0) || (selectedMethod === "dot" && walletConnected);
+    (selectedMethod === "twint" && twintPhone.length > 0) || 
+    isDotValid;
 
   // Check if transaction is currently active (disable confirm button)
   const txActive = isTxActive();
@@ -223,7 +285,7 @@ export function SettleHome({
             <CheckCircle2 className="w-12 h-12 mx-auto" style={{ color: 'var(--success)' }} />
             <p className="text-body">Mark this cash settlement as complete?</p>
             <p className="text-caption text-secondary">
-              This will record that you {isPaying ? 'paid' : 'received'} ${Math.abs(totalAmount).toFixed(2)} in cash
+              This will record that you {isPaying ? 'paid' : 'received'} {formatAmount(totalAmount)} in cash
             </p>
           </div>
 
@@ -286,7 +348,7 @@ export function SettleHome({
                   color: isPaying ? 'var(--foreground)' : 'var(--money)'
                 }}
               >
-                ${Math.abs(totalAmount).toFixed(2)}
+                {formatAmount(totalAmount)}
               </p>
             </div>
           </div>
@@ -297,19 +359,16 @@ export function SettleHome({
               {settlements[0]?.pots?.map(pot => (
                 <div key={pot.potId} className="flex justify-between text-caption text-secondary">
                   <span>{pot.potName}</span>
-                  <span className="tabular-nums" style={{ fontWeight: 500 }}>${pot.amount.toFixed(2)}</span>
+                  <span className="tabular-nums" style={{ fontWeight: 500 }}>{isDotPot ? `${pot.amount.toFixed(6)} DOT` : `$${pot.amount.toFixed(2)}`}</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Wallet Banner for DOT */}
-        {selectedMethod === "dot" && !walletConnected && (
-          <WalletBanner
-            isConnected={false}
-            onConnect={onConnectWallet ?? (() => {})}
-          />
+        {/* Wallet Banner for DOT - Only show when wallet is connected to display balance */}
+        {selectedMethod === "dot" && walletConnected && (
+          <WalletBanner />
         )}
 
         {/* Payment Method Tabs */}
@@ -546,12 +605,12 @@ export function SettleHome({
               <div className="w-2 h-2 rounded-full bg-gradient-to-br from-pink-400 to-purple-500" />
               <p className="text-body font-medium">Polkadot Settlement</p>
             </div>
-            <p className="text-caption text-secondary">
-              {walletConnected 
-                ? `Send ${Math.abs(totalAmount).toFixed(2)} USDT on Polkadot. This will create an on-chain transaction.`
-                : 'Connect your Polkadot wallet to settle on-chain in USDT.'
-              }
-            </p>
+                    <p className="text-caption text-secondary">
+                      {walletConnected 
+                        ? `Send ${formatAmount(totalAmount)} on Polkadot. This will create an on-chain transaction.`
+                        : `Connect your Polkadot wallet to settle on-chain in ${baseCurrency}.`
+                      }
+                    </p>
 
             {/* Fee & Total Section - Only visible when wallet connected */}
             {walletConnected && (
@@ -601,19 +660,29 @@ export function SettleHome({
 
                 {/* Total Row - Always show when not loading */}
                 {!feeLoading && (
-                  <div className="flex justify-between items-start">
-                    <span className="text-body font-medium">Total you'll send:</span>
-                    <div className="text-right">
-                      <p className="text-body font-medium tabular-nums">{Math.abs(totalAmount).toFixed(2)} USDT</p>
-                      <p className="text-caption text-muted tabular-nums">
-                        {feeEstimate !== null && !feeError 
-                          ? `+ ~${feeEstimate.toFixed(4)} DOT`
-                          : '+ network fee'
-                        }
-                      </p>
-                    </div>
-                  </div>
+                          <div className="flex justify-between items-start">
+                            <span className="text-body font-medium">Total you'll send:</span>
+                            <div className="text-right">
+                              <p className="text-body font-medium tabular-nums">{formatAmount(totalAmount)}</p>
+                              {feeEstimate !== null && !feeError && (
+                                <p className="text-caption text-muted tabular-nums">
+                                  + ~{feeEstimate.toFixed(6)} DOT (network fee)
+                                </p>
+                              )}
+                            </div>
+                          </div>
                 )}
+              </div>
+            )}
+
+            {/* Warning: No recipient address */}
+            {walletConnected && !recipientAddress && (
+              <div className="pt-3 border-t border-border/50">
+                <div className="p-2 bg-yellow-500/10 dark:bg-yellow-500/20 rounded-lg border border-yellow-500/30">
+                  <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                    ⚠️ No wallet address on file for {counterparty}. Please add their wallet address in the Members tab to settle via DOT.
+                  </p>
+                </div>
               </div>
             )}
           </div>
@@ -622,17 +691,21 @@ export function SettleHome({
 
       {/* Bottom CTA */}
       <div className="p-4 bg-background border-t border-border">
-        <PrimaryButton
-          fullWidth
-          onClick={handleConfirm}
-          disabled={!isValid || isLoading}
-          loading={isLoading}
-        >
-          {selectedMethod === "dot" && !walletConnected 
-            ? "Connect Wallet" 
-            : `Confirm ${selectedMethod === "cash" ? "Cash" : selectedMethod === "bank" ? "Bank" : selectedMethod === "paypal" ? "PayPal" : selectedMethod === "twint" ? "TWINT" : "DOT"} Settlement`
-          }
-        </PrimaryButton>
+        <div title={selectedMethod === "dot" && !recipientAddress ? "No wallet address on file for this member" : undefined}>
+          <PrimaryButton
+            fullWidth
+            onClick={handleConfirm}
+            disabled={!isValid || isLoading}
+            loading={isLoading}
+          >
+            {selectedMethod === "dot" && !walletConnected 
+              ? "Connect Wallet in Header"
+              : selectedMethod === "dot" && !recipientAddress
+              ? "Add Wallet Address Required"
+              : `Confirm ${selectedMethod === "cash" ? "Cash" : selectedMethod === "bank" ? "Bank" : selectedMethod === "paypal" ? "PayPal" : selectedMethod === "twint" ? "TWINT" : "DOT"} Settlement`
+            }
+          </PrimaryButton>
+        </div>
       </div>
     </div>
   );

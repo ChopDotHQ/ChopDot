@@ -1,10 +1,19 @@
-import { Receipt, AlertCircle, Plus, TrendingUp, TrendingDown, CheckCircle, ChevronDown, ChevronUp, History } from "lucide-react";
-import { useState } from "react";
+import { Receipt, AlertCircle, Plus, TrendingUp, TrendingDown, CheckCircle, ChevronDown, ChevronUp, History, ArrowRight, Wallet, ExternalLink, Copy, Loader2 } from "lucide-react";
+import { useState, useMemo } from "react";
 import { SwipeableExpenseRow } from "../SwipeableExpenseRow";
+import { computeBalances, suggestSettlements, getMemberBalance, type Balance, type Suggestion } from "../../services/settlement/calc";
+import type { Pot, Expense as PotExpense } from "../../schema/pot";
+import { SettlementConfirmModal } from "../SettlementConfirmModal";
+import { polkadotChainService } from "../../services/chain/polkadot";
+import { normalizeToPolkadot } from "../../services/chain/address";
+import { useAccount } from "../../contexts/AccountContext";
+import type { PotHistory } from "../../App";
 
 interface Member {
   id: string;
   name: string;
+  address?: string; // Optional Polkadot wallet address
+  verified?: boolean; // Optional verification status
 }
 
 interface Expense {
@@ -50,6 +59,8 @@ interface ExpensesTabProps {
   budgetEnabled?: boolean;
   totalExpenses?: number;
   contributions?: Contribution[];
+  potId?: string; // Pot ID for calculations
+  potHistory?: PotHistory[]; // On-chain settlement history
   onAddExpense: () => void;
   onExpenseClick: (expense: Expense) => void;
   onSettle: () => void;
@@ -58,6 +69,7 @@ interface ExpensesTabProps {
   onBatchAttestExpenses?: (expenseIds: string[]) => void;
   onReviewPending?: () => void;
   onShowToast?: (message: string, type?: "success" | "info" | "error") => void;
+  onUpdatePot?: (updates: { history?: PotHistory[] }) => void; // Callback to update pot history
   checkpointConfirmedCount?: number;
   checkpointTotalCount?: number;
 }
@@ -71,6 +83,8 @@ export function ExpensesTab({
   budgetEnabled,
   totalExpenses: _propTotalExpenses,
   contributions = [],
+  potId,
+  potHistory = [],
   onAddExpense, 
   onExpenseClick, 
   onSettle,
@@ -79,54 +93,95 @@ export function ExpensesTab({
   onBatchAttestExpenses,
   onReviewPending: _onReviewPending,
   onShowToast,
+  onUpdatePot,
   checkpointConfirmedCount,
   checkpointTotalCount,
 }: ExpensesTabProps) {
   const [showPendingOnly, setShowPendingOnly] = useState(false);
   const [showActivity, setShowActivity] = useState(false);
   
-  // Calculate balances
-  const myExpenses = expenses.filter(e => e.paidBy === currentUserId).reduce((sum, e) => sum + e.amount, 0);
-  const myShare = expenses.reduce((sum, e) => {
-    const share = e.split.find(s => s.memberId === currentUserId);
-    return sum + (share?.amount || 0);
-  }, 0);
-  const netBalance = myExpenses - myShare;
+  // Settlement modal state
+  const [settlementModal, setSettlementModal] = useState<{
+    fromMemberId: string;
+    toMemberId: string;
+    fromAddress: string;
+    toAddress: string;
+    fromName: string;
+    toName: string;
+    amountDot: number;
+  } | null>(null);
+  const [isSending, setIsSending] = useState(false);
+  
+  const account = useAccount();
+  
+  // Check if this is a DOT pot
+  const isDotPot = baseCurrency === "DOT";
+  
+  // Ensure we're on Asset Hub for DOT pots
+  useMemo(() => {
+    if (isDotPot) {
+      polkadotChainService.setChain('assethub');
+    }
+  }, [isDotPot]);
+  
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+  
+  // Convert to schema format for deterministic calculation
+  // Note: We use equal split for MVP, so we recalculate splits here
+  const potForCalc: Pot = useMemo(() => {
+    const potExpenses: PotExpense[] = expenses.map(exp => ({
+      id: exp.id,
+      potId: potId || '',
+      description: exp.memo || 'Expense',
+      amount: exp.amount,
+      paidBy: exp.paidBy,
+      createdAt: new Date(exp.date).getTime(),
+    }));
+    
+    const potMembers = members.map(m => ({
+      id: m.id,
+      name: m.name,
+      address: undefined, // Optional for MVP
+    }));
+    
+    return {
+      id: potId || 'temp',
+      name: 'Pot',
+      members: potMembers,
+      expenses: potExpenses,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+  }, [expenses, members, potId]);
+  
+  // Calculate balances using deterministic algorithm
+  const computedBalances = useMemo(() => computeBalances(potForCalc), [potForCalc]);
+  const settlementSuggestions = useMemo(() => suggestSettlements(computedBalances), [computedBalances]);
+  
+  // Get current user's net balance
+  const netBalance = getMemberBalance(computedBalances, currentUserId);
   
   // Budget calculations (passed as props)
   const budgetPercentage = budget ? Math.min((totalExpenses / budget) * 100, 100) : 0;
   const budgetRemaining = budget ? Math.max(budget - totalExpenses, 0) : 0;
   const isOverBudget = budget ? totalExpenses > budget : false;
   
-  // Calculate who owes what
-  const balances = members.map(member => {
-    if (member.id === currentUserId) return null;
-    
-    //
-    
-    // Calculate what they owe you or what you owe them
-    const myShareOfTheirExpenses = expenses
-      .filter(e => e.paidBy === member.id)
-      .reduce((sum, e) => {
-        const share = e.split.find(s => s.memberId === currentUserId);
-        return sum + (share?.amount || 0);
-      }, 0);
-    
-    const theirShareOfMyExpenses = expenses
-      .filter(e => e.paidBy === currentUserId)
-      .reduce((sum, e) => {
-        const share = e.split.find(s => s.memberId === member.id);
-        return sum + (share?.amount || 0);
-      }, 0);
-    
-    const balance = theirShareOfMyExpenses - myShareOfTheirExpenses;
-    
+  // Convert to display format (exclude current user)
+  // For DOT pots, use a much smaller threshold (0.000001 DOT = 1 micro-DOT)
+  // For USD pots, use 0.01 as threshold
+  const settleThreshold = baseCurrency === 'DOT' ? 0.000001 : 0.01;
+  
+  const balances = computedBalances
+    .filter(b => b.memberId !== currentUserId && Math.abs(b.net) > settleThreshold)
+    .map(b => {
+      const member = members.find(m => m.id === b.memberId);
+      if (!member) return null;
     return {
       member,
-      balance, // Positive = they owe you, Negative = you owe them
+        balance: b.net, // Positive = they owe you, Negative = you owe them
     };
-  }).filter(Boolean) as { member: Member; balance: number }[];
+    })
+    .filter(Boolean) as { member: Member; balance: number }[];
   
   // Calculate pending attestations (only expenses paid by OTHERS that you haven't confirmed)
   const pendingExpenses = expenses.filter(e => 
@@ -139,7 +194,14 @@ export function ExpensesTab({
     return sum + (share?.amount || 0);
   }, 0);
   
-  const canSettle = expenses.length > 0 && balances.some(b => Math.abs(b.balance) > 0.01);
+  // canSettle should be true if:
+  // 1. There are expenses, AND
+  // 2. Either there are balances to settle OR there are settlement suggestions
+  // (Settlement suggestions handle cases where current user owes/is owed)
+  const canSettle = expenses.length > 0 && (
+    balances.some(b => Math.abs(b.balance) > settleThreshold) ||
+    settlementSuggestions.length > 0
+  );
   
   // Filter expenses (when showing pending only, exclude self-paid expenses)
   const displayedExpenses = showPendingOnly 
@@ -240,6 +302,89 @@ export function ExpensesTab({
     if (diffInDays < 7) return `${diffInDays}d ago`;
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
+  
+  // Handle settlement confirmation
+  const handleSettleConfirm = async () => {
+    if (!settlementModal || !onUpdatePot) return;
+    
+    setIsSending(true);
+    
+    try {
+      const config = polkadotChainService.getConfig();
+      let txHash: string | undefined;
+      let blockHash: string | undefined;
+      let status: 'in_block' | 'finalized' | 'failed' = 'in_block';
+      
+      // Send DOT transaction with lifecycle tracking
+      await polkadotChainService.sendDot({
+        from: settlementModal.fromAddress,
+        to: settlementModal.toAddress,
+        amountDot: settlementModal.amountDot,
+        onStatus: (s, ctx) => {
+          if (s === 'submitted') {
+            onShowToast?.('Transaction submitted...', 'info');
+          } else if (s === 'inBlock') {
+            txHash = ctx?.txHash || txHash;
+            blockHash = ctx?.blockHash || blockHash;
+            status = 'in_block';
+            onShowToast?.(`Transaction in block! ${txHash ? `Hash: ${txHash.slice(0, 8)}...` : ''}`, 'success');
+          } else if (s === 'finalized') {
+            status = 'finalized';
+            blockHash = ctx?.blockHash || blockHash;
+            onShowToast?.('Transaction finalized!', 'success');
+          }
+        },
+      });
+      
+      if (!txHash) {
+        throw new Error('Transaction hash not received');
+      }
+      
+      // Create history entry (status will be updated if finalized callback fires)
+      const historyEntry: PotHistory = {
+        id: `settlement-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        type: 'onchain_settlement',
+        fromMemberId: settlementModal.fromMemberId,
+        toMemberId: settlementModal.toMemberId,
+        fromAddress: settlementModal.fromAddress,
+        toAddress: settlementModal.toAddress,
+        amountDot: settlementModal.amountDot.toFixed(6),
+        txHash,
+        block: blockHash,
+        status: status, // Will be 'in_block' initially, 'finalized' if callback fired
+        when: Date.now(),
+        subscan: `${config.subscanExtrinsicBase}/${txHash}`,
+      };
+      
+      // Update pot history
+      const updatedHistory = [historyEntry, ...potHistory];
+      onUpdatePot({ history: updatedHistory });
+      
+      // Refresh balance
+      account.refreshBalance();
+      
+      // Close modal
+      setSettlementModal(null);
+      setIsSending(false);
+      
+    } catch (error: any) {
+      console.error('[ExpensesTab] Settlement error:', error);
+      setIsSending(false);
+      
+      if (error?.message === 'USER_REJECTED') {
+        onShowToast?.('Transaction cancelled', 'info');
+      } else if (error?.message?.includes('Insufficient')) {
+        onShowToast?.('Insufficient balance for transaction', 'error');
+      } else {
+        onShowToast?.(`Settlement failed: ${error?.message || 'Unknown error'}`, 'error');
+      }
+    }
+  };
+  
+  const handleSettleCancel = () => {
+    setSettlementModal(null);
+    setIsSending(false);
+  };
 
   return (
     <div className="space-y-3">
@@ -265,14 +410,14 @@ export function ExpensesTab({
                     color: netBalance >= 0 ? 'var(--success)' : 'var(--ink)'
                   }}
                 >
-                  {netBalance >= 0 ? '+' : ''}${Math.abs(netBalance).toFixed(2)}
+                  {netBalance >= 0 ? '+' : ''}{baseCurrency === 'DOT' ? `${Math.abs(netBalance).toFixed(6)} DOT` : `$${Math.abs(netBalance).toFixed(2)}`}
                 </p>
               </div>
               
               {/* Quick context line: Total spent + Budget */}
               <div className="flex items-center justify-center gap-3 mt-2">
                 <span className="text-caption text-secondary">
-                  ${totalExpenses.toFixed(0)} spent
+                  {baseCurrency === 'DOT' ? `${totalExpenses.toFixed(6)} DOT` : `$${totalExpenses.toFixed(0)}`} spent
                 </span>
                 {budgetEnabled && budget && (
                   <>
@@ -307,10 +452,9 @@ export function ExpensesTab({
             </div>
 
             {/* Member Balances Breakdown */}
-            {balances.filter(b => Math.abs(b.balance) > 0.01).length > 0 && (
+            {balances.length > 0 && (
               <div className="space-y-1.5">
                 {balances
-                  .filter(b => Math.abs(b.balance) > 0.01)
                   .sort((a, b) => b.balance - a.balance)
                   .map(({ member, balance }) => (
                     <div key={member.id} className="flex items-center justify-between">
@@ -325,7 +469,7 @@ export function ExpensesTab({
                           fontWeight: 500,
                           color: balance > 0 ? 'var(--success)' : 'var(--ink)'
                         }}>
-                          {balance > 0 ? '+' : '-'}${Math.abs(balance).toFixed(2)}
+                          {balance > 0 ? '+' : '-'}{isDotPot ? `${Math.abs(balance).toFixed(6)} DOT` : `$${Math.abs(balance).toFixed(2)}`}
                         </span>
                         <p className="text-caption text-secondary">
                           {balance > 0 ? 'owes you' : 'you owe'}
@@ -334,6 +478,159 @@ export function ExpensesTab({
                     </div>
                   ))
                 }
+              </div>
+            )}
+            
+            {/* Settlement Suggestions */}
+            {settlementSuggestions.length > 0 && (
+              <div className="pt-3 border-t border-border/50">
+                <p className="text-caption text-secondary mb-2">Suggested settlements</p>
+                <div className="space-y-1.5">
+                  {settlementSuggestions.map((suggestion, idx) => {
+                    const fromMember = members.find(m => m.id === suggestion.from);
+                    const toMember = members.find(m => m.id === suggestion.to);
+                    if (!fromMember || !toMember) return null;
+                    
+                    // Check if recipient has address (for DOT settlements)
+                    const hasRecipientAddress = !!(toMember as any).address;
+                    const fromMemberAddress = (fromMember as any).address;
+                    
+                    // For DOT pots: check if current user is the sender and has wallet connected
+                    const isCurrentUserSender = fromMember.id === currentUserId;
+                    const canSettleWithDot = isDotPot && 
+                      isCurrentUserSender && 
+                      hasRecipientAddress && 
+                      fromMemberAddress && 
+                      account.status === 'connected' &&
+                      account.address0 &&
+                      normalizeToPolkadot(fromMemberAddress) === account.address0;
+                    
+                    // For DOT pots, amounts are already in DOT; for non-DOT pots, we don't show settle button
+                    const amountDot = suggestion.amount; // Always in pot's base currency
+                    const displayAmount = isDotPot ? `${suggestion.amount.toFixed(6)} DOT` : `$${suggestion.amount.toFixed(2)}`;
+                    
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`flex items-center justify-between p-2 glass-sm rounded-lg ${
+                          !hasRecipientAddress ? 'opacity-60' : ''
+                        }`}
+                        title={!hasRecipientAddress ? `No wallet address on file for ${toMember.name}` : undefined}
+                      >
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <span className="text-label truncate" style={{ fontWeight: 500 }}>
+                            {fromMember.name}
+                          </span>
+                          <ArrowRight className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                          <span className="text-label truncate" style={{ fontWeight: 500 }}>
+                            {toMember.name}
+                          </span>
+                          {!hasRecipientAddress && (
+                            <span className="text-[10px] text-muted-foreground" title="No wallet address on file for this member">
+                              (no address)
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="text-label tabular-nums" style={{ fontWeight: 500 }}>
+                            {displayAmount}
+                          </span>
+                          {canSettleWithDot && (
+                            <button
+                              onClick={() => {
+                                setSettlementModal({
+                                  fromMemberId: fromMember.id,
+                                  toMemberId: toMember.id,
+                                  fromAddress: normalizeToPolkadot(fromMemberAddress),
+                                  toAddress: normalizeToPolkadot((toMember as any).address),
+                                  fromName: fromMember.name,
+                                  toName: toMember.name,
+                                  amountDot,
+                                });
+                              }}
+                              className="px-2 py-1 rounded text-[10px] font-medium bg-accent text-white hover:opacity-90 transition-opacity flex items-center gap-1"
+                              disabled={isSending}
+                            >
+                              <Wallet className="w-3 h-3" />
+                              Settle with DOT
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-caption text-secondary mt-2" style={{ fontSize: '10px' }}>
+                  {isDotPot 
+                    ? "Settle directly on-chain with DOT. Minimal transfers to settle all balances."
+                    : "These are minimal transfers to settle all balances. Use \"Settle Up\" to initiate settlements."
+                  }
+                </p>
+              </div>
+            )}
+            
+            {/* Recent Settlements (DOT pots only) */}
+            {isDotPot && potHistory.length > 0 && (
+              <div className="pt-3 border-t border-border/50">
+                <p className="text-caption text-secondary mb-2">Recent settlements</p>
+                <div className="space-y-1.5">
+                  {potHistory.slice(0, 5).map((entry) => {
+                    const fromMember = members.find(m => m.id === entry.fromMemberId);
+                    const toMember = members.find(m => m.id === entry.toMemberId);
+                    const statusBadge = entry.status === 'finalized' 
+                      ? { label: 'Finalized', color: 'var(--success)' }
+                      : entry.status === 'in_block'
+                      ? { label: 'In block', color: 'var(--accent)' }
+                      : { label: 'Failed', color: 'var(--danger)' };
+                    
+                    return (
+                      <div key={entry.id} className="flex items-center justify-between p-2 glass-sm rounded-lg">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <span className="text-label truncate" style={{ fontWeight: 500 }}>
+                            {fromMember?.name || 'Unknown'}
+                          </span>
+                          <ArrowRight className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                          <span className="text-label truncate" style={{ fontWeight: 500 }}>
+                            {toMember?.name || 'Unknown'}
+                          </span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ 
+                            background: `${statusBadge.color}20`,
+                            color: statusBadge.color,
+                            fontWeight: 500
+                          }}>
+                            {statusBadge.label}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="text-label tabular-nums" style={{ fontWeight: 500 }}>
+                            {parseFloat(entry.amountDot).toFixed(6)} DOT
+                          </span>
+                          {entry.status === 'finalized' && (
+                            <a
+                              href={entry.subscan}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1 hover:bg-muted rounded transition-colors"
+                              title="View on Subscan"
+                            >
+                              <ExternalLink className="w-3 h-3 text-muted-foreground" />
+                            </a>
+                          )}
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(entry.txHash);
+                              onShowToast?.('Transaction hash copied', 'success');
+                            }}
+                            className="p-1 hover:bg-muted rounded transition-colors"
+                            title="Copy transaction hash"
+                          >
+                            <Copy className="w-3 h-3 text-muted-foreground" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
             
@@ -513,7 +810,7 @@ export function ExpensesTab({
                           color: 'var(--text-secondary)',
                           fontWeight: 500 
                         }}>
-                          ${event.metadata.amount.toFixed(2)}
+                          {event.metadata.currency || baseCurrency} {event.metadata.amount.toFixed(baseCurrency === 'DOT' ? 6 : 2)}
                         </span>
                       )}
                     </div>
@@ -582,6 +879,7 @@ export function ExpensesTab({
                       expense={expense}
                       members={members}
                       currentUserId={currentUserId}
+                      baseCurrency={baseCurrency}
                       onClick={() => onExpenseClick(expense)}
                       onDelete={onDeleteExpense ? () => onDeleteExpense(expense.id) : undefined}
                       onAttest={needsAttestation && onAttestExpense ? () => onAttestExpense(expense.id) : undefined}
@@ -593,6 +891,21 @@ export function ExpensesTab({
             </div>
           ))}
         </div>
+      )}
+      
+      {/* Settlement Confirmation Modal */}
+      {settlementModal && (
+        <SettlementConfirmModal
+          isOpen={!!settlementModal}
+          fromAddress={settlementModal.fromAddress}
+          toAddress={settlementModal.toAddress}
+          fromName={settlementModal.fromName}
+          toName={settlementModal.toName}
+          amountDot={settlementModal.amountDot}
+          onConfirm={handleSettleConfirm}
+          onCancel={handleSettleCancel}
+          isSending={isSending}
+        />
       )}
     </div>
   );

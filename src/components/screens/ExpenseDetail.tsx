@@ -29,6 +29,7 @@ interface ExpenseDetailProps {
   expense: Expense;
   members: Member[];
   currentUserId: string;
+  baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
   walletConnected?: boolean;
   onBack: () => void;
   onAttest: () => void;
@@ -44,6 +45,7 @@ export function ExpenseDetail({
   expense,
   members,
   currentUserId,
+  baseCurrency = 'USD',
   walletConnected = false,
   onBack,
   onAttest,
@@ -54,6 +56,16 @@ export function ExpenseDetail({
   onUpdateExpense,
   onConnectWallet,
 }: ExpenseDetailProps) {
+  const isDotPot = baseCurrency === 'DOT';
+  const decimals = isDotPot ? 6 : 2;
+  // For DOT pots, always use baseCurrency; for others, use expense.currency if available
+  const displayCurrency = isDotPot ? baseCurrency : (expense.currency || baseCurrency);
+  const formatAmount = (amt: number) => {
+    if (displayCurrency === 'DOT') {
+      return `${amt.toFixed(decimals)} DOT`;
+    }
+    return `$${amt.toFixed(decimals)}`;
+  };
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showReceiptViewer, setShowReceiptViewer] = useState(false);
   const [showAttestationDetail, setShowAttestationDetail] = useState(false);
@@ -71,7 +83,7 @@ export function ExpenseDetail({
       // State 1: Signing
       pushTxToast('signing', {
         amount: expense.amount,
-        currency: expense.currency,
+        currency: displayCurrency, // Use displayCurrency for consistency
       });
 
       // Simulate signing delay (400ms)
@@ -80,7 +92,7 @@ export function ExpenseDetail({
       // State 2: Broadcasting
       updateTxToast('broadcast', {
         amount: expense.amount,
-        currency: expense.currency,
+        currency: displayCurrency, // Use displayCurrency for consistency
       });
 
       // Simulate broadcast delay (600ms)
@@ -92,7 +104,7 @@ export function ExpenseDetail({
       // State 3: In block
       updateTxToast('inBlock', {
         amount: expense.amount,
-        currency: expense.currency,
+        currency: displayCurrency, // Use displayCurrency for consistency
         txHash: mockTxHash,
         fee: 0.0018,
         feeCurrency: 'DOT',
@@ -105,7 +117,7 @@ export function ExpenseDetail({
       const mockBlockNumber = Math.floor(Math.random() * 1000000) + 18000000;
       updateTxToast('finalized', {
         amount: expense.amount,
-        currency: expense.currency,
+        currency: displayCurrency, // Use displayCurrency for consistency
         txHash: mockTxHash,
         fee: 0.0018,
         feeCurrency: 'DOT',
@@ -144,7 +156,7 @@ export function ExpenseDetail({
     // State 1: Signing
     pushTxToast('signing', {
       amount: expense.amount,
-      currency: expense.currency,
+      currency: displayCurrency, // Use displayCurrency for consistency
     });
 
     // Simulate signing delay (400ms)
@@ -153,7 +165,7 @@ export function ExpenseDetail({
     // State 2: Broadcasting
     updateTxToast('broadcast', {
       amount: expense.amount,
-      currency: expense.currency,
+      currency: displayCurrency, // Use displayCurrency for consistency
     });
 
     // Simulate broadcast delay (600ms)
@@ -165,7 +177,7 @@ export function ExpenseDetail({
     // State 3: In block
     updateTxToast('inBlock', {
       amount: expense.amount,
-      currency: expense.currency,
+      currency: displayCurrency, // Use displayCurrency for consistency
       txHash: mockTxHash,
       fee: 0.0018,
       feeCurrency: 'DOT',
@@ -178,7 +190,7 @@ export function ExpenseDetail({
     const mockBlockNumber = Math.floor(Math.random() * 1000000) + 18000000;
     updateTxToast('finalized', {
       amount: expense.amount,
-      currency: expense.currency,
+      currency: displayCurrency, // Use displayCurrency for consistency
       txHash: mockTxHash,
       fee: 0.0018,
       feeCurrency: 'DOT',
@@ -224,7 +236,7 @@ export function ExpenseDetail({
             <div>
               <p className="text-xs text-secondary">Amount</p>
               <p className="text-base mt-0.5" style={{ fontWeight: 500 }}>
-                ${expense.amount.toFixed(2)}
+                {formatAmount(expense.amount)}
               </p>
             </div>
             
@@ -289,7 +301,7 @@ export function ExpenseDetail({
                   </div>
                   <span className="flex-1 text-xs">{member?.name}</span>
                   <span className="text-xs tabular-nums" style={{ fontWeight: 500 }}>
-                    ${amount.toFixed(2)}
+                    {formatAmount(amount)}
                   </span>
                 </div>
               );

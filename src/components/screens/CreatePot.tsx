@@ -1,12 +1,15 @@
-import { Receipt, TrendingUp } from "lucide-react";
+import { Receipt, TrendingUp, AlertCircle, CheckCircle } from "lucide-react";
 import { TopBar } from "../TopBar";
 import { MemberChip } from "../MemberChip";
 import { LinkButton } from "../LinkButton";
 import { useState } from "react";
+import { isValidSs58Any, normalizeToPolkadot } from "../../services/chain/address";
 
 interface Member {
   id: string;
   name: string;
+  address?: string;
+  verified?: boolean;
 }
 
 interface CreatePotProps {
@@ -43,12 +46,52 @@ export function CreatePot({
   onCreate,
 }: CreatePotProps) {
   const [newMemberName, setNewMemberName] = useState("");
+  const [newMemberAddress, setNewMemberAddress] = useState("");
+  const [showAddressField, setShowAddressField] = useState(false);
+  const [addressError, setAddressError] = useState<string | null>(null);
+  const [addressValid, setAddressValid] = useState(false);
   const [allowCashBank, setAllowCashBank] = useState(true);
+
+  // Validate address on change
+  const validateAddress = (addr: string) => {
+    if (!addr.trim()) {
+      setAddressError(null);
+      setAddressValid(false);
+      return;
+    }
+
+    if (isValidSs58Any(addr)) {
+      setAddressError(null);
+      setAddressValid(true);
+    } else {
+      setAddressError('Invalid address (any SS58 allowed)');
+      setAddressValid(false);
+    }
+  };
+
+  const handleAddressChange = (addr: string) => {
+    setNewMemberAddress(addr);
+    validateAddress(addr);
+  };
 
   const addMember = () => {
     if (newMemberName.trim()) {
-      setMembers([...members, { id: Date.now().toString(), name: newMemberName.trim() }]);
+      let normalizedAddress: string | undefined = undefined;
+      if (newMemberAddress.trim() && addressValid) {
+        normalizedAddress = normalizeToPolkadot(newMemberAddress);
+      }
+
+      setMembers([...members, { 
+        id: Date.now().toString(), 
+        name: newMemberName.trim(),
+        address: normalizedAddress,
+        verified: false,
+      }]);
       setNewMemberName("");
+      setNewMemberAddress("");
+      setShowAddressField(false);
+      setAddressError(null);
+      setAddressValid(false);
     }
   };
 
@@ -196,10 +239,59 @@ export function CreatePot({
               type="text"
               value={newMemberName}
               onChange={(e) => setNewMemberName(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && addMember()}
+              onKeyPress={(e) => e.key === "Enter" && !showAddressField && addMember()}
               placeholder="Name, handle, or email"
               className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm"
             />
+            
+            {/* Optional Address Field */}
+            {showAddressField && (
+              <div className="space-y-1">
+                <input
+                  type="text"
+                  value={newMemberAddress}
+                  onChange={(e) => handleAddressChange(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && newMemberName.trim() && (!newMemberAddress.trim() || addressValid) && addMember()}
+                  placeholder="Polkadot wallet address (optional, any SS58)"
+                  className={`w-full px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-sm font-mono ${
+                    addressError ? 'border-destructive' : addressValid ? 'border-green-500' : 'border-border'
+                  }`}
+                />
+                {addressError && (
+                  <div className="flex items-center gap-1 text-xs text-destructive">
+                    <AlertCircle className="w-3 h-3" />
+                    <span>{addressError}</span>
+                  </div>
+                )}
+                {addressValid && !addressError && (
+                  <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                    <CheckCircle className="w-3 h-3" />
+                    <span>Will be normalized to Polkadot format.</span>
+                  </div>
+                )}
+                <button
+                  onClick={() => {
+                    setShowAddressField(false);
+                    setNewMemberAddress("");
+                    setAddressError(null);
+                    setAddressValid(false);
+                  }}
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                >
+                  Remove address field
+                </button>
+              </div>
+            )}
+            
+            {!showAddressField && (
+              <button
+                onClick={() => setShowAddressField(true)}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                + Add wallet address (optional)
+              </button>
+            )}
+            
             <div className="flex justify-between items-center">
               <p className="text-xs text-muted-foreground">
                 Add now or invite later

@@ -68,30 +68,37 @@ export function QuickKeypadSheet({
   const amountNum = Number(amount);
   const totalPercent = members.reduce((sum, m) => sum + parseFloat(customPercents[m.id] || '0'), 0);
   const isSplitValid = splitType !== 'custom' || Math.abs(totalPercent - 100) < 0.01;
-  const isValid = amount.length > 0 && !Number.isNaN(amountNum) && amountNum > 0.009 && isSplitValid;
+  // For DOT pots, allow smaller amounts (0.000001 DOT = 1 micro-DOT)
+  // For USD pots, maintain minimum of 0.01
+  const minAmount = baseCurrency === 'DOT' ? 0.000001 : 0.01;
+  // Use >= instead of > to allow exactly minAmount, and handle floating point precision
+  const isValid = amount.length > 0 && !Number.isNaN(amountNum) && amountNum >= minAmount - 0.0000001 && isSplitValid;
 
+  // Use 6 decimals for DOT, 2 for other currencies
+  const decimals = baseCurrency === 'DOT' ? 6 : 2;
+  
   const computedSplit = useMemo(() => {
     if (!isValid) return [] as { memberId: string; amount: number }[];
     const participants = members.filter(m => participantIds.has(m.id));
     if (splitType === 'equal') {
       const count = participants.length || 1;
-      const per = Number((amountNum / count).toFixed(2));
-      const remainder = Number((amountNum - per * (count - 1)).toFixed(2));
+      const per = Number((amountNum / count).toFixed(decimals));
+      const remainder = Number((amountNum - per * (count - 1)).toFixed(decimals));
       return participants.map((m, idx) => ({ memberId: m.id, amount: idx === count - 1 ? remainder : per }));
     }
     if (splitType === 'custom') {
       return participants.map((m) => {
         const pct = parseFloat(customPercents[m.id] || '0');
-        return { memberId: m.id, amount: Number(((amountNum * pct) / 100).toFixed(2)) };
+        return { memberId: m.id, amount: Number(((amountNum * pct) / 100).toFixed(decimals)) };
       });
     }
     // shares
     const totalShares = participants.reduce((sum, p) => sum + parseInt(shares[p.id] || '0'), 0) || 1;
     return participants.map((m) => {
       const memberShares = parseInt(shares[m.id] || '0');
-      return { memberId: m.id, amount: Number(((amountNum * memberShares) / totalShares).toFixed(2)) };
+      return { memberId: m.id, amount: Number(((amountNum * memberShares) / totalShares).toFixed(decimals)) };
     });
-  }, [amountNum, customPercents, isValid, members, participantIds, shares, splitType]);
+  }, [amountNum, customPercents, isValid, members, participantIds, shares, splitType, decimals]);
 
   // Save CTA sublabel for context confirmation
   const sublabel = useMemo(() => {
@@ -108,15 +115,16 @@ export function QuickKeypadSheet({
 
   const save = () => {
     if (!isValid) return;
-    onSave({
-      amount: Number(amountNum.toFixed(2)),
-      currency: baseCurrency,
-      paidBy,
-      memo: memo.trim(),
-      date: new Date().toISOString(),
-      split: computedSplit.length > 0 ? computedSplit : [{ memberId: currentUserId, amount: Number(amountNum.toFixed(2)) }],
-      hasReceipt: false,
-    });
+          // Always use baseCurrency to ensure consistency
+          onSave({
+            amount: Number(amountNum.toFixed(decimals)),
+            currency: baseCurrency, // Always use baseCurrency for consistency
+            paidBy,
+            memo: memo.trim(),
+            date: new Date().toISOString(),
+            split: computedSplit.length > 0 ? computedSplit : [{ memberId: currentUserId, amount: Number(amountNum.toFixed(decimals)) }],
+            hasReceipt: false,
+          });
     setAmount('');
     setMemo('');
     setPaidBy(currentUserId);
@@ -134,12 +142,19 @@ export function QuickKeypadSheet({
             <input
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              onBlur={() => {
-                const n = Number(amount);
-                if (!Number.isNaN(n) && n > 0) setAmount(n.toFixed(2));
-              }}
-              placeholder="0.00"
-              type="number"
+                      onBlur={() => {
+                        const n = Number(amount);
+                        if (!Number.isNaN(n) && n >= minAmount) {
+                          setAmount(n.toFixed(decimals));
+                        } else if (!Number.isNaN(n) && n > 0 && n < minAmount) {
+                          // Round up to minimum if below threshold
+                          setAmount(minAmount.toFixed(decimals));
+                        }
+                      }}
+                      placeholder={baseCurrency === 'DOT' ? '0.000000' : '0.00'}
+                      type="number"
+                      step={baseCurrency === 'DOT' ? '0.000001' : '0.01'}
+                      min={minAmount.toString()}
               className="flex-1 px-2 py-2 input-field tabular-nums"
               style={{ fontSize: '32px' }}
             />
@@ -195,7 +210,7 @@ export function QuickKeypadSheet({
                 <label key={m.id} className="flex items-center gap-2 p-2 rounded-lg border border-border bg-card cursor-pointer">
                   <input type="checkbox" className="w-3.5 h-3.5" checked={isIncluded} onChange={() => toggleMember(m.id)} />
                   <span className="flex-1 text-xs">{m.id === currentUserId ? 'You' : m.name}</span>
-                  {isIncluded && <span className="text-xs text-secondary tabular-nums">{perPerson.toFixed(2)}</span>}
+                  {isIncluded && <span className="text-xs text-secondary tabular-nums">{perPerson.toFixed(decimals)}</span>}
                 </label>
               );
             })}
@@ -213,7 +228,7 @@ export function QuickKeypadSheet({
                   <span className="flex-1 text-xs">{m.id===currentUserId?'You':m.name}</span>
                   <input value={customPercents[m.id]} onChange={(e)=> setCustomPercents({ ...customPercents, [m.id]: e.target.value })} type="number" placeholder="0" className="w-14 px-1.5 py-0.5 input-field text-xs text-right" />
                   <span className="text-xs text-secondary">%</span>
-                  <span className="text-xs text-secondary tabular-nums w-14 text-right">{memberAmount.toFixed(2)}</span>
+                  <span className="text-xs text-secondary tabular-nums w-14 text-right">{memberAmount.toFixed(decimals)}</span>
                 </div>
               );
             })}
@@ -231,26 +246,19 @@ export function QuickKeypadSheet({
                   <span className="flex-1 text-xs">{m.id===currentUserId?'You':m.name}</span>
                   <input value={shares[m.id]} onChange={(e)=> setShares({ ...shares, [m.id]: e.target.value })} type="number" placeholder="1" className="w-14 px-1.5 py-0.5 input-field text-xs text-right" />
                   <span className="text-xs text-secondary">shares</span>
-                  <span className="text-xs text-secondary tabular-nums w-14 text-right">{memberAmount.toFixed(2)}</span>
+                  <span className="text-xs text-secondary tabular-nums w-14 text-right">{memberAmount.toFixed(decimals)}</span>
                 </div>
               );
             })}
           </div>
         )}
 
-        {/* No keypad in this form view */}
-
-        <input
-          placeholder="Memo (optional)"
-          className="w-full px-3 py-2 input-field text-body"
-          value={memo}
-          onChange={(e) => setMemo(e.target.value)}
-        />
+        {/* Memo field removed - using Title field above instead */}
 
         {/* Footer with full-width Save above nav bar */}
         <div className="pt-3 bg-card border-t border-border" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 96px)', backdropFilter: 'blur(6px)' }}>
           <button disabled={!isValid} onClick={() => { triggerHaptic('success'); save(); }} className="w-full px-4 py-3 rounded-lg btn-accent disabled:opacity-40 active:scale-98 transition-transform">
-            {isValid ? `Save ${baseCurrency} ${amountNum.toFixed(2)}` : 'Save'}
+            {isValid ? `Save ${baseCurrency} ${amountNum.toFixed(decimals)}` : 'Save'}
           </button>
           <div className="mt-1 text-center text-caption text-secondary">{sublabel}</div>
           <div className="flex justify-center mt-2">
