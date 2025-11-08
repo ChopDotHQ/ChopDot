@@ -47,45 +47,37 @@ export function MembersTab({
   const [editingMember, setEditingMember] = useState<Member | null>(null);
 
   // Calculate balance for each member relative to current user
+  // Balance = how much they owe you (or you owe them)
+  // Positive = they owe you, Negative = you owe them
   const getMemberBalance = (memberId: string): number => {
     if (!expenses || expenses.length === 0) return 0;
 
-    let memberPaid = 0;
-    let memberOwes = 0;
-    let youPaid = 0;
-    let youOwe = 0;
+    // Calculate: their share of expenses you paid - your share of expenses they paid
+    // This matches the logic in calculatePotSettlements()
+    let theirShareOfMyExpenses = 0;
+    let myShareOfTheirExpenses = 0;
 
     expenses.forEach(expense => {
-      // What this member paid
-      if (expense.paidBy === memberId) {
-        memberPaid += expense.amount;
-      }
-      // What this member owes (their split)
-      const memberSplit = expense.split.find(s => s.memberId === memberId);
-      if (memberSplit) {
-        memberOwes += memberSplit.amount;
-      }
-
-      // What you paid
+      // If you paid, find their share
       if (expense.paidBy === currentUserId) {
-        youPaid += expense.amount;
+        const memberSplit = expense.split.find(s => s.memberId === memberId);
+        if (memberSplit) {
+          theirShareOfMyExpenses += memberSplit.amount;
+        }
       }
-      // What you owe (your split)
-      const yourSplit = expense.split.find(s => s.memberId === currentUserId);
-      if (yourSplit) {
-        youOwe += yourSplit.amount;
+      
+      // If they paid, find your share
+      if (expense.paidBy === memberId) {
+        const yourSplit = expense.split.find(s => s.memberId === currentUserId);
+        if (yourSplit) {
+          myShareOfTheirExpenses += yourSplit.amount;
+        }
       }
     });
 
-    // Member's net position
-    const memberNet = memberPaid - memberOwes;
-    // Your net position
-    const yourNet = youPaid - youOwe;
-
-    // Balance = how much they owe you (or you owe them)
-    // If positive: they owe you
-    // If negative: you owe them
-    return yourNet - memberNet;
+    // Balance = theirShareOfMyExpenses - myShareOfTheirExpenses
+    // Positive = they owe you, Negative = you owe them
+    return theirShareOfMyExpenses - myShareOfTheirExpenses;
   };
 
   // Mock payment preferences (in real app, would come from member data)

@@ -62,18 +62,25 @@ export function computeBalances(pot: Pot): Balance[] {
   
   // Process each expense
   pot.expenses.forEach(expense => {
-    // Equal split: each member owes amount / numMembers
-    const perPerson = roundToMicro(expense.amount / memberIds.length);
-    
-    // Track what the payer paid
+    // Track what the payer paid (always full amount)
     const currentPaid = paid.get(expense.paidBy) || 0;
     paid.set(expense.paidBy, roundToMicro(currentPaid + expense.amount));
     
-    // Track what each member owes (equal split)
-    memberIds.forEach(memberId => {
-      const currentOwed = owed.get(memberId) || 0;
-      owed.set(memberId, roundToMicro(currentOwed + perPerson));
-    });
+    // Use custom split if available, otherwise fall back to equal split
+    if (expense.split && expense.split.length > 0) {
+      // Use actual split amounts from expense.split[]
+      expense.split.forEach(split => {
+        const currentOwed = owed.get(split.memberId) || 0;
+        owed.set(split.memberId, roundToMicro(currentOwed + split.amount));
+      });
+    } else {
+      // Fall back to equal split: each member owes amount / numMembers
+      const perPerson = roundToMicro(expense.amount / memberIds.length);
+      memberIds.forEach(memberId => {
+        const currentOwed = owed.get(memberId) || 0;
+        owed.set(memberId, roundToMicro(currentOwed + perPerson));
+      });
+    }
   });
   
   // Calculate net balances

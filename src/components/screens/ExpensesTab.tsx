@@ -136,7 +136,7 @@ export function ExpensesTab({
   );
   
   // Convert to schema format for deterministic calculation
-  // Note: We use equal split for MVP, so we recalculate splits here
+  // Preserves custom splits if provided, otherwise computeBalances() will use equal split
   const potForCalc: Pot = useMemo(() => {
     const potExpenses: PotExpense[] = expenses.map(exp => ({
       id: exp.id,
@@ -145,6 +145,7 @@ export function ExpensesTab({
       amount: exp.amount,
       paidBy: exp.paidBy,
       createdAt: new Date(exp.date).getTime(),
+      split: exp.split, // Preserve custom splits for accurate balance calculation
     }));
     
     const potMembers = members.map(m => ({
