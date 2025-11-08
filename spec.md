@@ -20,11 +20,17 @@
 
 ## 📚 Related Documentation
 
+### Design & UX
 - **UX/UI Guidelines:** [`src/guidelines/Guidelines.md`](src/guidelines/Guidelines.md) - Complete design system reference (follow from the start)
 - **Naming Conventions:** [`src/guidelines/NAMING_CONVENTIONS.md`](src/guidelines/NAMING_CONVENTIONS.md) - File and code naming standards
 - **UX/UI Assessment:** [`src/guidelines/UX_UI_ASSESSMENT.md`](src/guidelines/UX_UI_ASSESSMENT.md) - Phase 1-3 improvement roadmap (completed)
 - **UX/UI Inconsistencies:** [`src/guidelines/UX_UI_INCONSISTENCIES.md`](src/guidelines/UX_UI_INCONSISTENCIES.md) - Historical reference (all issues resolved)
+
+### Architecture & Code Quality
 - **File Structure:** [`src/FILE_STRUCTURE.md`](src/FILE_STRUCTURE.md) - Codebase navigation
+- **Connections Verification:** [`CONNECTIONS_VERIFICATION.md`](CONNECTIONS_VERIFICATION.md) - End-to-end connection verification (all verified ✅)
+- **Connections Test Report:** [`CONNECTIONS_TEST_REPORT.md`](CONNECTIONS_TEST_REPORT.md) - Detailed test findings and fixes
+- **Hierarchy & Logic Review:** [`HIERARCHY_LOGIC_REVIEW.md`](HIERARCHY_LOGIC_REVIEW.md) - App hierarchy and math consistency review
 
 ---
 
@@ -231,6 +237,13 @@ src/
 ## Change Log
 
 > **Note:** Update this section whenever you make changes to the app.
+
+### [2025-01-14] - Balance Calculation Consistency Fix
+- Fixed ExpensesTab to preserve expense.split[] when converting to PotExpense format
+- Updated computeBalances() to check for and use expense.split[] if available
+- Ensures all screens (ExpensesTab, PeopleHome, MembersTab, SettleSelection) show consistent balances
+- All balance calculations now use the same logic (expense.split[] when available, equal split fallback)
+- Dependability score restored to 9/10 ✅
 
 ### [2025-01-14] - Phase 3: Refinement (Complete)
 - Enhanced PrimaryButton with hover glow effect (`hover:shadow-[0_0_12px_rgba(230,0,122,0.3)]`)
