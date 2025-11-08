@@ -16,9 +16,11 @@ import { isValidSs58Any } from '../services/chain/address';
 // Member schema - note: address is optional for MVP, but validated if provided
 export const MemberSchema = z.object({
   id: z.string().min(1, 'Member ID is required'),
-  address: z.string().optional(),
+  address: z.string().nullable().optional(),
   name: z.string().min(1, 'Member name is required'),
   verified: z.boolean().optional(),
+  role: z.string().optional(), // 'Owner' | 'Member'
+  status: z.string().optional(), // 'active' | 'pending' | 'removed'
 }).refine((data) => {
   // If address is provided, it must be a valid SS58 address
   if (data.address && data.address.trim() !== '') {
@@ -32,15 +34,27 @@ export const MemberSchema = z.object({
 
 export type Member = z.infer<typeof MemberSchema>;
 
-// Expense schema - simplified for MVP (equal split only)
+// Expense schema - matches runtime Expense interface with backward compatibility
 export const ExpenseSchema = z.object({
   id: z.string().min(1, 'Expense ID is required'),
-  potId: z.string().min(1, 'Pot ID is required'),
-  description: z.string().min(1, 'Description is required'),
+  potId: z.string().optional(), // Optional for backward compatibility
   amount: z.number().positive('Amount must be greater than 0'),
+  currency: z.string().optional(), // Will be set by migration if missing
   paidBy: z.string().min(1, 'Paid by member ID is required'),
-  createdAt: z.number().int().nonnegative('Created at must be a valid timestamp'),
-}).refine((data) => {
+  memo: z.string().optional(), // Primary field name
+  description: z.string().optional(), // Legacy field - migration will map to memo
+  date: z.string().optional(), // ISO date string
+  createdAt: z.number().int().nonnegative().optional(), // Legacy timestamp
+  split: z.array(z.object({
+    memberId: z.string(),
+    amount: z.number(),
+  })).optional(),
+  attestations: z.array(z.string()).optional(),
+  hasReceipt: z.boolean().optional(),
+  attestationTxHash: z.string().optional(),
+  attestationTimestamp: z.string().optional(),
+}).passthrough() // Allow unknown fields for forward compatibility
+.refine((data) => {
   // Validate that paidBy is a valid member ID (will be checked at pot level)
   return data.paidBy.trim() !== '';
 }, {
@@ -50,15 +64,90 @@ export const ExpenseSchema = z.object({
 
 export type Expense = z.infer<typeof ExpenseSchema>;
 
-// Pot schema
+// PotHistory schema - discriminated union for on-chain history
+const PotHistoryBaseSchema = z.object({
+  id: z.string(),
+  when: z.number().int().nonnegative(), // Date.now()
+  txHash: z.string().optional(),
+  block: z.string().optional(),
+  status: z.enum(['submitted', 'in_block', 'finalized', 'failed']).optional(),
+  subscan: z.string().optional(),
+});
+
+const OnchainSettlementHistorySchema = PotHistoryBaseSchema.extend({
+  type: z.literal('onchain_settlement'),
+  fromMemberId: z.string(),
+  toMemberId: z.string(),
+  fromAddress: z.string(), // SS58-0
+  toAddress: z.string(), // SS58-0
+  amountDot: z.string(), // e.g. "0.017"
+  txHash: z.string(), // always present for settlements
+  subscan: z.string().optional(),
+  note: z.string().optional(),
+});
+
+const RemarkCheckpointHistorySchema = PotHistoryBaseSchema.extend({
+  type: z.literal('remark_checkpoint'),
+  message: z.string(), // full remark payload
+  potHash: z.string(), // blake2 hash of serialized snapshot
+  cid: z.string().nullable().optional(), // optional off-chain backup reference
+});
+
+export const PotHistorySchema = z.discriminatedUnion('type', [
+  OnchainSettlementHistorySchema,
+  RemarkCheckpointHistorySchema,
+]);
+
+export type PotHistory = z.infer<typeof PotHistorySchema>;
+
+// ExpenseCheckpoint schema (for currentCheckpoint)
+const ExpenseCheckpointSchema = z.object({
+  id: z.string(),
+  createdBy: z.string(),
+  createdAt: z.string(), // ISO date string
+  status: z.enum(['pending', 'confirmed', 'bypassed']),
+  confirmations: z.record(z.string(), z.boolean()).optional(), // Map<string, boolean> serialized
+  expiresAt: z.string().optional(), // ISO date string
+  bypassedBy: z.string().optional(),
+  bypassedAt: z.string().optional(),
+}).passthrough();
+
+// Contribution schema (for savings pots)
+const ContributionSchema = z.object({
+  id: z.string(),
+  memberId: z.string(),
+  amount: z.number(),
+  date: z.string(), // ISO date string
+  txHash: z.string().optional(),
+}).passthrough();
+
+// Pot schema - matches runtime Pot interface with passthrough for future fields
 export const PotSchema = z.object({
   id: z.string().min(1, 'Pot ID is required'),
   name: z.string().min(1, 'Pot name is required'),
+  type: z.enum(['expense', 'savings']),
+  baseCurrency: z.enum(['DOT', 'USD']).default('USD'),
   members: z.array(MemberSchema).min(1, 'Pot must have at least one member'),
-  expenses: z.array(ExpenseSchema),
-  createdAt: z.number().int().nonnegative('Created at must be a valid timestamp'),
-  updatedAt: z.number().int().nonnegative('Updated at must be a valid timestamp'),
-}).refine((data) => {
+  expenses: z.array(ExpenseSchema).default([]),
+  history: z.array(PotHistorySchema).optional().default([]),
+  budget: z.number().nullable().optional(),
+  budgetEnabled: z.boolean().optional().default(false),
+  checkpointEnabled: z.boolean().optional().default(true),
+  currentCheckpoint: ExpenseCheckpointSchema.optional(),
+  archived: z.boolean().optional().default(false),
+  // Savings pot fields
+  contributions: z.array(ContributionSchema).optional(),
+  totalPooled: z.number().optional(),
+  yieldRate: z.number().optional(),
+  defiProtocol: z.string().optional(),
+  goalAmount: z.number().optional(),
+  goalDescription: z.string().optional(),
+  // Legacy fields
+  createdAt: z.number().int().nonnegative().optional(),
+  updatedAt: z.number().int().nonnegative().optional(),
+  lastBackupCid: z.string().nullable().optional(),
+}).passthrough() // Allow unknown fields for forward compatibility
+.refine((data) => {
   // Validate no duplicate member IDs
   const memberIds = data.members.map(m => m.id);
   const uniqueIds = new Set(memberIds);
@@ -76,6 +165,7 @@ export const PotSchema = z.object({
 });
 
 export type Pot = z.infer<typeof PotSchema>;
+export type ValidatedPot = Pot; // Alias for consistency
 
 /**
  * Validate a member object

@@ -10,7 +10,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { normalizeToPolkadot } from '../services/chain/address';
-import { polkadotChainService } from '../services/chain/polkadot';
+import { chain } from '../services/chain';
 import { connectNovaWallet, disconnectWalletConnect, getWalletConnectSession } from '../services/chain/walletconnect';
 
 export type AccountConnector = 'extension' | 'walletconnect' | null;
@@ -81,22 +81,25 @@ export function AccountProvider({ children }: AccountProviderProps) {
   });
 
   // Auto-detect network from chain service
-  const detectNetwork = useCallback((): AccountNetwork => {
-    const config = polkadotChainService.getConfig();
-    if (config.name.includes('Asset Hub')) return 'asset-hub';
-    if (config.name.includes('Relay')) return 'polkadot';
-    if (config.name.includes('Westend')) return 'westend';
-    return 'unknown';
-  }, []);
+  const detectNetwork = useCallback((): AccountNetwork => 'asset-hub', []);
 
   // Fetch and update balance
   const refreshBalance = useCallback(async () => {
-    if (!state.address || state.status !== 'connected') return;
+    if (!state.address || state.status !== 'connected') {
+      console.warn('[Account] Cannot refresh balance: wallet not connected', {
+        hasAddress: !!state.address,
+        status: state.status
+      });
+      throw new Error('Wallet not connected');
+    }
 
     try {
-      const balancePlanck = await polkadotChainService.getFreeBalance(state.address);
+      console.log('[Account] Refreshing balance for:', state.address);
+      const balancePlanck = await chain.getFreeBalance(state.address);
       const balanceHuman = fmtPlanckToDot(balancePlanck);
       const network = detectNetwork();
+
+      console.log('[Account] Balance refreshed:', { balanceHuman, network });
 
       setState(prev => ({
         ...prev,
@@ -106,7 +109,8 @@ export function AccountProvider({ children }: AccountProviderProps) {
       }));
     } catch (error: any) {
       console.error('[Account] Balance refresh error:', error);
-      // Don't update state on error - keep last known balance
+      // Re-throw error so caller can handle it
+      throw error;
     }
   }, [state.address, state.status, detectNetwork]);
 
@@ -152,8 +156,8 @@ export function AccountProvider({ children }: AccountProviderProps) {
       const walletName = walletNameMap[account.meta.source?.toLowerCase() || ''] || account.meta.source || extensions[0]?.name || 'Extension';
 
       // Get initial balance
-      polkadotChainService.setChain('assethub'); // Default to Asset Hub
-      const balancePlanck = await polkadotChainService.getFreeBalance(address);
+      chain.setChain('assethub'); // Default to Asset Hub
+      const balancePlanck = await chain.getFreeBalance(address);
       const balanceHuman = fmtPlanckToDot(balancePlanck);
       const network = detectNetwork();
 
@@ -197,8 +201,8 @@ export function AccountProvider({ children }: AccountProviderProps) {
           const walletName = 'Nova Wallet';
 
           // Get initial balance
-          polkadotChainService.setChain('assethub'); // Default to Asset Hub
-          polkadotChainService.getFreeBalance(address)
+          chain.setChain('assethub'); // Default to Asset Hub
+          chain.getFreeBalance(address)
             .then(balancePlanck => {
               const balanceHuman = fmtPlanckToDot(balancePlanck);
               const network = detectNetwork();
@@ -297,8 +301,8 @@ export function AccountProvider({ children }: AccountProviderProps) {
           const address = accounts[0].split(':').slice(2).join(':');
           if (address) {
             const address0 = normalizeToPolkadot(address);
-            polkadotChainService.setChain('assethub');
-            polkadotChainService.getFreeBalance(address)
+            chain.setChain('assethub');
+            chain.getFreeBalance(address)
               .then(balancePlanck => {
                 const balanceHuman = fmtPlanckToDot(balancePlanck);
                 setState({
@@ -364,4 +368,3 @@ export function useAccount(): AccountContextType {
   }
   return context;
 }
-

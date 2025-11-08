@@ -74,11 +74,20 @@ export function CreatePot({
     validateAddress(addr);
   };
 
-  const addMember = () => {
+  const addMember = async () => {
     if (newMemberName.trim()) {
       let normalizedAddress: string | undefined = undefined;
       if (newMemberAddress.trim() && addressValid) {
         normalizedAddress = normalizeToPolkadot(newMemberAddress);
+      } else {
+        // In simulation mode, auto-inject mock address for DOT pots if no address provided
+        const { getMockAddressForMember, isSimulationMode } = await import('../../utils/simulation');
+        if (isSimulationMode() && baseCurrency === 'DOT' && !normalizedAddress) {
+          const mockAddr = getMockAddressForMember(newMemberName.trim());
+          if (mockAddr) {
+            normalizedAddress = mockAddr;
+          }
+        }
       }
 
       setMembers([...members, { 

@@ -18,6 +18,7 @@ import {
   useCallback,
   useEffect,
 } from "react";
+import { polkadotChainService } from "./services/chain/polkadot";
 import { useNav } from "./nav";
 import { useTheme } from "./utils/useTheme";
 import { triggerHaptic } from "./utils/haptics";
@@ -114,21 +115,33 @@ interface ExpenseCheckpoint {
   bypassedAt?: string;
 }
 
-export type PotHistory = {
+type PotHistoryBase = {
   id: string;
-  type: "onchain_settlement";
-  fromMemberId: string;
-  toMemberId: string;
-  fromAddress: string; // SS58-0
-  toAddress: string; // SS58-0
-  amountDot: string; // e.g. "0.017"
-  txHash: string; // 0x…
-  block?: string;
-  status: "in_block" | "finalized" | "failed";
   when: number; // Date.now()
-  subscan: string; // https://assethub-polkadot.subscan.io/extrinsic/<hash>
-  note?: string; // optional
+  txHash?: string; // 0x…
+  block?: string;
+  status: "submitted" | "in_block" | "finalized" | "failed";
+  subscan?: string;
 };
+
+export type PotHistory =
+  | (PotHistoryBase & {
+      type: "onchain_settlement";
+      fromMemberId: string;
+      toMemberId: string;
+      fromAddress: string; // SS58-0
+      toAddress: string; // SS58-0
+      amountDot: string; // e.g. "0.017"
+      txHash: string; // always present for settlements
+      subscan: string; // https://assethub-polkadot.subscan.io/extrinsic/<hash>
+      note?: string;
+    })
+  | (PotHistoryBase & {
+      type: "remark_checkpoint";
+      message: string; // full remark payload
+      potHash: string; // blake2 hash of serialized snapshot
+      cid?: string; // optional off-chain backup reference
+    });
 
 interface Pot {
   id: string;
@@ -758,18 +771,56 @@ function AppContent() {
   // Load persisted data on mount (runs once) - INSTANT & NON-BLOCKING
   useEffect(() => {
     // Load synchronously but safely - localStorage.getItem is fast
-    try {
-      const savedPots = localStorage.getItem("chopdot_pots");
-      if (savedPots && savedPots.length < 1000000) {
-        const parsed = JSON.parse(savedPots);
-        if (Array.isArray(parsed)) {
-          setPots(parsed);
+    (async () => {
+      try {
+        const savedPots = localStorage.getItem("chopdot_pots");
+        if (savedPots && savedPots.length < 1000000) {
+          const parsed = JSON.parse(savedPots);
+          if (Array.isArray(parsed)) {
+            // Migrate pots to current schema format
+            const { migrateAllPotsOnLoad, needsMigration } = await import('./utils/migratePot');
+            const migrated = migrateAllPotsOnLoad(parsed);
+            
+            // If migration occurred, save migrated pots back to localStorage
+            if (needsMigration(parsed)) {
+              try {
+                const migratedData = JSON.stringify(migrated);
+                localStorage.setItem("chopdot_pots", migratedData);
+                localStorage.setItem("chopdot_pots_backup", migratedData);
+                console.info("[ChopDot] Migrated pots to v2 schema");
+              } catch (saveErr) {
+                console.warn("[ChopDot] Failed to save migrated pots:", saveErr);
+              }
+            }
+            
+            setPots(migrated);
+          }
+        } else {
+          // Try backup if main data is missing
+          const backupPots = localStorage.getItem("chopdot_pots_backup");
+          if (backupPots && backupPots.length < 1000000) {
+            try {
+              const parsed = JSON.parse(backupPots);
+              if (Array.isArray(parsed)) {
+                console.warn("[ChopDot] Restored pots from backup");
+                // Migrate backup pots too
+                const { migrateAllPotsOnLoad } = await import('./utils/migratePot');
+                const migrated = migrateAllPotsOnLoad(parsed);
+                setPots(migrated);
+                // Restore migrated backup to main key
+                const migratedData = JSON.stringify(migrated);
+                localStorage.setItem("chopdot_pots", migratedData);
+              }
+            } catch (e) {
+              console.error("[ChopDot] Failed to restore from backup");
+            }
+          }
         }
+      } catch (e) {
+        console.error("[ChopDot] Failed to load pots");
+        localStorage.removeItem("chopdot_pots");
       }
-    } catch (e) {
-      console.error("[ChopDot] Failed to load pots");
-      localStorage.removeItem("chopdot_pots");
-    }
+    })();
 
     try {
       const savedSettlements = localStorage.getItem(
@@ -828,6 +879,12 @@ function AppContent() {
           return;
         }
         localStorage.setItem("chopdot_pots", data);
+        // Also save to backup key for recovery
+        try {
+          localStorage.setItem("chopdot_pots_backup", data);
+        } catch (backupErr) {
+          // Backup save failure is non-critical
+        }
       } catch (e) {
         console.error("[ChopDot] Failed to save pots:", e);
         // If quota exceeded, try to clear old data
@@ -1168,13 +1225,28 @@ function AppContent() {
   // ========================================
   // CRUD OPERATIONS
   // ========================================
-  const createPot = () => {
+  const createPot = async () => {
+    // In simulation mode, inject mock addresses for DOT pots
+    let processedMembers = newPot.members || [];
+    const { getMockAddressForMember, isSimulationMode } = await import('./utils/simulation');
+    if (isSimulationMode() && (newPot.baseCurrency || "USD") === 'DOT') {
+      processedMembers = processedMembers.map((m) => {
+        if (!m.address) {
+          const mockAddr = getMockAddressForMember(m.name);
+          if (mockAddr) {
+            return { ...m, address: mockAddr };
+          }
+        }
+        return m;
+      });
+    }
+    
     const pot: Pot = {
       id: Date.now().toString(),
       name: newPot.name || "Unnamed Pot",
       type: newPot.type || "expense",
       baseCurrency: newPot.baseCurrency || "USD",
-      members: newPot.members || [],
+      members: processedMembers,
       expenses: [],
       budget: newPot.budget,
       budgetEnabled: newPot.budgetEnabled,
@@ -2395,35 +2467,9 @@ function AppContent() {
             goalDescription={pot.goalDescription}
             onBack={back}
             onImportPot={(importedPot) => {
-              // Add imported pot to pots list
-              setPots([...pots, {
-                id: importedPot.id,
-                name: importedPot.name,
-                type: "expense", // Imported pots are expense pots
-                baseCurrency: "USD",
-                members: importedPot.members.map((m: { id: string; name: string; address?: string; verified?: boolean }) => ({
-                  id: m.id,
-                  name: m.name,
-                  role: "Member" as const,
-                  status: "active" as const,
-                  address: m.address,
-                  verified: m.verified,
-                })),
-                expenses: importedPot.expenses.map((e: { id: string; amount: number; paidBy: string; description: string; createdAt: number }) => ({
-                  id: e.id,
-                  amount: e.amount,
-                  currency: "USD",
-                  paidBy: e.paidBy,
-                  memo: e.description,
-                  date: new Date(e.createdAt).toISOString(),
-                  split: importedPot.members.map((m: { id: string }) => ({
-                    memberId: m.id,
-                    amount: e.amount / importedPot.members.length, // Equal split
-                  })),
-                  attestations: [],
-                  hasReceipt: false,
-                })),
-              }]);
+              // Imported pot is already migrated and in correct format
+              // Just add it to pots list (ID de-duplication already handled in import function)
+              setPots([...pots, importedPot]);
               showToast("Pot imported successfully", "success");
               // Navigate to the imported pot
               replace({ type: "pot-home", potId: importedPot.id });
@@ -2779,12 +2825,12 @@ function AppContent() {
           })),
         ];
 
+        const currentPot = currentPotId ? getCurrentPot() : undefined;
         return (
           <SettleSelection
-            potName={
-              currentPotId ? getCurrentPot()?.name : undefined
-            }
+            potName={currentPot?.name}
             balances={selectionBalances}
+            baseCurrency={currentPot?.baseCurrency || "USD"}
             onBack={() => {
               if (currentPotId) {
                 // Go back to pot detail explicitly to avoid blank states
@@ -2966,7 +3012,7 @@ function AppContent() {
                   txHash: reference,
                   status: 'in_block',
                   when: Date.now(),
-                  subscan: `https://assethub-polkadot.subscan.io/extrinsic/${reference}`,
+                  subscan: polkadotChainService.buildSubscanUrl(reference),
                 };
                 const updatedPots = pots.map(p => p.id === currentPotId ? { ...p, history: [historyEntry, ...(p.history || [])] } : p);
                 setPots(updatedPots);

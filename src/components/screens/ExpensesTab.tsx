@@ -125,6 +125,15 @@ export function ExpensesTab({
   }, [isDotPot]);
   
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+
+  const settlementHistory = useMemo(
+    () =>
+      potHistory.filter(
+        (entry): entry is Extract<PotHistory, { type: 'onchain_settlement' }> =>
+          entry.type === 'onchain_settlement'
+      ),
+    [potHistory]
+  );
   
   // Convert to schema format for deterministic calculation
   // Note: We use equal split for MVP, so we recalculate splits here
@@ -310,13 +319,13 @@ export function ExpensesTab({
     setIsSending(true);
     
     try {
-      const config = polkadotChainService.getConfig();
       let txHash: string | undefined;
       let blockHash: string | undefined;
       let status: 'in_block' | 'finalized' | 'failed' = 'in_block';
       
       // Send DOT transaction with lifecycle tracking
-      await polkadotChainService.sendDot({
+      const { chain } = await import('../../services/chain');
+      await chain.sendDot({
         from: settlementModal.fromAddress,
         to: settlementModal.toAddress,
         amountDot: settlementModal.amountDot,
@@ -353,7 +362,7 @@ export function ExpensesTab({
         block: blockHash,
         status: status, // Will be 'in_block' initially, 'finalized' if callback fired
         when: Date.now(),
-        subscan: `${config.subscanExtrinsicBase}/${txHash}`,
+        subscan: polkadotChainService.buildSubscanUrl(txHash),
       };
       
       // Update pot history
@@ -361,7 +370,11 @@ export function ExpensesTab({
       onUpdatePot({ history: updatedHistory });
       
       // Refresh balance
-      account.refreshBalance();
+      try {
+        await account.refreshBalance();
+      } catch (refreshError) {
+        console.error('[ExpensesTab] Balance refresh failed:', refreshError);
+      }
       
       // Close modal
       setSettlementModal(null);
@@ -570,11 +583,11 @@ export function ExpensesTab({
             )}
             
             {/* Recent Settlements (DOT pots only) */}
-            {isDotPot && potHistory.length > 0 && (
+            {isDotPot && settlementHistory.length > 0 && (
               <div className="pt-3 border-t border-border/50">
                 <p className="text-caption text-secondary mb-2">Recent settlements</p>
                 <div className="space-y-1.5">
-                  {potHistory.slice(0, 5).map((entry) => {
+                  {settlementHistory.slice(0, 5).map((entry) => {
                     const fromMember = members.find(m => m.id === entry.fromMemberId);
                     const toMember = members.find(m => m.id === entry.toMemberId);
                     const statusBadge = entry.status === 'finalized' 

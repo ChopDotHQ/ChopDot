@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
-import { Copy, Send, Download, Upload } from "lucide-react";
+import { Copy, Send, Download, Upload, Lock } from "lucide-react";
 import { downloadPotAsJSON, readPotFile } from "../../utils/pot-export";
+import { encryptPot, decryptPot, downloadEncryptedPot, readEncryptedPotFile } from "../../utils/crypto/exportEncrypt";
+import { PasswordModal } from "../PasswordModal";
 import type { Pot } from "../../schema/pot";
 
 interface Member {
@@ -56,6 +58,10 @@ export function SettingsTab({
   const [budget, setBudget] = useState(initialBudget?.toString() || "");
   const [checkpointEnabled, setCheckpointEnabled] = useState(initialCheckpointEnabled !== false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const encryptedFileInputRef = useRef<HTMLInputElement>(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordModalMode, setPasswordModalMode] = useState<'export' | 'import'>('export');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const pendingMembers = members.filter(m => m.status === "pending");
   
@@ -82,6 +88,8 @@ export function SettingsTab({
     if (!file) return;
     
     try {
+      // Get existing pot IDs for de-duplication (passed from parent via props if needed)
+      // For now, we'll let the import function handle it
       const result = await readPotFile(file);
       if (result.success && result.pot) {
         onImportPot?.(result.pot);
@@ -96,6 +104,95 @@ export function SettingsTab({
       // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleEncryptedExport = () => {
+    if (!pot) {
+      onShowToast?.('Cannot export: pot data not available', 'error');
+      return;
+    }
+    setPasswordModalMode('export');
+    setPasswordError(null);
+    setShowPasswordModal(true);
+  };
+
+  const handleEncryptedExportConfirm = async (password: string) => {
+    if (!pot) return;
+
+    try {
+      setPasswordError(null);
+      const blob = await encryptPot(pot, password);
+      const filename = `pot-${pot.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${Date.now()}.chop`;
+      downloadEncryptedPot(blob, filename);
+      setShowPasswordModal(false);
+      onShowToast?.('Encrypted pot exported successfully', 'success');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to encrypt pot';
+      setPasswordError(errorMessage);
+      onShowToast?.('Failed to encrypt pot', 'error');
+    }
+  };
+
+  const handleEncryptedImport = () => {
+    encryptedFileInputRef.current?.click();
+  };
+
+  const handleEncryptedFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file extension
+    if (!file.name.endsWith('.chop') && !file.name.endsWith('.json.chop')) {
+      onShowToast?.('Invalid file format. Please select a .chop file.', 'error');
+      if (encryptedFileInputRef.current) {
+        encryptedFileInputRef.current.value = '';
+      }
+      return;
+    }
+
+    try {
+      const fileText = await readEncryptedPotFile(file);
+      setPasswordModalMode('import');
+      setPasswordError(null);
+      setShowPasswordModal(true);
+      
+      // Store file text in a ref for use in password confirmation
+      (encryptedFileInputRef.current as any).__fileText = fileText;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to read file';
+      onShowToast?.(errorMessage, 'error');
+      if (encryptedFileInputRef.current) {
+        encryptedFileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleEncryptedImportConfirm = async (password: string) => {
+    const fileText = (encryptedFileInputRef.current as any)?.__fileText;
+    if (!fileText) {
+      setPasswordError('File data not available');
+      return;
+    }
+
+    try {
+      setPasswordError(null);
+      const decryptedPot = await decryptPot(fileText, password);
+      onImportPot?.(decryptedPot);
+      setShowPasswordModal(false);
+      onShowToast?.('Encrypted import completed', 'success');
+      
+      // Clear file text from ref
+      delete (encryptedFileInputRef.current as any).__fileText;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Couldn\'t decrypt — check password or file';
+      setPasswordError(errorMessage);
+      onShowToast?.(errorMessage, 'error');
+    } finally {
+      // Reset file input
+      if (encryptedFileInputRef.current) {
+        encryptedFileInputRef.current.value = '';
       }
     }
   };
@@ -256,6 +353,21 @@ export function SettingsTab({
           <Upload className="w-4 h-4" />
           <span className="text-body">Import Pot (JSON)</span>
         </button>
+        <button
+          onClick={handleEncryptedExport}
+          disabled={!pot}
+          className="w-full glass-sm rounded-xl p-3 flex items-center gap-2 hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Lock className="w-4 h-4" />
+          <span className="text-body">Encrypted Export (.chop)</span>
+        </button>
+        <button
+          onClick={handleEncryptedImport}
+          className="w-full glass-sm rounded-xl p-3 flex items-center gap-2 hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left"
+        >
+          <Lock className="w-4 h-4" />
+          <span className="text-body">Import Encrypted (.chop)</span>
+        </button>
         <input
           ref={fileInputRef}
           type="file"
@@ -263,7 +375,31 @@ export function SettingsTab({
           onChange={handleFileSelect}
           className="hidden"
         />
+        <input
+          ref={encryptedFileInputRef}
+          type="file"
+          accept=".chop,application/json"
+          onChange={handleEncryptedFileSelect}
+          className="hidden"
+        />
       </div>
+
+      {/* Password Modal */}
+      <PasswordModal
+        isOpen={showPasswordModal}
+        mode={passwordModalMode}
+        onClose={() => {
+          setShowPasswordModal(false);
+          setPasswordError(null);
+          // Clear file text if import was cancelled
+          if (encryptedFileInputRef.current) {
+            delete (encryptedFileInputRef.current as any).__fileText;
+            encryptedFileInputRef.current.value = '';
+          }
+        }}
+        onConfirm={passwordModalMode === 'export' ? handleEncryptedExportConfirm : handleEncryptedImportConfirm}
+        error={passwordError}
+      />
 
       {/* Pot Management */}
       <div className="pt-2 space-y-2 border-t border-border">

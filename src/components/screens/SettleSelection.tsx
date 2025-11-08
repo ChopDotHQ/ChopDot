@@ -18,6 +18,7 @@ interface SettleSelectionProps {
   balances: PersonBalance[];
   onBack: () => void;
   onSelectPerson: (personId: string) => void;
+  baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
 }
 
 export function SettleSelection({
@@ -25,10 +26,20 @@ export function SettleSelection({
   balances,
   onBack,
   onSelectPerson,
+  baseCurrency = "USD", // Default to USD if not provided
 }: SettleSelectionProps) {
   // Separate into "you owe" and "owed to you"
   const youOwe = balances.filter(b => b.direction === "owe");
   const owedToYou = balances.filter(b => b.direction === "owed");
+  
+  // Format amount based on currency
+  const formatAmount = (amount: number) => {
+    const isDot = baseCurrency === 'DOT';
+    const decimals = isDot ? 6 : 2;
+    const symbol = isDot ? 'DOT' : '$';
+    const formatted = Math.abs(amount).toFixed(decimals);
+    return isDot ? `${formatted} ${symbol}` : `${symbol}${formatted}`;
+  };
 
   return (
     <div className="flex flex-col h-full pb-[68px]">
@@ -90,7 +101,7 @@ export function SettleSelection({
                   </div>
                   <div className="text-right">
                     <p className="text-[15px] tabular-nums" style={{ fontWeight: 500, color: 'var(--foreground)' }}>
-                      -${person.amount.toFixed(2)}
+                      -{formatAmount(person.amount)}
                     </p>
                   </div>
                 </div>
@@ -132,7 +143,7 @@ export function SettleSelection({
                   </div>
                   <div className="text-right">
                     <p className="text-[15px] tabular-nums" style={{ fontWeight: 500, color: 'var(--success)' }}>
-                      +${person.amount.toFixed(2)}
+                      +{formatAmount(person.amount)}
                     </p>
                   </div>
                 </div>

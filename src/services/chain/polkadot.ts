@@ -1,5 +1,4 @@
-import type { PolkadotChainConfig } from './config';
-import { POLKADOT_RELAY_CHAIN, POLKADOT_ASSET_HUB } from './config';
+import { CHAIN_CONFIG, resolveChainKey, type ChainConfig, type ChainKey } from './config';
 import { normalizeToPolkadot, isValidSs58Any } from './address';
 import { encodeAddress, decodeAddress } from '@polkadot/util-crypto';
 
@@ -8,7 +7,7 @@ type SendDotParams = {
   to: string;
   amountDot: number;
   onStatus?: (s: 'submitted' | 'inBlock' | 'finalized', ctx?: { txHash?: string; blockHash?: string }) => void;
-  forceBrowserExtension?: boolean; // If true, use browser extension even if WalletConnect session exists
+  forceBrowserExtension?: boolean;
 };
 
 type SendDotResult = {
@@ -16,44 +15,89 @@ type SendDotResult = {
   finalizedBlock?: string;
 };
 
+type SignAndSendParams = {
+  from: string;
+  buildTx: (ctx: { api: any; config: ChainConfig }) => any;
+  onStatus?: (s: 'submitted' | 'inBlock' | 'finalized', ctx?: { txHash?: string; blockHash?: string }) => void;
+  forceBrowserExtension?: boolean;
+};
+
+const DEFAULT_CHAIN: ChainKey = 'assethub';
+
 let apiPromise: Promise<any> | null = null;
+let currentChainKey: ChainKey = DEFAULT_CHAIN;
+let currentRpcEndpoint: string | null = null;
 
-async function getApi(config: PolkadotChainConfig) {
-  // Always create new API instance for now (could optimize later)
+const getConfig = (): ChainConfig => CHAIN_CONFIG[currentChainKey];
+
+const createApi = async (config: ChainConfig) => {
   const { ApiPromise, WsProvider } = await import('@polkadot/api');
-  const provider = new WsProvider(config.wsEndpoint);
-  const api = await ApiPromise.create({ provider });
-  return api;
-}
 
-function toPlanckString(amountDot: number, decimals: number): string {
-  // Convert decimal number to planck string using BigInt without float rounding issues
+  let lastError: unknown;
+
+  for (const endpoint of config.rpc) {
+    try {
+      const provider = new WsProvider(endpoint);
+      const api = await ApiPromise.create({ provider });
+      currentRpcEndpoint = endpoint; // Track which endpoint succeeded
+      console.info('[Chain Service] Connected to Asset Hub RPC:', endpoint);
+
+      provider.on('error', (err) => {
+        console.error('[Chain Service] Provider error', endpoint, err);
+      });
+
+      provider.on('disconnected', () => {
+        console.warn('[Chain Service] Provider disconnected', endpoint);
+        apiPromise = null;
+        currentRpcEndpoint = null; // Clear on disconnect
+      });
+
+      return api;
+    } catch (error) {
+      console.error('[Chain Service] Failed to connect to', endpoint, error);
+      lastError = error;
+    }
+  }
+
+  throw new Error(
+    `Failed to connect to any Asset Hub RPC endpoint${lastError instanceof Error ? `: ${lastError.message}` : ''}`
+  );
+};
+
+const getApi = async () => {
+  if (!apiPromise) {
+    apiPromise = createApi(getConfig());
+  }
+  return apiPromise;
+};
+
+const toPlanckString = (amountDot: number, decimals: number): string => {
   const s = amountDot.toString();
   const [intPart, fracPartRaw = ''] = s.split('.');
-  const fracPart = fracPartRaw.slice(0, decimals); // trim extra precision
+  const fracPart = fracPartRaw.slice(0, decimals);
   const paddedFrac = (fracPart + '0'.repeat(decimals)).slice(0, decimals);
   const combined = `${intPart}${paddedFrac}`.replace(/^0+(?=\d)/, '');
   const asBigInt = BigInt(combined.length ? combined : '0');
   return asBigInt.toString();
-}
+};
 
 export const polkadotChainService = (() => {
-  let currentConfig: PolkadotChainConfig = POLKADOT_RELAY_CHAIN;
-  
   const setChain = (chain: 'relay' | 'assethub') => {
-    currentConfig = chain === 'assethub' ? POLKADOT_ASSET_HUB : POLKADOT_RELAY_CHAIN;
-    // Reset API connection when switching chains
-    apiPromise = null;
+    const resolved = resolveChainKey(chain);
+    if (currentChainKey !== resolved) {
+      currentChainKey = resolved;
+      apiPromise = null;
+    }
   };
-  
-  const getConfig = () => currentConfig;
+
+  const getCurrentChain = () => currentChainKey;
 
   const isValidPolkadotAddress = (address: string): boolean => {
     if (!address || typeof address !== 'string') return false;
     try {
-      // Ensure address decodes and matches SS58 prefix 0 when re-encoded
+      const config = getConfig();
       const publicKey = decodeAddress(address);
-      const encoded = encodeAddress(publicKey, currentConfig.ss58Prefix);
+      const encoded = encodeAddress(publicKey, config.ss58);
       return encoded === address;
     } catch (_) {
       return false;
@@ -63,191 +107,112 @@ export const polkadotChainService = (() => {
   const isValidSs58 = (address: string): boolean => isValidSs58Any(address);
 
   const getFreeBalance = async (address: string): Promise<string> => {
-    const config = getConfig();
-    const api = await getApi(config);
+    const api = await getApi();
     const normalized = normalizeToPolkadot(address);
     const accountData = await api.query.system.account(normalized);
-    const free = accountData.data.free;
-    return free.toString();
+    return accountData.data.free.toString();
   };
 
-  const sendDot = async ({ from, to, amountDot, onStatus, forceBrowserExtension = false }: SendDotParams): Promise<SendDotResult> => {
+  const signAndSendExtrinsic = async ({ from, buildTx, onStatus, forceBrowserExtension = false }: SignAndSendParams): Promise<SendDotResult> => {
     try {
       const config = getConfig();
-      const api = await getApi(config);
+      const api = await getApi();
 
-      // UX DECISION: If connected via WalletConnect (Nova Wallet), prefer browser extension signer
-      // User has already authenticated via WalletConnect connection, so browser extension approval is sufficient
-      // This provides faster, one-click approval in browser instead of requiring mobile approval
-      // 
-      // Only use WalletConnect signing if:
-      // 1. forceBrowserExtension is false (user wants WalletConnect)
-      // 2. AND no browser extension is available
-      // 
-      // Otherwise, use browser extension signer for better UX (faster approval)
       const { getWalletConnectSession } = await import('./walletconnect');
       const wcSession = getWalletConnectSession();
       let useWalletConnect = false;
-      let useBrowserExtension = false;
-      
-      // Check if we should use browser extension (preferred for better UX)
+
       if (forceBrowserExtension || wcSession) {
-        // Try browser extension first (faster, better UX)
-        // IMPORTANT: Only use browser extension if it has the SAME address as the connected wallet
         try {
           const { web3Enable, web3Accounts, web3FromAddress } = await import('@polkadot/extension-dapp');
           const exts = await web3Enable('ChopDot');
-          
+
           if (exts.length > 0) {
-            // Check if any browser extension account matches the Nova Wallet address
             const accounts = await web3Accounts();
-            const { normalizeToPolkadot } = await import('./address');
             const normalizedFrom = normalizeToPolkadot(from);
-            const matchingAccount = accounts.find(acc => {
-              const normalizedAcc = normalizeToPolkadot(acc.address);
-              return normalizedAcc === normalizedFrom;
-            });
-            
+            const matchingAccount = accounts.find(acc => normalizeToPolkadot(acc.address) === normalizedFrom);
+
             if (matchingAccount) {
-              // Browser extension has matching address - use it for faster approval
               try {
                 const injector = await web3FromAddress(from);
-                if (injector && injector.signer) {
+                if (injector?.signer) {
                   api.setSigner(injector.signer);
-                  useBrowserExtension = true;
+                } else if (wcSession && !forceBrowserExtension) {
+                  useWalletConnect = true;
                 } else {
-                  // Injector not found - fall back to WalletConnect
-                  if (wcSession && !forceBrowserExtension) {
-                    useWalletConnect = true;
-                  } else {
-                    throw new Error('NO_ACCOUNT');
-                  }
+                  throw new Error('NO_ACCOUNT');
                 }
               } catch (e: any) {
-                // Error getting injector - fall back to WalletConnect
                 if (wcSession && !forceBrowserExtension) {
                   useWalletConnect = true;
                 } else {
                   throw new Error('NO_ACCOUNT');
                 }
               }
+            } else if (wcSession) {
+              useWalletConnect = true;
             } else {
-              // Browser extension exists but doesn't have matching address
-              if (wcSession) {
-                // Always fall back to WalletConnect if session exists (even if forceBrowserExtension is true)
-                useWalletConnect = true;
-              } else {
-                throw new Error('NO_ACCOUNT');
-              }
+              throw new Error('NO_ACCOUNT');
             }
           } else if (wcSession && !forceBrowserExtension) {
-            // No browser extension but WalletConnect session exists - use WalletConnect
             useWalletConnect = true;
           } else {
             throw new Error('NO_WALLET');
           }
         } catch (e: any) {
-          // Error checking for browser extension
           if (wcSession && !forceBrowserExtension) {
             useWalletConnect = true;
           } else {
-            // Re-throw if we can't use WalletConnect
             throw e;
           }
         }
       } else {
-        // No WalletConnect session - use browser extension
         const { web3Enable, web3FromAddress } = await import('@polkadot/extension-dapp');
         const exts = await web3Enable('ChopDot');
-        if (!exts || exts.length === 0) {
-          throw new Error('NO_WALLET');
-        }
+        if (!exts || exts.length === 0) throw new Error('NO_WALLET');
 
         const injector = await web3FromAddress(from);
-        if (!injector) {
-          throw new Error('NO_ACCOUNT');
-        }
+        if (!injector) throw new Error('NO_ACCOUNT');
 
         api.setSigner(injector.signer);
-        useBrowserExtension = true;
       }
 
-      const value = toPlanckString(amountDot, config.dotDecimals);
-      const toNorm = normalizeToPolkadot(to);
-      
-      // Create unsigned transaction (important for WalletConnect)
-      const tx = api.tx.balances.transferKeepAlive(toNorm, value);
+      const tx = buildTx({ api, config });
 
-      // CRITICAL: Handle WalletConnect (Nova Wallet) transactions
-      // Only use WalletConnect if we explicitly decided to use it above
       if (useWalletConnect && wcSession) {
-        // SECURITY CHECK: Verify session is still valid
+        const { signAndSendTransaction } = await import('./walletconnect');
         const currentSession = getWalletConnectSession();
         if (!currentSession || currentSession.topic !== wcSession.topic) {
-          console.error('[Chain Service] ❌ WalletConnect session expired or invalid!');
           throw new Error('WalletConnect session expired. Please reconnect.');
         }
-        
-        // SECURITY CHECK: Ensure no signer was accidentally set
-        // If a signer exists, it means we might have taken the browser extension path
-        // This would cause auto-signing instead of prompting Nova Wallet
+
         try {
-          // Check if signer exists by trying to access it
-          const hasSigner = (api as any).hasSigner || (api as any)._signer;
-          if (hasSigner) {
-            console.error('[Chain Service] ❌ SECURITY ERROR: Signer detected but WalletConnect session exists!');
-            console.error('[Chain Service] ❌ This could cause auto-signing! Clearing signer...');
-            console.error('[Chain Service] ❌ Session topic:', wcSession.topic);
-            api.setSigner(null as any); // Clear signer
-          }
-        } catch (e) {
-          // Ignore errors checking for signer - it might not be accessible
+          api.setSigner(null as any);
+        } catch {
+          // ignore signer clearing errors
         }
-        console.log('[Chain Service] 🔐 Sending transaction via WalletConnect (REQUIRES NOVA WALLET APPROVAL)');
-        const { signAndSendTransaction } = await import('./walletconnect');
-        
-        // For WalletConnect, we need to send the UNSIGNED transaction
-        // DO NOT sign the transaction here - WalletConnect will prompt Nova Wallet to sign
-        // Get the unsigned transaction hex
-        // Note: toHex() returns the SCALE-encoded extrinsic, which is what WalletConnect expects
+
         const txHex = tx.toHex();
-        
-        // Show submitted status - this means we're waiting for Nova Wallet approval
         onStatus?.('submitted');
-        
+
         try {
-          // Determine chain ID based on current config
-          const currentChainId = config.name.includes('Asset Hub') 
-            ? 'polkadot-asset-hub:91b171bb158e2d3848fa23a9f1c25182'
-            : 'polkadot:91b171bb158e2d3848fa23a9f1c25182';
-          
-          // Send via WalletConnect - this MUST prompt Nova Wallet to sign
-          const { txHash } = await signAndSendTransaction(from, txHex, currentChainId);
-          
-          // Return immediately with txHash - WalletConnect handles the submission
-          // The transaction status will be updated asynchronously
+          const chainId = config.walletConnectChainId;
+          const { txHash } = await signAndSendTransaction(from, txHex, chainId);
           onStatus?.('inBlock', { txHash });
-          
           return { txHash };
         } catch (err: any) {
-          console.error('[Chain Service] ❌ WalletConnect transaction error:', err);
           if (err?.message === 'USER_REJECTED') {
             throw new Error('USER_REJECTED');
           }
-          // Provide more context in error message
           throw new Error(err?.message || 'Transaction failed via WalletConnect');
         }
-      } else {
-        // Browser extension flow - this should only happen if NO WalletConnect session
+      }
 
-      // Browser extension flow (Polkadot.js, SubWallet, etc.)
       return await new Promise<SendDotResult>((resolve, reject) => {
         let unsub: any;
         let isResolved = false;
-        // Capture onStatus callback in outer scope
         const statusCallback = onStatus;
-        
-        // Cleanup function to ensure unsubscribe is called
+
         const cleanup = () => {
           if (unsub && typeof unsub === 'function') {
             try {
@@ -258,8 +223,7 @@ export const polkadotChainService = (() => {
             unsub = null;
           }
         };
-        
-        // Use original 'from' for injector matching; chain derives sender from signature
+
         tx.signAndSend(from, (result: any) => {
           const { status, dispatchError, txHash } = result;
 
@@ -268,7 +232,6 @@ export const polkadotChainService = (() => {
               isResolved = true;
               cleanup();
               if (dispatchError.isModule) {
-                // Module error from chain; surface generically
                 reject(new Error('CHAIN_ERROR'));
               } else {
                 reject(new Error(dispatchError.toString()));
@@ -278,15 +241,12 @@ export const polkadotChainService = (() => {
           }
 
           if (status?.isBroadcast) {
-            // submitted to network
             statusCallback?.('submitted');
           }
           if (status?.isInBlock && !isResolved) {
-            // Provide tx hash early
             const hash = txHash?.toString?.() || tx.hash.toString();
             statusCallback?.('inBlock', { txHash: hash, blockHash: status.asInBlock.toString() });
             isResolved = true;
-            // Don't cleanup here - wait for finalized
             resolve({ txHash: hash });
           }
           if (status?.isFinalized) {
@@ -309,56 +269,69 @@ export const polkadotChainService = (() => {
             }
           });
       });
-      }
     } catch (e: any) {
       const msg = e?.message || '';
       if (msg === 'NO_WALLET') throw new Error('No wallet extension found');
       if (msg === 'NO_ACCOUNT') throw new Error('No Substrate account selected');
       if (msg === 'USER_REJECTED') throw new Error('User rejected the request');
-      if (/InsufficientBalance|balance/.test(msg)) throw new Error('Insufficient balance');
+      if (/InsufficientBalance|balance/i.test(msg)) throw new Error('Insufficient balance');
       if (/ECONNREFUSED|websocket|connect/i.test(msg)) throw new Error('RPC connection failed');
       throw new Error(typeof e === 'string' ? e : 'Transaction failed');
     }
   };
 
+  const sendDot = async ({ from, to, amountDot, onStatus, forceBrowserExtension = false }: SendDotParams): Promise<SendDotResult> => {
+    const config = getConfig();
+    return signAndSendExtrinsic({
+      from,
+      onStatus,
+      forceBrowserExtension,
+      buildTx: ({ api }) => {
+        const value = toPlanckString(amountDot, config.decimals);
+        const toNorm = normalizeToPolkadot(to);
+        return api.tx.balances.transferKeepAlive(toNorm, value);
+      },
+    });
+  };
+
   const estimateFee = async ({ from, to, amountDot }: { from: string; to: string; amountDot: number }): Promise<string> => {
     try {
       const config = getConfig();
-      const api = await getApi(config);
-      const value = toPlanckString(amountDot, config.dotDecimals);
+      const api = await getApi();
+      const value = toPlanckString(amountDot, config.decimals);
       const toNorm = normalizeToPolkadot(to);
       const tx = api.tx.balances.transferKeepAlive(toNorm, value);
-      
-      // Try payment.queryInfo first, fallback if it fails
+
       try {
-        // Use the tx directly, not toHex() - the API expects the extrinsic object
         const info = await api.rpc.payment.queryInfo(tx, from);
         return info.partialFee.toString();
-      } catch (e) {
-        // Fallback: estimate based on typical transfer fee (usually ~0.001-0.01 DOT)
-        // Conservative estimate: ~0.01 DOT for Asset Hub, ~0.001 for Relay Chain
-        const fallbackFee = config.name.includes('Asset Hub') ? '10000000' : '1000000'; // 0.01 or 0.001 DOT in planck
-        return fallbackFee;
+      } catch {
+        return '10000000'; // 0.01 DOT as conservative fallback
       }
-    } catch (e) {
-      // Very conservative fallback
-      return '10000000'; // 0.01 DOT
+    } catch {
+      return '10000000';
     }
   };
 
+  const buildSubscanUrl = (txHash: string) => `${getConfig().subscanExtrinsicBase}/${txHash}`;
+
+  const getCurrentRpc = (): string | null => currentRpcEndpoint;
+
   return {
-    getConfig,
     setChain,
+    getCurrentChain,
+    getConfig,
+    getCurrentRpc,
     getFreeBalance,
     isValidPolkadotAddress,
     isValidSs58,
     normalizeToPolkadot,
     sendDot,
     estimateFee,
-    toPlanckString: (amountDot: number) => toPlanckString(amountDot, currentConfig.dotDecimals),
+    signAndSendExtrinsic,
+    buildSubscanUrl,
+    toPlanckString: (amountDot: number) => toPlanckString(amountDot, getConfig().decimals),
   };
 })();
 
 export type PolkadotChainService = typeof polkadotChainService;
-
-

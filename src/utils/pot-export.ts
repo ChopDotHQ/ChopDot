@@ -1,11 +1,11 @@
 /**
  * Pot Export/Import Utilities
  * 
- * Provides JSON export/import functionality for pots with schema validation.
+ * Provides JSON export/import functionality for pots with schema validation and migration.
  */
 
 import type { Pot } from '../schema/pot';
-import { validatePot } from '../schema/pot';
+import { migratePot } from './migratePot';
 
 const SCHEMA_VERSION = '1.0.0';
 
@@ -45,39 +45,44 @@ export function downloadPotAsJSON(pot: Pot, filename?: string): void {
 }
 
 /**
- * Import pot from JSON file
+ * Import pot from JSON file with migration support
  */
-export function importPotFromJSON(json: string): { success: boolean; pot?: Pot; error?: string } {
+export function importPotFromJSON(json: string, existingPotIds: string[] = []): { success: boolean; pot?: Pot; error?: string } {
   try {
-    const parsed = JSON.parse(json) as ExportedPot;
+    const parsed = JSON.parse(json);
     
-    // Validate schema version
-    if (!parsed.schemaVersion) {
-      return { success: false, error: 'Invalid file format: missing schema version' };
+    // Handle both ExportedPot format and raw Pot format
+    const rawPot = parsed.pot || parsed;
+    
+    // Migrate pot to current schema (handles old formats)
+    let migratedPot: Pot;
+    try {
+      migratedPot = migratePot(rawPot);
+    } catch (migrationError) {
+      const errorMsg = migrationError instanceof Error ? migrationError.message : 'Migration failed';
+      return { success: false, error: `Failed to migrate pot: ${errorMsg}` };
     }
     
-    if (parsed.schemaVersion !== SCHEMA_VERSION) {
-      return { success: false, error: `Unsupported schema version: ${parsed.schemaVersion}. Expected: ${SCHEMA_VERSION}` };
-    }
-    
-    // Validate pot structure
-    const validation = validatePot(parsed.pot);
-    if (!validation.success) {
-      return { success: false, error: validation.error || 'Invalid pot data' };
-    }
-    
-    // De-dupe IDs if needed (add timestamp suffix)
+    // De-duplicate IDs if collision occurs
     const timestamp = Date.now();
-    const pot = validation.data!;
+    let finalPotId = migratedPot.id;
     
-    // Ensure unique IDs
-    pot.id = `${pot.id}-imported-${timestamp}`;
-    pot.expenses = pot.expenses.map(exp => ({
-      ...exp,
-      id: `${exp.id}-imported-${timestamp}`,
-    }));
+    // Check for ID collision
+    if (existingPotIds.includes(finalPotId)) {
+      finalPotId = `${migratedPot.id}-imported-${timestamp}`;
+    }
     
-    return { success: true, pot };
+    // Update pot ID and expense IDs
+    const importedPot: Pot = {
+      ...migratedPot,
+      id: finalPotId,
+      expenses: migratedPot.expenses.map(exp => ({
+        ...exp,
+        id: `${exp.id}-imported-${timestamp}`,
+      })),
+    };
+    
+    return { success: true, pot: importedPot };
   } catch (error) {
     if (error instanceof SyntaxError) {
       return { success: false, error: 'Invalid JSON format' };
@@ -89,7 +94,7 @@ export function importPotFromJSON(json: string): { success: boolean; pot?: Pot; 
 /**
  * Read JSON file from file input
  */
-export function readPotFile(file: File): Promise<{ success: boolean; pot?: Pot; error?: string }> {
+export function readPotFile(file: File, existingPotIds: string[] = []): Promise<{ success: boolean; pot?: Pot; error?: string }> {
   return new Promise((resolve) => {
     const reader = new FileReader();
     
@@ -100,7 +105,7 @@ export function readPotFile(file: File): Promise<{ success: boolean; pot?: Pot; 
         return;
       }
       
-      const result = importPotFromJSON(text);
+      const result = importPotFromJSON(text, existingPotIds);
       resolve(result);
     };
     

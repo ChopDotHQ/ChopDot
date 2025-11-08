@@ -515,7 +515,7 @@ export function ChainTestPage() {
       const valuePlanckStr = ((): string => {
         // reuse internal logic by sending and letting service convert; but for guard we approximate
         const config = polkadotChainService.getConfig();
-        const decimals = config.dotDecimals;
+        const decimals = config.decimals;
         const s = amt.toString();
         const [i, f = ''] = s.split('.');
         const pad = (f + '0'.repeat(decimals)).slice(0, decimals);
@@ -612,7 +612,7 @@ export function ChainTestPage() {
         setError('Selected account not found in wallet extension. If using Nova Wallet, it will automatically use WalletConnect.');
         setTxStatus('idle');
       } else if (/User rejected/.test(m)) {
-        setError('Transaction cancelled. If you approved in Nova Wallet but it still shows "Rejected", Nova Wallet may be rejecting because it shows "Polkadot Relay" while you selected Asset Hub. This is a WalletConnect limitation - the transaction will still go to Asset Hub. Try approving anyway or switch to Relay Chain.');
+        setError('Transaction cancelled. Nova Wallet may label the request simply as "Polkadot" even though it targets Asset Hub. This is a WalletConnect limitation—approve on the wallet to continue.');
         setTxStatus('idle');
       } else if (/Insufficient balance/.test(m)) setError('Insufficient balance.');
       else if (/RPC connection failed/.test(m)) setError('RPC seems down. Try again later.');
@@ -625,13 +625,8 @@ export function ChainTestPage() {
     }
   };
 
-  const subscanUrl = (hash: string) => {
-    // Use current chain selection for Subscan link
-    if (selectedChain === 'assethub') {
-      return `https://assethub-polkadot.subscan.io/extrinsic/${hash}`;
-    }
-    return `https://polkadot.subscan.io/extrinsic/${hash}`;
-  };
+  const subscanUrl = (hash: string) =>
+    `https://assethub-polkadot.subscan.io/extrinsic/${hash}`;
 
   return (
     <div className="min-h-screen p-6 flex flex-col gap-4" style={{ background: 'var(--background)', color: 'var(--foreground)' }}>
@@ -655,7 +650,7 @@ export function ChainTestPage() {
               onClick={() => setSelectedChain('relay')}
               disabled={busy}
             >
-              Relay Chain
+              Asset Hub (Polkadot)
             </button>
             <button
               className={`px-4 py-2 rounded-lg border font-medium transition-all flex-1 ${
@@ -671,8 +666,8 @@ export function ChainTestPage() {
           </div>
           <p className="text-xs opacity-60">
             {selectedChain === 'relay' 
-              ? 'Polkadot Relay Chain (native DOT)' 
-              : 'Polkadot Asset Hub (parachain with DOT)'}
+              ? 'Asset Hub (Polkadot, native DOT)' 
+              : 'Asset Hub (Polkadot, native DOT)'}
           </p>
         </div>
       )}
@@ -848,7 +843,7 @@ export function ChainTestPage() {
           <div className="flex items-center justify-between mb-2">
             <div className="text-xs font-medium opacity-70 uppercase tracking-wide">Free Balance</div>
             <div className="px-2 py-1 rounded-full text-xs font-medium bg-accent/10 text-accent">
-              {selectedChain === 'relay' ? 'Relay Chain' : 'Asset Hub'}
+              Asset Hub (Polkadot)
             </div>
           </div>
           <div className="text-2xl font-bold mb-1">{fmt(freeBalance)} <span className="text-base font-normal opacity-70">DOT</span></div>
@@ -857,9 +852,9 @@ export function ChainTestPage() {
               <div className="flex items-start gap-2">
                 <span className="text-amber-600 dark:text-amber-400 text-base">⚠️</span>
                 <div>
-                  <div className="font-medium mb-1 text-amber-900 dark:text-amber-200">Zero balance on {selectedChain === 'relay' ? 'Relay Chain' : 'Asset Hub'}</div>
+                  <div className="font-medium mb-1 text-amber-900 dark:text-amber-200">Zero balance on Asset Hub (Polkadot)</div>
                   <div className="opacity-80 text-amber-800 dark:text-amber-300">
-                    This account has 0 DOT on {selectedChain === 'relay' ? 'the Polkadot Relay Chain' : 'Polkadot Asset Hub'}. Try switching to the other chain if your funds are there. Each chain has separate balances.
+                    This account has 0 DOT on Polkadot Asset Hub. Asset Hub keeps balances separate from legacy chains.
                   </div>
                 </div>
               </div>
@@ -1033,7 +1028,7 @@ export function ChainTestPage() {
               <div className="flex justify-between items-center pt-2">
                 <span className="text-xs font-medium opacity-60">Network:</span>
                 <span className="text-xs font-semibold px-2 py-1 rounded" style={{ background: 'var(--muted)', color: 'var(--foreground)' }}>
-                  {selectedChain === 'relay' ? 'Polkadot Relay Chain' : 'Polkadot Asset Hub'}
+                  Asset Hub (Polkadot)
                 </span>
               </div>
             </div>
@@ -1198,7 +1193,7 @@ export function ChainTestPage() {
               ⚠️ After scanning, check your browser console for pairing events. If nothing appears, Nova Wallet might not be connecting.
             </p>
             <p className="text-xs opacity-60 mb-4 bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
-              ℹ️ <strong>Note:</strong> Nova Wallet may show "Polkadot Relay" in the connection prompt, but transactions will go to the chain you select above (Asset Hub or Relay Chain). This is a WalletConnect limitation.
+              ℹ️ <strong>Note:</strong> Nova Wallet may label the connection simply as “Polkadot”, but the transaction targets Asset Hub. This is a WalletConnect limitation.
             </p>
             
             <div className="flex justify-center mb-4 p-4 bg-white rounded-lg">
@@ -1242,5 +1237,3 @@ export function ChainTestPage() {
 }
 
 export default ChainTestPage;
-
-

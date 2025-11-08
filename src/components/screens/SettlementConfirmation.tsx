@@ -2,6 +2,7 @@ import { Check } from "lucide-react";
 import { SettlementResult } from "../../nav";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
+import { polkadotChainService } from "../../services/chain/polkadot";
 
 interface SettlementConfirmationProps {
   result: SettlementResult;
@@ -65,7 +66,7 @@ export function SettlementConfirmation({
                 <span className="text-muted-foreground">Transaction</span>
                 <a
                   className="font-mono text-sm truncate max-w-[180px] underline"
-                  href={`https://assethub-polkadot.subscan.io/extrinsic/${result.txHash}`}
+                  href={polkadotChainService.buildSubscanUrl(result.txHash)}
                   target="_blank"
                   rel="noreferrer"
                 >

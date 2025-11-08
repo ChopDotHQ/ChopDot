@@ -6,6 +6,9 @@ import { useState, useEffect } from "react";
 import { pushTxToast, updateTxToast, isTxActive } from "../../hooks/useTxToasts";
 import { useFeatureFlags } from "../../contexts/FeatureFlagsContext";
 import { useAccount } from "../../contexts/AccountContext";
+import { getHyperbridgeUrl } from "../../services/bridge/hyperbridge";
+import { triggerHaptic } from "../../utils/haptics";
+import { HyperbridgeBridgeSheet } from "../HyperbridgeBridgeSheet";
 
 interface Settlement {
   id: string;
@@ -45,6 +48,8 @@ export function SettleHome({
   onShowToast,
 }: SettleHomeProps) {
   const isDotPot = baseCurrency === 'DOT';
+  // Check for simulation mode (allows DOT settlement without wallet)
+  const isSimulationMode = import.meta.env.VITE_SIMULATE_CHAIN === '1';
   // Read feature flags
   const { POLKADOT_APP_ENABLED, SERVICE_FEE_CAP_BPS } = useFeatureFlags();
   // Use Account context for wallet connection status
@@ -53,17 +58,22 @@ export function SettleHome({
   
   // Fee estimator - uses real chain service for DOT, stub for others
   const estimateNetworkFee = async (): Promise<number> => {
-    if (isDotPot && walletConnected && account.address0 && recipientAddress && totalAmount > 0) {
+    // In simulation mode, allow fee estimation without wallet
+    const canEstimateFee = isSimulationMode || (walletConnected && account.address0);
+    if (isDotPot && canEstimateFee && recipientAddress && totalAmount > 0) {
       try {
-        const { polkadotChainService } = await import('../../services/chain/polkadot');
-        const feePlanck = await polkadotChainService.estimateFee({
-          from: account.address0,
+        const { chain } = await import('../../services/chain');
+        const fromAddress = isSimulationMode && !account.address0 
+          ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
+          : account.address0!;
+        const feePlanck = await chain.estimateFee({
+          from: fromAddress,
           to: recipientAddress,
           amountDot: Math.abs(totalAmount),
         });
-        const config = polkadotChainService.getConfig();
+        const config = chain.getConfig();
         // Convert planck to DOT (10 decimals)
-        const feeDot = parseFloat(feePlanck) / Math.pow(10, config.dotDecimals);
+        const feeDot = parseFloat(feePlanck) / Math.pow(10, config.decimals);
         return feeDot;
       } catch (error) {
         console.error('[SettleHome] Fee estimation error:', error);
@@ -94,6 +104,8 @@ export function SettleHome({
   const [paypalEmail, setPaypalEmail] = useState("");
   const [twintPhone, setTwintPhone] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showBridgeSheet, setShowBridgeSheet] = useState(false);
+  const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
   
   // Fee estimation state
   const [feeEstimate, setFeeEstimate] = useState<number | null>(null);
@@ -184,11 +196,13 @@ export function SettleHome({
     }
 
     // DOT settlement - use real chain service from Prompt 1
-    if (selectedMethod === "dot" && walletConnected && isDotPot && recipientAddress && account.address0) {
+    // In simulation mode, allow without wallet connection (will use mock address)
+    const canProceedDot = isSimulationMode || (walletConnected && account.address0);
+    if (selectedMethod === "dot" && canProceedDot && isDotPot && recipientAddress) {
       try {
         setIsSettling(true);
         
-        const { polkadotChainService } = await import('../../services/chain/polkadot');
+        const { chain } = await import('../../services/chain');
         const amountDot = Math.abs(totalAmount);
         
         // State 1: Signing
@@ -197,9 +211,13 @@ export function SettleHome({
           currency: 'DOT',
         });
 
-        // Send real DOT transaction
-        const result = await polkadotChainService.sendDot({
-          from: account.address0,
+        // Send real DOT transaction (or simulated in simulation mode)
+        // Use mock address in simulation mode if no wallet connected
+        const fromAddress = isSimulationMode && !account.address0 
+          ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
+          : account.address0!;
+        const result = await chain.sendDot({
+          from: fromAddress,
           to: recipientAddress,
           amountDot,
           onStatus: (status, ctx) => {
@@ -229,7 +247,11 @@ export function SettleHome({
         });
 
         // Refresh balance after successful transaction
-        account.refreshBalance();
+        try {
+          await account.refreshBalance();
+        } catch (refreshError) {
+          console.error('[SettleHome] Balance refresh failed:', refreshError);
+        }
 
         // Wait a bit for finalization status, then call onConfirm with txHash
         setTimeout(() => {
@@ -263,8 +285,17 @@ export function SettleHome({
   };
 
   // Check if DOT settlement is valid (requires wallet connected AND recipient address)
-  const isDotValid = selectedMethod === "dot" && walletConnected && !!recipientAddress;
+  // In simulation mode, bypass wallet requirement
+  const isDotValid = selectedMethod === "dot" && (isSimulationMode || walletConnected) && !!recipientAddress;
   const showDotMethod = isDotPot && !!recipientAddress;
+  const isDotFlowActive = selectedMethod === 'dot' && isDotPot;
+  const amountDotString = totalAmount > 0 ? Math.abs(totalAmount).toFixed(6) : null;
+  const canAffordDotPayment = amountDotString && walletConnected
+    ? account.canAfford(amountDotString)
+    : true;
+  const needsHyperbridge = Boolean(amountDotString) && walletConnected && !canAffordDotPayment;
+  const showConnectWalletNotice = isDotFlowActive && account.status !== 'connected';
+  const showHyperbridgeCta = isDotFlowActive && walletConnected;
   
   const isValid = 
     selectedMethod === "cash" || 
@@ -373,6 +404,82 @@ export function SettleHome({
         {/* Wallet Banner for DOT - Only show when wallet is connected to display balance */}
         {selectedMethod === "dot" && walletConnected && (
           <WalletBanner />
+        )}
+
+        {showHyperbridgeCta && (
+          <div className="card p-3 space-y-2 border border-border/60">
+            <PrimaryButton
+              fullWidth
+              onClick={() => {
+                triggerHaptic('light');
+                setShowBridgeSheet(true);
+              }}
+            >
+              Get DOT (Hyperbridge)
+            </PrimaryButton>
+            <div className="flex items-center justify-between text-caption">
+              <span className="text-secondary">
+                {needsHyperbridge
+                  ? 'Looks like you’re short on DOT. Use Hyperbridge to top up.'
+                  : 'Need more DOT on Polkadot? Bridge funds in from other chains.'}
+              </span>
+              <button
+                type="button"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  triggerHaptic('light');
+                  
+                  console.log('[SettleHome] Refresh balance clicked', {
+                    status: account.status,
+                    address: account.address0,
+                    isRefreshing: isRefreshingBalance
+                  });
+
+                  if (account.status !== 'connected') {
+                    console.warn('[SettleHome] Wallet not connected');
+                    onShowToast?.('Please connect your wallet first', 'error');
+                    return;
+                  }
+
+                  if (!account.address0) {
+                    console.warn('[SettleHome] No wallet address');
+                    onShowToast?.('Wallet address not found', 'error');
+                    return;
+                  }
+
+                  setIsRefreshingBalance(true);
+                  
+                  // Safety timeout: reset after 10 seconds if it gets stuck
+                  const timeout = setTimeout(() => {
+                    console.warn('[SettleHome] Refresh timeout - resetting state');
+                    setIsRefreshingBalance(false);
+                  }, 10000);
+
+                  try {
+                    console.log('[SettleHome] Calling refreshBalance...');
+                    await account.refreshBalance();
+                    console.log('[SettleHome] Balance refresh completed');
+                    clearTimeout(timeout);
+                    onShowToast?.('Balance refreshed', 'success');
+                  } catch (error: any) {
+                    console.error('[SettleHome] Balance refresh error:', error);
+                    clearTimeout(timeout);
+                    onShowToast?.('Failed to refresh balance. Please try again.', 'error');
+                  } finally {
+                    setIsRefreshingBalance(false);
+                  }
+                }}
+                disabled={isRefreshingBalance || account.status !== 'connected'}
+                className="text-accent underline font-medium px-2 py-1 rounded hover:bg-accent/10 focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              >
+                {isRefreshingBalance ? 'Refreshing...' : 'Refresh balance'}
+              </button>
+            </div>
+            <p className="text-caption text-muted">
+              After bridging completes, return here and tap “Refresh balance” to update.
+            </p>
+          </div>
         )}
 
         {/* Payment Method Tabs */}
@@ -615,25 +722,32 @@ export function SettleHome({
               <p className="text-body font-medium">Polkadot Settlement</p>
             </div>
                     <p className="text-caption text-secondary">
-                      {walletConnected 
-                        ? `Send ${formatAmount(totalAmount)} on Polkadot. This will create an on-chain transaction.`
+                      {isSimulationMode || walletConnected
+                        ? `Send ${formatAmount(totalAmount)} on Polkadot. This will create an on-chain transaction${isSimulationMode ? ' (simulated)' : ''}.`
                         : `Connect your Polkadot wallet to settle on-chain in ${baseCurrency}.`
                       }
                     </p>
 
-            {/* From/To details when wallet connected and address available */}
-            {walletConnected && recipientAddress && (
+            {/* From/To details when wallet connected (or simulation mode) and address available */}
+            {(isSimulationMode || walletConnected) && recipientAddress && (
               <div className="pt-3 grid gap-2 text-caption">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-muted">From</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-sm truncate max-w-[180px]">
-                      {(account.address0 || '').slice(0, 6)}...{(account.address0 || '').slice(-6)}
+                      {((isSimulationMode && !account.address0) 
+                        ? '15mock00000000000000000000000000000A' 
+                        : (account.address0 || '')).slice(0, 6)}...{((isSimulationMode && !account.address0) 
+                        ? '15mock00000000000000000000000000000A' 
+                        : (account.address0 || '')).slice(-6)}
                     </span>
                     <button
                       className="text-micro underline opacity-70 hover:opacity-100"
                       onClick={() => {
-                        navigator.clipboard.writeText(account.address0 || '').catch(() => {});
+                        const addressToCopy = (isSimulationMode && !account.address0) 
+                          ? '15mock00000000000000000000000000000A' 
+                          : (account.address0 || '');
+                        navigator.clipboard.writeText(addressToCopy).catch(() => {});
                         onShowToast?.('Copied sender address', 'info');
                       }}
                     >
@@ -740,6 +854,26 @@ export function SettleHome({
 
       {/* Bottom CTA */}
       <div className="p-4 bg-background border-t border-border">
+        {isDotFlowActive && (
+          <>
+            {showConnectWalletNotice && (
+              <div className="mb-3 p-3 rounded-lg border bg-muted/10 space-y-2" style={{ borderColor: 'var(--border)' }}>
+                <p className="text-sm font-medium">You’ll need DOT on Polkadot to settle.</p>
+                <PrimaryButton
+                  fullWidth
+                  onClick={() => {
+                    void account.connectExtension().catch((error: any) => {
+                      const message = error?.message || 'Failed to connect wallet';
+                      onShowToast?.(message, 'error');
+                    });
+                  }}
+                >
+                  Connect wallet
+                </PrimaryButton>
+              </div>
+            )}
+          </>
+        )}
         <div title={selectedMethod === "dot" && !recipientAddress ? "No wallet address on file for this member" : undefined}>
           <PrimaryButton
             fullWidth
@@ -747,7 +881,7 @@ export function SettleHome({
             disabled={!isValid || isLoading}
             loading={isLoading}
           >
-            {selectedMethod === "dot" && !walletConnected 
+            {selectedMethod === "dot" && !isSimulationMode && !walletConnected 
               ? "Connect Wallet in Header"
               : selectedMethod === "dot" && !recipientAddress
               ? "Add Wallet Address Required"
@@ -756,6 +890,24 @@ export function SettleHome({
           </PrimaryButton>
         </div>
       </div>
+
+      {/* Embedded Hyperbridge Bridge Sheet */}
+      <HyperbridgeBridgeSheet
+        isOpen={showBridgeSheet}
+        onClose={() => setShowBridgeSheet(false)}
+        onBridgeComplete={async () => {
+          // Refresh balance after bridging completes
+          try {
+            await account.refreshBalance();
+            onShowToast?.('Bridge completed! Balance refreshed.', 'success');
+          } catch (refreshError) {
+            console.error('[SettleHome] Balance refresh failed after bridge:', refreshError);
+            onShowToast?.('Bridge completed! Please refresh balance manually.', 'info');
+          }
+        }}
+        dest="Polkadot"
+        asset="DOT"
+      />
     </div>
   );
 }

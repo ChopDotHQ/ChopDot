@@ -1,3 +1,5 @@
+import type { PotHistory } from '../App';
+
 /**
  * SETTLEMENT CALCULATION ENGINE
  * 
@@ -42,12 +44,7 @@ interface Pot {
   members: Member[];
   expenses: Expense[];
   // Optional on-chain history for DOT settlements (when available)
-  history?: Array<{
-    fromMemberId: string;
-    toMemberId: string;
-    amountDot: string;
-    status: 'in_block' | 'finalized' | 'failed';
-  }>;
+  history?: PotHistory[];
 }
 
 export interface Person {
@@ -157,7 +154,10 @@ export function calculateSettlements(
 
       // Apply on-chain DOT settlements for this pot to move balances toward zero
       if (pot.history && pot.history.length > 0) {
-        const relevant = pot.history.filter(h => h.status !== 'failed');
+        const relevant = pot.history.filter(
+          (h): h is Extract<PotHistory, { type: 'onchain_settlement' }> =>
+            h.type === 'onchain_settlement' && h.status !== 'failed'
+        );
         for (const h of relevant) {
           const amt = Number(h.amountDot || '0');
           if (!Number.isFinite(amt) || amt <= 0) continue;
@@ -288,7 +288,10 @@ export function calculatePotSettlements(
 
     // Apply DOT history offsets to move balance toward zero
     if (pot.history && pot.history.length > 0) {
-      const relevant = pot.history.filter(h => h.status !== 'failed');
+      const relevant = pot.history.filter(
+        (h): h is Extract<PotHistory, { type: 'onchain_settlement' }> =>
+          h.type === 'onchain_settlement' && h.status !== 'failed'
+      );
       for (const h of relevant) {
         const amt = Number(h.amountDot || '0');
         if (!Number.isFinite(amt) || amt <= 0) continue;

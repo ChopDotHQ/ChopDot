@@ -24,6 +24,7 @@ export function PrimaryButton({ children, onClick, disabled, fullWidth, variant 
   if (variant === "gradient") {
     return (
       <button
+        type="button"
         onClick={handleClick}
         disabled={isDisabled}
         className={`px-4 py-2.5 rounded-[var(--r-lg)] transition-all duration-200 text-body text-center flex items-center justify-center gap-2 ${
@@ -41,6 +42,7 @@ export function PrimaryButton({ children, onClick, disabled, fullWidth, variant 
   // Default variant
   return (
     <button
+      type="button"
       onClick={handleClick}
       disabled={isDisabled}
       className={`px-4 py-2.5 rounded-[var(--r-lg)] transition-all duration-200 text-body text-center flex items-center justify-center gap-2 ${

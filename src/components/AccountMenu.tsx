@@ -12,6 +12,8 @@ import { Wallet, Copy, ExternalLink, ChevronDown, CheckCircle, QrCode } from 'lu
 import Identicon from '@polkadot/react-identicon';
 import QRCode from 'qrcode';
 import { AddressDisplay } from './AddressDisplay';
+import { getHyperbridgeUrl } from '../services/bridge/hyperbridge';
+import { chain } from '../services/chain';
 
 // Helper component to auto-close QR modal after connection
 function AutoCloseQR({ onClose }: { onClose: () => void }) {
@@ -65,6 +67,7 @@ export function AccountMenu() {
   const [availableExtensions, setAvailableExtensions] = useState<Array<{ name: string; source: string; accounts: Array<{ address: string; name?: string; source?: string }> }>>([]);
   const [availableAccounts, setAvailableAccounts] = useState<Array<{ address: string; name?: string; source?: string }>>([]);
   const [selectedExtension, setSelectedExtension] = useState<string | null>(null);
+  const hasPositiveBalance = account.balanceHuman ? parseFloat(account.balanceHuman) > 0 : false;
 
   const handleConnectExtension = async () => {
     setShowMenu(false);
@@ -238,8 +241,9 @@ export function AccountMenu() {
 
   const getNetworkLabel = (network: string): string => {
     switch (network) {
-      case 'asset-hub': return 'Asset Hub';
-      case 'polkadot': return 'Relay Chain';
+      case 'asset-hub':
+      case 'polkadot':
+        return 'Asset Hub (Polkadot)';
       case 'westend': return 'Westend';
       default: return 'Unknown';
     }
@@ -292,6 +296,16 @@ export function AccountMenu() {
                     <span className="opacity-60">Balance:</span>
                     <span className="font-semibold">{formatBalance(account.balanceHuman)} DOT</span>
                   </div>
+                  {/* dev: show active RPC */}
+                  {import.meta.env.DEV && chain.getCurrentRpc() && (
+                    <div 
+                      data-testid="dev-active-rpc" 
+                      style={{ fontSize: 12, opacity: 0.7, marginTop: 6 }}
+                      className="text-xs opacity-60"
+                    >
+                      RPC: {chain.getCurrentRpc()}
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-2">
@@ -303,12 +317,35 @@ export function AccountMenu() {
                     Copy Address
                   </button>
                   <button
-                    onClick={account.refreshBalance}
+                    onClick={async () => {
+                      try {
+                        await account.refreshBalance();
+                      } catch (error) {
+                        console.error('[AccountMenu] Refresh balance failed:', error);
+                      }
+                    }}
                     className="w-full px-3 py-2 text-left text-sm rounded-md hover:bg-muted transition-colors flex items-center gap-2"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Refresh Balance
                   </button>
+                  {hasPositiveBalance && (
+                    <button
+                      onClick={() => {
+                        const url = getHyperbridgeUrl({
+                          src: 'Polkadot',
+                          asset: 'DOT',
+                          dest: 'Ethereum',
+                          destAsset: 'USDC',
+                        });
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm rounded-md hover:bg-muted transition-colors flex items-center gap-2"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Bridge out (DOT → USDC)
+                    </button>
+                  )}
                   <div className="border-t my-2" style={{ borderColor: 'var(--border)' }} />
                   <button
                     onClick={handleDisconnect}
@@ -350,6 +387,16 @@ export function AccountMenu() {
             className="absolute right-0 top-full mt-2 w-64 rounded-lg border bg-card shadow-lg z-50"
             style={{ borderColor: 'var(--border)' }}
           >
+            {/* dev: show active RPC (even when disconnected) */}
+            {import.meta.env.DEV && chain.getCurrentRpc() && (
+              <div 
+                data-testid="dev-active-rpc" 
+                className="p-3 border-b text-xs opacity-60"
+                style={{ borderColor: 'var(--border)' }}
+              >
+                RPC: {chain.getCurrentRpc()}
+              </div>
+            )}
             <div className="p-2">
               <button
                 onClick={handleConnectExtension}
@@ -489,4 +536,3 @@ export function AccountMenu() {
     </>
   );
 }
-
