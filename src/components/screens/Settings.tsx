@@ -41,13 +41,13 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
         <div className="p-4 space-y-6">
           {/* Profile Section */}
           <div className="space-y-3">
-            <h2 className="text-label text-muted-foreground px-1">Profile</h2>
+            <h2 className="text-label text-secondary px-1">Profile</h2>
 
             {/* Profile Image */}
-            <div className="p-3 glass-sm rounded-xl">
+            <div className="p-3 card rounded-xl transition-shadow duration-200">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                  <User className="w-6 h-6 text-muted-foreground" />
+                  <User className="w-6 h-6 text-secondary" />
                 </div>
                 <button 
                   className="text-label text-primary hover:opacity-70 transition-opacity"
@@ -92,10 +92,10 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
 
           {/* Preferences Section */}
           <div className="space-y-3">
-            <h2 className="text-label text-muted-foreground px-1">Preferences</h2>
+            <h2 className="text-label text-secondary px-1">Preferences</h2>
 
             {/* Notifications Toggle */}
-            <div className="p-3 glass-sm rounded-xl">
+            <div className="p-3 card rounded-xl transition-shadow duration-200">
               <div className="flex items-center justify-between">
                 <span className="text-body">Notifications</span>
                 <button
@@ -148,7 +148,7 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
 
             {/* Appearance Segmented Control */}
             <div className="space-y-2">
-              <label className="text-label text-muted-foreground px-1">
+              <label className="text-label text-secondary px-1">
                 Appearance
               </label>
               <div className="p-1 bg-secondary/50 dark:bg-secondary/30 rounded-xl flex gap-1">
@@ -160,7 +160,7 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
                   className={`flex-1 py-2 px-3 text-label rounded-lg transition-all duration-200 ${
                     theme === "light"
                       ? "bg-card shadow-sm text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-secondary hover:text-foreground"
                   }`}
                 >
                   Light
@@ -173,7 +173,7 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
                   className={`flex-1 py-2 px-3 text-label rounded-lg transition-all duration-200 ${
                     theme === "dark"
                       ? "bg-card shadow-sm text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-secondary hover:text-foreground"
                   }`}
                 >
                   Dark
@@ -186,14 +186,14 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
                   className={`flex-1 py-2 px-3 text-label rounded-lg transition-all duration-200 ${
                     theme === "system"
                       ? "bg-card shadow-sm text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-secondary hover:text-foreground"
                   }`}
                 >
                   Auto
                 </button>
               </div>
               {theme === "system" && (
-                <p className="text-micro text-muted-foreground px-1">
+                <p className="text-micro text-secondary px-1">
                   Follows your device theme
                 </p>
               )}
@@ -212,24 +212,24 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
 
           {/* Account Management */}
           <div className="space-y-3">
-            <h2 className="text-label text-muted-foreground px-1">Account</h2>
+            <h2 className="text-label text-secondary px-1">Account</h2>
 
             {/* Payment Methods */}
             <button
               onClick={onPaymentMethods}
-              className="w-full p-3 glass-sm rounded-xl flex items-center justify-between hover:bg-muted/50 transition-all duration-200 active:scale-[0.98]"
+              className="w-full p-4 card rounded-xl flex items-center justify-between hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98]"
             >
               <div className="flex items-center gap-3">
                 <CreditCard className="w-5 h-5 text-foreground" />
                 <span className="text-body text-foreground">Payment methods</span>
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              <ChevronRight className="w-5 h-5 text-secondary" />
             </button>
 
             {/* Sign Out */}
             <button
               onClick={onLogout}
-              className="w-full p-3 glass-sm rounded-xl flex items-center gap-3 hover:bg-muted/50 transition-all duration-200 active:scale-[0.98]"
+              className="w-full p-4 card rounded-xl flex items-center gap-3 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98]"
             >
               <LogOut className="w-5 h-5 text-foreground" />
               <span className="text-body text-foreground">Sign out</span>
@@ -238,10 +238,10 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
 
           {/* Danger Zone */}
           <div className="space-y-3 pt-2">
-            <h2 className="text-label text-muted-foreground px-1">Danger zone</h2>
+            <h2 className="text-label text-secondary px-1">Danger zone</h2>
             <button
               onClick={onDeleteAccount}
-              className="w-full p-3 glass-sm rounded-xl flex items-center justify-between hover:bg-destructive/10 transition-all duration-200 active:scale-[0.98] group"
+              className="w-full p-4 card rounded-xl flex items-center justify-between hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] group"
             >
               <div className="flex items-center gap-3">
                 <Trash2 className="w-5 h-5 text-destructive" />
@@ -251,7 +251,7 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
             </button>
           </div>
 
-          <p className="text-micro text-muted-foreground text-center pt-4 pb-2">
+          <p className="text-micro text-secondary text-center pt-4 pb-2">
             ChopDot v1.0.0
           </p>
         </div>

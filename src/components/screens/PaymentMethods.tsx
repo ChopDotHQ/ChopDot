@@ -47,7 +47,7 @@ export function PaymentMethods({
   }> = [
     {
       kind: "bank",
-      icon: <CreditCard className="w-5 h-5 text-muted-foreground" />,
+      icon: <CreditCard className="w-5 h-5 text-secondary" />,
       title: "Bank – IBAN",
       placeholder: "CH93 0000 0000 0000 0000 0",
       value: methods.find(m => m.kind === "bank")?.iban || "",
@@ -55,7 +55,7 @@ export function PaymentMethods({
     },
     {
       kind: "twint",
-      icon: <Smartphone className="w-5 h-5 text-muted-foreground" />,
+      icon: <Smartphone className="w-5 h-5 text-secondary" />,
       title: "TWINT",
       placeholder: "+41 79 123 45 67",
       value: methods.find(m => m.kind === "twint")?.phone || "",
@@ -63,7 +63,7 @@ export function PaymentMethods({
     },
     {
       kind: "paypal",
-      icon: <DollarSign className="w-5 h-5 text-muted-foreground" />,
+      icon: <DollarSign className="w-5 h-5 text-secondary" />,
       title: "PayPal",
       placeholder: "your@email.com",
       value: methods.find(m => m.kind === "paypal")?.email || "",
@@ -71,7 +71,7 @@ export function PaymentMethods({
     },
     {
       kind: "crypto",
-      icon: <Wallet className="w-5 h-5 text-muted-foreground" />,
+      icon: <Wallet className="w-5 h-5 text-secondary" />,
       title: "DOT Wallet",
       placeholder: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
       value: methods.find(m => m.kind === "crypto")?.address || "",
@@ -105,7 +105,7 @@ export function PaymentMethods({
           const hasValue = value.length > 0;
 
           return (
-            <div key={option.kind} className="glass-sm rounded-xl p-4">
+            <div key={option.kind} className="card rounded-xl p-4 transition-shadow duration-200">
               <div className="flex items-center gap-3 mb-3">
                 {option.icon}
                 <h4 className="text-section flex-1">{option.title}</h4>
@@ -115,7 +115,7 @@ export function PaymentMethods({
                     className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-micro transition-all duration-200 active:scale-95 ${
                       isPreferred
                         ? "bg-foreground text-background"
-                        : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                        : "bg-muted/50 text-secondary hover:bg-muted"
                     }`}
                   >
                     {isPreferred && <Check className="w-3 h-3" />}
@@ -128,7 +128,7 @@ export function PaymentMethods({
                 value={option.value}
                 onChange={(e) => option.onChange(e.target.value)}
                 placeholder={option.placeholder}
-                className="w-full px-3 py-2.5 bg-input-background border border-border/30 rounded-[var(--r-lg)] text-body placeholder:text-muted-foreground focus:outline-none focus-ring-pink transition-all"
+                className="w-full px-3 py-2.5 bg-input-background border border-border/30 rounded-[var(--r-lg)] text-body placeholder:text-secondary focus:outline-none focus-ring-pink transition-all"
               />
             </div>
           );
@@ -136,7 +136,7 @@ export function PaymentMethods({
       </div>
 
       <div className="p-4 border-t border-border/30">
-        <p className="text-caption text-muted-foreground text-center">
+        <p className="text-caption text-secondary text-center">
           Your saved details are shown only to people in your pots when settling with you.
         </p>
       </div>

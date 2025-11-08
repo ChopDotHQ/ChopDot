@@ -42,13 +42,13 @@ export function AddContribution({
               <TrendingUp className="w-4 h-4 text-white" />
             </div>
             <div className="flex-1">
-              <p className="text-sm" style={{ fontWeight: 500 }}>{potName}</p>
-              <p className="text-xs text-muted-foreground">{defiProtocol} · {yieldRate.toFixed(1)}% APY</p>
+              <p className="text-label" style={{ fontWeight: 500 }}>{potName}</p>
+              <p className="text-micro text-secondary">{defiProtocol} · {yieldRate.toFixed(1)}% APY</p>
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <p className="text-xs text-muted-foreground">Current pooled</p>
-            <p className="text-sm tabular-nums" style={{ fontWeight: 500 }}>
+            <p className="text-micro text-secondary">Current pooled</p>
+            <p className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>
               {baseCurrency} {currentBalance.toFixed(2)}
             </p>
           </div>
@@ -56,7 +56,7 @@ export function AddContribution({
 
         {/* Amount Input */}
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground px-1">Amount to add</label>
+          <label className="text-micro text-secondary px-1">Amount to add</label>
           <div className="relative">
             <input
               type="number"
@@ -68,7 +68,7 @@ export function AddContribution({
               style={{ fontWeight: 600 }}
               autoFocus
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[28px] text-muted-foreground tabular-nums" style={{ fontWeight: 600 }}>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[28px] text-secondary tabular-nums" style={{ fontWeight: 600 }}>
               {baseCurrency}
             </div>
           </div>
@@ -79,7 +79,7 @@ export function AddContribution({
               <button
                 key={quickAmount}
                 onClick={() => setAmount(quickAmount.toString())}
-                className="flex-1 px-3 py-2 bg-card border border-border rounded-lg text-xs hover:bg-muted/10 transition-colors active:scale-[0.98]"
+                className="flex-1 px-3 py-2 bg-card border border-border rounded-lg text-micro hover:bg-muted/10 transition-colors active:scale-[0.98]"
               >
                 +{baseCurrency} {quickAmount}
               </button>
@@ -91,14 +91,14 @@ export function AddContribution({
         {numAmount > 0 && (
           <div className="p-3 rounded-lg" style={{ background: 'rgba(86, 243, 154, 0.08)', border: '1px solid rgba(86, 243, 154, 0.2)' }}>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-muted-foreground">Estimated monthly yield</p>
-              <p className="text-sm tabular-nums" style={{ fontWeight: 600, color: 'var(--success)' }}>
+              <p className="text-micro text-secondary">Estimated monthly yield</p>
+              <p className="text-[18px] tabular-nums" style={{ fontWeight: 700, color: 'var(--success)' }}>
                 +{baseCurrency} {estimatedYield.toFixed(2)}
               </p>
             </div>
             <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">New total pooled</p>
-              <p className="text-sm tabular-nums" style={{ fontWeight: 500 }}>
+              <p className="text-micro text-secondary">New total pooled</p>
+              <p className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>
                 {baseCurrency} {newTotal.toFixed(2)}
               </p>
             </div>
@@ -107,7 +107,7 @@ export function AddContribution({
 
         {/* Payment Method Selection */}
         <div className="space-y-2">
-          <label className="text-xs text-muted-foreground px-1">Payment method</label>
+          <label className="text-micro text-secondary px-1">Payment method</label>
           
           <div className="space-y-2">
             <button
@@ -123,11 +123,11 @@ export function AddContribution({
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                   method === "wallet" ? "" : "bg-muted/20"
                 }`} style={method === "wallet" ? { background: 'var(--success)' } : {}}>
-                  <Wallet className={`w-5 h-5 ${method === "wallet" ? "text-white" : "text-muted-foreground"}`} />
+                  <Wallet className={`w-5 h-5 ${method === "wallet" ? "text-white" : "text-secondary"}`} />
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="text-sm" style={{ fontWeight: 500 }}>Polkadot Wallet</p>
-                  <p className="text-xs text-muted-foreground">Direct on-chain deposit</p>
+                  <p className="text-label" style={{ fontWeight: 500 }}>Polkadot Wallet</p>
+                  <p className="text-micro text-secondary">Direct on-chain deposit</p>
                 </div>
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                   method === "wallet" ? "" : "border-border"
@@ -152,13 +152,13 @@ export function AddContribution({
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                   method === "bank" ? "" : "bg-muted/20"
                 }`} style={method === "bank" ? { background: 'var(--success)' } : {}}>
-                  <svg className={`w-5 h-5 ${method === "bank" ? "text-white" : "text-muted-foreground"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className={`w-5 h-5 ${method === "bank" ? "text-white" : "text-secondary"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                   </svg>
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="text-sm" style={{ fontWeight: 500 }}>Bank Transfer</p>
-                  <p className="text-xs text-muted-foreground">Traditional banking (2-3 days)</p>
+                  <p className="text-label" style={{ fontWeight: 500 }}>Bank Transfer</p>
+                  <p className="text-micro text-secondary">Traditional banking (2-3 days)</p>
                 </div>
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                   method === "bank" ? "" : "border-border"
@@ -174,7 +174,7 @@ export function AddContribution({
 
         {/* Info Note */}
         <div className="p-3 bg-muted/10 rounded-lg">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-micro text-secondary">
             {method === "wallet" 
               ? `Funds will be deposited directly into ${defiProtocol} and start earning ${yieldRate.toFixed(1)}% APY immediately.`
               : `Bank transfers take 2-3 business days to clear before funds start earning yield.`

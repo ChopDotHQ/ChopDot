@@ -201,7 +201,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
           <h1 className="text-screen-title mb-2">
             {mode === 'signup' ? 'Create account' : 'Sign in'}
           </h1>
-          <p className="text-xs text-secondary">
+          <p className="text-micro text-secondary">
             {mode === 'signup' 
               ? 'Create an account to get started with ChopDot'
               : 'Sign in to your ChopDot account'
@@ -243,7 +243,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
           {error && (
             <div className="card p-3 flex items-start gap-2 bg-destructive/10">
               <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-destructive">{error}</p>
+              <p className="text-micro text-destructive">{error}</p>
             </div>
           )}
 
@@ -264,7 +264,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               setMode(mode === 'signup' ? 'email' : 'signup');
               setError(null);
             }}
-            className="w-full text-xs text-center text-secondary py-2"
+            className="w-full text-micro text-center text-secondary py-2"
             disabled={loading}
           >
             {mode === 'signup'
@@ -279,7 +279,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               setMode('select');
               setError(null);
             }}
-            className="w-full text-xs text-center text-secondary py-2"
+            className="w-full text-micro text-center text-secondary py-2"
             disabled={loading}
           >
             ← Back to options
@@ -299,7 +299,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
           <Wallet className="w-10 h-10 text-white" />
         </div>
         <h1 className="text-screen-title mb-2">Welcome to ChopDot</h1>
-        <p className="text-xs text-secondary px-4">
+        <p className="text-micro text-secondary px-4">
           Split expenses and manage group finances with blockchain-powered settlements
         </p>
       </div>
@@ -307,13 +307,13 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       {/* Auth Options */}
       <div className="flex-1 px-4 space-y-3">
         <div>
-          <p className="text-xs text-secondary mb-2 px-1">Connect with wallet</p>
+          <p className="text-micro text-secondary mb-2 px-1">Connect with wallet</p>
           
           {/* Polkadot Wallet */}
           <button
             onClick={() => handleWalletLogin('polkadot')}
             disabled={loading}
-            className="w-full card p-4 flex items-center gap-3 hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] mb-2 disabled:opacity-50"
+            className="w-full card p-4 flex items-center gap-3 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] mb-2 disabled:opacity-50"
           >
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
               background: 'linear-gradient(135deg, #E6007A 0%, #FF1864 100%)',
@@ -321,8 +321,8 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <Wallet className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm">Polkadot Wallet</p>
-              <p className="text-[10px] text-secondary">Polkadot.js, SubWallet, Talisman</p>
+              <p className="text-label">Polkadot Wallet</p>
+              <p className="text-micro text-secondary">Polkadot.js, SubWallet, Talisman</p>
             </div>
             {loading && <Loader2 className="w-4 h-4 animate-spin text-secondary" />}
           </button>
@@ -331,7 +331,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
           <button
             onClick={() => handleWalletLogin('metamask')}
             disabled={loading}
-            className="w-full card p-4 flex items-center gap-3 hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] mb-2 disabled:opacity-50"
+            className="w-full card p-4 flex items-center gap-3 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] mb-2 disabled:opacity-50"
           >
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
               background: 'linear-gradient(135deg, #F6851B 0%, #E2761B 100%)',
@@ -339,8 +339,8 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <Wallet className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm">MetaMask</p>
-              <p className="text-[10px] text-secondary">Ethereum & EVM chains</p>
+              <p className="text-label">MetaMask</p>
+              <p className="text-micro text-secondary">Ethereum & EVM chains</p>
             </div>
             {loading && <Loader2 className="w-4 h-4 animate-spin text-secondary" />}
           </button>
@@ -349,7 +349,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
           <button
             onClick={() => handleWalletLogin('rainbow')}
             disabled={loading}
-            className="w-full card p-4 flex items-center gap-3 hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
+            className="w-full card p-4 flex items-center gap-3 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
           >
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
               background: 'linear-gradient(135deg, #FF54BB 0%, #00E0FF 100%)',
@@ -357,8 +357,8 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
               <Wallet className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm">Rainbow & Others</p>
-              <p className="text-[10px] text-secondary">Via WalletConnect</p>
+              <p className="text-label">Rainbow & Others</p>
+              <p className="text-micro text-secondary">Via WalletConnect</p>
             </div>
             {loading && <Loader2 className="w-4 h-4 animate-spin text-secondary" />}
           </button>
@@ -367,7 +367,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         {/* Divider */}
         <div className="flex items-center gap-3 py-2">
           <div className="flex-1 h-px bg-border" />
-          <span className="text-[10px] text-secondary uppercase">Or</span>
+          <span className="text-micro text-secondary uppercase">Or</span>
           <div className="flex-1 h-px bg-border" />
         </div>
 
@@ -378,21 +378,21 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
             setMode('email');
           }}
           disabled={loading}
-          className="w-full card p-4 flex items-center gap-3 hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
+          className="w-full card p-4 flex items-center gap-3 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
         >
           <div className="w-10 h-10 rounded-xl bg-muted/20 flex items-center justify-center">
             <Mail className="w-5 h-5" />
           </div>
           <div className="flex-1 text-left">
-            <p className="text-sm">Continue with email</p>
-            <p className="text-[10px] text-secondary">Traditional email/password</p>
+            <p className="text-label">Continue with email</p>
+            <p className="text-micro text-secondary">Traditional email/password</p>
           </div>
         </button>
 
         {error && (
           <div className="card p-3 flex items-start gap-2 bg-destructive/10">
             <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-destructive">{error}</p>
+            <p className="text-micro text-destructive">{error}</p>
           </div>
         )}
       </div>
@@ -401,7 +401,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
       <div className="p-4 space-y-3 pb-24">
         {/* Guest Login Hint */}
         <div className="text-center px-2 mb-2">
-          <p className="text-xs text-secondary">
+          <p className="text-micro text-secondary">
             Just exploring? Try the app without signing in
           </p>
         </div>
@@ -409,19 +409,19 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
         <button
           onClick={handleGuestLogin}
           disabled={loading}
-          className="w-full card p-3 flex items-center justify-center gap-2 hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
+          className="w-full card p-3 flex items-center justify-center gap-2 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
         >
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span className="text-sm">Loading...</span>
+              <span className="text-body">Loading...</span>
             </>
           ) : (
-            <span className="text-sm" style={{ fontWeight: 500 }}>Continue as Guest</span>
+            <span className="text-body" style={{ fontWeight: 500 }}>Continue as Guest</span>
           )}
         </button>
         
-        <p className="text-[10px] text-secondary text-center">
+        <p className="text-micro text-secondary text-center">
           By continuing, you agree to ChopDot's Terms of Service and Privacy Policy
         </p>
       </div>

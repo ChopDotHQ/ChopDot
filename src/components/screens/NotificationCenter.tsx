@@ -137,7 +137,11 @@ export function NotificationCenter({
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
           {notifications.length === 0 ? (
             <div className="p-8">
-              <EmptyState icon={UserPlus} message="No notifications yet" />
+              <EmptyState 
+                icon={UserPlus} 
+                message="No notifications yet"
+                description="You'll see notifications here when someone adds you to a pot or requests payment"
+              />
             </div>
           ) : (
             <div className="space-y-2">
@@ -164,11 +168,11 @@ export function NotificationCenter({
                           {notification.type === 'settlement' ? 'Payment' : notification.type === 'attestation' ? 'Confirm' : notification.type === 'invite' ? 'Invite' : 'Reminder'}
                         </span>
                       </div>
-                      <span className="text-[11px] text-muted-foreground flex-shrink-0">
+                      <span className="text-micro text-secondary flex-shrink-0">
                         {formatTimestamp(notification.timestamp)}
                       </span>
                     </div>
-                    <p className="text-[13px] text-muted-foreground mb-2">
+                    <p className="text-body text-secondary mb-2">
                       {notification.message}
                     </p>
                     {notification.actionLabel && (

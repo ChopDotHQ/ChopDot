@@ -156,11 +156,17 @@ export function ExpensesTab({
     return {
       id: potId || 'temp',
       name: 'Pot',
+      type: 'expense' as const,
+      baseCurrency: 'USD' as const,
       members: potMembers,
       expenses: potExpenses,
+      history: [],
+      budgetEnabled: false,
+      checkpointEnabled: true,
+      archived: false,
       createdAt: Date.now(),
       updatedAt: Date.now(),
-    };
+    } as Pot;
   }, [expenses, members, potId]);
   
   // Calculate balances using deterministic algorithm
@@ -525,7 +531,7 @@ export function ExpensesTab({
                     return (
                       <div 
                         key={idx} 
-                        className={`flex items-center justify-between p-2 glass-sm rounded-lg ${
+                        className={`flex items-center justify-between p-3 card rounded-lg card-hover-lift transition-shadow duration-200 ${
                           !hasRecipientAddress ? 'opacity-60' : ''
                         }`}
                         title={!hasRecipientAddress ? `No wallet address on file for ${toMember.name}` : undefined}
@@ -534,12 +540,12 @@ export function ExpensesTab({
                           <span className="text-label truncate" style={{ fontWeight: 500 }}>
                             {fromMember.name}
                           </span>
-                          <ArrowRight className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                          <ArrowRight className="w-3 h-3 text-secondary flex-shrink-0" />
                           <span className="text-label truncate" style={{ fontWeight: 500 }}>
                             {toMember.name}
                           </span>
                           {!hasRecipientAddress && (
-                            <span className="text-[10px] text-muted-foreground" title="No wallet address on file for this member">
+                            <span className="text-micro text-secondary" title="No wallet address on file for this member">
                               (no address)
                             </span>
                           )}
@@ -597,16 +603,16 @@ export function ExpensesTab({
                       : { label: 'Failed', color: 'var(--danger)' };
                     
                     return (
-                      <div key={entry.id} className="flex items-center justify-between p-2 glass-sm rounded-lg">
+                      <div key={entry.id} className="flex items-center justify-between p-3 card rounded-lg card-hover-lift transition-shadow duration-200">
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                           <span className="text-label truncate" style={{ fontWeight: 500 }}>
                             {fromMember?.name || 'Unknown'}
                           </span>
-                          <ArrowRight className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+                          <ArrowRight className="w-3 h-3 text-secondary flex-shrink-0" />
                           <span className="text-label truncate" style={{ fontWeight: 500 }}>
                             {toMember?.name || 'Unknown'}
                           </span>
-                          <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ 
+                          <span className="text-micro px-1.5 py-0.5 rounded" style={{ 
                             background: `${statusBadge.color}20`,
                             color: statusBadge.color,
                             fontWeight: 500
@@ -626,7 +632,7 @@ export function ExpensesTab({
                               className="p-1 hover:bg-muted rounded transition-colors"
                               title="View on Subscan"
                             >
-                              <ExternalLink className="w-3 h-3 text-muted-foreground" />
+                              <ExternalLink className="w-3 h-3 text-secondary" />
                             </a>
                           )}
                           <button
@@ -637,7 +643,7 @@ export function ExpensesTab({
                             className="p-1 hover:bg-muted rounded transition-colors"
                             title="Copy transaction hash"
                           >
-                            <Copy className="w-3 h-3 text-muted-foreground" />
+                            <Copy className="w-3 h-3 text-secondary" />
                           </button>
                         </div>
                       </div>
@@ -651,21 +657,24 @@ export function ExpensesTab({
             <div className="flex gap-2 pt-2 items-center">
               <button
                 onClick={onAddExpense}
-                className="btn-primary flex-1 py-2.5 transition-all active:scale-[0.98]"
+                className="flex-1 py-3 rounded-[var(--r-lg)] transition-all active:scale-[0.98]"
+                style={{ 
+                  background: 'var(--accent)',
+                  color: '#fff',
+                  fontWeight: 600
+                }}
               >
                 <div className="flex items-center justify-center gap-1.5">
                   <Plus className="w-4 h-4" />
-                  <span className="text-body" style={{ fontWeight: 500 }}>Add Expense</span>
+                  <span className="text-body">Add Expense</span>
                 </div>
               </button>
               
               {canSettle && (
                 <button
                   onClick={onSettle}
-                  className="flex-1 py-2.5 rounded-xl transition-all active:scale-[0.98]"
+                  className="flex-1 py-2.5 rounded-[var(--r-lg)] transition-all active:scale-[0.98] card hover:shadow-[var(--shadow-fab)]"
                   style={{ 
-                    background: 'var(--card)',
-                    border: '2px solid var(--ink)',
                     color: 'var(--ink)'
                   }}
                 >
@@ -682,7 +691,7 @@ export function ExpensesTab({
       {/* Pending Attestations Alert - One-click approve */}
       {pendingAttestations > 0 && (
         <div className="mx-3">
-          <div className="card p-3 space-y-3" style={{ 
+          <div className="card p-4 space-y-3 transition-shadow duration-200" style={{ 
             background: 'rgba(230, 0, 122, 0.1)',
             border: '1px solid rgba(230, 0, 122, 0.2)'
           }}>
@@ -691,10 +700,10 @@ export function ExpensesTab({
                 <AlertCircle className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <p className="text-sm" style={{ fontWeight: 500 }}>
+                <p className="text-label" style={{ fontWeight: 500 }}>
                   {pendingAttestations} expense{pendingAttestations !== 1 ? 's' : ''} need{pendingAttestations === 1 ? 's' : ''} your confirmation
                 </p>
-                <p className="text-xs text-secondary">
+                <p className="text-micro text-secondary">
                   Paid by others · Your share: {baseCurrency} {totalPendingAmount.toFixed(2)}
                 </p>
               </div>
@@ -794,7 +803,7 @@ export function ExpensesTab({
               boxShadow: 'var(--shadow-card)',
             }}>
               {sortedActivity.length === 0 ? (
-                <p className="text-xs text-center py-4" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-micro text-center py-4" style={{ color: 'var(--text-secondary)' }}>
                   No activity yet
                 </p>
               ) : (
@@ -834,13 +843,13 @@ export function ExpensesTab({
           )}
         </div>
       )}
-
+      
       {/* Expenses List */}
       {expenses.length === 0 ? (
         <div className="mx-3">
           <button
             onClick={onAddExpense}
-            className="w-full flex flex-col items-center justify-center gap-3 p-8 card hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
+            className="w-full flex flex-col items-center justify-center gap-3 p-8 card card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200"
           >
             <div className="w-12 h-12 rounded-full bg-muted/10 flex items-center justify-center">
               <Receipt className="w-6 h-6" style={{ color: 'var(--text-secondary)' }} />
@@ -853,7 +862,7 @@ export function ExpensesTab({
         </div>
       ) : displayedExpenses.length === 0 ? (
         <div className="mx-3">
-          <div className="flex flex-col items-center justify-center gap-3 p-8 card">
+          <div className="flex flex-col items-center justify-center gap-3 p-8 card transition-shadow duration-200">
             <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(25, 195, 125, 0.1)' }}>
               <CheckCircle className="w-6 h-6" style={{ color: 'var(--success)' }} />
             </div>
@@ -863,7 +872,7 @@ export function ExpensesTab({
             </div>
             <button
               onClick={() => setShowPendingOnly(false)}
-              className="mt-2 text-xs underline"
+              className="mt-2 text-micro underline"
             >
               Show all expenses
             </button>
@@ -875,8 +884,8 @@ export function ExpensesTab({
             <div key={dateLabel} className="space-y-2">
               {/* Date header */}
               <div className="flex items-center justify-between px-1">
-                <h3 className="text-xs" style={{ color: 'var(--text-secondary)' }}>{dateLabel}</h3>
-                <span className="text-xs tabular-nums" style={{ color: 'var(--text-secondary)' }}>
+                <h3 className="text-micro" style={{ color: 'var(--text-secondary)' }}>{dateLabel}</h3>
+                <span className="text-micro tabular-nums" style={{ color: 'var(--text-secondary)' }}>
                   {baseCurrency} {dateExpenses.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}
                 </span>
               </div>

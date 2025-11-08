@@ -102,18 +102,18 @@ export function YouTab({
         <div className="card p-4">
           <div className="flex flex-col items-center mb-4">
             <div className="w-16 h-16 rounded-full bg-muted/20 flex items-center justify-center mb-3">
-              <UserIcon className="w-8 h-8 text-muted-foreground" />
+              <UserIcon className="w-8 h-8 text-secondary" />
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center gap-2 mb-1">
-                <p className="text-sm" style={{ fontWeight: 600 }}>{userName}</p>
+                <p className="text-label" style={{ fontWeight: 600 }}>{userName}</p>
                 {isGuest && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] bg-muted/20 text-secondary">
+                  <span className="px-2 py-0.5 rounded-full text-micro bg-muted/20 text-secondary">
                     Guest
                   </span>
                 )}
               </div>
-              <p className="text-xs text-secondary">
+              <p className="text-micro text-secondary">
                 {isGuest ? 'Preview mode • No data saved' : '@your_handle'}
               </p>
             </div>
@@ -126,14 +126,14 @@ export function YouTab({
               className="p-3 bg-muted/10 hover:bg-muted/20 rounded-xl transition-all duration-200 active:scale-95"
             >
               <QrCode className="w-5 h-5 mx-auto mb-1" />
-              <p className="text-xs text-center">My QR</p>
+              <p className="text-micro text-center">My QR</p>
             </button>
             <button
               onClick={onScanQR}
               className="p-3 bg-muted/10 hover:bg-muted/20 rounded-xl transition-all duration-200 active:scale-95"
             >
               <Scan className="w-5 h-5 mx-auto mb-1" />
-              <p className="text-xs text-center">Scan</p>
+              <p className="text-micro text-center">Scan</p>
             </button>
           </div>
         </div>
@@ -144,21 +144,21 @@ export function YouTab({
           className="card p-4 w-full text-left transition-all duration-200 active:scale-[0.98] hover:shadow-fab"
         >
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm" style={{ fontWeight: 600 }}>Quick insights</h3>
+            <h3 className="text-label" style={{ fontWeight: 600 }}>Quick insights</h3>
             <TrendingUp className="w-4 h-4 text-secondary" />
           </div>
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-secondary">Monthly spending</span>
-              <span className="text-sm tabular-nums" style={{ fontWeight: 600 }}>${insights.monthlySpending.toFixed(0)}</span>
+              <span className="text-micro text-secondary">Monthly spending</span>
+              <span className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>${insights.monthlySpending.toFixed(2)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-secondary">Active pots</span>
-              <span className="text-sm tabular-nums" style={{ fontWeight: 600 }}>{insights.activePots}</span>
+              <span className="text-micro text-secondary">Active pots</span>
+              <span className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>{insights.activePots}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-secondary">Total settled</span>
-              <span className="text-sm tabular-nums" style={{ fontWeight: 600 }}>${insights.totalSettled.toFixed(0)}</span>
+              <span className="text-micro text-secondary">Total settled</span>
+              <span className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>${insights.totalSettled.toFixed(2)}</span>
             </div>
           </div>
         </button>
@@ -176,15 +176,15 @@ export function YouTab({
                 className="w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
               >
                 <div className="flex-1 text-left">
-                  <p className="text-sm" style={{ fontWeight: 600 }}>General</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-label" style={{ fontWeight: 600 }}>General</p>
+                  <p className="text-micro text-secondary mt-0.5">
                     Currency, language and appearance
                   </p>
                 </div>
                 {openGeneral ? (
-                  <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+                  <ChevronDown className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
                 ) : (
-                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+                  <ChevronRight className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
                 )}
               </button>
             </CollapsibleTrigger>
@@ -192,13 +192,13 @@ export function YouTab({
               {/* Currency */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Globe className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-xs">Currency</span>
+                  <Globe className="w-4 h-4 text-secondary" />
+                  <span className="text-micro">Currency</span>
                 </div>
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="text-xs bg-transparent text-muted-foreground"
+                  className="text-micro bg-transparent text-secondary"
                 >
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
@@ -210,13 +210,13 @@ export function YouTab({
               {/* Language */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Languages className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-xs">Language</span>
+                  <Languages className="w-4 h-4 text-secondary" />
+                  <span className="text-micro">Language</span>
                 </div>
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="text-xs bg-transparent text-muted-foreground"
+                  className="text-micro bg-transparent text-secondary"
                 >
                   <option value="English">English</option>
                   <option value="Spanish">Spanish</option>
@@ -228,8 +228,8 @@ export function YouTab({
               {/* Appearance */}
               <div className="space-y-2 pt-2">
                 <div className="flex items-center gap-3">
-                  <Palette className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-xs">Appearance</span>
+                  <Palette className="w-4 h-4 text-secondary" />
+                  <span className="text-micro">Appearance</span>
                 </div>
                 <div className="p-1 bg-secondary/50 dark:bg-secondary/30 rounded-lg flex gap-1">
                   <button
@@ -237,10 +237,10 @@ export function YouTab({
                       triggerHaptic('light');
                       onThemeChange("light");
                     }}
-                    className={`flex-1 py-1.5 px-2 text-[11px] rounded-md transition-all duration-200 ${
+                    className={`flex-1 py-1.5 px-2 text-micro rounded-md transition-all duration-200 ${
                       theme === "light"
                         ? "bg-card shadow-sm text-foreground"
-                        : "text-muted-foreground"
+                        : "text-secondary"
                     }`}
                   >
                     Light
@@ -250,10 +250,10 @@ export function YouTab({
                       triggerHaptic('light');
                       onThemeChange("dark");
                     }}
-                    className={`flex-1 py-1.5 px-2 text-[11px] rounded-md transition-all duration-200 ${
+                    className={`flex-1 py-1.5 px-2 text-micro rounded-md transition-all duration-200 ${
                       theme === "dark"
                         ? "bg-card shadow-sm text-foreground"
-                        : "text-muted-foreground"
+                        : "text-secondary"
                     }`}
                   >
                     Dark
@@ -263,10 +263,10 @@ export function YouTab({
                       triggerHaptic('light');
                       onThemeChange("system");
                     }}
-                    className={`flex-1 py-1.5 px-2 text-[11px] rounded-md transition-all duration-200 ${
+                    className={`flex-1 py-1.5 px-2 text-micro rounded-md transition-all duration-200 ${
                       theme === "system"
                         ? "bg-card shadow-sm text-foreground"
-                        : "text-muted-foreground"
+                        : "text-secondary"
                     }`}
                   >
                     Auto
@@ -285,12 +285,12 @@ export function YouTab({
             className="w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
           >
             <div className="flex-1 text-left">
-              <p className="text-sm" style={{ fontWeight: 600 }}>Payment methods</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-label" style={{ fontWeight: 600 }}>Payment methods</p>
+              <p className="text-micro text-secondary mt-0.5">
                 Manage bank accounts and crypto wallets
               </p>
             </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+            <ChevronRight className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
           </button>
 
           {/* Notifications Section */}
@@ -304,22 +304,22 @@ export function YouTab({
                 className="w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
               >
                 <div className="flex-1 text-left">
-                  <p className="text-sm" style={{ fontWeight: 600 }}>Notifications</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-label" style={{ fontWeight: 600 }}>Notifications</p>
+                  <p className="text-micro text-secondary mt-0.5">
                     Manage your notification preferences
                   </p>
                 </div>
                 {openNotifications ? (
-                  <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+                  <ChevronDown className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
                 ) : (
-                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+                  <ChevronRight className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
                 )}
               </button>
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-2 card rounded-xl p-4 space-y-3">
               {/* Push Notifications */}
               <div className="flex items-center justify-between">
-                <span className="text-xs">Push notifications</span>
+                <span className="text-micro">Push notifications</span>
                 <button
                   onClick={() => {
                     triggerHaptic('light');
@@ -339,7 +339,7 @@ export function YouTab({
 
               {/* Email Notifications */}
               <div className="flex items-center justify-between">
-                <span className="text-xs">Email notifications</span>
+                <span className="text-micro">Email notifications</span>
                 <button
                   onClick={() => {
                     triggerHaptic('light');
@@ -359,7 +359,7 @@ export function YouTab({
 
               {/* Settlement Reminders */}
               <div className="flex items-center justify-between">
-                <span className="text-xs">Settlement reminders</span>
+                <span className="text-micro">Settlement reminders</span>
                 <button
                   onClick={() => {
                     triggerHaptic('light');
@@ -390,30 +390,30 @@ export function YouTab({
                 className="w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
               >
                 <div className="flex-1 text-left">
-                  <p className="text-sm" style={{ fontWeight: 600 }}>Security & Privacy</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-label" style={{ fontWeight: 600 }}>Security & Privacy</p>
+                  <p className="text-micro text-secondary mt-0.5">
                     Privacy settings, backup and data export
                   </p>
                 </div>
                 {openSecurity ? (
-                  <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+                  <ChevronDown className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
                 ) : (
-                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+                  <ChevronRight className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
                 )}
               </button>
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-2 card rounded-xl p-4 space-y-2">
               <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
-                <Download className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs">Export data</span>
+                <Download className="w-4 h-4 text-secondary" />
+                <span className="text-micro">Export data</span>
               </button>
               <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
-                <Shield className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs">Privacy settings</span>
+                <Shield className="w-4 h-4 text-secondary" />
+                <span className="text-micro">Privacy settings</span>
               </button>
               <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
-                <Lock className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs">Backup wallet</span>
+                <Lock className="w-4 h-4 text-secondary" />
+                <span className="text-micro">Backup wallet</span>
               </button>
             </CollapsibleContent>
           </Collapsible>
@@ -429,30 +429,30 @@ export function YouTab({
                 className="w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
               >
                 <div className="flex-1 text-left">
-                  <p className="text-sm" style={{ fontWeight: 600 }}>Advanced</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
+                  <p className="text-label" style={{ fontWeight: 600 }}>Advanced</p>
+                  <p className="text-micro text-secondary mt-0.5">
                     Developer features and app information
                   </p>
                 </div>
                 {openAdvanced ? (
-                  <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+                  <ChevronDown className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
                 ) : (
-                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+                  <ChevronRight className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
                 )}
               </button>
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-2 card rounded-xl p-4 space-y-2">
               <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
-                <Code className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs">Developer mode</span>
+                <Code className="w-4 h-4 text-secondary" />
+                <span className="text-micro">Developer mode</span>
               </button>
               <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
-                <Database className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs">Clear cache</span>
+                <Database className="w-4 h-4 text-secondary" />
+                <span className="text-micro">Clear cache</span>
               </button>
               <div className="flex items-center justify-between p-2">
-                <span className="text-xs text-muted-foreground">App version</span>
-                <span className="text-xs text-muted-foreground">1.0.0</span>
+                <span className="text-micro text-secondary">App version</span>
+                <span className="text-micro text-secondary">1.0.0</span>
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -470,13 +470,13 @@ export function YouTab({
                 <HelpCircle className="w-4 h-4 text-accent-pink" />
               </div>
               <div>
-                <p className="text-sm" style={{ fontWeight: 600 }}>Help & Support</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-label" style={{ fontWeight: 600 }}>Help & Support</p>
+                <p className="text-micro text-secondary mt-0.5">
                   Learn how to use ChopDot
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+            <ChevronRight className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
           </button>
 
           {/* Account Actions */}
@@ -489,7 +489,7 @@ export function YouTab({
               className="w-full card rounded-xl p-4 flex items-center gap-3 hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
             >
               <LogOut className="w-5 h-5 text-foreground" />
-              <span className="text-sm">Sign out</span>
+              <span className="text-label">Sign out</span>
             </button>
 
             <button
@@ -500,7 +500,7 @@ export function YouTab({
               className="w-full card rounded-xl p-4 flex items-center gap-3 hover:bg-destructive/10 transition-all duration-200 active:scale-[0.98]"
             >
               <Trash2 className="w-5 h-5 text-destructive" />
-              <span className="text-sm text-destructive">Delete account</span>
+              <span className="text-label text-destructive">Delete account</span>
             </button>
           </div>
         </div>

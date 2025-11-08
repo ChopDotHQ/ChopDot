@@ -3,6 +3,7 @@ import { WalletBanner } from "../WalletBanner";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { useState, useMemo } from "react";
 import { AccountMenu } from "../AccountMenu";
+import { EmptyState } from "../EmptyState";
 
 interface Pot {
   id: string;
@@ -86,7 +87,7 @@ export function PotsHome({
   const formatCurrency = (amount: number, withSign: boolean = false): string => {
     const absoluteAmount = Math.abs(amount);
     const sign = withSign ? (amount > 0 ? '+' : amount < 0 ? '-' : '') : '';
-    return `${sign}$${absoluteAmount.toFixed(0)}`;
+    return `${sign}$${absoluteAmount.toFixed(2)}`;
   };
   
   // Filter and sort pots
@@ -151,7 +152,7 @@ export function PotsHome({
           <WalletBanner />
 
           {/* Balance Summary with Privacy Toggle */}
-          <div className="card p-4">
+          <div className="card p-4 transition-shadow duration-200">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-section" style={{ fontWeight: 500 }}>Totals across all pots</h3>
               <button 
@@ -167,38 +168,38 @@ export function PotsHome({
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <p className="text-caption text-secondary mb-1">You owe</p>
+                <p className="text-micro text-secondary mb-1">You owe</p>
                 <p 
-                  className="text-[20px] tabular-nums"
+                  className="text-[22px] tabular-nums"
                   style={{ 
-                    fontWeight: 600, 
-                    color: balancesVisible && youOweTotal > 0 ? 'var(--foreground)' : 'var(--foreground)' 
+                    fontWeight: 700, 
+                    color: balancesVisible && youOweTotal > 0 ? 'var(--ink)' : 'var(--ink)' 
                   }}
                 >
                   {balancesVisible ? formatCurrency(youOweTotal) : "•••"}
                 </p>
               </div>
               <div>
-                <p className="text-caption text-secondary mb-1">Owed to you</p>
+                <p className="text-micro text-secondary mb-1">Owed to you</p>
                 <p 
-                  className="text-[20px] tabular-nums"
+                  className="text-[22px] tabular-nums"
                   style={{ 
-                    fontWeight: 600, 
-                    color: balancesVisible && owedToYouTotal > 0 ? 'var(--success)' : 'var(--foreground)' 
+                    fontWeight: 700, 
+                    color: balancesVisible && owedToYouTotal > 0 ? 'var(--success)' : 'var(--ink)' 
                   }}
                 >
                   {balancesVisible ? formatCurrency(owedToYouTotal) : "•••"}
                 </p>
               </div>
               <div>
-                <p className="text-caption text-secondary mb-1">Net</p>
+                <p className="text-micro text-secondary mb-1">Net</p>
                 <p 
-                  className="text-[20px] tabular-nums"
+                  className="text-[24px] tabular-nums"
                   style={{ 
-                    fontWeight: 600, 
+                    fontWeight: 700, 
                     color: balancesVisible 
-                      ? (netTotal >= 0 ? 'var(--money)' : 'var(--foreground)') 
-                      : 'var(--foreground)' 
+                      ? (netTotal >= 0 ? 'var(--money)' : 'var(--ink)') 
+                      : 'var(--ink)' 
                   }}
                 >
                   {balancesVisible ? formatCurrency(netTotal, true) : "•••"}
@@ -209,73 +210,77 @@ export function PotsHome({
 
           {/* Quick Actions Grid */}
           <div className="grid grid-cols-4 gap-2">
-            {/* Add Expense */}
+            {/* Add Expense - Primary Action */}
             <button
               onClick={onQuickAddExpense}
-              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card border border-border"
+              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95"
+              style={{ 
+                background: 'var(--accent)',
+                boxShadow: '0 2px 8px rgba(230, 0, 122, 0.25)'
+              }}
             >
               <div 
                 className="w-10 h-10 rounded-full flex items-center justify-center"
-                style={{ background: 'var(--accent)' }}
+                style={{ background: 'rgba(255, 255, 255, 0.2)' }}
               >
                 <Receipt className="w-5 h-5 text-white" />
               </div>
-              <span className="text-caption text-foreground">Add</span>
+              <span className="text-caption text-white" style={{ fontWeight: 500 }}>Add</span>
             </button>
 
-            {/* Settle */}
+            {/* Settle - Secondary */}
             <button
               onClick={onQuickSettle}
-              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card border border-border"
+              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]"
             >
               <div 
                 className="w-10 h-10 rounded-full flex items-center justify-center"
-                style={{ background: 'var(--accent)' }}
+                style={{ background: 'rgba(142, 142, 147, 0.1)' }}
               >
-                <ArrowLeftRight className="w-5 h-5 text-white" />
+                <ArrowLeftRight className="w-5 h-5" style={{ color: 'var(--ink)' }} />
               </div>
               <span className="text-caption text-foreground">Settle</span>
             </button>
 
-            {/* Scan QR */}
+            {/* Scan QR - Tertiary */}
             <button
               onClick={onQuickScan}
-              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card border border-border"
+              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]"
             >
               <div 
                 className="w-10 h-10 rounded-full flex items-center justify-center"
-                style={{ background: 'rgba(142, 142, 147, 0.2)' }}
+                style={{ background: 'rgba(142, 142, 147, 0.1)' }}
               >
-                <QrCode className="w-5 h-5" style={{ color: 'var(--foreground)', opacity: 0.8 }} />
+                <QrCode className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
               </div>
-              <span className="text-caption text-foreground">Scan</span>
+              <span className="text-caption text-secondary">Scan</span>
             </button>
 
-            {/* Request */}
+            {/* Request - Tertiary */}
             <button
               onClick={onQuickRequest}
-              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card border border-border"
+              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]"
             >
               <div 
                 className="w-10 h-10 rounded-full flex items-center justify-center"
-                style={{ background: 'var(--money)' }}
+                style={{ background: 'rgba(142, 142, 147, 0.1)' }}
               >
-                <Send className="w-5 h-5 text-white" />
+                <Send className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
               </div>
-              <span className="text-caption text-foreground">Request</span>
+              <span className="text-caption text-secondary">Request</span>
             </button>
           </div>
 
           {/* Search bar (when multiple pots) */}
           {pots.length > 3 && (
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search pots…"
-                className="w-full pl-10 pr-3 py-2.5 input-field text-body placeholder:text-muted-foreground focus:outline-none focus-ring-pink"
+                className="w-full pl-10 pr-3 py-2.5 input-field text-body placeholder:text-secondary focus:outline-none focus-ring-pink"
               />
             </div>
           )}
@@ -305,7 +310,20 @@ export function PotsHome({
               </div>
             </div>
             <div className="space-y-2">
-              {filteredPots.map((pot) => {
+              {filteredPots.length === 0 ? (
+                <div className="pt-8">
+                  <EmptyState
+                    icon={Receipt}
+                    message="No pots yet"
+                    description="Create your first pot to start tracking expenses"
+                    primaryAction={{
+                      label: "Create Pot",
+                      onClick: onCreatePot
+                    }}
+                  />
+                </div>
+              ) : (
+                filteredPots.map((pot) => {
                 const budgetPercentage = pot.budgetEnabled && pot.budget 
                   ? Math.min((pot.totalExpenses / pot.budget) * 100, 100) 
                   : 0;
@@ -317,7 +335,7 @@ export function PotsHome({
                   <button
                     key={pot.id}
                     onClick={() => onPotClick?.(pot.id)}
-                    className="w-full p-3 card text-left hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
+                    className="w-full p-4 card text-left card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200"
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="flex items-center gap-2 flex-1">
@@ -337,42 +355,42 @@ export function PotsHome({
                         {pot.type === "savings" ? (
                           <>
                             <div>
-                              <p className="text-caption text-secondary">Your contribution</p>
-                              <p className="text-body tabular-nums" style={{ fontWeight: 500 }}>
-                                ${pot.myExpenses.toFixed(0)}
+                              <p className="text-micro text-secondary mb-0.5">Your contribution</p>
+                              <p className="text-[18px] tabular-nums" style={{ fontWeight: 600 }}>
+                                ${pot.myExpenses.toFixed(2)}
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="text-caption text-secondary">Total pooled</p>
-                              <p className="text-body tabular-nums" style={{ fontWeight: 500 }}>
-                                ${pot.totalExpenses.toFixed(0)}
+                              <p className="text-micro text-secondary mb-0.5">Total pooled</p>
+                              <p className="text-[24px] tabular-nums" style={{ fontWeight: 700, color: 'var(--money)' }}>
+                                ${pot.totalExpenses.toFixed(2)}
                               </p>
                             </div>
                           </>
                         ) : (
                           <>
                             <div>
-                              <p className="text-caption text-secondary">Total expenses</p>
-                              <p className="text-body tabular-nums" style={{ fontWeight: 500 }}>
-                                ${pot.totalExpenses.toFixed(0)}
+                              <p className="text-micro text-secondary mb-0.5">Total expenses</p>
+                              <p className="text-[18px] tabular-nums" style={{ fontWeight: 600 }}>
+                                ${pot.totalExpenses.toFixed(2)}
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="text-caption text-secondary">Your balance</p>
+                              <p className="text-micro text-secondary mb-0.5">Your balance</p>
                               <p 
-                                className="text-body tabular-nums" 
+                                className="text-[24px] tabular-nums" 
                                 style={{ 
-                                  fontWeight: 500,
+                                  fontWeight: 700,
                                   color: Math.abs(pot.net) < 0.01 
                                     ? 'var(--muted)' 
                                     : pot.net >= 0 
                                       ? 'var(--money)' 
-                                      : 'var(--foreground)'
+                                      : 'var(--ink)'
                                 }}
                               >
                                 {Math.abs(pot.net) < 0.01 
                                   ? 'Settled' 
-                                  : `${pot.net >= 0 ? '+' : ''}${Math.abs(pot.net).toFixed(2)}`
+                                  : `${pot.net >= 0 ? '+' : '-'}$${Math.abs(pot.net).toFixed(2)}`
                                 }
                               </p>
                             </div>
@@ -419,7 +437,8 @@ export function PotsHome({
                     )}
                   </button>
                 );
-              })}
+              })
+              )}
             </div>
           </div>
         </div>

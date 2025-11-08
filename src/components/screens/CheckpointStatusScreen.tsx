@@ -74,7 +74,7 @@ export function CheckpointStatusScreen({
       <div className="flex-1 overflow-y-auto p-4 pb-6 space-y-4">
         {/* Explanation */}
         <div className="card p-4">
-          <p className="text-sm text-secondary">
+          <p className="text-body text-secondary">
             Before settling, let's confirm everyone has entered all their expenses for <span className="text-foreground" style={{ fontWeight: 600 }}>{potName}</span>.
           </p>
         </div>
@@ -82,8 +82,8 @@ export function CheckpointStatusScreen({
         {/* Progress indicator */}
         <div className="card p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm" style={{ fontWeight: 600 }}>Confirmation Progress</span>
-            <span className="text-sm" style={{ fontWeight: 600 }}>
+            <span className="text-label" style={{ fontWeight: 600 }}>Confirmation Progress</span>
+            <span className="text-label" style={{ fontWeight: 600 }}>
               {confirmedCount}/{totalCount}
             </span>
           </div>
@@ -98,7 +98,7 @@ export function CheckpointStatusScreen({
 
         {/* Member confirmation status */}
         <div className="card p-4">
-          <h3 className="text-sm mb-3" style={{ fontWeight: 600 }}>Member Status</h3>
+          <h3 className="text-label mb-3" style={{ fontWeight: 600 }}>Member Status</h3>
           <div className="space-y-3">
             {members.map((member) => {
               const confirmation = confirmations.get(member.id);
@@ -116,16 +116,16 @@ export function CheckpointStatusScreen({
                       </div>
                     )}
                     <div>
-                      <p className="text-sm" style={{ fontWeight: 500 }}>
+                      <p className="text-label" style={{ fontWeight: 500 }}>
                         {isCurrentUser ? "You" : member.name}
                       </p>
                       {isConfirmed && confirmation?.confirmedAt && (
-                        <p className="text-xs text-secondary">
+                        <p className="text-micro text-secondary">
                           Confirmed {formatConfirmationDate(confirmation!.confirmedAt)}
                         </p>
                       )}
                       {!isConfirmed && !isCurrentUser && (
-                        <p className="text-xs text-secondary">Pending</p>
+                        <p className="text-micro text-secondary">Pending</p>
                       )}
                     </div>
                   </div>
@@ -133,7 +133,7 @@ export function CheckpointStatusScreen({
                   {!isConfirmed && !isCurrentUser && onRemind && (
                     <button
                       onClick={() => onRemind(member.id)}
-                      className="px-3 py-1.5 text-xs rounded-lg transition-all duration-200 active:scale-95"
+                      className="px-3 py-1.5 text-micro rounded-lg transition-all duration-200 active:scale-95"
                       style={{
                         background: 'var(--accent-pink-soft)',
                         color: 'var(--accent)',
@@ -157,17 +157,17 @@ export function CheckpointStatusScreen({
                 <CheckCircle2 className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm mb-1" style={{ fontWeight: 600, color: 'var(--ink)' }}>
+                <p className="text-label mb-1" style={{ fontWeight: 600, color: 'var(--ink)' }}>
                   Your confirmation needed
                 </p>
-                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                <p className="text-micro" style={{ color: 'var(--text-secondary)' }}>
                   Have you entered all your expenses?
                 </p>
               </div>
             </div>
             <button
               onClick={onConfirm}
-              className="w-full py-3 rounded-lg text-sm transition-all duration-200 active:scale-[0.98]"
+              className="w-full py-3 rounded-lg text-body transition-all duration-200 active:scale-[0.98]"
               style={{
                 background: 'var(--accent)',
                 color: '#fff',
@@ -187,8 +187,8 @@ export function CheckpointStatusScreen({
                 <CheckCircle2 className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <p className="text-sm" style={{ fontWeight: 600 }}>Everyone confirmed!</p>
-                <p className="text-xs text-secondary">All members have confirmed their expenses</p>
+                <p className="text-label" style={{ fontWeight: 600 }}>Everyone confirmed!</p>
+                <p className="text-micro text-secondary">All members have confirmed their expenses</p>
               </div>
             </div>
           </div>
@@ -200,7 +200,7 @@ export function CheckpointStatusScreen({
         {allConfirmed ? (
           <button
             onClick={onSettleAnyway}
-            className="w-full py-3 rounded-lg text-sm transition-all duration-200 active:scale-[0.98]"
+            className="w-full py-3 rounded-lg text-body transition-all duration-200 active:scale-[0.98]"
             style={{
               background: 'var(--ink)',
               color: 'var(--bg)',
@@ -213,7 +213,7 @@ export function CheckpointStatusScreen({
           <>
             <button
               onClick={onSettleAnyway}
-              className="w-full py-3 rounded-lg text-sm transition-all duration-200 active:scale-[0.98]"
+              className="w-full py-3 rounded-lg text-body transition-all duration-200 active:scale-[0.98]"
               style={{
                 background: 'var(--secondary)',
                 color: 'var(--ink)',
@@ -222,7 +222,7 @@ export function CheckpointStatusScreen({
             >
               Settle Anyway
             </button>
-            <p className="text-xs text-center text-muted-foreground">
+            <p className="text-micro text-center text-secondary">
               Settlement may be inaccurate if members add expenses later
             </p>
           </>

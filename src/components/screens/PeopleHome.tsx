@@ -168,7 +168,7 @@ export function PeopleHome({
     return (
       <div
         key={person.id}
-        className="p-2 glass-sm rounded-lg"
+        className="p-4 card rounded-lg card-hover-lift transition-shadow duration-200 hover:shadow-[var(--shadow-fab)]"
       >
         <button
           onClick={() => onPersonClick?.({ 
@@ -179,31 +179,31 @@ export function PeopleHome({
             paymentPreference: person.paymentPreference,
             potCount: person.breakdown.length,
           })}
-          className="w-full flex items-start justify-between gap-2 mb-1.5 text-left hover:opacity-70 active:opacity-50 transition-opacity"
+          className="w-full flex items-start justify-between gap-2 mb-2 text-left hover:opacity-70 active:opacity-50 transition-opacity"
         >
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-              <User className="w-3.5 h-3.5 text-muted-foreground" />
+              <User className="w-3.5 h-3.5 text-secondary" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <p className="text-[13px]" style={{ fontWeight: 500 }}>{person.name}</p>
+                <p className="text-label" style={{ fontWeight: 600 }}>{person.name}</p>
                 {person.trustScore && (
                   <TrustIndicator score={person.trustScore} />
                 )}
                 {person.paymentPreference && (
-                  <span className="text-[9px] px-1 py-0.5 bg-muted text-muted-foreground rounded">
+                  <span className="text-micro px-1.5 py-0.5 bg-muted text-secondary rounded">
                     {person.paymentPreference}
                   </span>
                 )}
               </div>
               {breakdownText && (
-                <p className="text-[10px] text-secondary truncate">
+                <p className="text-micro text-secondary truncate mt-0.5">
                   {breakdownText}
                 </p>
               )}
               {person.address && (
-                <p className="text-[9px] text-secondary font-mono mt-0.5 truncate">
+                <p className="text-micro text-secondary font-mono mt-0.5 truncate">
                   {person.address.slice(0, 8)}...{person.address.slice(-6)}
                 </p>
               )}
@@ -211,10 +211,10 @@ export function PeopleHome({
           </div>
           <div className="text-right flex-shrink-0">
             <p 
-              className="text-[13px] tabular-nums" 
+              className="text-[18px] tabular-nums" 
               style={{ 
-                fontWeight: 500,
-                color: action === 'settle' ? 'var(--foreground)' : 'var(--money)'
+                fontWeight: 700,
+                color: action === 'settle' ? 'var(--ink)' : 'var(--money)'
               }}
             >
               {action === 'settle' ? '-' : '+'}{formatAmount(Math.abs(person.totalAmount), displayCurrency)}
@@ -277,7 +277,7 @@ export function PeopleHome({
                 backgroundColor: activeTab === "people" ? "var(--ink)" : "var(--card)",
                 color: activeTab === "people" ? "var(--bg)" : "var(--ink)",
               }}
-              className="px-3 py-1.5 rounded-lg text-[13px] transition-colors font-medium flex-shrink-0"
+              className="px-3 py-1.5 rounded-lg text-label transition-colors font-medium flex-shrink-0"
             >
               All
             </button>
@@ -287,7 +287,7 @@ export function PeopleHome({
                 backgroundColor: activeTab === "balances" ? "var(--ink)" : "var(--card)",
                 color: activeTab === "balances" ? "var(--bg)" : "var(--ink)",
               }}
-              className="px-3 py-1.5 rounded-lg text-[13px] transition-colors font-medium flex-shrink-0"
+              className="px-3 py-1.5 rounded-lg text-label transition-colors font-medium flex-shrink-0"
             >
               Balances
             </button>
@@ -311,8 +311,8 @@ export function PeopleHome({
             <WalletBanner />
 
             {/* Overview Chips */}
-            <div className="card p-3">
-              <div className="flex items-center gap-2 flex-wrap text-[11px]">
+            <div className="card p-4 transition-shadow duration-200">
+              <div className="flex items-center gap-2 flex-wrap text-micro">
                 <div>
                   <span className="text-secondary">You owe </span>
                   <span 

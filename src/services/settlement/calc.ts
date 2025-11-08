@@ -5,7 +5,7 @@
  * All calculations are pure functions with deterministic output.
  */
 
-import type { Pot, Member, Expense } from '../../schema/pot';
+import type { Pot, Expense } from '../../schema/pot';
 
 const ROUNDING_PRECISION = 1e-6; // Micro precision (1e-6 DOT/USD)
 
@@ -140,6 +140,8 @@ export function suggestSettlements(balances: Balance[]): Suggestion[] {
   while (debtorIdx < debtors.length && creditorIdx < creditors.length) {
     const debtor = debtors[debtorIdx];
     const creditor = creditors[creditorIdx];
+    
+    if (!debtor || !creditor) break;
     
     if (debtor.net < ROUNDING_PRECISION && creditorIdx < creditors.length) {
       // Debtor is fully settled, move to next

@@ -121,7 +121,7 @@ export function CreatePot({
       <div className="flex-1 overflow-auto p-3 space-y-3 pb-[68px]">
         {/* Pot Type Selection */}
         <div className="space-y-2">
-          <h3 className="text-xs text-muted-foreground">Type</h3>
+          <h3 className="text-micro text-secondary">Type</h3>
           <div className="grid grid-cols-2 gap-2">
             <button
               onClick={() => setPotType("expense")}
@@ -161,27 +161,27 @@ export function CreatePot({
 
         {/* Details - Compact */}
         <div className="space-y-2">
-          <h3 className="text-xs text-muted-foreground">Details</h3>
+          <h3 className="text-micro text-secondary">Details</h3>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">
+            <label className="text-micro text-secondary mb-1 block">
               {potType === "savings" ? "Savings pot name" : "Pot name"}
             </label>
             <input
               value={potName}
               onChange={(e) => setPotName(e.target.value)}
               placeholder={potType === "savings" ? "e.g., House Down Payment" : "e.g., Groceries"}
-              className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm"
+              className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body"
             />
           </div>
           
           {/* Two-column for Currency + Settings */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Currency</label>
+              <label className="text-micro text-secondary mb-1 block">Currency</label>
               <select
                 value={baseCurrency}
                 onChange={(e) => setBaseCurrency(e.target.value)}
-                className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm appearance-none"
+                className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body appearance-none"
               >
                 <option value="USD">USD</option>
                 <option value="EUR">EUR</option>
@@ -190,14 +190,14 @@ export function CreatePot({
               </select>
             </div>
             <div className="flex items-end">
-              <label className="flex items-center gap-1.5 p-1.5 glass-sm rounded-lg cursor-pointer w-full transition-all duration-200 active:scale-[0.98]">
+              <label className="flex items-center gap-1.5 p-1.5 card rounded-lg cursor-pointer w-full transition-all duration-200 hover:shadow-[var(--shadow-fab)] active:scale-[0.98]">
                 <input
                   type="checkbox"
                   checked={allowCashBank}
                   onChange={(e) => setAllowCashBank(e.target.checked)}
                   className="w-3.5 h-3.5"
                 />
-                <span className="text-xs">Cash/Bank</span>
+                <span className="text-micro">Cash/Bank</span>
               </label>
             </div>
           </div>
@@ -207,22 +207,22 @@ export function CreatePot({
         {potType === "savings" && (
           <>
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Savings goal (optional)</label>
+              <label className="text-micro text-secondary mb-1 block">Savings goal (optional)</label>
               <input
                 type="number"
                 value={goalAmount || ""}
                 onChange={(e) => setGoalAmount(e.target.value ? parseFloat(e.target.value) : undefined)}
                 placeholder="e.g., 50000"
-                className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm"
+                className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body"
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">What are you saving for?</label>
+              <label className="text-micro text-secondary mb-1 block">What are you saving for?</label>
               <input
                 value={goalDescription || ""}
                 onChange={(e) => setGoalDescription(e.target.value)}
                 placeholder="e.g., First home together 🏡"
-                className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm"
+                className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body"
               />
             </div>
           </>
@@ -230,7 +230,7 @@ export function CreatePot({
 
         {/* Members - Compact */}
         <div className="space-y-2 pt-2 border-t border-border">
-          <h3 className="text-xs text-muted-foreground">Members</h3>
+          <h3 className="text-micro text-secondary">Members</h3>
           
           <div className="flex flex-wrap gap-1.5">
             {members.map((member, index) => (
@@ -250,7 +250,7 @@ export function CreatePot({
               onChange={(e) => setNewMemberName(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !showAddressField && addMember()}
               placeholder="Name, handle, or email"
-              className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm"
+              className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body"
             />
             
             {/* Optional Address Field */}
@@ -262,18 +262,18 @@ export function CreatePot({
                   onChange={(e) => handleAddressChange(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && newMemberName.trim() && (!newMemberAddress.trim() || addressValid) && addMember()}
                   placeholder="Polkadot wallet address (optional, any SS58)"
-                  className={`w-full px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-sm font-mono ${
+                  className={`w-full px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-body font-mono ${
                     addressError ? 'border-destructive' : addressValid ? 'border-green-500' : 'border-border'
                   }`}
                 />
                 {addressError && (
-                  <div className="flex items-center gap-1 text-xs text-destructive">
+                  <div className="flex items-center gap-1 text-micro text-destructive">
                     <AlertCircle className="w-3 h-3" />
                     <span>{addressError}</span>
                   </div>
                 )}
                 {addressValid && !addressError && (
-                  <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                  <div className="flex items-center gap-1 text-micro text-green-600 dark:text-green-400">
                     <CheckCircle className="w-3 h-3" />
                     <span>Will be normalized to Polkadot format.</span>
                   </div>
@@ -285,7 +285,7 @@ export function CreatePot({
                     setAddressError(null);
                     setAddressValid(false);
                   }}
-                  className="text-xs text-muted-foreground hover:text-foreground"
+                  className="text-micro text-secondary hover:text-foreground"
                 >
                   Remove address field
                 </button>
@@ -295,14 +295,14 @@ export function CreatePot({
             {!showAddressField && (
               <button
                 onClick={() => setShowAddressField(true)}
-                className="text-xs text-muted-foreground hover:text-foreground"
+                className="text-micro text-secondary hover:text-foreground"
               >
                 + Add wallet address (optional)
               </button>
             )}
             
             <div className="flex justify-between items-center">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-micro text-secondary">
                 Add now or invite later
               </p>
               <LinkButton onClick={copyInviteLink}>Copy link</LinkButton>
@@ -315,10 +315,10 @@ export function CreatePot({
           <button
             onClick={onCreate}
             disabled={!isValid}
-            className={`w-full py-2 rounded-lg text-sm transition-all duration-200 text-center ${
+            className={`w-full py-2.5 rounded-lg text-body transition-all duration-200 text-center ${
               isValid
-                ? "glass-sm hover:bg-muted/50 active:scale-[0.98] text-foreground border-2 border-border"
-                : "bg-muted/30 text-muted-foreground cursor-not-allowed border border-border"
+                ? "card hover:shadow-[var(--shadow-fab)] active:scale-[0.98] text-foreground"
+                : "bg-muted/30 text-secondary cursor-not-allowed border border-border"
             }`}
           >
             Create Pot

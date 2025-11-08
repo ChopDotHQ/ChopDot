@@ -34,10 +34,10 @@ export function ScanQR({ onClose }: ScanQRProps) {
           </div>
 
           {/* Camera icon */}
-          <Camera className="absolute w-12 h-12 text-muted-foreground opacity-20" />
+          <Camera className="absolute w-12 h-12 text-secondary opacity-20" />
         </div>
 
-        <p className="text-[15px] text-muted-foreground mt-6 text-center">
+        <p className="text-body text-secondary mt-6 text-center">
           Point camera at QR code
         </p>
 

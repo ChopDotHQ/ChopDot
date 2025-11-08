@@ -1,4 +1,4 @@
-import type { PolkadotChainService, TxStatus, SignAndSendArgs, SendDotArgs, EstimateFeeArgs } from './adapter';
+import type { PolkadotChainService, SignAndSendArgs, SendDotArgs, EstimateFeeArgs } from './adapter';
 import { isValidSs58Any, normalizeToPolkadot } from './address';
 import type { ChainConfig } from './config';
 
@@ -21,7 +21,7 @@ const mockConfig: ChainConfig = {
   ss58: 0,
   decimals: 10,
   subscanExtrinsicBase: subscanBase,
-  rpc: ['mock://local'],
+  rpc: ['wss://polkadot-asset-hub-rpc.polkadot.io'] as any, // Simulation mode - use any to bypass readonly tuple type
   walletConnectChainId: 'polkadot-asset-hub:91b171bb158e2d3848fa23a9f1c25182',
   displayName: 'Asset Hub (Polkadot)',
 };

@@ -2,16 +2,19 @@ import { Check } from "lucide-react";
 import { SettlementResult } from "../../nav";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
+import { TopBar } from "../TopBar";
 import { polkadotChainService } from "../../services/chain/polkadot";
 
 interface SettlementConfirmationProps {
   result: SettlementResult;
+  onBack?: () => void;
   onViewHistory: () => void;
   onDone: () => void;
 }
 
 export function SettlementConfirmation({
   result,
+  onBack,
   onViewHistory,
   onDone,
 }: SettlementConfirmationProps) {
@@ -25,6 +28,7 @@ export function SettlementConfirmation({
 
   return (
     <div className="h-full bg-background flex flex-col overflow-hidden">
+      <TopBar title="Settlement Complete" onBack={onBack} />
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="min-h-full flex flex-col items-center justify-center px-6 py-12">
@@ -36,7 +40,7 @@ export function SettlementConfirmation({
             <h1 className="mb-1 text-screen-title" style={{ fontWeight: 600 }}>
               Settled {typeof result.amount === 'number' ? `$${result.amount.toFixed(2)}` : String(result.amount)} with {result.counterpartyName}
             </h1>
-            <p className="text-muted-foreground text-caption">
+            <p className="text-secondary text-caption">
               {new Date(result.at).toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
@@ -48,24 +52,24 @@ export function SettlementConfirmation({
           </div>
 
           {/* Method & Reference */}
-          <div className="w-full max-w-sm glass-sm rounded-xl p-4 mb-6">
+          <div className="w-full max-w-sm card rounded-xl p-4 mb-6 transition-shadow duration-200">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-muted-foreground">Payment method</span>
-              <span>{methodLabels[result.method]}</span>
+              <span className="text-micro text-secondary">Payment method</span>
+              <span className="text-label" style={{ fontWeight: 600 }}>{methodLabels[result.method]}</span>
             </div>
 
             {result.ref && (
               <div className="flex items-center justify-between mb-3">
-                <span className="text-muted-foreground">Reference</span>
-                <span className="font-mono text-sm">{result.ref}</span>
+                <span className="text-micro text-secondary">Reference</span>
+                <span className="font-mono text-label">{result.ref}</span>
               </div>
             )}
 
             {result.txHash && (
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Transaction</span>
+                <span className="text-micro text-secondary">Transaction</span>
                 <a
-                  className="font-mono text-sm truncate max-w-[180px] underline"
+                  className="font-mono text-label truncate max-w-[180px] underline"
                   href={polkadotChainService.buildSubscanUrl(result.txHash)}
                   target="_blank"
                   rel="noreferrer"
@@ -79,15 +83,15 @@ export function SettlementConfirmation({
           {/* Pots Affected */}
           {result.pots && result.pots.length > 0 && (
             <div className="w-full max-w-sm mb-6">
-              <h3 className="mb-3 text-muted-foreground">Pots affected</h3>
+              <h3 className="mb-3 text-micro text-secondary">Pots affected</h3>
               <div className="space-y-2">
                 {result.pots.map((pot) => (
                   <div
                     key={pot.id}
-                    className="glass-sm rounded-xl p-3 flex items-center justify-between"
+                    className="card rounded-xl p-3 flex items-center justify-between transition-shadow duration-200"
                   >
-                    <span>{pot.name}</span>
-                    <span className="text-muted-foreground">${pot.amount}</span>
+                    <span className="text-body">{pot.name}</span>
+                    <span className="text-label tabular-nums" style={{ fontWeight: 600 }}>${typeof pot.amount === 'number' ? pot.amount.toFixed(2) : pot.amount}</span>
                   </div>
                 ))}
               </div>

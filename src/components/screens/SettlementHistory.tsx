@@ -1,8 +1,9 @@
 import { TopBar } from "../TopBar";
 import { PrimaryButton } from "../PrimaryButton";
-import { Download } from "lucide-react";
+import { Download, CheckCircle } from "lucide-react";
 import { useMemo } from "react";
 import { polkadotChainService } from "../../services/chain/polkadot";
+import { EmptyState } from "../EmptyState";
 
 interface Settlement {
   id: string;
@@ -66,21 +67,25 @@ export function SettlementHistory({ settlements, onBack, personId }: SettlementH
       />
       <div className="flex-1 overflow-auto p-4 space-y-2">
         {filteredSettlements.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-label text-secondary">No settlements yet</p>
+          <div className="pt-8">
+            <EmptyState
+              icon={CheckCircle}
+              message="No settlements yet"
+              description="Your settlement history will appear here"
+            />
           </div>
         ) : (
           filteredSettlements.map((settlement) => (
-            <div key={settlement.id} className="p-3 glass-sm rounded-xl space-y-2">
+            <div key={settlement.id} className="p-4 card rounded-xl space-y-2 card-hover-lift transition-shadow duration-200 hover:shadow-[var(--shadow-fab)]">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-label text-foreground">{formatMethod(settlement.method)}</p>
-                  <p className="text-caption text-secondary mt-0.5">
+                  <p className="text-label" style={{ fontWeight: 600 }}>{formatMethod(settlement.method)}</p>
+                  <p className="text-micro text-secondary mt-0.5">
                     {formatDate(settlement.date)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-body tabular-nums" style={{ fontWeight: 500 }}>
+                  <p className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>
                     {settlement.currency === 'DOT' ? `${settlement.amount.toFixed(6)} DOT` : `$${settlement.amount.toFixed(2)}`}
                   </p>
                 </div>

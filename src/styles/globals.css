@@ -588,7 +588,20 @@ html {
   
   .focus-ring-pink:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(230, 0, 122, 0.1), 0 0 0 4px rgba(230, 0, 122, 0.2);
+    box-shadow: 0 0 0 3px rgba(230, 0, 122, 0.2), 0 0 0 5px rgba(230, 0, 122, 0.1);
+  }
+  
+  /* Card hover lift effect */
+  .card-hover-lift {
+    transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+  }
+  
+  .card-hover-lift:hover {
+    transform: translateY(-2px);
+  }
+  
+  .card-hover-lift:active {
+    transform: translateY(0) scale(0.99);
   }
   
   .active-ripple {

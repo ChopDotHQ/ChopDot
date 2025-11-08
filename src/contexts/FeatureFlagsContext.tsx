@@ -89,7 +89,7 @@ const FeatureFlagsContext = createContext<FeatureFlagsContextValue | null>(null)
  *   <App />
  * </FeatureFlagsProvider>
  */
-export function FeatureFlagsProvider(props: { children: ReactNode }): JSX.Element {
+export function FeatureFlagsProvider(props: { children: ReactNode }) {
   // Lazy initialization with memoization - only read flags once on mount
   const [flags] = useState<FeatureFlags>(() => {
     try {

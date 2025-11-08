@@ -71,7 +71,7 @@ export function SavingsTab({
       <div className="hero-card p-4 space-y-3">
         {/* Total Pooled Amount */}
         <div>
-          <p className="text-xs text-secondary mb-1">Total Pooled</p>
+          <p className="text-micro text-secondary mb-1">Total Pooled</p>
           <div className="flex items-baseline gap-2">
             <p className="text-[32px] tabular-nums" style={{ fontWeight: 600 }}>
               ${totalPooled.toFixed(2)}
@@ -79,7 +79,7 @@ export function SavingsTab({
             {yieldEarned > 0 && (
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-md" style={{ background: 'var(--success)', opacity: 0.15 }}>
                 <TrendingUp className="w-3 h-3" style={{ color: 'var(--success)' }} />
-                <span className="text-xs" style={{ color: 'var(--success)' }}>
+                <span className="text-micro" style={{ color: 'var(--success)' }}>
                   +${yieldEarned.toFixed(2)}
                 </span>
               </div>
@@ -94,12 +94,12 @@ export function SavingsTab({
               <TrendingUp className="w-4 h-4 text-white" />
             </div>
             <div>
-              <p className="text-xs" style={{ fontWeight: 500 }}>{defiProtocol}</p>
-              <p className="text-xs text-secondary">Earning yield via Polkadot</p>
+              <p className="text-micro" style={{ fontWeight: 500 }}>{defiProtocol}</p>
+              <p className="text-micro text-secondary">Earning yield via Polkadot</p>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-sm" style={{ fontWeight: 600, color: 'var(--success)' }}>
+            <p className="text-[18px]" style={{ fontWeight: 700, color: 'var(--success)' }}>
               {yieldRate.toFixed(1)}% APY
             </p>
           </div>
@@ -109,10 +109,10 @@ export function SavingsTab({
         {goalAmount && (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-xs text-secondary">
+              <p className="text-micro text-secondary">
                 {goalDescription || "Savings Goal"}
               </p>
-              <p className="text-xs tabular-nums" style={{ fontWeight: 500 }}>
+              <p className="text-micro tabular-nums" style={{ fontWeight: 500 }}>
                 {goalProgress.toFixed(0)}%
               </p>
             </div>
@@ -126,8 +126,8 @@ export function SavingsTab({
                 }}
               />
             </div>
-            <p className="text-xs text-secondary text-right">
-              ${totalPooled.toFixed(0)} / ${goalAmount.toFixed(0)}
+            <p className="text-micro text-secondary text-right">
+              ${totalPooled.toFixed(2)} / ${goalAmount.toFixed(2)}
             </p>
           </div>
         )}
@@ -140,14 +140,14 @@ export function SavingsTab({
             style={{ background: 'var(--success)', color: '#fff' }}
           >
             <Plus className="w-4 h-4" />
-            <span className="text-sm" style={{ fontWeight: 600 }}>Add Funds</span>
+            <span className="text-body" style={{ fontWeight: 600 }}>Add Funds</span>
           </button>
           <button
             onClick={onWithdraw}
             className="flex items-center justify-center gap-2 px-4 py-2.5 bg-card border border-border rounded-xl transition-all hover:bg-muted/30 active:scale-[0.98]"
           >
             <ArrowDownToLine className="w-4 h-4" />
-            <span className="text-sm" style={{ fontWeight: 500 }}>Withdraw</span>
+            <span className="text-body" style={{ fontWeight: 500 }}>Withdraw</span>
           </button>
         </div>
       </div>
@@ -156,7 +156,7 @@ export function SavingsTab({
       <div className="flex items-start gap-2 p-3 rounded-lg" style={{ background: 'rgba(25, 195, 125, 0.08)', border: '1px solid rgba(25, 195, 125, 0.2)' }}>
         <Info className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--success)' }} />
         <div>
-          <p className="text-xs">
+          <p className="text-micro">
             Your pooled funds are earning {yieldRate.toFixed(1)}% APY through {defiProtocol}. 
             Yield is distributed proportionally to all members.
           </p>
@@ -165,7 +165,7 @@ export function SavingsTab({
 
       {/* Member Balances */}
       <div className="space-y-1.5">
-        <p className="text-xs text-secondary px-1">Member Contributions</p>
+        <p className="text-micro text-secondary px-1">Member Contributions</p>
         <div className="space-y-1">
           {memberBalances.map((balance) => {
             const percentage = totalContributed > 0 ? (balance.total / totalContributed) * 100 : 0;
@@ -174,18 +174,18 @@ export function SavingsTab({
             return (
               <div
                 key={balance.memberId}
-                className="p-3 glass-sm rounded-lg"
+                className="p-4 card rounded-lg transition-shadow duration-200"
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     {isYou && (
                       <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--success)' }} />
                     )}
-                    <p className="text-sm" style={{ fontWeight: isYou ? 500 : 400 }}>
+                    <p className="text-label" style={{ fontWeight: isYou ? 600 : 500 }}>
                       {balance.memberName}
                     </p>
                   </div>
-                  <p className="text-sm tabular-nums" style={{ fontWeight: 500 }}>
+                  <p className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>
                     ${balance.total.toFixed(2)}
                   </p>
                 </div>
@@ -209,7 +209,7 @@ export function SavingsTab({
       {contributions.length > 0 && (
         <div className="space-y-1.5">
           <div className="flex items-center justify-between px-1">
-            <p className="text-xs text-secondary">Recent Activity</p>
+            <p className="text-micro text-secondary">Recent Activity</p>
           </div>
           <div className="space-y-1">
             {displayedContributions.map((contribution) => {
@@ -219,17 +219,17 @@ export function SavingsTab({
               return (
                 <div
                   key={contribution.id}
-                  className="p-2.5 glass-sm rounded-lg"
+                  className="p-3 card rounded-lg transition-shadow duration-200"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-1.5 mb-0.5">
                         <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--success)' }} />
-                        <p className="text-sm">
+                        <p className="text-label">
                           {isYou ? "You" : member?.name} added funds
                         </p>
                       </div>
-                      <p className="text-xs text-secondary">
+                      <p className="text-micro text-secondary">
                         {new Date(contribution.date).toLocaleDateString('en-US', { 
                           month: 'short', 
                           day: 'numeric',
@@ -240,7 +240,7 @@ export function SavingsTab({
                         )}
                       </p>
                     </div>
-                    <p className="text-sm tabular-nums" style={{ fontWeight: 500, color: 'var(--success)' }}>
+                    <p className="text-[18px] tabular-nums" style={{ fontWeight: 700, color: 'var(--success)' }}>
                       +${contribution.amount.toFixed(2)}
                     </p>
                   </div>
@@ -252,7 +252,7 @@ export function SavingsTab({
           {contributions.length > 5 && !showAllContributions && (
             <button
               onClick={() => setShowAllContributions(true)}
-              className="w-full py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="w-full py-2 text-micro text-secondary hover:text-foreground transition-colors"
             >
               Show all {contributions.length} contributions
             </button>

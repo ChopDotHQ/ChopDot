@@ -4,6 +4,8 @@ import { ReceiptViewer } from "../ReceiptViewer";
 import { Receipt, Check } from "lucide-react";
 import { useState } from "react";
 import { pushTxToast, updateTxToast } from "../../hooks/useTxToasts";
+import { PrimaryButton } from "../PrimaryButton";
+import { SecondaryButton } from "../SecondaryButton";
 
 interface Member {
   id: string;
@@ -231,11 +233,11 @@ export function ExpenseDetail({
         <TopBar title="Expense" onBack={onBack} />
         <div className="flex-1 overflow-auto p-3 space-y-3">
           {/* Main Info - Two column layout like Tricount */}
-          <div className="p-2 glass-sm rounded-lg space-y-2">
+          <div className="p-4 card space-y-2 transition-shadow duration-200">
             {/* Amount - Prominent */}
             <div>
-              <p className="text-xs text-secondary">Amount</p>
-              <p className="text-base mt-0.5" style={{ fontWeight: 500 }}>
+              <p className="text-micro text-secondary mb-0.5">Amount</p>
+              <p className="text-[22px] tabular-nums mt-0.5" style={{ fontWeight: 700 }}>
                 {formatAmount(expense.amount)}
               </p>
             </div>
@@ -243,20 +245,20 @@ export function ExpenseDetail({
             {/* Title/Memo */}
             {expense.memo && (
               <div>
-                <p className="text-xs text-secondary">Title</p>
-                <p className="text-sm mt-0.5">{expense.memo}</p>
+                <p className="text-micro text-secondary mb-0.5">Title</p>
+                <p className="text-body mt-0.5">{expense.memo}</p>
               </div>
             )}
             
             {/* Two-column: Paid By + Date */}
             <div className="grid grid-cols-2 gap-2 pt-1">
               <div>
-                <p className="text-xs text-secondary">Paid by</p>
-                <p className="text-sm mt-0.5">{paidByMember?.name}</p>
+                <p className="text-micro text-secondary mb-0.5">Paid by</p>
+                <p className="text-body mt-0.5">{paidByMember?.name}</p>
               </div>
               <div>
-                <p className="text-xs text-secondary">Date</p>
-                <p className="text-sm mt-0.5">
+                <p className="text-micro text-secondary mb-0.5">Date</p>
+                <p className="text-body mt-0.5">
                   {new Date(expense.date).toLocaleDateString('en-US', { 
                     month: 'short', 
                     day: 'numeric', 
@@ -275,38 +277,38 @@ export function ExpenseDetail({
             >
               <div className="flex items-center gap-1.5 mb-1.5">
                 <Receipt className="w-3.5 h-3.5" />
-                <p className="text-xs">Receipt</p>
+                <p className="text-micro">Receipt</p>
               </div>
               <div className="w-full h-24 bg-secondary rounded flex items-center justify-center">
-                <p className="text-xs text-secondary">Tap to view</p>
+                <p className="text-micro text-secondary">Tap to view</p>
               </div>
             </button>
           )}
 
           {/* Split Breakdown - Checkboxes style */}
           <div className="space-y-1.5">
-            <p className="text-xs text-secondary">Split breakdown</p>
+            <p className="text-micro text-secondary">Split breakdown</p>
             {expense.split.map(({ memberId, amount }) => {
               const member = members.find(m => m.id === memberId);
               const isAttested = expense.attestations.includes(memberId);
               return (
                 <div
                   key={memberId}
-                  className="flex items-center gap-2 p-1.5 glass-sm rounded-lg"
+                  className="flex items-center gap-2 p-3 card rounded-lg card-hover-lift transition-shadow duration-200"
                 >
                   <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
                     isAttested ? "bg-primary border-primary" : "border-border"
                   }`}>
                     {isAttested && <Check className="w-2.5 h-2.5 text-primary-foreground" />}
                   </div>
-                  <span className="flex-1 text-xs">{member?.name}</span>
-                  <span className="text-xs tabular-nums" style={{ fontWeight: 500 }}>
+                  <span className="flex-1 text-label">{member?.name}</span>
+                  <span className="text-label tabular-nums" style={{ fontWeight: 600 }}>
                     {formatAmount(amount)}
                   </span>
                 </div>
               );
             })}
-            <p className="text-xs text-secondary px-1.5 pt-0.5">
+            <p className="text-micro text-secondary px-1.5 pt-0.5">
               {expense.attestations.length}/{members.length} confirmed
             </p>
           </div>
@@ -315,42 +317,33 @@ export function ExpenseDetail({
         {/* Compact Footer */}
         <div className="p-3 border-t border-border space-y-2">
           {!hasAttested && (
-            <button
+            <PrimaryButton
               onClick={handleAttest}
               disabled={isAttesting}
-              className={`w-full py-2 glass-sm rounded-lg border-2 border-border text-sm transition-all duration-200 text-center flex items-center justify-center gap-2 ${
-                isAttesting
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-muted/50 active:scale-[0.98]'
-              }`}
+              loading={isAttesting}
+              fullWidth
             >
-              {isAttesting && (
-                <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                </svg>
-              )}
-              <span style={{ opacity: isAttesting ? 0.9 : 1 }}>Confirm</span>
-            </button>
+              Confirm
+            </PrimaryButton>
           )}
           {allAttested && (
-            <div className="p-1.5 bg-muted rounded-lg text-center">
-              <p className="text-xs text-secondary">All confirmed ✓</p>
+            <div className="p-3 card text-center transition-shadow duration-200">
+              <p className="text-micro text-secondary">All confirmed ✓</p>
             </div>
           )}
           <div className="flex gap-2">
-            <button
+            <SecondaryButton
               onClick={onEdit}
-              className="flex-1 py-2 glass-sm rounded-lg border-2 border-border text-sm hover:bg-muted/50 transition-all duration-200 active:scale-95 text-center"
+              fullWidth
             >
               Edit
-            </button>
-            <button
+            </SecondaryButton>
+            <SecondaryButton
               onClick={() => setShowDeleteConfirm(true)}
-              className="flex-1 py-2 glass-sm rounded-lg border-2 border-border text-sm hover:bg-muted/50 transition-all duration-200 active:scale-95 text-center"
+              fullWidth
             >
               Delete
-            </button>
+            </SecondaryButton>
           </div>
         </div>
 
@@ -361,25 +354,26 @@ export function ExpenseDetail({
           title="Delete expense?"
         >
           <div className="p-3 space-y-3">
-            <p className="text-xs text-secondary">
+            <p className="text-micro text-secondary">
               This will remove the expense and recompute all balances. This action cannot be undone.
             </p>
             <div className="space-y-2">
-              <button
+              <PrimaryButton
                 onClick={() => {
                   setShowDeleteConfirm(false);
                   onDelete();
                 }}
-                className="w-full py-2 glass-sm rounded-lg border-2 border-border text-sm hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-center"
+                fullWidth
+                variant="gradient"
               >
                 Delete Expense
-              </button>
-              <button
+              </PrimaryButton>
+              <SecondaryButton
                 onClick={() => setShowDeleteConfirm(false)}
-                className="w-full py-2 glass-sm rounded-lg border-2 border-border text-sm hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-center"
+                fullWidth
               >
                 Cancel
-              </button>
+              </SecondaryButton>
             </div>
           </div>
         </BottomSheet>

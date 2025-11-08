@@ -29,12 +29,12 @@ export function PrimaryButton({ children, onClick, disabled, fullWidth, variant 
         disabled={isDisabled}
         className={`px-4 py-2.5 rounded-[var(--r-lg)] transition-all duration-200 text-body text-center flex items-center justify-center gap-2 ${
           isDisabled
-            ? 'bg-muted/30 text-muted-foreground cursor-not-allowed'
-            : 'btn-accent active:scale-[0.98]'
+            ? 'bg-muted/30 text-secondary cursor-not-allowed'
+            : 'btn-accent active:scale-[0.98] hover:shadow-[0_0_12px_rgba(230,0,122,0.3)]'
         } ${fullWidth ? 'w-full' : ''}`}
       >
-        {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-        <span style={{ opacity: loading ? 0.9 : 1 }}>{children}</span>
+        {loading && <Loader2 className="w-3.5 h-3.5 animate-spin transition-opacity duration-200" style={{ opacity: loading ? 1 : 0 }} />}
+        <span className="transition-opacity duration-200" style={{ opacity: loading ? 0.7 : 1 }}>{children}</span>
       </button>
     );
   }
@@ -47,12 +47,12 @@ export function PrimaryButton({ children, onClick, disabled, fullWidth, variant 
       disabled={isDisabled}
       className={`px-4 py-2.5 rounded-[var(--r-lg)] transition-all duration-200 text-body text-center flex items-center justify-center gap-2 ${
         isDisabled
-          ? 'bg-muted/30 text-muted-foreground cursor-not-allowed border border-border'
-          : 'card hover:bg-muted/50 active:scale-[0.98] active-ripple text-foreground border border-border'
+          ? 'bg-muted/30 text-secondary cursor-not-allowed border border-border'
+          : 'card hover:bg-muted/50 active:scale-[0.98] active-ripple border border-border'
       } ${fullWidth ? 'w-full' : ''}`}
     >
-      {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-      <span style={{ opacity: loading ? 0.9 : 1 }}>{children}</span>
+      {loading && <Loader2 className="w-3.5 h-3.5 animate-spin transition-opacity duration-200" style={{ opacity: loading ? 1 : 0 }} />}
+      <span className="transition-opacity duration-200" style={{ opacity: loading ? 0.7 : 1 }}>{children}</span>
     </button>
   );
 }

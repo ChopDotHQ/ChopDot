@@ -165,7 +165,7 @@ export function RequestPayment({
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Hey! Can you settle up when you get a chance? Thanks!"
-                  className="w-full px-4 py-3 input-field text-body placeholder:text-muted-foreground focus:outline-none focus-ring-pink resize-none"
+                  className="w-full px-4 py-3 input-field text-body placeholder:text-secondary focus:outline-none focus-ring-pink resize-none"
                   rows={3}
                   maxLength={200}
                 />

@@ -41,11 +41,11 @@ export function getMockAddressForMember(name: string): string | null {
   }
   
   // Check if name contains common patterns
-  if (nameLower.includes('alice')) return MOCK_ADDRESSES.alice;
-  if (nameLower.includes('bob')) return MOCK_ADDRESSES.bob;
-  if (nameLower.includes('charlie')) return MOCK_ADDRESSES.charlie;
-  if (nameLower.includes('dave')) return MOCK_ADDRESSES.dave;
-  if (nameLower.includes('eve')) return MOCK_ADDRESSES.eve;
+  if (nameLower.includes('alice')) return MOCK_ADDRESSES.alice || null;
+  if (nameLower.includes('bob')) return MOCK_ADDRESSES.bob || null;
+  if (nameLower.includes('charlie')) return MOCK_ADDRESSES.charlie || null;
+  if (nameLower.includes('dave')) return MOCK_ADDRESSES.dave || null;
+  if (nameLower.includes('eve')) return MOCK_ADDRESSES.eve || null;
   
   // Generate a new one based on name
   return generateMockAddress(nameLower.slice(0, 2).toUpperCase());

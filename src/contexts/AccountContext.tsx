@@ -139,6 +139,10 @@ export function AccountProvider({ children }: AccountProviderProps) {
         if (found) account = found;
       }
 
+      if (!account) {
+        throw new Error('No account found');
+      }
+
       const address = account.address;
       const address0 = normalizeToPolkadot(address);
       
@@ -153,7 +157,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
         'polkagate-extension': 'PolkaGate',
         'metamask': 'MetaMask',
       };
-      const walletName = walletNameMap[account.meta.source?.toLowerCase() || ''] || account.meta.source || extensions[0]?.name || 'Extension';
+      const walletName = walletNameMap[account.meta?.source?.toLowerCase() || ''] || account.meta?.source || extensions[0]?.name || 'Extension';
 
       // Get initial balance
       chain.setChain('assethub'); // Default to Asset Hub
@@ -296,9 +300,9 @@ export function AccountProvider({ children }: AccountProviderProps) {
       if (savedConnector === 'walletconnect') {
         // Check if WalletConnect session still exists
         const session = getWalletConnectSession();
-        if (session && session.namespaces?.polkadot?.accounts?.length > 0) {
+        if (session?.namespaces?.polkadot?.accounts && session.namespaces.polkadot.accounts.length > 0) {
           const accounts = session.namespaces.polkadot.accounts;
-          const address = accounts[0].split(':').slice(2).join(':');
+          const address = accounts[0]?.split(':').slice(2).join(':');
           if (address) {
             const address0 = normalizeToPolkadot(address);
             chain.setChain('assethub');

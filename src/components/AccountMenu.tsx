@@ -138,13 +138,13 @@ export function AccountMenu() {
     setShowExtensionSelector(false);
 
     // If only one account, connect directly
-    if (extension.accounts.length === 1) {
+    if (extension.accounts.length === 1 && extension.accounts[0]) {
       handleSelectAccount(extension.accounts[0]);
       return;
     }
 
     // For multiple accounts, just use first one for now (can enhance later)
-    if (extension.accounts.length > 0) {
+    if (extension.accounts.length > 0 && extension.accounts[0]) {
       handleSelectAccount(extension.accounts[0]);
     }
   };
@@ -501,7 +501,7 @@ export function AccountMenu() {
             <div className="flex justify-center mb-4 p-4 bg-white rounded-lg">
               <img src={novaQRCode} alt="WalletConnect QR Code" className="w-64 h-64" />
             </div>
-            {account.status === 'connected' && (
+            {(account.status as string) === 'connected' && (
               <div className="mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                 <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
                   <CheckCircle className="w-4 h-4" />
@@ -518,14 +518,14 @@ export function AccountMenu() {
                 setConnecting(false);
               }}
             >
-              {account.status === 'connected' ? 'Close' : 'Cancel'}
+              {(account.status as string) === 'connected' ? 'Close' : 'Cancel'}
             </button>
           </div>
         </div>
       )}
       
       {/* Auto-close QR modal when connected */}
-      {showNovaQR && account.status === 'connected' && (
+      {showNovaQR && (account.status as string) === 'connected' && (
         <AutoCloseQR onClose={() => {
           setShowNovaQR(false);
           setNovaQRCode(null);

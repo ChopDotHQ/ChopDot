@@ -4,6 +4,7 @@ import { downloadPotAsJSON, readPotFile } from "../../utils/pot-export";
 import { encryptPot, decryptPot, downloadEncryptedPot, readEncryptedPotFile } from "../../utils/crypto/exportEncrypt";
 import { PasswordModal } from "../PasswordModal";
 import type { Pot } from "../../schema/pot";
+import { ErrorMessages, formatErrorMessage } from "../../utils/errorMessages";
 
 interface Member {
   id: string;
@@ -67,14 +68,14 @@ export function SettingsTab({
   
   const handleExportPot = () => {
     if (!pot) {
-      onShowToast?.('Cannot export: pot data not available', 'error');
+      onShowToast?.(ErrorMessages.export.noData, 'error');
       return;
     }
     try {
       downloadPotAsJSON(pot);
       onShowToast?.('Pot exported successfully', 'success');
     } catch (error) {
-      onShowToast?.('Failed to export pot', 'error');
+      onShowToast?.(formatErrorMessage(error, { action: 'export', resource: 'pot' }), 'error');
       console.error('Export error:', error);
     }
   };
@@ -95,10 +96,10 @@ export function SettingsTab({
         onImportPot?.(result.pot);
         onShowToast?.('Pot imported successfully', 'success');
       } else {
-        onShowToast?.(result.error || 'Failed to import pot', 'error');
+        onShowToast?.(result.error || formatErrorMessage(new Error('Import failed'), { action: 'import', resource: 'pot' }), 'error');
       }
     } catch (error) {
-      onShowToast?.('Failed to import pot', 'error');
+      onShowToast?.(formatErrorMessage(error, { action: 'import', resource: 'pot' }), 'error');
       console.error('Import error:', error);
     } finally {
       // Reset file input
@@ -110,7 +111,7 @@ export function SettingsTab({
 
   const handleEncryptedExport = () => {
     if (!pot) {
-      onShowToast?.('Cannot export: pot data not available', 'error');
+      onShowToast?.(ErrorMessages.export.noData, 'error');
       return;
     }
     setPasswordModalMode('export');
@@ -129,9 +130,9 @@ export function SettingsTab({
       setShowPasswordModal(false);
       onShowToast?.('Encrypted pot exported successfully', 'success');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to encrypt pot';
+      const errorMessage = formatErrorMessage(error, { action: 'encrypt', resource: 'pot' });
       setPasswordError(errorMessage);
-      onShowToast?.('Failed to encrypt pot', 'error');
+      onShowToast?.(errorMessage, 'error');
     }
   };
 
@@ -145,7 +146,7 @@ export function SettingsTab({
 
     // Check file extension
     if (!file.name.endsWith('.chop') && !file.name.endsWith('.json.chop')) {
-      onShowToast?.('Invalid file format. Please select a .chop file.', 'error');
+      onShowToast?.(ErrorMessages.file.invalidFormat, 'error');
       if (encryptedFileInputRef.current) {
         encryptedFileInputRef.current.value = '';
       }
@@ -161,7 +162,7 @@ export function SettingsTab({
       // Store file text in a ref for use in password confirmation
       (encryptedFileInputRef.current as any).__fileText = fileText;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to read file';
+      const errorMessage = formatErrorMessage(error, { action: 'read', resource: 'file' });
       onShowToast?.(errorMessage, 'error');
       if (encryptedFileInputRef.current) {
         encryptedFileInputRef.current.value = '';
@@ -186,7 +187,7 @@ export function SettingsTab({
       // Clear file text from ref
       delete (encryptedFileInputRef.current as any).__fileText;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Couldn\'t decrypt — check password or file';
+      const errorMessage = formatErrorMessage(error, { action: 'decrypt', resource: 'file', details: 'Check password or file' });
       setPasswordError(errorMessage);
       onShowToast?.(errorMessage, 'error');
     } finally {
@@ -216,7 +217,7 @@ export function SettingsTab({
           <input
             value={potName}
             onChange={(e) => setPotName(e.target.value)}
-            className="w-full px-3 py-2.5 bg-input-background border border-border/30 rounded-[var(--r-lg)] text-body placeholder:text-muted-foreground focus:outline-none focus-ring-pink transition-all"
+            className="w-full px-3 py-2.5 bg-input-background border border-border/30 rounded-[var(--r-lg)] text-body placeholder:text-secondary focus:outline-none focus-ring-pink transition-all"
           />
         </div>
         
@@ -265,7 +266,7 @@ export function SettingsTab({
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
                   placeholder="500"
-                  className="w-full pl-7 pr-3 py-2.5 bg-input-background border border-border/30 rounded-[var(--r-lg)] text-body placeholder:text-muted-foreground focus:outline-none focus-ring-pink transition-all"
+                  className="w-full pl-7 pr-3 py-2.5 bg-input-background border border-border/30 rounded-[var(--r-lg)] text-body placeholder:text-secondary focus:outline-none focus-ring-pink transition-all"
                 />
               </div>
             </div>
@@ -309,7 +310,7 @@ export function SettingsTab({
         <div className="pt-2 space-y-1.5 border-t border-border">
           <p className="text-label text-secondary">Pending invites ({pendingMembers.length})</p>
           {pendingMembers.map(member => (
-            <div key={member.id} className="p-2 glass-sm rounded-lg">
+            <div key={member.id} className="p-3 card rounded-lg transition-shadow duration-200">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-label">{member.name}</p>
                 <span className="text-caption px-1.5 py-0.5 bg-orange-100 text-orange-700 rounded">
@@ -341,14 +342,14 @@ export function SettingsTab({
         <button
           onClick={handleExportPot}
           disabled={!pot}
-          className="w-full glass-sm rounded-xl p-3 flex items-center gap-2 hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full card rounded-xl p-4 flex items-center gap-2 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] text-left disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Download className="w-4 h-4" />
           <span className="text-body">Export Pot (JSON)</span>
         </button>
         <button
           onClick={handleImportPot}
-          className="w-full glass-sm rounded-xl p-3 flex items-center gap-2 hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left"
+          className="w-full card rounded-xl p-4 flex items-center gap-2 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] text-left"
         >
           <Upload className="w-4 h-4" />
           <span className="text-body">Import Pot (JSON)</span>
@@ -356,14 +357,14 @@ export function SettingsTab({
         <button
           onClick={handleEncryptedExport}
           disabled={!pot}
-          className="w-full glass-sm rounded-xl p-3 flex items-center gap-2 hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full card rounded-xl p-4 flex items-center gap-2 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] text-left disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Lock className="w-4 h-4" />
           <span className="text-body">Encrypted Export (.chop)</span>
         </button>
         <button
           onClick={handleEncryptedImport}
-          className="w-full glass-sm rounded-xl p-3 flex items-center gap-2 hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left"
+          className="w-full card rounded-xl p-4 flex items-center gap-2 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] text-left"
         >
           <Lock className="w-4 h-4" />
           <span className="text-body">Import Encrypted (.chop)</span>
@@ -406,14 +407,14 @@ export function SettingsTab({
         <p className="text-label text-secondary">Pot management</p>
         <button
           onClick={() => onLeavePot?.()}
-          className="w-full glass-sm rounded-xl p-3 flex items-center justify-between hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left"
+          className="w-full card rounded-xl p-4 flex items-center justify-between hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] text-left"
         >
           <span className="text-body">Leave Pot</span>
           <span className="text-label text-secondary">›</span>
         </button>
         <button
           onClick={() => onArchivePot?.()}
-          className="w-full glass-sm rounded-xl p-3 flex items-center justify-between hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] text-left"
+          className="w-full card rounded-xl p-4 flex items-center justify-between hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] text-left"
         >
           <span className="text-body">Archive Pot</span>
           <span className="text-label text-secondary">›</span>

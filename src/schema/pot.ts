@@ -176,7 +176,7 @@ export function validateMember(member: unknown): { success: boolean; data?: Memb
     return { success: true, data };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0]?.message || 'Invalid member' };
+      return { success: false, error: error.issues[0]?.message || 'Invalid member' };
     }
     return { success: false, error: 'Invalid member' };
   }
@@ -215,8 +215,8 @@ export function validateExpense(expense: unknown, memberIds: string[]): { succes
     // Return success - potId will be set by parent when saving
     return { success: true, data: parsed as Expense };
   } catch (error) {
-    if (error instanceof z.ZodError && error.errors && Array.isArray(error.errors) && error.errors.length > 0) {
-      return { success: false, error: error.errors[0].message || 'Invalid expense' };
+    if (error instanceof z.ZodError && error.issues && Array.isArray(error.issues) && error.issues.length > 0) {
+      return { success: false, error: error.issues[0]?.message || 'Invalid expense' };
     }
     return { success: false, error: error instanceof Error ? error.message : 'Invalid expense' };
   }
@@ -231,7 +231,7 @@ export function validatePot(pot: unknown): { success: boolean; data?: Pot; error
     return { success: true, data };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return { success: false, error: error.errors[0]?.message || 'Invalid pot' };
+      return { success: false, error: error.issues[0]?.message || 'Invalid pot' };
     }
     return { success: false, error: 'Invalid pot' };
   }

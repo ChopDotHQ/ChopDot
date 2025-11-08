@@ -175,7 +175,6 @@ export function calculateSettlements(
       if (Math.abs(netBalance) >= netThreshold) {
         breakdown.push({
           potName: pot.name,
-          potId: pot.id,
           amount: Math.abs(netBalance),
           currency: pot.baseCurrency,
         });

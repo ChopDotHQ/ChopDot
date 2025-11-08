@@ -345,7 +345,7 @@ export function SettleHome({
         rightAction={onHistory ? (
           <button 
             onClick={onHistory}
-            className="text-label text-accent hover:opacity-80 transition-opacity"
+            className="text-label text-foreground hover:opacity-80 transition-opacity"
           >
             History
           </button>
@@ -407,7 +407,7 @@ export function SettleHome({
         )}
 
         {showHyperbridgeCta && (
-          <div className="card p-3 space-y-2 border border-border/60">
+          <div className="card p-4 space-y-2 transition-shadow duration-200">
             <PrimaryButton
               fullWidth
               onClick={() => {
@@ -625,7 +625,11 @@ export function SettleHome({
                   const details = `Bank transfer details\nAmount: ${amountStr}\nReference: ${bankReference || '(none)'}\nCounterparty: ${counterparty}`;
                   try {
                     await navigator.clipboard.writeText(details);
-                  } catch {}
+                    onShowToast?.('Bank details copied', 'success');
+                  } catch (error) {
+                    console.warn('[SettleHome] Failed to copy to clipboard:', error);
+                    onShowToast?.('Failed to copy', 'error');
+                  }
                 }}
                 className="px-3 py-2 rounded-lg bg-muted/20 text-caption hover:bg-muted/30 transition"
               >
@@ -657,7 +661,13 @@ export function SettleHome({
                 onClick={async () => {
                   const amountStr = `$${Math.abs(totalAmount).toFixed(2)}`;
                   const text = `Pay ${amountStr} to ${counterparty} via PayPal (${paypalEmail || 'email'})`;
-                  try { await navigator.clipboard.writeText(text); } catch {}
+                  try {
+                    await navigator.clipboard.writeText(text);
+                    onShowToast?.('PayPal details copied', 'success');
+                  } catch (error) {
+                    console.warn('[SettleHome] Failed to copy to clipboard:', error);
+                    onShowToast?.('Failed to copy', 'error');
+                  }
                 }}
                 className="px-3 py-2 rounded-lg bg-muted/20 text-caption hover:bg-muted/30 transition"
               >
@@ -697,7 +707,13 @@ export function SettleHome({
                 onClick={async () => {
                   const amountStr = `$${Math.abs(totalAmount).toFixed(2)}`;
                   const text = `TWINT payment: ${amountStr} to ${twintPhone || 'phone'} (${counterparty})`;
-                  try { await navigator.clipboard.writeText(text); } catch {}
+                  try {
+                    await navigator.clipboard.writeText(text);
+                    onShowToast?.('TWINT details copied', 'success');
+                  } catch (error) {
+                    console.warn('[SettleHome] Failed to copy to clipboard:', error);
+                    onShowToast?.('Failed to copy', 'error');
+                  }
                 }}
                 className="px-3 py-2 rounded-lg bg-muted/20 text-caption hover:bg-muted/30 transition"
               >
@@ -734,7 +750,7 @@ export function SettleHome({
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-muted">From</span>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-sm truncate max-w-[180px]">
+                    <span className="font-mono text-label truncate max-w-[180px]">
                       {((isSimulationMode && !account.address0) 
                         ? '15mock00000000000000000000000000000A' 
                         : (account.address0 || '')).slice(0, 6)}...{((isSimulationMode && !account.address0) 
@@ -747,8 +763,12 @@ export function SettleHome({
                         const addressToCopy = (isSimulationMode && !account.address0) 
                           ? '15mock00000000000000000000000000000A' 
                           : (account.address0 || '');
-                        navigator.clipboard.writeText(addressToCopy).catch(() => {});
-                        onShowToast?.('Copied sender address', 'info');
+                        navigator.clipboard.writeText(addressToCopy)
+                          .then(() => onShowToast?.('Copied sender address', 'info'))
+                          .catch((error) => {
+                            console.warn('[SettleHome] Failed to copy address:', error);
+                            onShowToast?.('Failed to copy address', 'error');
+                          });
                       }}
                     >
                       Copy
@@ -758,14 +778,18 @@ export function SettleHome({
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-muted">To</span>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-sm truncate max-w-[180px]">
+                    <span className="font-mono text-label truncate max-w-[180px]">
                       {recipientAddress.slice(0, 6)}...{recipientAddress.slice(-6)}
                     </span>
                     <button
                       className="text-micro underline opacity-70 hover:opacity-100"
                       onClick={() => {
-                        navigator.clipboard.writeText(recipientAddress).catch(() => {});
-                        onShowToast?.('Copied recipient address', 'info');
+                        navigator.clipboard.writeText(recipientAddress)
+                          .then(() => onShowToast?.('Copied recipient address', 'info'))
+                          .catch((error) => {
+                            console.warn('[SettleHome] Failed to copy address:', error);
+                            onShowToast?.('Failed to copy address', 'error');
+                          });
                       }}
                     >
                       Copy
@@ -842,7 +866,7 @@ export function SettleHome({
             {walletConnected && !recipientAddress && (
               <div className="pt-3 border-t border-border/50">
                 <div className="p-2 bg-yellow-500/10 dark:bg-yellow-500/20 rounded-lg border border-yellow-500/30">
-                  <p className="text-xs text-yellow-700 dark:text-yellow-300">
+                  <p className="text-micro text-yellow-700 dark:text-yellow-300">
                     ⚠️ No wallet address on file for {counterparty}. Please add their wallet address in the Members tab to settle via DOT.
                   </p>
                 </div>
@@ -858,7 +882,7 @@ export function SettleHome({
           <>
             {showConnectWalletNotice && (
               <div className="mb-3 p-3 rounded-lg border bg-muted/10 space-y-2" style={{ borderColor: 'var(--border)' }}>
-                <p className="text-sm font-medium">You’ll need DOT on Polkadot to settle.</p>
+                <p className="text-label" style={{ fontWeight: 500 }}>You'll need DOT on Polkadot to settle.</p>
                 <PrimaryButton
                   fullWidth
                   onClick={() => {

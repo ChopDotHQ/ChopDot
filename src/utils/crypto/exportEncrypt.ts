@@ -3,7 +3,8 @@
  * Handles encryption/decryption of pot data using password-based encryption
  */
 
-import { exportPotToJSON, importPotFromJSON, type Pot } from '../pot-export';
+import { exportPotToJSON, importPotFromJSON } from '../pot-export';
+import type { Pot } from '../../schema/pot';
 import { deriveKeyPBKDF2, aesGcmEncrypt, aesGcmDecrypt, generateSalt } from './crypto';
 import { arrayBufferToBase64, base64ToArrayBuffer, zeroUint8Array } from './bytes';
 
@@ -44,7 +45,7 @@ export async function encryptPot(pot: Pot, password: string): Promise<Blob> {
     ver: 'v1',
     kdf: 'PBKDF2-SHA256',
     iter: DEFAULT_PBKDF2_ITERATIONS,
-    salt: arrayBufferToBase64(salt.buffer),
+    salt: arrayBufferToBase64(salt.buffer as ArrayBuffer),
     algo: 'AES-GCM',
     iv: iv,
     ciphertext: ciphertext,

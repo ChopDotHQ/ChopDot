@@ -121,7 +121,7 @@ export function AddPaymentMethod({
                 onChange={setIban}
                 placeholder="CH93 0000 0000 0000 0000 0"
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-micro text-secondary mt-1">
                 Starts with country code (e.g., CH…), 15–34 chars.
               </p>
             </div>
@@ -143,7 +143,7 @@ export function AddPaymentMethod({
                 onChange={setPhone}
                 placeholder="+41 79 123 45 67"
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-micro text-secondary mt-1">
                 Swiss number (+41…) or leave empty if using handle.
               </p>
             </div>
@@ -165,7 +165,7 @@ export function AddPaymentMethod({
                 onChange={setEmail}
                 placeholder="you@example.com"
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-micro text-secondary mt-1">
                 Email or @username.
               </p>
             </div>
@@ -196,7 +196,7 @@ export function AddPaymentMethod({
                 onChange={setAddress}
                 placeholder="SS58 address"
               />
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-micro text-secondary mt-1">
                 Paste a valid SS58 address for the selected network.
               </p>
             </div>
@@ -218,7 +218,7 @@ export function AddPaymentMethod({
             />
             <Label
               htmlFor="preferred"
-              className="text-sm text-foreground cursor-pointer"
+              className="text-label text-foreground cursor-pointer"
             >
               Make this my preferred method
             </Label>
@@ -232,7 +232,7 @@ export function AddPaymentMethod({
           </PrimaryButton>
         </div>
 
-        <p className="text-xs text-muted-foreground text-center pt-2">
+        <p className="text-micro text-secondary text-center pt-2">
           Double-check details before saving. On-chain payments are final.
         </p>
       </div>

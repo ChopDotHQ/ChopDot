@@ -229,19 +229,19 @@ export function AddExpense({
             </svg>
           </button>
           <div className="flex items-center gap-1.5">
-            <span className="text-sm">{existingExpense ? "Edit" : "Add"} expense</span>
+            <span className="text-label">{existingExpense ? "Edit" : "Add"} expense</span>
             {potName && (
               <>
-                <span className="text-muted-foreground text-xs">•</span>
+                <span className="text-secondary text-micro">•</span>
                 {onChangePot ? (
                   <button
                     onClick={onChangePot}
-                    className="px-2 py-0.5 bg-secondary rounded-lg text-xs hover:bg-secondary/80 transition-colors"
+                    className="px-2 py-0.5 bg-secondary rounded-lg text-micro hover:bg-secondary/80 transition-colors"
                   >
                     {potName}
                   </button>
                 ) : (
-                  <span className="px-2 py-0.5 bg-secondary rounded-lg text-xs">
+                  <span className="px-2 py-0.5 bg-secondary rounded-lg text-micro">
                     {potName}
                   </span>
                 )}
@@ -255,10 +255,10 @@ export function AddExpense({
       <div className="flex-1 overflow-auto p-3 space-y-3 pb-[68px]">
         {/* Amount (largest, most prominent) */}
         <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Amount</label>
+          <label className="text-micro text-secondary mb-1 block">Amount</label>
           <div className="flex items-center gap-2">
             {currencyLocked ? (
-              <span className="px-2 py-1.5 bg-input-background border border-border rounded-lg text-sm">
+              <span className="px-2 py-1.5 bg-input-background border border-border rounded-lg text-body">
                 {baseCurrency}
               </span>
             ) : (
@@ -266,7 +266,7 @@ export function AddExpense({
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
                 disabled={isSaving}
-                className="px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <option value="USD">USD</option>
                 <option value="EUR">EUR</option>
@@ -295,13 +295,13 @@ export function AddExpense({
               min={minAmount.toString()}
               placeholder={baseCurrency === 'DOT' ? '0.000000' : '0.00'}
               disabled={isSaving}
-              className={`flex-1 px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-base disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`flex-1 px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-body disabled:opacity-50 disabled:cursor-not-allowed ${
                 amountError ? 'border-destructive' : 'border-border'
               }`}
             />
           </div>
           {amountError && (
-            <div className="flex items-center gap-1 mt-1 text-xs text-destructive">
+            <div className="flex items-center gap-1 mt-1 text-micro text-destructive">
               <AlertCircle className="w-3 h-3" />
               <span>{amountError}</span>
             </div>
@@ -310,20 +310,20 @@ export function AddExpense({
 
         {/* Title/Memo */}
         <div>
-          <label className="text-xs text-muted-foreground mb-1 block">Description <span className="text-destructive">*</span></label>
+          <label className="text-micro text-secondary mb-1 block">Description <span className="text-destructive">*</span></label>
           <div className="flex items-center gap-2">
             <input
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
               placeholder="Enter description"
               disabled={isSaving}
-              className={`flex-1 px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`flex-1 px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-body disabled:opacity-50 disabled:cursor-not-allowed ${
                 descriptionError ? 'border-destructive' : 'border-border'
               }`}
             />
           </div>
           {descriptionError && (
-            <div className="flex items-center gap-1 mt-1 text-xs text-destructive">
+            <div className="flex items-center gap-1 mt-1 text-micro text-destructive">
               <AlertCircle className="w-3 h-3" />
               <span>{descriptionError}</span>
             </div>
@@ -333,12 +333,12 @@ export function AddExpense({
         {/* Two-column: Paid By + Date */}
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Paid by <span className="text-destructive">*</span></label>
+            <label className="text-micro text-secondary mb-1 block">Paid by <span className="text-destructive">*</span></label>
             <select
               value={paidBy}
               onChange={(e) => setPaidBy(e.target.value)}
               disabled={isSaving}
-              className={`w-full px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-sm appearance-none disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`w-full px-2 py-1.5 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-body appearance-none disabled:opacity-50 disabled:cursor-not-allowed ${
                 paidByError ? 'border-destructive' : 'border-border'
               }`}
             >
@@ -348,56 +348,56 @@ export function AddExpense({
               ))}
             </select>
             {paidByError && (
-              <div className="flex items-center gap-1 mt-1 text-xs text-destructive">
+              <div className="flex items-center gap-1 mt-1 text-micro text-destructive">
                 <AlertCircle className="w-3 h-3" />
                 <span>{paidByError}</span>
               </div>
             )}
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Date</label>
+            <label className="text-micro text-secondary mb-1 block">Date</label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               disabled={isSaving}
-              className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
         </div>
 
         {/* Split Section */}
         <div className="pt-2 border-t border-border space-y-2">
-          <h3 className="text-xs text-muted-foreground">Split between</h3>
+          <h3 className="text-micro text-secondary">Split between</h3>
           
           {/* Split Type Tabs - More compact */}
           <div className="flex gap-1 p-0.5 bg-secondary/50 dark:bg-secondary/30 rounded-lg">
             <button
               onClick={() => setSplitType("equal")}
-              className={`flex-1 py-1 px-2 rounded text-xs transition-all duration-200 ${
+              className={`flex-1 py-1 px-2 rounded text-micro transition-all duration-200 ${
                 splitType === "equal"
                   ? "bg-card shadow-sm text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-secondary hover:text-foreground"
               }`}
             >
               Equal
             </button>
             <button
               onClick={() => setSplitType("custom")}
-              className={`flex-1 py-1 px-2 rounded text-xs transition-all duration-200 ${
+              className={`flex-1 py-1 px-2 rounded text-micro transition-all duration-200 ${
                 splitType === "custom"
                   ? "bg-card shadow-sm text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-secondary hover:text-foreground"
               }`}
             >
               Custom %
             </button>
             <button
               onClick={() => setSplitType("shares")}
-              className={`flex-1 py-1 px-2 rounded text-xs transition-all duration-200 ${
+              className={`flex-1 py-1 px-2 rounded text-micro transition-all duration-200 ${
                 splitType === "shares"
                   ? "bg-card shadow-sm text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-secondary hover:text-foreground"
               }`}
             >
               Shares
@@ -414,7 +414,7 @@ export function AddExpense({
                 return (
                   <label
                     key={member.id}
-                    className="flex items-center gap-2 p-1.5 glass-sm rounded-lg cursor-pointer hover:bg-muted/50 transition-all duration-200 active:scale-[0.98]"
+                    className="flex items-center gap-2 p-3 card rounded-lg cursor-pointer hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98]"
                   >
                     <input
                       type="checkbox"
@@ -422,9 +422,9 @@ export function AddExpense({
                       onChange={() => toggleMember(member.id)}
                       className="w-3.5 h-3.5"
                     />
-                    <span className="flex-1 text-xs">{member.name}</span>
+                    <span className="flex-1 text-label">{member.name}</span>
                     {isIncluded && (
-                      <span className="text-xs text-muted-foreground tabular-nums">
+                      <span className="text-label text-secondary tabular-nums">
                         {perPerson.toFixed(decimals)}
                       </span>
                     )}
@@ -432,7 +432,7 @@ export function AddExpense({
                 );
               })}
               {membersError && (
-                <div className="flex items-center gap-1 mt-1 text-xs text-destructive">
+                <div className="flex items-center gap-1 mt-1 text-micro text-destructive">
                   <AlertCircle className="w-3 h-3" />
                   <span>{membersError}</span>
                 </div>
@@ -449,8 +449,8 @@ export function AddExpense({
                 const memberAmount = (numAmount * percent) / 100;
                 
                 return (
-                  <div key={member.id} className="flex items-center gap-2 p-1.5 glass-sm rounded-lg">
-                    <span className="flex-1 text-xs">{member.name}</span>
+                  <div key={member.id} className="flex items-center gap-2 p-3 card rounded-lg transition-shadow duration-200">
+                    <span className="flex-1 text-label">{member.name}</span>
                     <input
                       value={customPercents[member.id]}
                       onChange={(e) =>
@@ -458,21 +458,21 @@ export function AddExpense({
                       }
                       type="number"
                       placeholder="0"
-                      className="w-14 px-1.5 py-0.5 bg-input-background border border-border rounded text-xs text-right tabular-nums"
+                      className="w-14 px-1.5 py-0.5 bg-input-background border border-border rounded text-micro text-right tabular-nums"
                     />
-                    <span className="text-xs text-muted-foreground">%</span>
-                    <span className="text-xs text-muted-foreground tabular-nums w-14 text-right">
+                    <span className="text-micro text-secondary">%</span>
+                    <span className="text-micro text-secondary tabular-nums w-14 text-right">
                       {memberAmount.toFixed(decimals)}
                     </span>
                   </div>
                 );
               })}
               <div className="px-1.5">
-                <p className={`text-xs ${isSplitValid ? "text-muted-foreground" : "text-destructive"}`}>
+                <p className={`text-micro ${isSplitValid ? "text-secondary" : "text-destructive"}`}>
                 Total: {totalPercent.toFixed(1)}% {!isSplitValid && "(must equal 100%)"}
               </p>
                 {splitError && (
-                  <div className="flex items-center gap-1 mt-1 text-xs text-destructive">
+                  <div className="flex items-center gap-1 mt-1 text-micro text-destructive">
                     <AlertCircle className="w-3 h-3" />
                     <span>{splitError}</span>
                   </div>
@@ -494,17 +494,17 @@ export function AddExpense({
                 const memberAmount = totalShares > 0 ? (numAmount * memberShares) / totalShares : 0;
                 
                 return (
-                  <div key={member.id} className="flex items-center gap-2 p-1.5 glass-sm rounded-lg">
-                    <span className="flex-1 text-xs">{member.name}</span>
+                  <div key={member.id} className="flex items-center gap-2 p-3 card rounded-lg transition-shadow duration-200">
+                    <span className="flex-1 text-label">{member.name}</span>
                     <input
                       value={shares[member.id]}
                       onChange={(e) => setShares({ ...shares, [member.id]: e.target.value })}
                       type="number"
                       placeholder="1"
-                      className="w-14 px-1.5 py-0.5 bg-input-background border border-border rounded text-xs text-right tabular-nums"
+                      className="w-14 px-1.5 py-0.5 bg-input-background border border-border rounded text-micro text-right tabular-nums"
                     />
-                    <span className="text-xs text-muted-foreground">shares</span>
-                    <span className="text-xs text-muted-foreground tabular-nums w-14 text-right">
+                    <span className="text-micro text-secondary">shares</span>
+                    <span className="text-micro text-secondary tabular-nums w-14 text-right">
                       {memberAmount.toFixed(decimals)}
                     </span>
                   </div>
@@ -519,10 +519,10 @@ export function AddExpense({
           <button
             onClick={handleSave}
             disabled={!isValid || isSaving}
-            className={`w-full py-2.5 rounded-lg text-sm font-medium transition-all duration-200 text-center flex items-center justify-center gap-2 ${
+            className={`w-full py-3 rounded-lg text-body font-medium transition-all duration-200 text-center flex items-center justify-center gap-2 ${
               isValid && !isSaving
-                ? "bg-foreground text-background hover:opacity-90 active:scale-[0.98]"
-                : "bg-muted/30 text-muted-foreground cursor-not-allowed"
+                ? "bg-accent text-white hover:opacity-90 active:scale-[0.98]"
+                : "bg-muted/30 text-secondary cursor-not-allowed"
             }`}
           >
             {isSaving && (
@@ -547,7 +547,7 @@ export function AddExpense({
           <div className="flex flex-col h-[500px]">
             {/* Header */}
             <div className="flex items-center justify-between p-3 border-b border-border">
-              <h2 className="text-sm">Receipt</h2>
+              <h2 className="text-label">Receipt</h2>
               <button
                 onClick={() => setShowReceiptSheet(false)}
                 className="p-1 hover:bg-muted rounded-lg transition-colors"
@@ -566,8 +566,8 @@ export function AddExpense({
                   }}
                   className="w-full p-6 border-2 border-dashed border-border rounded-lg hover:bg-muted transition-colors flex flex-col items-center gap-2"
                 >
-                  <Upload className="w-8 h-8 text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground">Tap to upload</p>
+                  <Upload className="w-8 h-8 text-secondary" />
+                  <p className="text-micro text-secondary">Tap to upload</p>
                 </button>
               ) : (
                 <div className="relative p-2 bg-muted rounded-lg">
@@ -578,11 +578,11 @@ export function AddExpense({
                     <X className="w-3 h-3" />
                   </button>
                   <div className="w-full h-32 bg-secondary rounded flex items-center justify-center">
-                    <p className="text-xs text-muted-foreground">Receipt preview</p>
+                    <p className="text-micro text-secondary">Receipt preview</p>
                   </div>
                 </div>
               )}
-              <p className="text-xs text-muted-foreground">
+              <p className="text-micro text-secondary">
                 Stored privately with expense details
               </p>
             </div>

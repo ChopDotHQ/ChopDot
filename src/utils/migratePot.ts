@@ -34,7 +34,7 @@ export function migratePot(raw: unknown): Pot {
   }
 
   // Step 4: If still failing, throw labeled error
-  const errors = reparseResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join('; ');
+  const errors = reparseResult.error.issues.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`).join('; ');
   throw new Error(`Failed to migrate pot: ${errors}`);
 }
 

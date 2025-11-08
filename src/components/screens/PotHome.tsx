@@ -180,7 +180,8 @@ export function PotHome({
   );
 
   const isWalletConnected = account.status === 'connected' && !!account.address0;
-  const showCheckpointSection = POLKADOT_APP_ENABLED && checkpointEnabled !== false;
+  // Only show checkpoint section if: feature enabled, checkpoint enabled, AND wallet connected
+  const showCheckpointSection = POLKADOT_APP_ENABLED && checkpointEnabled === true && isWalletConnected;
   const isDev = import.meta.env.MODE !== 'production';
 
   const latestCheckpointEntry = checkpointHistory[0];
@@ -500,8 +501,14 @@ export function PotHome({
                   </span>
                 </div>
                 <button
-                  onClick={() => navigator.clipboard.writeText(currentPotHash).catch(() => {})}
-                  className="text-xs text-accent underline hover:opacity-80 transition-opacity flex items-center gap-1"
+                  onClick={() => {
+                    navigator.clipboard.writeText(currentPotHash)
+                      .catch((error) => {
+                        console.warn('[PotHome] Failed to copy pot hash:', error);
+                        onShowToast?.('Failed to copy', 'error');
+                      });
+                  }}
+                  className="text-micro text-foreground underline hover:opacity-80 transition-opacity flex items-center gap-1"
                 >
                   <Copy className="w-3 h-3" />
                   Copy
@@ -519,9 +526,13 @@ export function PotHome({
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button
                     onClick={() =>
-                      navigator.clipboard.writeText(checkpointInput.lastBackupCid || '').catch(() => {})
+                      navigator.clipboard.writeText(checkpointInput.lastBackupCid || '')
+                        .catch((error) => {
+                          console.warn('[PotHome] Failed to copy CID:', error);
+                          onShowToast?.('Failed to copy', 'error');
+                        })
                     }
-                    className="text-xs text-accent underline hover:opacity-80 transition-opacity"
+                    className="text-micro text-accent underline hover:opacity-80 transition-opacity"
                   >
                     Copy
                   </button>
@@ -529,7 +540,7 @@ export function PotHome({
                     href={buildIpfsUrl(checkpointInput.lastBackupCid)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-accent underline hover:opacity-80 transition-opacity"
+                    className="text-micro text-accent underline hover:opacity-80 transition-opacity"
                   >
                     Open on IPFS
                   </a>
@@ -565,7 +576,13 @@ export function PotHome({
                             Hash {truncateHash(entry.potHash)}
                           </span>
                           <button
-                            onClick={() => navigator.clipboard.writeText(entry.potHash).catch(() => {})}
+                            onClick={() => {
+                              navigator.clipboard.writeText(entry.potHash)
+                                .catch((error) => {
+                                  console.warn('[PotHome] Failed to copy pot hash:', error);
+                                  onShowToast?.('Failed to copy', 'error');
+                                });
+                            }}
                             className="text-secondary hover:text-foreground transition-colors"
                             title="Copy pot hash"
                           >
@@ -577,7 +594,7 @@ export function PotHome({
                             href={buildIpfsUrl(entry.cid)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[11px] text-accent hover:underline flex items-center gap-1"
+                            className="text-micro text-foreground hover:underline flex items-center gap-1"
                           >
                             Open backup
                             <ExternalLink className="w-3 h-3" />
@@ -590,7 +607,7 @@ export function PotHome({
                             href={entry.subscan}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-accent hover:underline flex items-center gap-1"
+                            className="text-micro text-foreground hover:underline flex items-center gap-1"
                           >
                             View
                             <ExternalLink className="w-3 h-3" />
@@ -598,8 +615,14 @@ export function PotHome({
                         )}
                         {entry.txHash && (
                           <button
-                            onClick={() => navigator.clipboard.writeText(entry.txHash || '').catch(() => {})}
-                            className="text-xs text-secondary hover:underline flex items-center gap-1"
+                            onClick={() => {
+                              navigator.clipboard.writeText(entry.txHash || '')
+                                .catch((error) => {
+                                  console.warn('[PotHome] Failed to copy tx hash:', error);
+                                  onShowToast?.('Failed to copy', 'error');
+                                });
+                            }}
+                            className="text-micro text-secondary hover:underline flex items-center gap-1"
                           >
                             <Copy className="w-3 h-3" />
                             Copy hash
@@ -702,7 +725,9 @@ export function PotHome({
             pot={onImportPot ? {
               id: potId || '',
               name: potName,
-              members: members.map(m => ({ id: m.id, name: m.name })),
+              type: potType,
+              baseCurrency: baseCurrency as 'USD' | 'DOT',
+              members: members.map(m => ({ id: m.id, name: m.name, address: m.address || null })),
               expenses: expenses.map(e => ({
                 id: e.id,
                 potId: potId || '',
@@ -711,9 +736,13 @@ export function PotHome({
                 paidBy: e.paidBy,
                 createdAt: new Date(e.date).getTime(),
               })),
+              history: [],
+              budgetEnabled: false,
+              checkpointEnabled: checkpointEnabled ?? true,
+              archived: false,
               createdAt: Date.now(),
               updatedAt: Date.now(),
-            } : undefined}
+            } as import('../../schema/pot').Pot : undefined}
             onUpdateSettings={onUpdateSettings}
             onCopyInviteLink={onCopyInviteLink}
             onResendInvite={onResendInvite}

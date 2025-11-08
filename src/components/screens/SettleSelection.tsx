@@ -78,29 +78,29 @@ export function SettleSelection({
               <button
                 key={person.id}
                 onClick={() => onSelectPerson(person.id)}
-                className="w-full p-3 glass-sm rounded-lg hover:bg-muted/5 active:scale-[0.98] transition-all"
+                className="w-full p-4 card rounded-lg hover:shadow-[var(--shadow-fab)] active:scale-[0.98] transition-all duration-200"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-muted/20 flex items-center justify-center flex-shrink-0">
-                      <User className="w-4 h-4 text-muted-foreground" />
+                      <User className="w-4 h-4 text-secondary" />
                     </div>
                     <div className="text-left">
                       <div className="flex items-center gap-1.5">
-                        <p className="text-[14px] font-medium">{person.name}</p>
+                        <p className="text-label" style={{ fontWeight: 600 }}>{person.name}</p>
                         {person.trustScore && (
                           <TrustIndicator score={person.trustScore} />
                         )}
                       </div>
                       {person.paymentPreference && (
-                        <p className="text-[11px] text-secondary">
+                        <p className="text-micro text-secondary">
                           Prefers {person.paymentPreference}
                         </p>
                       )}
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-[15px] tabular-nums" style={{ fontWeight: 500, color: 'var(--foreground)' }}>
+                    <p className="text-[18px] tabular-nums" style={{ fontWeight: 700, color: 'var(--ink)' }}>
                       -{formatAmount(person.amount)}
                     </p>
                   </div>
@@ -113,36 +113,36 @@ export function SettleSelection({
         {/* People Who Owe You */}
         {owedToYou.length > 0 && (
           <div className="space-y-1.5">
-            <p className="text-caption text-secondary px-1">
+            <p className="text-micro text-secondary px-1">
               People who owe you
             </p>
             {owedToYou.map((person) => (
               <button
                 key={person.id}
                 onClick={() => onSelectPerson(person.id)}
-                className="w-full p-3 glass-sm rounded-lg hover:bg-muted/5 active:scale-[0.98] transition-all"
+                className="w-full p-4 card rounded-lg hover:shadow-[var(--shadow-fab)] active:scale-[0.98] transition-all duration-200"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-muted/20 flex items-center justify-center flex-shrink-0">
-                      <User className="w-4 h-4 text-muted-foreground" />
+                      <User className="w-4 h-4 text-secondary" />
                     </div>
                     <div className="text-left">
                       <div className="flex items-center gap-1.5">
-                        <p className="text-[14px] font-medium">{person.name}</p>
+                        <p className="text-label" style={{ fontWeight: 600 }}>{person.name}</p>
                         {person.trustScore && (
                           <TrustIndicator score={person.trustScore} />
                         )}
                       </div>
                       {person.paymentPreference && (
-                        <p className="text-[11px] text-secondary">
+                        <p className="text-micro text-secondary">
                           Prefers {person.paymentPreference}
                         </p>
                       )}
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-[15px] tabular-nums" style={{ fontWeight: 500, color: 'var(--success)' }}>
+                    <p className="text-[18px] tabular-nums" style={{ fontWeight: 700, color: 'var(--money)' }}>
                       +{formatAmount(person.amount)}
                     </p>
                   </div>

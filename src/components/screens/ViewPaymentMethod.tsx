@@ -46,20 +46,20 @@ export function ViewPaymentMethod({ method, onClose }: ViewPaymentMethodProps) {
           <>
             {method.holder && (
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Account holder</p>
-                <p className="text-foreground">{method.holder}</p>
+                <p className="text-micro text-secondary mb-1">Account holder</p>
+                <p className="text-body">{method.holder}</p>
               </div>
             )}
             <div>
-              <p className="text-sm text-muted-foreground mb-1">IBAN</p>
-              <p className="text-foreground font-mono text-sm break-all">
+              <p className="text-micro text-secondary mb-1">IBAN</p>
+              <p className="text-body font-mono break-all">
                 {method.iban}
               </p>
             </div>
             {method.note && (
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Reference note</p>
-                <p className="text-foreground">{method.note}</p>
+                <p className="text-micro text-secondary mb-1">Reference note</p>
+                <p className="text-body">{method.note}</p>
               </div>
             )}
           </>
@@ -69,14 +69,14 @@ export function ViewPaymentMethod({ method, onClose }: ViewPaymentMethodProps) {
           <>
             {method.phone && (
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Phone number</p>
-                <p className="text-foreground">{method.phone}</p>
+                <p className="text-micro text-secondary mb-1">Phone number</p>
+                <p className="text-body">{method.phone}</p>
               </div>
             )}
             {method.twintHandle && (
               <div>
-                <p className="text-sm text-muted-foreground mb-1">TWINT handle</p>
-                <p className="text-foreground">{method.twintHandle}</p>
+                <p className="text-micro text-secondary mb-1">TWINT handle</p>
+                <p className="text-body">{method.twintHandle}</p>
               </div>
             )}
           </>
@@ -86,14 +86,14 @@ export function ViewPaymentMethod({ method, onClose }: ViewPaymentMethodProps) {
           <>
             {method.email && (
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Email</p>
-                <p className="text-foreground">{method.email}</p>
+                <p className="text-micro text-secondary mb-1">Email</p>
+                <p className="text-body">{method.email}</p>
               </div>
             )}
             {method.username && (
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Username</p>
-                <p className="text-foreground">{method.username}</p>
+                <p className="text-micro text-secondary mb-1">Username</p>
+                <p className="text-body">{method.username}</p>
               </div>
             )}
           </>
@@ -102,21 +102,21 @@ export function ViewPaymentMethod({ method, onClose }: ViewPaymentMethodProps) {
         {method.kind === "crypto" && (
           <>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Network</p>
-              <p className="text-foreground">
+              <p className="text-micro text-secondary mb-1">Network</p>
+              <p className="text-body">
                 {method.network === "polkadot" ? "Polkadot" : "Asset Hub"}
               </p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Address</p>
-              <p className="text-foreground font-mono text-xs break-all">
+              <p className="text-micro text-secondary mb-1">Address</p>
+              <p className="text-body font-mono text-micro break-all">
                 {method.address}
               </p>
             </div>
             {method.label && (
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Label</p>
-                <p className="text-foreground">{method.label}</p>
+                <p className="text-micro text-secondary mb-1">Label</p>
+                <p className="text-body">{method.label}</p>
               </div>
             )}
           </>

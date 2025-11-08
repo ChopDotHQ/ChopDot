@@ -197,7 +197,7 @@ export function MembersTab({
                       {member.address && (
                         <div className="flex items-center gap-1.5 mt-1">
                           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
-                            <span className="text-[10px] font-mono text-foreground">
+                            <span className="text-micro font-mono text-foreground">
                               {member.address.slice(0, 8)}...{member.address.slice(-6)}
                             </span>
                             <button
@@ -208,10 +208,10 @@ export function MembersTab({
                               className="p-0.5 hover:bg-muted rounded transition-colors"
                               title="Copy address"
                             >
-                              <Copy className="w-3 h-3 text-muted-foreground" />
+                              <Copy className="w-3 h-3 text-secondary" />
                             </button>
                             {member.verified && (
-                              <div className="flex items-center gap-0.5 px-1 py-0.5 bg-green-500/20 rounded text-[10px] text-green-600 dark:text-green-400">
+                              <div className="flex items-center gap-0.5 px-1 py-0.5 bg-green-500/20 rounded text-micro text-green-600 dark:text-green-400">
                                 <CheckCircle className="w-2.5 h-2.5" />
                                 <span>Verified</span>
                               </div>
@@ -247,9 +247,9 @@ export function MembersTab({
                           return (
                             <>
                               <p 
-                                className="text-body tabular-nums"
+                                className="text-[18px] tabular-nums"
                                 style={{ 
-                                  fontWeight: 500,
+                                  fontWeight: 700,
                                   color: isSettled ? 'var(--muted)' : amountColor,
                                 }}
                               >

@@ -355,30 +355,6 @@ export async function apiCall(
 }
 ```
 
-## Testing
-
-### Backend Tests
-
-```bash
-cd backend
-
-# Install test dependencies
-npm install -D jest @types/jest ts-jest supertest @types/supertest
-
-# Run tests
-npm test
-```
-
-### Frontend Tests
-
-```bash
-# Install test dependencies
-npm install -D vitest @testing-library/react @testing-library/jest-dom
-
-# Run tests
-npm run test
-```
-
 ## Production Deployment
 
 ### Option 1: Docker Compose

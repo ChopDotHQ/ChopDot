@@ -77,25 +77,25 @@ export function MemberDetail({
         
         <div className="flex-1 overflow-auto p-4 space-y-4">
           {/* Profile Header */}
-          <div className="glass-sm rounded-xl p-4">
+          <div className="card rounded-xl p-4 transition-shadow duration-200">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                <User className="w-8 h-8 text-muted-foreground" />
+                <User className="w-8 h-8 text-secondary" />
               </div>
               <div className="flex-1">
-                <h2 className="text-[17px] mb-1">{memberName}</h2>
+                <h2 className="text-section mb-1">{memberName}</h2>
                 <TrustIndicator score={trustScore} showExplanation={true} />
               </div>
             </div>
             
             {/* Overall Balance */}
             <div className="pt-3 border-t border-border">
-              <p className="text-[12px] text-secondary mb-1">Overall balance</p>
-              <p className="text-[15px]" style={{ 
-                fontWeight: 500,
-                color: totalBalance > 0 ? 'var(--success)' : totalBalance < 0 ? 'var(--ink)' : 'var(--muted)'
+              <p className="text-micro text-secondary mb-1">Overall balance</p>
+              <p className="text-[22px] tabular-nums" style={{ 
+                fontWeight: 700,
+                color: totalBalance > 0 ? 'var(--money)' : totalBalance < 0 ? 'var(--ink)' : 'var(--muted)'
               }}>
-                {totalBalance > 0 ? `+${totalBalance.toFixed(2)}` : totalBalance < 0 ? `-${Math.abs(totalBalance).toFixed(2)}` : 'Settled'}
+                {totalBalance > 0 ? `+$${totalBalance.toFixed(2)}` : totalBalance < 0 ? `-$${Math.abs(totalBalance).toFixed(2)}` : 'Settled'}
               </p>
             </div>
           </div>
@@ -103,10 +103,10 @@ export function MemberDetail({
           {/* Preferred Payment Method */}
           {paymentPreference && (
             <div className="space-y-2">
-              <p className="text-[13px] text-secondary">Preferred payment method</p>
+              <p className="text-micro text-secondary">Preferred payment method</p>
               <button
                 onClick={() => setShowPaymentDetails(true)}
-                className="w-full glass-sm rounded-xl p-3 text-left hover:bg-muted/50 transition-all duration-200 active:scale-[0.98]"
+                className="w-full card rounded-xl p-3 text-left hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98]"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
@@ -124,17 +124,17 @@ export function MemberDetail({
           {/* Shared Pots */}
           {sharedPots.length > 0 && (
             <div className="space-y-2">
-              <p className="text-[13px] text-secondary">Shared pots ({sharedPots.length})</p>
+              <p className="text-micro text-secondary">Shared pots ({sharedPots.length})</p>
               <div className="space-y-2">
                 {sharedPots.map((pot) => (
-                  <div key={pot.id} className="glass-sm rounded-xl p-3">
+                  <div key={pot.id} className="card rounded-xl p-3 transition-shadow duration-200">
                     <div className="flex items-center justify-between">
-                      <p className="text-[14px]">{pot.name}</p>
-                      <p className="text-[13px] tabular-nums" style={{ 
-                        fontWeight: 500,
-                        color: pot.yourBalance > 0 ? 'var(--success)' : pot.yourBalance < 0 ? 'var(--ink)' : 'var(--muted)'
+                      <p className="text-label">{pot.name}</p>
+                      <p className="text-[18px] tabular-nums" style={{
+                        fontWeight: 700,
+                        color: pot.yourBalance > 0 ? 'var(--money)' : pot.yourBalance < 0 ? 'var(--ink)' : 'var(--muted)'
                       }}>
-                        {pot.yourBalance > 0 ? `+${pot.yourBalance.toFixed(2)}` : pot.yourBalance < 0 ? `-${Math.abs(pot.yourBalance).toFixed(2)}` : '—'}
+                        {pot.yourBalance > 0 ? `+$${pot.yourBalance.toFixed(2)}` : pot.yourBalance < 0 ? `-$${Math.abs(pot.yourBalance).toFixed(2)}` : '—'}
                       </p>
                     </div>
                   </div>
@@ -146,19 +146,19 @@ export function MemberDetail({
           {/* Recent Settlements */}
           {recentSettlements.length > 0 && (
             <div className="space-y-2">
-              <p className="text-[13px] text-muted-foreground">Recent settlements</p>
+              <p className="text-micro text-secondary">Recent settlements</p>
               <div className="space-y-2">
                 {recentSettlements.map((settlement) => (
-                  <div key={settlement.id} className="glass-sm rounded-xl p-3">
+                  <div key={settlement.id} className="card rounded-xl p-3 transition-shadow duration-200">
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-[14px]">
+                      <p className="text-label">
                         {settlement.direction === "sent" ? "You paid" : "They paid"}
                       </p>
-                      <p className="text-[14px]">${settlement.amount}</p>
+                      <p className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>${settlement.amount.toFixed(2)}</p>
                     </div>
                     <div className="flex items-center justify-between">
-                      <p className="text-[12px] text-muted-foreground">{settlement.method}</p>
-                      <p className="text-[12px] text-muted-foreground">{settlement.date}</p>
+                      <p className="text-micro text-secondary">{settlement.method}</p>
+                      <p className="text-micro text-secondary">{settlement.date}</p>
                     </div>
                   </div>
                 ))}
@@ -169,7 +169,7 @@ export function MemberDetail({
           {/* Empty States */}
           {sharedPots.length === 0 && (
             <div className="pt-8 text-center">
-              <p className="text-[13px] text-muted-foreground">No shared pots yet</p>
+              <p className="text-micro text-secondary">No shared pots yet</p>
             </div>
           )}
         </div>
@@ -193,14 +193,14 @@ export function MemberDetail({
         >
           <div className="p-4 space-y-4">
             <div className="space-y-2">
-              <p className="text-[12px] text-muted-foreground">Payment method</p>
-              <p className="text-[15px]">{getPaymentKindLabel(paymentPreference.kind)}</p>
+              <p className="text-micro text-secondary">Payment method</p>
+              <p className="text-label">{getPaymentKindLabel(paymentPreference.kind)}</p>
             </div>
             
             <div className="space-y-2">
-              <p className="text-[12px] text-muted-foreground">Details</p>
+              <p className="text-micro text-secondary">Details</p>
               <div className="p-3 bg-muted rounded-xl">
-                <p className="text-[14px] font-mono">
+                <p className="text-body font-mono">
                   {getFullPaymentDetails(paymentPreference.kind, paymentPreference.maskedDetails)}
                 </p>
               </div>

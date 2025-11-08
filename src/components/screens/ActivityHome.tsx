@@ -1,10 +1,11 @@
-import { ChevronRight, Bell, AlertCircle, ChevronDown, ChevronUp, Check, DollarSign, TrendingUp, UserPlus, Eye, EyeOff, X, RefreshCw, ListFilter, Wallet } from "lucide-react";
+import { ChevronRight, Bell, AlertCircle, ChevronDown, ChevronUp, Check, DollarSign, TrendingUp, UserPlus, Eye, EyeOff, X, RefreshCw, ListFilter, Wallet, Activity } from "lucide-react";
 import { useState, useMemo } from "react";
 import { SettleSheet } from "../SettleSheet";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { usePullToRefresh } from "../../utils/usePullToRefresh";
 import { triggerHaptic } from "../../utils/haptics";
 import { AccountMenu } from "../AccountMenu";
+import { EmptyState } from "../EmptyState";
 
 interface ActivityItem {
   id: string;
@@ -87,7 +88,7 @@ export function ActivityHome({
   // Lightweight currency formatter to keep UI consistent with PotsHome
   const formatCurrency = (amount: number): string => {
     const absoluteAmount = Math.abs(amount);
-    return `$${absoluteAmount.toFixed(0)}`;
+    return `$${absoluteAmount.toFixed(2)}`;
   };
 
   // Pull-to-refresh
@@ -154,7 +155,7 @@ export function ActivityHome({
         <div className="flex items-center gap-2">
           {/* Pending confirmations badge */}
           {hasPendingAttestations && (
-            <div className="px-2 py-1 rounded-md text-[11px]" style={{ background: 'var(--accent-pink-soft)', color: 'var(--accent)' }}>
+            <div className="px-2 py-1 rounded-md text-micro" style={{ background: 'var(--accent-pink-soft)', color: 'var(--accent)' }}>
               {pendingExpenses.length} pending
             </div>
           )}
@@ -189,7 +190,7 @@ export function ActivityHome({
           }}
         >
           <RefreshCw 
-            className={`w-5 h-5 text-muted-foreground transition-transform duration-200 ${
+            className={`w-5 h-5 text-secondary transition-transform duration-200 ${
               shouldTrigger ? 'rotate-180' : ''
             }`}
             style={{ transform: `rotate(${pullDistance * 2}deg)` }}
@@ -204,7 +205,7 @@ export function ActivityHome({
       >
         <div className="p-4 space-y-3">
           {/* Balance Overview Card */}
-          <div className="card p-4">
+          <div className="card p-4 transition-shadow duration-200">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-section" style={{ fontWeight: 500 }}>Your balance</h3>
               <button 
@@ -220,24 +221,24 @@ export function ActivityHome({
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className="text-caption text-secondary mb-1">You owe</p>
+                <p className="text-micro text-secondary mb-1">You owe</p>
                 <p 
-                  className="text-[20px] tabular-nums"
+                  className="text-[22px] tabular-nums"
                   style={{ 
-                    fontWeight: 600,
-                    color: balancesVisible && totalOwing > 0 ? 'var(--foreground)' : 'var(--foreground)'
+                    fontWeight: 700,
+                    color: balancesVisible && totalOwing > 0 ? 'var(--ink)' : 'var(--ink)'
                   }}
                 >
                   {balancesVisible ? formatCurrency(totalOwing) : "•••"}
                 </p>
               </div>
               <div>
-                <p className="text-caption text-secondary mb-1">Owed to you</p>
+                <p className="text-micro text-secondary mb-1">Owed to you</p>
                 <p 
-                  className="text-[20px] tabular-nums" 
+                  className="text-[22px] tabular-nums" 
                   style={{ 
-                    fontWeight: 600,
-                    color: balancesVisible && totalOwed > 0 ? 'var(--success)' : 'var(--foreground)'
+                    fontWeight: 700,
+                    color: balancesVisible && totalOwed > 0 ? 'var(--money)' : 'var(--ink)'
                   }}
                 >
                   {balancesVisible ? formatCurrency(totalOwed) : "•••"}
@@ -248,7 +249,7 @@ export function ActivityHome({
 
           {/* Pending Attestations Banner */}
           {hasPendingAttestations && showBanner && (
-            <div className="card p-3 bg-muted/10 border border-border">
+            <div className="card p-4 bg-muted/10 transition-shadow duration-200">
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--foreground)' }} />
                 <div className="flex-1 min-w-0">
@@ -272,7 +273,7 @@ export function ActivityHome({
                   onClick={() => setShowBanner(false)}
                   className="p-1 hover:bg-muted/30 rounded transition-colors"
                 >
-                  <X className="w-3.5 h-3.5 text-muted-foreground" />
+                  <X className="w-3.5 h-3.5 text-secondary" />
                 </button>
               </div>
 
@@ -283,7 +284,7 @@ export function ActivityHome({
                     <div key={expense.id} className="flex items-center justify-between p-2 bg-card rounded-lg">
                       <div className="flex-1 min-w-0">
                         <p className="text-body truncate">{expense.memo}</p>
-                        <p className="text-caption text-muted-foreground">
+                        <p className="text-caption text-secondary">
                           {expense.potName} • {expense.paidBy}
                         </p>
                       </div>
@@ -317,14 +318,14 @@ export function ActivityHome({
                   </div>
                   <div>
                     <p className="text-body">Settle with {topPersonToSettle.name}</p>
-                    <p className="text-caption text-muted-foreground">
+                    <p className="text-caption text-secondary">
                       via {topPersonToSettle.preferredMethod}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-body tabular-nums">${topPersonToSettle.amount.toFixed(2)}</p>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground ml-auto" />
+                  <ChevronRight className="w-4 h-4 text-secondary ml-auto" />
                 </div>
               </div>
             </button>
@@ -364,13 +365,14 @@ export function ActivityHome({
 
           {/* Activity Feed */}
           <div className="space-y-2">
-            <h3 className="text-label text-muted-foreground px-1">Recent activity</h3>
+            <h3 className="text-label text-secondary px-1">Recent activity</h3>
             {filteredActivities.length === 0 ? (
-              <div className="card p-8 text-center">
-                <p className="text-body text-muted-foreground">No activity yet</p>
-                <p className="text-caption text-muted-foreground mt-1">
-                  Your expenses and settlements will appear here
-                </p>
+              <div className="pt-8">
+                <EmptyState
+                  icon={Activity}
+                  message="No activity yet"
+                  description="Your expenses and settlements will appear here"
+                />
               </div>
             ) : (
               filteredActivities.map((activity) => (
@@ -398,11 +400,11 @@ export function ActivityHome({
                     <div className="flex-1 min-w-0">
                       <p className="text-body truncate">{activity.title}</p>
                       {activity.subtitle && (
-                        <p className="text-caption text-muted-foreground truncate">
+                        <p className="text-caption text-secondary truncate">
                           {activity.subtitle}
                         </p>
                       )}
-                      <p className="text-micro text-muted-foreground mt-1">
+                      <p className="text-micro text-secondary mt-1">
                         {new Date(activity.timestamp).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",

@@ -29,7 +29,7 @@ export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: 
           <button
             key={person.id}
             onClick={() => onSettle(person.id)}
-            className="w-full card p-3 text-left hover:opacity-80 active:opacity-60 transition-opacity"
+            className="w-full card p-4 text-left hover:shadow-[var(--shadow-fab)] active:opacity-60 transition-all duration-200"
           >
             <div className="flex items-center justify-between gap-3">
               {/* Left: Avatar + Name + Payment Preference */}
@@ -80,8 +80,8 @@ export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: 
               {/* Right: Amount (right-aligned) */}
               <div className="text-right flex-shrink-0">
                 <p 
-                  className="text-body font-medium tabular-nums"
-                  style={{ color: amountColor }}
+                  className="text-[18px] tabular-nums"
+                  style={{ fontWeight: 700, color: amountColor }}
                 >
                   {(() => {
                     const isDot = person.currency === 'DOT';
@@ -94,7 +94,7 @@ export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: 
                 </p>
                 <div className="mt-1">
                   <span
-                    className="inline-block px-2 py-0.5 rounded-md text-[11px] bg-muted/20 text-foreground"
+                    className="inline-block px-2 py-0.5 rounded-md text-micro bg-muted/20 text-foreground"
                     style={{ fontWeight: 500 }}
                   >
                     Settle with {person.name.split(' ')[0]}

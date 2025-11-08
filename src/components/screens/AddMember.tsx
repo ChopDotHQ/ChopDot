@@ -121,7 +121,7 @@ export function AddMember({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         <div className="w-10 h-10 rounded-full bg-muted/20 flex items-center justify-center flex-shrink-0">
-                          <User className="w-5 h-5 text-muted-foreground" />
+                          <User className="w-5 h-5 text-secondary" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
@@ -152,7 +152,7 @@ export function AddMember({
                           </div>
                         </div>
                       </div>
-                      <div className="text-accent text-[13px] font-medium flex-shrink-0 ml-2">
+                      <div className="text-foreground text-label font-medium flex-shrink-0 ml-2">
                         Add
                       </div>
                     </div>

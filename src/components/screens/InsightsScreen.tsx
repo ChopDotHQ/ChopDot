@@ -47,7 +47,7 @@ export function InsightsScreen({
           <div className="inline-flex p-0.5 rounded-lg" style={{ background: 'rgba(0, 0, 0, 0.06)' }}>
             <button
               onClick={() => setSelectedPeriod("3m")}
-              className="px-4 py-1.5 rounded-md text-xs transition-all duration-200"
+              className="px-4 py-1.5 rounded-md text-micro transition-all duration-200"
               style={{
                 background: selectedPeriod === "3m" ? 'var(--card)' : 'transparent',
                 color: selectedPeriod === "3m" ? 'var(--ink)' : 'var(--muted)',
@@ -59,7 +59,7 @@ export function InsightsScreen({
             </button>
             <button
               onClick={() => setSelectedPeriod("6m")}
-              className="px-4 py-1.5 rounded-md text-xs transition-all duration-200"
+              className="px-4 py-1.5 rounded-md text-micro transition-all duration-200"
               style={{
                 background: selectedPeriod === "6m" ? 'var(--card)' : 'transparent',
                 color: selectedPeriod === "6m" ? 'var(--ink)' : 'var(--muted)',
@@ -71,7 +71,7 @@ export function InsightsScreen({
             </button>
             <button
               onClick={() => setSelectedPeriod("1y")}
-              className="px-4 py-1.5 rounded-md text-xs transition-all duration-200"
+              className="px-4 py-1.5 rounded-md text-micro transition-all duration-200"
               style={{
                 background: selectedPeriod === "1y" ? 'var(--card)' : 'transparent',
                 color: selectedPeriod === "1y" ? 'var(--ink)' : 'var(--muted)',
@@ -86,22 +86,22 @@ export function InsightsScreen({
 
         {/* Combined Metrics - Spending */}
         <div className="card p-4">
-          <h3 className="text-sm mb-3" style={{ fontWeight: 600 }}>Spending</h3>
+          <h3 className="text-label mb-3" style={{ fontWeight: 600 }}>Spending</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <DollarSign className="w-3.5 h-3.5 text-secondary" />
                 <p className="text-micro text-secondary">This Month</p>
               </div>
-              <p className="text-xl tabular-nums" style={{ fontWeight: 700 }}>${monthlySpending.toFixed(0)}</p>
+              <p className="text-[22px] tabular-nums" style={{ fontWeight: 700 }}>${monthlySpending.toFixed(2)}</p>
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="w-3.5 h-3.5 text-secondary" />
                 <p className="text-micro text-secondary">Avg/Month</p>
               </div>
-              <p className="text-xl tabular-nums" style={{ fontWeight: 700 }}>
-                ${Math.round(monthlyData.reduce((sum, d) => sum + d.amount, 0) / monthlyData.length)}
+              <p className="text-[22px] tabular-nums" style={{ fontWeight: 700 }}>
+                ${(monthlyData.reduce((sum, d) => sum + d.amount, 0) / monthlyData.length).toFixed(2)}
               </p>
             </div>
             <div>
@@ -109,7 +109,7 @@ export function InsightsScreen({
                 <HandCoins className="w-3.5 h-3.5 text-secondary" />
                 <p className="text-micro text-secondary">Total Settled</p>
               </div>
-              <p className="text-xl tabular-nums" style={{ fontWeight: 700 }}>${totalSettled.toFixed(0)}</p>
+              <p className="text-[22px] tabular-nums" style={{ fontWeight: 700 }}>${totalSettled.toFixed(2)}</p>
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -123,7 +123,7 @@ export function InsightsScreen({
 
         {/* Reliability Metrics */}
         <div className="card p-4">
-          <h3 className="text-sm mb-3" style={{ fontWeight: 600 }}>Reliability</h3>
+          <h3 className="text-label mb-3" style={{ fontWeight: 600 }}>Reliability</h3>
           <div className="grid grid-cols-3 gap-3">
             <div className="text-center">
               <div className="text-xl tabular-nums mb-1" style={{ fontWeight: 700 }}>{confirmationRate}%</div>
@@ -142,7 +142,7 @@ export function InsightsScreen({
 
         {/* Spending Over Time */}
         <div className="card p-4">
-          <h3 className="text-sm mb-4" style={{ fontWeight: 600 }}>Spending Over Time</h3>
+          <h3 className="text-label mb-4" style={{ fontWeight: 600 }}>Spending Over Time</h3>
           <div className="flex gap-3">
             {/* Y-axis labels */}
             <div className="flex flex-col justify-between" style={{ height: "140px", paddingBottom: "20px" }}>

@@ -1,5 +1,6 @@
 import { Search, Users, X, ReceiptText } from "lucide-react";
 import { useState } from "react";
+import { EmptyState } from "../EmptyState";
 
 interface RecentExpense {
   id: string;
@@ -56,13 +57,13 @@ export function ChoosePot({
         {/* Search */}
         <div className="p-4 border-b border-border">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search pots…"
-              className="w-full pl-10 pr-3 py-2.5 input-field text-body placeholder:text-muted-foreground focus:outline-none focus-ring-pink"
+              className="w-full pl-10 pr-3 py-2.5 input-field text-body placeholder:text-secondary focus:outline-none focus-ring-pink"
             />
           </div>
         </div>
@@ -80,7 +81,7 @@ export function ChoosePot({
           {/* Recent Pots */}
           {filteredPots.length > 0 && (
             <div className="space-y-2">
-              <p className="text-label text-muted-foreground px-1 pt-2">
+              <p className="text-label text-secondary px-1 pt-2">
                 Recent
               </p>
               {filteredPots.map((pot) => (
@@ -91,13 +92,13 @@ export function ChoosePot({
                   >
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <p className="text-body flex-1">{pot.name}</p>
-                      <div className="flex items-center gap-1 text-caption text-muted-foreground flex-shrink-0">
+                      <div className="flex items-center gap-1 text-micro text-secondary flex-shrink-0">
                         <Users className="w-3 h-3" />
                         <span>{pot.memberCount}</span>
                       </div>
                     </div>
-                    <p className="text-caption text-muted-foreground">
-                      My expenses ${pot.myExpenses.toFixed(0)} • Total ${pot.totalExpenses.toFixed(0)}
+                    <p className="text-micro text-secondary">
+                      My expenses ${pot.myExpenses.toFixed(2)} • Total ${pot.totalExpenses.toFixed(2)}
                     </p>
                     <p className="text-micro text-secondary mt-1">
                       Updated {pot.lastUpdated}
@@ -134,10 +135,16 @@ export function ChoosePot({
 
           {/* Empty State */}
           {filteredPots.length === 0 && search && (
-            <div className="pt-8 text-center">
-              <p className="text-body text-secondary">
-                No pots found
-              </p>
+            <div className="pt-8">
+              <EmptyState
+                icon={Search}
+                message="No pots found"
+                description={`No pots match "${search}"`}
+                primaryAction={{
+                  label: "Create New Pot",
+                  onClick: onCreatePot
+                }}
+              />
             </div>
           )}
         </div>

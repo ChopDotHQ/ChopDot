@@ -521,7 +521,7 @@ function AppContent() {
       ],
       budget: 500,
       budgetEnabled: true,
-      checkpointEnabled: true,
+      checkpointEnabled: false, // Hidden by default - only show when wallet connected
     },
     {
       id: "2",
@@ -569,7 +569,7 @@ function AppContent() {
       ],
       budget: 3000,
       budgetEnabled: true,
-      checkpointEnabled: true,
+      checkpointEnabled: false, // Hidden by default - only show when wallet connected
     },
     {
       id: "3",
@@ -793,7 +793,8 @@ function AppContent() {
               }
             }
             
-            setPots(migrated);
+            // Ensure type compatibility - migrated pots match Pot interface
+            setPots(migrated as Pot[]);
           }
         } else {
           // Try backup if main data is missing
@@ -806,19 +807,29 @@ function AppContent() {
                 // Migrate backup pots too
                 const { migrateAllPotsOnLoad } = await import('./utils/migratePot');
                 const migrated = migrateAllPotsOnLoad(parsed);
-                setPots(migrated);
+                // Ensure type compatibility - migrated pots match Pot interface
+                setPots(migrated as Pot[]);
                 // Restore migrated backup to main key
-                const migratedData = JSON.stringify(migrated);
-                localStorage.setItem("chopdot_pots", migratedData);
+                try {
+                  const migratedData = JSON.stringify(migrated);
+                  localStorage.setItem("chopdot_pots", migratedData);
+                } catch (saveErr) {
+                  console.warn("[ChopDot] Failed to restore migrated backup:", saveErr);
+                  // Non-critical: pots are already loaded in memory
+                }
               }
             } catch (e) {
-              console.error("[ChopDot] Failed to restore from backup");
+              console.error("[ChopDot] Failed to restore from backup:", e);
             }
           }
         }
       } catch (e) {
-        console.error("[ChopDot] Failed to load pots");
-        localStorage.removeItem("chopdot_pots");
+        console.error("[ChopDot] Failed to load pots:", e);
+        try {
+          localStorage.removeItem("chopdot_pots");
+        } catch (removeErr) {
+          console.warn("[ChopDot] Failed to remove corrupted pots:", removeErr);
+        }
       }
     })();
 
@@ -836,8 +847,12 @@ function AppContent() {
         }
       }
     } catch (e) {
-      console.error("[ChopDot] Failed to load settlements");
-      localStorage.removeItem("chopdot_settlements");
+      console.error("[ChopDot] Failed to load settlements:", e);
+      try {
+        localStorage.removeItem("chopdot_settlements");
+      } catch (removeErr) {
+        console.warn("[ChopDot] Failed to remove corrupted settlements:", removeErr);
+      }
     }
 
     try {
@@ -1256,7 +1271,7 @@ function AppContent() {
       goalAmount: newPot.goalAmount,
       goalDescription: newPot.goalDescription,
       checkpointEnabled:
-        newPot.type === "expense" ? true : undefined, // Default enabled for expense pots
+        newPot.type === "expense" ? false : undefined, // Hidden by default - users can enable in settings
     };
 
     setPots([...pots, pot]);
@@ -2069,6 +2084,114 @@ function AppContent() {
   }, [pots, settlements]);
 
   // ========================================
+  // NAVIGATION SAFETY CHECKS
+  // ========================================
+  // Handle navigation when screens require data that's missing
+  useEffect(() => {
+    if (!screen) return;
+
+    const pot = getCurrentPot();
+    const screenType = screen.type;
+
+    // Check for screens that require a pot
+    if (
+      (screenType === "add-expense" ||
+        screenType === "edit-expense" ||
+        screenType === "expense-detail" ||
+        screenType === "add-contribution" ||
+        screenType === "withdraw-funds" ||
+        screenType === "pot-home") &&
+      !pot
+    ) {
+      reset({ type: "pots-home" });
+      return;
+    }
+
+    // Check for screens that require specific data
+    if (screenType === "edit-expense" && "expenseId" in screen) {
+      const expense = pot?.expenses.find((e) => e.id === screen.expenseId);
+      if (!expense && pot) {
+        replace({ type: "pot-home", potId: currentPotId! });
+        return;
+      }
+    }
+
+    if (screenType === "expense-detail" && "expenseId" in screen) {
+      const expense = pot?.expenses.find((e) => e.id === screen.expenseId);
+      if (!expense && pot) {
+        replace({ type: "pot-home", potId: currentPotId! });
+        return;
+      }
+    }
+
+    if (screenType === "checkpoint-status") {
+      if (!pot || !pot.currentCheckpoint) {
+        if (currentPotId) {
+          replace({ type: "pot-home", potId: currentPotId });
+        } else {
+          reset({ type: "pots-home" });
+        }
+        return;
+      }
+    }
+
+    if (screenType === "member-detail" && "memberId" in screen) {
+      const memberId = screen.memberId;
+      const personFromPeople = people.find((p) => p.id === memberId);
+      const foundInPots = pots.some((p) =>
+        p.members.some((m) => m.id === memberId),
+      );
+      if (!personFromPeople && !foundInPots) {
+        reset({ type: "people-home" });
+        return;
+      }
+    }
+
+    // Handle deprecated settlement screens
+    if (
+      screenType === "settle-cash" ||
+      screenType === "settle-bank" ||
+      screenType === "settle-dot"
+    ) {
+      if (currentPotId) {
+        replace({ type: "settle-selection" });
+      } else {
+        reset({ type: "people-home" });
+      }
+      return;
+    }
+
+    // Handle unknown screen types (shouldn't happen, but safety net)
+    const validScreenTypes = [
+      "activity-home",
+      "pots-home",
+      "settlements-home",
+      "people-home",
+      "you-tab",
+      "settings",
+      "payment-methods",
+      "insights",
+      "create-pot",
+      "pot-home",
+      "add-expense",
+      "edit-expense",
+      "expense-detail",
+      "settle-selection",
+      "settle-home",
+      "settlement-history",
+      "settlement-confirmation",
+      "member-detail",
+      "add-contribution",
+      "withdraw-funds",
+      "checkpoint-status",
+      "request-payment",
+    ];
+    if (!validScreenTypes.includes(screenType)) {
+      reset({ type: "pots-home" });
+    }
+  }, [screen, pots, people, currentPotId, reset, replace]);
+
+  // ========================================
   // SCREEN RENDERING
   // ========================================
   const renderScreen = () => {
@@ -2469,7 +2592,8 @@ function AppContent() {
             onImportPot={(importedPot) => {
               // Imported pot is already migrated and in correct format
               // Just add it to pots list (ID de-duplication already handled in import function)
-              setPots([...pots, importedPot]);
+              // Ensure type compatibility
+              setPots([...pots, importedPot as Pot]);
               showToast("Pot imported successfully", "success");
               // Navigate to the imported pot
               replace({ type: "pot-home", potId: importedPot.id });
@@ -2833,10 +2957,8 @@ function AppContent() {
             baseCurrency={currentPot?.baseCurrency || "USD"}
             onBack={() => {
               if (currentPotId) {
-                // Go back to pot detail explicitly to avoid blank states
-                push({ type: "pot-home", potId: currentPotId });
-                // Then remove the extra selection screen to keep stack tidy
-                back();
+                // Go back to pot detail
+                replace({ type: "pot-home", potId: currentPotId });
               } else {
                 reset({ type: "people-home" });
               }
@@ -3019,7 +3141,10 @@ function AppContent() {
                 // Persist to localStorage so it survives reload and is visible on return
                 try {
                   localStorage.setItem('pots', JSON.stringify(updatedPots));
-                } catch {}
+                } catch (error) {
+                  console.warn('[App] Failed to persist pot history to localStorage:', error);
+                  // Non-critical: history will still be visible in current session
+                }
               }
 
               // Show toast and navigate back
@@ -3047,11 +3172,13 @@ function AppContent() {
                 result: {
                   amount: Number(settlementAmount.toFixed(6)),
                   method: method as any,
+                  counterpartyId: personIdFromNav || activeSettlements[0]?.id || "unknown",
+                  counterpartyName,
+                  scope: settleScope as "pot" | "person-all" | "expense",
                   ref: method === "bank" ? reference : undefined,
                   txHash: method === "dot" ? reference : undefined,
                   pots: currentPotId && getCurrentPot() ? [{ id: currentPotId, name: getCurrentPot()!.name, amount: Number(settlementAmount.toFixed(6)) }] : [],
                   at: Date.now(),
-                  counterpartyName,
                 },
               });
             }}
@@ -3102,6 +3229,7 @@ function AppContent() {
         return (
           <SettlementConfirmation
             result={screen.result}
+            onBack={back}
             onViewHistory={() => {
               push({ type: "settlement-history" });
             }}
@@ -3313,7 +3441,15 @@ function AppContent() {
           />
         );
 
+      case "settle-cash":
+      case "settle-bank":
+      case "settle-dot":
+        // These screen types are deprecated - settlement is handled in settle-home
+        // Navigation handled in useEffect above
+        return null;
+
       default:
+        // Unknown screen type - navigation handled in useEffect above
         return null;
     }
   };

@@ -96,7 +96,7 @@ export async function connectNovaWallet(): Promise<{ uri: string; onConnect: Pro
       }
 
       return {
-        address: addresses[0],
+        address: addresses[0]!, // Non-null assertion: addresses.length > 0 checked above
         accounts: addresses,
       };
     })

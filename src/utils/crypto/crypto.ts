@@ -31,7 +31,7 @@ export async function deriveKeyPBKDF2(
   const key = await crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt: salt,
+      salt: salt as BufferSource,
       iterations: iterations,
       hash: 'SHA-256',
     },
@@ -71,14 +71,14 @@ export async function aesGcmEncrypt(
   const ciphertextBuffer = await crypto.subtle.encrypt(
     {
       name: 'AES-GCM',
-      iv: iv,
+      iv: iv as BufferSource,
     },
     key,
     plaintextBuffer
   );
 
   // Convert to base64
-  const ivBase64 = arrayBufferToBase64(iv.buffer);
+  const ivBase64 = arrayBufferToBase64(iv.buffer as ArrayBuffer);
   const ciphertextBase64 = arrayBufferToBase64(ciphertextBuffer);
 
   // Zero out sensitive data
@@ -113,7 +113,7 @@ export async function aesGcmDecrypt(
     plaintextBuffer = await crypto.subtle.decrypt(
       {
         name: 'AES-GCM',
-        iv: iv,
+        iv: iv as BufferSource,
       },
       key,
       ciphertextBuffer
