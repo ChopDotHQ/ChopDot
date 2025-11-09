@@ -1,4 +1,4 @@
-import { User, Bell, HandCoins, ListFilter, Wallet } from "lucide-react";
+import { User, Bell, HandCoins, ListFilter } from "lucide-react";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
 import { WalletBanner } from "../WalletBanner";
@@ -7,7 +7,6 @@ import { EmptyState } from "../EmptyState";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { useState, useMemo } from "react";
 import { AccountMenu } from "../AccountMenu";
-//
 import { PeopleView } from "./PeopleView";
 
 interface DebtBreakdown {
@@ -55,13 +54,10 @@ export function PeopleHome({
   youOwe,
   owedToYou,
   people,
-  walletConnected,
-  onConnectWallet,
   onSettle,
   onRemindSent: _onRemindSent,
   onPersonClick,
   onNotificationClick,
-  onWalletClick,
   notificationCount = 0,
   isDarkMode = false,
   onToggleTheme,

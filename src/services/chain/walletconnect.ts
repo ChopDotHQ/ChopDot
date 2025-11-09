@@ -130,8 +130,7 @@ export function getWalletConnectSession(): SessionTypes.Struct | null {
  */
 export async function signAndSendTransaction(
   address: string,
-  transaction: string, // Hex-encoded transaction (unsigned)
-  chainId?: string // Optional chain ID (defaults to Relay Chain)
+  transaction: string
 ): Promise<{ txHash: string }> {
   if (!signClient || !session) {
     throw new Error('WalletConnect session not found');
@@ -142,7 +141,6 @@ export async function signAndSendTransaction(
     // Asset Hub and Relay Chain share the same genesis hash, so WalletConnect doesn't distinguish them
     // We must use the Relay Chain chain ID format for WalletConnect requests
     // However, the actual transaction will be sent to whichever RPC endpoint we're connected to
-    const requestedChainId = chainId || POLKADOT_RELAY_CHAIN_ID;
     
     // Always use Relay Chain format for WalletConnect (Nova Wallet requirement)
     // Note: The transaction itself is still for the correct chain based on RPC endpoint

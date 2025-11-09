@@ -196,8 +196,7 @@ export const polkadotChainService = (() => {
         onStatus?.('submitted');
 
         try {
-          const chainId = config.walletConnectChainId;
-          const { txHash } = await signAndSendTransaction(from, txHex, chainId);
+          const { txHash } = await signAndSendTransaction(from, txHex);
           onStatus?.('inBlock', { txHash });
           return { txHash };
         } catch (err: any) {

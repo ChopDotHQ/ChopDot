@@ -1,4 +1,4 @@
-import { Plus, Bell, TrendingUp, Search, Eye, EyeOff, ListFilter, Receipt, ArrowLeftRight, QrCode, Send, Wallet } from "lucide-react";
+import { Plus, Bell, TrendingUp, Search, Eye, EyeOff, ListFilter, Receipt, ArrowLeftRight, QrCode, Send } from "lucide-react";
 import { WalletBanner } from "../WalletBanner";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { useState, useMemo } from "react";
@@ -57,8 +57,6 @@ export function PotsHome({
   onSettleWithPerson: _onSettleWithPerson,
   onRemindSent: _onRemindSent,
   onNotificationClick,
-  onWalletClick,
-  walletConnected = false,
   notificationCount = 0,
   onQuickAddExpense,
   onQuickSettle,

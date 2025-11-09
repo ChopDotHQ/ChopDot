@@ -42,7 +42,6 @@ export function SettingsTab({
   checkpointEnabled: initialCheckpointEnabled,
   potType = "expense",
   members = [],
-  potId,
   pot,
   onUpdateSettings,
   onCopyInviteLink,

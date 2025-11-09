@@ -103,7 +103,7 @@ export const simChain: PolkadotChainService = {
     return { txHash, finalizedBlock: finalizedBlockHash };
   },
 
-  async sendDot({ from, to, amountDot, onStatus }: SendDotArgs) {
+  async sendDot({ from, onStatus }: SendDotArgs) {
     // Delegate to simulated signAndSendExtrinsic lifecycle (matches real implementation)
     return this.signAndSendExtrinsic({
       buildTx: () => ({}), // Not used in sim

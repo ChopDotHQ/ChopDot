@@ -32,7 +32,7 @@ export function AccountMenu() {
   const [showExtensionSelector, setShowExtensionSelector] = useState(false);
   const [showNovaQR, setShowNovaQR] = useState(false);
   const [novaQRCode, setNovaQRCode] = useState<string | null>(null);
-  const [novaURI, setNovaURI] = useState<string | null>(null);
+  const [, setNovaURI] = useState<string | null>(null);
   const [connecting, setConnecting] = useState(false);
 
   // Reset connecting state and close modals when account status changes
@@ -65,8 +65,8 @@ export function AccountMenu() {
     }
   }, [account.error, connecting, showNovaQR]);
   const [availableExtensions, setAvailableExtensions] = useState<Array<{ name: string; source: string; accounts: Array<{ address: string; name?: string; source?: string }> }>>([]);
-  const [availableAccounts, setAvailableAccounts] = useState<Array<{ address: string; name?: string; source?: string }>>([]);
-  const [selectedExtension, setSelectedExtension] = useState<string | null>(null);
+  const [, setAvailableAccounts] = useState<Array<{ address: string; name?: string; source?: string }>>([]);
+  const [, setSelectedExtension] = useState<string | null>(null);
   const hasPositiveBalance = account.balanceHuman ? parseFloat(account.balanceHuman) > 0 : false;
 
   const handleConnectExtension = async () => {

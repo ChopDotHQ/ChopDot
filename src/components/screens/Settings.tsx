@@ -1,4 +1,4 @@
-import { User, LogOut, CreditCard, ChevronRight, Trash2 } from "lucide-react";
+import { User, LogOut, CreditCard, ChevronRight, Trash2, Cloud } from "lucide-react";
 import { TopBar } from "../TopBar";
 import { InputField } from "../InputField";
 import { SelectField } from "../SelectField";
@@ -8,13 +8,14 @@ import { Theme } from "../../utils/useTheme";
 interface SettingsProps {
   onBack?: () => void;
   onPaymentMethods: () => void;
+  onCrustStorage?: () => void;
   onLogout: () => void;
   onDeleteAccount: () => void;
   theme: Theme;
   onThemeChange: (theme: Theme) => void;
 }
 
-export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, theme, onThemeChange }: SettingsProps) {
+export function Settings({ onBack, onPaymentMethods, onCrustStorage, onLogout, onDeleteAccount, theme, onThemeChange }: SettingsProps) {
   const [name, setName] = useState("You");
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("you@example.com");
@@ -24,9 +25,7 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
   const [hasChanges, setHasChanges] = useState(false);
 
   const handleSave = () => {
-    // In a real app, this would save to backend/database
     setHasChanges(false);
-    // Show toast via parent component
   };
 
   const markChanged = () => {
@@ -225,6 +224,20 @@ export function Settings({ onBack, onPaymentMethods, onLogout, onDeleteAccount, 
               </div>
               <ChevronRight className="w-5 h-5 text-secondary" />
             </button>
+
+            {/* Crust Storage */}
+            {onCrustStorage && (
+              <button
+                onClick={onCrustStorage}
+                className="w-full p-4 card rounded-xl flex items-center justify-between hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-3">
+                  <Cloud className="w-5 h-5 text-foreground" />
+                  <span className="text-body text-foreground">Crust Storage (IPFS)</span>
+                </div>
+                <ChevronRight className="w-5 h-5 text-secondary" />
+              </button>
+            )}
 
             {/* Sign Out */}
             <button

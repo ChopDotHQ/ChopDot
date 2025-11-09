@@ -20,7 +20,6 @@ export function SettlementConfirmModal({
   isOpen,
   fromAddress,
   toAddress,
-  fromName,
   toName,
   amountDot,
   onConfirm,

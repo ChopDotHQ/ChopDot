@@ -185,7 +185,7 @@ export function HyperbridgeBridgeSheet({
                 title="Hyperbridge Bridge"
                 allow="clipboard-read; clipboard-write; payment; camera; microphone"
                 sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"
-                onLoad={(e) => {
+                onLoad={() => {
                   if (process.env.NODE_ENV === 'development') {
                     console.log('[HyperbridgeBridgeSheet] Iframe loaded');
                   }

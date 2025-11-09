@@ -200,7 +200,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
       
       // Wait for connection asynchronously (handled by AccountMenu showing QR)
       onConnect
-        .then(({ address, accounts }) => {
+        .then(({ address }) => {
           const address0 = normalizeToPolkadot(address);
           const walletName = 'Nova Wallet';
 

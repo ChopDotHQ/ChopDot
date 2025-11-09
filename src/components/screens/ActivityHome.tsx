@@ -1,4 +1,4 @@
-import { ChevronRight, Bell, AlertCircle, ChevronDown, ChevronUp, Check, DollarSign, TrendingUp, UserPlus, Eye, EyeOff, X, RefreshCw, ListFilter, Wallet, Activity } from "lucide-react";
+import { ChevronRight, Bell, Activity, AlertCircle, ChevronDown, ChevronUp, Check, DollarSign, TrendingUp, UserPlus, Eye, EyeOff, X, RefreshCw, ListFilter } from "lucide-react";
 import { useState, useMemo } from "react";
 import { SettleSheet } from "../SettleSheet";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
@@ -62,8 +62,6 @@ export function ActivityHome({
   hasPendingAttestations,
   onActivityClick,
   onNotificationClick,
-  onWalletClick,
-  walletConnected = false,
   onSettleClick,
   onConfirmExpense,
   onRefresh,

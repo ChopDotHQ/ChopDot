@@ -346,7 +346,7 @@ export function ChainTestPage() {
       }, 60000);
 
       // Wait for connection
-      const { address, accounts } = await onConnect;
+      const { address } = await onConnect;
       
       clearTimeout(connectionTimeout);
       

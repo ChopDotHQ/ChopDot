@@ -1,4 +1,4 @@
-import { QrCode, Scan, TrendingUp, User as UserIcon, Bell, ChevronRight, ChevronDown, Globe, Languages, Palette, Shield, Lock, Database, Code, LogOut, Trash2, Download, Wallet, HelpCircle } from "lucide-react";
+import { QrCode, Scan, TrendingUp, User as UserIcon, Bell, ChevronRight, ChevronDown, Globe, Languages, Palette, Shield, Lock, Database, Code, LogOut, Trash2, Download, HelpCircle, Cloud } from "lucide-react";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { triggerHaptic } from "../../utils/haptics";
@@ -12,6 +12,7 @@ interface YouTabProps {
   onPaymentMethods: () => void;
   onViewInsights: () => void;
   onSettings: () => void;
+  onCrustStorage: () => void;
   onNotificationClick: () => void;
   onWalletClick: () => void;
   walletConnected?: boolean;
@@ -42,9 +43,8 @@ export function YouTab({
   onPaymentMethods,
   onViewInsights,
   onSettings: _onSettings,
+  onCrustStorage,
   onNotificationClick,
-  onWalletClick,
-  walletConnected = false,
   notificationCount,
   insights,
   theme,
@@ -406,6 +406,16 @@ export function YouTab({
               <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
                 <Download className="w-4 h-4 text-secondary" />
                 <span className="text-micro">Export data</span>
+              </button>
+              <button 
+                onClick={() => {
+                  triggerHaptic('light');
+                  onCrustStorage();
+                }}
+                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left"
+              >
+                <Cloud className="w-4 h-4 text-secondary" />
+                <span className="text-micro">Crust Storage (IPFS)</span>
               </button>
               <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
                 <Shield className="w-4 h-4 text-secondary" />

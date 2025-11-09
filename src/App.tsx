@@ -1,17 +1,3 @@
-/**
- * CHOPDOT - Main Application Entry Point
- *
- * A mobile expense splitting and group financial management app
- * built for iPhone 15 (390×844) with Polkadot blockchain integration.
- *
- * Core Features:
- * - Multi-pot expense tracking (expense pots & savings pots)
- * - Smart settlement calculations (pot-scoped & global)
- * - Reliability tracking (confirmation rates, settlement history, trust metrics)
- * - Unified header pattern across all navigation tabs
- * - Theme support (light/dark mode with system preference)
- */
-
 import {
   useState,
   useMemo,
@@ -62,21 +48,18 @@ import { YouTab } from "./components/screens/YouTab";
 import { TxToast } from "./components/TxToast";
 import { CheckpointStatusScreen } from "./components/screens/CheckpointStatusScreen";
 import { RequestPayment } from "./components/screens/RequestPayment";
+import { CrustStorage } from "./components/screens/CrustStorage";
 import { WalletConnectionSheet } from "./components/WalletConnectionSheet";
 import { BatchConfirmSheet } from "./components/BatchConfirmSheet";
 import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
-
-// ============================================================================
-// TYPE DEFINITIONS
-// ============================================================================
 
 interface Member {
   id: string;
   name: string;
   role: "Owner" | "Member";
   status: "active" | "pending";
-  address?: string; // Optional Polkadot wallet address (SS58, normalized to SS58-0)
-  verified?: boolean; // Optional verification status (for future use)
+  address?: string;
+  verified?: boolean;
 }
 
 interface Expense {
@@ -110,15 +93,15 @@ interface ExpenseCheckpoint {
     string,
     { confirmed: boolean; confirmedAt?: string }
   >;
-  expiresAt: string; // Auto-confirm after 48h
+  expiresAt: string;
   bypassedBy?: string;
   bypassedAt?: string;
 }
 
 type PotHistoryBase = {
   id: string;
-  when: number; // Date.now()
-  txHash?: string; // 0x…
+  when: number;
+  txHash?: string;
   block?: string;
   status: "submitted" | "in_block" | "finalized" | "failed";
   subscan?: string;
@@ -129,18 +112,18 @@ export type PotHistory =
       type: "onchain_settlement";
       fromMemberId: string;
       toMemberId: string;
-      fromAddress: string; // SS58-0
-      toAddress: string; // SS58-0
-      amountDot: string; // e.g. "0.017"
-      txHash: string; // always present for settlements
-      subscan: string; // https://assethub-polkadot.subscan.io/extrinsic/<hash>
+      fromAddress: string;
+      toAddress: string;
+      amountDot: string;
+      txHash: string;
+      subscan: string;
       note?: string;
     })
   | (PotHistoryBase & {
       type: "remark_checkpoint";
-      message: string; // full remark payload
-      potHash: string; // blake2 hash of serialized snapshot
-      cid?: string; // optional off-chain backup reference
+      message: string;
+      potHash: string;
+      cid?: string;
     });
 
 interface Pot {
@@ -158,10 +141,10 @@ interface Pot {
   defiProtocol?: string;
   goalAmount?: number;
   goalDescription?: string;
-  checkpointEnabled?: boolean; // Default: true
+  checkpointEnabled?: boolean;
   currentCheckpoint?: ExpenseCheckpoint;
   archived?: boolean;
-  history?: PotHistory[]; // On-chain settlement history
+  history?: PotHistory[];
 }
 
 interface Settlement {
@@ -178,17 +161,13 @@ interface Settlement {
 interface PaymentMethod {
   id: string;
   kind: "bank" | "twint" | "paypal" | "crypto";
-  // Bank
   iban?: string;
   holder?: string;
   note?: string;
-  // TWINT
   phone?: string;
   twintHandle?: string;
-  // PayPal
   email?: string;
   username?: string;
-  // Crypto
   network?: "polkadot" | "assethub";
   address?: string;
   label?: string;
@@ -223,16 +202,10 @@ interface Notification {
   onAction?: () => void;
 }
 
-// ============================================================================
-// MAIN APP COMPONENT
-// ============================================================================
-
 function AppContent() {
   const { DEMO_MODE, POLKADOT_APP_ENABLED } = useFeatureFlags();
-  // Theme management
   const { theme, setTheme } = useTheme();
 
-  // Authentication
   const {
     user,
     isLoading: authLoading,
@@ -240,10 +213,6 @@ function AppContent() {
     logout,
   } = useAuth();
 
-  // ========================================
-  // NAVIGATION & ROUTING
-  // ========================================
-  // 5-tab navigation system: Pots | People | Activity | You
   const {
     current: screen,
     stack,
@@ -253,10 +222,6 @@ function AppContent() {
     replace,
   } = useNav({ type: "pots-home" });
 
-  // ========================================
-  // UI STATE & MODALS
-  // ========================================
-  // Toast notifications
   const [toast, setToast] = useState<{
     message: string;
     type?: "success" | "error" | "info";
@@ -269,18 +234,6 @@ function AppContent() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  /**
-   * MODAL STATE MANAGEMENT
-   *
-   * Pattern: Boolean flags for each modal/sheet
-   *
-   * Why not consolidated?
-   * - Simple, straightforward
-   * - No abstraction overhead
-   * - Easy to trace which modal is open
-   *
-   * Note: Could be refactored to useReducer if modals grow beyond 15+
-   */
   const [showNotifications, setShowNotifications] =
     useState(false);
   const [showWalletSheet, setShowWalletSheet] = useState(false);
@@ -295,31 +248,8 @@ function AppContent() {
   const [showAddMember, setShowAddMember] = useState(false);
   const [showBatchConfirm, setShowBatchConfirm] =
     useState(false);
-  // Flag to hint PotHome to open quick keypad when navigated
   const [fabQuickAddPotId, setFabQuickAddPotId] = useState<string | null>(null);
 
-  // ========================================
-  // DATA STATE
-  // ========================================
-  /**
-   * NAVIGATION CONTEXT IDs
-   *
-   * These track the current context for operations (like "which pot are we in?")
-   *
-   * - currentPotId: Which pot we're viewing/editing
-   *   - Set when: Navigating to pot-home, add-expense, settle-selection (pot-scoped)
-   *   - Cleared when: Returning to root tabs
-   *
-   * - currentExpenseId: Which expense we're viewing/editing
-   *   - Set when: Navigating to expense-detail, edit-expense
-   *   - Cleared when: Deleting expense or navigating away
-   *
-   * - selectedCounterpartyId: Which person we're settling with
-   *   - Set when: Clicking "Settle" on a person from people list
-   *   - Cleared when: Completing settlement
-   *
-   * Note: These enable "implicit context" - screens don't need to pass IDs through props
-   */
   const [currentPotId, setCurrentPotId] = useState<
     string | null
   >(null);
@@ -329,14 +259,12 @@ function AppContent() {
   const [selectedCounterpartyId, setSelectedCounterpartyId] =
     useState<string | null>(null);
 
-  // Wallet state
   const [walletConnected, setWalletConnected] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState<
     | { provider: string; address: string; name?: string }
     | undefined
   >();
 
-  // Settlements history - lazy initialization
   const [settlements, setSettlements] = useState<Settlement[]>(
     () => [
       {
@@ -388,7 +316,6 @@ function AppContent() {
     ],
   );
 
-  // Pots (expense & savings groups) - lazy initialization
   const [pots, setPots] = useState<Pot[]>(() => [
     {
       id: "1",
@@ -521,7 +448,7 @@ function AppContent() {
       ],
       budget: 500,
       budgetEnabled: true,
-      checkpointEnabled: false, // Hidden by default - only show when wallet connected
+      checkpointEnabled: false,
     },
     {
       id: "2",
@@ -569,7 +496,7 @@ function AppContent() {
       ],
       budget: 3000,
       budgetEnabled: true,
-      checkpointEnabled: false, // Hidden by default - only show when wallet connected
+      checkpointEnabled: false,
     },
     {
       id: "3",
@@ -613,7 +540,6 @@ function AppContent() {
     },
   ]);
 
-  // Payment methods - lazy initialization
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => [
     {
       id: "1",
@@ -631,7 +557,6 @@ function AppContent() {
   const [preferredMethodId, setPreferredMethodId] =
     useState<string>("1");
 
-  // Notifications - lazy initialization
   const [notifications, setNotifications] = useState<
     Notification[]
   >(() => [
@@ -657,27 +582,6 @@ function AppContent() {
     },
   ]);
 
-  /**
-   * PERSON vs MEMBER DISTINCTION
-   *
-   * TWO similar but different concepts:
-   *
-   * 1. MEMBER (type: Member):
-   *    - Belongs to a specific pot
-   *    - Has pot-specific properties (role, status)
-   *    - Stored in pot.members[]
-   *
-   * 2. PERSON (type: Person):
-   *    - Global contact across ALL pots
-   *    - Has settlement properties (balance, trustScore, paymentPreference)
-   *    - Derived by de-duplicating members from all pots
-   *    - Used for settlements and people view
-   *
-   * Conversion: Members → People (this function)
-   * - Iterate all pots
-   * - De-duplicate members by ID
-   * - Convert to Person format with settlement properties
-   */
   const people: Person[] = useMemo(() => {
     const peopleMap = new Map<string, Person>();
 
@@ -696,13 +600,11 @@ function AppContent() {
             potCount: 0,
           });
         }
-        // Upgrade existing entry if we discover a wallet address in any pot
         if (member.id !== 'owner') {
           const existing = peopleMap.get(member.id);
           if (existing && member.address) {
             existing.paymentPreference = 'DOT';
-            // @ts-expect-error augment at runtime for People screens that read address
-            existing.address = member.address;
+            (existing as any).address = member.address;
           }
         }
       });
@@ -711,7 +613,6 @@ function AppContent() {
     return Array.from(peopleMap.values());
   }, [pots]);
 
-  // Settlement calculations (balances, not history)
   const balances = useMemo(() => {
     const start = performance.now();
     const result = calculateSettlements(pots, people, "owner");
@@ -724,7 +625,6 @@ function AppContent() {
     return result;
   }, [pots, people]);
 
-  // Pending expenses for activity feed (MUST be before getFabState)
   const pendingExpenses = useMemo(() => {
     const start = performance.now();
     const pending: Array<{
@@ -761,27 +661,19 @@ function AppContent() {
     return pending;
   }, [pots]);
 
-  // ========================================
-  // LOCALSTORAGE PERSISTENCE
-  // ========================================
-  // Track if we've loaded initial data to prevent double-save on mount
   const [hasLoadedInitialData, setHasLoadedInitialData] =
     useState(false);
 
-  // Load persisted data on mount (runs once) - INSTANT & NON-BLOCKING
   useEffect(() => {
-    // Load synchronously but safely - localStorage.getItem is fast
     (async () => {
       try {
         const savedPots = localStorage.getItem("chopdot_pots");
         if (savedPots && savedPots.length < 1000000) {
           const parsed = JSON.parse(savedPots);
           if (Array.isArray(parsed)) {
-            // Migrate pots to current schema format
             const { migrateAllPotsOnLoad, needsMigration } = await import('./utils/migratePot');
             const migrated = migrateAllPotsOnLoad(parsed);
             
-            // If migration occurred, save migrated pots back to localStorage
             if (needsMigration(parsed)) {
               try {
                 const migratedData = JSON.stringify(migrated);
@@ -793,21 +685,17 @@ function AppContent() {
               }
             }
             
-            // Ensure type compatibility - migrated pots match Pot interface
             setPots(migrated as Pot[]);
           }
         } else {
-          // Try backup if main data is missing
           const backupPots = localStorage.getItem("chopdot_pots_backup");
           if (backupPots && backupPots.length < 1000000) {
             try {
               const parsed = JSON.parse(backupPots);
               if (Array.isArray(parsed)) {
                 console.warn("[ChopDot] Restored pots from backup");
-                // Migrate backup pots too
                 const { migrateAllPotsOnLoad } = await import('./utils/migratePot');
                 const migrated = migrateAllPotsOnLoad(parsed);
-                // Ensure type compatibility - migrated pots match Pot interface
                 setPots(migrated as Pot[]);
                 // Restore migrated backup to main key
                 try {
@@ -815,7 +703,6 @@ function AppContent() {
                   localStorage.setItem("chopdot_pots", migratedData);
                 } catch (saveErr) {
                   console.warn("[ChopDot] Failed to restore migrated backup:", saveErr);
-                  // Non-critical: pots are already loaded in memory
                 }
               }
             } catch (e) {
@@ -873,20 +760,15 @@ function AppContent() {
       localStorage.removeItem("chopdot_notifications");
     }
 
-    // Mark as loaded immediately
     setHasLoadedInitialData(true);
   }, []);
 
-  // Save pots to localStorage whenever they change (skip initial load)
-  // Use requestIdleCallback to avoid blocking UI
   useEffect(() => {
     if (!hasLoadedInitialData) return;
 
-    // Debounce saves using requestIdleCallback for better performance
     const saveData = () => {
       try {
         const data = JSON.stringify(pots);
-        // Check size before saving
         if (data.length > 1000000) {
           console.warn(
             "[ChopDot] Pots data too large, not saving",
@@ -894,15 +776,12 @@ function AppContent() {
           return;
         }
         localStorage.setItem("chopdot_pots", data);
-        // Also save to backup key for recovery
         try {
           localStorage.setItem("chopdot_pots_backup", data);
         } catch (backupErr) {
-          // Backup save failure is non-critical
         }
       } catch (e) {
         console.error("[ChopDot] Failed to save pots:", e);
-        // If quota exceeded, try to clear old data
         if (
           e instanceof DOMException &&
           e.name === "QuotaExceededError"
@@ -926,7 +805,6 @@ function AppContent() {
     }
   }, [pots, hasLoadedInitialData]);
 
-  // Save settlements to localStorage whenever they change (skip initial load)
   useEffect(() => {
     if (!hasLoadedInitialData) return;
 
@@ -959,7 +837,6 @@ function AppContent() {
     }
   }, [settlements, hasLoadedInitialData]);
 
-  // Save notifications to localStorage whenever they change (skip initial load)
   useEffect(() => {
     if (!hasLoadedInitialData) return;
 
@@ -992,14 +869,10 @@ function AppContent() {
     }
   }, [notifications, hasLoadedInitialData]);
 
-  // Sync currentPotId with screen.potId when navigating to pot-related screens
   useEffect(() => {
     if (screen?.type === "pot-home" && screen.potId) {
       setCurrentPotId(screen.potId);
     } else if (screen?.type === "add-expense" && !currentPotId) {
-      // If we're on add-expense but currentPotId isn't set, try to get it from screen context
-      // This shouldn't normally happen, but handle it gracefully
-      // Find last pot-home screen in stack (reverse iteration for compatibility)
       let lastPotHomeScreen: { type: "pot-home"; potId: string } | undefined;
       for (let i = stack.length - 1; i >= 0; i--) {
         const s = stack[i];
@@ -1014,7 +887,6 @@ function AppContent() {
     }
   }, [screen, stack, currentPotId]);
 
-  // New pot form
   const [newPot, setNewPot] = useState<Partial<Pot>>({
     name: "",
     type: "expense",
@@ -1031,12 +903,6 @@ function AppContent() {
     budgetEnabled: false,
   });
 
-  // (removed) New expense form state was unused
-
-  // ========================================
-  // NAVIGATION HELPERS
-  // ========================================
-  // Get active tab based on current screen
   const getActiveTab = ():
     | "pots"
     | "people"
@@ -1053,7 +919,6 @@ function AppContent() {
     ) {
       return "people";
     }
-    // Keep Activity context while in settle flows so FAB/icon don't switch to Pots
     if (
       screen && (
         screen.type === "settle-selection" ||
@@ -1068,7 +933,6 @@ function AppContent() {
     return "pots";
   };
 
-  // Handle tab changes
   const handleTabChange = (
     tab: "pots" | "people" | "activity" | "you",
   ) => {
@@ -1083,7 +947,6 @@ function AppContent() {
     }
   };
 
-  // Check if screen should show tab bar
   const shouldShowTabBar = () => {
     const tabBarScreens = [
       "activity-home",
@@ -1099,9 +962,6 @@ function AppContent() {
     return screen ? tabBarScreens.includes(screen.type) : false;
   };
 
-  // ========================================
-  // FAB CONTEXT-SENSITIVE LOGIC
-  // ========================================
   const getFabState = useCallback((): {
     visible: boolean;
     icon: LucideIcon;
@@ -1110,18 +970,16 @@ function AppContent() {
   } => {
     const activeTab = getActiveTab();
 
-    // Hide FAB within settle flows to avoid confusion
     if (screen && (screen.type === "settle-selection" || screen.type === "settle-home")) {
       return { visible: false, icon: Receipt, color: "var(--accent)", action: () => {} };
     }
 
-    // Pot detail: context action to add expense/contribution
     if (screen && screen.type === "pot-home") {
       const potForFab = pots.find(p => p.id === (currentPotId || screen.potId));
       if (potForFab?.type === "savings") {
         return {
           visible: true,
-          icon: CheckCircle, // could use TrendingUp, but keep consistent icons set
+          icon: CheckCircle,
           color: "var(--money)",
           action: () => {
             triggerHaptic("light");
@@ -1130,7 +988,6 @@ function AppContent() {
           },
         };
       }
-      // default: expense pot → add expense
       return {
         visible: true,
         icon: Receipt,
@@ -1145,7 +1002,6 @@ function AppContent() {
       };
     }
 
-    // People & You tabs: Hide FAB completely
     if (activeTab === "people" || activeTab === "you") {
       return {
         visible: false,
@@ -1155,7 +1011,6 @@ function AppContent() {
       };
     }
 
-    // Activity tab: Show "Confirm All" if pending expenses, otherwise "Quick Settle"
     if (activeTab === "activity") {
       if (pendingExpenses.length > 0) {
         return {
@@ -1164,7 +1019,6 @@ function AppContent() {
           color: "var(--success)",
           action: () => {
             triggerHaptic("light");
-            // Open batch confirm sheet instead of immediately confirming
             setShowBatchConfirm(true);
           },
         };
@@ -1175,7 +1029,6 @@ function AppContent() {
           color: "var(--accent)",
           action: () => {
             triggerHaptic("light");
-            // Global quick settle across all pots
             setCurrentPotId(null);
             setSelectedCounterpartyId(null);
             push({ type: "settle-selection" });
@@ -1197,7 +1050,6 @@ function AppContent() {
       };
     }
 
-    // Default: Hide
     return {
       visible: false,
       icon: Receipt,
@@ -1214,9 +1066,7 @@ function AppContent() {
     showToast,
   ]);
 
-  // Check if current screen can swipe back
   const canSwipeBack = () => {
-    // Root tab screens cannot swipe back
     const rootScreens = [
       "activity-home",
       "pots-home",
@@ -1224,24 +1074,15 @@ function AppContent() {
       "people-home",
       "you-tab",
     ];
-    // Defensive: avoid blank by enforcing a safe reset when stack length is 1
     if (!screen) return false;
     if (stack.length <= 1) return false;
     return !rootScreens.includes(screen.type);
   };
 
-  // ========================================
-  // DATA HELPERS
-  // ========================================
-  // Get current pot
   const getCurrentPot = () =>
     pots.find((p) => p.id === currentPotId);
 
-  // ========================================
-  // CRUD OPERATIONS
-  // ========================================
   const createPot = async () => {
-    // In simulation mode, inject mock addresses for DOT pots
     let processedMembers = newPot.members || [];
     const { getMockAddressForMember, isSimulationMode } = await import('./utils/simulation');
     if (isSimulationMode() && (newPot.baseCurrency || "USD") === 'DOT') {
@@ -1271,7 +1112,7 @@ function AppContent() {
       goalAmount: newPot.goalAmount,
       goalDescription: newPot.goalDescription,
       checkpointEnabled:
-        newPot.type === "expense" ? false : undefined, // Hidden by default - users can enable in settings
+        newPot.type === "expense" ? false : undefined,
     };
 
     setPots([...pots, pot]);
@@ -1291,7 +1132,6 @@ function AppContent() {
       budgetEnabled: false,
     });
 
-    // Navigate to the newly created pot instead of going back
     setCurrentPotId(pot.id);
     replace({ type: "pot-home", potId: pot.id });
     showToast("Pot created successfully!", "success");
@@ -1324,7 +1164,6 @@ function AppContent() {
       pots.map((p) => {
         if (p.id !== currentPotId) return p;
 
-        // Invalidate checkpoint if user has confirmed (new expense added after confirmation)
         let updatedCheckpoint = p.currentCheckpoint;
         if (
           p.currentCheckpoint?.status === "pending" &&
@@ -1372,7 +1211,6 @@ function AppContent() {
       pots.map((p) => {
         if (p.id !== currentPotId) return p;
 
-        // Invalidate checkpoint if user has confirmed (expense modified after confirmation)
         let updatedCheckpoint = p.currentCheckpoint;
         if (
           p.currentCheckpoint?.status === "pending" &&
@@ -1441,40 +1279,19 @@ function AppContent() {
     showToast("Expense deleted", "info");
   };
 
-  /**
-   * EXPENSE ATTESTATION (Individual Expense Confirmation)
-   *
-   * Purpose: Confirm that an expense is accurate and legitimate
-   *
-   * Rules:
-   * - You CANNOT attest your own expenses (prevents fraud)
-   * - You can only attest once per expense
-   * - Attestations are stored in expense.attestations[] array
-   *
-   * Use Cases:
-   * - Bob adds "Groceries $50" → Alice attests it's correct
-   * - Builds trust score (more attestations = more reliable)
-   *
-   * Different from Checkpoint:
-   * - Attestation = "This expense is correct" (per-expense)
-   * - Checkpoint = "All expenses are entered" (per-pot, before settlement)
-   */
   const attestExpense = (expenseId: string) => {
     if (!currentPotId) return;
 
-    // Find the expense to check if user is the payer
     const pot = pots.find((p) => p.id === currentPotId);
     const expense = pot?.expenses.find(
       (e) => e.id === expenseId,
     );
 
-    // Prevent self-attestation: You can't confirm your own expenses
     if (expense?.paidBy === "owner") {
       showToast("You can't confirm your own expense", "error");
       return;
     }
 
-    // Check if already confirmed
     if (expense?.attestations.includes("owner")) {
       showToast("You already confirmed this expense", "info");
       return;
@@ -1505,21 +1322,12 @@ function AppContent() {
     triggerHaptic("light");
   };
 
-  /**
-   * BATCH ATTESTATION - Single Pot
-   *
-   * Purpose: Attest multiple expenses within ONE pot at once
-   * Used by: PotHome screen's "Confirm All" button
-   *
-   * Note: Single state update for all attestations (prevents async state bugs)
-   */
   const batchAttestExpenses = (expenseIds: string[]) => {
     if (!currentPotId) return;
 
     const pot = pots.find((p) => p.id === currentPotId);
     if (!pot) return;
 
-    // Filter out expenses that are self-paid or already confirmed
     const validExpenseIds = expenseIds.filter((expenseId) => {
       const expense = pot.expenses.find(
         (e) => e.id === expenseId,
@@ -1536,7 +1344,6 @@ function AppContent() {
       return;
     }
 
-    // Single state update for all attestations
     setPots(
       pots.map((p) =>
         p.id === currentPotId
@@ -1565,24 +1372,7 @@ function AppContent() {
     triggerHaptic("light");
   };
 
-  /**
-   * BATCH ATTESTATION - All Pots (Global)
-   *
-   * Purpose: Attest ALL pending expenses across ALL pots
-   * Used by: Activity tab FAB → BatchConfirmSheet
-   *
-   * Workflow:
-   * 1. User sees pending count in Activity tab
-   * 2. Clicks "Confirm All" FAB → Opens BatchConfirmSheet
-   * 3. User reviews list → Clicks "Confirm All"
-   * 4. This function groups by pot and attests all valid expenses
-   *
-   * Different from batchAttestExpenses:
-   * - batchAttestExpenses = single pot (called from PotHome)
-   * - handleBatchConfirmAll = all pots (called from Activity/BatchConfirmSheet)
-   */
   const handleBatchConfirmAll = () => {
-    // Group pending expenses by pot
     const groupedByPot = new Map<string, string[]>();
     pendingExpenses.forEach((exp) => {
       const pot = pots.find((p) =>
@@ -1596,7 +1386,6 @@ function AppContent() {
       }
     });
 
-    // Batch attest per pot
     groupedByPot.forEach((expenseIds, potId) => {
       const pot = pots.find((p) => p.id === potId);
       if (!pot) return;
@@ -1643,35 +1432,6 @@ function AppContent() {
     triggerHaptic("light");
   };
 
-  // ========================================
-  // CHECKPOINT OPERATIONS
-  // ========================================
-  /**
-   * CHECKPOINT WORKFLOW EXPLANATION
-   *
-   * Problem: Before settling, members need to confirm all expenses are entered.
-   * Solution: Checkpoint system - members confirm expenses BEFORE settling.
-   *
-   * FLOW:
-   * 1. User clicks "Settle" → createCheckpoint() creates checkpoint
-   * 2. Navigate to CheckpointStatusScreen
-   * 3. Each member reviews expenses and clicks "Confirm"
-   * 4. When ALL confirm → auto-proceed to settlement
-   * 5. OR user clicks "Settle Anyway" → bypassCheckpoint() → proceed
-   *
-   * STATE TRANSITIONS:
-   * - "pending" → waiting for confirmations
-   * - "confirmed" → all confirmed, auto-clear and proceed
-   * - "bypassed" → user skipped, proceed anyway
-   *
-   * INVALIDATION RULES:
-   * - Adding/editing expense after user confirmed → reset user's confirmation
-   * - This forces re-review if data changed
-   *
-   * EXPIRY (NOT YET IMPLEMENTED):
-   * - Auto-confirm after 48 hours
-   * - Would need background job or check on next visit
-   */
   const createCheckpoint = (potId: string) => {
     const pot = pots.find((p) => p.id === potId);
     if (!pot) return null;
@@ -1679,9 +1439,8 @@ function AppContent() {
     const now = new Date();
     const expiresAt = new Date(
       now.getTime() + 48 * 60 * 60 * 1000,
-    ); // 48 hours
+    );
 
-    // Initialize confirmations for all members
     const confirmations = new Map<
       string,
       { confirmed: boolean; confirmedAt?: string }
@@ -1936,7 +1695,6 @@ function AppContent() {
     const start = performance.now();
     const items: ActivityItem[] = [];
 
-    // Build person name map for quick lookup
     const personNames = new Map<string, string>();
     pots.forEach((pot) => {
       pot.members.forEach((m) => {
@@ -1946,7 +1704,6 @@ function AppContent() {
 
     pots.forEach((pot) => {
       pot.expenses.forEach((expense) => {
-        // Add expense activity
         items.push({
           id: expense.id,
           type: "expense",
@@ -1956,13 +1713,9 @@ function AppContent() {
           amount: expense.amount,
         });
 
-        // Add attestation activities for each person who confirmed
         expense.attestations.forEach((attesterId, index) => {
-          // Create a unique ID for each attestation (synthetic)
           const attestationId = `${expense.id}-attestation-${attesterId}`;
 
-          // Estimate attestation time (temporary workaround)
-          // In production: Store attestation timestamp in Expense.attestations as objects
           const attestationTime = new Date(
             new Date(expense.date).getTime() +
               (index + 1) * 2 * 60 * 60 * 1000,
@@ -1986,7 +1739,6 @@ function AppContent() {
       });
     });
 
-    // Add settlement activities from settlements state
     settlements.forEach((s) => {
       const name = personNames.get(s.personId) || s.personId;
       const title = `Settled ${s.currency === 'DOT' ? s.amount.toFixed(6) + ' DOT' : '$' + s.amount.toFixed(2)} with ${name}`;
@@ -2169,6 +1921,7 @@ function AppContent() {
       "people-home",
       "you-tab",
       "settings",
+      "crust-storage",
       "payment-methods",
       "insights",
       "create-pot",
@@ -2451,6 +2204,9 @@ function AppContent() {
             onSettings={() => {
               push({ type: "settings" });
             }}
+            onCrustStorage={() => {
+              push({ type: "crust-storage" });
+            }}
             onNotificationClick={() => {
               triggerHaptic("light");
               setShowNotifications(true);
@@ -2487,6 +2243,9 @@ function AppContent() {
             onBack={back}
             onPaymentMethods={() =>
               push({ type: "payment-methods" })
+            }
+            onCrustStorage={() =>
+              push({ type: "crust-storage" })
             }
             onLogout={handleLogout}
             onDeleteAccount={handleDeleteAccount}
@@ -3440,6 +3199,9 @@ function AppContent() {
             }}
           />
         );
+
+      case "crust-storage":
+        return <CrustStorage />;
 
       case "settle-cash":
       case "settle-bank":

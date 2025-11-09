@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import { pushTxToast, updateTxToast, isTxActive } from "../../hooks/useTxToasts";
 import { useFeatureFlags } from "../../contexts/FeatureFlagsContext";
 import { useAccount } from "../../contexts/AccountContext";
-import { getHyperbridgeUrl } from "../../services/bridge/hyperbridge";
 import { triggerHaptic } from "../../utils/haptics";
 import { HyperbridgeBridgeSheet } from "../HyperbridgeBridgeSheet";
 

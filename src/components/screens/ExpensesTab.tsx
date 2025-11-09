@@ -1,7 +1,7 @@
-import { Receipt, AlertCircle, Plus, TrendingUp, TrendingDown, CheckCircle, ChevronDown, ChevronUp, History, ArrowRight, Wallet, ExternalLink, Copy, Loader2 } from "lucide-react";
+import { Receipt, AlertCircle, Plus, TrendingUp, TrendingDown, CheckCircle, ChevronDown, ChevronUp, History, ArrowRight, Wallet, ExternalLink, Copy } from "lucide-react";
 import { useState, useMemo } from "react";
 import { SwipeableExpenseRow } from "../SwipeableExpenseRow";
-import { computeBalances, suggestSettlements, getMemberBalance, type Balance, type Suggestion } from "../../services/settlement/calc";
+import { computeBalances, suggestSettlements, getMemberBalance } from "../../services/settlement/calc";
 import type { Pot, Expense as PotExpense } from "../../schema/pot";
 import { SettlementConfirmModal } from "../SettlementConfirmModal";
 import { polkadotChainService } from "../../services/chain/polkadot";

@@ -1,15 +1,3 @@
-/**
- * TYPE-SAFE NAVIGATION SYSTEM
- * 
- * Stack-based navigation with type-safe screen definitions.
- * Supports push/pop/replace/reset operations.
- * 
- * Screen Types:
- * - Main tabs: pots-home, people-home, activity-home, you-tab
- * - Detail screens: pot-home, expense-detail, member-detail, etc.
- * - Modal flows: add-expense, create-pot, settle-home, etc.
- */
-
 import { useState } from "react";
 
 export type SettlementResult = {
@@ -49,7 +37,8 @@ export type Screen =
   | { type: "add-contribution" }
   | { type: "withdraw-funds" }
   | { type: "checkpoint-status" }
-  | { type: "request-payment" };
+  | { type: "request-payment" }
+  | { type: "crust-storage" };
 
 export function useNav(initialScreen: Screen = { type: "pots-home" }) {
   const [stack, setStack] = useState<Screen[]>([initialScreen]);
