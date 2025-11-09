@@ -35,11 +35,27 @@ const createApi = async (config: ChainConfig) => {
 
   let lastError: unknown;
 
+  let attemptIndex = 0;
   for (const endpoint of config.rpc) {
+    attemptIndex++;
+    const startTime = performance.now();
     try {
       const provider = new WsProvider(endpoint);
       const api = await ApiPromise.create({ provider });
+      const duration = performance.now() - startTime;
       currentRpcEndpoint = endpoint; // Track which endpoint succeeded
+      
+      // RPC telemetry: log successful connection
+      if (import.meta.env.DEV) {
+        console.log('[RPC Telemetry]', {
+          endpoint,
+          attempt: attemptIndex,
+          success: true,
+          durationMs: duration.toFixed(2),
+          isFallback: attemptIndex > 1,
+        });
+      }
+      
       console.info('[Chain Service] Connected to Asset Hub RPC:', endpoint);
 
       provider.on('error', (err) => {
@@ -54,6 +70,20 @@ const createApi = async (config: ChainConfig) => {
 
       return api;
     } catch (error) {
+      const duration = performance.now() - startTime;
+      
+      // RPC telemetry: log fallback event
+      if (import.meta.env.DEV) {
+        console.warn('[RPC Telemetry]', {
+          endpoint,
+          attempt: attemptIndex,
+          success: false,
+          durationMs: duration.toFixed(2),
+          error: error instanceof Error ? error.message : String(error),
+          willFallback: attemptIndex < config.rpc.length,
+        });
+      }
+      
       console.error('[Chain Service] Failed to connect to', endpoint, error);
       lastError = error;
     }

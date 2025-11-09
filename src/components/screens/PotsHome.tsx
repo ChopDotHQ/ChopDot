@@ -1,9 +1,13 @@
-import { Plus, Bell, TrendingUp, Search, Eye, EyeOff, ListFilter, Receipt, ArrowLeftRight, QrCode, Send, Wallet } from "lucide-react";
+import { Plus, Bell, TrendingUp, Search, Eye, EyeOff, ListFilter, Receipt, ArrowLeftRight, QrCode, Send, Wallet, RefreshCw } from "lucide-react";
 import { WalletBanner } from "../WalletBanner";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { AccountMenu } from "../AccountMenu";
 import { EmptyState } from "../EmptyState";
+import { usePots, refreshPots } from "../../hooks/usePots";
+import { warnDev, logDev } from "../../utils/logDev";
+import { shouldPreferDLReads } from "../../utils/dlReadsFlag";
+import type { Pot as DataLayerPot } from "../../services/data/types";
 
 interface Pot {
   id: string;
@@ -49,7 +53,7 @@ interface PotsHomeProps {
 }
 
 export function PotsHome({ 
-  pots = [], 
+  pots: potsProp = [], 
   youOwe = [],
   owedToYou = [],
   onCreatePot, 
@@ -69,6 +73,103 @@ export function PotsHome({
   const [searchQuery, setSearchQuery] = useState("");
   const [showSortSheet, setShowSortSheet] = useState(false);
   const [sortBy, setSortBy] = useState<string>("recent");
+  
+  // Task 3: Read pots from Data Layer (if flag enabled) with fallback
+  const preferDLReads = shouldPreferDLReads();
+  const dlPots = usePots();
+  const [refreshKey, setRefreshKey] = useState(0);
+  
+  // Transform Data Layer pots to potSummaries format
+  const transformPotToSummary = useMemo(() => {
+    return (pot: DataLayerPot): Pot => {
+      const myExpenses = pot.expenses
+        .filter((e) => e.paidBy === "owner")
+        .reduce((sum, e) => sum + e.amount, 0);
+
+      const totalExpenses = pot.expenses.reduce(
+        (sum, e) => sum + e.amount,
+        0,
+      );
+
+      const myShare = pot.expenses.reduce((sum, e) => {
+        const split = (e.split || []).find(
+          (s) => s.memberId === "owner",
+        );
+        return sum + (split?.amount || 0);
+      }, 0);
+
+      const net = myExpenses - myShare;
+
+      return {
+        id: pot.id,
+        name: pot.name,
+        type: pot.type,
+        myExpenses,
+        totalExpenses,
+        net,
+        budget: pot.budget ?? undefined,
+        budgetEnabled: pot.budgetEnabled,
+        totalPooled: pot.totalPooled,
+        yieldRate: pot.yieldRate,
+      };
+    };
+  }, []);
+  
+  // Task 3: Determine which pots to use (Data Layer or fallback based on flag)
+  const pots = useMemo(() => {
+    // If flag is on, prefer DL reads; otherwise prefer props (current behavior)
+    if (preferDLReads) {
+      // Prefer DL reads when flag is on
+      if (dlPots.length > 0) {
+        try {
+          const transformed = dlPots
+            .filter(p => !p.archived)
+            .map(transformPotToSummary);
+          return transformed;
+        } catch (error) {
+          warnDev('[DataLayer] Read failed, using UI state fallback', error);
+          return potsProp;
+        }
+      }
+      // DL empty/loading but flag is on - still prefer DL (will show empty until loaded)
+      return [];
+    } else {
+      // Flag is off - use existing behavior (prefer props, use DL if props empty)
+      if (dlPots.length > 0 && potsProp.length === 0) {
+        try {
+          const transformed = dlPots
+            .filter(p => !p.archived)
+            .map(transformPotToSummary);
+          return transformed;
+        } catch (error) {
+          warnDev('[DataLayer] Read failed, using UI state fallback', error);
+          return potsProp;
+        }
+      }
+      return potsProp;
+    }
+  }, [dlPots, potsProp, transformPotToSummary, preferDLReads]);
+  
+  // Refresh handler (dev-only)
+  const handleRefresh = () => {
+    refreshPots();
+    setRefreshKey(prev => prev + 1);
+    logDev('[DataLayer] listPots refreshed');
+  };
+  
+  // Listen for refresh events (dev-only)
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    
+    const handleRefreshEvent = () => {
+      setRefreshKey(prev => prev + 1);
+    };
+    
+    window.addEventListener('pots-refresh', handleRefreshEvent);
+    return () => {
+      window.removeEventListener('pots-refresh', handleRefreshEvent);
+    };
+  }, []);
 
   const sortOptions: SortOption[] = [
     { id: "recent", label: "Recent activity" },
@@ -148,6 +249,29 @@ export function PotsHome({
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="p-4 space-y-3">
+          {/* Task 3: Dev-only Data Layer indicator (shows when flag is active) */}
+          {import.meta.env.DEV && preferDLReads && (
+            <div 
+              className="flex items-center justify-between px-3 py-2 rounded-lg text-caption"
+              style={{ 
+                background: 'rgba(230, 0, 122, 0.1)',
+                border: '1px solid rgba(230, 0, 122, 0.2)'
+              }}
+              data-testid="dl-read-indicator"
+            >
+              <span style={{ color: 'var(--accent)', fontWeight: 500 }}>
+                Reading via Data Layer (VITE_DL_READS=on)
+              </span>
+              <button
+                onClick={handleRefresh}
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                title="Refresh Data Layer"
+              >
+                <RefreshCw className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
+              </button>
+            </div>
+          )}
+          
           {/* Wallet Balance Banner - Shows when connected */}
           <WalletBanner />
 

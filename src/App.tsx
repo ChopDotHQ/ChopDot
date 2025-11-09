@@ -48,6 +48,9 @@ import { BottomTabBar } from "./components/BottomTabBar";
 import { SwipeableScreen } from "./components/SwipeableScreen";
 import { Toast } from "./components/Toast";
 import { ChoosePot } from "./components/screens/ChoosePot";
+import { PotsDebug } from "./components/PotsDebug";
+import { useData } from "./services/data/DataContext";
+import { logDev, warnDev } from "./utils/logDev";
 import { MyQR } from "./components/screens/MyQR";
 import { ScanQR } from "./components/screens/ScanQR";
 import { AddPaymentMethod } from "./components/screens/AddPaymentMethod";
@@ -229,6 +232,8 @@ interface Notification {
 
 function AppContent() {
   const { DEMO_MODE, POLKADOT_APP_ENABLED } = useFeatureFlags();
+  // Data layer services (for write-through)
+  const { pots: potService, expenses: expenseService, members: memberService } = useData();
   // Theme management
   const { theme, setTheme } = useTheme();
 
@@ -772,29 +777,16 @@ function AppContent() {
   useEffect(() => {
     // Load synchronously but safely - localStorage.getItem is fast
     (async () => {
+      // Task 4: Migration and backup are now handled by LocalStorageSource
+      // App.tsx just reads/writes directly for UI state (Data Layer handles migration)
       try {
         const savedPots = localStorage.getItem("chopdot_pots");
         if (savedPots && savedPots.length < 1000000) {
           const parsed = JSON.parse(savedPots);
           if (Array.isArray(parsed)) {
-            // Migrate pots to current schema format
-            const { migrateAllPotsOnLoad, needsMigration } = await import('./utils/migratePot');
-            const migrated = migrateAllPotsOnLoad(parsed);
-            
-            // If migration occurred, save migrated pots back to localStorage
-            if (needsMigration(parsed)) {
-              try {
-                const migratedData = JSON.stringify(migrated);
-                localStorage.setItem("chopdot_pots", migratedData);
-                localStorage.setItem("chopdot_pots_backup", migratedData);
-                console.info("[ChopDot] Migrated pots to v2 schema");
-              } catch (saveErr) {
-                console.warn("[ChopDot] Failed to save migrated pots:", saveErr);
-              }
-            }
-            
-            // Ensure type compatibility - migrated pots match Pot interface
-            setPots(migrated as Pot[]);
+            // Note: Migration happens in LocalStorageSource.getPots() on first read
+            // This direct read is for UI state only (backward compatibility)
+            setPots(parsed as Pot[]);
           }
         } else {
           // Try backup if main data is missing
@@ -804,18 +796,12 @@ function AppContent() {
               const parsed = JSON.parse(backupPots);
               if (Array.isArray(parsed)) {
                 console.warn("[ChopDot] Restored pots from backup");
-                // Migrate backup pots too
-                const { migrateAllPotsOnLoad } = await import('./utils/migratePot');
-                const migrated = migrateAllPotsOnLoad(parsed);
-                // Ensure type compatibility - migrated pots match Pot interface
-                setPots(migrated as Pot[]);
-                // Restore migrated backup to main key
+                setPots(parsed as Pot[]);
+                // Restore backup to main key
                 try {
-                  const migratedData = JSON.stringify(migrated);
-                  localStorage.setItem("chopdot_pots", migratedData);
+                  localStorage.setItem("chopdot_pots", JSON.stringify(parsed));
                 } catch (saveErr) {
-                  console.warn("[ChopDot] Failed to restore migrated backup:", saveErr);
-                  // Non-critical: pots are already loaded in memory
+                  console.warn("[ChopDot] Failed to restore backup:", saveErr);
                 }
               }
             } catch (e) {
@@ -894,12 +880,8 @@ function AppContent() {
           return;
         }
         localStorage.setItem("chopdot_pots", data);
-        // Also save to backup key for recovery
-        try {
-          localStorage.setItem("chopdot_pots_backup", data);
-        } catch (backupErr) {
-          // Backup save failure is non-critical
-        }
+        // Task 4: Backup is now handled by LocalStorageSource.savePots()
+        // This direct write is for UI state only (backup happens in Data Layer)
       } catch (e) {
         console.error("[ChopDot] Failed to save pots:", e);
         // If quota exceeded, try to clear old data
@@ -1275,6 +1257,37 @@ function AppContent() {
     };
 
     setPots([...pots, pot]);
+    
+    // Write-through to Data Layer (non-blocking)
+    try {
+      // Convert pot to CreatePotDTO format
+      const createDto = {
+        name: pot.name,
+        type: pot.type,
+        baseCurrency: pot.baseCurrency as 'DOT' | 'USD',
+        budget: pot.budget ?? null,
+        budgetEnabled: pot.budgetEnabled ?? false,
+        checkpointEnabled: pot.checkpointEnabled,
+        goalAmount: pot.goalAmount,
+        goalDescription: pot.goalDescription,
+        members: pot.members.map(m => ({
+          id: m.id,
+          name: m.name,
+          address: m.address || null,
+          verified: m.verified,
+          role: m.role,
+          status: m.status,
+        })),
+      };
+      
+      await potService.createPot(createDto);
+      logDev(`Pot created via service`, { potId: pot.id });
+    } catch (error) {
+      // Non-blocking: show warning toast but don't stop UI flow
+      warnDev('Service create failed', error);
+      showToast('Saved locally (service write failed)', 'info');
+    }
+    
     setNewPot({
       name: "",
       type: "expense",
@@ -1351,6 +1364,31 @@ function AppContent() {
       }),
     );
 
+    // Step 5a: Write-through to Data Layer (non-blocking)
+    // Use IIFE to handle async without making addExpense async
+    (async () => {
+      try {
+        // Convert expense to CreateExpenseDTO format
+        const createExpenseDTO = {
+          potId: currentPotId,
+          amount: expense.amount,
+          currency: expense.currency,
+          paidBy: expense.paidBy,
+          memo: expense.memo,
+          date: expense.date,
+          split: expense.split,
+          hasReceipt: expense.hasReceipt,
+        };
+
+        await expenseService.addExpense(currentPotId, createExpenseDTO);
+        logDev('[DataLayer] Expense added via service', { potId: currentPotId, expenseId: expense.id });
+      } catch (error) {
+        // Non-blocking: show warning toast but don't stop UI flow
+        warnDev('[DataLayer] Service addExpense failed', error);
+        showToast('Saved locally (service write failed)', 'info');
+      }
+    })();
+
     // Navigate to pot-home instead of just going back
     // This ensures we're on the correct pot screen even if navigation stack is inconsistent
     replace({ type: "pot-home", potId: currentPotId });
@@ -1412,6 +1450,30 @@ function AppContent() {
       }),
     );
 
+    // Step 5c: Write-through to Data Layer (non-blocking)
+    // Use IIFE to handle async without making updateExpense async
+    (async () => {
+      try {
+        // Convert expense update to UpdateExpenseDTO format
+        const updateExpenseDTO = {
+          amount: data.amount,
+          currency: data.currency,
+          paidBy: data.paidBy,
+          memo: data.memo,
+          date: data.date,
+          split: data.split,
+          hasReceipt: data.hasReceipt,
+        };
+
+        await expenseService.updateExpense(currentPotId, currentExpenseId, updateExpenseDTO);
+        logDev('[DataLayer] Expense updated via service', { potId: currentPotId, expenseId: currentExpenseId });
+      } catch (error) {
+        // Non-blocking: show warning toast but don't stop UI flow
+        warnDev('[DataLayer] Service updateExpense failed', error);
+        showToast('Saved locally (service write failed)', 'info');
+      }
+    })();
+
     // Navigate to pot-home instead of just going back
     // This ensures we're on the correct pot screen even if navigation stack is inconsistent
     replace({ type: "pot-home", potId: currentPotId });
@@ -1435,6 +1497,20 @@ function AppContent() {
           : p,
       ),
     );
+
+    // Step 5c: Write-through to Data Layer (non-blocking)
+    // Use IIFE to handle async without making deleteExpense async
+    (async () => {
+      try {
+        await expenseService.removeExpense(currentPotId, targetExpenseId);
+        logDev('[DataLayer] Expense deleted via service', { potId: currentPotId, expenseId: targetExpenseId });
+      } catch (error) {
+        // Non-blocking: show warning toast but don't stop UI flow
+        warnDev('[DataLayer] Service removeExpense failed', error);
+        showToast('Saved locally (service write failed)', 'info');
+      }
+    })();
+
     if (navigateBack) {
       back();
     }
@@ -2646,6 +2722,18 @@ function AppContent() {
                     : p,
                 ),
               );
+
+              // Step 1: Write-through to Data Layer (non-blocking)
+              (async () => {
+                try {
+                  await memberService.removeMember(currentPotId, memberId);
+                  logDev('[DataLayer] Member removed via service', { potId: currentPotId, memberId });
+                } catch (error) {
+                  warnDev('[DataLayer] Service removeMember failed', error);
+                  showToast('Saved locally (service write failed)', 'info');
+                }
+              })();
+
               showToast("Member removed", "info");
             }}
             onUpdateMember={(updatedMember) => {
@@ -2664,6 +2752,28 @@ function AppContent() {
                     : p,
                 ),
               );
+
+              // Step 1: Write-through to Data Layer (non-blocking)
+              (async () => {
+                try {
+                  // Convert to UpdateMemberDTO format (address already normalized by EditMemberModal)
+                  // Note: onUpdateMember callback doesn't include status, so get it from current member
+                  const currentMember = pots.find(p => p.id === currentPotId)?.members.find(m => m.id === updatedMember.id);
+                  const updateMemberDTO = {
+                    name: updatedMember.name,
+                    address: updatedMember.address || null,
+                    verified: updatedMember.verified,
+                    ...(currentMember?.status && { status: currentMember.status }),
+                  };
+
+                  await memberService.updateMember(currentPotId, updatedMember.id, updateMemberDTO);
+                  logDev('[DataLayer] Member updated via service', { potId: currentPotId, memberId: updatedMember.id });
+                } catch (error) {
+                  warnDev('[DataLayer] Service updateMember failed', error);
+                  showToast('Saved locally (service write failed)', 'info');
+                }
+              })();
+
               showToast("Member updated", "success");
             }}
             
@@ -3666,6 +3776,13 @@ function AppContent() {
             );
             if (!person) return;
 
+            const newMember = {
+              id: person.id,
+              name: person.name,
+              role: "Member" as const,
+              status: "active" as const,
+            };
+
             setPots(
               pots.map((p) =>
                 p.id === currentPotId
@@ -3673,22 +3790,46 @@ function AppContent() {
                       ...p,
                       members: [
                         ...p.members,
-                        {
-                          id: person.id,
-                          name: person.name,
-                          role: "Member",
-                          status: "active",
-                        },
+                        newMember,
                       ],
                     }
                   : p,
               ),
             );
+
+            // Step 1: Write-through to Data Layer (non-blocking)
+            (async () => {
+              try {
+                // Convert to CreateMemberDTO format
+                const createMemberDTO = {
+                  potId: currentPotId!,
+                  name: person.name,
+                  role: "Member" as const,
+                  status: "active" as const,
+                  address: null, // Existing contact may not have address
+                  verified: false,
+                };
+
+                await memberService.addMember(currentPotId!, createMemberDTO);
+                logDev('[DataLayer] Member added via service', { potId: currentPotId, memberId: person.id });
+              } catch (error) {
+                warnDev('[DataLayer] Service addMember failed', error);
+                showToast('Saved locally (service write failed)', 'info');
+              }
+            })();
+
             showToast(`${person.name} added to pot`, "success");
           }}
           onInviteNew={(nameOrEmail) => {
             // Create a pending member
             const newMemberId = `pending-${Date.now()}`;
+            const newMember = {
+              id: newMemberId,
+              name: nameOrEmail,
+              role: "Member" as const,
+              status: "pending" as const,
+            };
+
             setPots(
               pots.map((p) =>
                 p.id === currentPotId
@@ -3696,17 +3837,34 @@ function AppContent() {
                       ...p,
                       members: [
                         ...p.members,
-                        {
-                          id: newMemberId,
-                          name: nameOrEmail,
-                          role: "Member",
-                          status: "pending",
-                        },
+                        newMember,
                       ],
                     }
                   : p,
               ),
             );
+
+            // Step 1: Write-through to Data Layer (non-blocking)
+            (async () => {
+              try {
+                // Convert to CreateMemberDTO format
+                const createMemberDTO = {
+                  potId: currentPotId!,
+                  name: nameOrEmail,
+                  role: "Member" as const,
+                  status: "pending" as const,
+                  address: null,
+                  verified: false,
+                };
+
+                await memberService.addMember(currentPotId!, createMemberDTO);
+                logDev('[DataLayer] Member invited via service', { potId: currentPotId, memberId: newMemberId });
+              } catch (error) {
+                warnDev('[DataLayer] Service addMember (invite) failed', error);
+                showToast('Saved locally (service write failed)', 'info');
+              }
+            })();
+
             showToast(
               `Invite sent to ${nameOrEmail}`,
               "success",
@@ -3738,6 +3896,9 @@ function AppContent() {
 
       {/* Transaction Toast */}
       <TxToast />
+
+      {/* Dev-only Debug Panel */}
+      <PotsDebug uiPots={pots as import('./schema/pot').Pot[]} />
     </div>
   );
 }
