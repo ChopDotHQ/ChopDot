@@ -592,21 +592,6 @@ export function ExpensesTab({
             {/* Recent Settlements (DOT pots only) */}
             {isDotPot && settlementHistory.length > 0 && (
               <div className="pt-3 border-t border-border/50">
-                {/* Task 2: Dev-only DL read indicator */}
-                {import.meta.env.DEV && (
-                  <div 
-                    className="flex items-center justify-between px-2 py-1 mb-2 rounded text-caption"
-                    style={{ 
-                      background: 'rgba(230, 0, 122, 0.1)',
-                      border: '1px solid rgba(230, 0, 122, 0.2)'
-                    }}
-                    data-testid="dl-read-indicator-history"
-                  >
-                    <span style={{ color: 'var(--accent)', fontWeight: 500 }}>
-                      Reading via Data Layer (history)
-                    </span>
-                  </div>
-                )}
                 <p className="text-caption text-secondary mb-2">Recent settlements</p>
                 <div className="space-y-1.5">
                   {settlementHistory.slice(0, 5).map((entry) => {

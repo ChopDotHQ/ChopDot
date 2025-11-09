@@ -34,7 +34,6 @@ import { BottomTabBar } from "./components/BottomTabBar";
 import { SwipeableScreen } from "./components/SwipeableScreen";
 import { Toast } from "./components/Toast";
 import { ChoosePot } from "./components/screens/ChoosePot";
-import { PotsDebug } from "./components/PotsDebug";
 import { useData } from "./services/data/DataContext";
 import { logDev, warnDev } from "./utils/logDev";
 import { MyQR } from "./components/screens/MyQR";
@@ -3668,8 +3667,6 @@ function AppContent() {
       {/* Transaction Toast */}
       <TxToast />
 
-      {/* Dev-only Debug Panel */}
-      <PotsDebug uiPots={pots as import('./schema/pot').Pot[]} />
     </div>
   );
 }

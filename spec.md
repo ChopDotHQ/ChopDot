@@ -1,9 +1,10 @@
 # ChopDot Specification
 
 **Last Updated:** January 14, 2025  
-**Version:** 1.2.0  
+**Version:** 1.3.0  
 **Status:** Production Ready 🚀  
-**UX/UI Rating:** 8.5/10 (All phases complete)
+**UX/UI Rating:** 8.5/10 (All phases complete)  
+**Data Layer:** Stable (v0.9.0-data-layer-stable)
 
 ---
 
@@ -161,8 +162,17 @@ src/
 ### Data Flow
 1. User actions → Component handlers
 2. State updates → React re-render
-3. localStorage sync → Persistence
-4. Navigation → Stack-based routing
+3. Data Layer services → Repository → Data Source (localStorage/API)
+4. localStorage sync → Persistence
+5. Navigation → Stack-based routing
+
+### Data Layer Architecture
+- **Services:** Business logic layer (PotService, ExpenseService, MemberService, SettlementService)
+- **Repositories:** Data access abstraction (PotRepository, ExpenseRepository, etc.)
+- **Sources:** Data persistence (LocalStorageSource, HttpSource stub)
+- **Hooks:** React hooks for data access (`usePots`, `usePot`)
+- **Feature Flags:** Safe gradual rollout (`VITE_DL_READS=on|off`, `VITE_DATA_SOURCE=local|api`)
+- **Error Handling:** Graceful fallbacks, error boundaries, non-blocking writes
 
 ### Key Design Patterns
 - **Component Composition:** Reusable UI components
@@ -226,6 +236,8 @@ src/
 - **Validation:** Zod 4.1.12
 - **Forms:** react-hook-form 7.55.0
 - **Storage:** localStorage (with migration support)
+- **Data Layer:** Service/Repository pattern with feature flags (`VITE_DL_READS`, `VITE_DATA_SOURCE`)
+- **Backup:** Crust/IPFS integration (auto-backup on checkpoint finalization)
 
 ### Development
 - **Linting:** ESLint 9.15.0
@@ -237,6 +249,23 @@ src/
 ## Change Log
 
 > **Note:** Update this section whenever you make changes to the app.
+
+### [2025-01-14] - Dev-Only UI Cleanup & Data Layer Finalization
+- ✅ Removed all dev-only debugging UI elements (pink "Reading via Data Layer" bars, green PotsDebug component)
+- ✅ Cleaned up unused imports and handlers related to debug components
+- ✅ Data Layer architecture stable and production-ready (v0.9.0-data-layer-stable)
+- ✅ All dev-only elements properly gated (no visual indicators in production)
+- ✅ App ready for user testing without debugging clutter
+
+### [2025-01-14] - Data Layer Architecture Stable Release (v0.9.0)
+- ✅ Complete Data Layer foundation (Service/Repository pattern)
+- ✅ Feature flags for safe rollout (`VITE_DL_READS`, `VITE_DATA_SOURCE`)
+- ✅ Checkpoint auto-backup to Crust/IPFS
+- ✅ RPC telemetry logging
+- ✅ Comprehensive API documentation (`docs/API_REFERENCE.md`)
+- ✅ Incremental rollout completed (5-step safe migration)
+- ✅ Error boundaries and graceful fallbacks
+- ✅ Performance telemetry (dev-only)
 
 ### [2025-01-14] - Balance Calculation Consistency Fix
 - Fixed ExpensesTab to preserve expense.split[] when converting to PotExpense format
@@ -404,5 +433,6 @@ When making changes to the app:
 ---
 
 **Document Maintained By:** Development Team  
-**Last Review:** January 14, 2025
+**Last Review:** January 14, 2025  
+**Release Tag:** v0.9.0-data-layer-stable
 

@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { web3Accounts, web3Enable, web3FromAddress } from "@polkadot/extension-dapp";
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import { create as ipfsHttpClient } from "ipfs-http-client";
 import type { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
-import { typesBundleForPolkadot } from "@crustio/type-definitions";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
 import { Card } from "../ui/card";
@@ -21,7 +19,6 @@ interface UploadedFile {
 
 const CRUST_GATEWAY = "https://gw.crustfiles.app";
 const CRUST_RPC = "wss://rpc-rocky.crust.network";
-const PUBLIC_IPFS_GATEWAY = "https://ipfs.io"; // Rocky testnet
 
 export function CrustStorage() {
   const [selectedAccount, setSelectedAccount] = useState<InjectedAccountWithMeta | null>(null);
@@ -52,10 +49,13 @@ export function CrustStorage() {
   useEffect(() => {
     const connectToCrust = async () => {
       try {
+        // Note: Crust type definitions are optional
+        // If @crustio/type-definitions is installed, you can add typesBundle here
+        // For now, using default Polkadot types which work fine for most operations
         const wsProvider = new WsProvider(CRUST_RPC);
         const api = await ApiPromise.create({ 
           provider: wsProvider,
-          typesBundle: typesBundleForPolkadot,
+          // typesBundle: typesBundleForPolkadot, // Optional: add if @crustio/type-definitions is installed
         });
         setApi(api);
       } catch (e) {

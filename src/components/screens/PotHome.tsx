@@ -4,7 +4,7 @@ import { ExpensesTab } from "./ExpensesTab";
 import { SavingsTab } from "./SavingsTab";
 import { MembersTab } from "./MembersTab";
 import { SettingsTab } from "./SettingsTab";
-import { Download, Share2, ExternalLink, Copy, RefreshCw } from "lucide-react";
+import { Download, Share2, ExternalLink, Copy } from "lucide-react";
 import { exportPotExpensesToCSV } from "../../utils/export";
 import { triggerHaptic } from "../../utils/haptics";
 import { QuickKeypadSheet } from "../QuickKeypadSheet";
@@ -585,33 +585,6 @@ export function PotHome({
         }
       />
 
-      {/* Task 3: Dev-only Data Layer indicator (shows when flag is active) */}
-      {import.meta.env.DEV && preferDLReads && (
-        <div 
-          className="flex items-center justify-between px-3 py-2 mx-4 mt-2 rounded-lg text-caption"
-          style={{ 
-            background: 'rgba(230, 0, 122, 0.1)',
-            border: '1px solid rgba(230, 0, 122, 0.2)'
-          }}
-          data-testid="dl-read-indicator-pot"
-        >
-          <span style={{ color: 'var(--accent)', fontWeight: 500 }}>
-            Reading via Data Layer (VITE_DL_READS=on) {potId ? `(pot: ${potId.slice(0, 8)}...)` : ''}
-          </span>
-          <button
-            onClick={() => {
-              refreshPot();
-              if (import.meta.env.DEV) {
-                console.log('[DataLayer] getPot refreshed', { potId });
-              }
-            }}
-            className="p-1 hover:bg-accent/20 rounded transition-colors"
-            title="Refresh pot from Data Layer"
-          >
-            <RefreshCw className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
-          </button>
-        </div>
-      )}
 
       {showCheckpointSection && (
         <div className="px-4 pt-3">

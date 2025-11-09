@@ -1,11 +1,11 @@
-import { Plus, Bell, TrendingUp, Search, Eye, EyeOff, ListFilter, Receipt, ArrowLeftRight, QrCode, Send, Wallet, RefreshCw } from "lucide-react";
+import { Plus, Bell, TrendingUp, Search, Eye, EyeOff, ListFilter, Receipt, ArrowLeftRight, QrCode, Send } from "lucide-react";
 import { WalletBanner } from "../WalletBanner";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { AccountMenu } from "../AccountMenu";
 import { EmptyState } from "../EmptyState";
-import { usePots, refreshPots } from "../../hooks/usePots";
-import { warnDev, logDev } from "../../utils/logDev";
+import { usePots } from "../../hooks/usePots";
+import { warnDev } from "../../utils/logDev";
 import { shouldPreferDLReads } from "../../utils/dlReadsFlag";
 import type { Pot as DataLayerPot } from "../../services/data/types";
 
@@ -75,7 +75,6 @@ export function PotsHome({
   // Task 3: Read pots from Data Layer (if flag enabled) with fallback
   const preferDLReads = shouldPreferDLReads();
   const dlPots = usePots();
-  const [refreshKey, setRefreshKey] = useState(0);
   
   // Transform Data Layer pots to potSummaries format
   const transformPotToSummary = useMemo(() => {
@@ -148,26 +147,6 @@ export function PotsHome({
     }
   }, [dlPots, potsProp, transformPotToSummary, preferDLReads]);
   
-  // Refresh handler (dev-only)
-  const handleRefresh = () => {
-    refreshPots();
-    setRefreshKey(prev => prev + 1);
-    logDev('[DataLayer] listPots refreshed');
-  };
-  
-  // Listen for refresh events (dev-only)
-  useEffect(() => {
-    if (!import.meta.env.DEV) return;
-    
-    const handleRefreshEvent = () => {
-      setRefreshKey(prev => prev + 1);
-    };
-    
-    window.addEventListener('pots-refresh', handleRefreshEvent);
-    return () => {
-      window.removeEventListener('pots-refresh', handleRefreshEvent);
-    };
-  }, []);
 
   const sortOptions: SortOption[] = [
     { id: "recent", label: "Recent activity" },
@@ -247,28 +226,6 @@ export function PotsHome({
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="p-4 space-y-3">
-          {/* Task 3: Dev-only Data Layer indicator (shows when flag is active) */}
-          {import.meta.env.DEV && preferDLReads && (
-            <div 
-              className="flex items-center justify-between px-3 py-2 rounded-lg text-caption"
-              style={{ 
-                background: 'rgba(230, 0, 122, 0.1)',
-                border: '1px solid rgba(230, 0, 122, 0.2)'
-              }}
-              data-testid="dl-read-indicator"
-            >
-              <span style={{ color: 'var(--accent)', fontWeight: 500 }}>
-                Reading via Data Layer (VITE_DL_READS=on)
-              </span>
-              <button
-                onClick={handleRefresh}
-                className="p-1 hover:bg-white/20 rounded transition-colors"
-                title="Refresh Data Layer"
-              >
-                <RefreshCw className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
-              </button>
-            </div>
-          )}
           
           {/* Wallet Balance Banner - Shows when connected */}
           <WalletBanner />

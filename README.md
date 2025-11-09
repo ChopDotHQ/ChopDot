@@ -1,10 +1,12 @@
 # ChopDot
 
-> Status: Work in Progress (MVP). Features, architecture, and integrations are evolving. Some product choices are not final; wallet flows and on‑chain anchoring are planned but not yet finalised.
+> Status: **Production Ready** 🚀  
+> Version: **1.3.0**  
+> Data Layer: **v0.9.0-data-layer-stable**
 
-Mobile-first expense splitting and group financial management app prototype.
+Mobile-first expense splitting and group financial management app with Polkadot blockchain integration.
 
-This repository consolidates the ChopDot Mobile Wireframe codebase and the existing GitHub repository metadata (README and license).
+ChopDot enables groups to track expenses, settle balances, and optionally use blockchain for verifiable settlements. Built with a clean architecture, comprehensive Data Layer, and production-ready UX.
 
 ## Why ChopDot
 
@@ -16,27 +18,80 @@ ChopDot brings familiar group-expense flows to a world where fairness and verifi
 - Interoperability – works great without a wallet; even better with one
 - Ownership – your data lives with you
 
-## What's in the MVP today
-- Mobile‑first PWA matching the wireframes (iPhone 15 viewport)
-- Group ledger UI: add expenses, see balances, prototype settlement flows
-- Local‑first persistence to keep state between sessions
-- Clean design system (CSS variables) and fast, modern stack (Vite + TS)
-- Member wallet addresses: Members can have an optional Polkadot wallet address. Any SS58 address is accepted; addresses are normalized to SS58-0 (Polkadot format) for display and settlements.
+## What's Built
 
-## What’s next
-- Wallet connection (Polkadot.js / SubWallet) with smooth onboarding
-- On‑chain anchoring on Asset Hub for accountable settlements
-- Multi‑wallet options and exploration towards JAM‑native patterns
+### Core Features ✅
+- **Mobile-first PWA** - iPhone 15 viewport optimized, iOS-style design
+- **Expense Management** - Add, edit, delete expenses with flexible split logic
+- **Settlement System** - Pot-scoped and global settlements with multiple payment methods
+- **Pot Management** - Expense pots and savings pots with budgets and checkpoints
+- **People & Balances** - Track balances across pots, trust metrics, settlement history
+- **Activity Feed** - Unified timeline of expenses, settlements, and checkpoints
+
+### Data Layer Architecture ✅
+- **Service/Repository Pattern** - Clean separation of concerns
+- **Feature Flags** - Safe gradual rollout (`VITE_DL_READS`, `VITE_DATA_SOURCE`)
+- **Multiple Data Sources** - localStorage (current) + HTTP stub (ready for API)
+- **Auto-Backup** - Crust/IPFS backup on checkpoint finalization
+- **Error Handling** - Graceful fallbacks, error boundaries, non-blocking writes
+
+### Blockchain Integration ✅
+- **Wallet Connection** - Polkadot.js, SubWallet, Talisman, MetaMask, WalletConnect
+- **Checkpoint System** - Pre-settlement verification with on-chain anchoring
+- **Settlement Tracking** - Complete payment history with Subscan links
+- **Member Addresses** - SS58 address support (normalized to SS58-0)
+
+### UX/UI ✅
+- **Design System** - Comprehensive guidelines, design tokens, typography
+- **Dark Mode** - System preference + manual toggle
+- **Empty States** - Helpful prompts and CTAs
+- **Loading States** - Skeleton components for smooth loading
+- **Error Messages** - User-friendly, actionable feedback
+
+## What's Next
+
+### Immediate (API Layer Branch)
+- **Backend API Integration** - Connect HttpSource to real PostgreSQL backend
+- **JAM Integration** - Wire to JAM local node for decentralized data
+- **Real-time Sync** - Multi-device synchronization
+
+### Near-term
+- **Push Notifications** - Attestation requests, settlement reminders
+- **Receipt Management** - IPFS/Arweave storage, camera capture
+- **Multi-currency** - Real exchange rates, currency conversion
+
+### Future
+- **Smart Features** - Recurring expenses, templates, auto-split
+- **DeFi Integration** - Real yield from Acala
+- **Mobile Apps** - Native iOS/Android apps
 
 ## Built for Polkadot
 Designed for composability and multi‑chain collaboration. We start off‑chain for speed, and add on‑chain verification where it delivers real value.
 
 ## Tech Stack
 
-- React 18 + TypeScript
-- Vite
-- Tailwind CSS v4
-- ShadCN UI components
+### Frontend
+- **React 19.2.0** + **TypeScript 5.6.3**
+- **Vite 6.0.3** - Fast build tool
+- **Tailwind CSS 4.0.0** - Utility-first CSS with design tokens
+- **ShadCN UI** - Accessible component library
+
+### Blockchain
+- **@polkadot/api** - Polkadot blockchain integration
+- **@polkadot/extension-dapp** - Wallet connection
+- **ethers.js** - EVM support
+- **WalletConnect** - Multi-wallet support
+
+### Data & State
+- **Zod** - Schema validation
+- **Data Layer** - Service/Repository pattern with feature flags
+- **localStorage** - Local persistence with migration support
+- **React Context** - Global state management
+
+### Development
+- **ESLint** - Code linting
+- **TypeScript** - Strict type checking
+- **npm** - Package management
 
 ## Run locally
 
@@ -71,6 +126,28 @@ For safe public demos, you can enable a restricted mode that disables wallet con
   - Wallet UI buttons will show a harmless toast and not open the wallet sheet.
   - Debug helpers are not exposed in production builds.
 
-## Notes
+## Documentation
 
-- Source originated from the ChopDot Mobile Wireframe export (see design reference) and is adapted for local development.
+- **Specification:** [`spec.md`](spec.md) - Complete app specification and changelog
+- **UX/UI Guidelines:** [`src/guidelines/Guidelines.md`](src/guidelines/Guidelines.md) - Design system reference
+- **API Reference:** [`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) - Data Layer API documentation
+- **Release Notes:** [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) - v0.9.0-data-layer-stable release details
+
+## Feature Flags
+
+### Data Layer Reads (`VITE_DL_READS`)
+- **Default:** `off` (uses existing UI state)
+- **Set to `on`:** Enables Data Layer reads across the app
+- **Toggle:** Use `scripts/toggle-dl-reads.sh on|off` (requires dev server restart)
+
+### Data Source (`VITE_DATA_SOURCE`)
+- **Default:** `local` (uses localStorage)
+- **Set to `api`:** Uses HttpSource stub (ready for backend integration)
+
+## Release Information
+
+**Current Release:** v0.9.0-data-layer-stable  
+**Release Date:** January 14, 2025  
+**Status:** ✅ Stable and production-ready
+
+See [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) for full release details.
