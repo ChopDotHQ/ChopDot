@@ -4,7 +4,7 @@ import { ExpensesTab } from "./ExpensesTab";
 import { SavingsTab } from "./SavingsTab";
 import { MembersTab } from "./MembersTab";
 import { SettingsTab } from "./SettingsTab";
-import { Download, Share2, ExternalLink, Copy } from "lucide-react";
+import { Download, Share2, ExternalLink, Copy, RefreshCw } from "lucide-react";
 import { exportPotExpensesToCSV } from "../../utils/export";
 import { triggerHaptic } from "../../utils/haptics";
 import { QuickKeypadSheet } from "../QuickKeypadSheet";
@@ -13,6 +13,12 @@ import { useFeatureFlags } from "../../contexts/FeatureFlagsContext";
 import { checkpointPot, computePotHash, type PotCheckpointInput } from "../../services/chain/remark";
 import type { PotHistory } from "../../App";
 import { PrimaryButton } from "../PrimaryButton";
+import { usePot } from "../../hooks/usePot";
+import { warnDev, logDev } from "../../utils/logDev";
+import { shouldPreferDLReads } from "../../utils/dlReadsFlag";
+import { savePotSnapshot } from "../../services/backup/backupService";
+import { useData } from "../../services/data/DataContext";
+import type { Pot as DataLayerPot } from "../../services/data/types";
 
 interface Member {
   id: string;
@@ -112,22 +118,22 @@ interface PotHomeProps {
 
 export function PotHome({
   potId,
-  potType,
-  potName,
-  baseCurrency,
-  members,
-  expenses,
-  budget,
-  budgetEnabled,
-  checkpointEnabled,
+  potType: potTypeProp,
+  potName: potNameProp,
+  baseCurrency: baseCurrencyProp,
+  members: membersProp,
+  expenses: expensesProp,
+  budget: budgetProp,
+  budgetEnabled: budgetEnabledProp,
+  checkpointEnabled: checkpointEnabledProp,
   hasActiveCheckpoint: _hasActiveCheckpoint,
   checkpointConfirmations,
-  contributions = [],
-  totalPooled = 0,
-  yieldRate = 0,
+  contributions: contributionsProp = [],
+  totalPooled: totalPooledProp = 0,
+  yieldRate: yieldRateProp = 0,
   defiProtocol = "Acala Earn",
-  goalAmount,
-  goalDescription,
+  goalAmount: goalAmountProp,
+  goalDescription: goalDescriptionProp,
   onBack,
   // onAddExpense,
   onExpenseClick,
@@ -155,6 +161,50 @@ export function PotHome({
   potHistory = [],
   onUpdatePot,
 }: PotHomeProps) {
+  // Task 3: Read pot from Data Layer (if flag enabled) with fallback to props
+  const preferDLReads = shouldPreferDLReads();
+  const { pot: dlPot, loading: dlLoading, error: dlError, refresh: refreshPot } = usePot(potId);
+  const { pots: potService } = useData();
+  
+  // Use Data Layer pot if flag is on or if DL pot is available, otherwise fallback to props
+  const pot = useMemo<DataLayerPot | null>(() => {
+    if (preferDLReads) {
+      // Flag is on - prefer DL reads
+      if (dlPot) {
+        return dlPot;
+      }
+      if (dlError && potId) {
+        warnDev('[DataLayer] Pot read failed, falling back to UI state', { potId, error: dlError });
+      }
+      // DL loading or empty - return null (will use props fallback)
+      return null;
+    } else {
+      // Flag is off - use existing behavior (prefer DL if available, otherwise props)
+      if (dlPot) {
+        return dlPot;
+      }
+      if (dlError && potId) {
+        warnDev('[DataLayer] Pot read failed, falling back to UI state', { potId, error: dlError });
+      }
+      return null;
+    }
+  }, [dlPot, dlError, potId, preferDLReads]);
+
+  // Determine which data source to use (Data Layer or props fallback)
+  const potType = pot?.type ?? potTypeProp;
+  const potName = pot?.name ?? potNameProp;
+  const baseCurrency = pot?.baseCurrency ?? baseCurrencyProp;
+  const members = pot?.members ?? membersProp;
+  const expenses = pot?.expenses ?? expensesProp;
+  const budget = pot?.budget ?? budgetProp;
+  const budgetEnabled = pot?.budgetEnabled ?? budgetEnabledProp;
+  const checkpointEnabled = pot?.checkpointEnabled ?? checkpointEnabledProp;
+  const contributions = pot?.contributions ?? contributionsProp;
+  const totalPooled = pot?.totalPooled ?? totalPooledProp;
+  const yieldRate = pot?.yieldRate ?? yieldRateProp;
+  const goalAmount = pot?.goalAmount ?? goalAmountProp;
+  const goalDescription = pot?.goalDescription ?? goalDescriptionProp;
+
   // Dynamic tabs based on pot type
   const tabs = potType === "savings" 
     ? ["Savings", "Members", "Settings"]
@@ -164,19 +214,33 @@ export function PotHome({
   const { POLKADOT_APP_ENABLED } = useFeatureFlags();
   const [keypadOpen, setKeypadOpen] = useState(false);
   const [isCheckpointing, setIsCheckpointing] = useState(false);
-  const [localHistory, setLocalHistory] = useState<PotHistory[]>(potHistory);
-
+  const [isBackingUp, setIsBackingUp] = useState(false);
+  
+  // Task 2: Use DL-loaded pot history as source of truth
+  const potHistoryFromDL = pot?.history ?? [];
+  const activeHistory = potHistoryFromDL.length > 0 ? potHistoryFromDL : potHistory;
+  
+  // Dev log for history items
   useEffect(() => {
-    setLocalHistory(potHistory);
-  }, [potHistory]);
+    if (import.meta.env.DEV && activeHistory.length > 0) {
+      const settlementCount = activeHistory.filter(e => e.type === 'onchain_settlement').length;
+      const checkpointCount = activeHistory.filter(e => e.type === 'remark_checkpoint').length;
+      logDev('[DL][history] items loaded', { 
+        total: activeHistory.length, 
+        settlements: settlementCount, 
+        checkpoints: checkpointCount,
+        source: potHistoryFromDL.length > 0 ? 'DL' : 'props'
+      });
+    }
+  }, [activeHistory, potHistoryFromDL.length]);
 
   const checkpointHistory = useMemo(
     () =>
-      localHistory.filter(
+      activeHistory.filter(
         (entry): entry is Extract<PotHistory, { type: 'remark_checkpoint' }> =>
           entry.type === 'remark_checkpoint'
       ),
-    [localHistory]
+    [activeHistory]
   );
 
   const isWalletConnected = account.status === 'connected' && !!account.address0;
@@ -185,6 +249,9 @@ export function PotHome({
   const isDev = import.meta.env.MODE !== 'production';
 
   const latestCheckpointEntry = checkpointHistory[0];
+  
+  // Task 7: Get lastBackupCid from pot (DL) or latest checkpoint entry
+  const lastBackupCid = pot?.lastBackupCid ?? latestCheckpointEntry?.cid ?? null;
 
   const checkpointInput = useMemo<PotCheckpointInput>(() => ({
     id: potId || potName,
@@ -201,13 +268,13 @@ export function PotHome({
       paidBy: expense.paidBy,
       memo: expense.memo,
       date: expense.date,
-      split: expense.split.map((split) => ({
+      split: (expense.split || []).map((split) => ({
         memberId: split.memberId,
         amount: split.amount,
       })),
     })),
-    lastBackupCid: latestCheckpointEntry?.cid ?? null,
-  }), [baseCurrency, expenses, latestCheckpointEntry?.cid, members, potId, potName]);
+    lastBackupCid,
+  }), [baseCurrency, expenses, lastBackupCid, members, potId, potName]);
 
   const ipfsGatewayBase =
     (import.meta.env.VITE_IPFS_GATEWAY as string | undefined) ||
@@ -238,14 +305,13 @@ export function PotHome({
   };
 
   const applyHistoryUpdate = (entry: PotHistory, persist: boolean) => {
-    setLocalHistory((prev) => {
-      const filtered = prev.filter((item) => item.id !== entry.id);
-      const nextHistory = [entry, ...filtered];
-      if (persist) {
-        onUpdatePot?.({ history: nextHistory });
-      }
-      return nextHistory;
-    });
+    // Task 2: Update history (will be persisted via onUpdatePot callback)
+    const filtered = activeHistory.filter((item) => item.id !== entry.id);
+    const nextHistory = [entry, ...filtered];
+    if (persist) {
+      onUpdatePot?.({ history: nextHistory });
+    }
+    // Note: History updates will be reflected when pot is refreshed from DL
   };
 
   const handleCheckpoint = async () => {
@@ -276,6 +342,21 @@ export function PotHome({
               onShowToast?.('Checkpoint included in block', 'success');
             } else if (entry.status === 'finalized') {
               onShowToast?.('Checkpoint finalized on-chain', 'success');
+              // Auto-backup to Crust when checkpoint finalizes
+              if (pot && potId) {
+                (async () => {
+                  try {
+                    const { cid } = await savePotSnapshot(pot);
+                    await potService.updatePot(potId, {
+                      lastBackupCid: cid,
+                    });
+                    logDev('[Checkpoint] Auto-backed up to Crust', { potId, cid });
+                  } catch (error) {
+                    warnDev('[Checkpoint] Auto-backup failed', error);
+                    // Non-blocking: don't show error toast for background backup
+                  }
+                })();
+              }
             } else if (entry.status === 'failed') {
               onShowToast?.('Checkpoint failed to publish', 'error');
             }
@@ -307,6 +388,39 @@ export function PotHome({
     } finally {
       pendingUpdates.length = 0;
       setIsCheckpointing(false);
+    }
+  };
+
+  // Task 7: Handle Crust backup
+  const handleBackupToCrust = async () => {
+    if (!pot || !potId) {
+      onShowToast?.('Pot data not available', 'error');
+      return;
+    }
+
+    setIsBackingUp(true);
+    try {
+      const { cid } = await savePotSnapshot(pot);
+      
+      // Update pot's lastBackupCid via Data Layer
+      await potService.updatePot(potId, {
+        lastBackupCid: cid,
+      });
+      
+      // Refresh pot from Data Layer
+      refreshPot();
+      
+      onShowToast?.(`Backup saved to Crust (CID: ${cid.slice(0, 8)}...)`, 'success');
+      
+      if (import.meta.env.DEV) {
+        logDev('[BackupService] Backup completed and CID saved', { potId, cid });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Backup failed';
+      onShowToast?.(`Backup failed: ${errorMessage}`, 'error');
+      warnDev('[BackupService] Backup failed', error);
+    } finally {
+      setIsBackingUp(false);
     }
   };
 
@@ -471,6 +585,34 @@ export function PotHome({
         }
       />
 
+      {/* Task 3: Dev-only Data Layer indicator (shows when flag is active) */}
+      {import.meta.env.DEV && preferDLReads && (
+        <div 
+          className="flex items-center justify-between px-3 py-2 mx-4 mt-2 rounded-lg text-caption"
+          style={{ 
+            background: 'rgba(230, 0, 122, 0.1)',
+            border: '1px solid rgba(230, 0, 122, 0.2)'
+          }}
+          data-testid="dl-read-indicator-pot"
+        >
+          <span style={{ color: 'var(--accent)', fontWeight: 500 }}>
+            Reading via Data Layer (VITE_DL_READS=on) {potId ? `(pot: ${potId.slice(0, 8)}...)` : ''}
+          </span>
+          <button
+            onClick={() => {
+              refreshPot();
+              if (import.meta.env.DEV) {
+                console.log('[DataLayer] getPot refreshed', { potId });
+              }
+            }}
+            className="p-1 hover:bg-accent/20 rounded transition-colors"
+            title="Refresh pot from Data Layer"
+          >
+            <RefreshCw className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
+          </button>
+        </div>
+      )}
+
       {showCheckpointSection && (
         <div className="px-4 pt-3">
           <div className="card p-4 space-y-3">
@@ -515,6 +657,27 @@ export function PotHome({
                 </button>
               </div>
             )}
+            
+            {/* Task 7: Backup to Crust button */}
+            <div className="pt-2 border-t border-border">
+              <button
+                onClick={handleBackupToCrust}
+                disabled={isBackingUp || !pot}
+                className="w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  background: isBackingUp ? 'var(--muted)' : 'var(--accent)',
+                  color: 'white',
+                }}
+              >
+                {isBackingUp ? 'Backing up...' : import.meta.env.DEV ? 'Backup to Crust (dev stub)' : 'Backup to Crust (coming soon)'}
+              </button>
+              {!import.meta.env.DEV && (
+                <p className="text-micro text-secondary mt-2 text-center">
+                  Crust backup integration coming soon
+                </p>
+              )}
+            </div>
+
             {checkpointInput.lastBackupCid && (
               <div className="flex items-center justify-between text-[11px] text-secondary bg-muted/20 px-3 py-2 rounded-lg">
                 <div className="flex flex-col gap-0.5 min-w-0">
@@ -685,7 +848,7 @@ export function PotHome({
             totalExpenses={totalExpenses}
             contributions={contributions}
             potId={potId}
-            potHistory={localHistory}
+            potHistory={activeHistory}
             onAddExpense={() => setKeypadOpen(true)}
             onExpenseClick={onExpenseClick}
             onSettle={onSettle}

@@ -124,7 +124,11 @@ export function SettingsTab({
     try {
       setPasswordError(null);
       const blob = await encryptPot(pot, password);
-      const filename = `pot-${pot.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-${Date.now()}.chop`;
+      // Task 8: Use YYYY-MM-DD format for encrypted export filename
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+      const slug = pot.name.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      const filename = `pot-${slug}-${dateStr}.chop`;
       downloadEncryptedPot(blob, filename);
       setShowPasswordModal(false);
       onShowToast?.('Encrypted pot exported successfully', 'success');

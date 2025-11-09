@@ -4,6 +4,8 @@ import App from './App.tsx'
 import './index.css'
 import './styles/globals.css'
 import { AccountProvider } from './contexts/AccountContext'
+import { DataProvider } from './services/data/DataContext'
+import { DataLayerErrorBoundary } from './components/DataLayerErrorBoundary'
 
 // Hide loading spinner
 const loadingEl = document.getElementById('loading')
@@ -27,16 +29,24 @@ if (window.location.pathname === '/chain-test') {
     createRoot(rootEl).render(
       <StrictMode>
         <AccountProvider>
-          <ChainTestPage />
+          <DataLayerErrorBoundary>
+            <DataProvider>
+              <ChainTestPage />
+            </DataProvider>
+          </DataLayerErrorBoundary>
         </AccountProvider>
       </StrictMode>,
     )
   })()
-} else {
+  } else {
   createRoot(rootEl).render(
   <StrictMode>
       <AccountProvider>
-    <App />
+        <DataLayerErrorBoundary>
+          <DataProvider>
+            <App />
+          </DataProvider>
+        </DataLayerErrorBoundary>
       </AccountProvider>
   </StrictMode>,
 )
