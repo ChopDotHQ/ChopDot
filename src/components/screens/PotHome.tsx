@@ -163,7 +163,7 @@ export function PotHome({
 }: PotHomeProps) {
   // Task 3: Read pot from Data Layer (if flag enabled) with fallback to props
   const preferDLReads = shouldPreferDLReads();
-  const { pot: dlPot, loading: dlLoading, error: dlError, refresh: refreshPot } = usePot(potId);
+  const { pot: dlPot, error: dlError, refresh: refreshPot } = usePot(potId);
   const { pots: potService } = useData();
   
   // Use Data Layer pot if flag is on or if DL pot is available, otherwise fallback to props
@@ -194,8 +194,39 @@ export function PotHome({
   const potType = pot?.type ?? potTypeProp;
   const potName = pot?.name ?? potNameProp;
   const baseCurrency = pot?.baseCurrency ?? baseCurrencyProp;
-  const members = pot?.members ?? membersProp;
-  const expenses = pot?.expenses ?? expensesProp;
+  // Transform Data Layer types to component types (handle optional/nullable fields)
+  const members = useMemo(() => {
+    const source = pot?.members ?? membersProp;
+    return source.map(m => ({
+      id: m.id,
+      name: m.name,
+      role: (m.role === 'Owner' || m.role === 'Member' ? m.role : 'Member') as 'Owner' | 'Member',
+      status: (m.status === 'active' || m.status === 'pending' ? m.status : 'active') as 'active' | 'pending',
+      address: m.address ?? undefined, // Convert null to undefined
+      verified: m.verified ?? false,
+    }));
+  }, [pot?.members, membersProp]);
+
+  const expenses = useMemo(() => {
+    const source = pot?.expenses ?? expensesProp;
+    return source.map(e => {
+      // Handle both memo and description fields (backward compatibility)
+      const memo = e.memo ?? (e as any).description ?? '';
+      const date = e.date ?? new Date().toISOString().split('T')[0];
+      return {
+        id: e.id,
+        amount: e.amount,
+        currency: e.currency ?? baseCurrency, // Default to pot currency
+        paidBy: e.paidBy,
+        memo,
+        date, // Always defined
+        split: e.split ?? [], // Default to empty array
+        attestations: e.attestations ?? [],
+        hasReceipt: e.hasReceipt ?? false,
+        receiptUrl: e.receiptUrl,
+      } as Expense;
+    });
+  }, [pot?.expenses, expensesProp, baseCurrency]);
   const budget = pot?.budget ?? budgetProp;
   const budgetEnabled = pot?.budgetEnabled ?? budgetEnabledProp;
   const checkpointEnabled = pot?.checkpointEnabled ?? checkpointEnabledProp;
@@ -217,8 +248,19 @@ export function PotHome({
   const [isBackingUp, setIsBackingUp] = useState(false);
   
   // Task 2: Use DL-loaded pot history as source of truth
-  const potHistoryFromDL = pot?.history ?? [];
-  const activeHistory = potHistoryFromDL.length > 0 ? potHistoryFromDL : potHistory;
+  // Ensure all history entries have required status field (default to 'submitted')
+  const normalizeHistory = (history: (PotHistory | { status?: string; [key: string]: unknown })[]): PotHistory[] => {
+    return history.map(entry => {
+      const baseEntry = entry as PotHistory;
+      return {
+        ...baseEntry,
+        status: baseEntry.status ?? 'submitted',
+      } as PotHistory;
+    });
+  };
+  
+  const potHistoryFromDL = normalizeHistory(pot?.history ?? []);
+  const activeHistory = potHistoryFromDL.length > 0 ? potHistoryFromDL : normalizeHistory(potHistory as (PotHistory | { status?: string; [key: string]: unknown })[]);
   
   // Dev log for history items
   useEffect(() => {
@@ -306,8 +348,13 @@ export function PotHome({
 
   const applyHistoryUpdate = (entry: PotHistory, persist: boolean) => {
     // Task 2: Update history (will be persisted via onUpdatePot callback)
+    // Ensure status is defined (default to 'submitted' if missing)
+    const entryWithStatus: PotHistory = {
+      ...entry,
+      status: entry.status ?? 'submitted',
+    } as PotHistory;
     const filtered = activeHistory.filter((item) => item.id !== entry.id);
-    const nextHistory = [entry, ...filtered];
+    const nextHistory = [entryWithStatus, ...filtered];
     if (persist) {
       onUpdatePot?.({ history: nextHistory });
     }
@@ -467,7 +514,7 @@ export function PotHome({
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
   // Calculate net: what you're owed minus what you owe
   const myShare = expenses.reduce((sum, e) => {
-    const share = e.split.find((s) => s.memberId === currentUserId);
+    const share = (e.split ?? []).find((s) => s.memberId === currentUserId);
     return sum + (share?.amount || 0);
   }, 0);
   const net = myExpenses - myShare;
@@ -495,13 +542,13 @@ export function PotHome({
     [...expenses].reverse().forEach((e) => {
       const label = (e.memo || '').trim();
       if (label.length === 0) return;
-      const participantIds = e.split
+      const participantIds = (e.split ?? [])
         .filter((s) => s.amount > 0 && memberIdSet.has(s.memberId))
         .map((s) => s.memberId)
         .sort();
       const key = `${label.toLowerCase()}|${participantIds.join(',')}` as PickKey;
       const existing = stats.get(key);
-      const ts = new Date(e.date).getTime() || Date.now();
+      const ts = e.date ? new Date(e.date).getTime() : Date.now();
       if (existing) {
         existing.count += 1;
         // Keep most recent amount/ts
@@ -870,7 +917,7 @@ export function PotHome({
                 description: e.memo,
                 amount: e.amount,
                 paidBy: e.paidBy,
-                createdAt: new Date(e.date).getTime(),
+                createdAt: e.date ? new Date(e.date).getTime() : Date.now(),
               })),
               history: [],
               budgetEnabled: false,
