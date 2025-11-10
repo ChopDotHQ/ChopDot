@@ -22,16 +22,14 @@
 ## 📚 Related Documentation
 
 ### Design & UX
-- **UX/UI Guidelines:** [`src/guidelines/Guidelines.md`](src/guidelines/Guidelines.md) - Complete design system reference (follow from the start)
+- **UX/UI Guidelines:** [`src/guidelines/Guidelines.md`](src/guidelines/Guidelines.md) - Complete design system reference
 - **Naming Conventions:** [`src/guidelines/NAMING_CONVENTIONS.md`](src/guidelines/NAMING_CONVENTIONS.md) - File and code naming standards
-- **UX/UI Assessment:** [`src/guidelines/UX_UI_ASSESSMENT.md`](src/guidelines/UX_UI_ASSESSMENT.md) - Phase 1-3 improvement roadmap (completed)
-- **UX/UI Inconsistencies:** [`src/guidelines/UX_UI_INCONSISTENCIES.md`](src/guidelines/UX_UI_INCONSISTENCIES.md) - Historical reference (all issues resolved)
+- **Quick Reference:** [`src/guidelines/QUICK_REFERENCE.md`](src/guidelines/QUICK_REFERENCE.md) - Fast lookup for common patterns
 
 ### Architecture & Code Quality
 - **File Structure:** [`src/FILE_STRUCTURE.md`](src/FILE_STRUCTURE.md) - Codebase navigation
-- **Connections Verification:** [`CONNECTIONS_VERIFICATION.md`](CONNECTIONS_VERIFICATION.md) - End-to-end connection verification (all verified ✅)
-- **Connections Test Report:** [`CONNECTIONS_TEST_REPORT.md`](CONNECTIONS_TEST_REPORT.md) - Detailed test findings and fixes
-- **Hierarchy & Logic Review:** [`HIERARCHY_LOGIC_REVIEW.md`](HIERARCHY_LOGIC_REVIEW.md) - App hierarchy and math consistency review
+- **API Reference:** [`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) - Data Layer API documentation
+- **Workflow Guide:** [`src/WORKFLOW_GUIDE.md`](src/WORKFLOW_GUIDE.md) - Feature workflows and user flows
 
 ---
 

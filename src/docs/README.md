@@ -7,8 +7,8 @@ Welcome to the ChopDot documentation! This is your guide to understanding, setti
 ## 📚 Quick Navigation
 
 ### Getting Started
-- **[Current State](./CURRENT_STATE.md)** ⭐ - What works now, what's next
 - **[Setup Guide](./SETUP_GUIDE.md)** - How to run locally
+- **[Quick Reference](./QUICK_REFERENCE.md)** - Fast lookup for developers
 
 ### Technical Reference
 - **[Database Schema](./DATABASE_SCHEMA.md)** - PostgreSQL table structure
