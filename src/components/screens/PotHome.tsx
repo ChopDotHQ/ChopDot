@@ -246,6 +246,7 @@ export function PotHome({
   const [keypadOpen, setKeypadOpen] = useState(false);
   const [isCheckpointing, setIsCheckpointing] = useState(false);
   const [isBackingUp, setIsBackingUp] = useState(false);
+  const [lastCheckpointClick, setLastCheckpointClick] = useState(0);
   
   // Task 2: Use DL-loaded pot history as source of truth
   // Ensure all history entries have required status field (default to 'submitted')
@@ -286,9 +287,9 @@ export function PotHome({
   );
 
   const isWalletConnected = account.status === 'connected' && !!account.address0;
-  // Only show checkpoint section if: feature enabled, checkpoint enabled, AND wallet connected
-  const showCheckpointSection = POLKADOT_APP_ENABLED && checkpointEnabled === true && isWalletConnected;
+  // Only show checkpoint section if: feature enabled, checkpoint enabled, wallet connected, AND (auditable mode OR dev)
   const isDev = import.meta.env.MODE !== 'production';
+  const showCheckpointSection = POLKADOT_APP_ENABLED && checkpointEnabled === true && isWalletConnected && (pot?.mode === 'auditable' || isDev);
 
   const latestCheckpointEntry = checkpointHistory[0];
   
@@ -362,12 +363,22 @@ export function PotHome({
   };
 
   const handleCheckpoint = async () => {
+    // Debounce: prevent rapid clicks (2s cooldown)
+    const now = Date.now();
+    if (now - lastCheckpointClick < 2000) {
+      return;
+    }
+    setLastCheckpointClick(now);
+    
     if (!showCheckpointSection) return;
     if (!isWalletConnected || !account.address0) {
       onShowToast?.('Connect a wallet to checkpoint on-chain', 'error');
       return;
     }
     if (isCheckpointing) return;
+    
+    // Rate limit: 1 per 24h (manual checkpoints only) - REMOVED
+    // Checkpoint creation disabled
 
     triggerHaptic('light');
     setIsCheckpointing(true);
@@ -633,7 +644,7 @@ export function PotHome({
       />
 
 
-      {showCheckpointSection && (
+      {false && showCheckpointSection && (
         <div className="px-4 pt-3">
           <div className="card p-4 space-y-3">
             <div className="flex items-center justify-between gap-3">
@@ -719,14 +730,16 @@ export function PotHome({
                   >
                     Copy
                   </button>
-                  <a
-                    href={buildIpfsUrl(checkpointInput.lastBackupCid)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-micro text-accent underline hover:opacity-80 transition-opacity"
-                  >
-                    Open on IPFS
-                  </a>
+                  {checkpointInput.lastBackupCid && (
+                    <a
+                      href={buildIpfsUrl(checkpointInput.lastBackupCid || '')}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-micro text-accent underline hover:opacity-80 transition-opacity"
+                    >
+                      Open on IPFS
+                    </a>
+                  )}
                 </div>
               </div>
             )}
@@ -868,6 +881,7 @@ export function PotHome({
             totalExpenses={totalExpenses}
             contributions={contributions}
             potId={potId}
+            pot={pot ?? undefined}
             potHistory={activeHistory}
             onAddExpense={() => setKeypadOpen(true)}
             onExpenseClick={onExpenseClick}
@@ -905,7 +919,30 @@ export function PotHome({
             potType={potType}
             members={members}
             potId={potId}
-            pot={onImportPot ? {
+            pot={pot ? {
+              id: pot.id || potId || '',
+              name: pot.name || potName,
+              type: pot.type || potType,
+              baseCurrency: (pot.baseCurrency || baseCurrency) as 'USD' | 'DOT',
+              members: pot.members || members.map(m => ({ id: m.id, name: m.name, address: m.address || null })),
+              expenses: pot.expenses || expenses.map(e => ({
+                id: e.id,
+                potId: potId || '',
+                description: e.memo,
+                amount: e.amount,
+                paidBy: e.paidBy,
+                createdAt: e.date ? new Date(e.date).getTime() : Date.now(),
+              })),
+              history: pot.history || [],
+              budgetEnabled: pot.budgetEnabled ?? budgetEnabled,
+              budget: pot.budget ?? budget,
+              checkpointEnabled: pot.checkpointEnabled ?? checkpointEnabled ?? true,
+              mode: (pot as any).mode ?? 'casual',
+              confirmationsEnabled: (pot as any).confirmationsEnabled ?? false,
+              archived: pot.archived ?? false,
+              createdAt: pot.createdAt || Date.now(),
+              updatedAt: pot.updatedAt || Date.now(),
+            } as import('../../schema/pot').Pot : (onImportPot ? {
               id: potId || '',
               name: potName,
               type: potType,
@@ -922,10 +959,12 @@ export function PotHome({
               history: [],
               budgetEnabled: false,
               checkpointEnabled: checkpointEnabled ?? true,
+              mode: 'casual',
+              confirmationsEnabled: false,
               archived: false,
               createdAt: Date.now(),
               updatedAt: Date.now(),
-            } as import('../../schema/pot').Pot : undefined}
+            } as import('../../schema/pot').Pot : undefined)}
             onUpdateSettings={onUpdateSettings}
             onCopyInviteLink={onCopyInviteLink}
             onResendInvite={onResendInvite}

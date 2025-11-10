@@ -48,11 +48,9 @@ import { WithdrawFunds } from "./components/screens/WithdrawFunds";
 import { YouSheet } from "./components/YouSheet";
 import { YouTab } from "./components/screens/YouTab";
 import { TxToast } from "./components/TxToast";
-import { CheckpointStatusScreen } from "./components/screens/CheckpointStatusScreen";
 import { RequestPayment } from "./components/screens/RequestPayment";
 import { CrustStorage } from "./components/screens/CrustStorage";
 import { WalletConnectionSheet } from "./components/WalletConnectionSheet";
-import { BatchConfirmSheet } from "./components/BatchConfirmSheet";
 import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
 
 interface Member {
@@ -251,8 +249,6 @@ function AppContent() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod | null>(null);
   const [showAddMember, setShowAddMember] = useState(false);
-  const [showBatchConfirm, setShowBatchConfirm] =
-    useState(false);
   const [fabQuickAddPotId, setFabQuickAddPotId] = useState<string | null>(null);
 
   const [currentPotId, setCurrentPotId] = useState<
@@ -669,6 +665,27 @@ function AppContent() {
   const [hasLoadedInitialData, setHasLoadedInitialData] =
     useState(false);
 
+  // Migrate attestations from old format (string[]) to new format (Array<{memberId, confirmedAt}>)
+  const migrateAttestations = (expense: any) => {
+    if (!expense.attestations || !Array.isArray(expense.attestations)) {
+      return expense;
+    }
+    
+    // Check if already in new format (has objects with memberId)
+    if (expense.attestations.length > 0 && typeof expense.attestations[0] === 'object') {
+      return expense; // Already migrated
+    }
+    
+    // Migrate from string[] to Array<{memberId, confirmedAt}>
+    const now = new Date().toISOString();
+    expense.attestations = (expense.attestations as string[]).map((memberId: string, index: number) => ({
+      memberId,
+      confirmedAt: new Date(Date.now() - (expense.attestations.length - index) * 2 * 60 * 60 * 1000).toISOString(), // Estimate timestamps
+    }));
+    
+    return expense;
+  };
+
   useEffect(() => {
     (async () => {
       // Task 4: Migration and backup are now handled by LocalStorageSource
@@ -679,8 +696,15 @@ function AppContent() {
           const parsed = JSON.parse(savedPots);
           if (Array.isArray(parsed)) {
             // Note: Migration happens in LocalStorageSource.getPots() on first read
-            // This direct read is for UI state only (backward compatibility)
-            setPots(parsed as Pot[]);
+            // Also migrate attestations format and add new fields
+            const migrated = parsed.map((pot: any) => ({
+              ...pot,
+              expenses: (pot.expenses || []).map(migrateAttestations),
+              mode: pot.mode ?? 'casual',
+              confirmationsEnabled: pot.confirmationsEnabled ?? (import.meta.env.VITE_REQUIRE_CONFIRMATIONS_DEFAULT === '1'),
+              lastEditAt: pot.lastEditAt ?? new Date().toISOString(),
+            }));
+            setPots(migrated as Pot[]);
           }
         } else {
           const backupPots = localStorage.getItem("chopdot_pots_backup");
@@ -689,10 +713,17 @@ function AppContent() {
               const parsed = JSON.parse(backupPots);
               if (Array.isArray(parsed)) {
                 console.warn("[ChopDot] Restored pots from backup");
-                setPots(parsed as Pot[]);
+                const migrated = parsed.map((pot: any) => ({
+                  ...pot,
+                  expenses: (pot.expenses || []).map(migrateAttestations),
+                  mode: pot.mode ?? 'casual',
+                  confirmationsEnabled: pot.confirmationsEnabled ?? (import.meta.env.VITE_REQUIRE_CONFIRMATIONS_DEFAULT === '1'),
+                  lastEditAt: pot.lastEditAt ?? new Date().toISOString(),
+                }));
+                setPots(migrated as Pot[]);
                 // Restore backup to main key
                 try {
-                  localStorage.setItem("chopdot_pots", JSON.stringify(parsed));
+                  localStorage.setItem("chopdot_pots", JSON.stringify(migrated));
                 } catch (saveErr) {
                   console.warn("[ChopDot] Failed to restore backup:", saveErr);
                 }
@@ -1002,14 +1033,14 @@ function AppContent() {
     }
 
     if (activeTab === "activity") {
-      if (pendingExpenses.length > 0) {
+      // Batch confirm removed
+      if (false && pendingExpenses.length > 0) {
         return {
           visible: true,
           icon: CheckCircle,
           color: "var(--success)",
           action: () => {
             triggerHaptic("light");
-            setShowBatchConfirm(true);
           },
         };
       } else {
@@ -1103,6 +1134,9 @@ function AppContent() {
       goalDescription: newPot.goalDescription,
       checkpointEnabled:
         newPot.type === "expense" ? false : undefined,
+      mode: 'casual',
+      confirmationsEnabled: import.meta.env.VITE_REQUIRE_CONFIRMATIONS_DEFAULT === '1',
+      lastEditAt: new Date().toISOString(),
     };
 
     setPots([...pots, pot]);
@@ -1376,10 +1410,23 @@ function AppContent() {
       return;
     }
 
-    if (expense?.attestations.includes("owner")) {
+    // Check if already confirmed (handle both old and new format)
+    const attestations = expense?.attestations ?? [];
+    const isConfirmed = Array.isArray(attestations) && (
+      (typeof attestations[0] === 'string' && attestations.includes("owner")) ||
+      (typeof attestations[0] === 'object' && attestations.some((a: any) => a.memberId === "owner"))
+    );
+
+    if (isConfirmed) {
       showToast("You already confirmed this expense", "info");
       return;
     }
+
+    // Add attestation in new format
+    const now = new Date().toISOString();
+    const existingAttestations = Array.isArray(attestations) && typeof attestations[0] === 'string'
+      ? attestations.map((id: string) => ({ memberId: id, confirmedAt: now }))
+      : (attestations as Array<{ memberId: string; confirmedAt: string }>);
 
     setPots(
       pots.map((p) =>
@@ -1391,8 +1438,8 @@ function AppContent() {
                   ? {
                       ...e,
                       attestations: [
-                        ...e.attestations,
-                        "owner",
+                        ...existingAttestations,
+                        { memberId: "owner", confirmedAt: now },
                       ],
                     }
                   : e,
@@ -1456,65 +1503,7 @@ function AppContent() {
     triggerHaptic("light");
   };
 
-  const handleBatchConfirmAll = () => {
-    const groupedByPot = new Map<string, string[]>();
-    pendingExpenses.forEach((exp) => {
-      const pot = pots.find((p) =>
-        p.expenses.some((e) => e.id === exp.id),
-      );
-      if (pot) {
-        if (!groupedByPot.has(pot.id)) {
-          groupedByPot.set(pot.id, []);
-        }
-        groupedByPot.get(pot.id)!.push(exp.id);
-      }
-    });
-
-    groupedByPot.forEach((expenseIds, potId) => {
-      const pot = pots.find((p) => p.id === potId);
-      if (!pot) return;
-
-      const validExpenseIds = expenseIds.filter((expenseId) => {
-        const expense = pot.expenses.find(
-          (e) => e.id === expenseId,
-        );
-        return (
-          expense &&
-          expense.paidBy !== "owner" &&
-          !expense.attestations.includes("owner")
-        );
-      });
-
-      if (validExpenseIds.length > 0) {
-        setPots((prevPots) =>
-          prevPots.map((p) =>
-            p.id === potId
-              ? {
-                  ...p,
-                  expenses: p.expenses.map((e) =>
-                    validExpenseIds.includes(e.id)
-                      ? {
-                          ...e,
-                          attestations: [
-                            ...e.attestations,
-                            "owner",
-                          ],
-                        }
-                      : e,
-                  ),
-                }
-              : p,
-          ),
-        );
-      }
-    });
-
-    showToast(
-      `✓ ${pendingExpenses.length} expense${pendingExpenses.length > 1 ? "s" : ""} confirmed`,
-      "success",
-    );
-    triggerHaptic("light");
-  };
+  // handleBatchConfirmAll - REMOVED
 
   const createCheckpoint = (potId: string) => {
     const pot = pots.find((p) => p.id === potId);
@@ -2615,21 +2604,27 @@ function AppContent() {
                   p.id === currentPotId
                     ? {
                         ...p,
-                        name: settings.potName || p.name,
+                        name: settings.potName !== undefined ? settings.potName : p.name,
                         baseCurrency:
-                          settings.baseCurrency ||
-                          p.baseCurrency,
-                        budget: settings.budget,
-                        budgetEnabled: settings.budgetEnabled,
+                          settings.baseCurrency !== undefined
+                            ? settings.baseCurrency
+                            : p.baseCurrency,
+                        budget: settings.budget !== undefined ? settings.budget : p.budget,
+                        budgetEnabled: settings.budgetEnabled !== undefined ? settings.budgetEnabled : p.budgetEnabled,
                         checkpointEnabled:
-                          settings.checkpointEnabled,
+                          settings.checkpointEnabled !== undefined
+                            ? settings.checkpointEnabled
+                            : p.checkpointEnabled,
                         archived:
                           typeof (settings as any).archived === 'boolean' ? (settings as any).archived : (p as any).archived,
                       }
                     : p,
                 ),
               );
-              showToast("Settings updated", "success");
+              // Only show toast for non-immediate updates (name, currency, budget)
+              if (settings.potName || settings.baseCurrency || settings.budget !== undefined) {
+                showToast("Settings updated", "success");
+              }
             }}
             onDeleteExpense={deleteExpense}
             onAttestExpense={(expenseId, silent) => {
@@ -2732,53 +2727,6 @@ function AppContent() {
               showToast("Expense anchored on-chain", "success");
             }}
             onConnectWallet={() => setWalletConnected(true)}
-          />
-        );
-
-      case "checkpoint-status":
-        if (!pot || !pot.currentCheckpoint) return null;
-
-        return (
-          <CheckpointStatusScreen
-            potName={pot.name}
-            members={pot.members}
-            confirmations={pot.currentCheckpoint.confirmations}
-            currentUserId="owner"
-            expiresAt={pot.currentCheckpoint.expiresAt}
-            onBack={back}
-            onConfirm={() => {
-              confirmCheckpoint();
-              // Check if all confirmed after this confirmation
-              const pot = getCurrentPot();
-              if (pot?.currentCheckpoint) {
-                const updatedConfirmations = new Map(
-                  pot.currentCheckpoint.confirmations,
-                );
-                updatedConfirmations.set("owner", {
-                  confirmed: true,
-                  confirmedAt: new Date().toISOString(),
-                });
-                const allConfirmed = Array.from(
-                  updatedConfirmations.values(),
-                ).every((c) => c.confirmed);
-
-                if (allConfirmed) {
-                  // Auto-proceed to settlement after short delay
-                  setTimeout(() => {
-                    clearCheckpoint(pot.id);
-                    push({ type: "settle-selection" });
-                  }, 800);
-                }
-              }
-            }}
-            onSettleAnyway={() => {
-              bypassCheckpoint();
-              clearCheckpoint(pot.id);
-              push({ type: "settle-selection" });
-            }}
-            onRemind={(_) => {
-              showToast("Reminder sent");
-            }}
           />
         );
 
@@ -2976,6 +2924,13 @@ function AppContent() {
             recipientAddress={recipientAddress}
             baseCurrency={currentPotId && getCurrentPot() ? getCurrentPot()!.baseCurrency : "USD"}
             onShowToast={showToast}
+            pot={currentPotId && getCurrentPot() ? getCurrentPot()! : undefined}
+            onUpdatePot={currentPotId ? (updates) => {
+              const pot = getCurrentPot();
+              if (pot) {
+                setPots(pots.map(p => p.id === currentPotId ? { ...p, ...updates } : p));
+              }
+            } : undefined}
             onConfirm={(method, reference) => {
               // Add settlement to history
               const newSettlement: Settlement = {
@@ -3393,14 +3348,6 @@ function AppContent() {
         />
       )}
 
-      {/* Batch Confirm Sheet */}
-      {showBatchConfirm && (
-        <BatchConfirmSheet
-          expenses={pendingExpenses}
-          onClose={() => setShowBatchConfirm(false)}
-          onConfirm={handleBatchConfirmAll}
-        />
-      )}
 
       {/* Modals */}
       {showWalletSheet && (

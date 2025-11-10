@@ -1,6 +1,7 @@
 import { blake2AsHex } from '@polkadot/util-crypto';
 import { chain } from './index';
 import type { PotHistory } from '../../App';
+import { stableStringify } from '../../utils/stableStringify';
 
 type PotCheckpointMember = {
   id: string;
@@ -40,69 +41,79 @@ const randomId = (prefix: string) => {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 };
 
-const normalizeMembers = (members: PotCheckpointMember[]) =>
-  [...members]
-    .map(({ id, name, address }) => ({
-      id,
-      name,
-      address: address ?? null,
-    }))
+const PII_RE = /(mailto:|@|(\+?\d[\d\s\-().]{6,})|(iban|twint|venmo|paypal|bank))/i;
+
+function validatePrivacy(snapshotJson: string): void {
+  if (PII_RE.test(snapshotJson)) {
+    throw new Error('Snapshot may contain PII — refusing to anchor.');
+  }
+}
+
+function normalizeMembers(members: PotCheckpointMember[]) {
+  return [...(members ?? [])]
+    .map((m) => ({ id: m.id, name: m.name ?? '', address: m.address ?? '' }))
     .sort((a, b) => a.id.localeCompare(b.id));
+}
 
-const normalizeExpenses = (expenses: PotCheckpointExpense[]) =>
-  [...expenses]
-    .map(({ id, amount, paidBy, memo = '', date = '', split }) => ({
-      id,
-      amount: Number(amount.toFixed(6)),
-      paidBy,
-      memo,
-      date,
-      split: [...split]
-        .map(({ memberId, amount }) => ({
-          memberId,
-          amount: Number(amount.toFixed(6)),
-        }))
-        .sort((a, b) => a.memberId.localeCompare(b.memberId)),
+function normalizeExpenses(exps: PotCheckpointExpense[]) {
+  return [...(exps ?? [])]
+    .map((e) => ({
+      id: e.id,
+      amount: Number(e.amount),
+      paidBy: e.paidBy,
+      date: e.date ?? '',
+      // memo intentionally stripped for privacy
+      split: (e.split ?? [])
+        .map((s: any) => ({ memberId: s.memberId, amount: Number(s.amount) }))
+        .sort((a: any, b: any) => a.memberId.localeCompare(b.memberId)),
     }))
-    .sort((a, b) => a.id.localeCompare(b.id));
-
-const buildSnapshotObject = (pot: PotCheckpointInput, cid?: string | null) => ({
-  id: pot.id,
-  name: pot.name,
-  baseCurrency: pot.baseCurrency,
-  members: normalizeMembers(pot.members),
-  expenses: normalizeExpenses(pot.expenses),
-  lastBackupCid: cid ?? pot.lastBackupCid ?? null,
-});
-
-export function computePotHash(pot: PotCheckpointInput, cid?: string | null): string {
-  const snapshot = buildSnapshotObject(pot, cid);
-  return blake2AsHex(JSON.stringify(snapshot));
+    .sort((a, b) => (a.date || '').localeCompare(b.date || '') || a.id.localeCompare(b.id));
 }
 
 export function buildCheckpointSnapshot(
   pot: PotCheckpointInput,
-  cid?: string | null
+  options?: { cid?: string | null; mode?: 'casual' | 'auditable'; skipPrivacyCheck?: boolean }
 ) {
-  const snapshot = buildSnapshotObject(pot, cid);
-  const snapshotJson = JSON.stringify(snapshot);
-  const potHash = blake2AsHex(snapshotJson);
-  const message = `chopdot:checkpoint:v1 potId=${pot.id} hash=${potHash}${
-    snapshot.lastBackupCid ? ` cid=${snapshot.lastBackupCid}` : ''
-  }`;
+  const { cid, mode = 'casual', skipPrivacyCheck = false } = options ?? {};
 
-  return {
-    snapshot,
-    snapshotJson,
-    potHash,
-    message,
+  const snapshot = {
+    id: pot.id,
+    name: pot.name ?? '',
+    baseCurrency: pot.baseCurrency,
+    members: normalizeMembers(pot.members),
+    expenses: normalizeExpenses(pot.expenses),
+    // include cid only in auditable mode
+    cid: mode === 'auditable' ? (cid ?? null) : null,
+    v: 1,
   };
+
+  const snapshotJson = stableStringify(snapshot);
+  // Only validate privacy when actually creating a checkpoint, not for display purposes
+  if (!skipPrivacyCheck) {
+    validatePrivacy(snapshotJson);
+  }
+  const potHash = blake2AsHex(snapshotJson);
+
+  // Privacy defaults: hash-only remark (no potId, no sensitive data)
+  // Only include CID if auditable mode and CID exists
+  const message = snapshot.cid
+    ? `chopdot:v1:${potHash} cid:${snapshot.cid}`
+    : `chopdot:v1:${potHash}`;
+
+  return { snapshot, snapshotJson, potHash, message };
+}
+
+export function computePotHash(pot: PotCheckpointInput, cid?: string | null, mode?: 'casual' | 'auditable'): string {
+  // Skip privacy check when computing hash for display purposes
+  const { potHash } = buildCheckpointSnapshot(pot, { cid, mode, skipPrivacyCheck: true });
+  return potHash;
 }
 
 interface CheckpointPotParams {
   pot: PotCheckpointInput;
   signerAddress: string;
   cid?: string | null;
+  mode?: 'casual' | 'auditable';
   forceBrowserExtension?: boolean;
   onStatusUpdate?: CheckpointLifecycleCallback;
 }
@@ -111,10 +122,11 @@ export async function checkpointPot({
   pot,
   signerAddress,
   cid,
+  mode = 'casual',
   forceBrowserExtension,
   onStatusUpdate,
 }: CheckpointPotParams): Promise<PotHistory> {
-  const { snapshot, potHash, message } = buildCheckpointSnapshot(pot, cid ?? pot.lastBackupCid ?? null);
+  const { snapshot, potHash, message } = buildCheckpointSnapshot(pot, { cid: cid ?? pot.lastBackupCid ?? null, mode });
 
   let stagedEntry: PotHistory | null = null;
 

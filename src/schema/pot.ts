@@ -49,7 +49,13 @@ export const ExpenseSchema = z.object({
     memberId: z.string(),
     amount: z.number(),
   })).optional(),
-  attestations: z.array(z.string()).optional(),
+  attestations: z.union([
+    z.array(z.string()), // Legacy format: string[]
+    z.array(z.object({
+      memberId: z.string(),
+      confirmedAt: z.string(), // ISO date string
+    })), // New format: Array<{memberId, confirmedAt}>
+  ]).optional(),
   hasReceipt: z.boolean().optional(),
   attestationTxHash: z.string().optional(),
   attestationTimestamp: z.string().optional(),
@@ -121,6 +127,18 @@ const ContributionSchema = z.object({
   txHash: z.string().optional(),
 }).passthrough();
 
+// Pot mode: casual (no confirmations) vs auditable (with confirmations)
+export const PotModeSchema = z.enum(['casual', 'auditable']).default('casual');
+export type PotMode = z.infer<typeof PotModeSchema>;
+
+// Last checkpoint metadata (simplified)
+const LastCheckpointSchema = z.object({
+  hash: z.string(),
+  txHash: z.string().optional(),
+  at: z.string(), // ISO date string
+  cid: z.string().optional(),
+}).optional();
+
 // Pot schema - matches runtime Pot interface with passthrough for future fields
 export const PotSchema = z.object({
   id: z.string().min(1, 'Pot ID is required'),
@@ -135,6 +153,11 @@ export const PotSchema = z.object({
   checkpointEnabled: z.boolean().optional().default(true),
   currentCheckpoint: ExpenseCheckpointSchema.optional(),
   archived: z.boolean().optional().default(false),
+  // New fields: pot mode and confirmations
+  mode: PotModeSchema.optional().default('casual'),
+  confirmationsEnabled: z.boolean().optional(),
+  lastCheckpoint: LastCheckpointSchema.optional(),
+  lastEditAt: z.string().optional(), // ISO date string
   // Savings pot fields
   contributions: z.array(ContributionSchema).optional(),
   totalPooled: z.number().optional(),

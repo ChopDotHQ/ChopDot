@@ -18,9 +18,7 @@ This file contains general project documentation. For installation, deployment, 
 
 | Feature | Splitwise/Tricount | ChopDot |
 |---------|-------------------|---------|
-| **Trust Layer** | Hopes people confirm | ✅ On-chain attestations |
 | **Savings Pots** | ❌ No | ✅ Earn yield while saving together |
-| **Checkpoints** | ❌ No | ✅ Group expense verification before settling |
 | **Settlement** | Bank transfer only | ✅ Cash, Bank, DOT, USDC |
 | **Receipts** | Stored on servers | ✅ IPFS/Arweave (coming soon) |
 | **UI/UX** | Cluttered, dated | ✅ Clean iOS design |
@@ -64,8 +62,6 @@ docker-compose up -d
 ### Expense Management
 - **Multi-pot system** - Separate pots for roommates, trips, savings
 - **Smart splitting** - Equal, unequal, percentage, custom
-- **Attestations** - Group members confirm expenses for trust
-- **Checkpoints** - Verify all expenses before settling (48h auto-confirm)
 
 ### Settlement
 - **Multiple methods** - Cash, bank transfer, DOT wallet, TWINT
@@ -102,7 +98,7 @@ docker-compose up -d
 - **Docker** - Containerized deployment
 
 ### Blockchain (UI Complete, Integration Pending)
-- **Polkadot** - On-chain attestations, DOT settlements
+- **Polkadot** - DOT settlements
 - **Acala** - DeFi savings yields
 - **IPFS/Arweave** - Decentralized receipt storage
 
@@ -124,8 +120,6 @@ docker-compose up -d
 ### ✅ Phase 1: Frontend Prototype (DONE)
 - [x] Core expense management
 - [x] Settlement calculations
-- [x] Attestation workflow
-- [x] Checkpoint system
 - [x] Activity feed
 - [x] Help & Support
 - [x] Clean iOS design
@@ -138,7 +132,6 @@ docker-compose up -d
 
 ### 🔜 Phase 3: Blockchain Integration (Next)
 - [ ] Real Polkadot transactions
-- [ ] On-chain attestations
 - [ ] DOT settlements
 - [ ] Wallet signatures
 

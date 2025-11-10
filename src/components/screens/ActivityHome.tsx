@@ -245,8 +245,8 @@ export function ActivityHome({
             </div>
           </div>
 
-          {/* Pending Attestations Banner */}
-          {hasPendingAttestations && showBanner && (
+          {/* Pending Attestations Banner - REMOVED */}
+          {false && hasPendingAttestations && showBanner && (
             <div className="card p-4 bg-muted/10 transition-shadow duration-200">
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--foreground)' }} />

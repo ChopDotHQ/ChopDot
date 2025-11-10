@@ -58,25 +58,17 @@ export class ExpenseService {
       // Get pot to check checkpoint status
       const pot = await this.potRepository.get(potId);
 
-      // Invalidate checkpoint if user has confirmed (new expense added after confirmation)
-      if (
-        pot.currentCheckpoint?.status === 'pending' &&
-        pot.currentCheckpoint.confirmations instanceof Map &&
-        pot.currentCheckpoint.confirmations.get('owner')?.confirmed
-      ) {
-        // Invalidate checkpoint confirmation
-        const updatedConfirmations = new Map(pot.currentCheckpoint.confirmations);
-        updatedConfirmations.set('owner', {
-          confirmed: false,
-        });
-
-        await this.potRepository.update(potId, {
-          currentCheckpoint: {
-            ...pot.currentCheckpoint,
-            confirmations: updatedConfirmations,
-          },
-        });
+      // Always update lastEditAt
+      // Clear lastCheckpoint if it exists (edit invalidates checkpoint)
+      const updates: { lastEditAt: string; lastCheckpoint?: undefined } = {
+        lastEditAt: new Date().toISOString(),
+      };
+      
+      if (pot.lastCheckpoint) {
+        updates.lastCheckpoint = undefined;
       }
+
+      await this.potRepository.update(potId, updates);
 
       // Create expense
       const result = await this.repository.create(potId, dto);
@@ -119,25 +111,17 @@ export class ExpenseService {
       // Get pot to check checkpoint status
       const pot = await this.potRepository.get(potId);
 
-      // Invalidate checkpoint if user has confirmed (expense modified after confirmation)
-      if (
-        pot.currentCheckpoint?.status === 'pending' &&
-        pot.currentCheckpoint.confirmations instanceof Map &&
-        pot.currentCheckpoint.confirmations.get('owner')?.confirmed
-      ) {
-        // Invalidate checkpoint confirmation
-        const updatedConfirmations = new Map(pot.currentCheckpoint.confirmations);
-        updatedConfirmations.set('owner', {
-          confirmed: false,
-        });
-
-        await this.potRepository.update(potId, {
-          currentCheckpoint: {
-            ...pot.currentCheckpoint,
-            confirmations: updatedConfirmations,
-          },
-        });
+      // Always update lastEditAt
+      // Clear lastCheckpoint if it exists (edit invalidates checkpoint)
+      const updates: { lastEditAt: string; lastCheckpoint?: undefined } = {
+        lastEditAt: new Date().toISOString(),
+      };
+      
+      if (pot.lastCheckpoint) {
+        updates.lastCheckpoint = undefined;
       }
+
+      await this.potRepository.update(potId, updates);
 
       // Update expense
       const result = await this.repository.update(potId, expenseId, dto);

@@ -56,7 +56,6 @@ export function SettingsTab({
   const [baseCurrency, setBaseCurrency] = useState(initialCurrency);
   const [budgetEnabled, setBudgetEnabled] = useState(initialBudgetEnabled || false);
   const [budget, setBudget] = useState(initialBudget?.toString() || "");
-  const [checkpointEnabled, setCheckpointEnabled] = useState(initialCheckpointEnabled !== false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const encryptedFileInputRef = useRef<HTMLInputElement>(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -201,15 +200,6 @@ export function SettingsTab({
     }
   };
 
-  const handleSave = () => {
-    onUpdateSettings({ 
-      potName, 
-      baseCurrency,
-      budgetEnabled,
-      budget: budgetEnabled && budget ? parseFloat(budget) : undefined,
-      checkpointEnabled,
-    });
-  };
 
   return (
     <div className="p-3 space-y-3">
@@ -219,7 +209,11 @@ export function SettingsTab({
           <label className="text-label text-secondary mb-1 block">Pot name</label>
           <input
             value={potName}
-            onChange={(e) => setPotName(e.target.value)}
+            onChange={(e) => {
+              setPotName(e.target.value);
+              // Apply immediately
+              onUpdateSettings({ potName: e.target.value });
+            }}
             className="w-full px-3 py-2.5 bg-input-background border border-border/30 rounded-[var(--r-lg)] text-body placeholder:text-secondary focus:outline-none focus-ring-pink transition-all"
           />
         </div>
@@ -228,7 +222,11 @@ export function SettingsTab({
           <label className="text-label text-secondary mb-1 block">Currency</label>
           <select
             value={baseCurrency}
-            onChange={(e) => setBaseCurrency(e.target.value)}
+            onChange={(e) => {
+              setBaseCurrency(e.target.value);
+              // Apply immediately
+              onUpdateSettings({ baseCurrency: e.target.value });
+            }}
             className="w-full px-3 py-2.5 bg-input-background border border-border/30 rounded-[var(--r-lg)] text-body focus:outline-none focus-ring-pink transition-all appearance-none"
           >
             <option value="USD">USD</option>
@@ -246,7 +244,15 @@ export function SettingsTab({
               <p className="text-caption text-secondary">Track spending against a limit</p>
             </div>
             <button
-              onClick={() => setBudgetEnabled(!budgetEnabled)}
+              onClick={() => {
+                const newValue = !budgetEnabled;
+                setBudgetEnabled(newValue);
+                // Apply immediately
+                onUpdateSettings({ 
+                  budgetEnabled: newValue,
+                  budget: newValue && budget ? parseFloat(budget) : undefined,
+                });
+              }}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 budgetEnabled ? "bg-primary" : "bg-switch-background"
               }`}
@@ -267,7 +273,15 @@ export function SettingsTab({
                 <input
                   type="number"
                   value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
+                  onChange={(e) => {
+                    setBudget(e.target.value);
+                    // Apply immediately
+                    const budgetValue = e.target.value ? parseFloat(e.target.value) : undefined;
+                    onUpdateSettings({ 
+                      budgetEnabled: true,
+                      budget: budgetValue,
+                    });
+                  }}
                   placeholder="500"
                   className="w-full pl-7 pr-3 py-2.5 bg-input-background border border-border/30 rounded-[var(--r-lg)] text-body placeholder:text-secondary focus:outline-none focus-ring-pink transition-all"
                 />
@@ -276,37 +290,7 @@ export function SettingsTab({
           )}
         </div>
 
-        {/* Checkpoint Settings (Expense pots only) */}
-        {potType === "expense" && (
-          <div className="pt-2 border-t border-border/50">
-            <div className="flex items-center justify-between">
-              <div>
-                <label className="text-label block">Settlement checkpoints</label>
-                <p className="text-caption text-secondary">Confirm expenses before settling</p>
-              </div>
-              <button
-                onClick={() => setCheckpointEnabled(!checkpointEnabled)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  checkpointEnabled ? "bg-primary" : "bg-switch-background"
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    checkpointEnabled ? "translate-x-6" : "translate-x-1"
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
-        )}
       </div>
-
-      <button
-        onClick={handleSave}
-        className="w-full py-2.5 bg-foreground text-background rounded-lg text-body hover:opacity-90 transition-all duration-200 active:scale-[0.98] text-center"
-      >
-        Save
-      </button>
 
       {/* Compact Pending Members Section */}
       {pendingMembers.length > 0 && (

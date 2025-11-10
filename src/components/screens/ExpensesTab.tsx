@@ -8,6 +8,7 @@ import { polkadotChainService } from "../../services/chain/polkadot";
 import { normalizeToPolkadot } from "../../services/chain/address";
 import { useAccount } from "../../contexts/AccountContext";
 import type { PotHistory } from "../../App";
+import { ConfirmModal } from "../ConfirmModal";
 
 interface Member {
   id: string;
@@ -24,7 +25,7 @@ interface Expense {
   memo: string;
   date: string;
   split: { memberId: string; amount: number }[];
-  attestations: string[];
+  attestations: string[] | Array<{ memberId: string; confirmedAt: string }>;
   hasReceipt: boolean;
   receiptUrl?: string;
 }
@@ -60,6 +61,7 @@ interface ExpensesTabProps {
   totalExpenses?: number;
   contributions?: Contribution[];
   potId?: string; // Pot ID for calculations
+  pot?: Pot; // Full pot object for readiness checks
   potHistory?: PotHistory[]; // On-chain settlement history
   onAddExpense: () => void;
   onExpenseClick: (expense: Expense) => void;
@@ -69,7 +71,7 @@ interface ExpensesTabProps {
   onBatchAttestExpenses?: (expenseIds: string[]) => void;
   onReviewPending?: () => void;
   onShowToast?: (message: string, type?: "success" | "info" | "error") => void;
-  onUpdatePot?: (updates: { history?: PotHistory[] }) => void; // Callback to update pot history
+  onUpdatePot?: (updates: { history?: PotHistory[]; lastCheckpoint?: any; lastEditAt?: string }) => void; // Callback to update pot history
   checkpointConfirmedCount?: number;
   checkpointTotalCount?: number;
 }
@@ -84,6 +86,7 @@ export function ExpensesTab({
   totalExpenses: _propTotalExpenses,
   contributions = [],
   potId,
+  pot,
   potHistory = [],
   onAddExpense, 
   onExpenseClick, 
@@ -99,6 +102,7 @@ export function ExpensesTab({
 }: ExpensesTabProps) {
   const [showPendingOnly, setShowPendingOnly] = useState(false);
   const [showActivity, setShowActivity] = useState(false);
+  const [confirmModalState, setConfirmModalState] = useState<{ open: boolean; expense?: Expense }>({ open: false });
   
   // Settlement modal state
   const [settlementModal, setSettlementModal] = useState<{
@@ -199,10 +203,22 @@ export function ExpensesTab({
     })
     .filter(Boolean) as { member: Member; balance: number }[];
   
+  // Helper to check if expense is confirmed by user (handles both old and new format)
+  const hasConfirmed = (expense: Expense, userId: string): boolean => {
+    const atts = expense.attestations ?? [];
+    if (Array.isArray(atts) && atts.length > 0) {
+      if (typeof atts[0] === 'string') {
+        return (atts as string[]).includes(userId);
+      }
+      return (atts as Array<{ memberId: string; confirmedAt: string }>).some(a => a.memberId === userId);
+    }
+    return false;
+  };
+
   // Calculate pending attestations (only expenses paid by OTHERS that you haven't confirmed)
   const pendingExpenses = expenses.filter(e => 
     e.paidBy !== currentUserId &&  // Exclude your own expenses
-    !e.attestations.includes(currentUserId)  // You haven't confirmed yet
+    !hasConfirmed(e, currentUserId)  // You haven't confirmed yet
   );
   const pendingAttestations = pendingExpenses.length;
   const totalPendingAmount = pendingExpenses.reduce((sum, e) => {
@@ -210,10 +226,8 @@ export function ExpensesTab({
     return sum + (share?.amount || 0);
   }, 0);
   
-  // canSettle should be true if:
-  // 1. There are expenses, AND
-  // 2. Either there are balances to settle OR there are settlement suggestions
-  // (Settlement suggestions handle cases where current user owes/is owed)
+  // Check readiness to settle using new helper (if pot provided)
+  // Ready to settle check - REMOVED (no confirmations required)
   const canSettle = expenses.length > 0 && (
     balances.some(b => Math.abs(b.balance) > settleThreshold) ||
     settlementSuggestions.length > 0
@@ -221,8 +235,13 @@ export function ExpensesTab({
   
   // Filter expenses (when showing pending only, exclude self-paid expenses)
   const displayedExpenses = showPendingOnly 
-    ? expenses.filter(e => e.paidBy !== currentUserId && !e.attestations.includes(currentUserId))
+    ? expenses.filter(e => e.paidBy !== currentUserId && !hasConfirmed(e, currentUserId))
     : expenses;
+
+  // Handle expense click
+  const handleExpenseClick = (expense: Expense) => {
+    onExpenseClick(expense);
+  };
 
   // Group expenses by date (sorted desc within groups)
   const groupedExpenses = displayedExpenses
@@ -447,14 +466,6 @@ export function ExpensesTab({
                     </span>
                   </>
                 )}
-                {typeof checkpointConfirmedCount === 'number' && typeof checkpointTotalCount === 'number' && checkpointTotalCount > 0 && (
-                  <>
-                    <span className="text-caption text-secondary">•</span>
-                    <span className="text-caption text-secondary">
-                      {checkpointConfirmedCount}/{checkpointTotalCount} confirmed
-                    </span>
-                  </>
-                )}
               </div>
               
               {/* Compact budget progress bar (if enabled) */}
@@ -671,9 +682,11 @@ export function ExpensesTab({
                 </div>
               </button>
               
-              {canSettle && (
+              {canSettle ? (
                 <button
-                  onClick={onSettle}
+                  onClick={() => {
+                    onSettle();
+                  }}
                   className="flex-1 py-2.5 rounded-[var(--r-lg)] transition-all active:scale-[0.98] card hover:shadow-[var(--shadow-fab)]"
                   style={{ 
                     color: 'var(--ink)'
@@ -683,14 +696,20 @@ export function ExpensesTab({
                     <span className="text-body" style={{ fontWeight: 500 }}>Settle Up</span>
                   </div>
                 </button>
+              ) : expenses.length > 0 && !readyToSettle.ready && (
+                <div className="flex-1 py-2.5 px-3 rounded-[var(--r-lg)] bg-yellow-500/10 border border-yellow-500/30">
+                  <p className="text-caption text-yellow-700 dark:text-yellow-300 text-center">
+                    ⚠️ {readyToSettle.reason}
+                  </p>
+                </div>
               )}
             </div>
           </div>
         </div>
       )}
 
-      {/* Pending Attestations Alert - One-click approve */}
-      {pendingAttestations > 0 && (
+      {/* Pending Attestations Alert - REMOVED */}
+      {false && pendingAttestations > 0 && (
         <div className="mx-3">
           <div className="card p-4 space-y-3 transition-shadow duration-200" style={{ 
             background: 'rgba(230, 0, 122, 0.1)',
@@ -716,7 +735,7 @@ export function ExpensesTab({
                 <button
                   onClick={() => {
                     const toApprove = pendingExpenses.filter(exp => 
-                      !exp.attestations.includes(currentUserId)
+                      !hasConfirmed(exp, currentUserId)
                     );
                     
                     // Get all expense IDs to approve
@@ -894,8 +913,6 @@ export function ExpensesTab({
               {/* Expenses in this date group */}
               <div className="space-y-1.5">
                 {dateExpenses.map((expense) => {
-                  const needsAttestation = !expense.attestations.includes(currentUserId);
-                  
                   return (
                     <SwipeableExpenseRow
                       key={expense.id}
@@ -903,10 +920,8 @@ export function ExpensesTab({
                       members={members}
                       currentUserId={currentUserId}
                       baseCurrency={baseCurrency}
-                      onClick={() => onExpenseClick(expense)}
+                      onClick={() => handleExpenseClick(expense)}
                       onDelete={onDeleteExpense ? () => onDeleteExpense(expense.id) : undefined}
-                      onAttest={needsAttestation && onAttestExpense ? () => onAttestExpense(expense.id) : undefined}
-                      showApproveButton={showPendingOnly && needsAttestation}
                     />
                   );
                 })}
@@ -928,6 +943,20 @@ export function ExpensesTab({
           onConfirm={handleSettleConfirm}
           onCancel={handleSettleCancel}
           isSending={isSending}
+        />
+      )}
+
+      {/* Edit Invalidation Confirm Modal */}
+      {/* ConfirmModal - REMOVED */}
+      {false && (
+        <ConfirmModal
+          open={confirmModalState.open}
+          title="Editing will void the snapshot"
+          body="This pot has a checkpoint. Editing invalidates it; you'll need a new checkpoint before settling."
+          confirmText="Edit anyway"
+          cancelText="Cancel"
+          onConfirm={() => {}}
+          onCancel={() => {}}
         />
       )}
     </div>

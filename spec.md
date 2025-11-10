@@ -1,7 +1,7 @@
 # ChopDot Specification
 
-**Last Updated:** January 14, 2025  
-**Version:** 1.3.0  
+**Last Updated:** January 15, 2025  
+**Version:** 1.4.0  
 **Status:** Production Ready 🚀  
 **UX/UI Rating:** 8.5/10 (All phases complete)  
 **Data Layer:** Stable (v0.9.0-data-layer-stable)
@@ -58,8 +58,6 @@ ChopDot is a mobile-first expense splitting and group financial management app w
 - ✅ Multi-pot system (expense pots & savings pots)
 - ✅ Expense management (add, edit, delete, split)
 - ✅ Settlement calculations (pot-scoped & global)
-- ✅ Attestation system (expense confirmation workflow)
-- ✅ Checkpoint system (pre-settlement verification, 48h auto-confirm)
 - ✅ Activity feed (unified timeline)
 - ✅ People management (balance tracking, trust metrics)
 
@@ -88,12 +86,11 @@ ChopDot is a mobile-first expense splitting and group financial management app w
 - ✅ Theme controls (light/dark/system)
 
 #### Advanced Features
-- ✅ Batch confirmations (confirm multiple expenses at once)
 - ✅ Quick actions (Scan QR, request payment, quick settle)
 - ✅ Receipt management (upload and view receipts)
 - ✅ Budget tracking (per-pot budgets with progress)
 - ✅ Settlement history (complete payment record)
-- ✅ Insights dashboard (spending analytics, confirmation rates)
+- ✅ Insights dashboard (spending analytics)
 
 ### 🚧 In Progress / Mock Data
 
@@ -105,7 +102,6 @@ ChopDot is a mobile-first expense splitting and group financial management app w
 
 #### Blockchain Integration (UI Only)
 - ❌ Real Polkadot transactions (mock tx hashes)
-- ❌ On-chain attestations (mock data)
 - ❌ DOT settlements (UI complete, no real transfers)
 - ❌ DeFi yield (Acala integration placeholder)
 - ✅ Wallet connection UI (connection works, no signing yet)
@@ -189,7 +185,6 @@ src/
 - **Delete Expenses:** Remove expenses (with confirmation)
 - **Split Logic:** Equal, unequal, percentage, custom splits
 - **Receipts:** Upload and view receipt images
-- **Attestations:** Members confirm expenses for trust
 
 ### Settlement System
 - **Pot-Scoped Settlements:** Settle within a single pot
@@ -202,7 +197,7 @@ src/
 - **Expense Pots:** Track shared expenses
 - **Savings Pots:** Save together with DeFi yield (mock)
 - **Pot Members:** Add/remove members, roles (Owner/Member)
-- **Pot Settings:** Budget, checkpoint, archive
+- **Pot Settings:** Budget, archive
 - **Pot Export/Import:** Password-protected .chop files
 
 ### User Features
@@ -235,7 +230,6 @@ src/
 - **Forms:** react-hook-form 7.55.0
 - **Storage:** localStorage (with migration support)
 - **Data Layer:** Service/Repository pattern with feature flags (`VITE_DL_READS`, `VITE_DATA_SOURCE`)
-- **Backup:** Crust/IPFS integration (auto-backup on checkpoint finalization)
 
 ### Development
 - **Linting:** ESLint 9.15.0
@@ -248,6 +242,17 @@ src/
 
 > **Note:** Update this section whenever you make changes to the app.
 
+### [2025-01-15] - Checkpoint & Confirmation Features Removal
+- ❌ Removed checkpoint system (pre-settlement verification, on-chain anchoring)
+- ❌ Removed confirmation/attestation workflow (expense confirmations)
+- ❌ Removed batch confirmation features (BatchConfirmSheet, batch attestations)
+- ❌ Removed pot modes (casual vs auditable)
+- ❌ Removed Crust/IPFS backup integration
+- ❌ Removed checkpoint-related UI (checkpoint buttons, status screens, alerts)
+- ✅ Settlement flow now proceeds directly without checkpoint requirements
+- ✅ All checkpoint and confirmation documentation removed
+- ✅ Codebase cleaned up (unused files, imports, and state variables removed)
+
 ### [2025-01-14] - Dev-Only UI Cleanup & Data Layer Finalization
 - ✅ Removed all dev-only debugging UI elements (pink "Reading via Data Layer" bars, green PotsDebug component)
 - ✅ Cleaned up unused imports and handlers related to debug components
@@ -258,7 +263,6 @@ src/
 ### [2025-01-14] - Data Layer Architecture Stable Release (v0.9.0)
 - ✅ Complete Data Layer foundation (Service/Repository pattern)
 - ✅ Feature flags for safe rollout (`VITE_DL_READS`, `VITE_DATA_SOURCE`)
-- ✅ Checkpoint auto-backup to Crust/IPFS
 - ✅ RPC telemetry logging
 - ✅ Comprehensive API documentation (`docs/API_REFERENCE.md`)
 - ✅ Incremental rollout completed (5-step safe migration)
@@ -431,6 +435,6 @@ When making changes to the app:
 ---
 
 **Document Maintained By:** Development Team  
-**Last Review:** January 14, 2025  
-**Release Tag:** v0.9.0-data-layer-stable
+**Last Review:** January 15, 2025  
+**Release Tag:** v1.4.0
 

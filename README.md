@@ -1,7 +1,7 @@
 # ChopDot
 
 > Status: **Production Ready** 🚀  
-> Version: **1.3.0**  
+> Version: **1.4.0**  
 > Data Layer: **v0.9.0-data-layer-stable**
 
 Mobile-first expense splitting and group financial management app with Polkadot blockchain integration.
@@ -24,20 +24,18 @@ ChopDot brings familiar group-expense flows to a world where fairness and verifi
 - **Mobile-first PWA** - iPhone 15 viewport optimized, iOS-style design
 - **Expense Management** - Add, edit, delete expenses with flexible split logic
 - **Settlement System** - Pot-scoped and global settlements with multiple payment methods
-- **Pot Management** - Expense pots and savings pots with budgets and checkpoints
+- **Pot Management** - Expense pots and savings pots with budgets
 - **People & Balances** - Track balances across pots, trust metrics, settlement history
-- **Activity Feed** - Unified timeline of expenses, settlements, and checkpoints
+- **Activity Feed** - Unified timeline of expenses and settlements
 
 ### Data Layer Architecture ✅
 - **Service/Repository Pattern** - Clean separation of concerns
 - **Feature Flags** - Safe gradual rollout (`VITE_DL_READS`, `VITE_DATA_SOURCE`)
 - **Multiple Data Sources** - localStorage (current) + HTTP stub (ready for API)
-- **Auto-Backup** - Crust/IPFS backup on checkpoint finalization
 - **Error Handling** - Graceful fallbacks, error boundaries, non-blocking writes
 
 ### Blockchain Integration ✅
 - **Wallet Connection** - Polkadot.js, SubWallet, Talisman, MetaMask, WalletConnect
-- **Checkpoint System** - Pre-settlement verification with on-chain anchoring
 - **Settlement Tracking** - Complete payment history with Subscan links
 - **Member Addresses** - SS58 address support (normalized to SS58-0)
 
@@ -56,7 +54,7 @@ ChopDot brings familiar group-expense flows to a world where fairness and verifi
 - **Real-time Sync** - Multi-device synchronization
 
 ### Near-term
-- **Push Notifications** - Attestation requests, settlement reminders
+- **Push Notifications** - Settlement reminders
 - **Receipt Management** - IPFS/Arweave storage, camera capture
 - **Multi-currency** - Real exchange rates, currency conversion
 
@@ -146,8 +144,8 @@ For safe public demos, you can enable a restricted mode that disables wallet con
 
 ## Release Information
 
-**Current Release:** v0.9.0-data-layer-stable  
-**Release Date:** January 14, 2025  
+**Current Release:** v1.4.0  
+**Release Date:** January 15, 2025  
 **Status:** ✅ Stable and production-ready
 
 See [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) for full release details.

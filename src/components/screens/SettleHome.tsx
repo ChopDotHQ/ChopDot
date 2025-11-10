@@ -8,6 +8,9 @@ import { useFeatureFlags } from "../../contexts/FeatureFlagsContext";
 import { useAccount } from "../../contexts/AccountContext";
 import { triggerHaptic } from "../../utils/haptics";
 import { HyperbridgeBridgeSheet } from "../HyperbridgeBridgeSheet";
+import type { Pot } from "../../schema/pot";
+import { checkpointPot, buildCheckpointSnapshot, type PotCheckpointInput } from "../../services/chain/remark";
+import type { PotHistory } from "../../App";
 
 interface Settlement {
   id: string;
@@ -30,6 +33,8 @@ interface SettleHomeProps {
   recipientAddress?: string; // Optional recipient wallet address for DOT settlements
   baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
   onShowToast?: (message: string, type?: "success" | "error" | "info") => void; // Optional toast callback
+  pot?: Pot; // Pot data for pre-settlement checkpoint
+  onUpdatePot?: (updates: { lastCheckpoint?: { hash: string; txHash?: string; at: string; cid?: string } }) => void; // Callback to update pot
 }
 
 export function SettleHome({
@@ -39,12 +44,14 @@ export function SettleHome({
   onHistory,
   scope = "global",
   scopeLabel,
-  potId: _potId,
+  potId,
   personId: _personId,
   preferredMethod,
   recipientAddress,
   baseCurrency = "USD", // Default to USD if not provided
   onShowToast,
+  pot,
+  onUpdatePot,
 }: SettleHomeProps) {
   const isDotPot = baseCurrency === 'DOT';
   // Check for simulation mode (allows DOT settlement without wallet)
@@ -179,108 +186,224 @@ export function SettleHome({
       return;
     }
 
-    // For non-DOT methods, show loading state
-    if (selectedMethod !== "dot") {
-      setIsSettling(true);
-      
-      // Simulate settlement processing
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      setIsSettling(false);
-    }
-
-    if (selectedMethod === "cash") {
-      setShowConfirmation(true);
-      return;
-    }
-
-    // DOT settlement - use real chain service from Prompt 1
-    // In simulation mode, allow without wallet connection (will use mock address)
-    const canProceedDot = isSimulationMode || (walletConnected && account.address0);
-    if (selectedMethod === "dot" && canProceedDot && isDotPot && recipientAddress) {
+    // Pre-settlement checkpoint - REMOVED
+    if (false && potId && walletConnected && account.address0 && pot && scope === 'pot') {
       try {
         setIsSettling(true);
+        onShowToast?.('Verifying balances...', 'info');
         
-        const { chain } = await import('../../services/chain');
-        const amountDot = Math.abs(totalAmount);
+        // Build checkpoint input
+        const checkpointInput: PotCheckpointInput = {
+          id: pot.id,
+          name: pot.name,
+          baseCurrency: pot.baseCurrency,
+          members: pot.members.map(m => ({ id: m.id, name: m.name, address: m.address ?? null })),
+          expenses: pot.expenses.map(e => ({
+            id: e.id,
+            amount: e.amount,
+            paidBy: e.paidBy,
+            memo: e.memo,
+            date: e.date,
+            split: e.split ?? [],
+          })),
+          lastBackupCid: pot.lastBackupCid ?? null,
+        };
         
-        // State 1: Signing
-        pushTxToast('signing', {
-          amount: amountDot,
-          currency: 'DOT',
+        // Try Crust upload (optional, non-blocking)
+        let cid: string | null = null;
+        if (import.meta.env.VITE_ENABLE_CRUST === '1' && pot.mode === 'auditable') {
+          try {
+            const { snapshotJson } = buildCheckpointSnapshot(checkpointInput, { mode: pot.mode });
+            const result = await savePotSnapshotCrust(snapshotJson);
+            cid = result.cid;
+            trackEvent({ type: 'crust_upload_ok', potId: pot.id, cid: result.cid });
+          } catch (error) {
+            trackEvent({ type: 'crust_upload_failed', potId: pot.id, error: String(error) });
+            // Non-blocking: continue without CID
+          }
+        }
+        
+        // Create checkpoint
+        trackEvent({ 
+          type: 'checkpoint_create_requested', 
+          potId: pot.id, 
+          mode: pot.mode ?? 'casual',
+          isPreSettlement: true 
         });
-
-        // Send real DOT transaction (or simulated in simulation mode)
-        // Use mock address in simulation mode if no wallet connected
-        const fromAddress = isSimulationMode && !account.address0 
-          ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
-          : account.address0!;
-        const result = await chain.sendDot({
-          from: fromAddress,
-          to: recipientAddress,
-          amountDot,
-          onStatus: (status, ctx) => {
-            if (status === 'submitted') {
-              updateTxToast('broadcast', {
-                amount: amountDot,
-                currency: 'DOT',
+        
+        const checkpointEntry = await checkpointPot({
+          pot: checkpointInput,
+          signerAddress: account.address0,
+          cid,
+          mode: pot.mode ?? 'casual',
+          onStatusUpdate: (entry) => {
+            if (entry.status === 'finalized') {
+              onShowToast?.('Verified. Proceeding to settle.', 'success');
+              trackEvent({ 
+                type: 'checkpoint_finalized', 
+                potId: pot.id, 
+                txHash: entry.txHash!,
+                hash: entry.potHash,
+                cid: cid ?? undefined
               });
-            } else if (status === 'inBlock' && ctx?.txHash) {
-              updateTxToast('inBlock', {
-                amount: amountDot,
-                currency: 'DOT',
-                txHash: ctx.txHash,
-                fee: feeEstimate || 0.0024,
-                feeCurrency: 'DOT',
-              });
-            } else if (status === 'finalized' && ctx?.blockHash) {
-              updateTxToast('finalized', {
-                amount: amountDot,
-                currency: 'DOT',
-                txHash: result.txHash,
-                fee: feeEstimate || 0.0024,
-                feeCurrency: 'DOT',
-              });
+              
+              // Update pot.lastCheckpoint
+              if (onUpdatePot && entry.txHash) {
+                onUpdatePot({
+                  lastCheckpoint: {
+                    hash: entry.potHash,
+                    txHash: entry.txHash,
+                    at: new Date().toISOString(),
+                    cid: cid ?? undefined,
+                  },
+                });
+              }
             }
           },
         });
-
-        // Refresh balance after successful transaction
-        try {
-          await account.refreshBalance();
-        } catch (refreshError) {
-          console.error('[SettleHome] Balance refresh failed:', refreshError);
-        }
-
-        // Wait a bit for finalization status, then call onConfirm with txHash
-        setTimeout(() => {
-          setIsSettling(false);
-          onConfirm(selectedMethod, result.txHash);
-        }, 2000);
-
-        return;
+        
+        // Proceed with settlement
+        await performSettlement();
+        
       } catch (error: any) {
-        console.error('[SettleHome] DOT transfer error:', error);
         setIsSettling(false);
         
         if (error?.message === 'USER_REJECTED') {
-          onShowToast?.('Transaction cancelled', 'info');
-        } else if (error?.message?.includes('Insufficient')) {
-          onShowToast?.('Insufficient balance for transaction', 'error');
-        } else {
-          onShowToast?.(`Settlement failed: ${error?.message || 'Unknown error'}`, 'error');
+          onShowToast?.('Checkpoint cancelled', 'info');
+          return;
         }
+        
+        trackEvent({ 
+          type: 'checkpoint_failed', 
+          potId: potId!, 
+          error: error?.message || 'Unknown error' 
+        });
+        
+        // Offer Retry / Skip
+        const shouldRetry = confirm(
+          'Checkpoint failed. Retry checkpoint before settling?\n\n' +
+          'Click OK to retry, Cancel to skip checkpoint and proceed.'
+        );
+        
+        if (shouldRetry) {
+          handleConfirm(); // Retry
+          return;
+        }
+        
+        // Skip checkpoint and proceed
+        onShowToast?.('Skipping checkpoint, proceeding to settlement...', 'info');
+        await performSettlement();
         return;
       }
+    } else {
+      // No wallet connected or no potId - proceed directly
+      await performSettlement();
     }
-
-    // Non-DOT methods: direct confirmation
-    let reference: string | undefined;
-    if (selectedMethod === "bank") reference = bankReference;
-    if (selectedMethod === "paypal") reference = paypalEmail;
-    if (selectedMethod === "twint") reference = twintPhone;
     
-    onConfirm(selectedMethod, reference);
+    async function performSettlement() {
+      // For non-DOT methods, show loading state
+      if (selectedMethod !== "dot") {
+        setIsSettling(true);
+        
+        // Simulate settlement processing
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        setIsSettling(false);
+      }
+
+      if (selectedMethod === "cash") {
+        setShowConfirmation(true);
+        return;
+      }
+
+      // DOT settlement - use real chain service from Prompt 1
+      // In simulation mode, allow without wallet connection (will use mock address)
+      const canProceedDot = isSimulationMode || (walletConnected && account.address0);
+      if (selectedMethod === "dot" && canProceedDot && isDotPot && recipientAddress) {
+        try {
+          setIsSettling(true);
+          
+          const { chain } = await import('../../services/chain');
+          const amountDot = Math.abs(totalAmount);
+          
+          // State 1: Signing
+          pushTxToast('signing', {
+            amount: amountDot,
+            currency: 'DOT',
+          });
+
+          // Send real DOT transaction (or simulated in simulation mode)
+          // Use mock address in simulation mode if no wallet connected
+          const fromAddress = isSimulationMode && !account.address0 
+            ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
+            : account.address0!;
+          const result = await chain.sendDot({
+            from: fromAddress,
+            to: recipientAddress,
+            amountDot,
+            onStatus: (status, ctx) => {
+              if (status === 'submitted') {
+                updateTxToast('broadcast', {
+                  amount: amountDot,
+                  currency: 'DOT',
+                });
+              } else if (status === 'inBlock' && ctx?.txHash) {
+                updateTxToast('inBlock', {
+                  amount: amountDot,
+                  currency: 'DOT',
+                  txHash: ctx.txHash,
+                  fee: feeEstimate || 0.0024,
+                  feeCurrency: 'DOT',
+                });
+              } else if (status === 'finalized' && ctx?.blockHash) {
+                updateTxToast('finalized', {
+                  amount: amountDot,
+                  currency: 'DOT',
+                  txHash: result.txHash,
+                  fee: feeEstimate || 0.0024,
+                  feeCurrency: 'DOT',
+                });
+              }
+            },
+          });
+
+          // Refresh balance after successful transaction
+          try {
+            await account.refreshBalance();
+          } catch (refreshError) {
+            console.error('[SettleHome] Balance refresh failed:', refreshError);
+          }
+
+          // Wait a bit for finalization status, then call onConfirm with txHash
+          setTimeout(() => {
+            setIsSettling(false);
+            onConfirm(selectedMethod, result.txHash);
+          }, 2000);
+
+          return;
+        } catch (error: any) {
+          console.error('[SettleHome] DOT transfer error:', error);
+          setIsSettling(false);
+          
+          if (error?.message === 'USER_REJECTED') {
+            onShowToast?.('Transaction cancelled', 'info');
+          } else if (error?.message?.includes('Insufficient')) {
+            onShowToast?.('Insufficient balance for transaction', 'error');
+          } else {
+            onShowToast?.(`Settlement failed: ${error?.message || 'Unknown error'}`, 'error');
+          }
+          return;
+        }
+      }
+
+      // Non-DOT methods: direct confirmation
+      let reference: string | undefined;
+      if (selectedMethod === "bank") reference = bankReference;
+      if (selectedMethod === "paypal") reference = paypalEmail;
+      if (selectedMethod === "twint") reference = twintPhone;
+      
+      onConfirm(selectedMethod, reference);
+    }
   };
 
   // Check if DOT settlement is valid (requires wallet connected AND recipient address)

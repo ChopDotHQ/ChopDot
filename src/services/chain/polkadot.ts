@@ -1,4 +1,4 @@
-import { CHAIN_CONFIG, resolveChainKey, type ChainConfig, type ChainKey } from './config';
+import { CHAIN_CONFIG, resolveChainKey, getActiveChain, getActiveChainConfig, type ChainConfig, type ChainKey } from './config';
 import { normalizeToPolkadot, isValidSs58Any } from './address';
 import { encodeAddress, decodeAddress } from '@polkadot/util-crypto';
 
@@ -22,13 +22,15 @@ type SignAndSendParams = {
   forceBrowserExtension?: boolean;
 };
 
-const DEFAULT_CHAIN: ChainKey = 'assethub';
+const DEFAULT_CHAIN: ChainKey = getActiveChain();
 
 let apiPromise: Promise<any> | null = null;
 let currentChainKey: ChainKey = DEFAULT_CHAIN;
 let currentRpcEndpoint: string | null = null;
 
-const getConfig = (): ChainConfig => CHAIN_CONFIG[currentChainKey];
+const getConfig = (): ChainConfig => {
+  return getActiveChainConfig(); // Always respects VITE_CHAIN_NETWORK
+};
 
 const createApi = async (config: ChainConfig) => {
   const { ApiPromise, WsProvider } = await import('@polkadot/api');
