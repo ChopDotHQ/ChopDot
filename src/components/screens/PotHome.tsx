@@ -10,7 +10,7 @@ import { triggerHaptic } from "../../utils/haptics";
 import { QuickKeypadSheet } from "../QuickKeypadSheet";
 import { useAccount } from "../../contexts/AccountContext";
 import { useFeatureFlags } from "../../contexts/FeatureFlagsContext";
-import { checkpointPot, computePotHash, type PotCheckpointInput } from "../../services/chain/remark";
+import { computePotHash, type PotCheckpointInput } from "../../services/chain/remark";
 import type { PotHistory } from "../../App";
 import { PrimaryButton } from "../PrimaryButton";
 import { usePot } from "../../hooks/usePot";
@@ -244,7 +244,7 @@ export function PotHome({
   const account = useAccount();
   const { POLKADOT_APP_ENABLED } = useFeatureFlags();
   const [keypadOpen, setKeypadOpen] = useState(false);
-  const [isCheckpointing, setIsCheckpointing] = useState(false);
+  const [isCheckpointing] = useState(false);
   const [isBackingUp, setIsBackingUp] = useState(false);
   const [lastCheckpointClick, setLastCheckpointClick] = useState(0);
   
@@ -347,20 +347,7 @@ export function PotHome({
     return `${hash.slice(0, 10)}…${hash.slice(-6)}`;
   };
 
-  const applyHistoryUpdate = (entry: PotHistory, persist: boolean) => {
-    // Task 2: Update history (will be persisted via onUpdatePot callback)
-    // Ensure status is defined (default to 'submitted' if missing)
-    const entryWithStatus: PotHistory = {
-      ...entry,
-      status: entry.status ?? 'submitted',
-    } as PotHistory;
-    const filtered = activeHistory.filter((item) => item.id !== entry.id);
-    const nextHistory = [entryWithStatus, ...filtered];
-    if (persist) {
-      onUpdatePot?.({ history: nextHistory });
-    }
-    // Note: History updates will be reflected when pot is refreshed from DL
-  };
+  // applyHistoryUpdate removed - checkpoint feature disabled
 
   const handleCheckpoint = async () => {
     // Debounce: prevent rapid clicks (2s cooldown)
@@ -377,76 +364,9 @@ export function PotHome({
     }
     if (isCheckpointing) return;
     
-    // Rate limit: 1 per 24h (manual checkpoints only) - REMOVED
-    // Checkpoint creation disabled
-
-    triggerHaptic('light');
-    setIsCheckpointing(true);
-
-    let appended = false;
-    const pendingUpdates: PotHistory[] = [];
-    let lastToastStatus: PotHistory['status'] | null = null;
-
-    try {
-      const entry = await checkpointPot({
-        pot: checkpointInput,
-        signerAddress: account.address0,
-        onStatusUpdate: (entry) => {
-          pendingUpdates.push(entry);
-          if (entry.status !== lastToastStatus) {
-            if (entry.status === 'submitted') {
-              onShowToast?.('Checkpoint submitted for signing…', 'info');
-            } else if (entry.status === 'in_block') {
-              onShowToast?.('Checkpoint included in block', 'success');
-            } else if (entry.status === 'finalized') {
-              onShowToast?.('Checkpoint finalized on-chain', 'success');
-              // Auto-backup to Crust when checkpoint finalizes
-              if (pot && potId) {
-                (async () => {
-                  try {
-                    const { cid } = await savePotSnapshot(pot);
-                    await potService.updatePot(potId, {
-                      lastBackupCid: cid,
-                    });
-                    logDev('[Checkpoint] Auto-backed up to Crust', { potId, cid });
-                  } catch (error) {
-                    warnDev('[Checkpoint] Auto-backup failed', error);
-                    // Non-blocking: don't show error toast for background backup
-                  }
-                })();
-              }
-            } else if (entry.status === 'failed') {
-              onShowToast?.('Checkpoint failed to publish', 'error');
-            }
-            lastToastStatus = entry.status;
-          }
-          if (appended) {
-            applyHistoryUpdate(entry, true);
-          }
-        },
-      });
-
-      if (entry && entry.txHash) {
-        appended = true;
-        applyHistoryUpdate(entry, true);
-        pendingUpdates.forEach((update) => applyHistoryUpdate(update, true));
-        if (lastToastStatus === null) {
-          onShowToast?.('Checkpoint submitted', 'success');
-        }
-      } else {
-        onShowToast?.('Checkpoint failed. No changes were saved.', 'error');
-      }
-    } catch (error: any) {
-      console.error('[PotHome] Checkpoint error:', error);
-      const message =
-        error?.message === 'USER_REJECTED'
-          ? 'Checkpoint cancelled'
-          : `Checkpoint failed: ${error?.message || 'Unknown error'}`;
-      onShowToast?.(message, error?.message === 'USER_REJECTED' ? 'info' : 'error');
-    } finally {
-      pendingUpdates.length = 0;
-      setIsCheckpointing(false);
-    }
+    // Checkpoint feature removed
+    onShowToast?.('Checkpoint feature has been removed', 'info');
+    return;
   };
 
   // Task 7: Handle Crust backup
@@ -884,7 +804,7 @@ export function PotHome({
             pot={pot ?? undefined}
             potHistory={activeHistory}
             onAddExpense={() => setKeypadOpen(true)}
-            onExpenseClick={onExpenseClick}
+            onExpenseClick={onExpenseClick as any}
             onSettle={onSettle}
             onDeleteExpense={onDeleteExpense}
             onAttestExpense={onAttestExpense}

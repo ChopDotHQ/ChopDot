@@ -145,6 +145,7 @@ export class PotRepository {
       budget: input.budget,
       budgetEnabled: input.budgetEnabled ?? false,
       checkpointEnabled: input.checkpointEnabled ?? false,
+      mode: 'casual',
       history: [],
       archived: false,
       // Savings pot fields

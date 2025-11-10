@@ -86,7 +86,7 @@ export function ExpensesTab({
   totalExpenses: _propTotalExpenses,
   contributions = [],
   potId,
-  pot,
+  pot: _pot,
   potHistory = [],
   onAddExpense, 
   onExpenseClick, 
@@ -97,12 +97,11 @@ export function ExpensesTab({
   onReviewPending: _onReviewPending,
   onShowToast,
   onUpdatePot,
-  checkpointConfirmedCount,
-  checkpointTotalCount,
+  checkpointConfirmedCount: _checkpointConfirmedCount,
+  checkpointTotalCount: _checkpointTotalCount,
 }: ExpensesTabProps) {
   const [showPendingOnly, setShowPendingOnly] = useState(false);
   const [showActivity, setShowActivity] = useState(false);
-  const [confirmModalState, setConfirmModalState] = useState<{ open: boolean; expense?: Expense }>({ open: false });
   
   // Settlement modal state
   const [settlementModal, setSettlementModal] = useState<{
@@ -163,6 +162,7 @@ export function ExpensesTab({
       name: 'Pot',
       type: 'expense' as const,
       baseCurrency: 'USD' as const,
+      mode: 'casual' as const,
       members: potMembers,
       expenses: potExpenses,
       history: [],
@@ -171,7 +171,7 @@ export function ExpensesTab({
       archived: false,
       createdAt: Date.now(),
       updatedAt: Date.now(),
-    } as Pot;
+    } as unknown as Pot;
   }, [expenses, members, potId]);
   
   // Calculate balances using deterministic algorithm
@@ -682,7 +682,7 @@ export function ExpensesTab({
                 </div>
               </button>
               
-              {canSettle ? (
+              {canSettle && (
                 <button
                   onClick={() => {
                     onSettle();
@@ -696,12 +696,6 @@ export function ExpensesTab({
                     <span className="text-body" style={{ fontWeight: 500 }}>Settle Up</span>
                   </div>
                 </button>
-              ) : expenses.length > 0 && !readyToSettle.ready && (
-                <div className="flex-1 py-2.5 px-3 rounded-[var(--r-lg)] bg-yellow-500/10 border border-yellow-500/30">
-                  <p className="text-caption text-yellow-700 dark:text-yellow-300 text-center">
-                    ⚠️ {readyToSettle.reason}
-                  </p>
-                </div>
               )}
             </div>
           </div>
@@ -916,7 +910,7 @@ export function ExpensesTab({
                   return (
                     <SwipeableExpenseRow
                       key={expense.id}
-                      expense={expense}
+                      expense={expense as any}
                       members={members}
                       currentUserId={currentUserId}
                       baseCurrency={baseCurrency}
@@ -950,7 +944,7 @@ export function ExpensesTab({
       {/* ConfirmModal - REMOVED */}
       {false && (
         <ConfirmModal
-          open={confirmModalState.open}
+          open={false}
           title="Editing will void the snapshot"
           body="This pot has a checkpoint. Editing invalidates it; you'll need a new checkpoint before settling."
           confirmText="Edit anyway"

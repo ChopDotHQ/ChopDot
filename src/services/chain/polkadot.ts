@@ -1,4 +1,4 @@
-import { CHAIN_CONFIG, resolveChainKey, getActiveChain, getActiveChainConfig, type ChainConfig, type ChainKey } from './config';
+import { resolveChainKey, getActiveChain, getActiveChainConfig, type ChainConfig, type ChainKey } from './config';
 import { normalizeToPolkadot, isValidSs58Any } from './address';
 import { encodeAddress, decodeAddress } from '@polkadot/util-crypto';
 
@@ -122,7 +122,10 @@ export const polkadotChainService = (() => {
     }
   };
 
-  const getCurrentChain = () => currentChainKey;
+  const getCurrentChain = (): 'assethub' => {
+    // Always return 'assethub' to match adapter interface
+    return currentChainKey === 'westend' ? 'assethub' : currentChainKey;
+  };
 
   const isValidPolkadotAddress = (address: string): boolean => {
     if (!address || typeof address !== 'string') return false;

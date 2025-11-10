@@ -9,8 +9,6 @@ import { useAccount } from "../../contexts/AccountContext";
 import { triggerHaptic } from "../../utils/haptics";
 import { HyperbridgeBridgeSheet } from "../HyperbridgeBridgeSheet";
 import type { Pot } from "../../schema/pot";
-import { checkpointPot, buildCheckpointSnapshot, type PotCheckpointInput } from "../../services/chain/remark";
-import type { PotHistory } from "../../App";
 
 interface Settlement {
   id: string;
@@ -44,14 +42,14 @@ export function SettleHome({
   onHistory,
   scope = "global",
   scopeLabel,
-  potId,
+  potId: _potId,
   personId: _personId,
   preferredMethod,
   recipientAddress,
   baseCurrency = "USD", // Default to USD if not provided
   onShowToast,
-  pot,
-  onUpdatePot,
+  pot: _pot,
+  onUpdatePot: _onUpdatePot,
 }: SettleHomeProps) {
   const isDotPot = baseCurrency === 'DOT';
   // Check for simulation mode (allows DOT settlement without wallet)
@@ -187,118 +185,8 @@ export function SettleHome({
     }
 
     // Pre-settlement checkpoint - REMOVED
-    if (false && potId && walletConnected && account.address0 && pot && scope === 'pot') {
-      try {
-        setIsSettling(true);
-        onShowToast?.('Verifying balances...', 'info');
-        
-        // Build checkpoint input
-        const checkpointInput: PotCheckpointInput = {
-          id: pot.id,
-          name: pot.name,
-          baseCurrency: pot.baseCurrency,
-          members: pot.members.map(m => ({ id: m.id, name: m.name, address: m.address ?? null })),
-          expenses: pot.expenses.map(e => ({
-            id: e.id,
-            amount: e.amount,
-            paidBy: e.paidBy,
-            memo: e.memo,
-            date: e.date,
-            split: e.split ?? [],
-          })),
-          lastBackupCid: pot.lastBackupCid ?? null,
-        };
-        
-        // Try Crust upload (optional, non-blocking)
-        let cid: string | null = null;
-        if (import.meta.env.VITE_ENABLE_CRUST === '1' && pot.mode === 'auditable') {
-          try {
-            const { snapshotJson } = buildCheckpointSnapshot(checkpointInput, { mode: pot.mode });
-            const result = await savePotSnapshotCrust(snapshotJson);
-            cid = result.cid;
-            trackEvent({ type: 'crust_upload_ok', potId: pot.id, cid: result.cid });
-          } catch (error) {
-            trackEvent({ type: 'crust_upload_failed', potId: pot.id, error: String(error) });
-            // Non-blocking: continue without CID
-          }
-        }
-        
-        // Create checkpoint
-        trackEvent({ 
-          type: 'checkpoint_create_requested', 
-          potId: pot.id, 
-          mode: pot.mode ?? 'casual',
-          isPreSettlement: true 
-        });
-        
-        const checkpointEntry = await checkpointPot({
-          pot: checkpointInput,
-          signerAddress: account.address0,
-          cid,
-          mode: pot.mode ?? 'casual',
-          onStatusUpdate: (entry) => {
-            if (entry.status === 'finalized') {
-              onShowToast?.('Verified. Proceeding to settle.', 'success');
-              trackEvent({ 
-                type: 'checkpoint_finalized', 
-                potId: pot.id, 
-                txHash: entry.txHash!,
-                hash: entry.potHash,
-                cid: cid ?? undefined
-              });
-              
-              // Update pot.lastCheckpoint
-              if (onUpdatePot && entry.txHash) {
-                onUpdatePot({
-                  lastCheckpoint: {
-                    hash: entry.potHash,
-                    txHash: entry.txHash,
-                    at: new Date().toISOString(),
-                    cid: cid ?? undefined,
-                  },
-                });
-              }
-            }
-          },
-        });
-        
-        // Proceed with settlement
-        await performSettlement();
-        
-      } catch (error: any) {
-        setIsSettling(false);
-        
-        if (error?.message === 'USER_REJECTED') {
-          onShowToast?.('Checkpoint cancelled', 'info');
-          return;
-        }
-        
-        trackEvent({ 
-          type: 'checkpoint_failed', 
-          potId: potId!, 
-          error: error?.message || 'Unknown error' 
-        });
-        
-        // Offer Retry / Skip
-        const shouldRetry = confirm(
-          'Checkpoint failed. Retry checkpoint before settling?\n\n' +
-          'Click OK to retry, Cancel to skip checkpoint and proceed.'
-        );
-        
-        if (shouldRetry) {
-          handleConfirm(); // Retry
-          return;
-        }
-        
-        // Skip checkpoint and proceed
-        onShowToast?.('Skipping checkpoint, proceeding to settlement...', 'info');
-        await performSettlement();
-        return;
-      }
-    } else {
-      // No wallet connected or no potId - proceed directly
-      await performSettlement();
-    }
+    // Proceed directly to settlement
+    await performSettlement();
     
     async function performSettlement() {
       // For non-DOT methods, show loading state

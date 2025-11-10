@@ -676,12 +676,8 @@ function AppContent() {
       return expense; // Already migrated
     }
     
-    // Migrate from string[] to Array<{memberId, confirmedAt}>
-    const now = new Date().toISOString();
-    expense.attestations = (expense.attestations as string[]).map((memberId: string, index: number) => ({
-      memberId,
-      confirmedAt: new Date(Date.now() - (expense.attestations.length - index) * 2 * 60 * 60 * 1000).toISOString(), // Estimate timestamps
-    }));
+    // Migration removed - keep as string[]
+    // expense.attestations stays as string[]
     
     return expense;
   };
@@ -1134,9 +1130,6 @@ function AppContent() {
       goalDescription: newPot.goalDescription,
       checkpointEnabled:
         newPot.type === "expense" ? false : undefined,
-      mode: 'casual',
-      confirmationsEnabled: import.meta.env.VITE_REQUIRE_CONFIRMATIONS_DEFAULT === '1',
-      lastEditAt: new Date().toISOString(),
     };
 
     setPots([...pots, pot]);
@@ -1422,12 +1415,7 @@ function AppContent() {
       return;
     }
 
-    // Add attestation in new format
-    const now = new Date().toISOString();
-    const existingAttestations = Array.isArray(attestations) && typeof attestations[0] === 'string'
-      ? attestations.map((id: string) => ({ memberId: id, confirmedAt: now }))
-      : (attestations as Array<{ memberId: string; confirmedAt: string }>);
-
+    // Add attestation (keep as string[] for now)
     setPots(
       pots.map((p) =>
         p.id === currentPotId
@@ -1438,8 +1426,8 @@ function AppContent() {
                   ? {
                       ...e,
                       attestations: [
-                        ...existingAttestations,
-                        { memberId: "owner", confirmedAt: now },
+                        ...(Array.isArray(attestations) ? attestations : []),
+                        "owner",
                       ],
                     }
                   : e,
@@ -1505,111 +1493,7 @@ function AppContent() {
 
   // handleBatchConfirmAll - REMOVED
 
-  const createCheckpoint = (potId: string) => {
-    const pot = pots.find((p) => p.id === potId);
-    if (!pot) return null;
-
-    const now = new Date();
-    const expiresAt = new Date(
-      now.getTime() + 48 * 60 * 60 * 1000,
-    );
-
-    const confirmations = new Map<
-      string,
-      { confirmed: boolean; confirmedAt?: string }
-    >();
-    pot.members.forEach((member) => {
-      confirmations.set(member.id, { confirmed: false });
-    });
-
-    const checkpoint: ExpenseCheckpoint = {
-      id: Date.now().toString(),
-      createdBy: "owner",
-      createdAt: now.toISOString(),
-      status: "pending",
-      confirmations,
-      expiresAt: expiresAt.toISOString(),
-    };
-
-    setPots(
-      pots.map((p) =>
-        p.id === potId
-          ? { ...p, currentCheckpoint: checkpoint }
-          : p,
-      ),
-    );
-
-    return checkpoint;
-  };
-
-  const confirmCheckpoint = () => {
-    if (!currentPotId) return;
-    const pot = getCurrentPot();
-    if (!pot || !pot.currentCheckpoint) return;
-
-    const updatedConfirmations = new Map(
-      pot.currentCheckpoint.confirmations,
-    );
-    updatedConfirmations.set("owner", {
-      confirmed: true,
-      confirmedAt: new Date().toISOString(),
-    });
-
-    // Check if all confirmed
-    const allConfirmed = Array.from(
-      updatedConfirmations.values(),
-    ).every((c) => c.confirmed);
-
-    setPots(
-      pots.map((p) =>
-        p.id === currentPotId && p.currentCheckpoint
-          ? {
-              ...p,
-              currentCheckpoint: {
-                ...p.currentCheckpoint,
-                confirmations: updatedConfirmations,
-                status: allConfirmed ? "confirmed" : "pending",
-              },
-            }
-          : p,
-      ),
-    );
-
-    showToast("✓ Confirmed! All expenses entered", "success");
-    triggerHaptic("light");
-  };
-
-  const bypassCheckpoint = () => {
-    if (!currentPotId) return;
-    const pot = getCurrentPot();
-    if (!pot || !pot.currentCheckpoint) return;
-
-    setPots(
-      pots.map((p) =>
-        p.id === currentPotId && p.currentCheckpoint
-          ? {
-              ...p,
-              currentCheckpoint: {
-                ...p.currentCheckpoint,
-                status: "bypassed",
-                bypassedBy: "owner",
-                bypassedAt: new Date().toISOString(),
-              },
-            }
-          : p,
-      ),
-    );
-  };
-
-  const clearCheckpoint = (potId: string) => {
-    setPots(
-      pots.map((p) =>
-        p.id === potId
-          ? { ...p, currentCheckpoint: undefined }
-          : p,
-      ),
-    );
-  };
+  // Checkpoint functions removed
 
   const handleLogout = async () => {
     try {
@@ -2453,10 +2337,8 @@ function AppContent() {
                   push({ type: "checkpoint-status" });
                 } else {
                   // Create new checkpoint
-                  const checkpoint = createCheckpoint(pot.id);
-                  if (checkpoint) {
-                    push({ type: "checkpoint-status" });
-                  }
+                  // Checkpoint feature removed - proceed directly to settlement
+                  push({ type: "settle-selection" });
                 }
               } else {
                 // Checkpoints disabled, go directly to settle
@@ -2924,7 +2806,7 @@ function AppContent() {
             recipientAddress={recipientAddress}
             baseCurrency={currentPotId && getCurrentPot() ? getCurrentPot()!.baseCurrency : "USD"}
             onShowToast={showToast}
-            pot={currentPotId && getCurrentPot() ? getCurrentPot()! : undefined}
+            pot={currentPotId && getCurrentPot() ? ({ ...getCurrentPot()!, mode: 'casual' as const } as any) : undefined}
             onUpdatePot={currentPotId ? (updates) => {
               const pot = getCurrentPot();
               if (pot) {

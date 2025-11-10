@@ -126,7 +126,7 @@ export async function checkpointPot({
   forceBrowserExtension,
   onStatusUpdate,
 }: CheckpointPotParams): Promise<PotHistory> {
-  const { snapshot, potHash, message } = buildCheckpointSnapshot(pot, { cid: cid ?? pot.lastBackupCid ?? null, mode });
+  const { potHash, message } = buildCheckpointSnapshot(pot, { cid: cid ?? pot.lastBackupCid ?? null, mode });
 
   let stagedEntry: PotHistory | null = null;
 
@@ -151,7 +151,7 @@ export async function checkpointPot({
             status: status === 'finalized' ? 'finalized' : status === 'inBlock' ? 'in_block' : 'submitted',
             potHash,
             message,
-            cid: snapshot.lastBackupCid ?? undefined,
+            cid: undefined,
             txHash: txHashCtx,
             block: ctx?.blockHash,
             subscan: chain.buildSubscanUrl(txHashCtx),
@@ -188,7 +188,7 @@ export async function checkpointPot({
         status: 'submitted',
         potHash,
         message,
-        cid: snapshot.lastBackupCid ?? undefined,
+            cid: undefined,
         txHash,
         subscan: chain.buildSubscanUrl(txHash),
       };
