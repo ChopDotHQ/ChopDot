@@ -137,11 +137,11 @@ export function extractCIDFromUrl(url: string): string | null {
 
     // Try to extract from query parameter (if it's a full URL)
     try {
-      const urlObj = new URL(url);
-      const cidParam = urlObj.searchParams.get('cid');
-      if (cidParam) {
-        return cidParam;
-      }
+    const urlObj = new URL(url);
+    const cidParam = urlObj.searchParams.get('cid');
+    if (cidParam) {
+      return cidParam;
+    }
 
       // Try to extract from IPFS gateway URL path
       // Format: https://cloudflare-ipfs.com/ipfs/QmABC123... or any IPFS gateway
@@ -152,10 +152,10 @@ export function extractCIDFromUrl(url: string): string | null {
     } catch (urlError) {
       // Not a valid URL, might be just a CID or partial URL
       // Try regex matching on the string directly
-      const ipfsMatch = url.match(/\/ipfs\/([a-zA-Z0-9]+)/);
-      if (ipfsMatch && ipfsMatch[1]) {
-        return ipfsMatch[1];
-      }
+    const ipfsMatch = url.match(/\/ipfs\/([a-zA-Z0-9]+)/);
+    if (ipfsMatch && ipfsMatch[1]) {
+      return ipfsMatch[1];
+    }
 
       // Try to extract CID from query string pattern even if not full URL
       const queryMatch = url.match(/[?&]cid=([a-zA-Z0-9]+)/);

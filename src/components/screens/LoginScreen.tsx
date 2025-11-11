@@ -164,12 +164,30 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
           address = polkadotJsAccount.address;
           
           // Auto-connect to AccountContext for Polkadot.js
+          // Use timeout to prevent hanging - balance fetch might fail, but connection should work
           try {
-            await account.connectExtension(address);
+            await Promise.race([
+              account.connectExtension(address),
+              new Promise<void>((_, reject) => 
+                setTimeout(() => reject(new Error('Connection timeout')), 8000)
+              )
+            ]);
           } catch (e) {
-            console.warn('[Login] Failed to auto-connect to AccountContext:', e);
+            console.warn('[Login] AccountContext connection issue (continuing anyway):', e);
+            // Continue anyway - the extension is connected, we can sign
+            // The balance will be fetched later via polling
           }
           
+          // Wait briefly for AccountContext to update status
+          // Poll for connection status (max 2 seconds)
+          let attempts = 0;
+          while (account.status === 'connecting' && attempts < 20) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+          }
+          
+          // Proceed with signing even if status is still connecting
+          // The extension connection is valid, AccountContext is just slow to update
           const message = generateSignInMessage(address);
           signature = await signPolkadotMessage(address, message);
           break;

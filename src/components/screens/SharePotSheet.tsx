@@ -176,7 +176,7 @@ export function SharePotSheet({
             {/* Share Link - Stacked layout to avoid truncation */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-label text-secondary">Shareable Link</label>
+              <label className="text-label text-secondary">Shareable Link</label>
                 <button
                   onClick={() => copyToClipboard(shareData.shareLink, 'link')}
                   className="p-2 card border border-border rounded-lg hover:bg-muted/50 transition-colors active:scale-95 flex items-center gap-1.5"
@@ -249,7 +249,7 @@ export function SharePotSheet({
           {shareData && (
             <PrimaryButton
               onClick={() => {
-                copyToClipboard(shareData.shareLink, 'link');
+                  copyToClipboard(shareData.shareLink, 'link');
               }}
               fullWidth
             >

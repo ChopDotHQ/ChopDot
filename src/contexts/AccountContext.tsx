@@ -179,10 +179,27 @@ export function AccountProvider({ children }: AccountProviderProps) {
       };
       const walletName = walletNameMap[account.meta?.source?.toLowerCase() || ''] || account.meta?.source || extensions[0]?.name || 'Extension';
 
-      // Get initial balance
+      // Get initial balance (with timeout to prevent hanging)
       chain.setChain('assethub'); // Default to Asset Hub
-      const balancePlanck = await chain.getFreeBalance(address);
-      const balanceHuman = fmtPlanckToDot(balancePlanck);
+      let balancePlanck = '0';
+      let balanceHuman = '0';
+      
+      try {
+        // Add timeout to balance fetch (5 seconds)
+        const balancePromise = chain.getFreeBalance(address);
+        const timeoutPromise = new Promise<string>((_, reject) => 
+          setTimeout(() => reject(new Error('Balance fetch timeout')), 5000)
+        );
+        
+        balancePlanck = await Promise.race([balancePromise, timeoutPromise]);
+        balanceHuman = fmtPlanckToDot(balancePlanck);
+      } catch (error) {
+        console.warn('[Account] Balance fetch failed or timed out, using zero balance:', error);
+        // Continue with zero balance - user can refresh later
+        balancePlanck = '0';
+        balanceHuman = '0';
+      }
+      
       const network = detectNetwork();
 
       // Save connector preference
