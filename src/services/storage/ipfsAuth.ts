@@ -136,12 +136,7 @@ export function clearIPFSAuthCache(walletAddress?: string): void {
   }
 }
 
-/**
- * Set signature in global scope for backend requests
- * This is a workaround since we can't pass it directly through fetch
- */
-export function setGlobalIPFSAuth(walletAddress: string, signature: string): void {
-  (window as any).__chopdot_wallet_address = walletAddress;
-  (window as any).__chopdot_wallet_signature = signature;
-}
+// Removed setGlobalIPFSAuth - no longer needed
+// Backend receives auth via formData (walletAddress/signature fields)
+// This improves security by not exposing signatures in window globals
 

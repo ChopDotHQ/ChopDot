@@ -10,7 +10,7 @@
  */
 
 import { create } from 'ipfs-http-client';
-import { getIPFSAuthSignature, setGlobalIPFSAuth } from './ipfsAuth';
+import { getIPFSAuthSignature } from './ipfsAuth';
 import { getWalletAddress } from './getWalletAddress';
 
 // Backend API URL (for production proxy)
@@ -63,9 +63,6 @@ export async function uploadToIPFS(
           const signature = await getIPFSAuthSignature(address);
           formData.append('walletAddress', address);
           formData.append('signature', signature);
-          
-          // Also set in global scope for the fetch call
-          setGlobalIPFSAuth(address, signature);
           
           console.log('[IPFS] Added user authentication for automatic token generation');
         } catch (error) {
@@ -178,9 +175,6 @@ export async function uploadBufferToIPFS(
           const signature = await getIPFSAuthSignature(address);
           formData.append('walletAddress', address);
           formData.append('signature', signature);
-          
-          // Also set in global scope for the fetch call
-          setGlobalIPFSAuth(address, signature);
           
           console.log('[IPFS] Added user authentication for automatic token generation');
         } catch (error) {
