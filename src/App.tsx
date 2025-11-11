@@ -1170,7 +1170,7 @@ function AppContent() {
     // Auto-backup each pot that changed
     pots.forEach((pot) => {
       // Trigger auto-backup (debounced, FREE IPFS storage)
-      autoBackupPot(pot, account.address0 || undefined).catch((error) => {
+      autoBackupPot(pot as Pot, account.address0 || undefined).catch((error) => {
         console.error('[App] Auto-backup failed for pot:', pot.id, error);
         // Silent fail - don't interrupt user
       });
@@ -1562,7 +1562,7 @@ function AppContent() {
       split: data.split,
       attestations: [],
       hasReceipt: data.hasReceipt,
-      receiptUrl: data.receiptUrl,
+      ...(data.receiptUrl && { receiptUrl: data.receiptUrl }),
     };
 
     setPots(
@@ -1609,7 +1609,7 @@ function AppContent() {
           date: expense.date,
           split: expense.split,
           hasReceipt: expense.hasReceipt,
-          receiptUrl: expense.receiptUrl,
+          ...((expense as any).receiptUrl && { receiptUrl: (expense as any).receiptUrl }),
         };
 
         await expenseService.addExpense(currentPotId, createExpenseDTO);
@@ -3551,17 +3551,17 @@ function AppContent() {
                 members: importedPot.members.map((m, idx) => ({
                   id: m.id || `member-${idx}`,
                   name: m.name,
-                  address: m.address || null,
-                  verified: m.verified || false,
+                  address: m.address ?? null,
+                  verified: m.verified ?? false,
                   role: (m.role === 'Owner' ? 'Owner' : (m.role === 'Member' ? 'Member' : undefined)) as 'Owner' | 'Member' | undefined,
-                  status: m.status || 'active',
+                  status: (m.status || 'active') as string,
                 })),
                 expenses: importedPot.expenses.map((e, idx) => ({
                   ...e,
                   id: e.id || `expense-${idx}`,
                   currency: e.currency || importedPot.baseCurrency,
                 })),
-              };
+              } as Pot;
               
               setPots([...pots, newPot]);
               setCurrentPotId(newPot.id);

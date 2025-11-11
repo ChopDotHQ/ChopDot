@@ -8,8 +8,8 @@
  */
 
 import type { Pot } from '../../schema/pot';
-import { getUserPotIndex, getCachedUserIndexCid } from '../storage/userIndex';
-import { getIPFSGatewayUrl, fetchFromIPFSWithFallback } from '../storage/ipfs';
+import { getUserPotIndex } from '../storage/userIndex';
+import { fetchFromIPFSWithFallback } from '../storage/ipfs';
 
 /**
  * Attempt to restore pots from IPFS

@@ -23,6 +23,8 @@ export const DEFAULT_POTS: Pot[] = [
       { id: "bob", name: "Bob", role: "Member", status: "active" }
     ],
     expenses: [],
+    history: [],
+    archived: false,
     budget: 500,
     budgetEnabled: true,
     checkpointEnabled: false,
@@ -41,6 +43,8 @@ export const DEFAULT_POTS: Pot[] = [
       { id: "diana", name: "Diana", role: "Member", status: "pending" }
     ],
     expenses: [],
+    history: [],
+    archived: false,
     budget: 3000,
     budgetEnabled: true,
     checkpointEnabled: false,
@@ -57,6 +61,10 @@ export const DEFAULT_POTS: Pot[] = [
       { id: "owner", name: "You", role: "Owner", status: "active" }
     ],
     expenses: [],
+    history: [],
+    archived: false,
+    budgetEnabled: false,
+    checkpointEnabled: false,
     contributions: [],
     totalPooled: 750,
     yieldRate: 12.5,
@@ -163,6 +171,8 @@ export const DEFAULT_POTS: Pot[] = [
     budget: 10.0,
     budgetEnabled: true,
     checkpointEnabled: false,
+    history: [],
+    archived: false,
     mode: 'casual',
     confirmationsEnabled: false,
     lastEditAt: new Date().toISOString()

@@ -9,7 +9,7 @@
 
 import type { Pot } from '../../schema/pot';
 import { savePotSnapshotCrust } from './crustBackup';
-import { saveUserPotIndex, cacheUserIndexCid, getCachedUserIndexCid } from '../storage/userIndex';
+import { saveUserPotIndex, cacheUserIndexCid } from '../storage/userIndex';
 
 // Debounce timer (2 seconds)
 let backupTimers = new Map<string, NodeJS.Timeout>();
