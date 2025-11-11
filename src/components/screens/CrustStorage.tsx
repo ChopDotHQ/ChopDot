@@ -218,6 +218,9 @@ export function CrustStorage({ onAuthSetup }: CrustStorageProps = {}) {
       if (account.connector === 'walletconnect') {
         // WalletConnect signing is handled via chain service
         const chainService = await import('../../services/chain');
+        if (!api.tx.market?.placeStorageOrder) {
+          throw new Error('Market pallet not available');
+        }
         const tx = api.tx.market.placeStorageOrder(cid, fileSize, 0, "");
         
         await chainService.chain.signAndSendExtrinsic({
