@@ -20,7 +20,7 @@ interface UploadedFile {
   txHash?: string;
 }
 
-const CRUST_GATEWAY = "https://gw.crustfiles.app";
+// const CRUST_GATEWAY = "https://gw.crustfiles.app"; // Not used - using ipfs.ts service instead
 const CRUST_RPC = "wss://rpc-rocky.crust.network";
 
 interface CrustStorageProps {

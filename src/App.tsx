@@ -1170,7 +1170,7 @@ function AppContent() {
     // Auto-backup each pot that changed
     pots.forEach((pot) => {
       // Trigger auto-backup (debounced, FREE IPFS storage)
-      autoBackupPot(pot as Pot, account.address0 || undefined).catch((error) => {
+      autoBackupPot(pot as any, account.address0 || undefined).catch((error) => {
         console.error('[App] Auto-backup failed for pot:', pot.id, error);
         // Silent fail - don't interrupt user
       });
