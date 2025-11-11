@@ -90,7 +90,7 @@ export function buildCheckpointSnapshot(
   const snapshotJson = stableStringify(snapshot);
   // Only validate privacy when actually creating a checkpoint, not for display purposes
   if (!skipPrivacyCheck) {
-    validatePrivacy(snapshotJson);
+  validatePrivacy(snapshotJson);
   }
   const potHash = blake2AsHex(snapshotJson);
 

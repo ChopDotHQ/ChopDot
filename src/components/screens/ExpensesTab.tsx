@@ -943,15 +943,15 @@ export function ExpensesTab({
       {/* Edit Invalidation Confirm Modal */}
       {/* ConfirmModal - REMOVED */}
       {false && (
-        <ConfirmModal
+      <ConfirmModal
           open={false}
-          title="Editing will void the snapshot"
-          body="This pot has a checkpoint. Editing invalidates it; you'll need a new checkpoint before settling."
-          confirmText="Edit anyway"
-          cancelText="Cancel"
+        title="Editing will void the snapshot"
+        body="This pot has a checkpoint. Editing invalidates it; you'll need a new checkpoint before settling."
+        confirmText="Edit anyway"
+        cancelText="Cancel"
           onConfirm={() => {}}
           onCancel={() => {}}
-        />
+      />
       )}
     </div>
   );
