@@ -1130,7 +1130,7 @@ function AppContent() {
         const restoredPots = await attemptAutoRestore(account.address0);
         
         if (restoredPots.length > 0) {
-          setPots(restoredPots);
+          setPots(restoredPots as Pot[]);
           showToast(`Restored ${restoredPots.length} pot(s) from backup`, 'success');
           console.log('[App] Auto-restore successful', { potCount: restoredPots.length });
         }
