@@ -31,6 +31,11 @@
 - **API Reference:** [`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) - Data Layer API documentation
 - **Workflow Guide:** [`src/WORKFLOW_GUIDE.md`](src/WORKFLOW_GUIDE.md) - Feature workflows and user flows
 
+### IPFS & Storage
+- **IPFS/Crust Guide:** [`docs/IPFS_CRUST_GUIDE.md`](docs/IPFS_CRUST_GUIDE.md) - Complete IPFS integration guide
+- **Sync Analysis:** [`TECHNICAL_SYNC_ANALYSIS.md`](TECHNICAL_SYNC_ANALYSIS.md) - Multi-user sync challenges and solutions
+- **Sharing Guide:** [`SHARING_VS_ADDING_MEMBERS.md`](SHARING_VS_ADDING_MEMBERS.md) - User guide for pot sharing
+
 ---
 
 ## Overview
@@ -99,6 +104,14 @@ ChopDot is a mobile-first expense splitting and group financial management app w
 - ❌ REST API (documented, not implemented)
 - ❌ Real-time sync (mock SyncBanner exists)
 - ❌ Push notifications (mock NotificationCenter exists)
+
+#### IPFS & Crust Storage
+- ✅ IPFS integration (via Crust Network)
+- ✅ Automatic authentication (wallet-based, one-time sign)
+- ✅ Pot sharing via IPFS links
+- ✅ Auto-backup to IPFS (debounced, free tier)
+- ✅ Receipt storage on IPFS
+- ⚠️ Multi-user sync not implemented (see Known Issues)
 
 #### Blockchain Integration
 - ✅ Real Polkadot transactions (DOT transfers via `balances.transferKeepAlive`)
@@ -248,12 +261,20 @@ src/
 
 > **Note:** Update this section whenever you make changes to the app.
 
+### [2025-01-15] - IPFS & Crust Integration
+- ✅ IPFS integration via Crust Network
+- ✅ Automatic wallet-based authentication (one-time sign)
+- ✅ Pot sharing via IPFS links (`/import-pot?cid=...`)
+- ✅ Auto-backup to IPFS (debounced, 2 seconds)
+- ✅ Receipt storage on IPFS
+- ✅ IPFS onboarding modal (explains signing process)
+- ⚠️ Multi-user sync not implemented (IPFS snapshots only - see Known Issues)
+
 ### [2025-01-15] - Checkpoint & Confirmation Features Removal
 - ❌ Removed checkpoint system (pre-settlement verification, on-chain anchoring)
 - ❌ Removed confirmation/attestation workflow (expense confirmations)
 - ❌ Removed batch confirmation features (BatchConfirmSheet, batch attestations)
 - ❌ Removed pot modes (casual vs auditable)
-- ❌ Removed Crust/IPFS backup integration
 - ❌ Removed checkpoint-related UI (checkpoint buttons, status screens, alerts)
 - ✅ Settlement flow now proceeds directly without checkpoint requirements
 - ✅ All checkpoint and confirmation documentation removed
@@ -386,7 +407,7 @@ src/
 ### Medium Priority
 - [ ] Backend API not connected (using localStorage only)
 - [ ] Real Polkadot transactions not implemented (UI only)
-- [ ] No real-time sync between devices
+- [ ] **Multi-user sync not implemented** - When users share a pot via IPFS link, each person gets a snapshot copy. Changes made by one user don't sync to others automatically. See `TECHNICAL_SYNC_ANALYSIS.md` for detailed analysis and potential solutions.
 - [ ] No push notifications
 
 ### Low Priority

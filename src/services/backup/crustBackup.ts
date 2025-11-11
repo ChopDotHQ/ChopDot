@@ -1,39 +1,53 @@
 /**
- * Crust/IPFS Backup Service - Placeholder
+ * Crust/IPFS Backup Service
  * 
- * Placeholder for future Crust integration.
- * Do NOT upload yet — simply logs fake CID for development.
+ * Uploads pot snapshots to IPFS via Crust gateway and pins them on Crust chain.
  * 
- * When Crust credentials are ready, this will:
- * 1. Upload pot snapshot to Crust/IPFS
- * 2. Return { cid, gatewayUrl }
- * 3. Append cid to remark for on-chain anchoring
+ * Automatic authentication: Uses wallet address if available (signs once, caches signature)
  */
+
+import { uploadBufferToIPFS } from '../storage/ipfsWithOnboarding';
+import { getIPFSGatewayUrl } from '../storage/ipfs';
+import { getWalletAddress } from '../storage/getWalletAddress';
 
 export interface CrustUploadResult {
   cid: string;
-  gatewayUrl?: string;
+  gatewayUrl: string;
 }
 
 /**
- * Placeholder upload function
- * Returns a fake CID for development/testing
+ * Upload pot snapshot to IPFS via Crust gateway
+ * 
+ * @param snapshot - JSON string of the pot snapshot
+ * @returns CID and gateway URL
  */
 export async function savePotSnapshotCrust(snapshot: string): Promise<CrustUploadResult> {
-  console.log('[Crust] Placeholder upload (not actually uploading)', {
-    snapshotLength: snapshot.length,
-    preview: snapshot.slice(0, 50),
-  });
-  
-  // Simulate upload delay
-  await new Promise((r) => setTimeout(r, 500));
-  
-  // Generate fake CID for testing
-  const fakeCid = `bafybeifakecid${Math.random().toString(36).slice(2, 8)}`;
-  
-  return {
-    cid: fakeCid,
-    gatewayUrl: `https://ipfs.io/ipfs/${fakeCid}`,
-  };
+  try {
+    console.log('[Crust] Uploading pot snapshot to IPFS...', {
+      snapshotLength: snapshot.length,
+      preview: snapshot.slice(0, 50),
+    });
+    
+    // Convert snapshot string to buffer
+    const buffer = new TextEncoder().encode(snapshot);
+    
+    // Get wallet address for automatic authentication
+    const walletAddress = getWalletAddress();
+    
+    // Upload to IPFS via Crust gateway (with automatic auth if wallet connected)
+    const cid = await uploadBufferToIPFS(buffer, 'pot-snapshot.json', true, walletAddress || undefined);
+    
+    const gatewayUrl = getIPFSGatewayUrl(cid, true);
+    
+    console.log('[Crust] Pot snapshot uploaded successfully', { cid, gatewayUrl });
+    
+    return {
+      cid,
+      gatewayUrl,
+    };
+  } catch (error) {
+    console.error('[Crust] Failed to upload pot snapshot:', error);
+    throw new Error(`Failed to upload pot snapshot to IPFS: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 

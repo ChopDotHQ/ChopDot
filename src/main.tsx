@@ -1,11 +1,48 @@
-import { StrictMode } from 'react'
+import { StrictMode, Component, ReactNode, ErrorInfo } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import './styles/globals.css'
 import { AccountProvider } from './contexts/AccountContext'
 import { DataProvider } from './services/data/DataContext'
-import { DataLayerErrorBoundary } from './components/DataLayerErrorBoundary'
+
+// Simple error boundary to catch render errors and show them
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('App Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '20px', fontFamily: 'monospace', background: '#000', color: '#fff', minHeight: '100vh' }}>
+          <h1 style={{ color: '#f00' }}>App Error</h1>
+          <pre style={{ background: '#222', padding: '10px', overflow: 'auto' }}>
+            {this.state.error?.message || 'Unknown error'}
+            {'\n\n'}
+            {this.state.error?.stack}
+          </pre>
+          <button 
+            onClick={() => window.location.reload()} 
+            style={{ marginTop: '20px', padding: '10px 20px', fontSize: '16px' }}
+          >
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // Hide loading spinner
 const loadingEl = document.getElementById('loading')
@@ -28,26 +65,26 @@ if (window.location.pathname === '/chain-test') {
     const { ChainTestPage } = await import('./chain/chain-test-page');
     createRoot(rootEl).render(
       <StrictMode>
-        <AccountProvider>
-          <DataLayerErrorBoundary>
+        <ErrorBoundary>
+          <AccountProvider>
             <DataProvider>
               <ChainTestPage />
             </DataProvider>
-          </DataLayerErrorBoundary>
-        </AccountProvider>
+          </AccountProvider>
+        </ErrorBoundary>
       </StrictMode>,
     )
   })()
   } else {
   createRoot(rootEl).render(
   <StrictMode>
-      <AccountProvider>
-        <DataLayerErrorBoundary>
+      <ErrorBoundary>
+        <AccountProvider>
           <DataProvider>
             <App />
           </DataProvider>
-        </DataLayerErrorBoundary>
-      </AccountProvider>
+        </AccountProvider>
+      </ErrorBoundary>
   </StrictMode>,
 )
 }

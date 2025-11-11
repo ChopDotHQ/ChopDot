@@ -11,7 +11,8 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { normalizeToPolkadot } from '../services/chain/address';
 import { chain } from '../services/chain';
-import { connectNovaWallet, disconnectWalletConnect, getWalletConnectSession } from '../services/chain/walletconnect';
+// Dynamic imports for WalletConnect to avoid "require is not defined" error
+// These are loaded only when needed, not at module initialization
 
 export type AccountConnector = 'extension' | 'walletconnect' | null;
 
@@ -82,6 +83,25 @@ export function AccountProvider({ children }: AccountProviderProps) {
 
   // Auto-detect network from chain service
   const detectNetwork = useCallback((): AccountNetwork => 'asset-hub', []);
+
+  // Store wallet address in localStorage and window for IPFS auth
+  useEffect(() => {
+    if (state.address0) {
+      try {
+        localStorage.setItem('account.address0', state.address0);
+        (window as any).__chopdot_wallet_address = state.address0;
+      } catch (error) {
+        // Silent fail
+      }
+    } else {
+      try {
+        localStorage.removeItem('account.address0');
+        delete (window as any).__chopdot_wallet_address;
+      } catch (error) {
+        // Silent fail
+      }
+    }
+  }, [state.address0]);
 
   // Fetch and update balance
   const refreshBalance = useCallback(async () => {
@@ -196,7 +216,9 @@ export function AccountProvider({ children }: AccountProviderProps) {
     setState(prev => ({ ...prev, status: 'connecting', error: null }));
 
     try {
-      const { uri, onConnect } = await connectNovaWallet();
+      // Dynamic import to avoid loading WalletConnect packages at module init
+      const walletConnectModule = await import('../services/chain/walletconnect');
+      const { uri, onConnect } = await walletConnectModule.connectNovaWallet();
       
       // Wait for connection asynchronously (handled by AccountMenu showing QR)
       onConnect
@@ -252,7 +274,11 @@ export function AccountProvider({ children }: AccountProviderProps) {
   // Disconnect
   const disconnect = useCallback(() => {
     if (state.connector === 'walletconnect') {
-      disconnectWalletConnect().catch(console.error);
+      // Dynamic import to avoid loading WalletConnect packages at module init
+      // Fire and forget - don't await to keep disconnect synchronous
+      import('../services/chain/walletconnect')
+        .then(walletConnectModule => walletConnectModule.disconnectWalletConnect())
+        .catch(console.error);
     }
     
     localStorage.removeItem(STORAGE_KEY);
@@ -298,32 +324,37 @@ export function AccountProvider({ children }: AccountProviderProps) {
     if (savedConnector && (savedConnector === 'extension' || savedConnector === 'walletconnect')) {
       // Try to auto-reconnect
       if (savedConnector === 'walletconnect') {
-        // Check if WalletConnect session still exists
-        const session = getWalletConnectSession();
-        if (session?.namespaces?.polkadot?.accounts && session.namespaces.polkadot.accounts.length > 0) {
-          const accounts = session.namespaces.polkadot.accounts;
-          const address = accounts[0]?.split(':').slice(2).join(':');
-          if (address) {
-            const address0 = normalizeToPolkadot(address);
-            chain.setChain('assethub');
-            chain.getFreeBalance(address)
-              .then(balancePlanck => {
-                const balanceHuman = fmtPlanckToDot(balancePlanck);
-                setState({
-                  status: 'connected',
-                  connector: 'walletconnect',
-                  address,
-                  address0,
-                  network: detectNetwork(),
-                  balanceFree: balancePlanck,
-                  balanceHuman,
-                  walletName: 'Nova Wallet',
-                  error: null,
-                });
-              })
-              .catch(console.error);
-          }
-        }
+        // Dynamic import to avoid loading WalletConnect packages at module init
+        import('../services/chain/walletconnect')
+          .then(walletConnectModule => {
+            // Check if WalletConnect session still exists
+            const session = walletConnectModule.getWalletConnectSession();
+            if (session?.namespaces?.polkadot?.accounts && session.namespaces.polkadot.accounts.length > 0) {
+              const accounts = session.namespaces.polkadot.accounts;
+              const address = accounts[0]?.split(':').slice(2).join(':');
+              if (address) {
+                const address0 = normalizeToPolkadot(address);
+                chain.setChain('assethub');
+                chain.getFreeBalance(address)
+                  .then(balancePlanck => {
+                    const balanceHuman = fmtPlanckToDot(balancePlanck);
+                    setState({
+                      status: 'connected',
+                      connector: 'walletconnect',
+                      address,
+                      address0,
+                      network: detectNetwork(),
+                      balanceFree: balancePlanck,
+                      balanceHuman,
+                      walletName: 'Nova Wallet',
+                      error: null,
+                    });
+                  })
+                  .catch(console.error);
+              }
+            }
+          })
+          .catch(console.error);
       } else if (savedConnector === 'extension') {
         // Try to reconnect extension (silent - won't show error if user removed extension)
         connectExtension().catch(() => {

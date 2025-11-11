@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Copy, Send, Download, Upload, Lock } from "lucide-react";
+import { Copy, Send, Download, Upload, Lock, Share2 } from "lucide-react";
 import { downloadPotAsJSON, readPotFile } from "../../utils/pot-export";
 import { encryptPot, decryptPot, downloadEncryptedPot, readEncryptedPotFile } from "../../utils/crypto/exportEncrypt";
 import { PasswordModal } from "../PasswordModal";
@@ -31,6 +31,7 @@ interface SettingsTabProps {
   onDeletePot?: () => void;
   onImportPot?: (pot: Pot) => void; // Callback when pot is imported
   onShowToast?: (message: string, type?: "success" | "info" | "error") => void;
+  onSharePot?: () => void; // Callback to open share pot sheet
 }
 
 export function SettingsTab({
@@ -51,6 +52,7 @@ export function SettingsTab({
   onDeletePot,
   onImportPot,
   onShowToast,
+  onSharePot,
 }: SettingsTabProps) {
   const [potName, setPotName] = useState(initialPotName);
   const [baseCurrency, setBaseCurrency] = useState(initialCurrency);
@@ -319,6 +321,21 @@ export function SettingsTab({
           >
             <Copy className="w-3.5 h-3.5" />
             Copy invite link
+          </button>
+        </div>
+      )}
+
+      {/* Share Pot */}
+      {onSharePot && (
+        <div className="pt-2 space-y-2 border-t border-border">
+          <p className="text-label text-secondary">Share Pot</p>
+          <button
+            onClick={onSharePot}
+            disabled={!pot}
+            className="w-full card rounded-xl p-4 flex items-center gap-2 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] text-left disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Share2 className="w-4 h-4" />
+            <span className="text-body">Share Pot (IPFS)</span>
           </button>
         </div>
       )}

@@ -57,6 +57,7 @@ export const ExpenseSchema = z.object({
     })), // New format: Array<{memberId, confirmedAt}>
   ]).optional(),
   hasReceipt: z.boolean().optional(),
+  receiptUrl: z.string().url().optional(), // IPFS gateway URL for receipt
   attestationTxHash: z.string().optional(),
   attestationTimestamp: z.string().optional(),
 }).passthrough() // Allow unknown fields for forward compatibility

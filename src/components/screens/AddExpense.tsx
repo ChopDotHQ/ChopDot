@@ -1,7 +1,8 @@
 import { BottomSheet } from "../BottomSheet";
-import { Upload, X, AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { Upload, X, AlertCircle, Loader2 } from "lucide-react";
+import { useState, useRef } from "react";
 import { validateExpense } from "../../schema/pot";
+import { uploadReceipt } from "../../services/storage/receipt";
 
 interface Member {
   id: string;
@@ -38,6 +39,7 @@ interface AddExpenseProps {
     date: string;
     split: { memberId: string; amount: number }[];
     hasReceipt: boolean;
+    receiptUrl?: string;
   }) => void;
   onBack: () => void;
   onChangePot?: () => void;
@@ -76,7 +78,11 @@ export function AddExpense({
   
   // Receipt state
   const [hasReceipt, setHasReceipt] = useState(existingExpense?.hasReceipt || false);
+  const [receiptUrl, setReceiptUrl] = useState(existingExpense?.receiptUrl || undefined);
+  const [isUploadingReceipt, setIsUploadingReceipt] = useState(false);
+  const [receiptUploadError, setReceiptUploadError] = useState<string | null>(null);
   const [showReceiptSheet, setShowReceiptSheet] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Split state - initialize from existing expense if editing
   const [splitType, setSplitType] = useState("equal");
@@ -205,6 +211,7 @@ export function AddExpense({
                 date,
                 split,
                 hasReceipt,
+                receiptUrl,
               });
       
       // Reset saving state after a short delay to ensure navigation happens
@@ -558,32 +565,94 @@ export function AddExpense({
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-3 space-y-3">
-              {!hasReceipt ? (
-                <button
-                  onClick={() => {
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,application/pdf"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  setIsUploadingReceipt(true);
+                  setReceiptUploadError(null);
+
+                  try {
+                    const { gatewayUrl } = await uploadReceipt(file);
+                    setReceiptUrl(gatewayUrl);
                     setHasReceipt(true);
                     setShowReceiptSheet(false);
-                  }}
-                  className="w-full p-6 border-2 border-dashed border-border rounded-lg hover:bg-muted transition-colors flex flex-col items-center gap-2"
+                  } catch (error) {
+                    console.error('[AddExpense] Receipt upload failed:', error);
+                    setReceiptUploadError(error instanceof Error ? error.message : 'Failed to upload receipt');
+                    setHasReceipt(false);
+                    setReceiptUrl(undefined);
+                  } finally {
+                    setIsUploadingReceipt(false);
+                    // Reset file input
+                    if (fileInputRef.current) {
+                      fileInputRef.current.value = '';
+                    }
+                  }
+                }}
+              />
+              
+              {!hasReceipt ? (
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingReceipt}
+                  className="w-full p-6 border-2 border-dashed border-border rounded-lg hover:bg-muted transition-colors flex flex-col items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Upload className="w-8 h-8 text-secondary" />
-                  <p className="text-micro text-secondary">Tap to upload</p>
+                  {isUploadingReceipt ? (
+                    <>
+                      <Loader2 className="w-8 h-8 text-secondary animate-spin" />
+                      <p className="text-micro text-secondary">Uploading to IPFS...</p>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 text-secondary" />
+                      <p className="text-micro text-secondary">Tap to upload receipt</p>
+                    </>
+                  )}
                 </button>
               ) : (
                 <div className="relative p-2 bg-muted rounded-lg">
                   <button
-                    onClick={() => setHasReceipt(false)}
-                    className="absolute top-1 right-1 p-1 bg-background rounded-full"
+                    onClick={() => {
+                      setHasReceipt(false);
+                      setReceiptUrl(undefined);
+                    }}
+                    className="absolute top-1 right-1 p-1 bg-background rounded-full hover:bg-muted transition-colors"
                   >
                     <X className="w-3 h-3" />
                   </button>
-                  <div className="w-full h-32 bg-secondary rounded flex items-center justify-center">
-                    <p className="text-micro text-secondary">Receipt preview</p>
-                  </div>
+                  {receiptUrl ? (
+                    <img
+                      src={receiptUrl}
+                      alt="Receipt"
+                      className="w-full h-32 object-cover rounded"
+                      onError={() => {
+                        // If image fails to load, show placeholder
+                        setReceiptUploadError('Failed to load receipt image');
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-32 bg-secondary rounded flex items-center justify-center">
+                      <p className="text-micro text-secondary">Receipt preview</p>
+                    </div>
+                  )}
                 </div>
               )}
+              
+              {receiptUploadError && (
+                <div className="flex items-center gap-2 p-2 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
+                  <p className="text-micro text-destructive">{receiptUploadError}</p>
+                </div>
+              )}
+              
               <p className="text-micro text-secondary">
-                Stored privately with expense details
+                Stored on IPFS via Crust Network
               </p>
             </div>
           </div>

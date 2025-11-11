@@ -3,9 +3,10 @@ import {
   useMemo,
   useCallback,
   useEffect,
+  useRef,
 } from "react";
 import { polkadotChainService } from "./services/chain/polkadot";
-import { useNav } from "./nav";
+import { useNav, type Screen } from "./nav";
 import { useTheme } from "./utils/useTheme";
 import { triggerHaptic } from "./utils/haptics";
 import type { PersonSettlement, SettlementBreakdown } from "./utils/settlements";
@@ -15,6 +16,9 @@ import {
 } from "./utils/settlements";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { FeatureFlagsProvider, useFeatureFlags } from "./contexts/FeatureFlagsContext";
+import { useAccount } from "./contexts/AccountContext";
+import { autoBackupPot, cleanupBackupTimers } from "./services/backup/autoBackup";
+import { attemptAutoRestore } from "./services/restore/autoRestore";
 import { LoginScreen } from "./components/screens/LoginScreen";
 import { ActivityHome } from "./components/screens/ActivityHome";
 import { PotsHome } from "./components/screens/PotsHome";
@@ -50,8 +54,12 @@ import { YouTab } from "./components/screens/YouTab";
 import { TxToast } from "./components/TxToast";
 import { RequestPayment } from "./components/screens/RequestPayment";
 import { CrustStorage } from "./components/screens/CrustStorage";
+import { CrustAuthSetup } from "./components/screens/CrustAuthSetup";
+import { IPFSAuthOnboarding } from "./components/IPFSAuthOnboarding";
 import { WalletConnectionSheet } from "./components/WalletConnectionSheet";
+import { ImportPot } from "./components/screens/ImportPot";
 import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
+import { setOnboardingCallback, resetOnboardingFlag } from "./services/storage/ipfsWithOnboarding";
 
 interface Member {
   id: string;
@@ -208,6 +216,8 @@ function AppContent() {
   const { pots: potService, expenses: expenseService, members: memberService } = useData();
   // Theme management
   const { theme, setTheme } = useTheme();
+  // Get wallet address for auto-backup/restore
+  const account = useAccount();
 
   const {
     user,
@@ -216,6 +226,16 @@ function AppContent() {
     logout,
   } = useAuth();
 
+  // Check for CID in URL to determine initial screen
+  const getInitialScreen = (): Screen => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const cidParam = urlParams.get('cid');
+    if (cidParam) {
+      return { type: 'import-pot' };
+    }
+    return { type: 'pots-home' };
+  };
+
   const {
     current: screen,
     stack,
@@ -223,7 +243,29 @@ function AppContent() {
     back,
     reset,
     replace,
-  } = useNav({ type: "pots-home" });
+  } = useNav(getInitialScreen());
+
+  // Also check for CID changes in URL (e.g., when navigating back/forward)
+  // Use useRef to track the last CID we've seen to prevent infinite loops
+  const lastCidRef = useRef<string | null>(null);
+  
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const cidParam = urlParams.get('cid');
+    
+    // Only navigate if CID actually changed
+    if (cidParam !== lastCidRef.current) {
+      lastCidRef.current = cidParam;
+      
+      if (cidParam && screen.type !== 'import-pot') {
+        // Navigate to import screen if CID is in URL
+        reset({ type: 'import-pot' });
+      } else if (!cidParam && screen.type === 'import-pot') {
+        // Navigate away from import screen if CID is removed from URL
+        reset({ type: 'pots-home' });
+      }
+    }
+  }, [screen.type, reset]);
 
   const [toast, setToast] = useState<{
     message: string;
@@ -250,6 +292,8 @@ function AppContent() {
     useState<PaymentMethod | null>(null);
   const [showAddMember, setShowAddMember] = useState(false);
   const [fabQuickAddPotId, setFabQuickAddPotId] = useState<string | null>(null);
+  const [showIPFSAuthOnboarding, setShowIPFSAuthOnboarding] = useState(false);
+  const [pendingIPFSAction, setPendingIPFSAction] = useState<(() => Promise<void>) | null>(null);
 
   const [currentPotId, setCurrentPotId] = useState<
     string | null
@@ -1063,6 +1107,72 @@ function AppContent() {
     }
   }, [pots, hasLoadedInitialData]);
 
+  // Auto-restore from IPFS when wallet is connected and localStorage is empty
+  useEffect(() => {
+    if (!hasLoadedInitialData) return;
+    if (account.status !== 'connected' || !account.address0) return;
+
+    (async () => {
+      try {
+        // Check if localStorage has pots
+        const localPotsJson = localStorage.getItem('chopdot_pots');
+        if (localPotsJson && localPotsJson.length > 0) {
+          // Has local data, skip restore
+          return;
+        }
+
+        // localStorage empty - try to restore from IPFS
+        console.log('[App] Attempting auto-restore from IPFS...');
+        const restoredPots = await attemptAutoRestore(account.address0);
+        
+        if (restoredPots.length > 0) {
+          setPots(restoredPots);
+          showToast(`Restored ${restoredPots.length} pot(s) from backup`, 'success');
+          console.log('[App] Auto-restore successful', { potCount: restoredPots.length });
+        }
+      } catch (error) {
+        console.error('[App] Auto-restore failed:', error);
+        // Silent fail - don't interrupt user
+      }
+    })();
+  }, [hasLoadedInitialData, account.status, account.address0]);
+
+  // Cleanup backup timers on unmount
+  useEffect(() => {
+    return () => {
+      cleanupBackupTimers();
+    };
+  }, []);
+
+  // Set up IPFS onboarding callback
+  useEffect(() => {
+    setOnboardingCallback((walletAddress: string, onContinue: () => Promise<void>) => {
+      setShowIPFSAuthOnboarding(true);
+      setPendingIPFSAction(() => onContinue);
+    });
+  }, []);
+
+  // Auto-backup pots to IPFS when they change (debounced)
+  useEffect(() => {
+    if (!hasLoadedInitialData) return;
+    if (account.status !== 'connected' || !account.address0) return;
+    if (pots.length === 0) return;
+    
+    // Skip auto-backup if we're on the import screen (user is importing, not editing)
+    if (screen?.type === 'import-pot') {
+      return;
+    }
+
+    // Auto-backup each pot that changed
+    pots.forEach((pot) => {
+      // Trigger auto-backup (debounced, FREE IPFS storage)
+      autoBackupPot(pot, account.address0 || undefined).catch((error) => {
+        console.error('[App] Auto-backup failed for pot:', pot.id, error);
+        // Silent fail - don't interrupt user
+      });
+    });
+  }, [pots, hasLoadedInitialData, account.status, account.address0, screen?.type]);
+
   useEffect(() => {
     if (!hasLoadedInitialData) return;
 
@@ -1434,6 +1544,7 @@ function AppContent() {
     date: string;
     split: { memberId: string; amount: number }[];
     hasReceipt: boolean;
+    receiptUrl?: string;
   }) => {
     if (!currentPotId) return;
 
@@ -1447,6 +1558,7 @@ function AppContent() {
       split: data.split,
       attestations: [],
       hasReceipt: data.hasReceipt,
+      receiptUrl: data.receiptUrl,
     };
 
     setPots(
@@ -1493,6 +1605,7 @@ function AppContent() {
           date: expense.date,
           split: expense.split,
           hasReceipt: expense.hasReceipt,
+          receiptUrl: expense.receiptUrl,
         };
 
         await expenseService.addExpense(currentPotId, createExpenseDTO);
@@ -1518,6 +1631,7 @@ function AppContent() {
     date: string;
     split: { memberId: string; amount: number }[];
     hasReceipt: boolean;
+    receiptUrl?: string;
   }) => {
     if (!currentPotId || !currentExpenseId) return;
 
@@ -1556,6 +1670,7 @@ function AppContent() {
                   date: data.date,
                   split: data.split,
                   hasReceipt: data.hasReceipt,
+                  receiptUrl: data.receiptUrl,
                 }
               : e,
           ),
@@ -1577,6 +1692,7 @@ function AppContent() {
           date: data.date,
           split: data.split,
           hasReceipt: data.hasReceipt,
+          receiptUrl: data.receiptUrl,
         };
 
         await expenseService.updateExpense(currentPotId, currentExpenseId, updateExpenseDTO);
@@ -3397,7 +3513,62 @@ function AppContent() {
         );
 
       case "crust-storage":
-        return <CrustStorage />;
+        return (
+          <CrustStorage
+            onAuthSetup={() => push({ type: "crust-auth-setup" })}
+          />
+        );
+
+      case "crust-auth-setup":
+        return (
+          <CrustAuthSetup onBack={back} />
+        );
+
+      case "import-pot": {
+        // Extract CID from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const cidParam = urlParams.get('cid');
+        
+        return (
+          <ImportPot
+            initialCid={cidParam || undefined}
+            onBack={() => {
+              // Remove CID from URL
+              const url = new URL(window.location.href);
+              url.searchParams.delete('cid');
+              window.history.replaceState({}, '', url.toString());
+              reset({ type: 'pots-home' });
+            }}
+            onImport={(importedPot) => {
+              // Add imported pot to pots list
+              const newPot: Pot = {
+                ...importedPot,
+                id: `${Date.now()}`,
+                members: importedPot.members.map((m, idx) => ({
+                  ...m,
+                  id: m.id || `member-${idx}`,
+                })),
+                expenses: importedPot.expenses.map((e, idx) => ({
+                  ...e,
+                  id: e.id || `expense-${idx}`,
+                })),
+              };
+              
+              setPots([...pots, newPot]);
+              setCurrentPotId(newPot.id);
+              
+              // Remove CID from URL
+              const url = new URL(window.location.href);
+              url.searchParams.delete('cid');
+              window.history.replaceState({}, '', url.toString());
+              
+              replace({ type: 'pot-home', potId: newPot.id });
+              showToast('Pot imported successfully!', 'success');
+            }}
+            onShowToast={showToast}
+          />
+        );
+      }
 
       case "settle-cash":
       case "settle-bank":
@@ -3736,6 +3907,31 @@ function AppContent() {
 
       {/* Transaction Toast */}
       <TxToast />
+
+      {/* IPFS Auth Onboarding */}
+      {showIPFSAuthOnboarding && account.address0 && (
+        <IPFSAuthOnboarding
+          walletAddress={account.address0}
+          onContinue={async () => {
+            setShowIPFSAuthOnboarding(false);
+            if (pendingIPFSAction) {
+              try {
+                await pendingIPFSAction();
+              } catch (error) {
+                console.error('[App] Pending IPFS action failed:', error);
+                showToast('Upload failed. Please try again.', 'error');
+              } finally {
+                setPendingIPFSAction(null);
+              }
+            }
+          }}
+          onCancel={() => {
+            setShowIPFSAuthOnboarding(false);
+            setPendingIPFSAction(null);
+            resetOnboardingFlag(); // Reset flag so user can try again later
+          }}
+        />
+      )}
 
     </div>
   );
