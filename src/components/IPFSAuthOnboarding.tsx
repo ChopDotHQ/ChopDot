@@ -5,7 +5,7 @@
  * Shows once per wallet address, then never again.
  */
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Wallet, Shield, CheckCircle, X } from 'lucide-react';
 import { PrimaryButton } from './PrimaryButton';
 import { SecondaryButton } from './SecondaryButton';
@@ -62,8 +62,6 @@ export function IPFSAuthOnboarding({
       onCancel?.();
     }, 200);
   };
-
-  const shortAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">

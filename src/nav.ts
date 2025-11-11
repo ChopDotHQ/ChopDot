@@ -38,7 +38,9 @@ export type Screen =
   | { type: "withdraw-funds" }
   | { type: "checkpoint-status" }
   | { type: "request-payment" }
-  | { type: "crust-storage" };
+  | { type: "crust-storage" }
+  | { type: "crust-auth-setup" }
+  | { type: "import-pot" };
 
 export function useNav(initialScreen: Screen = { type: "pots-home" }) {
   const [stack, setStack] = useState<Screen[]>([initialScreen]);

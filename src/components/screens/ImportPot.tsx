@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { TopBar } from '../TopBar';
-import { ArrowLeft, Download, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
+import { Download, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { PrimaryButton } from '../PrimaryButton';
 import { SecondaryButton } from '../SecondaryButton';
 import { importPotFromCID, extractCIDFromUrl } from '../../services/sharing/potShare';
@@ -101,15 +101,8 @@ export function ImportPot({
   return (
     <div className="flex flex-col h-full bg-background">
       <TopBar
-        left={
-          <button
-            onClick={onBack}
-            className="p-2 hover:bg-muted/50 rounded-lg transition-colors active:scale-95"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-        }
-        center={<h1 className="text-lg font-medium">Import Pot</h1>}
+        title="Import Pot"
+        onBack={onBack}
       />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">

@@ -111,14 +111,26 @@ async function fetchPotFromIPFS(cid: string): Promise<Pot | null> {
     
     // Validate pot structure
     if (potData && potData.potId && potData.name) {
-      // Convert snapshot format to Pot format
+      // Convert snapshot format to Pot format with all required fields
       const pot: Pot = {
         id: potData.potId,
         name: potData.name,
-        type: potData.type || 'expense',
-        baseCurrency: potData.baseCurrency || 'USD',
-        members: potData.members || [],
+        type: (potData.type === 'savings' ? 'savings' : 'expense') as 'expense' | 'savings',
+        baseCurrency: (potData.baseCurrency === 'DOT' ? 'DOT' : 'USD') as 'DOT' | 'USD',
+        members: (potData.members || []).map((m: any) => ({
+          id: m.id,
+          name: m.name,
+          address: m.address || null,
+          verified: m.verified || false,
+          role: m.role === 'Owner' ? 'Owner' : (m.role === 'Member' ? 'Member' : undefined),
+          status: m.status || 'active',
+        })),
         expenses: potData.expenses || [],
+        history: potData.history || [],
+        budgetEnabled: potData.budgetEnabled || false,
+        checkpointEnabled: potData.checkpointEnabled ?? true,
+        archived: potData.archived || false,
+        mode: potData.mode || 'casual',
         createdAt: potData.createdAt,
         updatedAt: potData.updatedAt,
       };

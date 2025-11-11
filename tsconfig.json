@@ -75,6 +75,7 @@
     "dist",
     "database",
     "scripts",
-    "docs"
+    "docs",
+    "backend"
   ]
 }

@@ -257,15 +257,15 @@ function AppContent() {
     if (cidParam !== lastCidRef.current) {
       lastCidRef.current = cidParam;
       
-      if (cidParam && screen.type !== 'import-pot') {
+      if (cidParam && screen?.type !== 'import-pot') {
         // Navigate to import screen if CID is in URL
         reset({ type: 'import-pot' });
-      } else if (!cidParam && screen.type === 'import-pot') {
+      } else if (!cidParam && screen?.type === 'import-pot') {
         // Navigate away from import screen if CID is removed from URL
         reset({ type: 'pots-home' });
       }
     }
-  }, [screen.type, reset]);
+  }, [screen?.type, reset]);
 
   const [toast, setToast] = useState<{
     message: string;
@@ -1123,6 +1123,10 @@ function AppContent() {
 
         // localStorage empty - try to restore from IPFS
         console.log('[App] Attempting auto-restore from IPFS...');
+        if (!account.address0) {
+          console.log('[App] No wallet address, skipping auto-restore');
+          return;
+        }
         const restoredPots = await attemptAutoRestore(account.address0);
         
         if (restoredPots.length > 0) {
@@ -1146,7 +1150,7 @@ function AppContent() {
 
   // Set up IPFS onboarding callback
   useEffect(() => {
-    setOnboardingCallback((walletAddress: string, onContinue: () => Promise<void>) => {
+    setOnboardingCallback((_walletAddress: string, onContinue: () => Promise<void>) => {
       setShowIPFSAuthOnboarding(true);
       setPendingIPFSAction(() => onContinue);
     });
@@ -3540,17 +3544,22 @@ function AppContent() {
               reset({ type: 'pots-home' });
             }}
             onImport={(importedPot) => {
-              // Add imported pot to pots list
+              // Add imported pot to pots list (pot already has all required fields from restorePotFromCID)
               const newPot: Pot = {
                 ...importedPot,
-                id: `${Date.now()}`,
+                id: `${Date.now()}-${importedPot.id}`, // Ensure unique ID
                 members: importedPot.members.map((m, idx) => ({
-                  ...m,
                   id: m.id || `member-${idx}`,
+                  name: m.name,
+                  address: m.address || null,
+                  verified: m.verified || false,
+                  role: (m.role === 'Owner' ? 'Owner' : (m.role === 'Member' ? 'Member' : undefined)) as 'Owner' | 'Member' | undefined,
+                  status: m.status || 'active',
                 })),
                 expenses: importedPot.expenses.map((e, idx) => ({
                   ...e,
                   id: e.id || `expense-${idx}`,
+                  currency: e.currency || importedPot.baseCurrency,
                 })),
               };
               
