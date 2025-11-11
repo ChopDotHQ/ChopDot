@@ -7,6 +7,10 @@ import SignClient from '@walletconnect/sign-client';
 import type { SessionTypes } from '@walletconnect/types';
 import { WalletConnectModal } from '@walletconnect/modal';
 
+// WalletConnect Project ID from environment variable
+// Fallback to default project ID if not set
+const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '15e72db89587fa8bd14473b8ff73a0bb';
+
 // Polkadot chain IDs for WalletConnect
 // Format: namespace:chainId (genesis hash in hex)
 // Nova Wallet uses the genesis hash format
@@ -27,7 +31,7 @@ export async function initWalletConnect(): Promise<SignClient> {
   }
 
   signClient = await SignClient.init({
-    projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '15e72db89587fa8bd14473b8ff73a0bb',
+    projectId: WALLETCONNECT_PROJECT_ID,
     metadata: {
       name: 'ChopDot',
       description: 'Polkadot Chain Test',
@@ -43,7 +47,7 @@ export async function initWalletConnect(): Promise<SignClient> {
   if (!walletConnectModal) {
     try {
       walletConnectModal = new WalletConnectModal({
-        projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '15e72db89587fa8bd14473b8ff73a0bb',
+        projectId: WALLETCONNECT_PROJECT_ID,
         chains: [POLKADOT_RELAY_CHAIN_ID, POLKADOT_ASSET_HUB_CHAIN_ID],
         // recommendedWalletIds not supported in current WalletConnect version
         // Keep explorer enabled - it will show desktop wallets
