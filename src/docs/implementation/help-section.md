@@ -24,7 +24,7 @@ Implemented a clean FAQ-style help system accessible from the You tab. This prov
 - **Position:** Between "Payment Methods" and "Notifications"
 - **Action:** Opens HelpSheet modal on tap
 
-## FAQ Content (10 Items)
+## FAQ Content (11 Items)
 
 1. **What is ChopDot?** - Core value proposition
 2. **What are pots?** - Explain expense vs savings pots
@@ -36,6 +36,7 @@ Implemented a clean FAQ-style help system accessible from the You tab. This prov
 8. **How do savings pots work?** - DeFi yield explanation
 9. **Can I use ChopDot without crypto?** - Reassure non-crypto users
 10. **How do I invite someone?** - Adding members
+11. **What fees does ChopDot charge?** - Fee structure explanation (network fees vs platform fees, display-only status)
 
 ## Design Decisions
 

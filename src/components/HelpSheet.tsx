@@ -61,6 +61,10 @@ const FAQ_ITEMS: FAQItem[] = [
     question: "How do I invite someone to a pot?",
     answer: "Open a pot, tap the members section, then tap 'Add Member'. You can invite by name/email, scan their QR code, or share your own QR code for them to scan.",
   },
+  {
+    question: "What fees does ChopDot charge?",
+    answer: "ChopDot is free to use. When settling expenses, you may see two types of fees. Network Fee (DOT transactions only): A small fee paid to the Polkadot network to process your transaction, typically 0.001–0.005 DOT (about $0.01–$0.04). This fee goes to the network, not to ChopDot. Platform Fee (display only): Currently shown for transparency but not charged. If enabled, it would be 0.20% of the settlement amount. You'll see 'not charged' next to it in the settlement screen. This may change in future versions, but we'll always be transparent about it. Cash and bank transfers have no fees at all — completely free. All fees are clearly shown before you confirm any payment, so there are no surprises.",
+  },
 ];
 
 export function HelpSheet({ onClose }: HelpSheetProps) {
