@@ -28,15 +28,13 @@ Welcome to the ChopDot documentation! This is your guide to understanding, setti
 ```
 docs/
 ├── README.md                    # This file
-├── CURRENT_STATE.md            # Project status
 ├── SETUP_GUIDE.md              # Local development setup
 ├── DATABASE_SCHEMA.md          # PostgreSQL schema
 ├── BACKEND_API.md              # API reference
 ├── AUTH_SYSTEM.md              # Authentication system
+├── QUICK_REFERENCE.md          # Developer quick reference
 ├── implementation/             # Feature-specific docs
 │   ├── help-section.md
-│   ├── checkpoint-system.md
-│   ├── batch-confirm-preview.md
 │   ├── context-sensitive-fab.md
 │   ├── csv-export.md
 │   ├── attestation-detail.md
@@ -46,6 +44,7 @@ docs/
 │   ├── pending-mutation-states.md
 │   └── web3auth-google-login.md
 └── archive/                    # Historical docs
+    ├── DOCUMENTATION_CLEANUP_SUMMARY.md
     └── MIGRATION_AND_DEBUG_HISTORY.md
 ```
 
@@ -55,8 +54,8 @@ docs/
 
 ### I'm a Developer
 **Start here:**
-1. [Current State](./CURRENT_STATE.md) - Understand what's built
-2. [Setup Guide](./SETUP_GUIDE.md) - Get the app running
+1. [Setup Guide](./SETUP_GUIDE.md) - Get the app running
+2. [Quick Reference](./QUICK_REFERENCE.md) - Fast lookup for developers
 3. [Implementation Docs](./implementation/) - Learn specific features
 
 **Reference:**
@@ -66,14 +65,14 @@ docs/
 
 ### I'm a Designer
 **Start here:**
-1. [Current State](./CURRENT_STATE.md) - See what's implemented
+1. `/guidelines/Guidelines.md` - Design principles
 2. `/guidelines/Typography.md` - Typography system
-3. `/guidelines/Guidelines.md` - Design principles
+3. `/guidelines/QUICK_REFERENCE.md` - Design quick reference
 
 ### I'm a Product Manager
 **Start here:**
-1. [Current State](./CURRENT_STATE.md) - Feature status
-2. `/README.md` (root) - Roadmap & priorities
+1. `/README.md` (root) - Project overview & roadmap
+2. `/spec.md` - Full specification
 3. `/CHANGELOG.md` - Version history
 
 ---
@@ -89,7 +88,7 @@ docs/
 → [Auth System](./AUTH_SYSTEM.md)
 
 **...know what's implemented vs. planned?**  
-→ [Current State](./CURRENT_STATE.md)
+→ `/spec.md` - Full specification and current state
 
 **...understand a specific feature?**  
 → [Implementation Docs](./implementation/)
@@ -106,7 +105,7 @@ docs/
 ### "I want to..."
 
 **...add a new feature**  
-1. Check [Current State](./CURRENT_STATE.md) for context
+1. Check `/spec.md` for context and current state
 2. Review related [Implementation Docs](./implementation/)
 3. Follow design system in `/guidelines/`
 
@@ -116,8 +115,8 @@ docs/
 3. Review relevant implementation docs
 
 **...understand the codebase**  
-1. Start with [Current State](./CURRENT_STATE.md)
-2. Read `/README.md` (root) for high-level overview
+1. Read `/README.md` (root) for high-level overview
+2. Check `/spec.md` for detailed specification
 3. Explore [Implementation Docs](./implementation/) for specific features
 
 ---
@@ -132,8 +131,6 @@ Each feature has detailed documentation in `/docs/implementation/`:
 - **[Request Payment](./implementation/request-payment.md)** - Payment request flow
 
 ### Core Features
-- **[Checkpoint System](./implementation/checkpoint-system.md)** - Pre-settlement verification
-- **[Batch Confirm](./implementation/batch-confirm-preview.md)** - Multi-expense approval
 - **[Attestation Detail](./implementation/attestation-detail.md)** - Expense confirmation UI
 - **[Context-Sensitive FAB](./implementation/context-sensitive-fab.md)** - Smart floating button
 
@@ -150,7 +147,7 @@ Each feature has detailed documentation in `/docs/implementation/`:
 ## 🛠️ Development Workflow
 
 ### Before You Start
-1. Read [Current State](./CURRENT_STATE.md)
+1. Read `/spec.md` for current state and architecture
 2. Check `/CHANGELOG.md` for recent changes
 3. Review relevant [Implementation Docs](./implementation/)
 
@@ -160,7 +157,7 @@ Each feature has detailed documentation in `/docs/implementation/`:
 - Check browser console for ChopDot logs
 
 ### After Implementing
-- Update [Current State](./CURRENT_STATE.md) if needed
+- Update `/spec.md` if architecture changes
 - Add implementation doc in `/docs/implementation/`
 - Update `/CHANGELOG.md`
 

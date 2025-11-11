@@ -100,11 +100,11 @@ ChopDot is a mobile-first expense splitting and group financial management app w
 - ❌ Real-time sync (mock SyncBanner exists)
 - ❌ Push notifications (mock NotificationCenter exists)
 
-#### Blockchain Integration (UI Only)
-- ❌ Real Polkadot transactions (mock tx hashes)
-- ❌ DOT settlements (UI complete, no real transfers)
+#### Blockchain Integration
+- ✅ Real Polkadot transactions (DOT transfers via `balances.transferKeepAlive`)
+- ✅ DOT settlements (fully functional with network fee estimation)
+- ✅ Wallet connection (Polkadot.js, SubWallet, Talisman, WalletConnect)
 - ❌ DeFi yield (Acala integration placeholder)
-- ✅ Wallet connection UI (connection works, no signing yet)
 
 #### Authentication (Partial)
 - ✅ AuthContext provider
@@ -191,6 +191,12 @@ src/
 - **Global Settlements:** Settle across all pots
 - **Settlement Methods:** Cash, Bank, PayPal, TWINT, DOT
 - **Settlement History:** Complete payment record
+- **Fee System:**
+  - Network fees (DOT): Automatically estimated and displayed for blockchain transactions
+  - Platform fees: Display-only (0.20% default, configurable via `VITE_SHOW_PLATFORM_FEE`)
+  - Balance validation: Ensures sufficient balance for amount + network fee
+  - CoinGecko integration: Real-time DOT price for fiat equivalent display
+  - See `FEE_SYSTEM_IMPLEMENTATION.md` and `SETTLEMENT_FEE_AUDIT.md` for details
 - **Balance Calculations:** Real-time balance updates
 
 ### Pot Management
