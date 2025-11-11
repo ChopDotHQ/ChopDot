@@ -45,10 +45,7 @@ export async function initWalletConnect(): Promise<SignClient> {
       walletConnectModal = new WalletConnectModal({
         projectId: '15e72db89587fa8bd14473b8ff73a0bb',
         chains: [POLKADOT_RELAY_CHAIN_ID, POLKADOT_ASSET_HUB_CHAIN_ID],
-        recommendedWalletIds: [
-          'subwallet',
-          'talisman',
-        ],
+        // recommendedWalletIds not supported in current WalletConnect version
         // Keep explorer enabled - it will show desktop wallets
         // Mobile wallets will use QR code (scan tab) which doesn't require explorer
         enableExplorer: true,

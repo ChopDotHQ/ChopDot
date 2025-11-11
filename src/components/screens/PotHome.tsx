@@ -905,6 +905,7 @@ export function PotHome({
         isOpen={showShareSheet}
         onClose={() => setShowShareSheet(false)}
         pot={pot ? {
+          ...pot,
           id: pot.id || potId || '',
           name: pot.name || potName,
           type: pot.type || potType,

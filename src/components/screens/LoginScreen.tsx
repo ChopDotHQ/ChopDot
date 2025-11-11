@@ -179,38 +179,43 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
           // Use WalletConnect - this will show a modal with available wallets
           // User can select SubWallet, Talisman, MetaMask, Rainbow, etc.
           // The AccountContext handles the WalletConnect connection and QR code display
-          const walletConnectUri = await account.connectWalletConnect();
+          await account.connectWalletConnect();
           
           // Wait for connection to complete (user selects wallet and connects)
           // Poll for connection status (max 60 seconds)
           let attempts = 0;
           const maxAttempts = 60;
+          let connectedAddress: string | undefined;
+          let connectedSignature: string | undefined;
           
           while (attempts < maxAttempts) {
             await new Promise(resolve => setTimeout(resolve, 1000));
             
             if (account.status === 'connected' && account.address0) {
-              address = account.address0;
+              connectedAddress = account.address0;
               
               // Sign message via WalletConnect
               const { createWalletConnectSigner } = await import('../../services/chain/walletconnect');
               const { stringToHex } = await import('@polkadot/util');
-              const signer = createWalletConnectSigner(address);
-              const message = generateSignInMessage(address);
+              const signer = createWalletConnectSigner(connectedAddress);
+              const message = generateSignInMessage(connectedAddress);
               const { signature: sig } = await signer.signRaw({
-                address,
+                address: connectedAddress,
                 data: stringToHex(message),
               });
-              signature = sig;
+              connectedSignature = sig;
               break;
             }
             
             attempts++;
           }
           
-          if (!address || !signature) {
+          if (!connectedAddress || !connectedSignature) {
             throw new Error('WalletConnect connection timed out. Please select your wallet and try again.');
           }
+          
+          address = connectedAddress;
+          signature = connectedSignature;
           break;
         }
 

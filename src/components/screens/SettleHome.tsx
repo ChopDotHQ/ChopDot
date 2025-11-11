@@ -89,7 +89,7 @@ export function SettleHome({
   const [twintPhone, setTwintPhone] = useState("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showBridgeSheet, setShowBridgeSheet] = useState(false);
-  const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
+  // const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
   
   // Fee estimation state
   const [feeEstimate, setFeeEstimate] = useState<number | null>(null);
@@ -376,10 +376,10 @@ export function SettleHome({
     return null;
   };
   const amountDot = getAmountDot();
-  const amountDotString = amountDot ? amountDot.toFixed(6) : null;
-  const canAffordDotPayment = amountDotString && walletConnected
-    ? account.canAfford(amountDotString)
-    : true;
+  // const amountDotString = amountDot ? amountDot.toFixed(6) : null;
+  // const canAffordDotPayment = amountDotString && walletConnected
+  //   ? account.canAfford(amountDotString)
+  //   : true;
   const showConnectWalletNotice = isDotFlowActive && account.status !== 'connected';
   
   const isValid = 

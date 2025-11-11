@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Share2, Copy, CheckCircle, ExternalLink, Loader2, AlertCircle, Wallet } from 'lucide-react';
+import { Share2, Copy, CheckCircle, Loader2, AlertCircle, Wallet } from 'lucide-react';
 import { BottomSheet } from '../BottomSheet';
 import { PrimaryButton } from '../PrimaryButton';
 import { SecondaryButton } from '../SecondaryButton';
