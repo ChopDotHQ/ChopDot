@@ -115,11 +115,39 @@ export function AccountProvider({ children }: AccountProviderProps) {
 
     try {
       console.log('[Account] Refreshing balance for:', state.address);
-      const balancePlanck = await chain.getFreeBalance(state.address);
+      
+      // Add timeout with retry logic
+      let balancePlanck = '0';
+      let attempts = 0;
+      const maxAttempts = 3;
+      
+      while (attempts < maxAttempts) {
+        try {
+          const balancePromise = chain.getFreeBalance(state.address);
+          const timeoutPromise = new Promise<string>((_, reject) => 
+            setTimeout(() => reject(new Error('Balance fetch timeout')), 10000) // 10 seconds
+          );
+          
+          balancePlanck = await Promise.race([balancePromise, timeoutPromise]);
+          break; // Success, exit retry loop
+        } catch (error) {
+          attempts++;
+          console.warn(`[Account] Balance fetch attempt ${attempts} failed:`, error);
+          
+          if (attempts >= maxAttempts) {
+            // All attempts failed - throw error
+            throw error;
+          }
+          
+          // Wait before retry (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+        }
+      }
+      
       const balanceHuman = fmtPlanckToDot(balancePlanck);
       const network = detectNetwork();
 
-      console.log('[Account] Balance refreshed:', { balanceHuman, network });
+      console.log('[Account] Balance refreshed:', { balanceHuman, network, attempts });
 
       setState(prev => ({
         ...prev,
@@ -128,9 +156,10 @@ export function AccountProvider({ children }: AccountProviderProps) {
         network,
       }));
     } catch (error: any) {
-      console.error('[Account] Balance refresh error:', error);
-      // Re-throw error so caller can handle it
-      throw error;
+      console.error('[Account] Balance refresh error after retries:', error);
+      // Don't throw - just log the error and keep current balance
+      // This prevents UI from breaking if RPC is temporarily unavailable
+      console.warn('[Account] Keeping previous balance due to fetch failure');
     }
   }, [state.address, state.status, detectNetwork]);
 
@@ -179,23 +208,38 @@ export function AccountProvider({ children }: AccountProviderProps) {
       };
       const walletName = walletNameMap[account.meta?.source?.toLowerCase() || ''] || account.meta?.source || extensions[0]?.name || 'Extension';
 
-      // Get initial balance (with timeout to prevent hanging)
+      // Get initial balance (with timeout and retry to prevent hanging)
       chain.setChain('assethub'); // Default to Asset Hub
       let balancePlanck = '0';
       let balanceHuman = '0';
       
+      // Try to fetch balance with retries (non-blocking)
       try {
-        // Add timeout to balance fetch (5 seconds)
-        const balancePromise = chain.getFreeBalance(address);
-        const timeoutPromise = new Promise<string>((_, reject) => 
-          setTimeout(() => reject(new Error('Balance fetch timeout')), 5000)
-        );
+        let attempts = 0;
+        const maxAttempts = 2; // Quick retry for initial connection
         
-        balancePlanck = await Promise.race([balancePromise, timeoutPromise]);
-        balanceHuman = fmtPlanckToDot(balancePlanck);
+        while (attempts < maxAttempts) {
+          try {
+            const balancePromise = chain.getFreeBalance(address);
+            const timeoutPromise = new Promise<string>((_, reject) => 
+              setTimeout(() => reject(new Error('Balance fetch timeout')), 8000) // 8 seconds
+            );
+            
+            balancePlanck = await Promise.race([balancePromise, timeoutPromise]);
+            balanceHuman = fmtPlanckToDot(balancePlanck);
+            break; // Success
+          } catch (error) {
+            attempts++;
+            if (attempts >= maxAttempts) {
+              throw error; // Re-throw if all attempts failed
+            }
+            // Quick retry
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+        }
       } catch (error) {
-        console.warn('[Account] Balance fetch failed or timed out, using zero balance:', error);
-        // Continue with zero balance - user can refresh later
+        console.warn('[Account] Initial balance fetch failed, will retry via polling:', error);
+        // Continue with zero balance - polling will retry
         balancePlanck = '0';
         balanceHuman = '0';
       }

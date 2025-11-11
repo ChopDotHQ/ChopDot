@@ -127,6 +127,9 @@ export function WalletBanner() {
                 clearTimeout(timeout);
                 setIsRefreshing(false);
                 setShowSuccess(false);
+                
+                // Show error message to user
+                console.warn('[WalletBanner] Balance refresh failed. This might be due to RPC being slow or unavailable. The balance will update automatically when the RPC responds.');
               }
             }}
             disabled={isRefreshing}
