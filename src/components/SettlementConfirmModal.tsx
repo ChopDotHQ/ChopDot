@@ -3,6 +3,7 @@ import { BottomSheet } from './BottomSheet';
 import { Copy, Loader2 } from 'lucide-react';
 import { polkadotChainService } from '../services/chain/polkadot';
 import Identicon from '@polkadot/react-identicon';
+import { formatDOT } from '../utils/platformFee';
 
 interface SettlementConfirmModalProps {
   isOpen: boolean;
@@ -114,7 +115,7 @@ export function SettlementConfirmModal({
           {!feeLoading && estimatedFee && !feeError && (
             <div className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground">Network fee (est.):</span>
-              <span className="text-xs tabular-nums text-muted-foreground">~{estimatedFee} DOT</span>
+              <span className="text-xs tabular-nums text-muted-foreground">{formatDOT(parseFloat(estimatedFee))}</span>
             </div>
           )}
           
