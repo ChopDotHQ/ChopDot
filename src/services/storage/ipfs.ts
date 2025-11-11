@@ -43,7 +43,7 @@ const CRUST_IPFS_GATEWAY = IPFS_GATEWAYS[0]; // Primary gateway
  */
 export async function uploadToIPFS(
   file: File,
-  useCrustGateway: boolean = true,
+  _useCrustGateway: boolean = true,
   walletAddress?: string
 ): Promise<string> {
   // Auto-detect wallet address if not provided
@@ -157,7 +157,7 @@ export async function uploadToIPFS(
 export async function uploadBufferToIPFS(
   buffer: ArrayBuffer | Uint8Array,
   filename?: string,
-  useCrustGateway: boolean = true,
+  _useCrustGateway: boolean = true,
   walletAddress?: string
 ): Promise<string> {
   // Auto-detect wallet address if not provided
@@ -169,7 +169,8 @@ export async function uploadBufferToIPFS(
       console.log('[IPFS] Attempting upload via backend proxy...');
       
       const formData = new FormData();
-      formData.append('file', new Blob([buffer]), filename || 'file');
+      const blobBuffer: Uint8Array = buffer instanceof ArrayBuffer ? new Uint8Array(buffer) : (buffer as Uint8Array);
+      formData.append('file', new Blob([blobBuffer as BlobPart]), filename || 'file');
       
       // Add wallet authentication if available (automatic token generation)
       if (address) {
@@ -230,7 +231,8 @@ export async function uploadBufferToIPFS(
         url: endpoint.url,
       });
 
-      const file = new File([buffer], filename || 'file', { type: 'application/octet-stream' });
+      const blobBuffer: Uint8Array = buffer instanceof ArrayBuffer ? new Uint8Array(buffer) : (buffer as Uint8Array);
+      const file = new File([blobBuffer as BlobPart], filename || 'file', { type: 'application/octet-stream' });
       const result = await ipfs.add(file, {
         pin: false,
       });
@@ -261,7 +263,7 @@ export async function uploadBufferToIPFS(
  * @param useCrustGateway - Whether to use Crust gateway (default: true)
  * @returns Full URL to access the file
  */
-export function getIPFSGatewayUrl(cid: string, useCrustGateway: boolean = true): string {
+export function getIPFSGatewayUrl(cid: string, _useCrustGateway: boolean = true): string {
   // Always use primary gateway (fallback logic handled in fetch functions)
   return `${CRUST_IPFS_GATEWAY}/ipfs/${cid}`;
 }

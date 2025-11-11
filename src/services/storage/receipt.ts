@@ -6,7 +6,6 @@
 
 import { uploadToIPFS } from './ipfsWithOnboarding';
 import { getIPFSGatewayUrl } from './ipfs';
-import { getWalletAddress } from './getWalletAddress';
 
 export interface ReceiptUploadResult {
   cid: string;
