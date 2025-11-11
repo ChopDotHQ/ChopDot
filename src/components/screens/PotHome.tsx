@@ -363,7 +363,7 @@ export function PotHome({
       return;
     }
     if (isCheckpointing) return;
-    
+
     // Checkpoint feature removed
     onShowToast?.('Checkpoint feature has been removed', 'info');
     return;
@@ -651,14 +651,14 @@ export function PotHome({
                     Copy
                   </button>
                   {checkpointInput.lastBackupCid && (
-                    <a
+                  <a
                       href={buildIpfsUrl(checkpointInput.lastBackupCid || '')}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-micro text-accent underline hover:opacity-80 transition-opacity"
-                    >
-                      Open on IPFS
-                    </a>
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-micro text-accent underline hover:opacity-80 transition-opacity"
+                  >
+                    Open on IPFS
+                  </a>
                   )}
                 </div>
               </div>

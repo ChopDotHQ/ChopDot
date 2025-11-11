@@ -11,6 +11,7 @@ import type { Pot } from '../types';
 import { migrateAllPotsOnLoad, needsMigration } from '../../../utils/migratePot';
 import { QuotaExceededError, ValidationError } from '../errors';
 import { PotSchema } from '../../../schema/pot';
+import { ensureDefaultPots } from '../seeds/defaultPots';
 
 const STORAGE_KEYS = {
   pots: 'chopdot_pots',
@@ -70,7 +71,28 @@ export class LocalStorageSource {
           }
           
           this.migrated = true;
-          return migrateAllPotsOnLoad(parsed); // Always migrate to ensure schema compliance
+          let migrated = migrateAllPotsOnLoad(parsed); // Always migrate to ensure schema compliance
+          
+          // Ensure all default pots exist (adds missing ones without overwriting)
+          const beforeCount = migrated.length;
+          migrated = ensureDefaultPots(migrated);
+          const addedCount = migrated.length - beforeCount;
+          
+          // Save updated pots back to localStorage if any were added
+          if (addedCount > 0) {
+            try {
+              const updatedJson = JSON.stringify(migrated);
+              if (updatedJson.length < MAX_SIZES.pots) {
+                localStorage.setItem(STORAGE_KEYS.pots, updatedJson);
+                localStorage.setItem(STORAGE_KEYS.potsBackup, updatedJson);
+                console.log(`[LocalStorageSource] Added ${addedCount} default pot(s)`);
+              }
+            } catch (saveErr) {
+              console.warn('[LocalStorageSource] Failed to save updated pots:', saveErr);
+            }
+          }
+          
+          return migrated;
         }
       }
 
@@ -101,9 +123,23 @@ export class LocalStorageSource {
         }
       }
 
-      // No data found
+      // No data found - return default pots
       this.migrated = true;
-      return [];
+      const defaultPots = ensureDefaultPots([]);
+      
+      // Save default pots to localStorage for future loads
+      try {
+        const defaultJson = JSON.stringify(defaultPots);
+        if (defaultJson.length < MAX_SIZES.pots) {
+          localStorage.setItem(STORAGE_KEYS.pots, defaultJson);
+          localStorage.setItem(STORAGE_KEYS.potsBackup, defaultJson);
+          console.log('[LocalStorageSource] Seeded default pots');
+        }
+      } catch (saveErr) {
+        console.warn('[LocalStorageSource] Failed to save default pots:', saveErr);
+      }
+      
+      return defaultPots;
     } catch (e) {
       console.error('[LocalStorageSource] Failed to load pots:', e);
       
