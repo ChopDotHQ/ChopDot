@@ -29,7 +29,7 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   const [showWalletPicker, setShowWalletPicker] = useState(false);
   const [showWalletConnectQR, setShowWalletConnectQR] = useState(false);
   const [walletConnectQRCode, setWalletConnectQRCode] = useState<string | null>(null);
-  const [walletConnectURI, setWalletConnectURI] = useState<string | null>(null);
+  const [_walletConnectURI, setWalletConnectURI] = useState<string | null>(null);
   const [isWaitingForWalletConnect, setIsWaitingForWalletConnect] = useState(false);
   const walletConnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
