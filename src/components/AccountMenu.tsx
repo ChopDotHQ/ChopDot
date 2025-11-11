@@ -204,8 +204,8 @@ export function AccountMenu() {
       setNovaQRCode(null);
       setNovaURI(null);
       // Show error to user
-      const errorMsg = error?.message || 'Failed to setup Nova Wallet connection';
-      alert(`Failed to setup Nova Wallet connection: ${errorMsg}`);
+      const errorMsg = error?.message || 'Failed to setup WalletConnect connection';
+      alert(`Failed to setup WalletConnect connection: ${errorMsg}`);
     }
   };
 
@@ -412,7 +412,7 @@ export function AccountMenu() {
                 disabled={connecting}
               >
                 <QrCode className="w-4 h-4" />
-                Nova Wallet (QR)
+                WalletConnect
               </button>
             </div>
           </div>
@@ -481,10 +481,10 @@ export function AccountMenu() {
             onClick={(e) => e.stopPropagation()}
             style={{ borderColor: 'var(--border)' }}
           >
-            <h3 className="text-lg font-semibold mb-2">Connect Nova Wallet</h3>
+            <h3 className="text-lg font-semibold mb-2">Connect via WalletConnect</h3>
             <p className="text-sm opacity-70 mb-4">
               {account.status === 'connecting' 
-                ? 'Scan this QR code with your Nova Wallet app'
+                ? 'Scan this QR code with Nova Wallet, SubWallet mobile, or Talisman mobile'
                 : account.status === 'connected'
                 ? 'Connected! Closing...'
                 : account.error
