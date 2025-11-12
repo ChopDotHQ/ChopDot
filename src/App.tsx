@@ -17,7 +17,7 @@ import {
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { FeatureFlagsProvider, useFeatureFlags } from "./contexts/FeatureFlagsContext";
 import { useAccount } from "./contexts/AccountContext";
-import { autoBackupPot, cleanupBackupTimers } from "./services/backup/autoBackup";
+import { cleanupBackupTimers } from "./services/backup/autoBackup";
 import { attemptAutoRestore } from "./services/restore/autoRestore";
 import { LoginScreen } from "./components/screens/LoginScreen";
 import { ActivityHome } from "./components/screens/ActivityHome";

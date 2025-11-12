@@ -70,7 +70,7 @@ const createApi = async (config: ChainConfig) => {
           console.log(`[Chain Service] ⚠️ WebSocket disconnected from ${endpoint}`);
         });
         
-        provider.on('error', (err) => {
+        provider.on('error', (err: unknown) => {
           console.error(`[Chain Service] ❌ WebSocket error for ${endpoint}:`, err);
         });
         
@@ -137,7 +137,7 @@ const createApi = async (config: ChainConfig) => {
         
         console.info('[Chain Service] ✅ Connected to Asset Hub RPC:', endpoint);
 
-        provider.on('error', (err) => {
+        provider.on('error', (err: unknown) => {
           console.error('[Chain Service] Provider error', endpoint, err);
           // Reset API promise on error to force reconnection
           apiPromise = null;
