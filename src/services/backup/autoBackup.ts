@@ -14,6 +14,16 @@ import { saveUserPotIndex, cacheUserIndexCid } from '../storage/userIndex';
 // Debounce timer (2 seconds)
 let backupTimers = new Map<string, NodeJS.Timeout>();
 
+// Backup queue to prevent simultaneous uploads (rate limiting)
+type BackupTask = {
+  pot: Pot;
+  walletAddress?: string;
+};
+
+let backupQueue: BackupTask[] = [];
+let isProcessingQueue = false;
+const QUEUE_DELAY_MS = 3000; // 3 seconds between backups to avoid rate limits
+
 /**
  * Auto-backup a pot to IPFS
  * Debounced: waits 2 seconds after last change before backing up
@@ -40,28 +50,58 @@ export async function autoBackupPot(
 
   // Set new timer (debounce)
   const timer = setTimeout(async () => {
+    // Add to queue instead of processing immediately
+    // Remove any existing entry for this pot
+    backupQueue = backupQueue.filter(task => task.pot.id !== pot.id);
+    backupQueue.push({ pot, walletAddress });
+    
+    // Start processing queue if not already processing
+    processBackupQueue();
+    
+    // Clean up timer
+    backupTimers.delete(pot.id);
+  }, 2000); // 2 second debounce
+
+  backupTimers.set(pot.id, timer);
+}
+
+/**
+ * Process backup queue sequentially to avoid rate limiting
+ */
+async function processBackupQueue(): Promise<void> {
+  if (isProcessingQueue || backupQueue.length === 0) {
+    return;
+  }
+
+  isProcessingQueue = true;
+
+  while (backupQueue.length > 0) {
+    const task = backupQueue.shift();
+    if (!task) break;
+
     try {
       console.log('[AutoBackup] Backing up pot to IPFS', {
-        potId: pot.id,
-        potName: pot.name,
+        potId: task.pot.id,
+        potName: task.pot.name,
+        queueLength: backupQueue.length,
       });
 
       // Backup pot snapshot to IPFS (FREE)
       const { cid } = await savePotSnapshotCrust(
         JSON.stringify({
-          potId: pot.id,
-          name: pot.name,
-          type: pot.type,
-          baseCurrency: pot.baseCurrency,
-          members: pot.members,
-          expenses: pot.expenses,
-          createdAt: pot.createdAt || new Date().toISOString(),
+          potId: task.pot.id,
+          name: task.pot.name,
+          type: task.pot.type,
+          baseCurrency: task.pot.baseCurrency,
+          members: task.pot.members,
+          expenses: task.pot.expenses,
+          createdAt: task.pot.createdAt || new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         }, null, 2)
       );
 
       console.log('[AutoBackup] Pot backed up successfully', {
-        potId: pot.id,
+        potId: task.pot.id,
         cid,
       });
 
@@ -72,7 +112,7 @@ export async function autoBackupPot(
         if (potsJson) {
           const pots: Pot[] = JSON.parse(potsJson);
           const updatedPots = pots.map((p) => 
-            p.id === pot.id 
+            p.id === task.pot.id 
               ? { ...p, lastBackupCid: cid, lastBackupAt: new Date().toISOString() }
               : p
           );
@@ -82,21 +122,26 @@ export async function autoBackupPot(
         console.warn('[AutoBackup] Failed to store CID in pot metadata:', error);
       }
 
-      // Update user index if wallet address provided
-      if (walletAddress) {
-        await updateUserPotIndex(walletAddress);
+      // Update user index if wallet address provided (only after last pot)
+      if (task.walletAddress && backupQueue.length === 0) {
+        await updateUserPotIndex(task.walletAddress);
       }
 
-      // Clean up timer
-      backupTimers.delete(pot.id);
+      // Wait before processing next item to avoid rate limiting
+      if (backupQueue.length > 0) {
+        await new Promise(resolve => setTimeout(resolve, QUEUE_DELAY_MS));
+      }
     } catch (error) {
       console.error('[AutoBackup] Failed to backup pot:', error);
-      // Silent fail - don't interrupt user
-      backupTimers.delete(pot.id);
+      // Continue processing queue even if one fails
+      // Wait before next attempt
+      if (backupQueue.length > 0) {
+        await new Promise(resolve => setTimeout(resolve, QUEUE_DELAY_MS));
+      }
     }
-  }, 2000); // 2 second debounce
+  }
 
-  backupTimers.set(pot.id, timer);
+  isProcessingQueue = false;
 }
 
 /**
@@ -194,12 +239,14 @@ export async function forceBackupPot(
 }
 
 /**
- * Clean up all backup timers
+ * Clean up all backup timers and queue
  * Call this when app unmounts or user logs out
  */
 export function cleanupBackupTimers(): void {
   backupTimers.forEach((timer) => clearTimeout(timer));
   backupTimers.clear();
-  console.log('[AutoBackup] Cleaned up backup timers');
+  backupQueue = [];
+  isProcessingQueue = false;
+  console.log('[AutoBackup] Cleaned up backup timers and queue');
 }
 

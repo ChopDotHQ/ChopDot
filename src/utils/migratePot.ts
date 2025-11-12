@@ -7,6 +7,7 @@
 
 import { PotSchema, type Pot } from '../schema/pot';
 import { z } from 'zod';
+import { isValidSs58Any } from '../services/chain/address';
 
 /**
  * Migrate a single pot from old format to current format
@@ -68,13 +69,30 @@ function coerceOldPotShape(raw: unknown): unknown {
     pot.history = [];
   }
 
-  // Ensure members have address field (null if missing)
+  // Ensure members have address field (null if missing or invalid)
   if (Array.isArray(pot.members)) {
     pot.members = pot.members.map((m: unknown) => {
       if (typeof m === 'object' && m !== null) {
         const member = m as Record<string, unknown>;
+        // If address is missing, set to null
         if (!('address' in member)) {
           member.address = null;
+        } else {
+          // If address exists but is invalid (empty string or not valid SS58), set to null
+          const address = member.address;
+          if (address === null || address === undefined) {
+            member.address = null;
+          } else if (typeof address === 'string') {
+            const trimmed = address.trim();
+            if (trimmed === '' || !isValidSs58Any(trimmed)) {
+              member.address = null;
+            } else {
+              member.address = trimmed;
+            }
+          } else {
+            // Non-string address value - set to null
+            member.address = null;
+          }
         }
         return member;
       }

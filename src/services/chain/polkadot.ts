@@ -27,6 +27,7 @@ const DEFAULT_CHAIN: ChainKey = getActiveChain();
 let apiPromise: Promise<any> | null = null;
 let currentChainKey: ChainKey = DEFAULT_CHAIN;
 let currentRpcEndpoint: string | null = null;
+let isCreatingApi = false; // Lock to prevent concurrent API creation
 
 const getConfig = (): ChainConfig => {
   return getActiveChainConfig(); // Always respects VITE_CHAIN_NETWORK
@@ -41,14 +42,91 @@ const createApi = async (config: ChainConfig) => {
   for (const endpoint of config.rpc) {
     attemptIndex++;
     const startTime = performance.now();
+    // Declare provider and api outside try block so they're accessible in catch
+    let provider: any = null;
+    let api: any = null;
+    
     try {
-      const provider = new WsProvider(endpoint);
-      const api = await ApiPromise.create({ provider });
-      const duration = performance.now() - startTime;
-      currentRpcEndpoint = endpoint; // Track which endpoint succeeded
+      console.log(`[Chain Service] Attempting to connect to RPC ${attemptIndex}/${config.rpc.length}: ${endpoint}`);
       
-      // RPC telemetry: log successful connection
-      if (import.meta.env.DEV) {
+      try {
+        // Remove timeout parameter - let WsProvider use its default timeout
+        // This allows more time for WebSocket connections to establish
+        provider = new WsProvider(endpoint);
+        
+        // Log provider state immediately after creation
+        console.log(`[Chain Service] Provider created for ${endpoint}, checking connection state...`);
+        
+        // Add connection event listeners for diagnostics BEFORE creating API
+        provider.on('connecting', () => {
+          console.log(`[Chain Service] 🔄 WebSocket connecting to ${endpoint}...`);
+        });
+        
+        provider.on('connected', () => {
+          console.log(`[Chain Service] ✅ WebSocket connected to ${endpoint}`);
+        });
+        
+        provider.on('disconnected', () => {
+          console.log(`[Chain Service] ⚠️ WebSocket disconnected from ${endpoint}`);
+        });
+        
+        provider.on('error', (err) => {
+          console.error(`[Chain Service] ❌ WebSocket error for ${endpoint}:`, err);
+        });
+        
+        // Create API - ApiPromise.create() should resolve quickly
+        // In @polkadot/api v14+, it resolves immediately but connection happens via api.isReady
+        console.log(`[Chain Service] Creating ApiPromise for ${endpoint}...`);
+        console.log(`[Chain Service] Provider state before create:`, {
+          isConnected: (provider as any).isConnected,
+          hasSubscriptions: (provider as any).hasSubscriptions,
+        });
+        
+        // Create API - ApiPromise.create() should resolve immediately
+        // In @polkadot/api v14.3.1, it resolves quickly but connection happens via api.isReady
+        console.log(`[Chain Service] Creating ApiPromise for ${endpoint}...`);
+        const createStartTime = performance.now();
+        
+        // Check WebSocket support first
+        if (typeof WebSocket === 'undefined') {
+          throw new Error('WebSocket not supported in this browser');
+        }
+        
+        // ApiPromise.create() should resolve immediately - wrap with timeout to detect hangs
+        // If it takes > 2 seconds, something is wrong
+        const createPromise = ApiPromise.create({ provider });
+        const createTimeout = new Promise<any>((_, reject) =>
+          setTimeout(() => reject(new Error(`ApiPromise.create() hung for ${endpoint} - WebSocket may be blocked`)), 2000)
+        );
+        
+        api = await Promise.race([createPromise, createTimeout]);
+        const createDuration = performance.now() - createStartTime;
+        
+        if (createDuration > 100) {
+          console.warn(`[Chain Service] ⚠️ ApiPromise.create() took ${createDuration.toFixed(2)}ms (unusually slow)`);
+        } else {
+          console.log(`[Chain Service] ✅ ApiPromise created for ${endpoint} (took ${createDuration.toFixed(2)}ms)`);
+        }
+        
+        // Check if API object was created correctly
+        if (!api || typeof api.isReady === 'undefined') {
+          throw new Error(`ApiPromise.create() returned invalid API object for ${endpoint}`);
+        }
+        
+        // Wait for API to be ready (ensures WebSocket connection is fully established)
+        // This is where the actual connection happens
+        console.log(`[Chain Service] Waiting for API to be ready for ${endpoint}...`);
+        const readyTimeoutPromise = new Promise<void>((_, reject) =>
+          setTimeout(() => reject(new Error(`API ready timeout for ${endpoint} (connection not established)`)), 30000) // 30 seconds for connection
+        );
+        
+        await Promise.race([api.isReady, readyTimeoutPromise]);
+        console.log(`[Chain Service] ✅ API is ready for ${endpoint}`);
+        
+        const duration = performance.now() - startTime;
+        currentRpcEndpoint = endpoint; // Track which endpoint succeeded
+        
+        // RPC telemetry: log successful connection
         console.log('[RPC Telemetry]', {
           endpoint,
           attempt: attemptIndex,
@@ -56,51 +134,124 @@ const createApi = async (config: ChainConfig) => {
           durationMs: duration.toFixed(2),
           isFallback: attemptIndex > 1,
         });
+        
+        console.info('[Chain Service] ✅ Connected to Asset Hub RPC:', endpoint);
+
+        provider.on('error', (err) => {
+          console.error('[Chain Service] Provider error', endpoint, err);
+          // Reset API promise on error to force reconnection
+          apiPromise = null;
+          currentRpcEndpoint = null;
+        });
+
+        provider.on('disconnected', () => {
+          console.warn('[Chain Service] Provider disconnected', endpoint);
+          apiPromise = null;
+          currentRpcEndpoint = null; // Clear on disconnect
+        });
+
+        return api;
+      } catch (innerError) {
+        // Handle errors from ApiPromise.create() or api.isReady
+        console.error(`[Chain Service] ❌ Inner error for ${endpoint}:`, innerError);
+        // Clean up API if it was created
+        if (api) {
+          try {
+            await api.disconnect();
+          } catch (disconnectError) {
+            // Ignore disconnect errors
+          }
+        }
+        throw innerError;
       }
-      
-      console.info('[Chain Service] Connected to Asset Hub RPC:', endpoint);
-
-      provider.on('error', (err) => {
-        console.error('[Chain Service] Provider error', endpoint, err);
-      });
-
-      provider.on('disconnected', () => {
-        console.warn('[Chain Service] Provider disconnected', endpoint);
-        apiPromise = null;
-        currentRpcEndpoint = null; // Clear on disconnect
-      });
-
-      return api;
     } catch (error) {
       const duration = performance.now() - startTime;
       
       // RPC telemetry: log fallback event
-      if (import.meta.env.DEV) {
-        console.warn('[RPC Telemetry]', {
-          endpoint,
-          attempt: attemptIndex,
-          success: false,
-          durationMs: duration.toFixed(2),
-          error: error instanceof Error ? error.message : String(error),
-          willFallback: attemptIndex < config.rpc.length,
-        });
+      console.warn('[RPC Telemetry]', {
+        endpoint,
+        attempt: attemptIndex,
+        success: false,
+        durationMs: duration.toFixed(2),
+        error: error instanceof Error ? error.message : String(error),
+        willFallback: attemptIndex < config.rpc.length,
+      });
+      
+      console.error(`[Chain Service] ❌ Failed to connect to ${endpoint}:`, error);
+      lastError = error;
+      
+      // Clean up failed provider and API to prevent connection leaks
+      try {
+        if (api) {
+          await api.disconnect();
+        }
+      } catch (apiCleanupError) {
+        // Ignore API cleanup errors
       }
       
-      console.error('[Chain Service] Failed to connect to', endpoint, error);
-      lastError = error;
+      try {
+        if (provider && typeof provider.disconnect === 'function') {
+          provider.disconnect();
+        }
+      } catch (providerCleanupError) {
+        // Ignore provider cleanup errors
+        console.warn(`[Chain Service] Failed to cleanup provider for ${endpoint}:`, providerCleanupError);
+      }
     }
   }
 
-  throw new Error(
-    `Failed to connect to any Asset Hub RPC endpoint${lastError instanceof Error ? `: ${lastError.message}` : ''}`
-  );
+  // Provide helpful error message for WebSocket blocking
+  const isWebSocketBlocked = lastError instanceof Error && 
+    lastError.message.includes('ApiPromise.create() hung');
+  
+  let errorMsg: string;
+  if (isWebSocketBlocked) {
+    errorMsg = `WebSocket connections are being blocked. This prevents connecting to Polkadot RPC endpoints. ` +
+      `Possible causes: browser extensions (ad blockers, privacy tools), firewall, antivirus, or network restrictions. ` +
+      `Try: disabling extensions, using incognito mode, or checking firewall settings.`;
+    console.error('[Chain Service] ❌ WebSocket Blocking Detected');
+    console.error('[Chain Service] Troubleshooting steps:');
+    console.error('  1. Disable browser extensions (especially ad blockers)');
+    console.error('  2. Try incognito/private browsing mode');
+    console.error('  3. Check firewall/antivirus settings');
+    console.error('  4. Try a different network');
+  } else {
+    errorMsg = `Failed to connect to any Asset Hub RPC endpoint${lastError instanceof Error ? `: ${lastError.message}` : ''}`;
+  }
+  
+  console.error('[Chain Service]', errorMsg);
+  throw new Error(errorMsg);
 };
 
-const getApi = async () => {
-  if (!apiPromise) {
-    apiPromise = createApi(getConfig());
+const getApi = async (timeoutMs: number = 120000): Promise<any> => {
+  // Prevent concurrent API creation - wait if one is already being created
+  if (isCreatingApi && apiPromise) {
+    console.log('[Chain Service] API creation already in progress, waiting...');
+    return apiPromise;
   }
-  return apiPromise;
+  
+  if (!apiPromise) {
+    isCreatingApi = true;
+    apiPromise = createApi(getConfig())
+      .then((api) => {
+        isCreatingApi = false;
+        return api;
+      })
+      .catch((error) => {
+        isCreatingApi = false;
+        apiPromise = null; // Clear on error so we can retry
+        throw error;
+      });
+  }
+  
+  // Add timeout to API connection promise
+  // Use 120 seconds default to allow all 4 endpoints to be tried (4 × 30s = 120s max)
+  return Promise.race([
+    apiPromise,
+    new Promise<any>((_, reject) => 
+      setTimeout(() => reject(new Error(`API connection timeout after ${timeoutMs}ms`)), timeoutMs)
+    )
+  ]);
 };
 
 const toPlanckString = (amountDot: number, decimals: number): string => {
@@ -142,16 +293,33 @@ export const polkadotChainService = (() => {
   const isValidSs58 = (address: string): boolean => isValidSs58Any(address);
 
   const getFreeBalance = async (address: string): Promise<string> => {
-    const api = await getApi();
-    const normalized = normalizeToPolkadot(address);
-    const accountData = await api.query.system.account(normalized);
-    return accountData.data.free.toString();
+    try {
+      console.log('[Chain] Getting API connection...');
+      // Use 120 second timeout to allow all RPC endpoints to be tried (4 × 30s = 120s max)
+      const api = await getApi(120000);
+      
+      // Wait for API to be ready before querying (critical!)
+      console.log('[Chain] Waiting for API to be ready...');
+      await api.isReady;
+      console.log('[Chain] API is ready, querying balance...');
+      
+      const normalized = normalizeToPolkadot(address);
+      const accountData = await api.query.system.account(normalized);
+      const balance = accountData.data.free.toString();
+      
+      console.log('[Chain] Balance query successful:', { address: normalized.slice(0, 10) + '...', balance });
+      return balance;
+    } catch (error) {
+      console.error('[Chain] getFreeBalance error:', error);
+      throw error;
+    }
   };
 
   const signAndSendExtrinsic = async ({ from, buildTx, onStatus, forceBrowserExtension = false }: SignAndSendParams): Promise<SendDotResult> => {
     try {
       const config = getConfig();
       const api = await getApi();
+      await api.isReady; // Ensure API is ready before using it
 
       const { getWalletConnectSession } = await import('./walletconnect');
       const wcSession = getWalletConnectSession();

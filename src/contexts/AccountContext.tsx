@@ -80,6 +80,10 @@ export function AccountProvider({ children }: AccountProviderProps) {
     walletName: undefined,
     error: null,
   });
+  
+  // Track if user has explicitly logged in (vs auto-reconnect)
+  // This prevents balance fetching from auto-reconnect on login screen
+  const [hasExplicitlyLoggedIn, setHasExplicitlyLoggedIn] = useState(false);
 
   // Auto-detect network from chain service
   const detectNetwork = useCallback((): AccountNetwork => 'asset-hub', []);
@@ -125,7 +129,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
         try {
           const balancePromise = chain.getFreeBalance(state.address);
           const timeoutPromise = new Promise<string>((_, reject) => 
-            setTimeout(() => reject(new Error('Balance fetch timeout')), 10000) // 10 seconds
+            setTimeout(() => reject(new Error('Balance fetch timeout')), 30000) // 30 seconds - allow time for RPC connection
           );
           
           balancePlanck = await Promise.race([balancePromise, timeoutPromise]);
@@ -164,7 +168,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
   }, [state.address, state.status, detectNetwork]);
 
   // Connect via browser extension
-  const connectExtension = useCallback(async (selectedAddress?: string) => {
+  const connectExtension = useCallback(async (selectedAddress?: string, isAutoReconnect: boolean = false) => {
     setState(prev => ({ ...prev, status: 'connecting', error: null }));
 
     try {
@@ -208,46 +212,69 @@ export function AccountProvider({ children }: AccountProviderProps) {
       };
       const walletName = walletNameMap[account.meta?.source?.toLowerCase() || ''] || account.meta?.source || extensions[0]?.name || 'Extension';
 
-      // Get initial balance (with timeout and retry to prevent hanging)
+      // Get initial balance (non-blocking - fetch in background)
+      // Don't wait for balance during login - it will be fetched via polling
+      // Skip balance fetch for auto-reconnect to prevent console spam on login screen
       chain.setChain('assethub'); // Default to Asset Hub
       let balancePlanck = '0';
       let balanceHuman = '0';
       
-      // Try to fetch balance with retries (non-blocking)
-      try {
-        let attempts = 0;
-        const maxAttempts = 2; // Quick retry for initial connection
-        
-        while (attempts < maxAttempts) {
-          try {
-            const balancePromise = chain.getFreeBalance(address);
-            const timeoutPromise = new Promise<string>((_, reject) => 
-              setTimeout(() => reject(new Error('Balance fetch timeout')), 8000) // 8 seconds
-            );
-            
-            balancePlanck = await Promise.race([balancePromise, timeoutPromise]);
-            balanceHuman = fmtPlanckToDot(balancePlanck);
-            break; // Success
-          } catch (error) {
-            attempts++;
-            if (attempts >= maxAttempts) {
-              throw error; // Re-throw if all attempts failed
+      // Fetch balance in background (don't block connection)
+      // This allows login to complete immediately even if RPC is slow
+      // Skip if auto-reconnect to prevent WebSocket attempts on login screen
+      if (!isAutoReconnect) {
+        (async () => {
+        try {
+          let attempts = 0;
+          const maxAttempts = 2;
+          
+          while (attempts < maxAttempts) {
+            try {
+              const balancePromise = chain.getFreeBalance(address);
+              const timeoutPromise = new Promise<string>((_, reject) => 
+                setTimeout(() => reject(new Error('Balance fetch timeout')), 30000) // 30 seconds
+              );
+              
+              const fetchedBalance = await Promise.race([balancePromise, timeoutPromise]);
+              const fetchedBalanceHuman = fmtPlanckToDot(fetchedBalance);
+              
+              // Update state if still connected to same address
+              setState((prev) => {
+                if (prev.address === address && prev.status === 'connected') {
+                  return {
+                    ...prev,
+                    balance: fetchedBalanceHuman,
+                    balancePlanck: fetchedBalance,
+                  };
+                }
+                return prev;
+              });
+              break; // Success
+            } catch (error) {
+              attempts++;
+              if (attempts >= maxAttempts) {
+                console.warn('[Account] Initial balance fetch failed, will retry via polling:', error);
+                break;
+              }
+              await new Promise(resolve => setTimeout(resolve, 1000));
             }
-            // Quick retry
-            await new Promise(resolve => setTimeout(resolve, 500));
           }
+        } catch (error) {
+          console.warn('[Account] Background balance fetch failed:', error);
+          // Polling will retry automatically
         }
-      } catch (error) {
-        console.warn('[Account] Initial balance fetch failed, will retry via polling:', error);
-        // Continue with zero balance - polling will retry
-        balancePlanck = '0';
-        balanceHuman = '0';
+      })();
       }
       
       const network = detectNetwork();
 
       // Save connector preference
       localStorage.setItem(STORAGE_KEY, 'extension');
+      
+      // Mark as explicitly logged in (not auto-reconnect)
+      if (!isAutoReconnect) {
+        setHasExplicitlyLoggedIn(true);
+      }
 
       setState({
         status: 'connected',
@@ -296,6 +323,9 @@ export function AccountProvider({ children }: AccountProviderProps) {
 
               // Save connector preference
               localStorage.setItem(STORAGE_KEY, 'walletconnect');
+              
+              // Mark as explicitly logged in (not auto-reconnect)
+              setHasExplicitlyLoggedIn(true);
 
               setState({
                 status: 'connected',
@@ -343,6 +373,9 @@ export function AccountProvider({ children }: AccountProviderProps) {
     }
     
     localStorage.removeItem(STORAGE_KEY);
+    
+    // Reset explicit login flag
+    setHasExplicitlyLoggedIn(false);
     
     setState({
       status: 'disconnected',
@@ -396,38 +429,39 @@ export function AccountProvider({ children }: AccountProviderProps) {
               if (address) {
                 const address0 = normalizeToPolkadot(address);
                 chain.setChain('assethub');
-                chain.getFreeBalance(address)
-                  .then(balancePlanck => {
-                    const balanceHuman = fmtPlanckToDot(balancePlanck);
-                    setState({
-                      status: 'connected',
-                      connector: 'walletconnect',
-                      address,
-                      address0,
-                      network: detectNetwork(),
-                      balanceFree: balancePlanck,
-                      balanceHuman,
-                      walletName: 'Nova Wallet',
-                      error: null,
-                    });
-                  })
-                  .catch(console.error);
+                // Don't fetch balance on auto-reconnect - wait for explicit login
+                // This prevents WebSocket connection attempts on login screen
+                // Don't set hasExplicitlyLoggedIn for auto-reconnect
+                // Balance polling will start only after explicit login
+                setState({
+                  status: 'connected',
+                  connector: 'walletconnect',
+                  address,
+                  address0,
+                  network: detectNetwork(),
+                  balanceFree: null,
+                  balanceHuman: null,
+                  walletName: 'Nova Wallet',
+                  error: null,
+                });
               }
             }
           })
           .catch(console.error);
       } else if (savedConnector === 'extension') {
         // Try to reconnect extension (silent - won't show error if user removed extension)
-        connectExtension().catch(() => {
+        // Pass isAutoReconnect=true to prevent balance fetching from auto-reconnect
+        connectExtension(undefined, true).catch(() => {
           // Silent fail - user can manually connect
         });
       }
     }
   }, []); // Run once on mount
 
-  // Balance polling
+  // Balance polling - only after explicit login (not auto-reconnect)
   useEffect(() => {
     if (state.status !== 'connected') return;
+    if (!hasExplicitlyLoggedIn) return; // Don't fetch balance from auto-reconnect
 
     // Initial fetch
     refreshBalance();
@@ -438,7 +472,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
     }, BALANCE_POLL_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [state.status, refreshBalance]);
+  }, [state.status, hasExplicitlyLoggedIn, refreshBalance]);
 
   const value: AccountContextType = {
     ...state,

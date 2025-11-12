@@ -80,6 +80,11 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'lucide-react', 'buffer'],
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
   },
   define: {
     global: 'globalThis',

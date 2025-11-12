@@ -1156,26 +1156,29 @@ function AppContent() {
     });
   }, []);
 
-  // Auto-backup pots to IPFS when they change (debounced)
-  useEffect(() => {
-    if (!hasLoadedInitialData) return;
-    if (account.status !== 'connected' || !account.address0) return;
-    if (pots.length === 0) return;
-    
-    // Skip auto-backup if we're on the import screen (user is importing, not editing)
-    if (screen?.type === 'import-pot') {
-      return;
-    }
-
-    // Auto-backup each pot that changed
-    pots.forEach((pot) => {
-      // Trigger auto-backup (debounced, FREE IPFS storage)
-      autoBackupPot(pot as any, account.address0 || undefined).catch((error) => {
-        console.error('[App] Auto-backup failed for pot:', pot.id, error);
-        // Silent fail - don't interrupt user
-      });
-    });
-  }, [pots, hasLoadedInitialData, account.status, account.address0, screen?.type]);
+  // DISABLED: Auto-backup on login - only backup when user explicitly shares a pot
+  // This prevents IPFS authentication from interrupting the login flow
+  // Auto-backup will happen when user clicks "Share Pot" button instead
+  // 
+  // useEffect(() => {
+  //   if (!hasLoadedInitialData) return;
+  //   if (account.status !== 'connected' || !account.address0) return;
+  //   if (pots.length === 0) return;
+  //   
+  //   // Skip auto-backup if we're on the import screen (user is importing, not editing)
+  //   if (screen?.type === 'import-pot') {
+  //     return;
+  //   }
+  //
+  //   // Auto-backup each pot that changed
+  //   pots.forEach((pot) => {
+  //     // Trigger auto-backup (debounced, FREE IPFS storage)
+  //     autoBackupPot(pot as any, account.address0 || undefined).catch((error) => {
+  //       console.error('[App] Auto-backup failed for pot:', pot.id, error);
+  //       // Silent fail - don't interrupt user
+  //     });
+  //   });
+  // }, [pots, hasLoadedInitialData, account.status, account.address0, screen?.type]);
 
   useEffect(() => {
     if (!hasLoadedInitialData) return;
