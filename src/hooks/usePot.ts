@@ -1,16 +1,9 @@
-/**
- * usePot Hook
- * 
- * Hook to fetch a single pot via data layer service.
- * Supports refresh functionality for Step 5b.
- */
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useData } from '../services/data/DataContext';
 import type { Pot } from '../services/data/types';
 import { warnDev, logDev } from '../utils/logDev';
 
-// Global refresh trigger per pot ID
 const globalRefreshTriggers = new Map<string, number>();
 
 export interface UsePotResult {
@@ -20,12 +13,6 @@ export interface UsePotResult {
   refresh: () => void;
 }
 
-/**
- * Hook to fetch a single pot via data layer service
- * 
- * @param potId - Pot ID to fetch
- * @returns Object with pot, loading state, error, and refresh function
- */
 export function usePot(potId: string | null | undefined): UsePotResult {
   const { pots: potService } = useData();
   const [pot, setPot] = useState<Pot | null>(null);
@@ -49,7 +36,6 @@ export function usePot(potId: string | null | undefined): UsePotResult {
       setPot(data);
       setLoading(false);
       
-      // Dev-only logging
       if (import.meta.env.DEV) {
         logDev('[usePot] Loaded pot via data layer', { potId, potName: data.name });
       }
@@ -59,14 +45,12 @@ export function usePot(potId: string | null | undefined): UsePotResult {
       setPot(null);
       setLoading(false);
       
-      // Dev-only warning
       if (import.meta.env.DEV) {
         warnDev('[usePot] Failed to load pot', { potId, error });
       }
     }
   }, [potService, potId]);
 
-  // Initial load
   useEffect(() => {
     if (potId) {
       refreshTriggerRef.current = globalRefreshTriggers.get(potId) || 0;
@@ -74,7 +58,6 @@ export function usePot(potId: string | null | undefined): UsePotResult {
     loadPot();
   }, [loadPot, potId]);
 
-  // Listen for refresh events
   useEffect(() => {
     if (!potId) return;
 
@@ -102,20 +85,14 @@ export function usePot(potId: string | null | undefined): UsePotResult {
     globalRefreshTriggers.set(potId, current + 1);
     refreshTriggerRef.current = current + 1;
     
-    // Dispatch refresh event
     window.dispatchEvent(new CustomEvent('pot-refresh', { detail: { potId } }));
     
-    // Also trigger load directly
     loadPot();
   }, [loadPot, potId]);
 
   return { pot, loading, error, refresh };
 }
 
-/**
- * Trigger a refresh of a specific pot
- * Dev-only utility for Step 5b testing
- */
 export function refreshPot(potId: string): void {
   if (import.meta.env.DEV) {
     const current = globalRefreshTriggers.get(potId) || 0;
