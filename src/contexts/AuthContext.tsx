@@ -149,7 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (method: AuthMethod, credentials: LoginCredentials) => {
     try {
       setIsLoading(true);
-      let userData: User;
+      let userData: User | null = null;
       if (credentials.type === 'wallet') {
         // Wallet-based authentication - simplified flow
         const supabase = getSupabase();
@@ -165,7 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             password: credentials.address,
           });
           
-          let authUser = signInData?.user;
+          let authUser = signInData?.user ?? null;
           
           // If sign in failed, try to sign up (new user)
           if (signInError || !authUser) {
@@ -187,7 +187,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               throw signUpError;
             }
             
-            authUser = signUpData.user || signUpData.session?.user;
+            authUser = signUpData.user ?? signUpData.session?.user ?? null;
             
             if (!authUser) {
               throw new Error('Failed to create user - no user returned from signup');
@@ -261,6 +261,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       // Store user and token (keep legacy keys for now)
+      if (!userData) {
+        throw new Error('Authentication failed: missing user data');
+      }
+
       localStorage.setItem('chopdot_user', JSON.stringify(userData));
       const supabase = getSupabase();
       if (supabase) {
