@@ -1551,6 +1551,29 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               onError={(message) => setError(message)}
               preferDeepLinks={device.isMobile}
             />
+            <WalletPanel theme={resolvedPanelTheme}>
+              <div className="space-y-3">
+                <div className="space-y-3">
+                  <WalletOption
+                    title="Email & password"
+                    subtitle="Sign in with your ChopDot account"
+                    iconSrc={EMAIL_LOGIN_LOGO}
+                    iconAlt="Email login icon"
+                    onClick={() => setAuthPanelView('signup')}
+                    disabled={loading}
+                    theme={{ ...variationWalletTheme, ...emailOptionTheme }}
+                  />
+                </div>
+                <WalletOption
+                  title="Continue as guest"
+                  onClick={handleGuestLogin}
+                  disabled={loading}
+                  variant="ghost"
+                  theme={variationGuestTheme}
+                />
+                {renderErrorAlert()}
+              </div>
+            </WalletPanel>
             {renderFooterContent()}
           </div>
         </div>
