@@ -31,6 +31,7 @@ export interface AccountState {
 }
 
 interface AccountContextType extends AccountState {
+  connect: (wallet: any) => Promise<void>;
   connectExtension: (selectedAddress?: string) => Promise<void>;
   connectWalletConnect: () => Promise<string>; // Returns URI for QR code
   disconnect: () => void;
@@ -476,6 +477,13 @@ export function AccountProvider({ children }: AccountProviderProps) {
 
   const value: AccountContextType = {
     ...state,
+    connect: async (wallet: any) => {
+      if (wallet.id === 'nova') {
+        await connectWalletConnect();
+      } else {
+        await connectExtension(wallet.id);
+      }
+    },
     connectExtension,
     connectWalletConnect,
     disconnect,
@@ -493,8 +501,8 @@ export function AccountProvider({ children }: AccountProviderProps) {
 
 export function useAccount(): AccountContextType {
   const context = useContext(AccountContext);
-  if (context === undefined) {
-    throw new Error('useAccount must be used within AccountProvider');
+  if (!context) {
+    throw new Error('useAccount must be used within an AccountProvider');
   }
   return context;
 }

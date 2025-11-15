@@ -19,7 +19,7 @@ import { FeatureFlagsProvider, useFeatureFlags } from "./contexts/FeatureFlagsCo
 import { useAccount } from "./contexts/AccountContext";
 import { cleanupBackupTimers } from "./services/backup/autoBackup";
 import { attemptAutoRestore } from "./services/restore/autoRestore";
-import { LoginScreen } from "./components/screens/LoginScreen";
+import { AuthScreen } from "./components/screens/AuthScreen";
 import { ActivityHome } from "./components/screens/ActivityHome";
 import { PotsHome } from "./components/screens/PotsHome";
 import { PeopleHome } from "./components/screens/PeopleHome";
@@ -3627,7 +3627,7 @@ function AppContent() {
   if (!isAuthenticated) {
     return (
       <div className="app-shell bg-background overflow-auto">
-        <LoginScreen />
+        <AuthScreen onAuthSuccess={() => reset({ type: "pots-home" })} />
       </div>
     );
   }

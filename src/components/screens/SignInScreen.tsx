@@ -21,7 +21,7 @@ interface LoginScreenProps {
   onLoginSuccess?: () => void;
 }
 
-export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
+export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   const { login, loginAsGuest } = useAuth();
   const account = useAccount(); // Get AccountContext to auto-connect wallet
   const [loading, setLoading] = useState(false);
@@ -419,13 +419,18 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                     triggerHaptic('light');
                     setShowWalletPicker(false);
                     try {
+                      console.log('[SubWallet] Starting login flow...');
                       setLoading(true);
                       setError(null);
                       
                       // Connect directly to SubWallet extension (not via WalletConnect)
+                      console.log('[SubWallet] Enabling web3...');
                       const { web3Enable, web3Accounts } = await import('@polkadot/extension-dapp');
                       await web3Enable('ChopDot');
+                      
+                      console.log('[SubWallet] Getting accounts...');
                       const accounts = await web3Accounts();
+                      console.log('[SubWallet] Found accounts:', accounts.map(a => ({ address: a.address, source: a.meta.source })));
                       
                       const subWalletAccount = accounts.find(acc => 
                         acc.meta.source === 'subwallet-js' || 
@@ -437,27 +442,37 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
                       }
                       
                       const address = subWalletAccount.address;
+                      console.log('[SubWallet] Selected address:', address);
                       
                       try {
+                        console.log('[SubWallet] Connecting to AccountContext...');
                         await account.connectExtension(address);
+                        console.log('[SubWallet] AccountContext connected');
                       } catch (e) {
-                        console.warn('[Login] Failed to auto-connect to AccountContext:', e);
+                        console.warn('[SubWallet] Failed to auto-connect to AccountContext:', e);
                       }
                       
+                      console.log('[SubWallet] Generating sign-in message...');
                       const message = generateSignInMessage(address);
-                      const signature = await signPolkadotMessage(address, message);
+                      console.log('[SubWallet] Message:', message);
                       
+                      console.log('[SubWallet] Requesting signature...');
+                      const signature = await signPolkadotMessage(address, message);
+                      console.log('[SubWallet] Signature received:', signature);
+                      
+                      console.log('[SubWallet] Calling login...');
                       await login('polkadot', {
                         type: 'wallet',
                         address,
                         signature,
                         message,
                       });
+                      console.log('[SubWallet] Login completed!');
                       
                       triggerHaptic('medium');
                       onLoginSuccess?.();
                     } catch (err: any) {
-                      console.error('SubWallet login failed:', err);
+                      console.error('[SubWallet] Login failed:', err);
                       let friendlyError = 'Failed to connect SubWallet';
                       if (err.message?.includes('not found')) {
                         friendlyError = 'SubWallet extension not found. Please install SubWallet browser extension.';

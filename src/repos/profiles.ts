@@ -3,12 +3,21 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 export interface ProfileRecord {
   id: string;
   username?: string | null;
+  wallet_address?: string | null;
 }
 
-export async function upsertProfile(supabase: SupabaseClient, userId: string, username?: string | null): Promise<void> {
+export async function upsertProfile(
+  supabase: SupabaseClient, 
+  userId: string, 
+  username?: string | null,
+  walletAddress?: string | null
+): Promise<void> {
   const record: ProfileRecord = { id: userId };
   if (typeof username === 'string' && username.trim().length > 0) {
     record.username = username.trim();
+  }
+  if (typeof walletAddress === 'string' && walletAddress.trim().length > 0) {
+    record.wallet_address = walletAddress.trim();
   }
 
   const { error } = await supabase

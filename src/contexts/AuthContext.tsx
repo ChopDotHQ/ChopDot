@@ -151,30 +151,89 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       let userData: User;
       if (credentials.type === 'wallet') {
-        // Verify wallet signature
-        // const isValid = await verifySignature(credentials.address, credentials.signature, credentials.message);
-        // if (!isValid) throw new Error('Invalid signature');
+        // Wallet-based authentication - simplified flow
+        const supabase = getSupabase();
         
-        // Call backend to get or create user
-        // const response = await fetch('/api/auth/wallet', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify({
-        //     walletAddress: credentials.address,
-        //     signature: credentials.signature,
-        //     message: credentials.message,
-        //     authMethod: method,
-        //   }),
-        // });
-        
-        // Mock user data
-        userData = {
-          id: `user_${Date.now()}`,
-          walletAddress: credentials.address,
-          authMethod: method,
-          name: `${method.charAt(0).toUpperCase() + method.slice(1)} User`,
-          createdAt: new Date().toISOString(),
-        };
+        if (supabase) {
+          const walletEmail = `${credentials.address.toLowerCase()}@wallet.chopdot.app`;
+          
+          console.log('[Auth] Wallet login attempt for:', credentials.address);
+          
+          // Try to sign in first (for returning users)
+          let { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email: walletEmail,
+            password: credentials.address,
+          });
+          
+          let authUser = signInData?.user;
+          
+          // If sign in failed, try to sign up (new user)
+          if (signInError || !authUser) {
+            console.log('[Auth] Sign in failed, creating new user:', signInError?.message);
+            
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+              email: walletEmail,
+              password: credentials.address,
+              options: {
+                data: {
+                  wallet_address: credentials.address,
+                  auth_method: method,
+                },
+              },
+            });
+            
+            if (signUpError) {
+              console.error('[Auth] SignUp error:', signUpError);
+              throw signUpError;
+            }
+            
+            authUser = signUpData.user || signUpData.session?.user;
+            
+            if (!authUser) {
+              throw new Error('Failed to create user - no user returned from signup');
+            }
+            
+            console.log('[Auth] New user created:', authUser.id);
+            
+            // Create profile for new user
+            try {
+              await upsertProfile(supabase, authUser.id, null, credentials.address);
+              console.log('[Auth] Profile created');
+            } catch (profileError) {
+              console.error('[Auth] Profile creation failed:', profileError);
+              // Don't throw - user is created, profile can be created later
+            }
+          } else {
+            console.log('[Auth] User signed in:', authUser.id);
+          }
+          
+          // Get profile to fetch username
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', authUser.id)
+            .single();
+          
+          userData = {
+            id: authUser.id,
+            walletAddress: credentials.address,
+            authMethod: method,
+            name: profile?.username || `${method.charAt(0).toUpperCase() + method.slice(1)} User`,
+            createdAt: new Date().toISOString(),
+          };
+          
+          console.log('[Auth] Wallet auth successful:', userData);
+        } else {
+          // No Supabase - use mock data (development only)
+          console.warn('[Auth] No Supabase configured, using mock auth');
+          userData = {
+            id: `user_${Date.now()}`,
+            walletAddress: credentials.address,
+            authMethod: method,
+            name: `${method.charAt(0).toUpperCase() + method.slice(1)} User`,
+            createdAt: new Date().toISOString(),
+          };
+        }
       } else {
         const supabase = getSupabase();
         if (!supabase) {
