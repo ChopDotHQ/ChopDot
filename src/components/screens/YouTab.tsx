@@ -1,10 +1,11 @@
-import { QrCode, Scan, TrendingUp, User as UserIcon, Bell, ChevronRight, ChevronDown, Globe, Languages, Palette, Shield, Lock, Database, Code, LogOut, Trash2, Download, HelpCircle, Cloud } from "lucide-react";
-import { useState } from "react";
+import { QrCode, Scan, TrendingUp, User as UserIcon, Bell, ChevronRight, ChevronDown, Globe, Languages, Palette, Shield, Lock, Database, Code, LogOut, Trash2, Download, HelpCircle, Cloud, Mail, KeyRound } from "lucide-react";
+import { useEffect, useState, FormEvent } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { triggerHaptic } from "../../utils/haptics";
 import { HelpSheet } from "../HelpSheet";
 import { Theme } from "../../utils/useTheme";
 import { AccountMenu } from "../AccountMenu";
+import { getSupabase } from "../../utils/supabase-client";
 
 interface YouTabProps {
   onShowQR: () => void;
@@ -34,6 +35,7 @@ interface YouTabProps {
   onLogout: () => void;
   onDeleteAccount: () => void;
   userName?: string;
+  userEmail?: string;
   isGuest?: boolean;
 }
 
@@ -52,6 +54,7 @@ export function YouTab({
   onLogout,
   onDeleteAccount,
   userName = "You",
+  userEmail,
   isGuest = false,
 }: YouTabProps) {
   // Collapsible states
@@ -62,6 +65,17 @@ export function YouTab({
   const [openSecurity, setOpenSecurity] = useState(false);
   const [openAdvanced, setOpenAdvanced] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [emailUpdate, setEmailUpdate] = useState({
+    value: userEmail ?? "",
+    status: "idle" as "idle" | "loading" | "success" | "error",
+    message: "",
+  });
+  const [passwordUpdate, setPasswordUpdate] = useState({
+    newPassword: "",
+    confirmPassword: "",
+    status: "idle" as "idle" | "loading" | "success" | "error",
+    message: "",
+  });
 
   // Settings states
   const [currency, setCurrency] = useState("USD");
@@ -69,6 +83,98 @@ export function YouTab({
   const [pushNotifications, setPushNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [settlementReminders, setSettlementReminders] = useState(true);
+
+  useEffect(() => {
+    setEmailUpdate((prev) => ({ ...prev, value: userEmail ?? "" }));
+  }, [userEmail]);
+
+  const handleEmailUpdate = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    triggerHaptic("light");
+    if (!emailUpdate.value.trim()) {
+      setEmailUpdate((prev) => ({ ...prev, status: "error", message: "Enter a valid email address." }));
+      triggerHaptic("error");
+      return;
+    }
+    const supabase = getSupabase();
+    if (!supabase) {
+      setEmailUpdate((prev) => ({ ...prev, status: "error", message: "Email auth is not configured." }));
+      triggerHaptic("error");
+      return;
+    }
+    try {
+      setEmailUpdate((prev) => ({ ...prev, status: "loading", message: "" }));
+      const { error } = await supabase.auth.updateUser({ email: emailUpdate.value.trim() });
+      if (error) throw error;
+      setEmailUpdate((prev) => ({
+        ...prev,
+        status: "success",
+        message: "Check your inbox to confirm the new email.",
+      }));
+      triggerHaptic("medium");
+    } catch (error: any) {
+      console.error("[YouTab] Email update failed:", error);
+      setEmailUpdate((prev) => ({
+        ...prev,
+        status: "error",
+        message: error?.message || "Unable to update email right now.",
+      }));
+      triggerHaptic("error");
+    }
+  };
+
+  const handlePasswordUpdate = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    triggerHaptic("light");
+    if (passwordUpdate.newPassword.length < 8) {
+      setPasswordUpdate((prev) => ({
+        ...prev,
+        status: "error",
+        message: "Password must be at least 8 characters long.",
+      }));
+      triggerHaptic("error");
+      return;
+    }
+    if (passwordUpdate.newPassword !== passwordUpdate.confirmPassword) {
+      setPasswordUpdate((prev) => ({
+        ...prev,
+        status: "error",
+        message: "Passwords do not match.",
+      }));
+      triggerHaptic("error");
+      return;
+    }
+    const supabase = getSupabase();
+    if (!supabase) {
+      setPasswordUpdate((prev) => ({
+        ...prev,
+        status: "error",
+        message: "Password auth is not configured.",
+      }));
+      triggerHaptic("error");
+      return;
+    }
+    try {
+      setPasswordUpdate((prev) => ({ ...prev, status: "loading", message: "" }));
+      const { error } = await supabase.auth.updateUser({ password: passwordUpdate.newPassword });
+      if (error) throw error;
+      setPasswordUpdate({
+        newPassword: "",
+        confirmPassword: "",
+        status: "success",
+        message: "Password updated.",
+      });
+      triggerHaptic("medium");
+    } catch (error: any) {
+      console.error("[YouTab] Password update failed:", error);
+      setPasswordUpdate((prev) => ({
+        ...prev,
+        status: "error",
+        message: error?.message || "Unable to update password right now.",
+      }));
+      triggerHaptic("error");
+    }
+  };
 
   return (
     <div className="h-full overflow-auto pb-[88px] bg-background">
@@ -402,7 +508,100 @@ export function YouTab({
                 )}
               </button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="mt-2 card rounded-xl p-4 space-y-2">
+            <CollapsibleContent className="mt-2 card rounded-xl p-4 space-y-3">
+              {!isGuest && (
+                <div className="space-y-4 rounded-xl border border-border/60 p-4">
+                  <h3 className="text-label font-semibold">Account security</h3>
+                  <form onSubmit={handleEmailUpdate} className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-secondary" />
+                      <span className="text-micro text-secondary">Email address</span>
+                    </div>
+                    <input
+                      type="email"
+                      value={emailUpdate.value}
+                      onChange={(event) =>
+                        setEmailUpdate((prev) => ({ ...prev, value: event.target.value, status: "idle", message: "" }))
+                      }
+                      className="w-full rounded-xl border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30"
+                      placeholder="name@domain.com"
+                      required
+                    />
+                    <button
+                      type="submit"
+                      className="w-full rounded-xl bg-[var(--accent)] py-2 text-sm font-semibold text-white transition-opacity disabled:opacity-60"
+                      disabled={emailUpdate.status === "loading"}
+                    >
+                      {emailUpdate.status === "loading" ? "Updating…" : "Update email"}
+                    </button>
+                    {emailUpdate.message && (
+                      <p
+                        className={`text-xs ${
+                          emailUpdate.status === "error" ? "text-destructive" : "text-secondary"
+                        }`}
+                      >
+                        {emailUpdate.message}
+                      </p>
+                    )}
+                  </form>
+
+                  <form onSubmit={handlePasswordUpdate} className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <KeyRound className="w-4 h-4 text-secondary" />
+                      <span className="text-micro text-secondary">Password</span>
+                    </div>
+                    <input
+                      type="password"
+                      value={passwordUpdate.newPassword}
+                      onChange={(event) =>
+                        setPasswordUpdate((prev) => ({
+                          ...prev,
+                          newPassword: event.target.value,
+                          status: "idle",
+                          message: "",
+                        }))
+                      }
+                      className="w-full rounded-xl border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30"
+                      placeholder="New password"
+                      minLength={8}
+                      required
+                    />
+                    <input
+                      type="password"
+                      value={passwordUpdate.confirmPassword}
+                      onChange={(event) =>
+                        setPasswordUpdate((prev) => ({
+                          ...prev,
+                          confirmPassword: event.target.value,
+                          status: "idle",
+                          message: "",
+                        }))
+                      }
+                      className="w-full rounded-xl border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30"
+                      placeholder="Confirm password"
+                      minLength={8}
+                      required
+                    />
+                    <button
+                      type="submit"
+                      className="w-full rounded-xl border border-border py-2 text-sm font-semibold text-foreground hover:bg-muted/20 transition-colors disabled:opacity-60"
+                      disabled={passwordUpdate.status === "loading"}
+                    >
+                      {passwordUpdate.status === "loading" ? "Updating…" : "Update password"}
+                    </button>
+                    {passwordUpdate.message && (
+                      <p
+                        className={`text-xs ${
+                          passwordUpdate.status === "error" ? "text-destructive" : "text-secondary"
+                        }`}
+                      >
+                        {passwordUpdate.message}
+                      </p>
+                    )}
+                  </form>
+                </div>
+              )}
+
               <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
                 <Download className="w-4 h-4 text-secondary" />
                 <span className="text-micro">Export data</span>

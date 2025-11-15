@@ -4,6 +4,8 @@ import App from './App.tsx'
 import './index.css'
 import './styles/globals.css'
 import { AccountProvider } from './contexts/AccountContext'
+import { AccountProviderLuno } from './contexts/AccountContextLuno'
+import { EvmAccountProvider } from './contexts/EvmAccountContext'
 import { DataProvider } from './services/data/DataContext'
 
 // Simple error boundary to catch render errors and show them
@@ -52,6 +54,28 @@ if (loadingEl) {
 
 const rootEl = document.getElementById('root')!
 
+const isFlagEnabled = (value?: string) =>
+  value === '1' || value?.toLowerCase() === 'true';
+
+const enableLunoKit = isFlagEnabled(import.meta.env.VITE_ENABLE_LUNOKIT);
+const enableEmbeddedWallet = isFlagEnabled(import.meta.env.VITE_ENABLE_EMBEDDED_WALLET);
+
+const PolkadotProviderComponent = enableLunoKit ? AccountProviderLuno : AccountProvider;
+
+const renderWithProviders = (content: ReactNode) => (
+  <StrictMode>
+    <ErrorBoundary>
+      <PolkadotProviderComponent>
+        <EvmAccountProvider enabled={enableEmbeddedWallet}>
+          <DataProvider>
+            {content}
+          </DataProvider>
+        </EvmAccountProvider>
+      </PolkadotProviderComponent>
+    </ErrorBoundary>
+  </StrictMode>
+);
+
 // Polyfill Buffer for deps that expect it in the browser
 if (!(window as any).Buffer) {
   import('buffer').then(({ Buffer }) => {
@@ -64,27 +88,11 @@ if (window.location.pathname === '/chain-test') {
   (async () => {
     const { ChainTestPage } = await import('./chain/chain-test-page');
     createRoot(rootEl).render(
-      <StrictMode>
-        <ErrorBoundary>
-          <AccountProvider>
-            <DataProvider>
-              <ChainTestPage />
-            </DataProvider>
-          </AccountProvider>
-        </ErrorBoundary>
-      </StrictMode>,
+      renderWithProviders(<ChainTestPage />),
     )
   })()
   } else {
   createRoot(rootEl).render(
-  <StrictMode>
-      <ErrorBoundary>
-        <AccountProvider>
-          <DataProvider>
-            <App />
-          </DataProvider>
-        </AccountProvider>
-      </ErrorBoundary>
-  </StrictMode>,
+    renderWithProviders(<App />),
 )
 }

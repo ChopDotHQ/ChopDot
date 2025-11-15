@@ -2554,6 +2554,7 @@ function AppContent() {
             onLogout={handleLogout}
             onDeleteAccount={handleDeleteAccount}
             userName={user?.name || "You"}
+            userEmail={user?.email}
             isGuest={user?.isGuest || false}
           />
         );

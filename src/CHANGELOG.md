@@ -4,6 +4,14 @@ All notable changes to ChopDot are documented here.
 
 ---
 
+## [Unreleased]
+
+### Added
+- Feature flags `VITE_ENABLE_LUNOKIT` and `VITE_ENABLE_EMBEDDED_WALLET`, plus placeholder providers (`AccountContextLuno`, `EvmAccountContext`) and env typings to wire future wallet work without behaviour changes.
+- Feature flag `VITE_ENABLE_LOGIN_PANEL_UI` to flip between the legacy login flow and a Privy-inspired panel layout without touching wallet logic.
+
+---
+
 ## [1.1.0] - 2025-10-13
 
 ### 🔐 Authentication System (Major Update)

@@ -81,7 +81,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
     walletName: undefined,
     error: null,
   });
-  
+
   // Track if user has explicitly logged in (vs auto-reconnect)
   // This prevents balance fetching from auto-reconnect on login screen
   const [hasExplicitlyLoggedIn, setHasExplicitlyLoggedIn] = useState(false);
@@ -434,17 +434,17 @@ export function AccountProvider({ children }: AccountProviderProps) {
                 // This prevents WebSocket connection attempts on login screen
                 // Don't set hasExplicitlyLoggedIn for auto-reconnect
                 // Balance polling will start only after explicit login
-                setState({
-                  status: 'connected',
-                  connector: 'walletconnect',
-                  address,
-                  address0,
-                  network: detectNetwork(),
+                    setState({
+                      status: 'connected',
+                      connector: 'walletconnect',
+                      address,
+                      address0,
+                      network: detectNetwork(),
                   balanceFree: null,
                   balanceHuman: null,
-                  walletName: 'Nova Wallet',
-                  error: null,
-                });
+                      walletName: 'Nova Wallet',
+                      error: null,
+                    });
               }
             }
           })

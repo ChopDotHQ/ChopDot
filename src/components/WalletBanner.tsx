@@ -3,6 +3,12 @@ import { getHyperbridgeUrl } from "../services/bridge/hyperbridge";
 import { triggerHaptic } from "../utils/haptics";
 import { useState, useEffect } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
+import { BalanceDisplay } from "./polkadot/BalanceDisplay";
+
+const isFlagEnabled = (value?: string) =>
+  value === '1' || value?.toLowerCase() === 'true';
+
+const enablePolkadotBalanceUI = isFlagEnabled(import.meta.env.VITE_ENABLE_POLKADOT_BALANCE_UI);
 
 /**
  * WalletBanner - Shows wallet balance when connected
@@ -42,9 +48,67 @@ export function WalletBanner() {
     }
   }, [isRefreshing]);
 
+  const handleGetDot = () => {
+    triggerHaptic('light');
+    const url = getHyperbridgeUrl({ dest: 'Polkadot', asset: 'DOT' });
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleRefresh = async () => {
+    triggerHaptic('light');
+    setIsRefreshing(true);
+    setShowSuccess(false);
+
+    const timeout = setTimeout(() => {
+      console.warn('[WalletBanner] Refresh timeout - resetting state');
+      setIsRefreshing(false);
+      setShowSuccess(false);
+    }, 10000);
+
+    try {
+      await account.refreshBalance();
+      clearTimeout(timeout);
+
+      setTimeout(() => {
+        setIsRefreshing((current) => {
+          if (current) {
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 2000);
+            return false;
+          }
+          return current;
+        });
+      }, 500);
+    } catch (error: any) {
+      console.error('[WalletBanner] Refresh error:', error);
+      clearTimeout(timeout);
+      setIsRefreshing(false);
+      setShowSuccess(false);
+      console.warn('[WalletBanner] Balance refresh failed. This might be due to RPC being slow or unavailable. The balance will update automatically when the RPC responds.');
+    }
+  };
+
   // Only show banner when wallet is connected - show balance prominently
   if (account.status === 'connected' && account.balanceHuman) {
     const balance = parseFloat(account.balanceHuman);
+
+    if (enablePolkadotBalanceUI) {
+      const networkLabel = account.network === 'asset-hub' || account.network === 'polkadot'
+        ? 'Asset Hub (Polkadot)'
+        : account.network;
+
+      return (
+        <BalanceDisplay
+          amount={balance}
+          networkLabel={networkLabel || undefined}
+          isRefreshing={isRefreshing}
+          showSuccess={showSuccess}
+          onGetMore={handleGetDot}
+          onRefresh={handleRefresh}
+        />
+      );
+    }
+
     return (
       <div className={`p-3 glass-sm rounded-lg border transition-all duration-200 ${
         showSuccess ? 'ring-2 ring-success/50' : ''
@@ -81,11 +145,7 @@ export function WalletBanner() {
         <div className="mt-3 flex items-center justify-between gap-2">
           <button
             type="button"
-            onClick={() => {
-              triggerHaptic('light');
-              const url = getHyperbridgeUrl({ dest: 'Polkadot', asset: 'DOT' });
-              window.open(url, '_blank', 'noopener,noreferrer');
-            }}
+            onClick={handleGetDot}
             className="px-3 py-1.5 rounded-[var(--r-lg)] text-xs font-semibold transition-all hover:opacity-90"
             style={{ background: 'var(--accent)', color: 'white' }}
           >
@@ -93,45 +153,7 @@ export function WalletBanner() {
           </button>
           <button
             type="button"
-            onClick={async () => {
-              triggerHaptic('light');
-              setIsRefreshing(true);
-              setShowSuccess(false);
-              
-              // Safety timeout: reset after 10 seconds if it gets stuck
-              const timeout = setTimeout(() => {
-                console.warn('[WalletBanner] Refresh timeout - resetting state');
-                setIsRefreshing(false);
-                setShowSuccess(false);
-              }, 10000);
-              
-              try {
-                await account.refreshBalance();
-                clearTimeout(timeout);
-                
-                // Wait a moment for balance to update, then always reset refreshing state
-                // Even if balance didn't change, the refresh was successful
-                setTimeout(() => {
-                  setIsRefreshing((current) => {
-                    // Only reset if still refreshing (balance change might have already reset it)
-                    if (current) {
-                      setShowSuccess(true);
-                      setTimeout(() => setShowSuccess(false), 2000);
-                      return false;
-                    }
-                    return current;
-                  });
-                }, 500);
-              } catch (error: any) {
-                console.error('[WalletBanner] Refresh error:', error);
-                clearTimeout(timeout);
-                setIsRefreshing(false);
-                setShowSuccess(false);
-                
-                // Show error message to user
-                console.warn('[WalletBanner] Balance refresh failed. This might be due to RPC being slow or unavailable. The balance will update automatically when the RPC responds.');
-              }
-            }}
+            onClick={handleRefresh}
             disabled={isRefreshing}
             className="text-xs font-semibold text-accent underline hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
           >

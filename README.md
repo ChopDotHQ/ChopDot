@@ -30,7 +30,7 @@ ChopDot brings familiar group-expense flows to a world where fairness and verifi
 
 ### Data Layer Architecture ✅
 - **Service/Repository Pattern** - Clean separation of concerns
-- **Feature Flags** - Safe gradual rollout (`VITE_DL_READS`, `VITE_DATA_SOURCE`)
+- **Feature Flags** - Safe gradual rollout (`VITE_DL_READS`, `VITE_DATA_SOURCE`, `VITE_ENABLE_MOBILE_WC_UI`)
 - **Multiple Data Sources** - localStorage (current) + HTTP stub (ready for API)
 - **Error Handling** - Graceful fallbacks, error boundaries, non-blocking writes
 
@@ -141,6 +141,29 @@ For safe public demos, you can enable a restricted mode that disables wallet con
 ### Data Source (`VITE_DATA_SOURCE`)
 - **Default:** `local` (uses localStorage)
 - **Set to `api`:** Uses HttpSource stub (ready for backend integration)
+
+### LunoKit Wallet Rail (`VITE_ENABLE_LUNOKIT`)
+- **Default:** `0` (legacy `AccountContext` remains active)
+- **Set to `1`:** Switches the root provider to `AccountContextLuno` (currently an alias, future LunoKit home).
+
+### Embedded Wallet Rail (`VITE_ENABLE_EMBEDDED_WALLET`)
+- **Default:** `0` (embedded wallet context stays disabled)
+- **Set to `1`:** Enables the placeholder `EvmAccountProvider` so MetaMask Embedded can drop in later without touching App wiring.
+
+### Polkadot Balance UI (`VITE_ENABLE_POLKADOT_BALANCE_UI`)
+- **Default:** `0` (legacy `WalletBanner` rendering remains)
+- **Set to `1`:** Switches the balance card to the new Polkadot-style `BalanceDisplay` component. Logic (refresh/get DOT) stays the same, but turning the flag off reverts the UI immediately.
+
+### Mobile WalletConnect Panel (`VITE_ENABLE_MOBILE_WC_UI`)
+- **Default:** `0` (desktop QR rail only)
+- **Set to `1`:** Enables the on-device WalletConnect wallet picker plus the desktop/mobile view toggle in `LoginScreen`. Desktop users can still force the QR modal; mobile/touch users get deep links, copy/share actions, and SubWallet/Talisman/Nova quick buttons.
+
+## Login & Signup Flows
+
+- The login rail is a Privy-style frosted panel with wallet buttons, an inline email/password form, “Continue as guest,” and a manual toggle to preview either desktop (QR) or mobile (device) views.
+- Tapping **Email & password** expands the inline form. The **Need an account?** link shows the swipeable signup panel, which collects email, optional username, password confirmation, and ToS consent before calling Supabase `auth.signUp`.
+- The new signup panel lives inside the same login scaffold, so QA/designers can swipe between “Sign in” and “Create account” states without leaving the screen.
+- Email users can later update their email or password from the **You** tab’s Security section (wired to Supabase `auth.updateUser`).
 
 ## Release Information
 

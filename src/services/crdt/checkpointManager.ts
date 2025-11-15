@@ -53,7 +53,7 @@ export class CheckpointManager {
       const { error } = await supabase.from('crdt_checkpoints').insert({
         pot_id: this.potId,
         document_data: compressed,
-        heads: heads.map(h => h.toString()),
+        heads: heads.map((head: string) => head.toString()),
         change_count: changeCount,
         created_by: userId,
       });

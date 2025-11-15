@@ -123,10 +123,10 @@ const createApi = async (config: ChainConfig) => {
         await Promise.race([api.isReady, readyTimeoutPromise]);
         console.log(`[Chain Service] ✅ API is ready for ${endpoint}`);
         
-        const duration = performance.now() - startTime;
-        currentRpcEndpoint = endpoint; // Track which endpoint succeeded
-        
-        // RPC telemetry: log successful connection
+      const duration = performance.now() - startTime;
+      currentRpcEndpoint = endpoint; // Track which endpoint succeeded
+      
+      // RPC telemetry: log successful connection
         console.log('[RPC Telemetry]', {
           endpoint,
           attempt: attemptIndex,
@@ -134,23 +134,23 @@ const createApi = async (config: ChainConfig) => {
           durationMs: duration.toFixed(2),
           isFallback: attemptIndex > 1,
         });
-        
+      
         console.info('[Chain Service] ✅ Connected to Asset Hub RPC:', endpoint);
 
         provider.on('error', (err: unknown) => {
-          console.error('[Chain Service] Provider error', endpoint, err);
+        console.error('[Chain Service] Provider error', endpoint, err);
           // Reset API promise on error to force reconnection
           apiPromise = null;
           currentRpcEndpoint = null;
-        });
+      });
 
-        provider.on('disconnected', () => {
-          console.warn('[Chain Service] Provider disconnected', endpoint);
-          apiPromise = null;
-          currentRpcEndpoint = null; // Clear on disconnect
-        });
+      provider.on('disconnected', () => {
+        console.warn('[Chain Service] Provider disconnected', endpoint);
+        apiPromise = null;
+        currentRpcEndpoint = null; // Clear on disconnect
+      });
 
-        return api;
+      return api;
       } catch (innerError) {
         // Handle errors from ApiPromise.create() or api.isReady
         console.error(`[Chain Service] ❌ Inner error for ${endpoint}:`, innerError);
@@ -168,14 +168,14 @@ const createApi = async (config: ChainConfig) => {
       const duration = performance.now() - startTime;
       
       // RPC telemetry: log fallback event
-      console.warn('[RPC Telemetry]', {
-        endpoint,
-        attempt: attemptIndex,
-        success: false,
-        durationMs: duration.toFixed(2),
-        error: error instanceof Error ? error.message : String(error),
-        willFallback: attemptIndex < config.rpc.length,
-      });
+        console.warn('[RPC Telemetry]', {
+          endpoint,
+          attempt: attemptIndex,
+          success: false,
+          durationMs: duration.toFixed(2),
+          error: error instanceof Error ? error.message : String(error),
+          willFallback: attemptIndex < config.rpc.length,
+        });
       
       console.error(`[Chain Service] ❌ Failed to connect to ${endpoint}:`, error);
       lastError = error;
@@ -303,8 +303,8 @@ export const polkadotChainService = (() => {
       await api.isReady;
       console.log('[Chain] API is ready, querying balance...');
       
-      const normalized = normalizeToPolkadot(address);
-      const accountData = await api.query.system.account(normalized);
+    const normalized = normalizeToPolkadot(address);
+    const accountData = await api.query.system.account(normalized);
       const balance = accountData.data.free.toString();
       
       console.log('[Chain] Balance query successful:', { address: normalized.slice(0, 10) + '...', balance });

@@ -76,10 +76,12 @@ ChopDot is a mobile-first expense splitting and group financial management app w
 - ✅ Toast notifications (user feedback)
 
 #### Authentication & Security
-- ✅ Multi-method authentication (Polkadot wallets, MetaMask, WalletConnect, email/password)
-- ✅ AuthContext provider (central auth state management)
-- ✅ Persistent sessions (localStorage-based)
-- ✅ Guest mode support
+- ✅ Multi-method authentication (Polkadot wallets, WalletConnect, Supabase email/password)
+- ✅ Privy-style login rail with inline email form, guest CTA, and manual desktop/mobile toggle
+- ✅ Mobile WalletConnect wallet picker with device detection and deep-link handling
+- ✅ Swipeable signup panel (email, optional username, ToS consent) backed by Supabase
+- ✅ AuthContext provider (central auth state management) with persistent sessions
+- ✅ You tab controls for updating email/password
 - ✅ Password-protected pot export/import (AES-GCM encryption)
 
 #### Settings & Management
@@ -119,14 +121,12 @@ ChopDot is a mobile-first expense splitting and group financial management app w
 - ✅ Wallet connection (Polkadot.js, SubWallet, Talisman, WalletConnect)
 - ❌ DeFi yield (Acala integration placeholder)
 
-#### Authentication (Partial)
-- ✅ AuthContext provider
-- ✅ Login/logout flow
-- ✅ Guest mode
-- ❌ Real user accounts (localStorage only)
-- ❌ Session management (server-side)
-- ❌ Password reset
-- ❌ Email verification
+#### Authentication (Next)
+- ✅ Supabase-backed email/password login and signup (email verification via Supabase)
+- ✅ Mobile wallet view flag (`VITE_ENABLE_MOBILE_WC_UI`) with manual override
+- ⚠️ Password reset UI (Supabase recovery link) — pending
+- ⚠️ Rich email verification status + resend flow — pending
+- ⚠️ Multi-factor / passkey support — future roadmap
 
 ---
 
@@ -255,11 +255,31 @@ src/
 - **Type Checking:** TypeScript strict mode
 - **Package Manager:** npm
 
+### Authentication Experience
+- **Login Rail:** Frosted card that lists wallet buttons, guest CTA, and an inline email/password form. Manual toggle lets QA force desktop or mobile layout.
+- **Mobile View:** When `VITE_ENABLE_MOBILE_WC_UI=1`, `useClientDevice()` swaps the wallet list for an on-device WalletConnect picker. Users can jump back to the QR modal or stay in mobile mode.
+- **Signup Panel:** Swipable panel (Privy-style) that collects email, optional username, password/confirm, and ToS consent. Calls `supabase.auth.signUp` and surfaces verification guidance inline.
+- **Supabase Sessions:** `AuthContext` subscribes to Supabase session changes and persists the mapped user in `localStorage` for instant reloads and guest fallback.
+- **Account Settings:** The “You” tab now exposes email/password update forms that call `supabase.auth.updateUser`, so email users can self-manage credentials.
+
+### Wallet & Connector Consumers
+- **AccountContext:** Centralizes wallet connectors (extensions, WalletConnect) and exposes `status`, `address0`, balances, and helpers (`connectExtension`, `connectWalletConnect`, `refreshBalance`, `disconnect`).
+- **High-Touch Screens:** `App.tsx`, `AccountMenu`, `WalletBanner`, `CrustStorage`, `CrustAuthSetup`, settlement screens, and Expense/People tabs rely on AccountContext state to gate CTAs, fetch balances, or trigger WalletConnect flows.
+- **Support Services:** `services/chain/walletconnect.ts`, `services/storage/ipfsAuth.ts`, and `utils/crustAuth.ts` depend on AccountContext’s persisted connector + address (`localStorage['account.connector']`, `['account.address0']`) for background tasks.
+- **Luno/EVM Futures:** `AccountContextLuno` and `EvmAccountContext` ship as drop-in providers behind feature flags so we can swap wallets without touching call sites.
+
 ---
 
 ## Change Log
 
 > **Note:** Update this section whenever you make changes to the app.
+
+### [2025-02-15] - Login & Signup Overhaul
+- ✅ Rebuilt the LoginScreen into a swipeable, Privy-style experience with inline email login, wallet rail, guest CTA, and manual desktop/mobile toggle
+- ✅ Added Supabase-backed signup panel (email, optional username, password confirmation, ToS consent) with inline success/error messaging
+- ✅ Brought the mobile WalletConnect picker behind `VITE_ENABLE_MOBILE_WC_UI` with automatic device detection plus explicit override buttons
+- ✅ Added account-management forms (update email/password) to the You tab, wired to `supabase.auth.updateUser`
+- ✅ Updated documentation (spec + README) and removed redundant rollout/internal docs now that the flows are canonical
 
 ### [2025-01-15] - IPFS & Crust Integration
 - ✅ IPFS integration via Crust Network
@@ -464,4 +484,3 @@ When making changes to the app:
 **Document Maintained By:** Development Team  
 **Last Review:** January 15, 2025  
 **Release Tag:** v1.4.0
-

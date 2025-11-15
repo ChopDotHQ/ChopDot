@@ -6,8 +6,8 @@
  * - Other wallets via WalletConnect (SubWallet, Talisman, MetaMask, Rainbow, etc.)
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { Wallet, AlertCircle, Loader2, X } from 'lucide-react';
+import { useState, useEffect, useRef, ReactNode, CSSProperties, useId, MouseEvent, FormEvent } from 'react';
+import { AlertCircle, Loader2, X, ChevronDown } from 'lucide-react';
 import { useAuth, AuthMethod } from '../../contexts/AuthContext';
 import { useAccount } from '../../contexts/AccountContext';
 import {
@@ -16,22 +16,454 @@ import {
 } from '../../utils/walletAuth';
 import { triggerHaptic } from '../../utils/haptics';
 import QRCodeLib from 'qrcode';
+import useClientDevice from '../../hooks/useClientDevice';
+import { getSupabase } from '../../utils/supabase-client';
+
+declare global {
+  interface Window {
+    analytics?: {
+      track?: (event: string, payload?: Record<string, unknown>) => void;
+    };
+  }
+}
+import { walletConnectLinks } from '../../config/wallet-connect-links';
 
 interface LoginScreenProps {
   onLoginSuccess?: () => void;
 }
 
-export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
+const ChopDotMark = ({ size = 48 }: { size?: number }) => {
+  const maskId = useId();
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 256 256"
+      role="img"
+      aria-hidden="true"
+    >
+      <defs>
+        <mask id={maskId}>
+          <rect x="0" y="0" width="256" height="256" fill="white" />
+          <rect
+            x="-64"
+            y="112"
+            width="384"
+            height="32"
+            fill="black"
+            transform="rotate(-35 128 128)"
+          />
+        </mask>
+      </defs>
+      <circle cx="128" cy="128" r="96" fill="var(--accent)" mask={`url(#${maskId})`} />
+    </svg>
+  );
+};
+
+const WalletLogo = ({
+  src,
+  alt,
+  className = '',
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+}) => (
+  <img
+    src={src}
+    alt={alt}
+    className={`h-8 w-8 object-contain ${className}`}
+    draggable={false}
+  />
+);
+
+interface PanelTheme {
+  background: string;
+  borderColor: string;
+  shadow: string;
+  backdropFilter?: string;
+}
+
+const defaultPanelTheme: PanelTheme = {
+  background: 'rgba(10,10,15,0.55)',
+  borderColor: 'rgba(255,255,255,0.08)',
+  shadow: '0 0 65px rgba(230,0,122,0.4), 0 38px 120px rgba(0,0,0,0.65)',
+  backdropFilter: 'blur(30px)',
+};
+
+const WalletPanel = ({
+  children,
+  theme = defaultPanelTheme,
+}: {
+  children: ReactNode;
+  theme?: PanelTheme;
+}) => (
+  <div
+    className="rounded-2xl border px-6 py-8 sm:px-8 sm:py-8 space-y-4 transition-colors"
+    style={{
+      background: theme.background,
+      borderColor: theme.borderColor,
+      boxShadow: theme.shadow,
+      backdropFilter: theme.backdropFilter,
+    }}
+  >
+    {children}
+  </div>
+);
+
+interface WalletOptionTheme {
+  background: string;
+  hoverBackground?: string;
+  borderColor: string;
+  iconBackground?: string;
+  iconBorderColor?: string;
+  iconShadow?: string;
+  titleColor?: string;
+  subtitleColor?: string;
+  shadow?: string;
+  borderStyle?: 'solid' | 'dashed' | 'none';
+}
+
+const defaultOptionTheme: WalletOptionTheme = {
+  background: 'linear-gradient(135deg, #05060c 0%, #111b36 100%)',
+  hoverBackground: 'linear-gradient(135deg, #080914 0%, #152144 100%)',
+  borderColor: 'rgba(255,255,255,0.18)',
+  iconBackground: 'linear-gradient(145deg, #1f1c2d, #0f0c18)',
+  iconBorderColor: 'rgba(255,255,255,0.25)',
+  iconShadow: '0 8px 20px rgba(0,0,0,0.35)',
+  titleColor: '#ffffff',
+  subtitleColor: 'rgba(255,255,255,0.8)',
+  shadow: '0 15px 35px rgba(0,0,0,0.4)',
+  borderStyle: 'solid',
+};
+
+const ghostOptionTheme: WalletOptionTheme = {
+  background: 'transparent',
+  hoverBackground: 'rgba(255,255,255,0.05)',
+  borderColor: 'rgba(255,255,255,0.3)',
+  iconBackground: 'transparent',
+  iconBorderColor: 'transparent',
+  titleColor: '#ffffff',
+  subtitleColor: 'rgba(255,255,255,0.7)',
+  borderStyle: 'dashed',
+};
+
+const polkadotOptionTheme: Partial<WalletOptionTheme> = {
+  background: 'linear-gradient(140deg, #2a0b25 0%, #422b62 100%)',
+  hoverBackground: 'linear-gradient(140deg, #361132 0%, #513277 100%)',
+  borderColor: 'rgba(230,0,122,0.35)',
+};
+
+const emailOptionTheme: Partial<WalletOptionTheme> = {
+  background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(255,240,249,0.92) 100%)',
+  hoverBackground: '#ffffff',
+  borderColor: 'rgba(0,0,0,0.08)',
+  iconBackground: '#ffffff',
+  iconBorderColor: 'rgba(0,0,0,0.05)',
+  titleColor: '#111111',
+  subtitleColor: '#5a5a66',
+  shadow: '0 12px 30px rgba(0,0,0,0.08)',
+};
+
+type PanelMode = 'dark' | 'light';
+type LoginViewOverride = 'auto' | 'desktop' | 'mobile';
+
+
+const sceneBackgroundStyles: Record<PanelMode, CSSProperties> = {
+  dark: {
+    backgroundColor: '#050105',
+    color: '#ffffff',
+    backgroundImage:
+      'radial-gradient(rgba(230,0,122,0.15) 1.2px, transparent 1.2px), radial-gradient(rgba(230,0,122,0.07) 1.2px, transparent 1.2px)',
+    backgroundSize: '48px 48px, 48px 48px',
+    backgroundPosition: '0 0, 24px 24px',
+  },
+  light: {
+    backgroundColor: '#fdf7ff',
+    color: '#0f0f11',
+    backgroundImage:
+      'radial-gradient(rgba(230,0,122,0.06) 1px, transparent 1px), radial-gradient(rgba(230,0,122,0.03) 1px, transparent 1px)',
+    backgroundSize: '52px 52px, 52px 52px',
+    backgroundPosition: '0 0, 26px 26px',
+  },
+};
+
+const frostedPanelThemes: Record<PanelMode, PanelTheme> = {
+  dark: {
+    background: 'rgba(10,10,15,0.55)',
+    borderColor: 'rgba(255,255,255,0.08)',
+    shadow: '0 0 65px rgba(230,0,122,0.4), 0 38px 120px rgba(0,0,0,0.65)',
+    backdropFilter: 'blur(30px)',
+  },
+  light: {
+    background: 'linear-gradient(150deg, rgba(255,255,255,0.55), rgba(255,240,249,0.85))',
+    borderColor: 'rgba(255,255,255,0.35)',
+    shadow: '0 0 60px rgba(230,0,122,0.2), 0 25px 90px rgba(0,0,0,0.08)',
+    backdropFilter: 'blur(28px)',
+  },
+};
+
+const frostedWalletThemes: Record<PanelMode, Partial<WalletOptionTheme>> = {
+  dark: {
+    background: 'rgba(15,15,22,0.72)',
+    hoverBackground: 'rgba(21,21,30,0.8)',
+    borderColor: 'rgba(255,255,255,0.08)',
+    iconBackground: 'rgba(255,255,255,0.12)',
+    iconBorderColor: 'rgba(255,255,255,0.2)',
+    titleColor: '#ffffff',
+    subtitleColor: 'rgba(255,255,255,0.78)',
+    shadow: 'none',
+  },
+  light: {
+    background: 'rgba(255,255,255,0.9)',
+    hoverBackground: '#ffffff',
+    borderColor: 'rgba(0,0,0,0.04)',
+    iconBackground: '#ffffff',
+    iconBorderColor: 'rgba(0,0,0,0.04)',
+    titleColor: '#1c1c22',
+    subtitleColor: '#5a5a66',
+    shadow: 'none',
+  },
+};
+
+const frostedGuestThemes: Record<PanelMode, Partial<WalletOptionTheme>> = {
+  dark: {
+    background: 'rgba(255,255,255,0.12)',
+    hoverBackground: 'rgba(255,255,255,0.2)',
+    borderColor: 'rgba(255,255,255,0.45)',
+    titleColor: '#ffffff',
+    subtitleColor: 'rgba(255,255,255,0.72)',
+    borderStyle: 'solid',
+  },
+  light: {
+    background: '#ffffff',
+    hoverBackground: '#f5f5f8',
+    borderColor: 'rgba(0,0,0,0.05)',
+    titleColor: '#111111',
+    subtitleColor: '#6b7280',
+    borderStyle: 'solid',
+  },
+};
+
+const frostedWalletOverrides: Record<string, Partial<WalletOptionTheme>> = {
+  polkadot: {
+    background: '#e6007a',
+    hoverBackground: '#ff1d93',
+    borderColor: '#e6007a',
+    iconBackground: '#ffffff',
+    iconBorderColor: 'rgba(0,0,0,0.05)',
+    titleColor: '#ffffff',
+    subtitleColor: 'rgba(255,255,255,0.9)',
+    iconShadow: '0 4px 12px rgba(230,0,122,0.35)',
+    shadow: '0 8px 24px rgba(230,0,122,0.25)',
+  },
+};
+
+
+type WalletIntegrationKind = 'official-extension' | 'browser-extension' | 'walletconnect' | 'email';
+
+interface WalletOptionConfig {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: {
+    src: string;
+    alt: string;
+  };
+  integrationKind: WalletIntegrationKind;
+  handler: () => void;
+  showsLoadingIndicator?: boolean;
+  themeOverride?: Partial<WalletOptionTheme>;
+}
+
+interface WalletOptionProps {
+  title: string;
+  subtitle?: string;
+  iconSrc?: string;
+  iconAlt?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  loading?: boolean;
+  variant?: 'default' | 'ghost';
+  theme?: Partial<WalletOptionTheme>;
+}
+
+const WalletOption = ({
+  title,
+  subtitle,
+  iconSrc,
+  iconAlt,
+  onClick,
+  disabled,
+  loading,
+  variant = 'default',
+  theme,
+}: WalletOptionProps) => {
+  const isGhost = variant === 'ghost';
+  const baseClasses =
+    'group flex w-full items-center gap-4 rounded-xl p-4 transition-all active:scale-[0.995] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 disabled:opacity-60';
+  const variantClasses =
+    isGhost
+      ? 'justify-center text-sm font-semibold'
+      : 'text-left';
+  const contentAlignment = isGhost && !iconSrc ? 'text-center' : 'text-left';
+  const resolvedTheme = {
+    ...(isGhost ? ghostOptionTheme : defaultOptionTheme),
+    ...theme,
+  };
+  const buttonStyle: CSSProperties = {
+    background: resolvedTheme.background,
+    borderColor: resolvedTheme.borderColor,
+    boxShadow: resolvedTheme.shadow,
+  };
+  const titleStyle = resolvedTheme.titleColor ? { color: resolvedTheme.titleColor } : undefined;
+  const subtitleStyle = resolvedTheme.subtitleColor ? { color: resolvedTheme.subtitleColor } : undefined;
+  const borderClass = resolvedTheme.borderStyle === 'none' ? 'border-0' : 'border';
+  const borderStyleClass = resolvedTheme.borderStyle === 'dashed' ? 'border-dashed' : '';
+  const handleMouseEnter = !isGhost && resolvedTheme.hoverBackground
+    ? (event: MouseEvent<HTMLButtonElement>) => {
+        event.currentTarget.style.background = resolvedTheme.hoverBackground as string;
+      }
+    : undefined;
+  const handleMouseLeave = !isGhost && resolvedTheme.hoverBackground
+    ? (event: MouseEvent<HTMLButtonElement>) => {
+        event.currentTarget.style.background = resolvedTheme.background as string;
+      }
+    : undefined;
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`${baseClasses} ${variantClasses} ${borderClass} ${borderStyleClass}`}
+      style={buttonStyle}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {iconSrc && (
+        <div
+          className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl border p-1.5"
+          style={{
+            background: resolvedTheme.iconBackground,
+            borderColor: resolvedTheme.iconBorderColor,
+            boxShadow: resolvedTheme.iconShadow,
+          }}
+        >
+          <div className="h-9 w-9 flex items-center justify-center rounded-full overflow-hidden">
+            <WalletLogo src={iconSrc} alt={iconAlt ?? ''} className="h-full w-full object-cover" />
+          </div>
+        </div>
+      )}
+      <div className={`flex-1 ${contentAlignment} leading-tight`}>
+        <p
+          className={`text-base ${isGhost ? 'font-semibold' : 'font-medium'} ${resolvedTheme.titleColor ? '' : 'text-foreground'}`}
+          style={titleStyle}
+        >
+          {title}
+        </p>
+        {subtitle && (
+          <p className={`text-sm ${resolvedTheme.subtitleColor ? '' : 'text-secondary/80'}`} style={subtitleStyle}>
+            {subtitle}
+          </p>
+        )}
+      </div>
+      {loading && <Loader2 className="h-5 w-5 animate-spin text-white/80" />}
+    </button>
+  );
+};
+
+const POLKADOT_JS_LOGO = '/assets/Logos/Polkadot Js Logo.png';
+const WALLETCONNECT_LOGO = '/assets/Logos/Wallet Connect Logo.png';
+const SUBWALLET_LOGO = '/assets/Logos/Subwallet Logo.png';
+const TALISMAN_LOGO = '/assets/Logos/Talisman Wallet Logo.png';
+const EMAIL_LOGIN_LOGO = '/assets/Logos/choptdot_whitebackground.png';
+
+const isFlagEnabled = (value?: string) => value === '1' || value?.toLowerCase() === 'true';
+
+interface ViewModeToggleProps {
+  value: LoginViewOverride;
+  onChange: (value: LoginViewOverride) => void;
+  resolvedView: 'desktop' | 'mobile';
+}
+
+const ViewModeToggle = ({ value, onChange, resolvedView }: ViewModeToggleProps) => {
+  const options: { id: LoginViewOverride; label: string }[] = [
+    { id: 'auto', label: `Auto (${resolvedView})` },
+    { id: 'desktop', label: 'Desktop' },
+    { id: 'mobile', label: 'Mobile' },
+  ];
+
+  return (
+    <div className="fixed top-4 right-4 z-[80]">
+      <div className="flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-3 py-2 text-white shadow-lg backdrop-blur-lg">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/70">Login view</span>
+        <div className="flex rounded-full bg-white/10 p-0.5">
+          {options.map((option) => {
+            const isActive = value === option.id;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => onChange(option.id)}
+                className={`px-3 py-1 text-[11px] font-medium rounded-full transition-colors ${
+                  isActive ? 'bg-white text-black' : 'text-white/70 hover:text-white'
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const trackEvent = (name: string, payload?: Record<string, unknown>) => {
+  try {
+    window?.analytics?.track?.(name, payload);
+  } catch (err) {
+    console.debug(`[analytics] ${name}`, payload);
+  }
+};
+
+export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   const { login, loginAsGuest } = useAuth();
   const account = useAccount(); // Get AccountContext to auto-connect wallet
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showWalletPicker, setShowWalletPicker] = useState(false);
   const [showWalletConnectQR, setShowWalletConnectQR] = useState(false);
   const [walletConnectQRCode, setWalletConnectQRCode] = useState<string | null>(null);
-  const [_walletConnectURI, setWalletConnectURI] = useState<string | null>(null);
+  const [walletConnectUri, setWalletConnectUri] = useState<string | null>(null);
   const [isWaitingForWalletConnect, setIsWaitingForWalletConnect] = useState(false);
   const walletConnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const enableMobileUi = isFlagEnabled(import.meta.env.VITE_ENABLE_MOBILE_WC_UI ?? '0');
+  const device = useClientDevice();
+  const [viewModeOverride, setViewModeOverride] = useState<LoginViewOverride>('auto');
+  const [showEmailLogin, setShowEmailLogin] = useState(false);
+  const [emailCredentials, setEmailCredentials] = useState({ email: '', password: '' });
+  const [authPanelView, setAuthPanelView] = useState<'login' | 'signup'>('login');
+  const [signupForm, setSignupForm] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    username: '',
+    acceptTerms: false,
+  });
+  const [signupFeedback, setSignupFeedback] = useState<{ status: 'idle' | 'success' | 'error'; message?: string }>({
+    status: 'idle',
+  });
+  const hasTrackedMobilePanelRef = useRef(false);
+  const getInitialPanelMode = () => {
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark' as PanelMode;
+    }
+    return 'light' as PanelMode;
+  };
+  const [panelMode, setPanelMode] = useState<PanelMode>(getInitialPanelMode);
+  const resolvedViewMode: 'desktop' | 'mobile' =
+    viewModeOverride === 'auto' ? (device.isMobile ? 'mobile' : 'desktop') : viewModeOverride;
+  const isMobileWalletFlow = enableMobileUi && resolvedViewMode === 'mobile';
 
   // Listen for WalletConnect connection completion
   useEffect(() => {
@@ -59,7 +491,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       // Close QR modal immediately
       setShowWalletConnectQR(false);
       setWalletConnectQRCode(null);
-      setWalletConnectURI(null);
+      setWalletConnectUri(null);
       setIsWaitingForWalletConnect(false);
 
       // Proceed with login
@@ -112,7 +544,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           console.warn('[LoginScreen] WalletConnect connection timeout');
           setShowWalletConnectQR(false);
           setWalletConnectQRCode(null);
-          setWalletConnectURI(null);
+          setWalletConnectUri(null);
           setIsWaitingForWalletConnect(false);
           setError('WalletConnect connection timed out. Please try again.');
           triggerHaptic('error');
@@ -126,6 +558,80 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       };
     }
   }, [isWaitingForWalletConnect, showWalletConnectQR, account.status]);
+
+  useEffect(() => {
+    if (isMobileWalletFlow && showWalletConnectQR) {
+      setShowWalletConnectQR(false);
+    }
+  }, [isMobileWalletFlow, showWalletConnectQR]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (event: MediaQueryListEvent) => {
+      setPanelMode(event.matches ? 'dark' : 'light');
+    };
+    // set initial in case matchMedia differs
+    setPanelMode(media.matches ? 'dark' : 'light');
+    if (media.addEventListener) {
+      media.addEventListener('change', handleChange);
+    } else {
+      media.addListener(handleChange);
+    }
+    return () => {
+      if (media.removeEventListener) {
+        media.removeEventListener('change', handleChange);
+      } else {
+        media.removeListener(handleChange);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!enableMobileUi && viewModeOverride === 'mobile') {
+      setViewModeOverride('auto');
+    }
+  }, [enableMobileUi, viewModeOverride]);
+
+  useEffect(() => {
+    if (isMobileWalletFlow && enableMobileUi && !walletConnectUri && !isWaitingForWalletConnect && !loading) {
+      startWalletConnectSession({ openQrModal: false, source: 'mobile-panel-auto' });
+    }
+  }, [isMobileWalletFlow, enableMobileUi, walletConnectUri, isWaitingForWalletConnect, loading]);
+
+  useEffect(() => {
+    if (isMobileWalletFlow && showEmailLogin) {
+      setShowEmailLogin(false);
+    }
+    if (isMobileWalletFlow && authPanelView === 'signup') {
+      setAuthPanelView('login');
+    }
+  }, [isMobileWalletFlow, showEmailLogin, authPanelView]);
+
+  useEffect(() => {
+    if (authPanelView === 'login') {
+      setSignupForm({
+        email: '',
+        password: '',
+        confirmPassword: '',
+        username: '',
+        acceptTerms: false,
+      });
+      setSignupFeedback({ status: 'idle' });
+    }
+  }, [authPanelView]);
+
+  useEffect(() => {
+    if (isMobileWalletFlow && !hasTrackedMobilePanelRef.current) {
+      hasTrackedMobilePanelRef.current = true;
+      trackEvent('mobile_wallet_panel_opened', { os: device.os });
+    }
+    if (!isMobileWalletFlow && hasTrackedMobilePanelRef.current) {
+      hasTrackedMobilePanelRef.current = false;
+    }
+  }, [isMobileWalletFlow, device.os]);
 
   const handleWalletLogin = async (method: AuthMethod) => {
     try {
@@ -291,351 +797,848 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     }
   };
 
+  const handleEmailLogin = async (event?: FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    const trimmedEmail = emailCredentials.email.trim();
+    if (!trimmedEmail || !emailCredentials.password) {
+      setError('Please enter both email and password.');
+      triggerHaptic('error');
+      return;
+    }
 
-  return (
-    <div className="min-h-full bg-background flex flex-col overflow-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
-      {/* Header */}
-      <div className="p-4 pt-16 pb-8 text-center">
-        <div className="w-20 h-20 mx-auto mb-4 rounded-3xl flex items-center justify-center" style={{
-          background: 'var(--accent)',
-        }}>
-          <Wallet className="w-10 h-10 text-white" />
-        </div>
-        <h1 className="text-screen-title mb-2">Welcome to ChopDot</h1>
-        <p className="text-micro text-secondary px-4">
-          Split expenses and manage group finances with blockchain-powered settlements
-        </p>
+    try {
+      setLoading(true);
+      setError(null);
+      await login('email', {
+        type: 'email',
+        email: trimmedEmail,
+        password: emailCredentials.password,
+      });
+      triggerHaptic('medium');
+      setShowEmailLogin(false);
+      setEmailCredentials({ email: '', password: '' });
+      onLoginSuccess?.();
+    } catch (err: any) {
+      console.error('Email login failed:', err);
+      setError(err.message || 'Failed to login with email and password');
+      triggerHaptic('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignupSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    triggerHaptic('light');
+    if (!signupForm.email.trim() || !signupForm.password || !signupForm.confirmPassword) {
+      setSignupFeedback({ status: 'error', message: 'Fill out every field to continue.' });
+      triggerHaptic('error');
+      return;
+    }
+    if (signupForm.password.length < 8) {
+      setSignupFeedback({ status: 'error', message: 'Password must be at least 8 characters.' });
+      triggerHaptic('error');
+      return;
+    }
+    if (signupForm.password !== signupForm.confirmPassword) {
+      setSignupFeedback({ status: 'error', message: 'Passwords do not match.' });
+      triggerHaptic('error');
+      return;
+    }
+    if (!signupForm.acceptTerms) {
+      setSignupFeedback({ status: 'error', message: 'Please accept the terms to create an account.' });
+      triggerHaptic('error');
+      return;
+    }
+    const supabase = getSupabase();
+    if (!supabase) {
+      setSignupFeedback({ status: 'error', message: 'Supabase auth is not configured.' });
+      triggerHaptic('error');
+      return;
+    }
+    try {
+      setLoading(true);
+      setSignupFeedback({ status: 'idle' });
+      const { error } = await supabase.auth.signUp({
+        email: signupForm.email.trim(),
+        password: signupForm.password,
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: signupForm.username ? { username: signupForm.username } : undefined,
+        },
+      });
+      if (error) {
+        throw error;
+      }
+      setSignupFeedback({
+        status: 'success',
+        message: 'Check your email to confirm your account, then sign in here.',
+      });
+      triggerHaptic('medium');
+    } catch (err: any) {
+      console.error('Signup failed:', err);
+      setSignupFeedback({ status: 'error', message: err.message || 'Unable to create account.' });
+      triggerHaptic('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  interface ExtensionLoginArgs {
+    sources: string[];
+    walletDisplayName: string;
+    notFoundMessage: string;
+  }
+
+  const loginWithExtension = async ({ sources, walletDisplayName, notFoundMessage }: ExtensionLoginArgs) => {
+    try {
+      triggerHaptic('light');
+      setLoading(true);
+      setError(null);
+
+      const { web3Enable, web3Accounts } = await import('@polkadot/extension-dapp');
+      await web3Enable('ChopDot');
+      const accounts = await web3Accounts();
+
+      const matchedAccount = accounts.find((acc) => {
+        const metaSource = (acc.meta.source || '').toLowerCase();
+        return sources.some((source) => metaSource === source || metaSource === source.replace('-js', ''));
+      });
+
+      if (!matchedAccount) {
+        throw new Error(notFoundMessage);
+      }
+
+      const address = matchedAccount.address;
+
+      try {
+        await account.connectExtension(address);
+      } catch (connectionError) {
+        console.warn(`[Login] ${walletDisplayName} auto-connect issue (continuing anyway):`, connectionError);
+      }
+
+      const message = generateSignInMessage(address);
+      const signature = await signPolkadotMessage(address, message);
+
+      await login('polkadot', {
+        type: 'wallet',
+        address,
+        signature,
+        message,
+      });
+
+      triggerHaptic('medium');
+      onLoginSuccess?.();
+    } catch (err: any) {
+      console.error(`[Login] ${walletDisplayName} login failed:`, err);
+      let friendlyError = `Failed to connect ${walletDisplayName}`;
+      if (err.message?.includes('not found')) {
+        friendlyError = notFoundMessage;
+      } else if (err.message) {
+        friendlyError = err.message;
+      }
+      setError(friendlyError);
+      triggerHaptic('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startWalletConnectSession = async ({ openQrModal = true, source }: { openQrModal?: boolean; source?: string } = {}) => {
+    try {
+      triggerHaptic('light');
+      setLoading(true);
+      setError(null);
+
+      const result = (await account.connectWalletConnect()) as { uri?: string } | string | null | undefined;
+      const uri = typeof result === 'string' ? result : result?.uri;
+
+      if (!uri) {
+        throw new Error('Failed to generate WalletConnect QR code');
+      }
+
+      const qrCodeDataUrl = await QRCodeLib.toDataURL(uri, {
+        errorCorrectionLevel: 'M',
+        width: 300,
+        margin: 2,
+      });
+
+      setWalletConnectUri(uri);
+      setWalletConnectQRCode(qrCodeDataUrl);
+      setShowWalletConnectQR(openQrModal);
+      setIsWaitingForWalletConnect(true);
+      if (source) {
+        trackEvent('walletconnect_session_started', { source, isMobile: isMobileWalletFlow });
+      }
+    } catch (err: any) {
+      console.error('WalletConnect login failed:', err);
+      setShowWalletConnectQR(false);
+      setWalletConnectQRCode(null);
+      setWalletConnectUri(null);
+      setIsWaitingForWalletConnect(false);
+
+      let errorMessage = err.message || 'Failed to connect via WalletConnect';
+      if (err.message?.includes('MetaMask') || err.message?.includes('does not support Polkadot')) {
+        errorMessage = 'MetaMask mobile does not support Polkadot. Please use Nova Wallet, SubWallet, or Talisman for Polkadot connections.';
+      }
+
+      setError(errorMessage);
+      triggerHaptic('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderErrorAlert = () => {
+    if (!error) {
+      return null;
+    }
+
+    return (
+      <div className="flex items-start gap-2 rounded-2xl border border-destructive/20 bg-destructive/10 px-3 py-2">
+        <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+        <p className="text-sm text-destructive leading-snug">{error}</p>
       </div>
+    );
+  };
 
-      {/* Auth Options */}
-      <div className="flex-1 px-4 space-y-3">
-        <div>
-          <p className="text-micro text-secondary mb-2 px-1">Connect with wallet</p>
-          
-          {/* Polkadot.js - Direct Connection */}
-          <button
-            onClick={() => handleWalletLogin('polkadot')}
-            disabled={loading}
-            className="w-full card p-4 flex items-center gap-3 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] mb-2 disabled:opacity-50"
-          >
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
-              background: 'linear-gradient(135deg, #E6007A 0%, #FF1864 100%)',
-            }}>
-              <Wallet className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-label">Polkadot.js</p>
-              <p className="text-micro text-secondary">Polkadot browser extension</p>
-            </div>
-            {loading && <Loader2 className="w-4 h-4 animate-spin text-secondary" />}
-          </button>
+  const MobileWalletConnectPanel = ({
+    uri,
+    loading,
+    errorMessage,
+    onRetry,
+    onSwitchToDesktop,
+    mode,
+    panelTheme,
+    walletTheme,
+    guestTheme,
+    onGuestLogin,
+    onError,
+    preferDeepLinks,
+  }: {
+    uri: string | null;
+    loading: boolean;
+    errorMessage: string | null;
+    onRetry: () => Promise<void>;
+    onSwitchToDesktop: () => void;
+    mode: PanelMode;
+    panelTheme: PanelTheme;
+    walletTheme: Partial<WalletOptionTheme>;
+    guestTheme: Partial<WalletOptionTheme>;
+    onGuestLogin: () => Promise<void>;
+    onError: (message: string) => void;
+    preferDeepLinks: boolean;
+  }) => {
+    const [showSecondaryWallets, setShowSecondaryWallets] = useState(false);
+    const textPrimary = mode === 'dark' ? 'text-white' : 'text-[#111111]';
+    const textSecondary = mode === 'dark' ? 'text-white/70' : 'text-secondary/80';
+    const walletLinks = walletConnectLinks.filter((link) => link.id !== 'copy');
+    const primaryWalletIds: WalletOptionConfig['id'][] = ['subwallet', 'talisman', 'nova'];
+    const primaryWallets = primaryWalletIds
+      .map((id) => walletLinks.find((link) => link.id === id))
+      .filter((link): link is (typeof walletLinks)[number] => Boolean(link));
+    const secondaryWallets = walletLinks.filter((link) => !primaryWalletIds.includes(link.id));
+    const isReady = Boolean(uri);
 
-          {/* Other Wallets - Opens wallet picker */}
-          <button
-            onClick={() => {
-              triggerHaptic('light');
-              setShowWalletPicker(true);
-            }}
-            disabled={loading}
-            className="w-full card p-4 flex items-center gap-3 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] mb-2 disabled:opacity-50"
-          >
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{
-              background: 'linear-gradient(135deg, #3B99FC 0%, #5E5DF7 100%)',
-            }}>
-              <Wallet className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-label">Other Wallets</p>
-              <p className="text-micro text-secondary">SubWallet, Talisman & Polkadot-compatible wallets</p>
-            </div>
-          </button>
+    const handleWalletClick = async (linkId: string) => {
+      const link = walletLinks.find((l) => l.id === linkId);
+      if (!link) {
+        return;
+      }
+      if (!uri) {
+        await onRetry();
+        return;
+      }
+      const target =
+        (preferDeepLinks ? link.deepLink?.(uri) : link.universalLink?.(uri)) ??
+        (preferDeepLinks ? link.universalLink?.(uri) : link.deepLink?.(uri));
+      if (!target) {
+        onError('Unable to open this wallet. Please switch to desktop QR or retry.');
+        return;
+      }
+      try {
+        const isHttpLink = target.startsWith('http');
+        const openInNewTab = link.id === 'other' || isHttpLink;
+        if (openInNewTab && typeof window !== 'undefined' && typeof window.open === 'function') {
+          const popup = window.open(target, '_blank', 'noopener,noreferrer');
+          if (!popup) {
+            throw new Error('Popup was blocked');
+          }
+        } else {
+          window.location.href = target;
+        }
+        trackEvent('mobile_wallet_link_clicked', { walletId: link.id });
+      } catch (err) {
+        console.error('[MobileWalletConnect] Failed to open wallet link', err);
+        if (navigator?.clipboard?.writeText) {
+          await navigator.clipboard.writeText(uri);
+          onError('Could not open the wallet directly. WalletConnect link copied—paste it into your wallet app.');
+        } else {
+          onError('Could not open the wallet link. Please switch to the desktop QR view.');
+        }
+      }
+    };
 
-          {/* Guest Login Option */}
-          <button
-            onClick={handleGuestLogin}
-            disabled={loading}
-            className="w-full card p-4 flex items-center justify-center gap-2 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="text-body">Loading...</span>
-              </>
-            ) : (
-              <span className="text-body" style={{ fontWeight: 500 }}>Continue as Guest</span>
-            )}
-          </button>
-        </div>
-
-        {error && (
-          <div className="card p-3 flex items-start gap-2 bg-destructive/10">
-            <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
-            <p className="text-micro text-destructive">{error}</p>
+    return (
+      <WalletPanel theme={panelTheme}>
+        <div className="space-y-4">
+          <div className="text-center space-y-1">
+            <p className={`text-base font-semibold ${textPrimary}`}>Open your wallet</p>
+            <p className={`text-sm ${textSecondary}`}>
+              Tap your wallet below. If nothing happens, install the app first and reopen the WalletConnect link.
+            </p>
           </div>
-        )}
-      </div>
 
-      {/* Footer with Legal Text */}
-      <div className="p-4 pb-24">
-        <p className="text-micro text-secondary text-center">
-          By continuing, you agree to ChopDot's Terms of Service and Privacy Policy
-        </p>
-      </div>
+          {errorMessage && (
+            <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive space-y-2">
+              <p>{errorMessage}</p>
+              <button
+                type="button"
+                onClick={onRetry}
+                className="text-xs font-semibold underline underline-offset-2"
+                disabled={loading}
+              >
+                Try again
+              </button>
+            </div>
+          )}
 
-      {/* Wallet Picker Modal */}
-      {showWalletPicker && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/40 z-50 animate-fadeIn"
-            onClick={() => {
-              triggerHaptic('light');
-              setShowWalletPicker(false);
-            }}
+          <div className="space-y-3">
+            {primaryWallets.map((link) => (
+              <WalletOption
+                key={link.id}
+                title={link.label}
+                subtitle={link.description}
+                iconSrc={link.icon}
+                iconAlt={`${link.label} icon`}
+                onClick={() => handleWalletClick(link.id)}
+                disabled={loading || !isReady}
+                theme={walletTheme}
+              />
+            ))}
+          </div>
+
+          {secondaryWallets.length > 0 && (
+            <div
+              className={`rounded-2xl border px-3 py-2 transition-colors ${
+                mode === 'dark'
+                  ? 'border-white/15 bg-white/5'
+                  : 'border-black/5 bg-white/60'
+              }`}
+            >
+              <button
+                type="button"
+                onClick={() => setShowSecondaryWallets((prev) => !prev)}
+                className="w-full flex items-center justify-between text-sm font-semibold text-[var(--accent)]"
+              >
+                {showSecondaryWallets ? 'Hide more wallets' : 'More wallet options'}
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${showSecondaryWallets ? 'rotate-180' : 'rotate-0'}`}
+                />
+              </button>
+              {showSecondaryWallets && (
+                <div className="mt-3 space-y-3">
+                  {secondaryWallets.map((link) => (
+                    <WalletOption
+                      key={link.id}
+                      title={link.label}
+                      subtitle={link.description}
+                      iconSrc={link.icon}
+                      iconAlt={`${link.label} icon`}
+                      onClick={() => handleWalletClick(link.id)}
+                      disabled={loading || !isReady}
+                      theme={walletTheme}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <WalletOption
+            title="Continue as guest"
+            onClick={onGuestLogin}
+            disabled={loading}
+            variant="ghost"
+            theme={guestTheme}
           />
 
-          {/* Modal */}
-          <div className="fixed inset-x-0 bottom-0 z-50 animate-slideUp">
-            <div className="bg-card rounded-t-[24px] max-h-[80vh] flex flex-col" style={{ boxShadow: 'var(--shadow-elev)' }}>
-              {/* Header */}
-              <div className="flex items-center justify-between px-4 py-4 border-b border-border/50">
-                <h2 className="text-section">Select Wallet</h2>
-                <button
-                  onClick={() => {
-                    triggerHaptic('light');
-                    setShowWalletPicker(false);
-                  }}
-                  className="w-8 h-8 rounded-full bg-secondary/50 flex items-center justify-center active:scale-95 transition-transform"
-                >
-                  <X className="w-4 h-4 text-muted" />
-                </button>
-              </div>
-
-              {/* Wallet List */}
-              <div className="flex-1 overflow-y-auto p-4 pt-6 space-y-3">
-                {/* SubWallet - Browser Extension */}
-                <button
-                  onClick={async () => {
-                    triggerHaptic('light');
-                    setShowWalletPicker(false);
-                    try {
-                      console.log('[SubWallet] Starting login flow...');
-                      setLoading(true);
-                      setError(null);
-                      
-                      // Connect directly to SubWallet extension (not via WalletConnect)
-                      console.log('[SubWallet] Enabling web3...');
-                      const { web3Enable, web3Accounts } = await import('@polkadot/extension-dapp');
-                      await web3Enable('ChopDot');
-                      
-                      console.log('[SubWallet] Getting accounts...');
-                      const accounts = await web3Accounts();
-                      console.log('[SubWallet] Found accounts:', accounts.map(a => ({ address: a.address, source: a.meta.source })));
-                      
-                      const subWalletAccount = accounts.find(acc => 
-                        acc.meta.source === 'subwallet-js' || 
-                        acc.meta.source === 'subwallet'
-                      );
-                      
-                      if (!subWalletAccount) {
-                        throw new Error('SubWallet extension not found. Please install SubWallet browser extension.');
-                      }
-                      
-                      const address = subWalletAccount.address;
-                      console.log('[SubWallet] Selected address:', address);
-                      
-                      try {
-                        console.log('[SubWallet] Connecting to AccountContext...');
-                        await account.connectExtension(address);
-                        console.log('[SubWallet] AccountContext connected');
-                      } catch (e) {
-                        console.warn('[SubWallet] Failed to auto-connect to AccountContext:', e);
-                      }
-                      
-                      console.log('[SubWallet] Generating sign-in message...');
-                      const message = generateSignInMessage(address);
-                      console.log('[SubWallet] Message:', message);
-                      
-                      console.log('[SubWallet] Requesting signature...');
-                      const signature = await signPolkadotMessage(address, message);
-                      console.log('[SubWallet] Signature received:', signature);
-                      
-                      console.log('[SubWallet] Calling login...');
-                      await login('polkadot', {
-                        type: 'wallet',
-                        address,
-                        signature,
-                        message,
-                      });
-                      console.log('[SubWallet] Login completed!');
-                      
-                      triggerHaptic('medium');
-                      onLoginSuccess?.();
-                    } catch (err: any) {
-                      console.error('[SubWallet] Login failed:', err);
-                      let friendlyError = 'Failed to connect SubWallet';
-                      if (err.message?.includes('not found')) {
-                        friendlyError = 'SubWallet extension not found. Please install SubWallet browser extension.';
-                      } else if (err.message) {
-                        friendlyError = err.message;
-                      }
-                      setError(friendlyError);
-                      triggerHaptic('error');
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                  disabled={loading}
-                  className="w-full card p-4 flex items-center gap-3 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
-                >
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{
-                    background: 'linear-gradient(135deg, #9333EA 0%, #7C3AED 100%)',
-                  }}>
-                    <span className="text-2xl">🟣</span>
-                  </div>
-                  <div className="flex-1 text-left">
-                    <p className="text-label font-medium">SubWallet</p>
-                    <p className="text-micro text-secondary">Browser extension</p>
-                  </div>
-                </button>
-
-                {/* Talisman - Browser Extension */}
-                <button
-                  onClick={async () => {
-                    triggerHaptic('light');
-                    setShowWalletPicker(false);
-                    try {
-                      setLoading(true);
-                      setError(null);
-                      
-                      // Connect directly to Talisman extension (not via WalletConnect)
-                      const { web3Enable, web3Accounts } = await import('@polkadot/extension-dapp');
-                      await web3Enable('ChopDot');
-                      const accounts = await web3Accounts();
-                      
-                      const talismanAccount = accounts.find(acc => 
-                        acc.meta.source === 'talisman'
-                      );
-                      
-                      if (!talismanAccount) {
-                        throw new Error('Talisman extension not found. Please install Talisman browser extension.');
-                      }
-                      
-                      const address = talismanAccount.address;
-                      
-                      try {
-                        await account.connectExtension(address);
-                      } catch (e) {
-                        console.warn('[Login] Failed to auto-connect to AccountContext:', e);
-                      }
-                      
-                      const message = generateSignInMessage(address);
-                      const signature = await signPolkadotMessage(address, message);
-                      
-                      await login('polkadot', {
-                        type: 'wallet',
-                        address,
-                        signature,
-                        message,
-                      });
-                      
-                      triggerHaptic('medium');
-                      onLoginSuccess?.();
-                    } catch (err: any) {
-                      console.error('Talisman login failed:', err);
-                      let friendlyError = 'Failed to connect Talisman';
-                      if (err.message?.includes('not found')) {
-                        friendlyError = 'Talisman extension not found. Please install Talisman browser extension.';
-                      } else if (err.message) {
-                        friendlyError = err.message;
-                      }
-                      setError(friendlyError);
-                      triggerHaptic('error');
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                  disabled={loading}
-                  className="w-full card p-4 flex items-center gap-3 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
-                >
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{
-                    background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-                  }}>
-                    <span className="text-2xl">🔷</span>
-                  </div>
-                  <div className="flex-1 text-left">
-                    <p className="text-label font-medium">Talisman</p>
-                    <p className="text-micro text-secondary">Browser extension</p>
-                  </div>
-                </button>
-
-                {/* WalletConnect - For mobile wallets (Nova, MetaMask mobile, etc.) */}
-                <button
-                  onClick={async () => {
-                    triggerHaptic('light');
-                    setShowWalletPicker(false);
-                    try {
-                      setLoading(true);
-                      setError(null);
-                      
-                      // Use WalletConnect for mobile wallets via QR code
-                      const uri = await account.connectWalletConnect();
-                      
-                      if (!uri) {
-                        throw new Error('Failed to generate WalletConnect QR code');
-                      }
-                      
-                      // Generate QR code
-                      const qrCodeDataUrl = await QRCodeLib.toDataURL(uri, {
-                        errorCorrectionLevel: 'M',
-                        width: 300,
-                        margin: 2,
-                      });
-                      
-                      setWalletConnectURI(uri);
-                      setWalletConnectQRCode(qrCodeDataUrl);
-                      setShowWalletConnectQR(true);
-                      setIsWaitingForWalletConnect(true);
-                      setLoading(false);
-                      
-                      // Connection will be handled by useEffect listening to account.status
-                      // No need to poll here - the useEffect will detect when account.status becomes 'connected'
-                    } catch (err: any) {
-                      console.error('WalletConnect login failed:', err);
-                      setShowWalletConnectQR(false);
-                      setWalletConnectQRCode(null);
-                      setWalletConnectURI(null);
-                      setIsWaitingForWalletConnect(false);
-                      
-                      // Show user-friendly error message
-                      let errorMessage = err.message || 'Failed to connect via WalletConnect';
-                      if (err.message?.includes('MetaMask') || err.message?.includes('does not support Polkadot')) {
-                        errorMessage = 'MetaMask mobile does not support Polkadot. Please use Nova Wallet, SubWallet, or Talisman for Polkadot connections.';
-                      }
-                      
-                      setError(errorMessage);
-                      triggerHaptic('error');
-                      setLoading(false);
-                    }
-                  }}
-                  disabled={loading}
-                  className="w-full card p-4 flex items-center gap-3 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] disabled:opacity-50"
-                >
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{
-                    background: 'linear-gradient(135deg, #3B99FC 0%, #5E5DF7 100%)',
-                  }}>
-                    <Wallet className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <p className="text-label font-medium">WalletConnect</p>
-                    <p className="text-micro text-secondary">Nova Wallet, SubWallet mobile, Talisman mobile</p>
-                  </div>
-                </button>
-              </div>
-            </div>
+          <div className="text-center space-y-2">
+            <button
+              type="button"
+              onClick={onSwitchToDesktop}
+              className="text-xs font-semibold text-[var(--accent)] underline underline-offset-4"
+            >
+              Switch to desktop wallet view
+            </button>
           </div>
-        </>
+        </div>
+      </WalletPanel>
+    );
+  };
+
+  const renderEmailLoginForm = () => {
+    const containerClasses =
+      panelMode === 'dark'
+        ? 'border-white/10 bg-white/5'
+        : 'border-black/5 bg-white shadow-[0_15px_35px_rgba(0,0,0,0.05)]';
+    const inputClasses =
+      panelMode === 'dark'
+        ? 'bg-white/10 border-white/20 text-white placeholder:text-white/60'
+        : 'bg-white border-black/10 text-[#0f0f11] placeholder:text-secondary/70';
+    const labelClasses = panelMode === 'dark' ? 'text-white/80' : 'text-[#111111]';
+    return (
+      <form onSubmit={handleEmailLogin} className={`space-y-3 rounded-2xl border px-4 py-4 ${containerClasses}`}>
+        <div className="space-y-1">
+          <p className={`text-base font-semibold ${panelMode === 'dark' ? 'text-white' : 'text-[#111111]'}`}>
+            Sign in with email
+          </p>
+          <p className={`text-sm ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
+            Enter the credentials you created when registering with email.
+          </p>
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="email-login-email" className={`text-sm font-semibold ${labelClasses}`}>
+            Email
+          </label>
+          <input
+            id="email-login-email"
+            type="email"
+            autoComplete="email"
+            required
+            className={`w-full rounded-xl border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 ${inputClasses}`}
+            value={emailCredentials.email}
+            onChange={(event) =>
+              setEmailCredentials((prev) => ({
+                ...prev,
+                email: event.target.value,
+              }))
+            }
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="email-login-password" className={`text-sm font-semibold ${labelClasses}`}>
+            Password
+          </label>
+          <input
+            id="email-login-password"
+            type="password"
+            autoComplete="current-password"
+            required
+            className={`w-full rounded-xl border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 ${inputClasses}`}
+            value={emailCredentials.password}
+            onChange={(event) =>
+              setEmailCredentials((prev) => ({
+                ...prev,
+                password: event.target.value,
+              }))
+            }
+          />
+        </div>
+        <div className="space-y-2">
+          <button
+            type="submit"
+            className="w-full rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted/10 disabled:opacity-60"
+            disabled={loading}
+          >
+            Continue with email
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setShowEmailLogin(false);
+              setEmailCredentials({ email: '', password: '' });
+            }}
+            className="w-full rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted/10"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    );
+  };
+
+  const renderSignupPanel = () => {
+    const resolvedPanelTheme = frostedPanelThemes[panelMode] ?? defaultPanelTheme;
+    const inputClasses =
+      panelMode === 'dark'
+        ? 'bg-white/10 border-white/20 text-white placeholder:text-white/60'
+        : 'bg-white border-black/10 text-[#0f0f11] placeholder:text-secondary/70';
+
+    return (
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-sm space-y-6">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <ChopDotMark size={52} />
+            <p className={panelMode === 'dark' ? 'text-sm font-medium text-white/90' : 'text-sm font-medium text-secondary/80'}>
+              Create your ChopDot account
+            </p>
+          </div>
+          <WalletPanel theme={resolvedPanelTheme}>
+            <form onSubmit={handleSignupSubmit} className="space-y-3">
+              <div className="space-y-1">
+                <p className={`text-base font-semibold ${panelMode === 'dark' ? 'text-white' : 'text-[#111111]'}`}>
+                  Sign up with email
+                </p>
+                <p className={`text-sm ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
+                  We&apos;ll send a confirmation link so you can verify your email.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <label className={`text-sm font-semibold ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
+                  Email
+                </label>
+                <input
+                  type="email"
+                  required
+                  autoComplete="email"
+                  className={`w-full rounded-xl border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 ${inputClasses}`}
+                  value={signupForm.email}
+                  onChange={(event) => setSignupForm((prev) => ({ ...prev, email: event.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className={`text-sm font-semibold ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
+                  Username (optional)
+                </label>
+                <input
+                  type="text"
+                  className={`w-full rounded-xl border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 ${inputClasses}`}
+                  value={signupForm.username}
+                  onChange={(event) => setSignupForm((prev) => ({ ...prev, username: event.target.value }))}
+                  placeholder="How friends see you"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className={`text-sm font-semibold ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
+                  Password
+                </label>
+                <input
+                  type="password"
+                  minLength={8}
+                  required
+                  autoComplete="new-password"
+                  className={`w-full rounded-xl border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 ${inputClasses}`}
+                  value={signupForm.password}
+                  onChange={(event) => setSignupForm((prev) => ({ ...prev, password: event.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className={`text-sm font-semibold ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
+                  Confirm password
+                </label>
+                <input
+                  type="password"
+                  minLength={8}
+                  required
+                  autoComplete="new-password"
+                  className={`w-full rounded-xl border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 ${inputClasses}`}
+                  value={signupForm.confirmPassword}
+                  onChange={(event) => setSignupForm((prev) => ({ ...prev, confirmPassword: event.target.value }))}
+                />
+              </div>
+              <label className="flex items-start gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={signupForm.acceptTerms}
+                  onChange={(event) => setSignupForm((prev) => ({ ...prev, acceptTerms: event.target.checked }))}
+                  className="mt-1"
+                />
+                <span className={panelMode === 'dark' ? 'text-white/80' : 'text-secondary/80'}>
+                  I agree to the{' '}
+                  <a href="/terms" className="underline">
+                    Terms of Service
+                  </a>{' '}
+                  and{' '}
+                  <a href="/privacy" className="underline">
+                    Privacy Policy
+                  </a>
+                  .
+                </span>
+              </label>
+              {signupFeedback.message && (
+                <div
+                  className={`rounded-xl border px-3 py-2 text-sm ${
+                    signupFeedback.status === 'error'
+                      ? 'border-destructive text-destructive bg-destructive/10'
+                      : 'border-emerald-500 text-emerald-600 bg-emerald-500/10'
+                  }`}
+                >
+                  {signupFeedback.message}
+                </div>
+              )}
+              <button
+                type="submit"
+                className="w-full rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted/10 disabled:opacity-60"
+                disabled={loading}
+              >
+                {loading ? 'Creating account…' : 'Create account'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setAuthPanelView('login')}
+                className="w-full rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted/10"
+              >
+                Back to login
+              </button>
+            </form>
+          </WalletPanel>
+          {renderFooterContent()}
+        </div>
+      </div>
+    );
+  };
+
+  const renderFooterContent = () => (
+    <div className="space-y-3">
+      <a
+        href="https://polkadot.com/get-started/wallets/"
+        target="_blank"
+        rel="noreferrer"
+        className={`block text-center text-sm font-semibold ${
+          panelMode === 'dark' ? 'text-white' : 'text-[var(--accent)]'
+        } transition-colors hover:text-[var(--accent)]/80 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/25 rounded-xl py-2`}
+      >
+        Need a wallet? View recommended options
+      </a>
+      <p className={`text-center text-xs ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
+        By continuing, you agree to ChopDot&apos;s{' '}
+        <a
+          href="/terms"
+          className={`font-medium underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 rounded-sm px-0.5 ${
+            panelMode === 'dark' ? 'text-white' : 'text-foreground'
+          }`}
+        >
+          Terms of Service
+        </a>{' '}
+        and{' '}
+        <a
+          href="/privacy"
+          className={`font-medium underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 rounded-sm px-0.5 ${
+            panelMode === 'dark' ? 'text-white' : 'text-foreground'
+          }`}
+        >
+          Privacy Policy
+        </a>
+        .
+      </p>
+    </div>
+  );
+
+  const renderPanelLayout = () => {
+    if (authPanelView === 'signup') {
+      return renderSignupPanel();
+    }
+
+    const walletOptionConfigs: WalletOptionConfig[] = [
+      {
+        id: 'email',
+        title: 'Email & password',
+        subtitle: 'Sign in with your ChopDot account',
+        icon: {
+          src: EMAIL_LOGIN_LOGO,
+          alt: 'Email login icon',
+        },
+        integrationKind: 'email',
+        handler: () =>
+          setShowEmailLogin((prev) => {
+            setAuthPanelView('login');
+            const next = !prev;
+            if (!next) {
+              setEmailCredentials({ email: '', password: '' });
+            }
+            setError(null);
+            return next;
+          }),
+        themeOverride: emailOptionTheme,
+      },
+      {
+        id: 'polkadot',
+        title: 'Polkadot.js',
+        subtitle: 'Browser extension',
+        icon: {
+          src: POLKADOT_JS_LOGO,
+          alt: 'Polkadot.js logo',
+        },
+        integrationKind: 'official-extension',
+        handler: () => handleWalletLogin('polkadot'),
+        showsLoadingIndicator: true,
+        themeOverride: polkadotOptionTheme,
+      },
+      {
+        id: 'subwallet',
+        title: 'SubWallet',
+        subtitle: 'Browser extension',
+        icon: {
+          src: SUBWALLET_LOGO,
+          alt: 'SubWallet logo',
+        },
+        integrationKind: 'browser-extension',
+        handler: () =>
+          loginWithExtension({
+            sources: ['subwallet-js', 'subwallet'],
+            walletDisplayName: 'SubWallet',
+            notFoundMessage: 'SubWallet extension not found. Please install SubWallet browser extension.',
+          }),
+      },
+      {
+        id: 'talisman',
+        title: 'Talisman',
+        subtitle: 'Browser extension',
+        icon: {
+          src: TALISMAN_LOGO,
+          alt: 'Talisman logo',
+        },
+        integrationKind: 'browser-extension',
+        handler: () =>
+          loginWithExtension({
+            sources: ['talisman'],
+            walletDisplayName: 'Talisman',
+            notFoundMessage: 'Talisman extension not found. Please install Talisman browser extension.',
+          }),
+      },
+      {
+        id: 'walletconnect',
+        title: 'WalletConnect',
+        subtitle: 'Scan with mobile wallets',
+        icon: {
+          src: WALLETCONNECT_LOGO,
+          alt: 'WalletConnect logo',
+        },
+        integrationKind: 'walletconnect',
+        handler: () => startWalletConnectSession({ openQrModal: true, source: 'desktop-qr' }),
+      },
+    ];
+
+    const resolvedPanelTheme = frostedPanelThemes[panelMode] ?? defaultPanelTheme;
+    const variationWalletTheme = frostedWalletThemes[panelMode];
+    const variationGuestTheme = frostedGuestThemes[panelMode];
+
+    const appliedWalletOptions = walletOptionConfigs.map((option) => {
+      const overrideTheme = frostedWalletOverrides[option.id] ?? {};
+      return {
+        ...option,
+        themeOverride: {
+          ...variationWalletTheme,
+          ...option.themeOverride,
+          ...overrideTheme,
+        },
+      };
+    });
+
+    if (isMobileWalletFlow) {
+      return (
+        <div className="flex-1 flex items-center justify-center px-4 py-12">
+          <div className="w-full max-w-sm space-y-6">
+            <div className="flex flex-col items-center gap-3 text-center">
+              <ChopDotMark size={52} />
+              <p className="text-sm font-medium text-white/90">Sign in to ChopDot</p>
+            </div>
+            <MobileWalletConnectPanel
+              uri={walletConnectUri}
+              loading={loading}
+              errorMessage={error}
+              onRetry={() => startWalletConnectSession({ openQrModal: false, source: 'mobile-panel-retry' })}
+              onSwitchToDesktop={async () => {
+                setViewModeOverride('desktop');
+                await startWalletConnectSession({ openQrModal: true, source: 'mobile-panel-switch-desktop' });
+              }}
+              mode={panelMode}
+              panelTheme={resolvedPanelTheme}
+              walletTheme={variationWalletTheme}
+              guestTheme={variationGuestTheme}
+              onGuestLogin={handleGuestLogin}
+              onError={(message) => setError(message)}
+              preferDeepLinks={device.isMobile}
+            />
+            {renderFooterContent()}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-sm space-y-6">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <ChopDotMark size={52} />
+            <p className={panelMode === 'dark' ? 'text-sm font-medium text-white/90' : 'text-sm font-medium text-secondary/80'}>
+              Sign in to ChopDot
+            </p>
+          </div>
+          <WalletPanel theme={resolvedPanelTheme}>
+            <div className="space-y-3">
+              {appliedWalletOptions.map((option) => (
+                <div key={option.id} className="space-y-3">
+                  <WalletOption
+                    title={option.title}
+                    subtitle={option.subtitle}
+                    iconSrc={option.icon.src}
+                    iconAlt={option.icon.alt}
+                    onClick={option.handler}
+                    disabled={loading}
+                    loading={option.showsLoadingIndicator && loading}
+                    theme={option.themeOverride}
+                  />
+                  {option.id === 'email' && showEmailLogin && renderEmailLoginForm()}
+                  {option.id === 'email' && authPanelView === 'login' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowEmailLogin(false);
+                        setAuthPanelView('signup');
+                      }}
+                      className="text-xs text-[var(--accent)] underline underline-offset-4 ml-1"
+                    >
+                      Need an account? Create one
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <WalletOption
+              title="Continue as guest"
+              onClick={handleGuestLogin}
+              disabled={loading}
+              variant="ghost"
+              theme={variationGuestTheme}
+            />
+
+            {renderErrorAlert()}
+          </WalletPanel>
+
+          {renderFooterContent()}
+          {enableMobileUi && resolvedViewMode === 'desktop' && (
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setViewModeOverride('mobile')}
+                className="text-xs font-semibold text-[var(--accent)] underline underline-offset-4"
+              >
+                Switch to mobile wallets view
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div
+      className={`min-h-full flex flex-col overflow-auto transition-colors duration-200 ${
+        panelMode === 'dark' ? 'text-white' : 'text-[#0f0f11]'
+      }`}
+      style={{
+        ...(sceneBackgroundStyles[panelMode] ?? sceneBackgroundStyles.dark),
+        WebkitOverflowScrolling: 'touch',
+      }}
+    >
+      {enableMobileUi && (
+        <ViewModeToggle value={viewModeOverride} onChange={setViewModeOverride} resolvedView={resolvedViewMode} />
       )}
+      {renderPanelLayout()}
 
       {/* WalletConnect QR Code Modal */}
       {showWalletConnectQR && walletConnectQRCode && (
@@ -647,7 +1650,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               triggerHaptic('light');
               setShowWalletConnectQR(false);
               setWalletConnectQRCode(null);
-              setWalletConnectURI(null);
+              setWalletConnectUri(null);
             }}
           />
 
@@ -662,7 +1665,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
                     triggerHaptic('light');
                     setShowWalletConnectQR(false);
                     setWalletConnectQRCode(null);
-                    setWalletConnectURI(null);
+                    setWalletConnectUri(null);
                   }}
                   className="w-8 h-8 rounded-full bg-secondary/50 flex items-center justify-center active:scale-95 transition-transform"
                 >

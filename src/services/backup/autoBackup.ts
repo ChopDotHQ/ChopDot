@@ -137,7 +137,7 @@ async function processBackupQueue(): Promise<void> {
       // Wait before next attempt
       if (backupQueue.length > 0) {
         await new Promise(resolve => setTimeout(resolve, QUEUE_DELAY_MS));
-      }
+    }
     }
   }
 
