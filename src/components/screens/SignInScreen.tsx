@@ -602,15 +602,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   }, [isMobileWalletFlow, enableMobileUi, walletConnectUri, isWaitingForWalletConnect, loading]);
 
   useEffect(() => {
-    if (isMobileWalletFlow && showEmailLogin) {
-      setShowEmailLogin(false);
-    }
-    if (isMobileWalletFlow && authPanelView === 'signup') {
-      setAuthPanelView('login');
-    }
-  }, [isMobileWalletFlow, showEmailLogin, authPanelView]);
-
-  useEffect(() => {
     if (authPanelView === 'login') {
       setSignupForm({
         email: '',
@@ -1015,6 +1006,11 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     onGuestLogin,
     onError,
     preferDeepLinks,
+    onEmailOptionToggle,
+    emailTheme,
+    showEmailForm,
+    renderEmailForm,
+    onSignupLink,
   }: {
     uri: string | null;
     loading: boolean;
@@ -1028,6 +1024,11 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     onGuestLogin: () => Promise<void>;
     onError: (message: string) => void;
     preferDeepLinks: boolean;
+    onEmailOptionToggle: () => void;
+    emailTheme: Partial<WalletOptionTheme>;
+    showEmailForm: boolean;
+    renderEmailForm?: () => ReactNode;
+    onSignupLink: () => void;
   }) => {
     const [showSecondaryWallets, setShowSecondaryWallets] = useState(false);
     const textPrimary = mode === 'dark' ? 'text-white' : 'text-[#111111]';
@@ -1154,6 +1155,29 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               )}
             </div>
           )}
+
+          <div className="space-y-3">
+            <WalletOption
+              title="Email & password"
+              subtitle="Sign in with your ChopDot account"
+              iconSrc={EMAIL_LOGIN_LOGO}
+              iconAlt="Email login icon"
+              onClick={onEmailOptionToggle}
+              disabled={loading}
+              theme={{
+                ...walletTheme,
+                ...emailTheme,
+              }}
+            />
+            {showEmailForm && renderEmailForm?.()}
+            <button
+              type="button"
+              onClick={onSignupLink}
+              className="text-xs text-[var(--accent)] underline underline-offset-4"
+            >
+              Need an account? Create one
+            </button>
+          </div>
 
           <WalletOption
             title="Continue as guest"
@@ -1550,30 +1574,24 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               onGuestLogin={handleGuestLogin}
               onError={(message) => setError(message)}
               preferDeepLinks={device.isMobile}
+              onEmailOptionToggle={() =>
+                setShowEmailLogin((prev) => {
+                  const next = !prev;
+                  if (!next) {
+                    setEmailCredentials({ email: '', password: '' });
+                  }
+                  setError(null);
+                  return next;
+                })
+              }
+              emailTheme={emailOptionTheme}
+              showEmailForm={showEmailLogin}
+              renderEmailForm={renderEmailLoginForm}
+              onSignupLink={() => {
+                setShowEmailLogin(false);
+                setAuthPanelView('signup');
+              }}
             />
-            <WalletPanel theme={resolvedPanelTheme}>
-              <div className="space-y-3">
-                <div className="space-y-3">
-                  <WalletOption
-                    title="Email & password"
-                    subtitle="Sign in with your ChopDot account"
-                    iconSrc={EMAIL_LOGIN_LOGO}
-                    iconAlt="Email login icon"
-                    onClick={() => setAuthPanelView('signup')}
-                    disabled={loading}
-                    theme={{ ...variationWalletTheme, ...emailOptionTheme }}
-                  />
-                </div>
-                <WalletOption
-                  title="Continue as guest"
-                  onClick={handleGuestLogin}
-                  disabled={loading}
-                  variant="ghost"
-                  theme={variationGuestTheme}
-                />
-                {renderErrorAlert()}
-              </div>
-            </WalletPanel>
             {renderFooterContent()}
           </div>
         </div>
