@@ -474,7 +474,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       showWalletConnectQR,
     });
 
-    if (!isWaitingForWalletConnect || !showWalletConnectQR) {
+    if (!isWaitingForWalletConnect) {
       return;
     }
 
@@ -1676,7 +1676,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         WebkitOverflowScrolling: 'touch',
       }}
     >
-      {enableMobileUi && (
+      {enableMobileUi && !device.isMobile && (
         <ViewModeToggle value={viewModeOverride} onChange={setViewModeOverride} resolvedView={resolvedViewMode} />
       )}
       {renderPanelLayout()}
