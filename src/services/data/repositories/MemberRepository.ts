@@ -78,6 +78,7 @@ export class MemberRepository {
     const updatedPot: typeof pot = {
       ...pot,
       members: [...(pot.members || []), member],
+      lastEditAt: new Date().toISOString(),
     };
 
     await this.source.savePot(updatedPot);
@@ -119,6 +120,7 @@ export class MemberRepository {
     const updatedPot: typeof pot = {
       ...pot,
       members: updatedMembers,
+      lastEditAt: new Date().toISOString(),
     };
 
     await this.source.savePot(updatedPot);
@@ -145,9 +147,9 @@ export class MemberRepository {
     const updatedPot: typeof pot = {
       ...pot,
       members: updatedMembers,
+      lastEditAt: new Date().toISOString(),
     };
 
     await this.source.savePot(updatedPot);
   }
 }
-

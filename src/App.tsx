@@ -60,6 +60,7 @@ import { WalletConnectionSheet } from "./components/WalletConnectionSheet";
 import { ImportPot } from "./components/screens/ImportPot";
 import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
 import { setOnboardingCallback, resetOnboardingFlag } from "./services/storage/ipfsWithOnboarding";
+import { usePots as useRemotePots } from "./hooks/usePots";
 
 interface Member {
   id: string;
@@ -210,6 +211,142 @@ interface Notification {
   onAction?: () => void;
 }
 
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+const builderPartyMembersTemplate: Member[] = [
+        {
+          id: "owner",
+          name: "You",
+          role: "Owner",
+          status: "active",
+          address: "15GrwkvKWLJUXwKZFXChsVGdfnRDEhinYMiGWXnV8Pfv7Hjq",
+        },
+        {
+          id: "alice",
+          name: "Alice",
+          role: "Member",
+          status: "active",
+          address: "15Jh2k3Xm29ry1CNtXNvzPTC2QgHYMnyqcG4cSnhpV9MrAbf",
+        },
+        {
+          id: "bob",
+          name: "Bob",
+          role: "Member",
+          status: "active",
+          address: "13FJ4i6TJyGXPRvWHzRvDDDeZPAHDq6cHruM3aMcDwZJWLEH",
+        },
+        {
+          id: "charlie",
+          name: "Charlie",
+          role: "Member",
+          status: "active",
+          address: "16Hk8qqBPGF6NQvM6PgZGZXzx9Dj2TqkBTsEz9wqgFudaGt3",
+        },
+];
+
+type BuilderPartyExpenseTemplate = Omit<Expense, "date"> & { daysAgo: number };
+
+const builderPartyExpenseTemplates: BuilderPartyExpenseTemplate[] = [
+  {
+    id: "pb1",
+    amount: 1.2,
+    currency: "DOT",
+    paidBy: "owner",
+    memo: "Hack lounge deposit",
+    daysAgo: 6,
+    split: [
+      { memberId: "owner", amount: 0.3 },
+      { memberId: "alice", amount: 0.3 },
+      { memberId: "bob", amount: 0.3 },
+      { memberId: "charlie", amount: 0.3 },
+    ],
+    attestations: ["alice", "bob", "charlie"],
+    hasReceipt: true,
+  },
+  {
+    id: "pb2",
+    amount: 1.2,
+    currency: "DOT",
+    paidBy: "alice",
+    memo: "Night market dinner",
+    daysAgo: 4,
+    split: [
+      { memberId: "owner", amount: 0.3 },
+      { memberId: "alice", amount: 0.3 },
+      { memberId: "bob", amount: 0.3 },
+      { memberId: "charlie", amount: 0.3 },
+    ],
+    attestations: ["owner", "charlie"],
+    hasReceipt: true,
+  },
+  {
+    id: "pb3",
+    amount: 1.2,
+    currency: "DOT",
+    paidBy: "bob",
+    memo: "Recharge snacks & coffee",
+    daysAgo: 3,
+    split: [
+      { memberId: "owner", amount: 0.3 },
+      { memberId: "alice", amount: 0.3 },
+      { memberId: "bob", amount: 0.3 },
+      { memberId: "charlie", amount: 0.3 },
+    ],
+    attestations: ["alice"],
+    hasReceipt: false,
+  },
+  {
+    id: "pb4",
+    amount: 1.2,
+    currency: "DOT",
+    paidBy: "charlie",
+    memo: "Badge print run",
+    daysAgo: 1,
+    split: [
+      { memberId: "owner", amount: 0.3 },
+      { memberId: "alice", amount: 0.3 },
+      { memberId: "bob", amount: 0.3 },
+      { memberId: "charlie", amount: 0.3 },
+    ],
+    attestations: [],
+    hasReceipt: true,
+  },
+  {
+    id: "pb5",
+    amount: 0.001,
+    currency: "DOT",
+    paidBy: "bob",
+    memo: "Micro-settlement demo",
+    daysAgo: 0,
+    split: [{ memberId: "owner", amount: 0.001 }],
+    attestations: [],
+    hasReceipt: false,
+  },
+];
+
+const createBuilderPartyMembers = (): Member[] =>
+  builderPartyMembersTemplate.map((member) => ({ ...member }));
+
+const createBuilderPartyExpenses = (now = Date.now()): Expense[] =>
+  builderPartyExpenseTemplates.map(({ daysAgo, ...expense }) => ({
+    ...expense,
+    date: new Date(now - daysAgo * DAY_IN_MS).toISOString(),
+    split: expense.split.map((split) => ({ ...split })),
+    attestations: [...expense.attestations],
+  }));
+
+const createPolkadotBuilderPartyPot = (now = Date.now()): Pot => ({
+  id: "4",
+  name: "Polkadot Builder Party",
+  type: "expense",
+  baseCurrency: "DOT",
+  members: createBuilderPartyMembers(),
+  expenses: createBuilderPartyExpenses(now),
+  budget: 6,
+  budgetEnabled: true,
+  checkpointEnabled: false,
+});
+
 function AppContent() {
   const { DEMO_MODE, POLKADOT_APP_ENABLED } = useFeatureFlags();
   // Data layer services (for write-through)
@@ -303,6 +440,11 @@ function AppContent() {
   >(null);
   const [selectedCounterpartyId, setSelectedCounterpartyId] =
     useState<string | null>(null);
+  const notifyPotRefresh = useCallback((potId: string) => {
+    window.dispatchEvent(
+      new CustomEvent("pot-refresh", { detail: { potId } }),
+    );
+  }, []);
 
   const [walletConnected, setWalletConnected] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState<
@@ -583,137 +725,7 @@ function AppContent() {
       goalAmount: 5000,
       goalDescription: "Build a 6-month emergency fund",
     },
-    {
-      id: "4",
-      name: "Polkadot Builder Party",
-      type: "expense",
-      baseCurrency: "DOT",
-      members: [
-        {
-          id: "owner",
-          name: "You",
-          role: "Owner",
-          status: "active",
-          address: "15XyKf7Gv8qJ3N4K5L6M7N8O9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C3D4E5F6",
-        },
-        {
-          id: "alice",
-          name: "Alice",
-          role: "Member",
-          status: "active",
-          address: "15mock00000000000000000000000000000A",
-        },
-        {
-          id: "bob",
-          name: "Bob",
-          role: "Member",
-          status: "active",
-          address: "15mock00000000000000000000000000000B",
-        },
-        {
-          id: "charlie",
-          name: "Charlie",
-          role: "Member",
-          status: "active",
-          address: "15mock00000000000000000000000000000C",
-        },
-      ],
-      expenses: [
-        {
-          id: "pb1",
-          amount: 2.5,
-          currency: "DOT",
-          paidBy: "owner",
-          memo: "Conference tickets (3-day pass)",
-          date: new Date(
-            Date.now() - 7 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 0.625 },
-            { memberId: "alice", amount: 0.625 },
-            { memberId: "bob", amount: 0.625 },
-            { memberId: "charlie", amount: 0.625 },
-          ],
-          attestations: ["alice", "bob", "charlie"],
-          hasReceipt: true,
-        },
-        {
-          id: "pb2",
-          amount: 1.8,
-          currency: "DOT",
-          paidBy: "alice",
-          memo: "Team dinner at Hackathon venue",
-          date: new Date(
-            Date.now() - 5 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 0.45 },
-            { memberId: "alice", amount: 0.45 },
-            { memberId: "bob", amount: 0.45 },
-            { memberId: "charlie", amount: 0.45 },
-          ],
-          attestations: ["bob"],
-          hasReceipt: true,
-        },
-        {
-          id: "pb3",
-          amount: 0.75,
-          currency: "DOT",
-          paidBy: "bob",
-          memo: "Coffee & snacks for coding sessions",
-          date: new Date(
-            Date.now() - 3 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 0.1875 },
-            { memberId: "alice", amount: 0.1875 },
-            { memberId: "bob", amount: 0.1875 },
-            { memberId: "charlie", amount: 0.1875 },
-          ],
-          attestations: ["alice", "charlie"],
-          hasReceipt: false,
-        },
-        {
-          id: "pb4",
-          amount: 3.2,
-          currency: "DOT",
-          paidBy: "charlie",
-          memo: "Workshop materials & swag",
-          date: new Date(
-            Date.now() - 2 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 0.8 },
-            { memberId: "alice", amount: 0.8 },
-            { memberId: "bob", amount: 0.8 },
-            { memberId: "charlie", amount: 0.8 },
-          ],
-          attestations: [],
-          hasReceipt: true,
-        },
-        {
-          id: "pb5",
-          amount: 1.25,
-          currency: "DOT",
-          paidBy: "owner",
-          memo: "Transportation (shared rides)",
-          date: new Date(
-            Date.now() - 1 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 0.3125 },
-            { memberId: "alice", amount: 0.3125 },
-            { memberId: "bob", amount: 0.3125 },
-            { memberId: "charlie", amount: 0.3125 },
-          ],
-          attestations: ["alice"],
-          hasReceipt: false,
-        },
-      ],
-      budget: 10.0,
-      budgetEnabled: true,
-      checkpointEnabled: false,
-    },
+    createPolkadotBuilderPartyPot(),
   ]);
 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => [
@@ -881,21 +893,7 @@ function AppContent() {
             const hasPolkadotBuilderParty = migrated.some((p: any) => p.id === "4");
             if (!hasPolkadotBuilderParty) {
               const polkadotBuilderPartyPot = {
-                id: "4", name: "Polkadot Builder Party", type: "expense", baseCurrency: "DOT",
-                members: [
-                  {id: "owner", name: "You", role: "Owner", status: "active", address: "15XyKf7Gv8qJ3N4K5L6M7N8O9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C3D4E5F6"},
-                  {id: "alice", name: "Alice", role: "Member", status: "active", address: "15mock00000000000000000000000000000A"},
-                  {id: "bob", name: "Bob", role: "Member", status: "active", address: "15mock00000000000000000000000000000B"},
-                  {id: "charlie", name: "Charlie", role: "Member", status: "active", address: "15mock00000000000000000000000000000C"}
-                ],
-                expenses: [
-                  {id: "pb1", amount: 2.5, currency: "DOT", paidBy: "owner", memo: "Conference tickets (3-day pass)", date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), split: [{memberId: "owner", amount: 0.625}, {memberId: "alice", amount: 0.625}, {memberId: "bob", amount: 0.625}, {memberId: "charlie", amount: 0.625}], attestations: ["alice", "bob", "charlie"], hasReceipt: true},
-                  {id: "pb2", amount: 1.8, currency: "DOT", paidBy: "alice", memo: "Team dinner at Hackathon venue", date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), split: [{memberId: "owner", amount: 0.45}, {memberId: "alice", amount: 0.45}, {memberId: "bob", amount: 0.45}, {memberId: "charlie", amount: 0.45}], attestations: ["bob"], hasReceipt: true},
-                  {id: "pb3", amount: 0.75, currency: "DOT", paidBy: "bob", memo: "Coffee & snacks for coding sessions", date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), split: [{memberId: "owner", amount: 0.1875}, {memberId: "alice", amount: 0.1875}, {memberId: "bob", amount: 0.1875}, {memberId: "charlie", amount: 0.1875}], attestations: ["alice", "charlie"], hasReceipt: false},
-                  {id: "pb4", amount: 3.2, currency: "DOT", paidBy: "charlie", memo: "Workshop materials & swag", date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), split: [{memberId: "owner", amount: 0.8}, {memberId: "alice", amount: 0.8}, {memberId: "bob", amount: 0.8}, {memberId: "charlie", amount: 0.8}], attestations: [], hasReceipt: true},
-                  {id: "pb5", amount: 1.25, currency: "DOT", paidBy: "owner", memo: "Transportation (shared rides)", date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), split: [{memberId: "owner", amount: 0.3125}, {memberId: "alice", amount: 0.3125}, {memberId: "bob", amount: 0.3125}, {memberId: "charlie", amount: 0.3125}], attestations: ["alice"], hasReceipt: false}
-                ],
-                budget: 10.0, budgetEnabled: true, checkpointEnabled: false,
+                ...createPolkadotBuilderPartyPot(),
                 mode: 'casual' as const,
                 confirmationsEnabled: false,
                 lastEditAt: new Date().toISOString()
@@ -974,23 +972,7 @@ function AppContent() {
               members: [{id: "owner", name: "You", role: "Owner", status: "active"}],
               expenses: [], contributions: [], totalPooled: 750, yieldRate: 12.5, defiProtocol: "Acala", goalAmount: 5000, goalDescription: "Build a 6-month emergency fund"
             },
-            {
-              id: "4", name: "Polkadot Builder Party", type: "expense", baseCurrency: "DOT",
-              members: [
-                {id: "owner", name: "You", role: "Owner", status: "active", address: "15XyKf7Gv8qJ3N4K5L6M7N8O9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C3D4E5F6"},
-                {id: "alice", name: "Alice", role: "Member", status: "active", address: "15mock00000000000000000000000000000A"},
-                {id: "bob", name: "Bob", role: "Member", status: "active", address: "15mock00000000000000000000000000000B"},
-                {id: "charlie", name: "Charlie", role: "Member", status: "active", address: "15mock00000000000000000000000000000C"}
-              ],
-              expenses: [
-                {id: "pb1", amount: 2.5, currency: "DOT", paidBy: "owner", memo: "Conference tickets (3-day pass)", date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), split: [{memberId: "owner", amount: 0.625}, {memberId: "alice", amount: 0.625}, {memberId: "bob", amount: 0.625}, {memberId: "charlie", amount: 0.625}], attestations: ["alice", "bob", "charlie"], hasReceipt: true},
-                {id: "pb2", amount: 1.8, currency: "DOT", paidBy: "alice", memo: "Team dinner at Hackathon venue", date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), split: [{memberId: "owner", amount: 0.45}, {memberId: "alice", amount: 0.45}, {memberId: "bob", amount: 0.45}, {memberId: "charlie", amount: 0.45}], attestations: ["bob"], hasReceipt: true},
-                {id: "pb3", amount: 0.75, currency: "DOT", paidBy: "bob", memo: "Coffee & snacks for coding sessions", date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), split: [{memberId: "owner", amount: 0.1875}, {memberId: "alice", amount: 0.1875}, {memberId: "bob", amount: 0.1875}, {memberId: "charlie", amount: 0.1875}], attestations: ["alice", "charlie"], hasReceipt: false},
-                {id: "pb4", amount: 3.2, currency: "DOT", paidBy: "charlie", memo: "Workshop materials & swag", date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), split: [{memberId: "owner", amount: 0.8}, {memberId: "alice", amount: 0.8}, {memberId: "bob", amount: 0.8}, {memberId: "charlie", amount: 0.8}], attestations: [], hasReceipt: true},
-                {id: "pb5", amount: 1.25, currency: "DOT", paidBy: "owner", memo: "Transportation (shared rides)", date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), split: [{memberId: "owner", amount: 0.3125}, {memberId: "alice", amount: 0.3125}, {memberId: "bob", amount: 0.3125}, {memberId: "charlie", amount: 0.3125}], attestations: ["alice"], hasReceipt: false}
-              ],
-              budget: 10.0, budgetEnabled: true, checkpointEnabled: false
-            }
+            createPolkadotBuilderPartyPot()
           ];
           
           try {
@@ -1617,6 +1599,7 @@ function AppContent() {
 
         await expenseService.addExpense(currentPotId, createExpenseDTO);
         logDev('[DataLayer] Expense added via service', { potId: currentPotId, expenseId: expense.id });
+        notifyPotRefresh(currentPotId);
       } catch (error) {
         // Non-blocking: show warning toast but don't stop UI flow
         warnDev('[DataLayer] Service addExpense failed', error);
@@ -1704,6 +1687,7 @@ function AppContent() {
 
         await expenseService.updateExpense(currentPotId, currentExpenseId, updateExpenseDTO);
         logDev('[DataLayer] Expense updated via service', { potId: currentPotId, expenseId: currentExpenseId });
+        notifyPotRefresh(currentPotId);
       } catch (error) {
         // Non-blocking: show warning toast but don't stop UI flow
         warnDev('[DataLayer] Service updateExpense failed', error);
@@ -1741,6 +1725,7 @@ function AppContent() {
       try {
         await expenseService.removeExpense(currentPotId, targetExpenseId);
         logDev('[DataLayer] Expense deleted via service', { potId: currentPotId, expenseId: targetExpenseId });
+        notifyPotRefresh(currentPotId);
       } catch (error) {
         // Non-blocking: show warning toast but don't stop UI flow
         warnDev('[DataLayer] Service removeExpense failed', error);
@@ -2092,6 +2077,23 @@ function AppContent() {
     (sum, p) => sum + p.totalAmount,
     0,
   );
+
+  const remotePots = useRemotePots();
+  const dataSourceType = import.meta.env.VITE_DATA_SOURCE || 'local';
+  const usingSupabaseSource = dataSourceType === 'supabase';
+  const remoteSyncSnapshot = useRef<string>("");
+
+  useEffect(() => {
+    if (!usingSupabaseSource || authLoading || !isAuthenticated) {
+      return;
+    }
+    const serialized = JSON.stringify(remotePots);
+    if (remoteSyncSnapshot.current === serialized) {
+      return;
+    }
+    remoteSyncSnapshot.current = serialized;
+    setPots(remotePots as unknown as Pot[]);
+  }, [remotePots, usingSupabaseSource, authLoading, isAuthenticated]);
   const totalOwing = balances.youOwe.reduce(
     (sum, p) => sum + p.totalAmount,
     0,
@@ -2731,6 +2733,7 @@ function AppContent() {
                 try {
                   await memberService.removeMember(currentPotId, memberId);
                   logDev('[DataLayer] Member removed via service', { potId: currentPotId, memberId });
+                  notifyPotRefresh(currentPotId);
                 } catch (error) {
                   warnDev('[DataLayer] Service removeMember failed', error);
                   showToast('Saved locally (service write failed)', 'info');
@@ -2741,6 +2744,17 @@ function AppContent() {
             }}
             onUpdateMember={(updatedMember) => {
               if (!currentPotId) return;
+              const currentMember = pots.find(p => p.id === currentPotId)?.members.find(m => m.id === updatedMember.id);
+              const previousAddress = currentMember?.address ?? null;
+              const nextAddress = updatedMember.address ?? null;
+              let toastLabel = "Member updated";
+              if (previousAddress !== nextAddress) {
+                if (nextAddress) {
+                  toastLabel = previousAddress ? "DOT wallet updated" : "DOT wallet added";
+                } else if (previousAddress) {
+                  toastLabel = "Wallet removed";
+                }
+              }
               setPots(
                 pots.map((p) =>
                   p.id === currentPotId
@@ -2761,23 +2775,24 @@ function AppContent() {
                 try {
                   // Convert to UpdateMemberDTO format (address already normalized by EditMemberModal)
                   // Note: onUpdateMember callback doesn't include status, so get it from current member
-                  const currentMember = pots.find(p => p.id === currentPotId)?.members.find(m => m.id === updatedMember.id);
+                  const existingMember = pots.find(p => p.id === currentPotId)?.members.find(m => m.id === updatedMember.id);
                   const updateMemberDTO = {
                     name: updatedMember.name,
                     address: updatedMember.address || null,
                     verified: updatedMember.verified,
-                    ...(currentMember?.status && { status: currentMember.status }),
+                    ...(existingMember?.status && { status: existingMember.status }),
                   };
 
                   await memberService.updateMember(currentPotId, updatedMember.id, updateMemberDTO);
                   logDev('[DataLayer] Member updated via service', { potId: currentPotId, memberId: updatedMember.id });
+                  notifyPotRefresh(currentPotId);
                 } catch (error) {
                   warnDev('[DataLayer] Service updateMember failed', error);
                   showToast('Saved locally (service write failed)', 'info');
                 }
               })();
 
-              showToast("Member updated", "success");
+              showToast(toastLabel, "success");
             }}
             
             // Wire Pot destructive actions with consistent navigation

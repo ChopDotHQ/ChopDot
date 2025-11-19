@@ -128,8 +128,10 @@ export class PotRepository {
    * Create a new pot
    */
   async create(input: CreatePotDTO): Promise<Pot> {
+    const potId = this.generatePotId();
+
     const pot: Pot = {
-      id: Date.now().toString(), // Temporary ID generation (will be UUID from backend)
+      id: potId,
       name: input.name,
       type: input.type,
       baseCurrency: input.baseCurrency || 'USD',
@@ -203,5 +205,37 @@ export class PotRepository {
     this.invalidate(); // Invalidate list cache
     return { ...imported }; // Return copy
   }
-}
 
+  /**
+   * Generate a UUID for new pots with a safe fallback when crypto.randomUUID
+   * is unavailable (older browsers, certain WebViews, etc.).
+   */
+  private generatePotId(): string {
+    const cryptoObj = typeof globalThis !== 'undefined' ? globalThis.crypto : undefined;
+    if (cryptoObj?.randomUUID) {
+      return cryptoObj.randomUUID();
+    }
+
+    if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
+      const cryptoWithRandom = cryptoObj as Crypto;
+      const buf = new Uint8Array(16);
+      cryptoWithRandom.getRandomValues(buf);
+      // Convert to RFC4122 version 4 UUID
+      const value6 = buf[6] ?? 0;
+      const value8 = buf[8] ?? 0;
+      // eslint-disable-next-line no-bitwise
+      buf[6] = (value6 & 0x0f) | 0x40;
+      // eslint-disable-next-line no-bitwise
+      buf[8] = (value8 & 0x3f) | 0x80;
+      const hex = Array.from(buf, (b) => b.toString(16).padStart(2, '0')).join('');
+      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+
+    // Final fallback: Math.random based UUID (not cryptographically strong but valid format)
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+      const rand = Math.random() * 16 | 0;
+      const value = char === 'x' ? rand : ((rand & 0x3) | 0x8);
+      return value.toString(16);
+    });
+  }
+}

@@ -14,6 +14,7 @@
 import { createContext, useContext, ReactNode, useMemo } from 'react';
 import { LocalStorageSource } from './sources/LocalStorageSource';
 import { HttpSource } from './sources/HttpSource';
+import { SupabaseSource } from './sources/SupabaseSource';
 import { PotRepository } from './repositories/PotRepository';
 import { ExpenseRepository } from './repositories/ExpenseRepository';
 import { MemberRepository } from './repositories/MemberRepository';
@@ -46,9 +47,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const dataSource = import.meta.env.VITE_DATA_SOURCE || 'local';
     
     // Create source instance
-    const source: DataSource = dataSource === 'api'
-      ? new HttpSource()
-      : new LocalStorageSource();
+    let source: DataSource;
+
+    if (dataSource === 'api') {
+      source = new HttpSource();
+    } else if (dataSource === 'supabase') {
+      const supabaseSource = new SupabaseSource();
+      if (supabaseSource.isConfigured()) {
+        source = supabaseSource;
+      } else {
+        console.warn('[DataContext] Supabase not configured. Falling back to LocalStorageSource.');
+        source = new LocalStorageSource();
+      }
+    } else {
+      source = new LocalStorageSource();
+    }
 
     // Create repositories with appropriate TTLs
     const potRepo = new PotRepository(source, 60_000); // 60s TTL
@@ -89,4 +102,3 @@ export function useData(): DataContextValue {
   }
   return context;
 }
-

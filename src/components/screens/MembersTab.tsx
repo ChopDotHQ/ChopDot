@@ -1,4 +1,4 @@
-import { UserPlus, MoreVertical, UserMinus, Send, Edit, Copy, CheckCircle } from "lucide-react";
+import { UserPlus, MoreVertical, UserMinus, Send, Edit, Copy, CheckCircle, Wallet } from "lucide-react";
 import { TrustDots } from "../TrustDots";
 import { useState } from "react";
 import { EditMemberModal } from "../EditMemberModal";
@@ -185,9 +185,13 @@ export function MembersTab({
                         </div>
                       )}
                       
-                      {/* Wallet Address Display - Show for DOT pots or any pot with address */}
-                      {member.address && (
-                        <div className="flex items-center gap-1.5 mt-1">
+                      {/* Wallet Address Display - Show readiness or CTA */}
+                      {member.address ? (
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-[11px] text-green-700 dark:text-green-400">
+                            <CheckCircle className="w-3 h-3" />
+                            DOT wallet ready
+                          </span>
                           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
                             <span className="text-micro font-mono text-foreground">
                               {member.address.slice(0, 8)}...{member.address.slice(-6)}
@@ -210,6 +214,17 @@ export function MembersTab({
                             )}
                           </div>
                         </div>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingMember(member);
+                          }}
+                          className="inline-flex items-center gap-1.5 mt-1 px-2 py-1 rounded-lg bg-[var(--accent)]/10 text-[11px] text-[var(--accent)] hover:bg-[var(--accent)]/15 transition-colors"
+                        >
+                          <Wallet className="w-3 h-3" />
+                          Add DOT wallet
+                        </button>
                       )}
                       
                       

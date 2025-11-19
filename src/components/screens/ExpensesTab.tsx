@@ -186,10 +186,26 @@ export function ExpensesTab({
   const budgetRemaining = budget ? Math.max(budget - totalExpenses, 0) : 0;
   const isOverBudget = budget ? totalExpenses > budget : false;
   
+  const formatPotAmount = (value: number, digits = baseCurrency === 'DOT' ? 6 : 2) =>
+    baseCurrency === 'DOT'
+      ? `${value.toFixed(digits)} DOT`
+      : `$${value.toFixed(digits)}`;
+
   // Convert to display format (exclude current user)
   // For DOT pots, use a much smaller threshold (0.000001 DOT = 1 micro-DOT)
   // For USD pots, use 0.01 as threshold
   const settleThreshold = baseCurrency === 'DOT' ? 0.000001 : 0.01;
+
+  const totalOutstanding = computedBalances.reduce((sum, balance) => {
+    if (balance.net > settleThreshold) {
+      return sum + balance.net;
+    }
+    return sum;
+  }, 0);
+
+  const normalizedOutstanding = totalOutstanding > settleThreshold ? totalOutstanding : 0;
+  const potTotalDisplay = formatPotAmount(totalExpenses);
+  const outstandingDisplay = formatPotAmount(normalizedOutstanding);
   
   const balances = computedBalances
     .filter(b => b.memberId !== currentUserId && Math.abs(b.net) > settleThreshold)
@@ -480,6 +496,20 @@ export function ExpensesTab({
                   />
                 </div>
               )}
+
+              {/* Pot overview */}
+              <div className="grid grid-cols-1 gap-2 pt-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-border/40 bg-muted/10 p-3 text-left">
+                  <p className="text-caption text-secondary mb-1">Total pot balance</p>
+                  <p className="text-xl font-semibold tabular-nums">{potTotalDisplay}</p>
+                  <p className="text-micro text-secondary mt-0.5">All expenses captured here</p>
+                </div>
+                <div className="rounded-2xl border border-border/40 bg-muted/10 p-3 text-left">
+                  <p className="text-caption text-secondary mb-1">Still to settle</p>
+                  <p className="text-xl font-semibold tabular-nums">{outstandingDisplay}</p>
+                  <p className="text-micro text-secondary mt-0.5">Sum of members who are owed</p>
+                </div>
+              </div>
             </div>
 
             {/* Member Balances Breakdown */}

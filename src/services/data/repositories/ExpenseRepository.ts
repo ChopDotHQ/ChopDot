@@ -125,6 +125,7 @@ export class ExpenseRepository {
     const updatedPot: typeof pot = {
       ...pot,
       expenses: [...(pot.expenses || []), expense],
+      lastEditAt: new Date().toISOString(),
     };
 
     await this.source.savePot(updatedPot);
@@ -167,6 +168,7 @@ export class ExpenseRepository {
     const updatedPot: typeof pot = {
       ...pot,
       expenses: updatedExpenses,
+      lastEditAt: new Date().toISOString(),
     };
 
     await this.source.savePot(updatedPot);
@@ -194,10 +196,10 @@ export class ExpenseRepository {
     const updatedPot: typeof pot = {
       ...pot,
       expenses: updatedExpenses,
+      lastEditAt: new Date().toISOString(),
     };
 
     await this.source.savePot(updatedPot);
     this.invalidate(potId); // Invalidate cache
   }
 }
-
