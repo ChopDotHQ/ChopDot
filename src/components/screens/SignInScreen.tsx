@@ -1589,7 +1589,7 @@ const MobileWalletConnectPanel = ({
               uri={walletConnectUri}
               loading={loading}
               errorMessage={error}
-              onRetry={() => startWalletConnectSession({ openQrModal: false, source: 'mobile-panel-retry' })}
+              onRetry={async () => await startWalletConnectSession({ openQrModal: false, source: 'mobile-panel-retry' })}
               onSwitchToDesktop={async () => {
                 setViewModeOverride('desktop');
                 await startWalletConnectSession({ openQrModal: true, source: 'mobile-panel-switch-desktop' });
