@@ -42,6 +42,12 @@ export type LoginCredentials =
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const deriveWalletEmail = (address: string): string => {
+  const normalized = address.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const slug = normalized || `wallet${Math.random().toString(36).slice(2, 10)}`;
+  return `wallet+${slug.slice(0, 30)}@chopdot.app`;
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -155,7 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const supabase = getSupabase();
         
         if (supabase) {
-          const walletEmail = `${credentials.address.toLowerCase()}@wallet.chopdot.app`;
+          const walletEmail = deriveWalletEmail(credentials.address);
           
           console.log('[Auth] Wallet login attempt for:', credentials.address);
           
