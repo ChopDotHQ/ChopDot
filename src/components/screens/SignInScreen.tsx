@@ -601,10 +601,11 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   }, [enableMobileUi, viewModeOverride]);
 
   useEffect(() => {
-    if (isMobileWalletFlow && enableMobileUi && !walletConnectUri && !isWaitingForWalletConnect && !loading) {
-      startWalletConnectSession({ openQrModal: false, source: 'mobile-panel-auto' });
+    // When switching to desktop view we may need QR, but on mobile we now wait for explicit tap
+    if (!enableMobileUi && showWalletConnectQR) {
+      setShowWalletConnectQR(false);
     }
-  }, [isMobileWalletFlow, enableMobileUi, walletConnectUri, isWaitingForWalletConnect, loading]);
+  }, [enableMobileUi, showWalletConnectQR]);
 
   useEffect(() => {
     if (authPanelView === 'login') {
@@ -940,7 +941,13 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     }
   };
 
-  const startWalletConnectSession = async ({ openQrModal = true, source }: { openQrModal?: boolean; source?: string } = {}) => {
+  const startWalletConnectSession = async ({
+    openQrModal = true,
+    source,
+  }: {
+    openQrModal?: boolean;
+    source?: string;
+  } = {}): Promise<string | null> => {
     try {
       triggerHaptic('light');
       setLoading(true);
@@ -966,6 +973,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       if (source) {
         trackEvent('walletconnect_session_started', { source, isMobile: isMobileWalletFlow });
       }
+      return uri;
     } catch (err: any) {
       console.error('WalletConnect login failed:', err);
       setShowWalletConnectQR(false);
@@ -980,6 +988,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
 
       setError(errorMessage);
       triggerHaptic('error');
+      return null;
     } finally {
       setLoading(false);
     }
@@ -998,29 +1007,30 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     );
   };
 
-  const MobileWalletConnectPanel = ({
-    uri,
-    loading,
-    errorMessage,
-    onRetry,
-    onSwitchToDesktop,
-    mode,
-    panelTheme,
-    walletTheme,
-    guestTheme,
-    onGuestLogin,
-    onError,
-    preferDeepLinks,
-    onEmailOptionToggle,
-    emailTheme,
-    showEmailForm,
-    renderEmailForm,
-    onSignupLink,
-  }: {
-    uri: string | null;
-    loading: boolean;
-    errorMessage: string | null;
-    onRetry: () => Promise<void>;
+const MobileWalletConnectPanel = ({
+  uri,
+  loading,
+  errorMessage,
+  onRetry,
+  onSwitchToDesktop,
+  mode,
+  panelTheme,
+  walletTheme,
+  guestTheme,
+  onGuestLogin,
+  onError,
+  preferDeepLinks,
+  onEmailOptionToggle,
+  emailTheme,
+  showEmailForm,
+  renderEmailForm,
+  onSignupLink,
+  waitingForSignature,
+}: {
+  uri: string | null;
+  loading: boolean;
+  errorMessage: string | null;
+  onRetry: () => Promise<string | null>;
     onSwitchToDesktop: () => void;
     mode: PanelMode;
     panelTheme: PanelTheme;
@@ -1031,10 +1041,11 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     preferDeepLinks: boolean;
     onEmailOptionToggle: () => void;
     emailTheme: Partial<WalletOptionTheme>;
-    showEmailForm: boolean;
-    renderEmailForm?: () => ReactNode;
-    onSignupLink: () => void;
-  }) => {
+  showEmailForm: boolean;
+  renderEmailForm?: () => ReactNode;
+  onSignupLink: () => void;
+  waitingForSignature: boolean;
+}) => {
     const [showSecondaryWallets, setShowSecondaryWallets] = useState(false);
     const textPrimary = mode === 'dark' ? 'text-white' : 'text-[#111111]';
     const textSecondary = mode === 'dark' ? 'text-white/70' : 'text-secondary/80';
@@ -1051,13 +1062,18 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       if (!link) {
         return;
       }
-      if (!uri) {
-        await onRetry();
+      let sessionUri = uri;
+      if (!sessionUri) {
+        sessionUri = await onRetry();
+      }
+      if (!sessionUri) {
+        onError('Unable to start WalletConnect session. Please try again.');
         return;
       }
+      const finalUri = sessionUri!;
       const target =
-        (preferDeepLinks ? link.deepLink?.(uri) : link.universalLink?.(uri)) ??
-        (preferDeepLinks ? link.universalLink?.(uri) : link.deepLink?.(uri));
+        (preferDeepLinks ? link.deepLink?.(finalUri) : link.universalLink?.(finalUri)) ??
+        (preferDeepLinks ? link.universalLink?.(finalUri) : link.deepLink?.(finalUri));
       if (!target) {
         onError('Unable to open this wallet. Please switch to desktop QR or retry.');
         return;
@@ -1077,7 +1093,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       } catch (err) {
         console.error('[MobileWalletConnect] Failed to open wallet link', err);
         if (navigator?.clipboard?.writeText) {
-          await navigator.clipboard.writeText(uri);
+          await navigator.clipboard.writeText(finalUri);
           onError('Could not open the wallet directly. WalletConnect link copied—paste it into your wallet app.');
         } else {
           onError('Could not open the wallet link. Please switch to the desktop QR view.');
@@ -1091,8 +1107,14 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           <div className="text-center space-y-1">
             <p className={`text-base font-semibold ${textPrimary}`}>Open your wallet</p>
             <p className={`text-sm ${textSecondary}`}>
-              Tap your wallet below. If nothing happens, install the app first and reopen the WalletConnect link.
+              Tap your wallet below. After approving the connection, stay inside your wallet until you confirm the signature.
             </p>
+            {waitingForSignature && (
+              <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-black/5 px-3 py-1 text-xs font-semibold text-[var(--accent)] dark:bg-white/10">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Waiting for signature in wallet…
+              </div>
+            )}
           </div>
 
           {errorMessage && (
@@ -1576,7 +1598,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               panelTheme={resolvedPanelTheme}
               walletTheme={variationWalletTheme}
               guestTheme={variationGuestTheme}
-              onGuestLogin={handleGuestLogin}
+                onGuestLogin={handleGuestLogin}
               onError={(message) => setError(message)}
               preferDeepLinks={device.isMobile}
               onEmailOptionToggle={() =>
@@ -1596,6 +1618,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
                 setShowEmailLogin(false);
                 setAuthPanelView('signup');
               }}
+              waitingForSignature={isWaitingForWalletConnect}
             />
             {renderFooterContent()}
           </div>
