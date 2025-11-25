@@ -47,11 +47,12 @@ const deriveWalletEmail = (address: string): string => {
   // Use hash-based approach to create deterministic, valid email
   // Hash the address to get a consistent, shorter identifier
   const hash = blake2AsHex(address.toLowerCase(), 256);
-  // Take first 16 chars of hash (after '0x' prefix) for shorter email
-  // Format: w{hash}@chopdot.app (max 64 chars local part per RFC, Supabase may be stricter)
-  // Total: w + 16 chars + @chopdot.app = 29 chars (well within limits)
-  const hashPart = hash.slice(2, 18); // Remove '0x' and take 16 chars
-  return `w${hashPart}@chopdot.app`;
+  // Take first 12 chars of hash (after '0x' prefix) for shorter email
+  // Format: wallet.{hash}@chopdot.app (standard format with dot separator)
+  // Total: wallet. (7) + 12 chars + @chopdot.app (12) = 31 chars total
+  // This format is more likely to pass Supabase validation
+  const hashPart = hash.slice(2, 14); // Remove '0x' and take 12 chars
+  return `wallet.${hashPart}@chopdot.app`;
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
