@@ -15,28 +15,28 @@
         name: "You",
         role: "Owner",
         status: "active",
-        address: "15XyKf7Gv8qJ3N4K5L6M7N8O9P0Q1R2S3T4U5V6W7X8Y9Z0A1B2C3D4E5F6"
+        address: "15GrwkvKWLJUXwKZFXChsVGdfnRDEhinYMiGWXnV8Pfv7Hjq"
       },
       {
         id: "alice",
         name: "Alice",
         role: "Member",
         status: "active",
-        address: "15mock00000000000000000000000000000A"
+        address: "15Jh2k3Xm29ry1CNtXNvzPTC2QgHYMnyqcG4cSnhpV9MrAbf"
       },
       {
         id: "bob",
         name: "Bob",
         role: "Member",
         status: "active",
-        address: "15mock00000000000000000000000000000B"
+        address: "13FJ4i6TJyGXPRvWHzRvDDDeZPAHDq6cHruM3aMcDwZJWLEH"
       },
       {
         id: "charlie",
         name: "Charlie",
         role: "Member",
         status: "active",
-        address: "15mock00000000000000000000000000000C"
+        address: "16Hk8qqBPGF6NQvM6PgZGZXzx9Dj2TqkBTsEz9wqgFudaGt3"
       }
     ],
     expenses: [
@@ -154,4 +154,3 @@
     console.error('❌ Error seeding pot:', error);
   }
 })();
-

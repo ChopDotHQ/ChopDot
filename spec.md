@@ -30,6 +30,8 @@
 - **File Structure:** [`src/FILE_STRUCTURE.md`](src/FILE_STRUCTURE.md) - Codebase navigation
 - **API Reference:** [`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) - Data Layer API documentation
 - **Workflow Guide:** [`src/WORKFLOW_GUIDE.md`](src/WORKFLOW_GUIDE.md) - Feature workflows and user flows
+- **Supabase Wrap-up:** [`docs/supabase/INTEGRATION_WRAPUP.md`](docs/supabase/INTEGRATION_WRAPUP.md) - CRUD rollout summary & verification
+- **Supabase Docs Index:** [`docs/supabase/DOCUMENTATION_INDEX.md`](docs/supabase/DOCUMENTATION_INDEX.md) - Links to every Supabase guide, SQL, and test report
 
 ### IPFS & Storage
 - **IPFS/Crust Guide:** [`docs/IPFS_CRUST_GUIDE.md`](docs/IPFS_CRUST_GUIDE.md) - Complete IPFS integration guide
@@ -78,6 +80,12 @@ ChopDot is a mobile-first expense splitting and group financial management app w
 #### Authentication & Security
 - ✅ Multi-method authentication (Polkadot wallets, WalletConnect, Supabase email/password)
 - ✅ Privy-style login rail with inline email form, guest CTA, and manual desktop/mobile toggle
+
+#### Data & Sync
+- ✅ Supabase persistence for pots/expenses/members (enable with `VITE_DATA_SOURCE=supabase`)
+- ✅ Automatic sample pots seeded for new Supabase accounts
+- ✅ `last_edit_at` tracking across expense/member actions
+- ✅ SQL verification scripts for CRUD health checks
 - ✅ Mobile WalletConnect wallet picker with device detection and deep-link handling
 - ✅ Swipeable signup panel (email, optional username, ToS consent) backed by Supabase
 - ✅ AuthContext provider (central auth state management) with persistent sessions
@@ -280,6 +288,13 @@ src/
 - ✅ Brought the mobile WalletConnect picker behind `VITE_ENABLE_MOBILE_WC_UI` with automatic device detection plus explicit override buttons
 - ✅ Added account-management forms (update email/password) to the You tab, wired to `supabase.auth.updateUser`
 - ✅ Updated documentation (spec + README) and removed redundant rollout/internal docs now that the flows are canonical
+
+-### [2025-11-19] - Supabase CRUD Integration
+- ✅ `VITE_DATA_SOURCE=supabase` now loads pots via `usePots()` (no more hardcoded IDs)
+- ✅ Pots, expenses, and members persist to Supabase metadata JSON + scalar columns (`last_edit_at`/`updated_at`)
+- ✅ New accounts auto-seed "Devconnect" + "Urbe" sample pots for better onboarding
+- ✅ Added SQL verification pack + wrap-up docs under `docs/supabase/`
+- ✅ README + spec updated with Supabase setup guidance
 
 ### [2025-01-15] - IPFS & Crust Integration
 - ✅ IPFS integration via Crust Network

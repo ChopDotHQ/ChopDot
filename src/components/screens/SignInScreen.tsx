@@ -1140,7 +1140,7 @@ const MobileWalletConnectPanel = ({
                 iconSrc={link.icon}
                 iconAlt={`${link.label} icon`}
                 onClick={() => handleWalletClick(link.id)}
-                disabled={loading || !isReady}
+                disabled={loading}
                 theme={walletTheme}
               />
             ))}
@@ -1174,7 +1174,7 @@ const MobileWalletConnectPanel = ({
                       iconSrc={link.icon}
                       iconAlt={`${link.label} icon`}
                       onClick={() => handleWalletClick(link.id)}
-                      disabled={loading || !isReady}
+                      disabled={loading}
                       theme={walletTheme}
                     />
                   ))}

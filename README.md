@@ -30,8 +30,9 @@ ChopDot brings familiar group-expense flows to a world where fairness and verifi
 
 ### Data Layer Architecture ✅
 - **Service/Repository Pattern** - Clean separation of concerns
-- **Feature Flags** - Safe gradual rollout (`VITE_DL_READS`, `VITE_DATA_SOURCE`, `VITE_ENABLE_MOBILE_WC_UI`)
-- **Multiple Data Sources** - localStorage (current) + HTTP stub (ready for API)
+- **Feature Flags** - Safe gradual rollout (`VITE_DATA_SOURCE`, `VITE_DL_READS`, `VITE_ENABLE_MOBILE_WC_UI`)
+- **Multiple Data Sources** - localStorage (default) + Supabase (cross-device) + HTTP stub
+- **Supabase persistence** - Pots, expenses, and members sync across devices when `VITE_DATA_SOURCE=supabase`
 - **Error Handling** - Graceful fallbacks, error boundaries, non-blocking writes
 
 ### Blockchain Integration ✅
@@ -83,7 +84,8 @@ Designed for composability and multi‑chain collaboration. We start off‑chain
 ### Data & State
 - **Zod** - Schema validation
 - **Data Layer** - Service/Repository pattern with feature flags
-- **localStorage** - Local persistence with migration support
+- **Supabase** - Cloud persistence for pots/expenses/members (enable via `VITE_DATA_SOURCE=supabase`)
+- **localStorage** - Local persistence + offline fallback
 - **React Context** - Global state management
 
 ### Development
@@ -127,6 +129,8 @@ For safe public demos, you can enable a restricted mode that disables wallet con
 ## Documentation
 
 - **Specification:** [`spec.md`](spec.md) - Complete app specification and changelog
+- **Supabase Integration:** [`docs/supabase/INTEGRATION_WRAPUP.md`](docs/supabase/INTEGRATION_WRAPUP.md) - CRUD rollout summary & verification
+- **Supabase Docs Index:** [`docs/supabase/DOCUMENTATION_INDEX.md`](docs/supabase/DOCUMENTATION_INDEX.md) - Navigation for all Supabase guides & SQL
 - **UX/UI Guidelines:** [`src/guidelines/Guidelines.md`](src/guidelines/Guidelines.md) - Design system reference
 - **API Reference:** [`docs/API_REFERENCE.md`](docs/API_REFERENCE.md) - Data Layer API documentation
 - **Release Notes:** [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) - v0.9.0-data-layer-stable release details

@@ -71,9 +71,9 @@ export function BalanceDisplay({
               disabled={isRefreshing}
               className={pillBase}
               style={{
-                background: 'rgba(255,255,255,0.12)',
-                color: 'white',
-                border: '1px solid rgba(255,255,255,0.2)',
+                background: 'var(--accent-pink-soft)',
+                color: 'var(--accent)',
+                border: '1px solid rgba(230,0,122,0.35)',
               }}
             >
               {isRefreshing ? 'Refreshing…' : 'Refresh'}

@@ -155,7 +155,8 @@ export function WalletBanner() {
             type="button"
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="text-xs font-semibold text-accent underline hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+            className="text-xs font-semibold underline hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+            style={{ color: 'var(--accent)' }}
           >
             {isRefreshing ? (
               <>
