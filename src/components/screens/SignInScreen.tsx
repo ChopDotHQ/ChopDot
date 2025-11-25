@@ -379,7 +379,6 @@ const TALISMAN_LOGO = '/assets/Logos/Talisman Wallet Logo.png';
 const EMAIL_LOGIN_LOGO = '/assets/Logos/choptdot_whitebackground.png';
 
 const isFlagEnabled = (value?: string) => value === '1' || value?.toLowerCase() === 'true';
-const SIGNATURE_DELAY_MS = 1200;
 
 interface ViewModeToggleProps {
   value: LoginViewOverride;
@@ -505,9 +504,10 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           const address = account.address0!;
           console.log('[LoginScreen] Signing message for address:', address);
 
-          // Give WalletConnect wallets (Nova/SubWallet/Talisman) a brief moment
-          // to surface the signature prompt after users return from their app.
-          await new Promise((resolve) => setTimeout(resolve, SIGNATURE_DELAY_MS));
+          // Request signature immediately - WalletConnect will queue it and Nova will show prompt
+          // Even if user is still in Nova or just returned, the request will be delivered
+          // Minimal delay just to ensure WalletConnect session is fully established
+          await new Promise((resolve) => setTimeout(resolve, 300));
 
           // Sign message via WalletConnect
           const { createWalletConnectSigner } = await import('../../services/chain/walletconnect');
