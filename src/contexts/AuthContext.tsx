@@ -45,27 +45,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const deriveWalletEmail = (address: string): string => {
   // Use hash-based approach to create deterministic, valid email
-  // Hash the address to get a consistent, shorter identifier
+  // Supabase may reject purely hexadecimal emails, so we use a more standard format
+  // Format: wallet.user.{hash}@chopdot.app (looks like a real email address)
   const hash = blake2AsHex(address.toLowerCase(), 256);
-  // Find first letter in hash to ensure email starts with letter (Supabase requirement)
-  // Format: wallet{hash}@chopdot.app (no separator, hash must start with letter)
   const hashWithoutPrefix = hash.slice(2); // Remove '0x'
   
-  // Find first letter (a-f) in hash, or use position 0 if it's already a letter
-  let startIdx = 0;
-  for (let i = 0; i < hashWithoutPrefix.length; i++) {
-    const char = hashWithoutPrefix[i];
-    if (char && char >= 'a' && char <= 'f') {
-      startIdx = i;
-      break;
-    }
-  }
-  
-  // Take 12 chars starting from first letter (ensure we have enough chars)
-  const hashPart = hashWithoutPrefix.slice(startIdx, startIdx + 12);
-  // Fallback: if hash part is too short, pad with hash chars from start
-  const finalHashPart = hashPart.length >= 12 ? hashPart : hashWithoutPrefix.slice(0, 12);
-  return `wallet${finalHashPart}@chopdot.app`;
+  // Take first 10 chars of hash (shorter to avoid length issues)
+  // Use dot separator to make it look more like a standard email
+  const hashPart = hashWithoutPrefix.slice(0, 10);
+  return `wallet.user.${hashPart}@chopdot.app`;
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
