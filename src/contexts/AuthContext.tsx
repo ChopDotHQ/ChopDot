@@ -55,15 +55,17 @@ const deriveWalletEmail = (address: string): string => {
   let startIdx = 0;
   for (let i = 0; i < hashWithoutPrefix.length; i++) {
     const char = hashWithoutPrefix[i];
-    if (char >= 'a' && char <= 'f') {
+    if (char && char >= 'a' && char <= 'f') {
       startIdx = i;
       break;
     }
   }
   
-  // Take 12 chars starting from first letter
+  // Take 12 chars starting from first letter (ensure we have enough chars)
   const hashPart = hashWithoutPrefix.slice(startIdx, startIdx + 12);
-  return `wallet${hashPart}@chopdot.app`;
+  // Fallback: if hash part is too short, pad with hash chars from start
+  const finalHashPart = hashPart.length >= 12 ? hashPart : hashWithoutPrefix.slice(0, 12);
+  return `wallet${finalHashPart}@chopdot.app`;
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
