@@ -12,6 +12,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { getSupabase } from '../utils/supabase-client';
 import { upsertProfile } from '../repos/profiles';
 import { blake2AsHex } from '@polkadot/util-crypto';
+import { hexToU8a } from '@polkadot/util';
 
 export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'email' | 'guest';
 
@@ -44,16 +45,28 @@ export type LoginCredentials =
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const deriveWalletEmail = (address: string): string => {
-  // Use hash-based approach to create deterministic, valid email
-  // Supabase may reject purely hexadecimal emails, so we use a more standard format
-  // Format: wallet.user.{hash}@chopdot.app (looks like a real email address)
+  // Use base64 encoding instead of hex to get more letters and avoid numbers
+  // Supabase seems to reject hex-only patterns, so base64 gives us A-Z, a-z, 0-9, +, /
+  // Format: wallet.{base64}@chopdot.app
   const hash = blake2AsHex(address.toLowerCase(), 256);
-  const hashWithoutPrefix = hash.slice(2); // Remove '0x'
+  const hashBytes = hexToU8a(hash); // Convert hex to bytes
   
-  // Take first 10 chars of hash (shorter to avoid length issues)
-  // Use dot separator to make it look more like a standard email
-  const hashPart = hashWithoutPrefix.slice(0, 10);
-  return `wallet.user.${hashPart}@chopdot.app`;
+  // Convert to base64 and take first 12 chars (ensures we get letters)
+  // Base64 will start with letters more often than hex
+  // Use 9 bytes = 12 base64 chars (no padding needed)
+  const bytesToEncode = hashBytes.slice(0, 9);
+  const binaryString = Array.from(bytesToEncode)
+    .map(byte => String.fromCharCode(byte))
+    .join('');
+  const base64Encoded = btoa(binaryString);
+  // Replace special chars (+/=) with letters for email safety
+  const base64Part = base64Encoded.replace(/[+/=]/g, (char) => {
+    if (char === '+') return 'p';
+    if (char === '/') return 's';
+    if (char === '=') return 'e';
+    return char;
+  });
+  return `wallet.${base64Part}@chopdot.app`;
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
