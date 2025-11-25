@@ -1055,7 +1055,6 @@ const MobileWalletConnectPanel = ({
       .map((id) => walletLinks.find((link) => link.id === id))
       .filter((link): link is (typeof walletLinks)[number] => Boolean(link));
     const secondaryWallets = walletLinks.filter((link) => !primaryWalletIds.includes(link.id));
-    const isReady = Boolean(uri);
 
     const handleWalletClick = async (linkId: string) => {
       const link = walletLinks.find((l) => l.id === linkId);
