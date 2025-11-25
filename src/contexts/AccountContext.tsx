@@ -315,32 +315,50 @@ export function AccountProvider({ children }: AccountProviderProps) {
           const address0 = normalizeToPolkadot(address);
           const walletName = 'Nova Wallet';
 
-          // Get initial balance
+          // Save connector preference
+          localStorage.setItem(STORAGE_KEY, 'walletconnect');
+          
+          // Mark as explicitly logged in (not auto-reconnect)
+          setHasExplicitlyLoggedIn(true);
+
+          // Set connected state immediately (don't wait for balance)
+          // This allows login to proceed even if WebSocket connections are blocked
+          const network = detectNetwork();
+          setState({
+            status: 'connected',
+            connector: 'walletconnect',
+            address,
+            address0,
+            network,
+            balanceFree: null, // Will be updated when balance check completes
+            balanceHuman: null,
+            walletName,
+            error: null,
+          });
+
+          // Try to get initial balance (non-blocking)
+          // If WebSockets are blocked, this will fail but login can still proceed
           chain.setChain('assethub'); // Default to Asset Hub
           chain.getFreeBalance(address)
             .then(balancePlanck => {
               const balanceHuman = fmtPlanckToDot(balancePlanck);
-              const network = detectNetwork();
-
-              // Save connector preference
-              localStorage.setItem(STORAGE_KEY, 'walletconnect');
-              
-              // Mark as explicitly logged in (not auto-reconnect)
-              setHasExplicitlyLoggedIn(true);
-
-              setState({
-                status: 'connected',
-                connector: 'walletconnect',
-                address,
-                address0,
-                network,
-                balanceFree: balancePlanck,
-                balanceHuman,
-                walletName,
-                error: null,
+              // Update state with balance (if still connected)
+              setState(prev => {
+                if (prev.status === 'connected' && prev.address0 === address0) {
+                  return {
+                    ...prev,
+                    balanceFree: balancePlanck,
+                    balanceHuman,
+                  };
+                }
+                return prev;
               });
             })
-            .catch(console.error);
+            .catch((error) => {
+              // Log but don't block - user can still login
+              console.warn('[Account] Balance check failed (non-blocking):', error?.message || error);
+              // Optionally show a warning toast, but don't prevent login
+            });
         })
         .catch((error: any) => {
           console.error('[Account] WalletConnect connection error:', error);
