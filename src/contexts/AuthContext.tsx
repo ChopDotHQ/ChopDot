@@ -48,7 +48,7 @@ const deriveWalletEmail = (address: string): string => {
   // Use base64 encoding instead of hex to get more letters and avoid numbers
   // Supabase seems to reject hex-only patterns, so base64 gives us A-Z, a-z, 0-9, +, /
   // Format: wallet.{base64}@chopdot.app
-  const hash = blake2AsHex(address.toLowerCase(), 256);
+  const hash = blake2AsHex(address.toLowerCase().trim(), 256);
   const hashBytes = hexToU8a(hash); // Convert hex to bytes
   
   // Convert to base64 and take first 12 chars (ensures we get letters)
@@ -60,13 +60,23 @@ const deriveWalletEmail = (address: string): string => {
     .join('');
   const base64Encoded = btoa(binaryString);
   // Replace special chars (+/=) with letters for email safety
-  const base64Part = base64Encoded.replace(/[+/=]/g, (char) => {
-    if (char === '+') return 'p';
-    if (char === '/') return 's';
-    if (char === '=') return 'e';
-    return char;
-  });
-  return `wallet.${base64Part}@chopdot.app`;
+  // Also sanitize: remove any non-alphanumeric except dots/dashes
+  const base64Part = base64Encoded
+    .replace(/[+/=]/g, (char) => {
+      if (char === '+') return 'p';
+      if (char === '/') return 's';
+      if (char === '=') return 'e';
+      return char;
+    })
+    .replace(/[^a-zA-Z0-9]/g, ''); // Remove any remaining special chars
+  
+  // Ensure we have at least some chars (fallback if somehow empty)
+  const safePart = base64Part.slice(0, 12) || 'wallet';
+  
+  // Trim and lowercase the final email to ensure no whitespace issues
+  const email = `wallet.${safePart}@chopdot.app`.toLowerCase().trim();
+  
+  return email;
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -184,6 +194,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (supabase) {
           const walletEmail = deriveWalletEmail(credentials.address);
           
+          // Log exact email string to debug Supabase validation issues
+          console.log('[Auth] Generated wallet email:', JSON.stringify(walletEmail));
           console.log('[Auth] Wallet login attempt for:', credentials.address);
           
           // Try to sign in first (for returning users)
