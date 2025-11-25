@@ -437,8 +437,10 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   const [walletConnectQRCode, setWalletConnectQRCode] = useState<string | null>(null);
   const [walletConnectUri, setWalletConnectUri] = useState<string | null>(null);
   const [isWaitingForWalletConnect, setIsWaitingForWalletConnect] = useState(false);
+  const [isWaitingForSignature, setIsWaitingForSignature] = useState(false);
   const walletConnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const enableMobileUi = isFlagEnabled(import.meta.env.VITE_ENABLE_MOBILE_WC_UI ?? '0');
+  const enableWcModal = isFlagEnabled(import.meta.env.VITE_ENABLE_WC_MODAL ?? '0');
   const device = useClientDevice();
   const [viewModeOverride, setViewModeOverride] = useState<LoginViewOverride>('auto');
   const [showEmailLogin, setShowEmailLogin] = useState(false);
@@ -494,6 +496,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       setWalletConnectQRCode(null);
       setWalletConnectUri(null);
       setIsWaitingForWalletConnect(false);
+      setIsWaitingForSignature(true);
 
       // Proceed with login
       (async () => {
@@ -536,6 +539,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           triggerHaptic('error');
         } finally {
           setLoading(false);
+          setIsWaitingForSignature(false);
         }
       })();
     }
@@ -774,6 +778,26 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     }
   };
 
+  const handleWalletConnectModal = async () => {
+    try {
+      triggerHaptic('light');
+      setLoading(true);
+      setError(null);
+      setIsWaitingForSignature(true);
+
+      // TODO: Implement WalletConnect modal flow
+      // This is incomplete work - WalletConnect modal integration pending
+      throw new Error('WalletConnect modal not yet implemented. Please use individual wallet buttons.');
+    } catch (err: any) {
+      console.error('[LoginScreen] WalletConnect modal flow failed:', err);
+      setError(err.message || 'Failed to connect with WalletConnect modal');
+      triggerHaptic('error');
+    } finally {
+      setLoading(false);
+      setIsWaitingForSignature(false);
+    }
+  };
+
 
   const handleGuestLogin = async () => {
     try {
@@ -980,6 +1004,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       setWalletConnectQRCode(null);
       setWalletConnectUri(null);
       setIsWaitingForWalletConnect(false);
+      setIsWaitingForSignature(false);
 
       let errorMessage = err.message || 'Failed to connect via WalletConnect';
       if (err.message?.includes('MetaMask') || err.message?.includes('does not support Polkadot')) {
@@ -1026,6 +1051,7 @@ const MobileWalletConnectPanel = ({
   renderEmailForm,
   onSignupLink,
   waitingForSignature,
+  onOpenModal,
 }: {
   uri: string | null;
   loading: boolean;
@@ -1045,6 +1071,7 @@ const MobileWalletConnectPanel = ({
   renderEmailForm?: () => ReactNode;
   onSignupLink: () => void;
   waitingForSignature: boolean;
+  onOpenModal?: () => Promise<void>;
 }) => {
     const [showSecondaryWallets, setShowSecondaryWallets] = useState(false);
     const textPrimary = mode === 'dark' ? 'text-white' : 'text-[#111111]';
@@ -1108,18 +1135,30 @@ const MobileWalletConnectPanel = ({
             <p className={`text-sm ${textSecondary}`}>
               Tap your wallet below. After approving the connection, stay inside your wallet until you confirm the signature.
             </p>
-            {waitingForSignature && (
-              <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-black/5 px-3 py-1 text-xs font-semibold text-[var(--accent)] dark:bg-white/10">
-                <Loader2 className="h-3 w-3 animate-spin" />
-                Waiting for signature in wallet…
-              </div>
-            )}
-          </div>
+          {waitingForSignature && (
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-black/5 px-3 py-1 text-xs font-semibold text-[var(--accent)] dark:bg-white/10">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Waiting for signature in wallet…
+            </div>
+          )}
+        </div>
 
-          {errorMessage && (
-            <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive space-y-2">
-              <p>{errorMessage}</p>
-              <button
+        {onOpenModal && (
+          <WalletOption
+            title="WalletConnect (new picker)"
+            subtitle="Search + QR like ether.fi"
+            iconSrc={WALLETCONNECT_LOGO}
+            iconAlt="WalletConnect logo"
+            onClick={onOpenModal}
+            disabled={loading}
+            theme={walletTheme}
+          />
+        )}
+
+        {errorMessage && (
+          <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive space-y-2">
+            <p>{errorMessage}</p>
+            <button
                 type="button"
                 onClick={onRetry}
                 className="text-xs font-semibold underline underline-offset-2"
@@ -1617,7 +1656,8 @@ const MobileWalletConnectPanel = ({
                 setShowEmailLogin(false);
                 setAuthPanelView('signup');
               }}
-              waitingForSignature={isWaitingForWalletConnect}
+              waitingForSignature={isWaitingForSignature}
+              onOpenModal={enableWcModal ? handleWalletConnectModal : undefined}
             />
             {renderFooterContent()}
           </div>
