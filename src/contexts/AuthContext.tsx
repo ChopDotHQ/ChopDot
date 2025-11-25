@@ -11,6 +11,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getSupabase } from '../utils/supabase-client';
 import { upsertProfile } from '../repos/profiles';
+import { blake2AsHex } from '@polkadot/util-crypto';
 
 export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'email' | 'guest';
 
@@ -43,9 +44,13 @@ export type LoginCredentials =
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const deriveWalletEmail = (address: string): string => {
-  const normalized = address.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const slug = normalized || `wallet${Math.random().toString(36).slice(2, 10)}`;
-  return `wallet+${slug.slice(0, 30)}@chopdot.app`;
+  // Use hash-based approach to create deterministic, valid email
+  // Hash the address to get a consistent, shorter identifier
+  const hash = blake2AsHex(address.toLowerCase(), 256);
+  // Take first 24 chars of hash (after '0x' prefix) + 'wallet' prefix = 30 chars total
+  // Format: wallet{hash}@chopdot.app (no special characters)
+  const hashPart = hash.slice(2, 26); // Remove '0x' and take 24 chars
+  return `wallet${hashPart}@chopdot.app`;
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
