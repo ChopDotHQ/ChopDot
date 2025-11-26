@@ -8,7 +8,6 @@
  */
 
 import { signPolkadotMessage } from '../../utils/walletAuth';
-import { createWalletConnectSigner, getWalletConnectSession } from '../../services/chain/walletconnect';
 import { stringToHex } from '@polkadot/util';
 
 // Cache for user signatures (keyed by wallet address)
@@ -58,55 +57,56 @@ export async function getIPFSAuthSignature(walletAddress: string): Promise<strin
   // Create new signature request
   const signaturePromise = (async () => {
     try {
-  // Generate signature by signing the wallet address
-  // This is safe - we're just signing the address itself for authentication
-  const message = walletAddress;
-  let signature: string;
+      // Generate signature by signing the wallet address
+      // This is safe - we're just signing the address itself for authentication
+      const message = walletAddress;
+      let signature: string;
 
-  // Detect connector type and use appropriate signing method
-  const connector = getConnectorType();
-  
-  if (connector === 'walletconnect') {
-    // Use WalletConnect signer for Nova Wallet/SubWallet mobile
-    try {
-      const session = getWalletConnectSession();
-      if (!session) {
-        throw new Error('WalletConnect session not found');
+      // Detect connector type and use appropriate signing method
+      const connector = getConnectorType();
+      
+      if (connector === 'walletconnect') {
+        // Use WalletConnect signer for Nova Wallet/SubWallet mobile
+        try {
+          const { createWalletConnectSigner, getWalletConnectSession } = await import('../../services/chain/walletconnect');
+          const session = getWalletConnectSession();
+          if (!session) {
+            throw new Error('WalletConnect session not found');
+          }
+
+          const signer = createWalletConnectSigner(walletAddress);
+          const result = await signer.signRaw({
+            address: walletAddress,
+            data: stringToHex(message),
+          });
+          signature = result.signature;
+
+          console.log('[IPFSAuth] Generated signature via WalletConnect', {
+            walletAddress: walletAddress.slice(0, 10) + '...',
+          });
+        } catch (error) {
+          console.error('[IPFSAuth] WalletConnect signing failed, falling back to extension method:', error);
+          // Fall back to extension method if WalletConnect fails
+          signature = await signPolkadotMessage(walletAddress, message);
+        }
+      } else {
+        // Use browser extension signer (default)
+        signature = await signPolkadotMessage(walletAddress, message);
+        
+        console.log('[IPFSAuth] Generated signature via browser extension', {
+          walletAddress: walletAddress.slice(0, 10) + '...',
+        });
       }
 
-      const signer = createWalletConnectSigner(walletAddress);
-      const result = await signer.signRaw({
-        address: walletAddress,
-        data: stringToHex(message),
-      });
-      signature = result.signature;
+      // Cache for future use
+      signatureCache.set(walletAddress, signature);
 
-      console.log('[IPFSAuth] Generated signature via WalletConnect', {
+      console.log('[IPFSAuth] Generated and cached signature for IPFS uploads', {
         walletAddress: walletAddress.slice(0, 10) + '...',
+        connector: connector || 'extension',
       });
-    } catch (error) {
-      console.error('[IPFSAuth] WalletConnect signing failed, falling back to extension method:', error);
-      // Fall back to extension method if WalletConnect fails
-      signature = await signPolkadotMessage(walletAddress, message);
-    }
-  } else {
-    // Use browser extension signer (default)
-    signature = await signPolkadotMessage(walletAddress, message);
-    
-    console.log('[IPFSAuth] Generated signature via browser extension', {
-      walletAddress: walletAddress.slice(0, 10) + '...',
-    });
-  }
 
-  // Cache for future use
-  signatureCache.set(walletAddress, signature);
-
-  console.log('[IPFSAuth] Generated and cached signature for IPFS uploads', {
-    walletAddress: walletAddress.slice(0, 10) + '...',
-    connector: connector || 'extension',
-  });
-
-  return signature;
+      return signature;
     } catch (error) {
       // If rate limited, throw a more helpful error
       if (error instanceof Error && error.message.includes('Rate limit')) {
@@ -139,4 +139,3 @@ export function clearIPFSAuthCache(walletAddress?: string): void {
 // Removed setGlobalIPFSAuth - no longer needed
 // Backend receives auth via formData (walletAddress/signature fields)
 // This improves security by not exposing signatures in window globals
-
