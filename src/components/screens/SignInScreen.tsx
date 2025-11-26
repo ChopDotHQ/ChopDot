@@ -1109,13 +1109,26 @@ const MobileWalletConnectPanel = ({
       }
       try {
         const isHttpLink = target.startsWith('http');
-        const openInNewTab = link.id === 'other' || isHttpLink;
-        if (openInNewTab && typeof window !== 'undefined' && typeof window.open === 'function') {
-          const popup = window.open(target, '_blank', 'noopener,noreferrer');
-          if (!popup) {
-            throw new Error('Popup was blocked');
+        const isDeepLink = target.includes('://') && !isHttpLink; // Custom URL scheme (novawallet://, subwallet://, etc.)
+        
+        // Deep links must use window.location.href (can't open in popup)
+        // HTTP links can try popup first, but fall back to navigation if blocked
+        if (isDeepLink) {
+          // Always navigate for deep links (custom URL schemes)
+          window.location.href = target;
+        } else if (isHttpLink && link.id === 'other') {
+          // For "Other Wallet" HTTP links, try popup first
+          if (typeof window !== 'undefined' && typeof window.open === 'function') {
+            const popup = window.open(target, '_blank', 'noopener,noreferrer');
+            if (!popup) {
+              // Popup blocked, fall back to navigation
+              window.location.href = target;
+            }
+          } else {
+            window.location.href = target;
           }
         } else {
+          // Default: navigate directly (safer, works everywhere)
           window.location.href = target;
         }
         trackEvent('mobile_wallet_link_clicked', { walletId: link.id });
