@@ -75,10 +75,12 @@ const deriveWalletEmail = (address: string): string => {
     .replace(/[^a-zA-Z0-9]/g, ''); // Remove any remaining special chars
   
   // Ensure we have at least some chars (fallback if somehow empty)
-  const safePart = base64Part.slice(0, 12) || 'wallet';
+  const safePart = base64Part.slice(0, 10) || 'wallet'; // Shorter hash part
   
-  // Trim and lowercase the final email to ensure no whitespace issues
-  const email = `wallet.${safePart}@${domain}`.toLowerCase().trim();
+  // Use format that matches the working pattern: wallet.user.{hash}@domain
+  // The "user" part makes it look more like a real email address
+  // This matches the pattern that successfully created wallet.user.test@chopdot.app
+  const email = `wallet.user.${safePart}@${domain}`.toLowerCase().trim();
   
   return email;
 };
@@ -222,6 +224,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   wallet_address: credentials.address,
                   auth_method: method,
                 },
+                // Auto-confirm wallet users (they can't receive confirmation emails)
+                // This requires email confirmation to be disabled OR admin API confirmation
+                emailRedirectTo: window.location.origin,
               },
             });
             
