@@ -49,13 +49,18 @@ export async function initWalletConnect(): Promise<SignClient> {
       walletConnectModal = new WalletConnectModal({
         projectId: WALLETCONNECT_PROJECT_ID,
         chains: [POLKADOT_RELAY_CHAIN_ID, POLKADOT_ASSET_HUB_CHAIN_ID],
-        // recommendedWalletIds not supported in current WalletConnect version
-        // Keep explorer enabled - it will show desktop wallets
-        // Mobile wallets will use QR code (scan tab) which doesn't require explorer
+        // Prioritize Polkadot-native wallets at the top
+        // Wallet IDs from WalletConnect Explorer: https://explorer.walletconnect.com/
+        // Note: Check WalletConnect docs for correct property name (may be explorerRecommendedWalletIds or featuredWalletIds)
+        // For now, explorer will auto-discover wallets that support Polkadot chains
+        // We exclude Rainbow since it doesn't support Polkadot
         enableExplorer: true,
-        // Exclude Rainbow from explorer to prevent auto-prioritization
-        // Users can still connect via QR code if they want to use Rainbow
         explorerExcludedWalletIds: ['rainbow', 'rainbowkit'],
+        // TODO: Add explorerRecommendedWalletIds once we confirm the correct wallet IDs:
+        // - Nova Wallet
+        // - SubWallet  
+        // - Talisman
+        // These can be found at https://explorer.walletconnect.com/ by searching for each wallet
       });
     } catch (error) {
       console.warn('[WalletConnect] Modal initialization failed, will use QR code flow:', error);
