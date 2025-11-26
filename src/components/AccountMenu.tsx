@@ -14,6 +14,8 @@ import QRCode from 'qrcode';
 import { AddressDisplay } from './AddressDisplay';
 import { getHyperbridgeUrl } from '../services/bridge/hyperbridge';
 import { chain } from '../services/chain';
+import { useIsMobile } from './ui/use-mobile';
+import { walletConnectLinks } from '../config/wallet-connect-links';
 
 // Helper component to auto-close QR modal after connection
 function AutoCloseQR({ onClose }: { onClose: () => void }) {
@@ -28,11 +30,12 @@ function AutoCloseQR({ onClose }: { onClose: () => void }) {
 
 export function AccountMenu() {
   const account = useAccount();
+  const isMobile = useIsMobile();
   const [showMenu, setShowMenu] = useState(false);
   const [showExtensionSelector, setShowExtensionSelector] = useState(false);
   const [showNovaQR, setShowNovaQR] = useState(false);
   const [novaQRCode, setNovaQRCode] = useState<string | null>(null);
-  const [, setNovaURI] = useState<string | null>(null);
+  const [novaURI, setNovaURI] = useState<string | null>(null);
   const [connecting, setConnecting] = useState(false);
 
   // Reset connecting state and close modals when account status changes
@@ -174,7 +177,15 @@ export function AccountMenu() {
         throw new Error('No URI received from WalletConnect');
       }
       
-      // Generate QR code
+      // On mobile, deep-link directly to wallet apps instead of showing QR
+      if (isMobile) {
+        // Mobile flow: show wallet selection, then deep-link
+        setNovaURI(uri);
+        setShowNovaQR(true); // Reuse this modal to show wallet options
+        return;
+      }
+      
+      // Desktop flow: generate QR code
       console.log('[AccountMenu] Generating QR code...');
       const qrCodeDataUrl = await QRCode.toDataURL(uri, {
         errorCorrectionLevel: 'M',
@@ -206,6 +217,38 @@ export function AccountMenu() {
       // Show error to user
       const errorMsg = error?.message || 'Failed to setup WalletConnect connection';
       alert(`Failed to setup WalletConnect connection: ${errorMsg}`);
+    }
+  };
+
+  const handleMobileWalletClick = async (walletId: string, uri?: string) => {
+    const uriToUse = uri || novaURI;
+    if (!uriToUse) return;
+    
+    const link = walletConnectLinks.find(l => l.id === walletId);
+    if (!link) return;
+    
+    const target = link.deepLink?.(uriToUse) ?? link.universalLink?.(uriToUse);
+    if (!target) {
+      alert('Unable to open this wallet. Please try another option.');
+      return;
+    }
+    
+    try {
+      const isHttpLink = target.startsWith('http');
+      if (isHttpLink && typeof window !== 'undefined' && typeof window.open === 'function') {
+        window.open(target, '_blank', 'noopener,noreferrer');
+      } else {
+        window.location.href = target;
+      }
+    } catch (err) {
+      console.error('[AccountMenu] Failed to open wallet link', err);
+      // Fallback: copy URI to clipboard
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(uriToUse);
+        alert('Could not open wallet directly. WalletConnect link copied—paste it into your wallet app.');
+      } else {
+        alert('Could not open the wallet link. Please try again.');
+      }
     }
   };
 
@@ -398,22 +441,61 @@ export function AccountMenu() {
               </div>
             )}
             <div className="p-2">
-              <button
-                onClick={handleConnectExtension}
-                className="w-full px-3 py-2 text-left text-sm rounded-md hover:bg-muted transition-colors flex items-center gap-2"
-                disabled={connecting}
-              >
-                <Wallet className="w-4 h-4" />
-                Browser Extension
-              </button>
-              <button
-                onClick={handleConnectWalletConnect}
-                className="w-full px-3 py-2 text-left text-sm rounded-md hover:bg-muted transition-colors flex items-center gap-2"
-                disabled={connecting}
-              >
-                <QrCode className="w-4 h-4" />
-                WalletConnect
-              </button>
+              {isMobile ? (
+                // Mobile: Show mobile wallet options that start WalletConnect and open deep link
+                <>
+                  {walletConnectLinks
+                    .filter(link => ['nova', 'subwallet', 'talisman'].includes(link.id))
+                    .map((link) => (
+                      <button
+                        key={link.id}
+                        onClick={async () => {
+                          setShowMenu(false);
+                          setConnecting(true);
+                          try {
+                            console.log(`[AccountMenu] Starting WalletConnect for ${link.label}...`);
+                            const uri = await account.connectWalletConnect();
+                            if (!uri) {
+                              throw new Error('No URI received from WalletConnect');
+                            }
+                            console.log(`[AccountMenu] Opening ${link.label} with URI...`);
+                            await handleMobileWalletClick(link.id, uri);
+                            // Connection will complete asynchronously - don't reset connecting state here
+                          } catch (error: any) {
+                            console.error('[AccountMenu] Mobile wallet connection error:', error);
+                            setConnecting(false);
+                            alert(`Failed to connect: ${error?.message || 'Unknown error'}`);
+                          }
+                        }}
+                        className="w-full px-3 py-2 text-left text-sm rounded-md hover:bg-muted transition-colors flex items-center gap-2"
+                        disabled={connecting}
+                      >
+                        <img src={link.icon} alt={link.label} className="w-4 h-4" />
+                        {link.label}
+                      </button>
+                    ))}
+                </>
+              ) : (
+                // Desktop: Show extension + WalletConnect
+                <>
+                  <button
+                    onClick={handleConnectExtension}
+                    className="w-full px-3 py-2 text-left text-sm rounded-md hover:bg-muted transition-colors flex items-center gap-2"
+                    disabled={connecting}
+                  >
+                    <Wallet className="w-4 h-4" />
+                    Browser Extension
+                  </button>
+                  <button
+                    onClick={handleConnectWalletConnect}
+                    className="w-full px-3 py-2 text-left text-sm rounded-md hover:bg-muted transition-colors flex items-center gap-2"
+                    disabled={connecting}
+                  >
+                    <QrCode className="w-4 h-4" />
+                    WalletConnect
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </>
@@ -462,8 +544,8 @@ export function AccountMenu() {
         </div>
       )}
 
-      {/* Nova Wallet QR Code Modal - Show during connection process only */}
-      {showNovaQR && novaQRCode && account.status !== 'disconnected' && (
+      {/* WalletConnect Modal - QR code on desktop, wallet selection on mobile */}
+      {showNovaQR && account.status !== 'disconnected' && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
           onClick={() => {
@@ -481,45 +563,91 @@ export function AccountMenu() {
             onClick={(e) => e.stopPropagation()}
             style={{ borderColor: 'var(--border)' }}
           >
-            <h3 className="text-lg font-semibold mb-2">Connect via WalletConnect</h3>
-            <p className="text-sm opacity-70 mb-4">
-              {account.status === 'connecting' 
-                ? 'Scan this QR code with Nova Wallet, SubWallet mobile, or Talisman mobile'
-                : account.status === 'connected'
-                ? 'Connected! Closing...'
-                : account.error
-                ? `Connection failed: ${account.error}`
-                : 'Waiting for connection...'}
-            </p>
-            {account.error && (
-              <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                <div className="flex items-center gap-2 text-red-700 dark:text-red-300">
-                  <span className="text-sm">{account.error}</span>
+            {isMobile && !novaQRCode ? (
+              // Mobile: Show wallet selection
+              <>
+                <h3 className="text-lg font-semibold mb-2">Choose Your Wallet</h3>
+                <p className="text-sm opacity-70 mb-4">
+                  Tap your wallet below. After approving the connection, stay inside your wallet until you confirm the signature.
+                </p>
+                <div className="space-y-2">
+                  {walletConnectLinks
+                    .filter(link => ['nova', 'subwallet', 'talisman'].includes(link.id))
+                    .map((link) => (
+                      <button
+                        key={link.id}
+                        onClick={() => handleMobileWalletClick(link.id, novaURI || undefined)}
+                        className="w-full px-4 py-3 rounded-lg border hover:bg-muted transition-colors flex items-center gap-3"
+                        style={{ borderColor: 'var(--border)' }}
+                      >
+                        <img src={link.icon} alt={link.label} className="w-8 h-8" />
+                        <div className="flex-1 text-left">
+                          <div className="font-medium">{link.label}</div>
+                          {link.description && (
+                            <div className="text-xs opacity-70">{link.description}</div>
+                          )}
+                        </div>
+                      </button>
+                    ))}
                 </div>
-              </div>
+                <button
+                  className="mt-4 w-full px-4 py-2 rounded-lg border hover:bg-muted transition-colors"
+                  onClick={() => {
+                    setShowNovaQR(false);
+                    setNovaQRCode(null);
+                    setNovaURI(null);
+                    setConnecting(false);
+                  }}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              // Desktop: Show QR code
+              <>
+                <h3 className="text-lg font-semibold mb-2">Connect via WalletConnect</h3>
+                <p className="text-sm opacity-70 mb-4">
+                  {account.status === 'connecting' 
+                    ? 'Scan this QR code with Nova Wallet, SubWallet mobile, or Talisman mobile'
+                    : account.status === 'connected'
+                    ? 'Connected! Closing...'
+                    : account.error
+                    ? `Connection failed: ${account.error}`
+                    : 'Waiting for connection...'}
+                </p>
+                {account.error && (
+                  <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                    <div className="flex items-center gap-2 text-red-700 dark:text-red-300">
+                      <span className="text-sm">{account.error}</span>
+                    </div>
+                  </div>
+                )}
+                {novaQRCode && (
+                  <div className="flex justify-center mb-4 p-4 bg-white rounded-lg">
+                    <img src={novaQRCode} alt="WalletConnect QR Code" className="w-64 h-64" />
+                  </div>
+                )}
+                {(account.status as string) === 'connected' && (
+                  <div className="mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                    <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                      <CheckCircle className="w-4 h-4" />
+                      <span className="text-sm font-medium">Successfully connected!</span>
+                    </div>
+                  </div>
+                )}
+                <button
+                  className="w-full px-4 py-2 rounded-lg bg-accent text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+                  onClick={() => {
+                    setShowNovaQR(false);
+                    setNovaQRCode(null);
+                    setNovaURI(null);
+                    setConnecting(false);
+                  }}
+                >
+                  {(account.status as string) === 'connected' ? 'Close' : 'Cancel'}
+                </button>
+              </>
             )}
-            <div className="flex justify-center mb-4 p-4 bg-white rounded-lg">
-              <img src={novaQRCode} alt="WalletConnect QR Code" className="w-64 h-64" />
-            </div>
-            {(account.status as string) === 'connected' && (
-              <div className="mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
-                  <CheckCircle className="w-4 h-4" />
-                  <span className="text-sm font-medium">Successfully connected!</span>
-                </div>
-              </div>
-            )}
-            <button
-              className="w-full px-4 py-2 rounded-lg bg-accent text-white hover:opacity-90 transition-opacity disabled:opacity-50"
-              onClick={() => {
-                setShowNovaQR(false);
-                setNovaQRCode(null);
-                setNovaURI(null);
-                setConnecting(false);
-              }}
-            >
-              {(account.status as string) === 'connected' ? 'Close' : 'Cancel'}
-            </button>
           </div>
         </div>
       )}
