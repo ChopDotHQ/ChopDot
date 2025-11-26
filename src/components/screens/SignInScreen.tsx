@@ -786,15 +786,73 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       triggerHaptic('light');
       setLoading(true);
       setError(null);
-      setIsWaitingForSignature(true);
+      setIsWaitingForSignature(false); // Will be set to true after connection
 
-      // TODO: Implement WalletConnect modal flow
-      // This is incomplete work - WalletConnect modal integration pending
-      throw new Error('WalletConnect modal not yet implemented. Please use individual wallet buttons.');
+      console.log('[LoginScreen] Opening WalletConnect Modal v2...');
+      
+      // Import WalletConnect modal service dynamically
+      const walletConnectModule = await import('../../services/chain/walletconnect');
+      const { connectViaWalletConnectModal } = walletConnectModule;
+      
+      // Open WalletConnect Modal v2 - shows wallet grid/search/QR
+      // This opens the polished modal with wallet grid/search/QR like ether.fi
+      const { address } = await connectViaWalletConnectModal();
+      
+      console.log('[LoginScreen] ✅ WalletConnect connection via modal! Address:', address);
+      
+      // Set waiting for signature state - keep user in wallet app
+      setIsWaitingForSignature(true);
+      
+      // Update AccountContext to reflect the connection
+      // The session is already established by connectViaWalletConnectModal
+      // AccountContext will detect the connection automatically via the WalletConnect session
+      // We just need to ensure it's synced - the connectWalletConnect method handles this
+      // But since we already have a session, we'll trigger a refresh
+      // For now, just proceed with signing - AccountContext will sync when it detects the session
+      
+      // Sign message via WalletConnect (using the session from modal)
+      const { createWalletConnectSigner } = await import('../../services/chain/walletconnect');
+      const { stringToHex } = await import('@polkadot/util');
+      const signer = createWalletConnectSigner(address);
+      const message = generateSignInMessage(address);
+      
+      console.log('[LoginScreen] Requesting signature from WalletConnect...');
+      console.log('[LoginScreen] 💡 Stay in your wallet app until you approve the signature');
+      
+      // Add delay to give wallet time to surface signature prompt
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      
+      const { signature } = await signer.signRaw({
+        address,
+        data: stringToHex(message),
+      });
+      
+      console.log('[LoginScreen] Signature received, logging in...');
+      
+      // Login with signature
+      await login('rainbow', {
+        type: 'wallet',
+        address,
+        signature,
+        message,
+      });
+      
+      triggerHaptic('medium');
+      onLoginSuccess?.();
+      
     } catch (err: any) {
       console.error('[LoginScreen] WalletConnect modal flow failed:', err);
-      setError(err.message || 'Failed to connect with WalletConnect modal');
-      triggerHaptic('error');
+      
+      // Handle user rejection gracefully
+      if (err?.message?.includes('User rejected') || 
+          err?.message?.includes('cancelled') ||
+          err?.message?.includes('Rejected')) {
+        setError(null); // Don't show error for user cancellation
+        triggerHaptic('light');
+      } else {
+        setError(err.message || 'Failed to connect with WalletConnect modal');
+        triggerHaptic('error');
+      }
     } finally {
       setLoading(false);
       setIsWaitingForSignature(false);
