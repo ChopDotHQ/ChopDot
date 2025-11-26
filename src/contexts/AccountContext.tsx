@@ -34,6 +34,7 @@ interface AccountContextType extends AccountState {
   connect: (wallet: any) => Promise<void>;
   connectExtension: (selectedAddress?: string) => Promise<void>;
   connectWalletConnect: () => Promise<string>; // Returns URI for QR code
+  syncWalletConnectSession: () => Promise<void>; // Sync with existing WalletConnect session
   disconnect: () => void;
   refreshBalance: () => Promise<void>;
   canAfford: (amountDot: string) => boolean;
@@ -296,6 +297,64 @@ export function AccountProvider({ children }: AccountProviderProps) {
         error: error?.message || 'Failed to connect extension',
       }));
       throw error;
+    }
+  }, [detectNetwork]);
+
+  // Sync with existing WalletConnect session (for when session is created outside AccountContext)
+  const syncWalletConnectSession = useCallback(async (): Promise<void> => {
+    try {
+      const walletConnectModule = await import('../services/chain/walletconnect');
+      const session = walletConnectModule.getWalletConnectSession();
+      
+      if (session?.namespaces?.polkadot?.accounts && session.namespaces.polkadot.accounts.length > 0) {
+        const accounts = session.namespaces.polkadot.accounts;
+        const address = accounts[0]?.split(':').slice(2).join(':');
+        if (address) {
+          const address0 = normalizeToPolkadot(address);
+          
+          // Save connector preference
+          localStorage.setItem(STORAGE_KEY, 'walletconnect');
+          
+          // Mark as explicitly logged in (not auto-reconnect)
+          setHasExplicitlyLoggedIn(true);
+          
+          // Set connected state
+          const network = detectNetwork();
+          setState({
+            status: 'connected',
+            connector: 'walletconnect',
+            address,
+            address0,
+            network,
+            balanceFree: null, // Will be updated when balance check completes
+            balanceHuman: null,
+            walletName: 'WalletConnect',
+            error: null,
+          });
+          
+          // Try to get initial balance (non-blocking)
+          chain.setChain('assethub');
+          chain.getFreeBalance(address)
+            .then(balancePlanck => {
+              const balanceHuman = fmtPlanckToDot(balancePlanck);
+              setState(prev => {
+                if (prev.status === 'connected' && prev.address0 === address0) {
+                  return {
+                    ...prev,
+                    balanceFree: balancePlanck,
+                    balanceHuman,
+                  };
+                }
+                return prev;
+              });
+            })
+            .catch((error) => {
+              console.warn('[Account] Balance check failed (non-blocking):', error?.message || error);
+            });
+        }
+      }
+    } catch (error) {
+      console.warn('[Account] Failed to sync WalletConnect session:', error);
     }
   }, [detectNetwork]);
 

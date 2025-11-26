@@ -849,12 +849,11 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       // Set waiting for signature state - keep user in wallet app
       setIsWaitingForSignature(true);
       
-      // Update AccountContext to reflect the connection
+      // Sync AccountContext with the WalletConnect session
       // The session is already established by connectViaWalletConnectModal
-      // AccountContext will detect the connection automatically via the WalletConnect session
-      // We just need to ensure it's synced - the connectWalletConnect method handles this
-      // But since we already have a session, we'll trigger a refresh
-      // For now, just proceed with signing - AccountContext will sync when it detects the session
+      // We need to update AccountContext so the app shows "Connected" status after login
+      await account.syncWalletConnectSession();
+      console.log('[LoginScreen] AccountContext synced with WalletConnect session');
       
       // Sign message via WalletConnect (using the session from modal)
       const { createWalletConnectSigner } = await import('../../services/chain/walletconnect');
