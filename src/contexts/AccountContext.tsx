@@ -498,8 +498,12 @@ export function AccountProvider({ children }: AccountProviderProps) {
       if (savedConnector === 'walletconnect') {
         // Dynamic import to avoid loading WalletConnect packages at module init
         import('../services/chain/walletconnect')
-          .then(walletConnectModule => {
-            // Check if WalletConnect session still exists
+          .then(async (walletConnectModule) => {
+            // Initialize WalletConnect first - this restores sessions from IndexedDB
+            // SignClient.init() automatically restores persisted sessions
+            await walletConnectModule.initWalletConnect();
+            
+            // Now check if WalletConnect session exists (after initialization)
             const session = walletConnectModule.getWalletConnectSession();
             if (session?.namespaces?.polkadot?.accounts && session.namespaces.polkadot.accounts.length > 0) {
               const accounts = session.namespaces.polkadot.accounts;
@@ -511,21 +515,26 @@ export function AccountProvider({ children }: AccountProviderProps) {
                 // This prevents WebSocket connection attempts on login screen
                 // Don't set hasExplicitlyLoggedIn for auto-reconnect
                 // Balance polling will start only after explicit login
-                    setState({
-                      status: 'connected',
-                      connector: 'walletconnect',
-                      address,
-                      address0,
-                      network: detectNetwork(),
+                setState({
+                  status: 'connected',
+                  connector: 'walletconnect',
+                  address,
+                  address0,
+                  network: detectNetwork(),
                   balanceFree: null,
                   balanceHuman: null,
-                      walletName: 'Nova Wallet',
-                      error: null,
-                    });
+                  walletName: 'WalletConnect',
+                  error: null,
+                });
+                console.log('[Account] Auto-reconnected to WalletConnect session:', address.slice(0, 10) + '...');
               }
+            } else {
+              console.log('[Account] No active WalletConnect session found on auto-reconnect');
             }
           })
-          .catch(console.error);
+          .catch((error) => {
+            console.warn('[Account] WalletConnect auto-reconnect failed:', error);
+          });
       } else if (savedConnector === 'extension') {
         // Try to reconnect extension (silent - won't show error if user removed extension)
         // Pass isAutoReconnect=true to prevent balance fetching from auto-reconnect
