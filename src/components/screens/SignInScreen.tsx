@@ -1091,6 +1091,18 @@ const MobileWalletConnectPanel = ({
       if (!link) {
         return;
       }
+      
+      // Check if we're on a real mobile device (not desktop browser simulation)
+      const isRealMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && 
+                           !/Chrome|Firefox|Safari/.test(navigator.userAgent) || 
+                           (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+      
+      // On desktop, deep links won't work - suggest using QR code instead
+      if (!isRealMobile && !preferDeepLinks) {
+        onError('Mobile wallet links only work on real mobile devices. Please use "Switch to desktop wallet view" to scan the QR code, or test on your phone.');
+        return;
+      }
+      
       let sessionUri = uri;
       if (!sessionUri) {
         sessionUri = await onRetry();
@@ -1100,37 +1112,17 @@ const MobileWalletConnectPanel = ({
         return;
       }
       const finalUri = sessionUri!;
-      const target =
-        (preferDeepLinks ? link.deepLink?.(finalUri) : link.universalLink?.(finalUri)) ??
-        (preferDeepLinks ? link.universalLink?.(finalUri) : link.deepLink?.(finalUri));
+      
+      // Prefer deep links on mobile, skip universal links (they're unreliable)
+      const target = link.deepLink?.(finalUri);
       if (!target) {
-        onError('Unable to open this wallet. Please switch to desktop QR or retry.');
+        onError('Unable to open this wallet. Please switch to desktop QR or test on a real mobile device.');
         return;
       }
+      
       try {
-        const isHttpLink = target.startsWith('http');
-        const isDeepLink = target.includes('://') && !isHttpLink; // Custom URL scheme (novawallet://, subwallet://, etc.)
-        
         // Deep links must use window.location.href (can't open in popup)
-        // HTTP links can try popup first, but fall back to navigation if blocked
-        if (isDeepLink) {
-          // Always navigate for deep links (custom URL schemes)
-          window.location.href = target;
-        } else if (isHttpLink && link.id === 'other') {
-          // For "Other Wallet" HTTP links, try popup first
-          if (typeof window !== 'undefined' && typeof window.open === 'function') {
-            const popup = window.open(target, '_blank', 'noopener,noreferrer');
-            if (!popup) {
-              // Popup blocked, fall back to navigation
-              window.location.href = target;
-            }
-          } else {
-            window.location.href = target;
-          }
-        } else {
-          // Default: navigate directly (safer, works everywhere)
-          window.location.href = target;
-        }
+        window.location.href = target;
         trackEvent('mobile_wallet_link_clicked', { walletId: link.id });
       } catch (err) {
         console.error('[MobileWalletConnect] Failed to open wallet link', err);
@@ -1138,7 +1130,7 @@ const MobileWalletConnectPanel = ({
           await navigator.clipboard.writeText(finalUri);
           onError('Could not open the wallet directly. WalletConnect link copied—paste it into your wallet app.');
         } else {
-          onError('Could not open the wallet link. Please switch to the desktop QR view.');
+          onError('Could not open the wallet link. Please switch to the desktop QR view or test on a real mobile device.');
         }
       }
     };
