@@ -419,6 +419,34 @@ const ViewModeToggle = ({ value, onChange, resolvedView }: ViewModeToggleProps) 
   );
 };
 
+interface WalletConnectModalToggleProps {
+  enabled: boolean;
+  onChange: (enabled: boolean) => void;
+}
+
+const WalletConnectModalToggle = ({ enabled, onChange }: WalletConnectModalToggleProps) => {
+  return (
+    <div className="fixed top-4 left-4 z-[80]">
+      <div className="flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-3 py-2 text-white shadow-lg backdrop-blur-lg">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/70">WC Modal</span>
+        <button
+          type="button"
+          onClick={() => {
+            const newValue = !enabled;
+            onChange(newValue);
+            localStorage.setItem('chopdot.wcModal.enabled', String(newValue));
+          }}
+          className={`px-3 py-1 text-[11px] font-medium rounded-full transition-colors ${
+            enabled ? 'bg-white text-black' : 'bg-white/10 text-white/70 hover:text-white'
+          }`}
+        >
+          {enabled ? 'ON' : 'OFF'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const trackEvent = (name: string, payload?: Record<string, unknown>) => {
   try {
     window?.analytics?.track?.(name, payload);
@@ -439,7 +467,17 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   const [isWaitingForSignature, setIsWaitingForSignature] = useState(false);
   const walletConnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const enableMobileUi = isFlagEnabled(import.meta.env.VITE_ENABLE_MOBILE_WC_UI ?? '0');
-  const enableWcModal = isFlagEnabled(import.meta.env.VITE_ENABLE_WC_MODAL ?? '0');
+  // Allow UI toggle for WC Modal in dev/localhost
+  const isDev = import.meta.env.MODE === 'development' || window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1') || window.location.hostname.includes('10.');
+  const [wcModalEnabled, setWcModalEnabled] = useState(() => {
+    // Check localStorage for saved preference
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('chopdot.wcModal.enabled');
+      return saved === 'true';
+    }
+    return false;
+  });
+  const enableWcModal = isDev ? wcModalEnabled : isFlagEnabled(import.meta.env.VITE_ENABLE_WC_MODAL ?? '0');
   const device = useClientDevice();
   const [viewModeOverride, setViewModeOverride] = useState<LoginViewOverride>('auto');
   const [showEmailLogin, setShowEmailLogin] = useState(false);
@@ -1811,6 +1849,9 @@ const MobileWalletConnectPanel = ({
     >
       {enableMobileUi && !device.isMobile && (
         <ViewModeToggle value={viewModeOverride} onChange={setViewModeOverride} resolvedView={resolvedViewMode} />
+      )}
+      {isDev && (
+        <WalletConnectModalToggle enabled={wcModalEnabled} onChange={setWcModalEnabled} />
       )}
       {renderPanelLayout()}
 
