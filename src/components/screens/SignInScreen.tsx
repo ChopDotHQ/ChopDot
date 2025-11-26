@@ -481,7 +481,11 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     }
     return false;
   });
-  const enableWcModal = isDev ? wcModalEnabled : isFlagEnabled(import.meta.env.VITE_ENABLE_WC_MODAL ?? '0');
+  // Default to WC Modal enabled (can be overridden by env var or dev toggle)
+  // In dev/localhost, use toggle state; otherwise default to enabled unless env var says otherwise
+  const enableWcModal = isDev 
+    ? wcModalEnabled 
+    : isFlagEnabled(import.meta.env.VITE_ENABLE_WC_MODAL ?? '1'); // Default to '1' (enabled)
   const device = useClientDevice();
   const [viewModeOverride, setViewModeOverride] = useState<LoginViewOverride>('auto');
   const [showEmailLogin, setShowEmailLogin] = useState(false);
