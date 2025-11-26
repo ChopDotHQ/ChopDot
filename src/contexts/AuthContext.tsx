@@ -48,6 +48,10 @@ const deriveWalletEmail = (address: string): string => {
   // Use base64 encoding instead of hex to get more letters and avoid numbers
   // Supabase seems to reject hex-only patterns, so base64 gives us A-Z, a-z, 0-9, +, /
   // Format: wallet.{base64}@chopdot.app
+  // TEMP: Use example.com for testing if Supabase has domain restrictions
+  // Set VITE_WALLET_EMAIL_DOMAIN=example.com to test with different domain
+  const domain = import.meta.env.VITE_WALLET_EMAIL_DOMAIN || 'chopdot.app';
+  
   const hash = blake2AsHex(address.toLowerCase().trim(), 256);
   const hashBytes = hexToU8a(hash); // Convert hex to bytes
   
@@ -74,7 +78,7 @@ const deriveWalletEmail = (address: string): string => {
   const safePart = base64Part.slice(0, 12) || 'wallet';
   
   // Trim and lowercase the final email to ensure no whitespace issues
-  const email = `wallet.${safePart}@chopdot.app`.toLowerCase().trim();
+  const email = `wallet.${safePart}@${domain}`.toLowerCase().trim();
   
   return email;
 };
@@ -223,6 +227,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             if (signUpError) {
               console.error('[Auth] SignUp error:', signUpError);
+              console.error('[Auth] SignUp error details:', {
+                message: signUpError.message,
+                status: signUpError.status,
+                name: signUpError.name,
+                email: walletEmail,
+                emailLength: walletEmail.length,
+                emailChars: Array.from(walletEmail).map(c => c.charCodeAt(0)),
+              });
               throw signUpError;
             }
             
