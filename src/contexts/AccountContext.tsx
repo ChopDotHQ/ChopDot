@@ -563,6 +563,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
     },
     connectExtension,
     connectWalletConnect,
+    syncWalletConnectSession,
     disconnect,
     refreshBalance,
     canAfford,
