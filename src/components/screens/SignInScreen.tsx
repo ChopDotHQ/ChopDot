@@ -427,21 +427,25 @@ interface WalletConnectModalToggleProps {
 const WalletConnectModalToggle = ({ enabled, onChange }: WalletConnectModalToggleProps) => {
   return (
     <div className="fixed top-4 left-4 z-[80]">
-      <div className="flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-3 py-2 text-white shadow-lg backdrop-blur-lg">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/70">WC Modal</span>
-        <button
-          type="button"
-          onClick={() => {
-            const newValue = !enabled;
-            onChange(newValue);
-            localStorage.setItem('chopdot.wcModal.enabled', String(newValue));
-          }}
-          className={`px-3 py-1 text-[11px] font-medium rounded-full transition-colors ${
-            enabled ? 'bg-white text-black' : 'bg-white/10 text-white/70 hover:text-white'
-          }`}
-        >
-          {enabled ? 'ON' : 'OFF'}
-        </button>
+      <div className="flex items-center gap-2 rounded-full border border-border/50 bg-background/95 backdrop-blur-sm px-3 py-2 shadow-lg">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground/70">WC Modal</span>
+        <div className="flex rounded-full bg-muted/50 p-0.5">
+          <button
+            type="button"
+            onClick={() => {
+              const newValue = !enabled;
+              onChange(newValue);
+              localStorage.setItem('chopdot.wcModal.enabled', String(newValue));
+            }}
+            className={`px-3 py-1 text-[11px] font-medium rounded-full transition-colors ${
+              enabled 
+                ? 'bg-[var(--accent)] text-white' 
+                : 'text-foreground/70 hover:text-foreground'
+            }`}
+          >
+            {enabled ? 'ON' : 'OFF'}
+          </button>
+        </div>
       </div>
     </div>
   );
