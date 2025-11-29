@@ -460,7 +460,7 @@ const trackEvent = (name: string, payload?: Record<string, unknown>) => {
 };
 
 export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
-  const { login, loginAsGuest, logout } = useAuth();
+  const { login, loginAsGuest } = useAuth();
   const account = useAccount(); // Get AccountContext to auto-connect wallet
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
