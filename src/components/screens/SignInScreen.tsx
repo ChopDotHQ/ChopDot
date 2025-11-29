@@ -460,7 +460,7 @@ const trackEvent = (name: string, payload?: Record<string, unknown>) => {
 };
 
 export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
-  const { login, loginAsGuest } = useAuth();
+  const { login, loginAsGuest, logout } = useAuth();
   const account = useAccount(); // Get AccountContext to auto-connect wallet
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -477,9 +477,13 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     // Check localStorage for saved preference
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('chopdot.wcModal.enabled');
-      return saved === 'true';
+      if (saved !== null) {
+        return saved === 'true';
+      }
+      // Default to enabled for testing (can be toggled off via UI)
+      return true;
     }
-    return false;
+    return true; // Default enabled
   });
   // Default to WC Modal enabled (can be overridden by env var or dev toggle)
   // In dev/localhost, use toggle state; otherwise default to enabled unless env var says otherwise
@@ -555,9 +559,17 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           // 800ms gives enough time for the wallet app to be ready
           await new Promise((resolve) => setTimeout(resolve, 800));
 
-          // Sign message via WalletConnect
-          const { createWalletConnectSigner } = await import('../../services/chain/walletconnect');
-          const { stringToHex } = await import('@polkadot/util');
+          // Sign message via WalletConnect (guarded import)
+          const signerModule = await import('../../services/chain/walletconnect').catch((err) => {
+            console.error('[LoginScreen] WC signer import failed:', err);
+            throw new Error('WalletConnect is unavailable right now. Please retry.');
+          });
+          const utilModule = await import('@polkadot/util').catch((err) => {
+            console.error('[LoginScreen] util import failed:', err);
+            throw new Error('WalletConnect is unavailable right now. Please retry.');
+          });
+          const { createWalletConnectSigner } = signerModule;
+          const { stringToHex } = utilModule;
           const signer = createWalletConnectSigner(address);
           const message = generateSignInMessage(address);
           
@@ -743,6 +755,45 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         }
 
         case 'rainbow': {
+          // Use WalletConnect Modal v2 if enabled, otherwise use legacy flow
+          console.log('[LoginScreen] Rainbow case - enableWcModal:', enableWcModal, 'wcModalEnabled:', wcModalEnabled, 'isDev:', isDev);
+          if (enableWcModal) {
+            // Use the new WC Modal v2 (wallet grid/search/QR)
+            console.log('[LoginScreen] Using WC Modal v2 for desktop WalletConnect');
+            // Import WalletConnect modal service dynamically
+            const walletConnectModule = await import('../../services/chain/walletconnect');
+            const { connectViaWalletConnectModal } = walletConnectModule;
+            
+            // Open WalletConnect Modal v2
+            const { address: wcAddress } = await connectViaWalletConnectModal();
+            
+            // Sync AccountContext with the WalletConnect session
+            await account.syncWalletConnectSession();
+            
+            // Sign message via WalletConnect (modal session)
+            const signerModule = await import('../../services/chain/walletconnect').catch((err) => {
+              console.error('[LoginScreen] WC signer import failed (modal session):', err);
+              throw new Error('WalletConnect is unavailable right now. Please retry.');
+            });
+            const utilModule = await import('@polkadot/util').catch((err) => {
+              console.error('[LoginScreen] util import failed (modal session):', err);
+              throw new Error('WalletConnect is unavailable right now. Please retry.');
+            });
+            const { createWalletConnectSigner } = signerModule;
+            const { stringToHex } = utilModule;
+            const signer = createWalletConnectSigner(wcAddress);
+            const message = generateSignInMessage(wcAddress);
+            const { signature: sig } = await signer.signRaw({
+              address: wcAddress,
+              data: stringToHex(message),
+            });
+            
+            address = wcAddress;
+            signature = sig;
+            break;
+          }
+          
+          // Legacy WalletConnect flow (QR code only)
           // Use WalletConnect - this will show a modal with available wallets
           // User can select SubWallet, Talisman, MetaMask, Rainbow, etc.
           // The AccountContext handles the WalletConnect connection and QR code display
@@ -761,9 +812,17 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
             if (account.status === 'connected' && account.address0) {
               connectedAddress = account.address0;
               
-              // Sign message via WalletConnect
-              const { createWalletConnectSigner } = await import('../../services/chain/walletconnect');
-              const { stringToHex } = await import('@polkadot/util');
+              // Sign message via WalletConnect (guarded import)
+              const signerModule = await import('../../services/chain/walletconnect').catch((err) => {
+                console.error('[LoginScreen] WC signer import failed (legacy WC loop):', err);
+                throw new Error('WalletConnect is unavailable right now. Please retry.');
+              });
+              const utilModule = await import('@polkadot/util').catch((err) => {
+                console.error('[LoginScreen] util import failed (legacy WC loop):', err);
+                throw new Error('WalletConnect is unavailable right now. Please retry.');
+              });
+              const { createWalletConnectSigner } = signerModule;
+              const { stringToHex } = utilModule;
               const signer = createWalletConnectSigner(connectedAddress);
               const message = generateSignInMessage(connectedAddress);
               const { signature: sig } = await signer.signRaw({
@@ -855,9 +914,17 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       await account.syncWalletConnectSession();
       console.log('[LoginScreen] AccountContext synced with WalletConnect session');
       
-      // Sign message via WalletConnect (using the session from modal)
-      const { createWalletConnectSigner } = await import('../../services/chain/walletconnect');
-      const { stringToHex } = await import('@polkadot/util');
+      // Sign message via WalletConnect (modal session, guarded import)
+      const signerModule = await import('../../services/chain/walletconnect').catch((err) => {
+        console.error('[LoginScreen] WC signer import failed (modal session):', err);
+        throw new Error('WalletConnect is unavailable right now. Please retry.');
+      });
+      const utilModule = await import('@polkadot/util').catch((err) => {
+        console.error('[LoginScreen] util import failed (modal session):', err);
+        throw new Error('WalletConnect is unavailable right now. Please retry.');
+      });
+      const { createWalletConnectSigner } = signerModule;
+      const { stringToHex } = utilModule;
       const signer = createWalletConnectSigner(address);
       const message = generateSignInMessage(address);
       
@@ -926,6 +993,8 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
 
   const handleEmailLogin = async (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
+    // Reset loading if switching from another handler
+    setLoading(false);
     const trimmedEmail = emailCredentials.email.trim();
     if (!trimmedEmail || !emailCredentials.password) {
       setError('Please enter both email and password.');
@@ -1083,6 +1152,15 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       setLoading(true);
       setError(null);
 
+      // Use WC Modal v2 if enabled, otherwise use legacy flow
+      if (enableWcModal) {
+        console.log('[LoginScreen] Using WC Modal v2 in startWalletConnectSession');
+        // Use the new WC Modal v2 (wallet grid/search/QR)
+        await handleWalletConnectModal();
+        return null; // handleWalletConnectModal handles the full flow
+      }
+
+      // Legacy WalletConnect flow (QR code only)
       const result = (await account.connectWalletConnect()) as { uri?: string } | string | null | undefined;
       const uri = typeof result === 'string' ? result : result?.uri;
 
@@ -1640,7 +1718,9 @@ const MobileWalletConnectPanel = ({
           alt: 'Email login icon',
         },
         integrationKind: 'email',
-        handler: () =>
+        handler: () => {
+          // Ensure loading is cleared when toggling the email form
+          setLoading(false);
           setShowEmailLogin((prev) => {
             setAuthPanelView('login');
             const next = !prev;
@@ -1649,7 +1729,8 @@ const MobileWalletConnectPanel = ({
             }
             setError(null);
             return next;
-          }),
+          });
+        },
         themeOverride: emailOptionTheme,
       },
       {
