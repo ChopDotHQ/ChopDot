@@ -10,6 +10,7 @@ import { getSupabase } from "../../utils/supabase-client";
 interface YouTabProps {
   onShowQR: () => void;
   onScanQR: () => void;
+  onReceive: () => void;
   onPaymentMethods: () => void;
   onViewInsights: () => void;
   onSettings: () => void;
@@ -42,6 +43,7 @@ interface YouTabProps {
 export function YouTab({
   onShowQR,
   onScanQR,
+  onReceive,
   onPaymentMethods,
   onViewInsights,
   onSettings: _onSettings,
@@ -56,8 +58,8 @@ export function YouTab({
   userName = "You",
   userEmail,
   isGuest = false,
+  walletConnected,
 }: YouTabProps) {
-  // Collapsible states
   const [openGeneral, setOpenGeneral] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
   void openProfile; void setOpenProfile;
@@ -77,7 +79,6 @@ export function YouTab({
     message: "",
   });
 
-  // Settings states
   const [currency, setCurrency] = useState("USD");
   const [language, setLanguage] = useState("English");
   const [pushNotifications, setPushNotifications] = useState(true);
@@ -178,14 +179,11 @@ export function YouTab({
 
   return (
     <div className="h-full overflow-auto pb-[88px] bg-background">
-      {/* Header */}
       <div className="p-4 flex items-center justify-between">
         <h1 className="text-screen-title">You</h1>
         <div className="flex items-center gap-2">
-          {/* Account Menu - unified wallet connection */}
           <AccountMenu />
           
-          {/* Notification bell */}
           <button
             onClick={onNotificationClick}
             className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted/50 transition-all duration-200 active:scale-95"
@@ -204,7 +202,6 @@ export function YouTab({
       </div>
 
       <div className="px-4 space-y-3">
-        {/* Profile Section */}
         <div className="card p-4">
           <div className="flex flex-col items-center mb-4">
             <div className="w-16 h-16 rounded-full bg-muted/20 flex items-center justify-center mb-3">
@@ -225,8 +222,7 @@ export function YouTab({
             </div>
           </div>
           
-          {/* QR Actions */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               onClick={onShowQR}
               className="p-3 bg-muted/10 hover:bg-muted/20 rounded-xl transition-all duration-200 active:scale-95"
@@ -241,10 +237,17 @@ export function YouTab({
               <Scan className="w-5 h-5 mx-auto mb-1" />
               <p className="text-micro text-center">Scan</p>
             </button>
+            <button
+              onClick={onReceive}
+              disabled={!walletConnected}
+              className="p-3 bg-muted/10 hover:bg-muted/20 rounded-xl transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <QrCode className="w-5 h-5 mx-auto mb-1" />
+              <p className="text-micro text-center">Receive</p>
+            </button>
           </div>
         </div>
 
-        {/* Quick Insights - Interactive card */}
         <button
           onClick={onViewInsights}
           className="card p-4 w-full text-left transition-all duration-200 active:scale-[0.98] hover:shadow-fab"
@@ -269,9 +272,7 @@ export function YouTab({
           </div>
         </button>
 
-        {/* Settings Sections */}
         <div className="space-y-2">
-          {/* General Section */}
           <Collapsible open={openGeneral} onOpenChange={setOpenGeneral}>
             <CollapsibleTrigger asChild>
               <button
@@ -295,7 +296,6 @@ export function YouTab({
               </button>
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-2 card rounded-xl p-4 space-y-3">
-              {/* Currency */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Globe className="w-4 h-4 text-secondary" />
@@ -313,7 +313,6 @@ export function YouTab({
                 </select>
               </div>
 
-              {/* Language */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Languages className="w-4 h-4 text-secondary" />
@@ -331,7 +330,6 @@ export function YouTab({
                 </select>
               </div>
 
-              {/* Appearance */}
               <div className="space-y-2 pt-2">
                 <div className="flex items-center gap-3">
                   <Palette className="w-4 h-4 text-secondary" />
@@ -382,7 +380,6 @@ export function YouTab({
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Payment Methods - Direct Link (No Collapse) */}
           <button
             onClick={() => {
               triggerHaptic('light');
@@ -399,7 +396,6 @@ export function YouTab({
             <ChevronRight className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
           </button>
 
-          {/* Notifications Section */}
           <Collapsible open={openNotifications} onOpenChange={setOpenNotifications}>
             <CollapsibleTrigger asChild>
               <button
@@ -423,7 +419,6 @@ export function YouTab({
               </button>
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-2 card rounded-xl p-4 space-y-3">
-              {/* Push Notifications */}
               <div className="flex items-center justify-between">
                 <span className="text-micro">Push notifications</span>
                 <button
@@ -443,7 +438,6 @@ export function YouTab({
                 </button>
               </div>
 
-              {/* Email Notifications */}
               <div className="flex items-center justify-between">
                 <span className="text-micro">Email notifications</span>
                 <button
@@ -463,7 +457,6 @@ export function YouTab({
                 </button>
               </div>
 
-              {/* Settlement Reminders */}
               <div className="flex items-center justify-between">
                 <span className="text-micro">Settlement reminders</span>
                 <button
@@ -485,7 +478,6 @@ export function YouTab({
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Security & Privacy Section */}
           <Collapsible open={openSecurity} onOpenChange={setOpenSecurity}>
             <CollapsibleTrigger asChild>
               <button
@@ -627,7 +619,6 @@ export function YouTab({
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Advanced Section */}
           <Collapsible open={openAdvanced} onOpenChange={setOpenAdvanced}>
             <CollapsibleTrigger asChild>
               <button
@@ -666,7 +657,6 @@ export function YouTab({
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Help & Support - Direct Link (No Collapse) */}
           <button
             onClick={() => {
               triggerHaptic('light');
@@ -688,7 +678,6 @@ export function YouTab({
             <ChevronRight className="w-5 h-5 text-secondary flex-shrink-0 ml-2" />
           </button>
 
-          {/* Account Actions */}
           <div className="space-y-2 pt-2">
             <button
               onClick={() => {
@@ -715,7 +704,6 @@ export function YouTab({
         </div>
       </div>
 
-      {/* Help Sheet */}
       {showHelp && <HelpSheet onClose={() => setShowHelp(false)} />}
     </div>
   );

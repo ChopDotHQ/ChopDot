@@ -36,7 +36,8 @@ import { SettlementConfirmation } from "./components/screens/SettlementConfirmat
 import { InsightsScreen } from "./components/screens/InsightsScreen";
 import { BottomTabBar } from "./components/BottomTabBar";
 import { SwipeableScreen } from "./components/SwipeableScreen";
-import { Toast } from "./components/Toast";
+import { Toaster } from "./components/ui/sonner";
+import { toast } from "sonner";
 import { ChoosePot } from "./components/screens/ChoosePot";
 import { useData } from "./services/data/DataContext";
 import { logDev, warnDev } from "./utils/logDev";
@@ -55,6 +56,7 @@ import { TxToast } from "./components/TxToast";
 import { RequestPayment } from "./components/screens/RequestPayment";
 import { CrustStorage } from "./components/screens/CrustStorage";
 import { CrustAuthSetup } from "./components/screens/CrustAuthSetup";
+import { ReceiveQR } from "./components/screens/ReceiveQR";
 import { IPFSAuthOnboarding } from "./components/IPFSAuthOnboarding";
 import { WalletConnectionSheet } from "./components/WalletConnectionSheet";
 import { ImportPot } from "./components/screens/ImportPot";
@@ -349,11 +351,8 @@ const createPolkadotBuilderPartyPot = (now = Date.now()): Pot => ({
 
 function AppContent() {
   const { DEMO_MODE, POLKADOT_APP_ENABLED } = useFeatureFlags();
-  // Data layer services (for write-through)
   const { pots: potService, expenses: expenseService, members: memberService } = useData();
-  // Theme management
   const { theme, setTheme } = useTheme();
-  // Get wallet address for auto-backup/restore
   const account = useAccount();
 
   const {
@@ -363,7 +362,6 @@ function AppContent() {
     logout,
   } = useAuth();
 
-  // Check for CID in URL to determine initial screen
   const getInitialScreen = (): Screen => {
     const urlParams = new URLSearchParams(window.location.search);
     const cidParam = urlParams.get('cid');
@@ -382,38 +380,34 @@ function AppContent() {
     replace,
   } = useNav(getInitialScreen());
 
-  // Also check for CID changes in URL (e.g., when navigating back/forward)
-  // Use useRef to track the last CID we've seen to prevent infinite loops
   const lastCidRef = useRef<string | null>(null);
   
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const cidParam = urlParams.get('cid');
     
-    // Only navigate if CID actually changed
     if (cidParam !== lastCidRef.current) {
       lastCidRef.current = cidParam;
       
       if (cidParam && screen?.type !== 'import-pot') {
-        // Navigate to import screen if CID is in URL
         reset({ type: 'import-pot' });
       } else if (!cidParam && screen?.type === 'import-pot') {
-        // Navigate away from import screen if CID is removed from URL
         reset({ type: 'pots-home' });
       }
     }
   }, [screen?.type, reset]);
 
-  const [toast, setToast] = useState<{
-    message: string;
-    type?: "success" | "error" | "info";
-  } | null>(null);
   const showToast = (
     message: string,
     type?: "success" | "error" | "info",
   ) => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
+    if (type === 'error') {
+      toast.error(message);
+    } else if (type === 'success') {
+      toast.success(message);
+    } else {
+      toast.info(message);
+    }
   };
 
   const [showNotifications, setShowNotifications] =
@@ -852,35 +846,26 @@ function AppContent() {
   const [hasLoadedInitialData, setHasLoadedInitialData] =
     useState(false);
 
-  // Migrate attestations from old format (string[]) to new format (Array<{memberId, confirmedAt}>)
   const migrateAttestations = (expense: any) => {
     if (!expense.attestations || !Array.isArray(expense.attestations)) {
       return expense;
     }
     
-    // Check if already in new format (has objects with memberId)
     if (expense.attestations.length > 0 && typeof expense.attestations[0] === 'object') {
       return expense; // Already migrated
     }
     
-    // Migration removed - keep as string[]
-    // expense.attestations stays as string[]
     
     return expense;
   };
 
   useEffect(() => {
     (async () => {
-      // Task 4: Migration and backup are now handled by LocalStorageSource
-      // App.tsx just reads/writes directly for UI state (Data Layer handles migration)
       try {
         const savedPots = localStorage.getItem("chopdot_pots");
         if (savedPots && savedPots.length < 1000000) {
           const parsed = JSON.parse(savedPots);
-          // Only load if we have actual pots (not empty array)
           if (Array.isArray(parsed) && parsed.length > 0) {
-            // Note: Migration happens in LocalStorageSource.getPots() on first read
-            // Also migrate attestations format and add new fields
             let migrated = parsed.map((pot: any) => ({
               ...pot,
               expenses: (pot.expenses || []).map(migrateAttestations),
@@ -889,7 +874,6 @@ function AppContent() {
               lastEditAt: pot.lastEditAt ?? new Date().toISOString(),
             }));
             
-            // Check if "Polkadot Builder Party" pot (ID "4") exists, if not add it
             const hasPolkadotBuilderParty = migrated.some((p: any) => p.id === "4");
             if (!hasPolkadotBuilderParty) {
               const polkadotBuilderPartyPot = {
@@ -899,7 +883,6 @@ function AppContent() {
                 lastEditAt: new Date().toISOString()
               };
               migrated.push(polkadotBuilderPartyPot);
-              // Save updated pots back to localStorage
               try {
                 const updatedJson = JSON.stringify(migrated);
                 if (updatedJson.length < 1000000) {
@@ -914,13 +897,11 @@ function AppContent() {
             
             setPots(migrated as Pot[]);
             setHasLoadedInitialData(true);
-            // Trigger refresh of data layer
             window.dispatchEvent(new CustomEvent('pots-refresh'));
             return;
           }
         }
         
-        // Try backup
         const backupPots = localStorage.getItem("chopdot_pots_backup");
         if (backupPots && backupPots.length < 1000000) {
           try {
@@ -936,13 +917,11 @@ function AppContent() {
               }));
               setPots(migrated as Pot[]);
               setHasLoadedInitialData(true);
-              // Restore backup to main key
               try {
                 localStorage.setItem("chopdot_pots", JSON.stringify(migrated));
               } catch (saveErr) {
                 console.warn("[ChopDot] Failed to restore backup:", saveErr);
               }
-              // Trigger refresh of data layer
               window.dispatchEvent(new CustomEvent('pots-refresh'));
               return;
             }
@@ -951,12 +930,8 @@ function AppContent() {
           }
         }
         
-        // No data in localStorage - seed initial pots from state
-        // This ensures the data layer has initial data on first load
         if (!hasLoadedInitialData) {
-          // Get current pots (which should have initial values if localStorage was empty)
           const currentPots = pots.length > 0 ? pots : [
-            // Fallback: use initial pots directly if state is empty
             {
               id: "1", name: "Devconnect Buenos Aires", type: "expense", baseCurrency: "USD",
               members: [{id: "owner", name: "You", role: "Owner", status: "active"}, {id: "alice", name: "Alice", role: "Member", status: "active"}, {id: "bob", name: "Bob", role: "Member", status: "active"}],
@@ -976,17 +951,14 @@ function AppContent() {
           ];
           
           try {
-            // Save initial pots to localStorage so data layer can read them
             const potsJson = JSON.stringify(currentPots);
             if (potsJson.length < 1000000) {
               localStorage.setItem("chopdot_pots", potsJson);
               localStorage.setItem("chopdot_pots_backup", potsJson);
               console.log('[App] Seeded initial pots to localStorage');
-              // Update state if it was empty
               if (pots.length === 0) {
                 setPots(currentPots as Pot[]);
               }
-              // Trigger refresh of data layer so usePots hook picks up the seeded data
               window.dispatchEvent(new CustomEvent('pots-refresh'));
             }
             setHasLoadedInitialData(true);
@@ -1003,7 +975,6 @@ function AppContent() {
         }
       }
       
-      // Load settlements
       try {
         const savedSettlements = localStorage.getItem(
           "chopdot_settlements",
@@ -1026,7 +997,6 @@ function AppContent() {
         }
       }
 
-      // Load notifications
       try {
         const savedNotifications = localStorage.getItem(
           "chopdot_notifications",
@@ -1062,8 +1032,6 @@ function AppContent() {
           return;
         }
         localStorage.setItem("chopdot_pots", data);
-        // Task 4: Backup is now handled by LocalStorageSource.savePots()
-        // This direct write is for UI state only (backup happens in Data Layer)
       } catch (e) {
         console.error("[ChopDot] Failed to save pots:", e);
         if (
@@ -1089,21 +1057,17 @@ function AppContent() {
     }
   }, [pots, hasLoadedInitialData]);
 
-  // Auto-restore from IPFS when wallet is connected and localStorage is empty
   useEffect(() => {
     if (!hasLoadedInitialData) return;
     if (account.status !== 'connected' || !account.address0) return;
 
     (async () => {
       try {
-        // Check if localStorage has pots
         const localPotsJson = localStorage.getItem('chopdot_pots');
         if (localPotsJson && localPotsJson.length > 0) {
-          // Has local data, skip restore
           return;
         }
 
-        // localStorage empty - try to restore from IPFS
         console.log('[App] Attempting auto-restore from IPFS...');
         if (!account.address0) {
           console.log('[App] No wallet address, skipping auto-restore');
@@ -1118,19 +1082,16 @@ function AppContent() {
         }
       } catch (error) {
         console.error('[App] Auto-restore failed:', error);
-        // Silent fail - don't interrupt user
       }
     })();
   }, [hasLoadedInitialData, account.status, account.address0]);
 
-  // Cleanup backup timers on unmount
   useEffect(() => {
     return () => {
       cleanupBackupTimers();
     };
   }, []);
 
-  // Set up IPFS onboarding callback
   useEffect(() => {
     setOnboardingCallback((_walletAddress: string, onContinue: () => Promise<void>) => {
       setShowIPFSAuthOnboarding(true);
@@ -1138,29 +1099,6 @@ function AppContent() {
     });
   }, []);
 
-  // DISABLED: Auto-backup on login - only backup when user explicitly shares a pot
-  // This prevents IPFS authentication from interrupting the login flow
-  // Auto-backup will happen when user clicks "Share Pot" button instead
-  // 
-  // useEffect(() => {
-  //   if (!hasLoadedInitialData) return;
-  //   if (account.status !== 'connected' || !account.address0) return;
-  //   if (pots.length === 0) return;
-  //   
-  //   // Skip auto-backup if we're on the import screen (user is importing, not editing)
-  //   if (screen?.type === 'import-pot') {
-  //     return;
-  //   }
-  //
-  //   // Auto-backup each pot that changed
-  //   pots.forEach((pot) => {
-  //     // Trigger auto-backup (debounced, FREE IPFS storage)
-  //     autoBackupPot(pot as any, account.address0 || undefined).catch((error) => {
-  //       console.error('[App] Auto-backup failed for pot:', pot.id, error);
-  //       // Silent fail - don't interrupt user
-  //     });
-  //   });
-  // }, [pots, hasLoadedInitialData, account.status, account.address0, screen?.type]);
 
   useEffect(() => {
     if (!hasLoadedInitialData) return;
@@ -1369,7 +1307,6 @@ function AppContent() {
     }
 
     if (activeTab === "activity") {
-      // Batch confirm removed
       if (false && pendingExpenses.length > 0) {
         return {
           visible: true,
@@ -1394,7 +1331,6 @@ function AppContent() {
       }
     }
 
-    // Pots tab: "Create Pot"
     if (activeTab === "pots") {
       return {
         visible: true,
@@ -1474,9 +1410,7 @@ function AppContent() {
 
     setPots([...pots, pot]);
     
-    // Write-through to Data Layer (non-blocking)
     try {
-      // Convert pot to CreatePotDTO format
       const createDto = {
         name: pot.name,
         type: pot.type,
@@ -1499,7 +1433,6 @@ function AppContent() {
       await potService.createPot(createDto);
       logDev(`Pot created via service`, { potId: pot.id });
     } catch (error) {
-      // Non-blocking: show warning toast but don't stop UI flow
       warnDev('Service create failed', error);
       showToast('Saved locally (service write failed)', 'info');
     }
@@ -1580,11 +1513,8 @@ function AppContent() {
       }),
     );
 
-    // Step 5a: Write-through to Data Layer (non-blocking)
-    // Use IIFE to handle async without making addExpense async
     (async () => {
       try {
-        // Convert expense to CreateExpenseDTO format
         const createExpenseDTO = {
           potId: currentPotId,
           amount: expense.amount,
@@ -1601,14 +1531,11 @@ function AppContent() {
         logDev('[DataLayer] Expense added via service', { potId: currentPotId, expenseId: expense.id });
         notifyPotRefresh(currentPotId);
       } catch (error) {
-        // Non-blocking: show warning toast but don't stop UI flow
         warnDev('[DataLayer] Service addExpense failed', error);
         showToast('Saved locally (service write failed)', 'info');
       }
     })();
 
-    // Navigate to pot-home instead of just going back
-    // This ensures we're on the correct pot screen even if navigation stack is inconsistent
     replace({ type: "pot-home", potId: currentPotId });
     showToast("Expense added successfully!", "success");
   };
@@ -1669,11 +1596,8 @@ function AppContent() {
       }),
     );
 
-    // Step 5c: Write-through to Data Layer (non-blocking)
-    // Use IIFE to handle async without making updateExpense async
     (async () => {
       try {
-        // Convert expense update to UpdateExpenseDTO format
         const updateExpenseDTO = {
           amount: data.amount,
           currency: data.currency,
@@ -1689,14 +1613,11 @@ function AppContent() {
         logDev('[DataLayer] Expense updated via service', { potId: currentPotId, expenseId: currentExpenseId });
         notifyPotRefresh(currentPotId);
       } catch (error) {
-        // Non-blocking: show warning toast but don't stop UI flow
         warnDev('[DataLayer] Service updateExpense failed', error);
         showToast('Saved locally (service write failed)', 'info');
       }
     })();
 
-    // Navigate to pot-home instead of just going back
-    // This ensures we're on the correct pot screen even if navigation stack is inconsistent
     replace({ type: "pot-home", potId: currentPotId });
     showToast("Expense updated!", "success");
   };
@@ -1719,15 +1640,12 @@ function AppContent() {
       ),
     );
 
-    // Step 5c: Write-through to Data Layer (non-blocking)
-    // Use IIFE to handle async without making deleteExpense async
     (async () => {
       try {
         await expenseService.removeExpense(currentPotId, targetExpenseId);
         logDev('[DataLayer] Expense deleted via service', { potId: currentPotId, expenseId: targetExpenseId });
         notifyPotRefresh(currentPotId);
       } catch (error) {
-        // Non-blocking: show warning toast but don't stop UI flow
         warnDev('[DataLayer] Service removeExpense failed', error);
         showToast('Saved locally (service write failed)', 'info');
       }
@@ -1752,7 +1670,6 @@ function AppContent() {
       return;
     }
 
-    // Check if already confirmed (handle both old and new format)
     const attestations = expense?.attestations ?? [];
     const isConfirmed = Array.isArray(attestations) && (
       (typeof attestations[0] === 'string' && attestations.includes("owner")) ||
@@ -1764,7 +1681,6 @@ function AppContent() {
       return;
     }
 
-    // Add attestation (keep as string[] for now)
     setPots(
       pots.map((p) =>
         p.id === currentPotId
@@ -1840,16 +1756,13 @@ function AppContent() {
     triggerHaptic("light");
   };
 
-  // handleBatchConfirmAll - REMOVED
 
-  // Checkpoint functions removed
 
   const handleLogout = async () => {
     try {
       triggerHaptic("medium");
       await logout();
       showToast("Logged out successfully", "success");
-      // User will be redirected to login screen by auth state change
     } catch (error) {
       console.error("Logout failed:", error);
       showToast("Logout failed", "error");
@@ -1859,8 +1772,6 @@ function AppContent() {
   const handleDeleteAccount = async () => {
     try {
       triggerHaptic("medium");
-      // TODO: Implement account deletion API call
-      // await deleteAccount();
       await logout();
       showToast("Account deleted", "info");
     } catch (error) {
@@ -1934,7 +1845,6 @@ function AppContent() {
     const pot = getCurrentPot();
     if (!pot || pot.type !== "savings") return;
 
-    // Calculate proportion of user's balance to withdraw
     const userContributions = (pot.contributions || [])
       .filter((c) => c.memberId === "owner")
       .reduce((sum, c) => sum + c.amount, 0);
@@ -1944,7 +1854,6 @@ function AppContent() {
       return;
     }
 
-    // Create a withdrawal record (negative contribution)
     const withdrawal: Contribution = {
       id: Date.now().toString(),
       memberId: "owner",
@@ -1977,26 +1886,6 @@ function AppContent() {
     );
   };
 
-  // ========================================
-  // COMPUTED DATA
-  // ========================================
-  /**
-   * ACTIVITY FEED GENERATION
-   *
-   * Purpose: Unified timeline of all activity (expenses, attestations, settlements)
-   *
-   * SYNTHETIC ID GENERATION (Workaround):
-   * - Expense IDs: Use expense.id directly
-   * - Attestation IDs: Generate as `${expense.id}-attestation-${attesterId}`
-   * - Format allows reverse lookup: extract expenseId by splitting on '-attestation-'
-   *
-   * TIMESTAMP ESTIMATION (Temporary):
-   * - Attestations don't have stored timestamps (would need DB schema change)
-   * - Estimated as expense.date + (index * 2 hours)
-   * - TODO: Store attestation timestamps in Expense type when adding backend
-   *
-   * Performance: Runs on every render, memoized by [pots]
-   */
   const activities: ActivityItem[] = useMemo(() => {
     const start = performance.now();
     const items: ActivityItem[] = [];
@@ -2072,7 +1961,6 @@ function AppContent() {
     return sorted;
   }, [pots]);
 
-  // Calculate totals for activity home
   const totalOwed = balances.owedToYou.reduce(
     (sum, p) => sum + p.totalAmount,
     0,
@@ -2099,7 +1987,6 @@ function AppContent() {
     0,
   );
 
-  // You tab insights - Simple reliability metrics
   const youTabInsights = useMemo(() => {
     const monthlySpending = pots.reduce((sum, pot) => {
       if (pot.type === "expense") {
@@ -2114,13 +2001,11 @@ function AppContent() {
       return sum;
     }, 0);
 
-    // Calculate simple reliability metrics
     let expensesNeedingConfirmation = 0;
     let expensesConfirmed = 0;
 
     pots.forEach((pot) => {
       pot.expenses.forEach((expense) => {
-        // Only count expenses where you weren't the payer (you need to confirm)
         if (expense.paidBy !== "owner") {
           expensesNeedingConfirmation++;
           if (expense.attestations.includes("owner")) {
@@ -2149,7 +2034,6 @@ function AppContent() {
       topCategoryAmount: 245.5,
       activePots: activeGroups,
       totalSettled: 1250.0,
-      // Reliability metrics (simple counts, no gamification)
       expensesConfirmed,
       expensesNeedingConfirmation,
       confirmationRate,
@@ -2158,17 +2042,12 @@ function AppContent() {
     };
   }, [pots, settlements]);
 
-  // ========================================
-  // NAVIGATION SAFETY CHECKS
-  // ========================================
-  // Handle navigation when screens require data that's missing
   useEffect(() => {
     if (!screen) return;
 
     const pot = getCurrentPot();
     const screenType = screen.type;
 
-    // Check for screens that require a pot
     if (
       (screenType === "add-expense" ||
         screenType === "edit-expense" ||
@@ -2182,7 +2061,6 @@ function AppContent() {
       return;
     }
 
-    // Check for screens that require specific data
     if (screenType === "edit-expense" && "expenseId" in screen) {
       const expense = pot?.expenses.find((e) => e.id === screen.expenseId);
       if (!expense && pot) {
@@ -2222,7 +2100,6 @@ function AppContent() {
       }
     }
 
-    // Handle deprecated settlement screens
     if (
       screenType === "settle-cash" ||
       screenType === "settle-bank" ||
@@ -2236,7 +2113,6 @@ function AppContent() {
       return;
     }
 
-    // Handle unknown screen types (shouldn't happen, but safety net)
     const validScreenTypes = [
       "activity-home",
       "pots-home",
@@ -2245,6 +2121,7 @@ function AppContent() {
       "you-tab",
       "settings",
       "crust-storage",
+      "crust-auth-setup",
       "payment-methods",
       "insights",
       "create-pot",
@@ -2261,15 +2138,14 @@ function AppContent() {
       "withdraw-funds",
       "checkpoint-status",
       "request-payment",
+      "receive-qr",
+      "import-pot",
     ];
     if (!validScreenTypes.includes(screenType)) {
       reset({ type: "pots-home" });
     }
   }, [screen, pots, people, currentPotId, reset, replace]);
 
-  // ========================================
-  // SCREEN RENDERING
-  // ========================================
   const renderScreen = () => {
     const pot = getCurrentPot();
 
@@ -2285,7 +2161,6 @@ function AppContent() {
             hasPendingAttestations={pendingExpenses.length > 0}
             onActivityClick={(activity) => {
               if (activity.type === "expense") {
-                // Find the pot containing this expense
                 const pot = pots.find((p) =>
                   p.expenses.some((e) => e.id === activity.id),
                 );
@@ -2298,7 +2173,6 @@ function AppContent() {
                   });
                 }
               } else if (activity.type === "attestation") {
-                // Extract expense ID from attestation ID (format: expenseId-attestation-attesterId)
                 const expenseId =
                   activity.id.split("-attestation-")[0];
                 const pot = pots.find((p) =>
@@ -2334,7 +2208,6 @@ function AppContent() {
             }}
             walletConnected={walletConnected}
             onRefresh={async () => {
-              // Mock refresh - in real app would fetch new data
               await new Promise((resolve) =>
                 setTimeout(resolve, 1000),
               );
@@ -2346,7 +2219,6 @@ function AppContent() {
         );
 
       case "pots-home":
-        // Calculate pot summaries
         const potSummaries = pots.filter(p => !p.archived).map((pot) => {
           const myExpenses = pot.expenses
             .filter((e) => e.paidBy === "owner")
@@ -2426,7 +2298,6 @@ function AppContent() {
               if (pots.length === 1) {
                 const pid = pots[0]!.id;
                 setCurrentPotId(pid);
-                // Open pot keypad by navigating to pot then toggling keypad will be handled by tap Add
                 push({ type: "pot-home", potId: pid });
               } else {
                 setShowChoosePot(true);
@@ -2441,7 +2312,6 @@ function AppContent() {
                 showToast("Nothing to settle yet", "info");
                 return;
               }
-              // Navigate to people home to see all balances
               reset({ type: "people-home" });
             }}
             onQuickScan={() => {
@@ -2476,7 +2346,6 @@ function AppContent() {
               showToast("Reminder sent.");
             }}
             onPersonClick={(person) => {
-              // Optional: Navigate to member detail for info viewing (not part of settle flow)
               push({
                 type: "member-detail",
                 memberId: person.id,
@@ -2518,6 +2387,14 @@ function AppContent() {
             onScanQR={() => {
               setShowScanQR(true);
             }}
+            onReceive={() => {
+              if (!connectedWallet && account.status !== 'connected') {
+                showToast("Connect wallet first", "info");
+                return;
+              }
+              triggerHaptic("light");
+              push({ type: "receive-qr" });
+            }}
             onPaymentMethods={() => {
               push({ type: "payment-methods" });
             }}
@@ -2546,7 +2423,7 @@ function AppContent() {
               triggerHaptic("light");
               setShowWalletSheet(true);
             }}
-            walletConnected={walletConnected}
+            walletConnected={!!connectedWallet || account.status === 'connected'}
             notificationCount={
               notifications.filter((n) => !n.read).length
             }
@@ -2673,12 +2550,8 @@ function AppContent() {
             goalDescription={pot.goalDescription}
             onBack={back}
             onImportPot={(importedPot) => {
-              // Imported pot is already migrated and in correct format
-              // Just add it to pots list (ID de-duplication already handled in import function)
-              // Ensure type compatibility
               setPots([...pots, importedPot as Pot]);
               showToast("Pot imported successfully", "success");
-              // Navigate to the imported pot
               replace({ type: "pot-home", potId: importedPot.id });
             }}
             onAddExpense={() => push({ type: "add-expense" })}
@@ -2690,25 +2563,19 @@ function AppContent() {
               });
             }}
             onSettle={() => {
-              // Check if checkpoints are enabled for this pot
               if (
                 pot.checkpointEnabled !== false &&
                 pot.type === "expense"
               ) {
-                // Check if there's an active checkpoint
                 if (
                   pot.currentCheckpoint &&
                   pot.currentCheckpoint.status === "pending"
                 ) {
-                  // Go to checkpoint status screen
                   push({ type: "checkpoint-status" });
                 } else {
-                  // Create new checkpoint
-                  // Checkpoint feature removed - proceed directly to settlement
                   push({ type: "settle-selection" });
                 }
               } else {
-                // Checkpoints disabled, go directly to settle
                 push({ type: "settle-selection" });
               }
             }}
@@ -2728,7 +2595,6 @@ function AppContent() {
                 ),
               );
 
-              // Step 1: Write-through to Data Layer (non-blocking)
               (async () => {
                 try {
                   await memberService.removeMember(currentPotId, memberId);
@@ -2770,11 +2636,8 @@ function AppContent() {
                 ),
               );
 
-              // Step 1: Write-through to Data Layer (non-blocking)
               (async () => {
                 try {
-                  // Convert to UpdateMemberDTO format (address already normalized by EditMemberModal)
-                  // Note: onUpdateMember callback doesn't include status, so get it from current member
                   const existingMember = pots.find(p => p.id === currentPotId)?.members.find(m => m.id === updatedMember.id);
                   const updateMemberDTO = {
                     name: updatedMember.name,
@@ -2795,7 +2658,6 @@ function AppContent() {
               showToast(toastLabel, "success");
             }}
             
-            // Wire Pot destructive actions with consistent navigation
             onDeletePot={() => {
               if (!currentPotId) return;
               setPots(pots.filter((p) => p.id !== currentPotId));
@@ -2843,7 +2705,6 @@ function AppContent() {
                     : p,
                 ),
               );
-              // Persist to localStorage
               try {
                 const stored = localStorage.getItem('pots');
                 if (stored) {
@@ -2883,7 +2744,6 @@ function AppContent() {
                     : p,
                 ),
               );
-              // Only show toast for non-immediate updates (name, currency, budget)
               if (settings.potName || settings.baseCurrency || settings.budget !== undefined) {
               showToast("Settings updated", "success");
               }
@@ -2971,7 +2831,6 @@ function AppContent() {
               showToast("Receipt link copied", "success")
             }
             onUpdateExpense={(updates) => {
-              // Update expense with attestation data
               setPots(
                 pots.map((p) =>
                   p.id === currentPotId
@@ -2993,30 +2852,11 @@ function AppContent() {
         );
 
       case "settle-selection":
-        /**
-         * SETTLEMENT SCOPING LOGIC
-         *
-         * ChopDot supports TWO types of settlements:
-         *
-         * 1. POT-SCOPED (if currentPotId is set):
-         *    - Only settle debts from THIS pot
-         *    - User clicked "Settle" from PotHome
-         *    - Uses calculatePotSettlements(pot, userId)
-         *
-         * 2. GLOBAL (if currentPotId is null):
-         *    - Settle ALL debts across ALL pots
-         *    - User clicked "Settle" from PeopleHome
-         *    - Uses balances (calculated from ALL pots)
-         *
-         * The scope is determined by whether currentPotId is set when
-         * navigating to settlement flow.
-         */
         const potSettlements =
           currentPotId && getCurrentPot()
             ? calculatePotSettlements(getCurrentPot()!, "owner")
             : balances;
 
-        // Convert to PersonBalance format for selection screen
         const selectionBalances = [
           ...potSettlements.youOwe.map((p) => ({
             id: p.id,
@@ -3044,7 +2884,6 @@ function AppContent() {
             baseCurrency={currentPot?.baseCurrency || "USD"}
             onBack={() => {
               if (currentPotId) {
-                // Go back to pot detail
                 replace({ type: "pot-home", potId: currentPotId });
               } else {
                 reset({ type: "people-home" });
@@ -3058,22 +2897,18 @@ function AppContent() {
         );
 
       case "settle-home":
-        // Determine the selected counterparty (explicit selection or auto-select the largest)
         let personIdFromNav = screen.personId || selectedCounterpartyId;
 
-        // Determine if this is pot-scoped or global
         const settleScope = currentPotId ? "pot" : "global";
         const settleLabel = currentPotId
           ? getCurrentPot()?.name
           : "All pots";
 
-        // Calculate settlements based on scope
         const scopedSettlements =
           currentPotId && getCurrentPot()
             ? calculatePotSettlements(getCurrentPot()!, "owner")
             : balances;
 
-        // If no person explicitly selected, auto-select the counterparty with the largest absolute amount
         if (!personIdFromNav) {
           const candidates = [
             ...scopedSettlements.youOwe.map((p) => ({ id: p.id, amount: Math.abs(p.totalAmount) })),
@@ -3085,7 +2920,6 @@ function AppContent() {
           }
         }
 
-        // Convert PersonSettlement to Settlement format with direction
         const convertToSettlements = (
           personSettlements: PersonSettlement[],
           direction: "owe" | "owed",
@@ -3103,7 +2937,6 @@ function AppContent() {
           }));
         };
 
-        // Filter to selected counterparty if any
         const activeSettlements = personIdFromNav
           ? [
               ...convertToSettlements(
@@ -3140,24 +2973,19 @@ function AppContent() {
             )?.name || "Unknown"
           : activeSettlements[0]?.name || "Unknown";
 
-        // Get person's preferred payment method (normalize to lowercase)
         const personData = personIdFromNav
           ? people.find((p) => p.id === personIdFromNav)
           : null;
         const preferredPaymentMethod =
           personData?.paymentPreference?.toLowerCase();
 
-        // Find recipient's wallet address from pots
-        // If pot-scoped, check current pot; otherwise check all pots
         let recipientAddress: string | undefined = undefined;
         if (personIdFromNav) {
           if (currentPotId) {
-            // Pot-scoped: check current pot
             const currentPot = pots.find(p => p.id === currentPotId);
             const recipientMember = currentPot?.members.find(m => m.id === personIdFromNav);
             recipientAddress = recipientMember?.address;
           } else {
-            // Global-scoped: check all pots (take first match)
             for (const pot of pots) {
               const recipientMember = pot.members.find(m => m.id === personIdFromNav);
               if (recipientMember?.address) {
@@ -3194,7 +3022,6 @@ function AppContent() {
               }
             } : undefined}
             onConfirm={(method, reference) => {
-              // Add settlement to history
               const newSettlement: Settlement = {
                 id: Date.now().toString(),
                 personId:
@@ -3213,7 +3040,6 @@ function AppContent() {
               };
               setSettlements([newSettlement, ...settlements]);
 
-              // If this was a DOT pot-scoped settlement, append to the pot's on-chain history for UI visibility
               if (settleScope === 'pot' && method === 'dot' && currentPotId && reference) {
                 const fromAddress = connectedWallet?.address || '';
                 const toAddress = recipientAddress || '';
@@ -3232,16 +3058,13 @@ function AppContent() {
                 };
                 const updatedPots = pots.map(p => p.id === currentPotId ? { ...p, history: [historyEntry, ...(p.history || [])] } : p);
                 setPots(updatedPots);
-                // Persist to localStorage so it survives reload and is visible on return
                 try {
                   localStorage.setItem('pots', JSON.stringify(updatedPots));
                 } catch (error) {
                   console.warn('[App] Failed to persist pot history to localStorage:', error);
-                  // Non-critical: history will still be visible in current session
                 }
               }
 
-              // Show toast and navigate back
               const methodLabels: Record<string, string> = {
                 cash: "cash",
                 bank: "bank transfer",
@@ -3260,7 +3083,6 @@ function AppContent() {
                 "success",
               );
 
-              // Navigate to confirmation screen with tx data
               push({
                 type: "settlement-confirmation",
                 result: {
@@ -3277,7 +3099,6 @@ function AppContent() {
               });
             }}
             onHistory={() => {
-              // Navigate to history filtered by person if person-scoped
               if (personIdFromNav) {
                 push({
                   type: "settlement-history",
@@ -3291,7 +3112,6 @@ function AppContent() {
         );
 
       case "settlement-history":
-        // Get person name mapping
         const personNames = new Map<string, string>();
         pots.forEach((pot) => {
           pot.members.forEach((member) => {
@@ -3301,7 +3121,6 @@ function AppContent() {
           });
         });
 
-        // Enrich settlements with person names and pot names
         const enrichedSettlements = settlements.map((s) => ({
           ...s,
           personName: personNames.get(s.personId) || "Unknown",
@@ -3335,7 +3154,6 @@ function AppContent() {
         );
 
       case "insights":
-        // Mock monthly data - would come from real expense history
         const mockMonthlyData = [
           { month: "Aug", amount: 420 },
           { month: "Sep", amount: 510 },
@@ -3361,12 +3179,10 @@ function AppContent() {
         );
 
       case "member-detail":
-        // Find member across all pots (not just current pot)
         let memberInfo:
           | { id: string; name: string }
           | undefined;
 
-        // First try to find in people array
         const personFromPeople = people.find(
           (p) => p.id === screen.memberId,
         );
@@ -3376,7 +3192,6 @@ function AppContent() {
             name: personFromPeople.name,
           };
         } else {
-          // Fallback: search all pots for this member
           for (const p of pots) {
             const foundMember = p.members.find(
               (m) => m.id === screen.memberId,
@@ -3393,7 +3208,6 @@ function AppContent() {
 
         if (!memberInfo) return null;
 
-        // Calculate shared pots and balances for this member
         const memberSharedPots = pots
           .filter((p) =>
             p.members.some((m) => m.id === screen.memberId),
@@ -3474,7 +3288,6 @@ function AppContent() {
       case "withdraw-funds":
         if (!pot) return null;
 
-        // Calculate user's balance in the pot
         const userBalance = (pot.contributions || [])
           .filter((c) => c.memberId === "owner")
           .reduce((sum, c) => sum + c.amount, 0);
@@ -3547,8 +3360,25 @@ function AppContent() {
           <CrustAuthSetup onBack={back} />
         );
 
+      case "receive-qr": {
+        const address = connectedWallet?.address || account.address0 || '';
+        console.log('[receive-qr] Rendering with:', { 
+          address, 
+          hasConnectedWallet: !!connectedWallet,
+          accountStatus: account.status,
+          accountAddress: account.address0,
+          screenType: screen?.type 
+        });
+        
+        return (
+          <ReceiveQR
+            onClose={() => back()}
+            walletAddress={address || 'No address found'}
+          />
+        );
+      }
+
       case "import-pot": {
-        // Extract CID from URL parameter
         const urlParams = new URLSearchParams(window.location.search);
         const cidParam = urlParams.get('cid');
         
@@ -3556,14 +3386,12 @@ function AppContent() {
           <ImportPot
             initialCid={cidParam || undefined}
             onBack={() => {
-              // Remove CID from URL
               const url = new URL(window.location.href);
               url.searchParams.delete('cid');
               window.history.replaceState({}, '', url.toString());
               reset({ type: 'pots-home' });
             }}
             onImport={(importedPot) => {
-              // Add imported pot to pots list (pot already has all required fields from restorePotFromCID)
               const newPot: Pot = {
                 ...importedPot,
                 id: `${Date.now()}-${importedPot.id}`, // Ensure unique ID
@@ -3585,7 +3413,6 @@ function AppContent() {
               setPots([...pots, newPot]);
               setCurrentPotId(newPot.id);
               
-              // Remove CID from URL
               const url = new URL(window.location.href);
               url.searchParams.delete('cid');
               window.history.replaceState({}, '', url.toString());
@@ -3601,21 +3428,15 @@ function AppContent() {
       case "settle-cash":
       case "settle-bank":
       case "settle-dot":
-        // These screen types are deprecated - settlement is handled in settle-home
-        // Navigation handled in useEffect above
         return null;
 
       default:
-        // Unknown screen type - navigation handled in useEffect above
         return null;
     }
   };
 
-  // Get FAB state for current context
   const fabState = getFabState();
 
-  // Show loading screen ONLY while checking auth
-  // localStorage loads in background - no blocking!
   if (authLoading) {
     return (
       <div className="app-shell bg-background flex items-center justify-center">
@@ -3639,7 +3460,6 @@ function AppContent() {
     );
   }
 
-  // Show login screen if not authenticated
   if (!isAuthenticated) {
     return (
       <div className="app-shell bg-background overflow-auto">
@@ -3658,7 +3478,7 @@ function AppContent() {
       </SwipeableScreen>
 
 
-      {/* Bottom Tab Bar with Context-Sensitive FAB */}
+      
       {shouldShowTabBar() && (
         <BottomTabBar
           activeTab={getActiveTab()}
@@ -3671,13 +3491,12 @@ function AppContent() {
       )}
 
 
-      {/* Modals */}
+      
       {showWalletSheet && (
         <WalletConnectionSheet
           isConnected={walletConnected}
           connectedWallet={connectedWallet}
           onConnect={(provider) => {
-            // Simulate wallet connection
             setWalletConnected(true);
             setConnectedWallet({
               provider,
@@ -3712,7 +3531,6 @@ function AppContent() {
             triggerHaptic("light");
           }}
           onNotificationClick={(notification) => {
-            // Mark as read when clicked
             setNotifications(
               notifications.map((n) =>
                 n.id === notification.id
@@ -3720,7 +3538,6 @@ function AppContent() {
                   : n,
               ),
             );
-            // Execute action if available
             notification.onAction?.();
           }}
         />
@@ -3777,7 +3594,6 @@ function AppContent() {
             setCurrentPotId(potId);
             setFabQuickAddPotId(potId);
             setShowChoosePot(false);
-            // Navigate to pot; the Add button will open keypad, or we can show keypad directly there
             push({ type: "pot-home", potId });
           }}
         />
@@ -3836,10 +3652,8 @@ function AppContent() {
               ),
             );
 
-            // Step 1: Write-through to Data Layer (non-blocking)
             (async () => {
               try {
-                // Convert to CreateMemberDTO format
                 const createMemberDTO = {
                   potId: currentPotId!,
                   name: person.name,
@@ -3860,7 +3674,6 @@ function AppContent() {
             showToast(`${person.name} added to pot`, "success");
           }}
           onInviteNew={(nameOrEmail) => {
-            // Create a pending member
             const newMemberId = `pending-${Date.now()}`;
             const newMember = {
               id: newMemberId,
@@ -3883,10 +3696,8 @@ function AppContent() {
               ),
             );
 
-            // Step 1: Write-through to Data Layer (non-blocking)
             (async () => {
               try {
-                // Convert to CreateMemberDTO format
                 const createMemberDTO = {
                   potId: currentPotId!,
                   name: nameOrEmail,
@@ -3928,15 +3739,11 @@ function AppContent() {
         />
       )}
 
-      {/* Toast */}
-      {toast && (
-        <Toast message={toast.message} type={toast.type ?? 'info'} onClose={() => setToast(null)} />
-      )}
+      <Toaster />
 
-      {/* Transaction Toast */}
       <TxToast />
 
-      {/* IPFS Auth Onboarding */}
+      
       {showIPFSAuthOnboarding && account.address0 && (
         <IPFSAuthOnboarding
           walletAddress={account.address0}
@@ -3965,7 +3772,6 @@ function AppContent() {
   );
 }
 
-// Wrap AppContent with providers
 export default function App() {
   return (
     <FeatureFlagsProvider>
@@ -3976,5 +3782,4 @@ export default function App() {
   );
 }
 
-// Load debug helpers synchronously - always available for emergency fixes
 import "./utils/debugHelpers";

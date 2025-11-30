@@ -38,7 +38,6 @@ export function QuickKeypadSheet({
   const [paidBy, setPaidBy] = useState<string>(currentUserId);
   const hasLast = !!(lastSplit && lastSplit.length > 0);
   void hasLast;
-  // Participants to split between (defaults to all members)
   const [participantIds, setParticipantIds] = useState<Set<string>>(new Set(members.map(m => m.id)));
   const [date, setDate] = useState<string>(() => new Date().toISOString().split('T')[0] || '');
   const [splitType, setSplitType] = useState<'equal' | 'custom' | 'shares'>('equal');
@@ -60,21 +59,23 @@ export function QuickKeypadSheet({
     if (next.size === 0) next.add(currentUserId);
     setParticipantIds(next);
     if (splitType !== 'equal') {
-      // Keep inputs visible only for selected members
-      // No further action needed
     }
+  };
+
+  const handleCustomPercentChange = (memberId: string, value: string) => {
+    setCustomPercents(prev => ({ ...prev, [memberId]: value }));
+  };
+
+  const handleSharesChange = (memberId: string, value: string) => {
+    setShares(prev => ({ ...prev, [memberId]: value }));
   };
 
   const amountNum = Number(amount);
   const totalPercent = members.reduce((sum, m) => sum + parseFloat(customPercents[m.id] || '0'), 0);
   const isSplitValid = splitType !== 'custom' || Math.abs(totalPercent - 100) < 0.01;
-  // For DOT pots, allow smaller amounts (0.000001 DOT = 1 micro-DOT)
-  // For USD pots, maintain minimum of 0.01
   const minAmount = baseCurrency === 'DOT' ? 0.000001 : 0.01;
-  // Use >= instead of > to allow exactly minAmount, and handle floating point precision
   const isValid = amount.length > 0 && !Number.isNaN(amountNum) && amountNum >= minAmount - 0.0000001 && isSplitValid;
 
-  // Use 6 decimals for DOT, 2 for other currencies
   const decimals = baseCurrency === 'DOT' ? 6 : 2;
   
   const computedSplit = useMemo(() => {
@@ -92,7 +93,6 @@ export function QuickKeypadSheet({
         return { memberId: m.id, amount: Number(((amountNum * pct) / 100).toFixed(decimals)) };
       });
     }
-    // shares
     const totalShares = participants.reduce((sum, p) => sum + parseInt(shares[p.id] || '0'), 0) || 1;
     return participants.map((m) => {
       const memberShares = parseInt(shares[m.id] || '0');
@@ -100,7 +100,6 @@ export function QuickKeypadSheet({
     });
   }, [amountNum, customPercents, isValid, members, participantIds, shares, splitType, decimals]);
 
-  // Save CTA sublabel for context confirmation
   const sublabel = useMemo(() => {
     const payerName = members.find(m => m.id === paidBy)?.name || 'You';
     const count = Array.from(participantIds).length;
@@ -109,16 +108,11 @@ export function QuickKeypadSheet({
     return `${payerName === 'You' ? 'You' : payerName} pay • ${modeLabel} (${count})${memoPart}`;
   }, [members, paidBy, participantIds, splitType, memo]);
 
-  // Previously we showed a detailed last split label; removed for cleaner UI
-
-  // Quick picks removed for now until categories are shown
-
   const save = () => {
     if (!isValid) return;
-          // Always use baseCurrency to ensure consistency
           onSave({
             amount: Number(amountNum.toFixed(decimals)),
-            currency: baseCurrency, // Always use baseCurrency for consistency
+            currency: baseCurrency,
             paidBy,
             memo: memo.trim(),
             date: new Date().toISOString(),
@@ -134,7 +128,6 @@ export function QuickKeypadSheet({
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title={`Quick add (${baseCurrency})`}>
       <div className="space-y-4">
-        {/* Amount first */}
         <div className="flex flex-col gap-2 mt-1">
           <label className="text-xs text-secondary">Amount</label>
           <div className="flex items-center gap-2">
@@ -147,7 +140,6 @@ export function QuickKeypadSheet({
                         if (!Number.isNaN(n) && n >= minAmount) {
                           setAmount(n.toFixed(decimals));
                         } else if (!Number.isNaN(n) && n > 0 && n < minAmount) {
-                          // Round up to minimum if below threshold
                           setAmount(minAmount.toFixed(decimals));
                         }
                       }}
@@ -161,7 +153,6 @@ export function QuickKeypadSheet({
           </div>
         </div>
 
-        {/* Title/Memo */}
         <div>
           <label className="text-xs text-secondary mb-1 block">Title</label>
           <input
@@ -172,8 +163,6 @@ export function QuickKeypadSheet({
           />
         </div>
 
-        {/* Split & details summary row */}
-        {/* Two-column Paid by + Date */}
         <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="text-xs text-secondary mb-1 block">Paid by</label>
@@ -189,7 +178,6 @@ export function QuickKeypadSheet({
           </div>
         </div>
 
-        {/* Split control */}
         <div>
           <div className="text-caption text-secondary mb-1">Split mode</div>
           <div className="flex items-center gap-2">
@@ -199,7 +187,6 @@ export function QuickKeypadSheet({
           </div>
         </div>
 
-        {/* Equal split list with checkboxes */}
         {splitType === 'equal' && (
           <div className="space-y-1">
             {members.map((m) => {
@@ -217,7 +204,6 @@ export function QuickKeypadSheet({
           </div>
         )}
 
-        {/* Custom inputs for modes */}
         {splitType === 'custom' && (
           <div className="space-y-2">
             {members.filter(m=>participantIds.has(m.id)).map((m)=>{
@@ -226,7 +212,7 @@ export function QuickKeypadSheet({
               return (
                 <div key={m.id} className="flex items-center gap-2">
                   <span className="flex-1 text-xs">{m.id===currentUserId?'You':m.name}</span>
-                  <input value={customPercents[m.id]} onChange={(e)=> setCustomPercents({ ...customPercents, [m.id]: e.target.value })} type="number" placeholder="0" className="w-14 px-1.5 py-0.5 input-field text-xs text-right" />
+                  <input value={customPercents[m.id]} onChange={(e)=> handleCustomPercentChange(m.id, e.target.value)} type="number" placeholder="0" className="w-14 px-1.5 py-0.5 input-field text-xs text-right" />
                   <span className="text-xs text-secondary">%</span>
                   <span className="text-xs text-secondary tabular-nums w-14 text-right">{memberAmount.toFixed(decimals)}</span>
                 </div>
@@ -244,7 +230,7 @@ export function QuickKeypadSheet({
               return (
                 <div key={m.id} className="flex items-center gap-2">
                   <span className="flex-1 text-xs">{m.id===currentUserId?'You':m.name}</span>
-                  <input value={shares[m.id]} onChange={(e)=> setShares({ ...shares, [m.id]: e.target.value })} type="number" placeholder="1" className="w-14 px-1.5 py-0.5 input-field text-xs text-right" />
+                  <input value={shares[m.id]} onChange={(e)=> handleSharesChange(m.id, e.target.value)} type="number" placeholder="1" className="w-14 px-1.5 py-0.5 input-field text-xs text-right" />
                   <span className="text-xs text-secondary">shares</span>
                   <span className="text-xs text-secondary tabular-nums w-14 text-right">{memberAmount.toFixed(decimals)}</span>
                 </div>
@@ -253,9 +239,6 @@ export function QuickKeypadSheet({
           </div>
         )}
 
-        {/* Memo field removed - using Title field above instead */}
-
-        {/* Footer with full-width Save above nav bar */}
         <div className="pt-3 bg-card border-t border-border" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 96px)', backdropFilter: 'blur(6px)' }}>
           <button disabled={!isValid} onClick={() => { triggerHaptic('success'); save(); }} className="w-full px-4 py-3 rounded-lg btn-accent disabled:opacity-40 active:scale-98 transition-transform">
             {isValid ? `Save ${baseCurrency} ${amountNum.toFixed(decimals)}` : 'Save'}
@@ -265,7 +248,6 @@ export function QuickKeypadSheet({
             <button onClick={onClose} className="text-caption underline">Cancel</button>
           </div>
         </div>
-        {/* Quick picks modal removed */}
       </div>
     </BottomSheet>
   );

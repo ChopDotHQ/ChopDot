@@ -40,7 +40,8 @@ export type Screen =
   | { type: "request-payment" }
   | { type: "crust-storage" }
   | { type: "crust-auth-setup" }
-  | { type: "import-pot" };
+  | { type: "import-pot" }
+  | { type: "receive-qr" };
 
 export function useNav(initialScreen: Screen = { type: "pots-home" }) {
   const [stack, setStack] = useState<Screen[]>([initialScreen]);
