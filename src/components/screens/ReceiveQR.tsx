@@ -2,6 +2,7 @@ import { X, Copy, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import QRCodeLib from 'qrcode';
 import { triggerHaptic } from "../../utils/haptics";
+import { toast } from "sonner";
 
 interface ReceiveQRProps {
   onClose: () => void;
@@ -33,6 +34,8 @@ export function ReceiveQR({ onClose, walletAddress }: ReceiveQRProps) {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+      toast.error('Failed to copy address');
+      triggerHaptic('error');
     }
   };
 

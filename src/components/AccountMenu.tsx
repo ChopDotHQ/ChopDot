@@ -16,6 +16,7 @@ import { getHyperbridgeUrl } from '../services/bridge/hyperbridge';
 import { chain } from '../services/chain';
 import { useIsMobile } from './ui/use-mobile';
 import { walletConnectLinks } from '../config/wallet-connect-links';
+import { toast } from 'sonner';
 
 // Helper component to auto-close QR modal after connection
 function AutoCloseQR({ onClose }: { onClose: () => void }) {
@@ -205,6 +206,7 @@ export function AccountMenu() {
       setTimeout(() => {
         if (account.status === 'connecting') {
           console.warn('[AccountMenu] WalletConnect connection timeout');
+          toast.warning('WalletConnect is taking too long. Please retry.');
           // Don't reset connecting state here - let the error handler do it
         }
       }, 60000);
@@ -216,7 +218,7 @@ export function AccountMenu() {
       setNovaURI(null);
       // Show error to user
       const errorMsg = error?.message || 'Failed to setup WalletConnect connection';
-      alert(`Failed to setup WalletConnect connection: ${errorMsg}`);
+      toast.error(`Failed to setup WalletConnect connection: ${errorMsg}`);
     }
   };
 
@@ -229,7 +231,7 @@ export function AccountMenu() {
     
     const target = link.deepLink?.(uriToUse) ?? link.universalLink?.(uriToUse);
     if (!target) {
-      alert('Unable to open this wallet. Please try another option.');
+      toast.error('Unable to open this wallet. Please try another option.');
       return;
     }
     
@@ -245,9 +247,9 @@ export function AccountMenu() {
       // Fallback: copy URI to clipboard
       if (navigator?.clipboard?.writeText) {
         await navigator.clipboard.writeText(uriToUse);
-        alert('Could not open wallet directly. WalletConnect link copied—paste it into your wallet app.');
+        toast.info('Could not open wallet directly. WalletConnect link copied—paste it into your wallet app.');
       } else {
-        alert('Could not open the wallet link. Please try again.');
+        toast.error('Could not open the wallet link. Please try again.');
       }
     }
   };
@@ -452,7 +454,7 @@ export function AccountMenu() {
                         onClick={async () => {
                           setShowMenu(false);
                           setConnecting(true);
-                          try {
+                        try {
                             console.log(`[AccountMenu] Starting WalletConnect for ${link.label}...`);
                             const uri = await account.connectWalletConnect();
                             if (!uri) {
@@ -464,7 +466,7 @@ export function AccountMenu() {
                           } catch (error: any) {
                             console.error('[AccountMenu] Mobile wallet connection error:', error);
                             setConnecting(false);
-                            alert(`Failed to connect: ${error?.message || 'Unknown error'}`);
+                            toast.error(`Failed to connect: ${error?.message || 'Unknown error'}`);
                           }
                         }}
                         className="w-full px-3 py-2 text-left text-sm rounded-md hover:bg-muted transition-colors flex items-center gap-2"

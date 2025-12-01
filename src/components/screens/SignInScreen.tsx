@@ -18,6 +18,7 @@ import { triggerHaptic } from '../../utils/haptics';
 import QRCodeLib from 'qrcode';
 import useClientDevice from '../../hooks/useClientDevice';
 import { getSupabase } from '../../utils/supabase-client';
+import { toast } from 'sonner';
 
 declare global {
   interface Window {
@@ -617,6 +618,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           setWalletConnectUri(null);
           setIsWaitingForWalletConnect(false);
           setError('WalletConnect connection timed out. Please try again.');
+          toast.warning('WalletConnect is taking too long. Please try again.');
           triggerHaptic('error');
         }
       }, 60000); // 60 seconds

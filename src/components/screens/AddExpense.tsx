@@ -3,6 +3,7 @@ import { Upload, X, AlertCircle, Loader2 } from "lucide-react";
 import { useState, useRef } from "react";
 import { validateExpense } from "../../schema/pot";
 import { uploadReceipt } from "../../services/storage/receipt";
+import { toast } from "sonner";
 
 interface Member {
   id: string;
@@ -193,8 +194,7 @@ export function AddExpense({
         // Show error toast if available
         const errorMsg = validation.error || 'Validation failed';
         console.error('Validation error:', errorMsg);
-        // Show alert if validation fails (temporary - should use toast)
-        alert(`Validation error: ${errorMsg}`);
+        toast.error(`Validation error: ${errorMsg}`);
         return;
       }
       

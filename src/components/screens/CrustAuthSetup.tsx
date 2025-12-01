@@ -11,6 +11,7 @@ import { PrimaryButton } from '../PrimaryButton';
 import { SecondaryButton } from '../SecondaryButton';
 import { Loader2, CheckCircle, Copy, AlertCircle, ExternalLink, ArrowLeft } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
+import { toast } from 'sonner';
 
 interface CrustAuthSetupProps {
   onBack?: () => void;
@@ -58,6 +59,7 @@ export function CrustAuthSetup({ onBack }: CrustAuthSetupProps = {}) {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('[CrustAuthSetup] Failed to copy:', err);
+      toast.error('Failed to copy token');
       triggerHaptic('error');
     }
   };
@@ -73,6 +75,7 @@ export function CrustAuthSetup({ onBack }: CrustAuthSetupProps = {}) {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('[CrustAuthSetup] Failed to copy:', err);
+      toast.error('Failed to copy env line');
       triggerHaptic('error');
     }
   };
@@ -245,4 +248,3 @@ export function CrustAuthSetup({ onBack }: CrustAuthSetupProps = {}) {
     </div>
   );
 }
-

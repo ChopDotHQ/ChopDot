@@ -9,6 +9,7 @@
  */
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useAccount } from './AccountContext';
 import { getSupabase } from '../utils/supabase-client';
 import { upsertProfile } from '../repos/profiles';
 import { blake2AsHex } from '@polkadot/util-crypto';
@@ -88,6 +89,7 @@ const deriveWalletEmail = (address: string): string => {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const account = useAccount();
 
   // Initial session check and subscription to Supabase auth changes
   useEffect(() => {
@@ -384,6 +386,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const supabase = getSupabase();
       if (supabase) {
         await supabase.auth.signOut();
+      }
+      // Disconnect WalletConnect session if present
+      try {
+        account.disconnect();
+      } catch (err) {
+        console.warn('[AuthContext] WC disconnect on logout failed (continuing):', err);
       }
       // Clear local storage
       localStorage.removeItem('chopdot_user');
