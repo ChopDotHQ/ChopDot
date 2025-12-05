@@ -204,6 +204,9 @@ serve(async (req) => {
     return json({ error: "not found" }, 404);
   } catch (error) {
     console.error("[wallet-auth] unhandled error:", error);
-    return json({ error: "internal error" }, 500);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error("[wallet-auth] error stack:", errorStack);
+    return json({ error: "internal error", details: errorMessage }, 500);
   }
 });
