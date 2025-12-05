@@ -71,9 +71,30 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'ui-vendor': ['lucide-react', 'recharts'],
+        manualChunks: (id) => {
+          // Split Polkadot libraries into separate chunk (large ~2MB)
+          if (id.includes('@polkadot/api') || id.includes('@polkadot/types')) {
+            return 'polkadot-api';
+          }
+          if (id.includes('@polkadot/')) {
+            return 'polkadot-utils';
+          }
+          // Split WalletConnect into separate chunk (already large)
+          if (id.includes('@walletconnect/') || id.includes('walletconnect')) {
+            return 'walletconnect-vendor';
+          }
+          // React vendor chunk
+          if (id.includes('react') || id.includes('react-dom')) {
+            return 'react-vendor';
+          }
+          // UI vendor chunk
+          if (id.includes('lucide-react') || id.includes('recharts')) {
+            return 'ui-vendor';
+          }
+          // Radix UI components
+          if (id.includes('@radix-ui/')) {
+            return 'radix-ui';
+          }
         },
       },
     },

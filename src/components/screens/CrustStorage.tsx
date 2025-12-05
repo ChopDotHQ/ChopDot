@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { web3FromAddress } from "@polkadot/extension-dapp";
-import { ApiPromise, WsProvider } from "@polkadot/api";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
 import { Card } from "../ui/card";
@@ -34,7 +33,7 @@ export function CrustStorage({ onAuthSetup }: CrustStorageProps = {}) {
   const [uploadProgress, setUploadProgress] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [error, setError] = useState("");
-  const [api, setApi] = useState<ApiPromise | null>(null);
+  const [api, setApi] = useState<any | null>(null); // ApiPromise type loaded dynamically
   const [showWalletConnectQR, setShowWalletConnectQR] = useState(false);
   const [walletConnectQRCode, setWalletConnectQRCode] = useState<string | null>(null);
   const [walletConnectURI, setWalletConnectURI] = useState<string | null>(null);
@@ -93,17 +92,22 @@ export function CrustStorage({ onAuthSetup }: CrustStorageProps = {}) {
   }, [uploadedFiles]);
 
   useEffect(() => {
+    let apiInstance: any = null;
+    
     const connectToCrust = async () => {
       try {
+        // Dynamic import to avoid bundling @polkadot/api in main chunk
+        const { ApiPromise, WsProvider } = await import("@polkadot/api");
+        
         // Note: Crust type definitions are optional
         // If @crustio/type-definitions is installed, you can add typesBundle here
         // For now, using default Polkadot types which work fine for most operations
         const wsProvider = new WsProvider(CRUST_RPC);
-        const api = await ApiPromise.create({ 
+        apiInstance = await ApiPromise.create({ 
           provider: wsProvider,
           // typesBundle: typesBundleForPolkadot, // Optional: add if @crustio/type-definitions is installed
         });
-        setApi(api);
+        setApi(apiInstance);
       } catch (e) {
         console.error("Failed to connect to Crust chain", e);
       }
@@ -112,11 +116,11 @@ export function CrustStorage({ onAuthSetup }: CrustStorageProps = {}) {
     connectToCrust();
 
     return () => {
-      if (api) {
-        api.disconnect();
+      if (apiInstance) {
+        apiInstance.disconnect();
       }
     };
-  }, []);
+  }, []); // Connect only once on mount
 
   const connectWallet = async () => {
     setIsConnecting(true);
@@ -263,7 +267,7 @@ export function CrustStorage({ onAuthSetup }: CrustStorageProps = {}) {
       const unsub = await tx.signAndSend(
         account.address0,
         { signer: signer as any },
-        ({ status, txHash }) => {
+        ({ status, txHash }: { status: any; txHash: any }) => {
           if (status.isInBlock) {
             setUploadProgress(`Pinned! Tx hash: ${txHash.toString()}`);
             
