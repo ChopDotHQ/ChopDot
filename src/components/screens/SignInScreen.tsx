@@ -1923,7 +1923,6 @@ const MobileWalletConnectPanel = ({
               triggerHaptic('light');
               setShowWalletConnectQR(false);
               setWalletConnectQRCode(null);
-              setWalletConnectUri(null);
             }}
           />
 
@@ -1938,7 +1937,6 @@ const MobileWalletConnectPanel = ({
                     triggerHaptic('light');
                     setShowWalletConnectQR(false);
                     setWalletConnectQRCode(null);
-                    setWalletConnectUri(null);
                   }}
                   className="w-8 h-8 rounded-full bg-secondary/50 flex items-center justify-center active:scale-95 transition-transform"
                 >
