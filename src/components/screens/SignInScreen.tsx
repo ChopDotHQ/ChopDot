@@ -467,7 +467,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   const [error, setError] = useState<string | null>(null);
   const [showWalletConnectQR, setShowWalletConnectQR] = useState(false);
   const [walletConnectQRCode, setWalletConnectQRCode] = useState<string | null>(null);
-  const [walletConnectUri, setWalletConnectUri] = useState<string | null>(null);
   const [isWaitingForWalletConnect, setIsWaitingForWalletConnect] = useState(false);
   const [isWaitingForSignature, setIsWaitingForSignature] = useState(false);
   const walletConnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
