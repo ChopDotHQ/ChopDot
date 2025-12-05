@@ -135,10 +135,20 @@ async function ensureUser(address: string, chain: "polkadot" | "evm", email: str
 
 async function handleVerify(body: VerifyPayload) {
   try {
-    const address = body.address?.trim();
-    const signature = body.signature?.trim();
+    // Handle signature - it might be a string or an object with a signature property
+    let signature: string;
+    if (typeof body.signature === 'string') {
+      signature = body.signature.trim();
+    } else if (body.signature && typeof body.signature === 'object' && 'signature' in body.signature) {
+      signature = String(body.signature.signature).trim();
+    } else {
+      console.error("[wallet-auth] Invalid signature format:", { signature: body.signature, signatureType: typeof body.signature });
+      return json({ error: "invalid signature format" }, 400);
+    }
+    
+    const address = typeof body.address === 'string' ? body.address.trim() : String(body.address || '').trim();
     const chain = body.chain;
-    console.log("[wallet-auth] verify request:", { address, signatureLength: signature?.length, chain });
+    console.log("[wallet-auth] verify request:", { address, signatureLength: signature?.length, chain, signatureType: typeof signature });
     
     if (!address || !signature || !chain) {
       console.error("[wallet-auth] Missing required fields:", { hasAddress: !!address, hasSignature: !!signature, hasChain: !!chain });
