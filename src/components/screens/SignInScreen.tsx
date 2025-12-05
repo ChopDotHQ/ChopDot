@@ -1380,9 +1380,16 @@ const MobileWalletConnectPanel = ({
               Tap your wallet below. After approving the connection, stay inside your wallet until you confirm the signature.
             </p>
           {waitingForSignature && (
-            <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-black/5 px-3 py-1 text-xs font-semibold text-[var(--accent)] dark:bg-white/10">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              Waiting for signature in wallet…
+            <div className="mt-3 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent)]/10 p-3 space-y-2">
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-[var(--accent)] flex-shrink-0" />
+                <p className="text-sm font-semibold text-foreground">
+                  Signature pending in wallet
+                </p>
+              </div>
+              <p className="text-xs text-muted leading-relaxed pl-6">
+                Go back to your wallet app and approve the signature request. Stay in your wallet until confirmed.
+              </p>
             </div>
           )}
         </div>
@@ -1870,6 +1877,24 @@ const MobileWalletConnectPanel = ({
               <ChopDotMark size={52} />
               <p className="text-sm font-medium text-white/90">Sign in to ChopDot</p>
             </div>
+            
+            {/* Prominent signature waiting banner - Mobile */}
+            {isWaitingForSignature && (
+              <div className="rounded-2xl border-2 border-[var(--accent)] bg-[var(--accent)]/10 p-4 space-y-3 animate-pulse">
+                <div className="flex items-center gap-3">
+                  <Loader2 className="w-5 h-5 animate-spin text-[var(--accent)] flex-shrink-0" />
+                  <div className="flex-1 space-y-1">
+                    <p className="text-base font-semibold text-white">
+                      Waiting for signature approval
+                    </p>
+                    <p className="text-sm text-white/80 leading-relaxed">
+                      Please go back to your wallet app (Nova Wallet) and approve the signature request. Stay in your wallet until you see the confirmation.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <MobileWalletConnectPanel
               uri={walletConnectUri}
               loading={loading}
