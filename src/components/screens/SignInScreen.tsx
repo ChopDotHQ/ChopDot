@@ -12,7 +12,8 @@ import { useAuth, AuthMethod } from '../../contexts/AuthContext';
 import { useAccount } from '../../contexts/AccountContext';
 import {
   signPolkadotMessage,
-  generateSignInMessage,
+  requestWalletNonce,
+  buildWalletAuthMessage,
 } from '../../utils/walletAuth';
 import { triggerHaptic } from '../../utils/haptics';
 import QRCodeLib from 'qrcode';
@@ -528,6 +529,11 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     viewModeOverride === 'auto' ? (device.isMobile ? 'mobile' : 'desktop') : viewModeOverride;
   const isMobileWalletFlow = enableMobileUi && resolvedViewMode === 'mobile';
 
+  const getWalletAuthMessage = async (addr: string) => {
+    const nonce = await requestWalletNonce(addr);
+    return buildWalletAuthMessage(nonce);
+  };
+
   // Listen for WalletConnect connection completion
   useEffect(() => {
     console.log('[LoginScreen] Account status changed:', {
@@ -582,7 +588,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           const { createWalletConnectSigner } = signerModule;
           const { stringToHex } = utilModule;
           const signer = createWalletConnectSigner(address);
-          const message = generateSignInMessage(address);
+          const message = await getWalletAuthMessage(address);
           
           console.log('[LoginScreen] Requesting signature from WalletConnect...');
           console.log('[LoginScreen] 💡 Stay in your wallet app until you approve the signature');
@@ -599,7 +605,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
             type: 'wallet',
             address,
             signature,
-            message,
+            chain: 'polkadot',
           });
           
           console.log('[LoginScreen] ✅ Login successful!');
@@ -761,7 +767,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           
           // Don't wait for AccountContext status - proceed immediately to signing
           // The extension connection is valid, AccountContext balance fetch can happen in background
-          const message = generateSignInMessage(address);
+          const message = await getWalletAuthMessage(address);
           signature = await signPolkadotMessage(address, message);
           break;
         }
@@ -794,7 +800,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
             const { createWalletConnectSigner } = signerModule;
             const { stringToHex } = utilModule;
             const signer = createWalletConnectSigner(wcAddress);
-            const message = generateSignInMessage(wcAddress);
+            const message = await getWalletAuthMessage(wcAddress);
             const { signature: sig } = await signer.signRaw({
               address: wcAddress,
               data: stringToHex(message),
@@ -836,7 +842,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               const { createWalletConnectSigner } = signerModule;
               const { stringToHex } = utilModule;
               const signer = createWalletConnectSigner(connectedAddress);
-              const message = generateSignInMessage(connectedAddress);
+              const message = await getWalletAuthMessage(connectedAddress);
               const { signature: sig } = await signer.signRaw({
                 address: connectedAddress,
                 data: stringToHex(message),
@@ -862,11 +868,12 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       }
 
       // Login with signature
+      const chain = method === 'polkadot' ? 'polkadot' : 'evm';
       await login(method, {
         type: 'wallet',
         address,
         signature,
-        message: generateSignInMessage(address),
+        chain,
       });
 
       triggerHaptic('medium');
@@ -938,7 +945,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       const { createWalletConnectSigner } = signerModule;
       const { stringToHex } = utilModule;
       const signer = createWalletConnectSigner(address);
-      const message = generateSignInMessage(address);
+      const message = await getWalletAuthMessage(address);
       
       console.log('[LoginScreen] Requesting signature from WalletConnect...');
       console.log('[LoginScreen] 💡 Stay in your wallet app until you approve the signature');
@@ -958,7 +965,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         type: 'wallet',
         address,
         signature,
-        message,
+        chain: 'polkadot',
       });
       
       triggerHaptic('medium');
@@ -1156,15 +1163,15 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         console.warn(`[Login] ${walletDisplayName} auto-connect issue (continuing anyway):`, connectionError);
       }
 
-      const message = generateSignInMessage(address);
-      const signature = await signPolkadotMessage(address, message);
+          const message = await getWalletAuthMessage(address);
+          const signature = await signPolkadotMessage(address, message);
 
-      await login('polkadot', {
-        type: 'wallet',
-        address,
-        signature,
-        message,
-      });
+        await login('polkadot', {
+          type: 'wallet',
+          address,
+          signature,
+          chain: 'polkadot',
+        });
 
       triggerHaptic('medium');
       onLoginSuccess?.();

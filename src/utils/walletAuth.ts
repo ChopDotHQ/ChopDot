@@ -246,6 +246,44 @@ export function generateSignInMessage(address: string): string {
 }
 
 /**
+ * Request a server-issued nonce for wallet auth (edge function)
+ */
+export async function requestWalletNonce(address: string): Promise<string> {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !anonKey) {
+    throw new Error('Supabase env vars missing for wallet auth');
+  }
+
+  const res = await fetch(`${supabaseUrl}/functions/v1/wallet-auth/request-nonce`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': anonKey,
+      'Authorization': `Bearer ${anonKey}`,
+    },
+    body: JSON.stringify({ address }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Failed to request nonce: ${res.status} ${text}`);
+  }
+
+  const data = await res.json();
+  if (!data?.nonce) {
+    throw new Error('Nonce not returned from wallet-auth function');
+  }
+  return data.nonce as string;
+}
+
+/**
+ * Build the exact message expected by the wallet-auth edge function
+ */
+export const buildWalletAuthMessage = (nonce: string) =>
+  `Sign this message to login to ChopDot.\nNonce: ${nonce}`;
+
+/**
  * Verify wallet signature (backend implementation)
  */
 export async function verifyWalletSignature(

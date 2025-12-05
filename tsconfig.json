@@ -76,6 +76,7 @@
     "database",
     "scripts",
     "docs",
-    "backend"
+    "backend",
+    "supabase/functions"
   ]
 }

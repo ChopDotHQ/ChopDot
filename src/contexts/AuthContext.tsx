@@ -12,8 +12,6 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { useAccount } from './AccountContext';
 import { getSupabase } from '../utils/supabase-client';
 import { upsertProfile } from '../repos/profiles';
-import { blake2AsHex } from '@polkadot/util-crypto';
-import { hexToU8a } from '@polkadot/util';
 
 export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'email' | 'guest';
 
@@ -39,52 +37,11 @@ interface AuthContextType {
 }
 
 export type LoginCredentials = 
-  | { type: 'wallet'; address: string; signature: string; message: string }
+  | { type: 'wallet'; address: string; signature: string; chain?: 'polkadot' | 'evm' }
   | { type: 'email'; email: string; password: string }
   | { type: 'guest' };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const deriveWalletEmail = (address: string): string => {
-  // Use base64 encoding instead of hex to get more letters and avoid numbers
-  // Supabase seems to reject hex-only patterns, so base64 gives us A-Z, a-z, 0-9, +, /
-  // Format: wallet.{base64}@chopdot.app
-  // TEMP: Use example.com for testing if Supabase has domain restrictions
-  // Set VITE_WALLET_EMAIL_DOMAIN=example.com to test with different domain
-  const domain = import.meta.env.VITE_WALLET_EMAIL_DOMAIN || 'chopdot.app';
-  
-  const hash = blake2AsHex(address.toLowerCase().trim(), 256);
-  const hashBytes = hexToU8a(hash); // Convert hex to bytes
-  
-  // Convert to base64 and take first 12 chars (ensures we get letters)
-  // Base64 will start with letters more often than hex
-  // Use 9 bytes = 12 base64 chars (no padding needed)
-  const bytesToEncode = hashBytes.slice(0, 9);
-  const binaryString = Array.from(bytesToEncode)
-    .map(byte => String.fromCharCode(byte))
-    .join('');
-  const base64Encoded = btoa(binaryString);
-  // Replace special chars (+/=) with letters for email safety
-  // Also sanitize: remove any non-alphanumeric except dots/dashes
-  const base64Part = base64Encoded
-    .replace(/[+/=]/g, (char) => {
-      if (char === '+') return 'p';
-      if (char === '/') return 's';
-      if (char === '=') return 'e';
-      return char;
-    })
-    .replace(/[^a-zA-Z0-9]/g, ''); // Remove any remaining special chars
-  
-  // Ensure we have at least some chars (fallback if somehow empty)
-  const safePart = base64Part.slice(0, 10) || 'wallet'; // Shorter hash part
-  
-  // Use format that matches the working pattern: wallet.user.{hash}@domain
-  // The "user" part makes it look more like a real email address
-  // This matches the pattern that successfully created wallet.user.test@chopdot.app
-  const email = `wallet.user.${safePart}@${domain}`.toLowerCase().trim();
-  
-  return email;
-};
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -196,102 +153,67 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       let userData: User | null = null;
       if (credentials.type === 'wallet') {
-        // Wallet-based authentication - simplified flow
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
         const supabase = getSupabase();
-        
-        if (supabase) {
-          const walletEmail = deriveWalletEmail(credentials.address);
-          
-          // Log exact email string to debug Supabase validation issues
-          console.log('[Auth] Generated wallet email:', JSON.stringify(walletEmail));
-          console.log('[Auth] Wallet login attempt for:', credentials.address);
-          
-          // Try to sign in first (for returning users)
-          let { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-            email: walletEmail,
-            password: credentials.address,
-          });
-          
-          let authUser = signInData?.user ?? null;
-          
-          // If sign in failed, try to sign up (new user)
-          if (signInError || !authUser) {
-            console.log('[Auth] Sign in failed, creating new user:', signInError?.message);
-            
-            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-              email: walletEmail,
-              password: credentials.address,
-              options: {
-                data: {
-                  wallet_address: credentials.address,
-                  auth_method: method,
-                },
-                // Auto-confirm wallet users (they can't receive confirmation emails)
-                // This requires email confirmation to be disabled OR admin API confirmation
-                emailRedirectTo: window.location.origin,
-              },
-            });
-            
-            if (signUpError) {
-              console.error('[Auth] SignUp error:', signUpError);
-              console.error('[Auth] SignUp error details:', {
-                message: signUpError.message,
-                status: signUpError.status,
-                name: signUpError.name,
-                email: walletEmail,
-                emailLength: walletEmail.length,
-                emailChars: Array.from(walletEmail).map(c => c.charCodeAt(0)),
-              });
-              throw signUpError;
-            }
-            
-            authUser = signUpData.user ?? signUpData.session?.user ?? null;
-            
-            if (!authUser) {
-              throw new Error('Failed to create user - no user returned from signup');
-            }
-            
-            console.log('[Auth] New user created:', authUser.id);
-            
-            // Create profile for new user
-            try {
-              await upsertProfile(supabase, authUser.id, null, credentials.address);
-              console.log('[Auth] Profile created');
-            } catch (profileError) {
-              console.error('[Auth] Profile creation failed:', profileError);
-              // Don't throw - user is created, profile can be created later
-            }
-          } else {
-            console.log('[Auth] User signed in:', authUser.id);
-          }
-          
-          // Get profile to fetch username
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('username')
-            .eq('id', authUser.id)
-            .single();
-          
-          userData = {
-            id: authUser.id,
-            walletAddress: credentials.address,
-            authMethod: method,
-            name: profile?.username || `${method.charAt(0).toUpperCase() + method.slice(1)} User`,
-            createdAt: new Date().toISOString(),
-          };
-          
-          console.log('[Auth] Wallet auth successful:', userData);
-        } else {
-          // No Supabase - use mock data (development only)
-          console.warn('[Auth] No Supabase configured, using mock auth');
-          userData = {
-            id: `user_${Date.now()}`,
-            walletAddress: credentials.address,
-            authMethod: method,
-            name: `${method.charAt(0).toUpperCase() + method.slice(1)} User`,
-            createdAt: new Date().toISOString(),
-          };
+        if (!supabase || !supabaseUrl || !anonKey) {
+          throw new Error('Supabase not configured for wallet auth');
         }
+
+        const chain: 'polkadot' | 'evm' = credentials.chain || (method === 'polkadot' ? 'polkadot' : 'evm');
+
+        const verifyRes = await fetch(`${supabaseUrl}/functions/v1/wallet-auth/verify`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': anonKey,
+            'Authorization': `Bearer ${anonKey}`,
+          },
+          body: JSON.stringify({
+            address: credentials.address,
+            signature: credentials.signature,
+            chain,
+          }),
+        });
+
+        if (!verifyRes.ok) {
+          const text = await verifyRes.text();
+          throw new Error(`Wallet auth failed: ${verifyRes.status} ${text}`);
+        }
+
+        const verifyData = await verifyRes.json();
+        if (!verifyData?.access_token || !verifyData?.refresh_token) {
+          throw new Error('Wallet auth failed: tokens not returned');
+        }
+
+        const { error: setSessionError } = await supabase.auth.setSession({
+          access_token: verifyData.access_token,
+          refresh_token: verifyData.refresh_token,
+        });
+        if (setSessionError) {
+          throw setSessionError;
+        }
+
+        const { data } = await supabase.auth.getSession();
+        const session = data.session || null;
+        if (!session?.user) {
+          throw new Error('Wallet auth failed: no session returned');
+        }
+
+        // Ensure profile row exists (non-blocking)
+        try {
+          await upsertProfile(supabase, session.user.id, session.user.user_metadata?.username ?? null, credentials.address);
+        } catch (profileError) {
+          console.warn('[auth.login] profile upsert failed:', (profileError as Error).message);
+        }
+
+        userData = {
+          id: session.user.id,
+          walletAddress: credentials.address,
+          authMethod: method,
+          name: session.user.email?.split('@')[0] || `${method.charAt(0).toUpperCase() + method.slice(1)} User`,
+          createdAt: new Date().toISOString(),
+        };
       } else {
         const supabase = getSupabase();
         if (!supabase) {

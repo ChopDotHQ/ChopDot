@@ -17,7 +17,7 @@ interface PotsDebugProps {
  * Dev-only debug panel comparing UI state vs Data Layer
  */
 export function PotsDebug({ uiPots }: PotsDebugProps) {
-  const dlPots = usePots();
+  const dl = usePots();
   const [mounted, setMounted] = useState(false);
   const [status, setStatus] = useState<'checking' | 'match' | 'mismatch'>('checking');
 
@@ -36,12 +36,12 @@ export function PotsDebug({ uiPots }: PotsDebugProps) {
     if (!mounted) return;
 
     const uiCount = uiPots.length;
-    const dlCount = dlPots.length;
+    const dlCount = dl.pots.length;
 
     if (uiCount === dlCount) {
       // Check if IDs match
       const uiIds = new Set(uiPots.map(p => p.id).sort());
-      const dlIds = new Set(dlPots.map(p => p.id).sort());
+      const dlIds = new Set(dl.pots.map(p => p.id).sort());
 
       const idsMatch = 
         uiIds.size === dlIds.size &&
@@ -68,7 +68,7 @@ export function PotsDebug({ uiPots }: PotsDebugProps) {
       
       // Log count diff
       const uiIds = new Set(uiPots.map(p => p.id).sort());
-      const dlIds = new Set(dlPots.map(p => p.id).sort());
+      const dlIds = new Set(dl.pots.map(p => p.id).sort());
       const missingInDL = Array.from(uiIds).filter(id => !dlIds.has(id));
       const extraInDL = Array.from(dlIds).filter(id => !uiIds.has(id));
       
@@ -79,7 +79,7 @@ export function PotsDebug({ uiPots }: PotsDebugProps) {
         extraInDL,
       });
     }
-  }, [mounted, uiPots, dlPots]);
+  }, [mounted, uiPots, dl.pots]);
 
   // Only render in dev mode
   if (!import.meta.env.DEV) {
@@ -91,7 +91,7 @@ export function PotsDebug({ uiPots }: PotsDebugProps) {
   }
 
   const uiCount = uiPots.length;
-  const dlCount = dlPots.length;
+  const dlCount = dl.pots.length;
   const isMatch = status === 'match';
 
   return (
@@ -122,4 +122,3 @@ export function PotsDebug({ uiPots }: PotsDebugProps) {
     </div>
   );
 }
-
