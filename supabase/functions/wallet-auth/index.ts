@@ -134,55 +134,115 @@ async function ensureUser(address: string, chain: "polkadot" | "evm", email: str
 }
 
 async function handleVerify(body: VerifyPayload) {
-  const address = body.address?.trim();
-  const signature = body.signature?.trim();
-  const chain = body.chain;
-  if (!address || !signature || !chain) return json({ error: "address, signature, and chain required" }, 400);
+  try {
+    const address = body.address?.trim();
+    const signature = body.signature?.trim();
+    const chain = body.chain;
+    console.log("[wallet-auth] verify request:", { address, signatureLength: signature?.length, chain });
+    
+    if (!address || !signature || !chain) {
+      console.error("[wallet-auth] Missing required fields:", { hasAddress: !!address, hasSignature: !!signature, hasChain: !!chain });
+      return json({ error: "address, signature, and chain required" }, 400);
+    }
 
-  // Pull nonce
-  const { data: nonceRow, error: nonceError } = await supabaseAdmin
-    .from("auth_nonces")
-    .select("*")
-    .eq("address", address)
-    .maybeSingle();
-  if (nonceError || !nonceRow) return json({ error: "nonce not found" }, 400);
-  if (new Date(nonceRow.expires_at).getTime() < Date.now()) {
+    // Pull nonce
+    const { data: nonceRow, error: nonceError } = await supabaseAdmin
+      .from("auth_nonces")
+      .select("*")
+      .eq("address", address)
+      .maybeSingle();
+    
+    if (nonceError) {
+      console.error("[wallet-auth] Nonce lookup error:", nonceError);
+      return json({ error: "nonce lookup failed" }, 500);
+    }
+    
+    if (!nonceRow) {
+      console.error("[wallet-auth] Nonce not found for address:", address);
+      return json({ error: "nonce not found" }, 400);
+    }
+    
+    if (new Date(nonceRow.expires_at).getTime() < Date.now()) {
+      console.error("[wallet-auth] Nonce expired:", { expiresAt: nonceRow.expires_at, now: new Date().toISOString() });
+      await supabaseAdmin.from("auth_nonces").delete().eq("address", address);
+      return json({ error: "nonce expired" }, 400);
+    }
+
+    const message = buildMessage(nonceRow.nonce);
+    console.log("[wallet-auth] Verifying signature:", { chain, messageLength: message.length, signatureLength: signature.length });
+    
+    let valid = false;
+    if (chain === "polkadot") {
+      try {
+        valid = await verifyPolkadotSignature(address, message, signature);
+        console.log("[wallet-auth] Polkadot signature verification result:", valid);
+      } catch (verifyError) {
+        console.error("[wallet-auth] Polkadot signature verification error:", verifyError);
+        return json({ error: "signature verification failed", details: verifyError instanceof Error ? verifyError.message : String(verifyError) }, 500);
+      }
+    } else {
+      try {
+        valid = await verifyEvmSignature(address, message, signature);
+        console.log("[wallet-auth] EVM signature verification result:", valid);
+      } catch (verifyError) {
+        console.error("[wallet-auth] EVM signature verification error:", verifyError);
+        return json({ error: "signature verification failed", details: verifyError instanceof Error ? verifyError.message : String(verifyError) }, 500);
+      }
+    }
+    
+    if (!valid) {
+      console.error("[wallet-auth] Signature invalid");
+      return json({ error: "invalid signature" }, 401);
+    }
+
+    // Consume nonce
     await supabaseAdmin.from("auth_nonces").delete().eq("address", address);
-    return json({ error: "nonce expired" }, 400);
+    console.log("[wallet-auth] Nonce consumed");
+
+    const email = deriveWalletEmail(address);
+    const password = randomString(16);
+    console.log("[wallet-auth] Creating/updating user:", { email, address, chain });
+    
+    let userId: string;
+    try {
+      userId = await ensureUser(address, chain, email, password);
+      console.log("[wallet-auth] User ensured:", userId);
+    } catch (userError) {
+      console.error("[wallet-auth] ensureUser failed:", userError);
+      return json({ error: "failed to create user", details: userError instanceof Error ? userError.message : String(userError) }, 500);
+    }
+
+    // Sign in server-side with rotated password to issue tokens
+    console.log("[wallet-auth] Signing in with password to get tokens");
+    const { data: sessionData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
+      email,
+      password,
+    });
+    
+    if (signInError) {
+      console.error("[wallet-auth] signInWithPassword failed:", signInError);
+      return json({ error: "failed to create session", details: signInError.message }, 500);
+    }
+    
+    if (!sessionData.session) {
+      console.error("[wallet-auth] No session returned from signInWithPassword");
+      return json({ error: "failed to create session", details: "No session data returned" }, 500);
+    }
+
+    console.log("[wallet-auth] ✅ Login successful:", { userId, email });
+    return json({
+      access_token: sessionData.session.access_token,
+      refresh_token: sessionData.session.refresh_token,
+      user_id: userId,
+      email,
+    });
+  } catch (error) {
+    console.error("[wallet-auth] handleVerify unhandled error:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error("[wallet-auth] error stack:", errorStack);
+    return json({ error: "internal error", details: errorMessage }, 500);
   }
-
-  const message = buildMessage(nonceRow.nonce);
-  let valid = false;
-  if (chain === "polkadot") {
-    valid = await verifyPolkadotSignature(address, message, signature);
-  } else {
-    valid = await verifyEvmSignature(address, message, signature);
-  }
-  if (!valid) return json({ error: "invalid signature" }, 401);
-
-  // Consume nonce
-  await supabaseAdmin.from("auth_nonces").delete().eq("address", address);
-
-  const email = deriveWalletEmail(address);
-  const password = randomString(16);
-  const userId = await ensureUser(address, chain, email, password);
-
-  // Sign in server-side with rotated password to issue tokens
-  const { data: sessionData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
-    email,
-    password,
-  });
-  if (signInError || !sessionData.session) {
-    console.error("[wallet-auth] signIn failed:", signInError);
-    return json({ error: "failed to create session" }, 500);
-  }
-
-  return json({
-    access_token: sessionData.session.access_token,
-    refresh_token: sessionData.session.refresh_token,
-    user_id: userId,
-    email,
-  });
 }
 
 serve(async (req) => {
