@@ -73,8 +73,10 @@ export default defineConfig({
       output: {
         manualChunks: (id) => {
           // Split Polkadot libraries into separate chunk (large ~2MB)
+          // Only chunk if it's actually imported (not eagerly)
           if (id.includes('@polkadot/api') || id.includes('@polkadot/types')) {
-            return 'polkadot-api';
+            // Don't eagerly load - let dynamic imports handle it
+            return null; // Let Vite's own chunk when dynamically imported
           }
           if (id.includes('@polkadot/')) {
             return 'polkadot-utils';
@@ -101,6 +103,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'lucide-react', 'buffer'],
+    exclude: ['@polkadot/api', '@polkadot/types'], // Exclude from pre-bundling to avoid initialization errors
     esbuildOptions: {
       define: {
         global: 'globalThis',
