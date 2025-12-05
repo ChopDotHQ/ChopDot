@@ -1,6 +1,7 @@
 import { resolveChainKey, getActiveChain, getActiveChainConfig, type ChainConfig, type ChainKey } from './config';
 import { normalizeToPolkadot, isValidSs58Any } from './address';
-import { encodeAddress, decodeAddress } from '@polkadot/util-crypto';
+// Lazy import to avoid pulling in Polkadot code eagerly
+// import { encodeAddress, decodeAddress } from '@polkadot/util-crypto';
 
 type SendDotParams = {
   from: string;
@@ -278,9 +279,10 @@ export const polkadotChainService = (() => {
     return currentChainKey === 'westend' ? 'assethub' : currentChainKey;
   };
 
-  const isValidPolkadotAddress = (address: string): boolean => {
+  const isValidPolkadotAddress = async (address: string): Promise<boolean> => {
     if (!address || typeof address !== 'string') return false;
     try {
+      const { encodeAddress, decodeAddress } = await import('@polkadot/util-crypto');
       const config = getConfig();
       const publicKey = decodeAddress(address);
       const encoded = encodeAddress(publicKey, config.ss58);

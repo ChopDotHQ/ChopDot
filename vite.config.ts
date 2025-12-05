@@ -72,13 +72,15 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Split Polkadot libraries into separate chunk (large ~2MB)
+          // Don't chunk Polkadot API - let it be dynamically imported as-is
+          // Chunking causes initialization errors in production
           if (id.includes('@polkadot/api') || id.includes('@polkadot/types')) {
-            return 'polkadot-api';
+            return undefined; // Don't create separate chunk, bundle inline when dynamically imported
           }
-          if (id.includes('@polkadot/')) {
+          if (id.includes('@polkadot/util-crypto') || id.includes('@polkadot/util')) {
             return 'polkadot-utils';
           }
+          // Don't chunk other @polkadot packages - let them load with dynamic imports
           // Split WalletConnect into separate chunk (already large)
           if (id.includes('@walletconnect/') || id.includes('walletconnect')) {
             return 'walletconnect-vendor';
