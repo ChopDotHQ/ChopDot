@@ -72,15 +72,15 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // Don't chunk Polkadot API - let it be dynamically imported as-is
-          // Chunking causes initialization errors in production
+          // Don't create separate chunks for Polkadot API - let Vite handle it naturally
+          // Creating chunks causes "Cannot access 'Ad' before initialization" errors
+          // Return undefined to prevent chunking - Vite will bundle inline when dynamically imported
           if (id.includes('@polkadot/api') || id.includes('@polkadot/types')) {
-            return undefined; // Don't create separate chunk, bundle inline when dynamically imported
+            return undefined;
           }
           if (id.includes('@polkadot/util-crypto') || id.includes('@polkadot/util')) {
             return 'polkadot-utils';
           }
-          // Don't chunk other @polkadot packages - let them load with dynamic imports
           // Split WalletConnect into separate chunk (already large)
           if (id.includes('@walletconnect/') || id.includes('walletconnect')) {
             return 'walletconnect-vendor';

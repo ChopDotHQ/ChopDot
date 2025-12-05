@@ -2,7 +2,7 @@ import { TopBar } from "../TopBar";
 import { PrimaryButton } from "../PrimaryButton";
 import { Download, CheckCircle } from "lucide-react";
 import { useMemo } from "react";
-import { polkadotChainService } from "../../services/chain/polkadot";
+import { buildSubscanUrl } from "../../services/chain/utils";
 import { EmptyState } from "../EmptyState";
 
 interface Settlement {
@@ -106,7 +106,7 @@ export function SettlementHistory({ settlements, onBack, personId }: SettlementH
                     <span>Tx</span>
                     <a
                       className="text-micro underline font-mono text-secondary"
-                      href={polkadotChainService.buildSubscanUrl(settlement.txHash)}
+                      href={buildSubscanUrl(settlement.txHash)}
                       target="_blank"
                       rel="noreferrer"
                     >

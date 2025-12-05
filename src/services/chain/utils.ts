@@ -1,4 +1,4 @@
-import { getActiveChainConfig, type ChainConfig } from './config';
+import { getActiveChainConfig } from './config';
 
 /**
  * Build Subscan URL for a transaction hash

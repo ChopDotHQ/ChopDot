@@ -3,7 +3,7 @@ import { SettlementResult } from "../../nav";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
 import { TopBar } from "../TopBar";
-import { polkadotChainService } from "../../services/chain/polkadot";
+import { buildSubscanUrl } from "../../services/chain/utils";
 
 interface SettlementConfirmationProps {
   result: SettlementResult;
@@ -70,7 +70,7 @@ export function SettlementConfirmation({
                 <span className="text-micro text-secondary">Transaction</span>
                 <a
                   className="font-mono text-label truncate max-w-[180px] underline"
-                  href={polkadotChainService.buildSubscanUrl(result.txHash)}
+                  href={buildSubscanUrl(result.txHash)}
                   target="_blank"
                   rel="noreferrer"
                 >

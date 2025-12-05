@@ -4,7 +4,7 @@ import { SwipeableExpenseRow } from "../SwipeableExpenseRow";
 import { computeBalances, suggestSettlements, getMemberBalance } from "../../services/settlement/calc";
 import type { Pot, Expense as PotExpense } from "../../schema/pot";
 import { SettlementConfirmModal } from "../SettlementConfirmModal";
-import { polkadotChainService } from "../../services/chain/polkadot";
+import { buildSubscanUrl } from "../../services/chain/utils";
 import { normalizeToPolkadot } from "../../services/chain/address";
 import { useAccount } from "../../contexts/AccountContext";
 import type { PotHistory } from "../../App";
@@ -123,7 +123,8 @@ export function ExpensesTab({
   // Ensure we're on Asset Hub for DOT pots
   useMemo(() => {
     if (isDotPot) {
-      polkadotChainService.setChain('assethub');
+      // Lazy load to set chain
+      import("../../services/chain/polkadot").then(m => m.polkadotChainService.setChain('assethub'));
     }
   }, [isDotPot]);
   
@@ -404,7 +405,7 @@ export function ExpensesTab({
         block: blockHash,
         status: status, // Will be 'in_block' initially, 'finalized' if callback fired
         when: Date.now(),
-        subscan: polkadotChainService.buildSubscanUrl(txHash),
+        subscan: buildSubscanUrl(txHash),
       };
       
       // Update pot history

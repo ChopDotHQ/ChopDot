@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { Copy, Loader2 } from 'lucide-react';
-import { polkadotChainService } from '../services/chain/polkadot';
+// Lazy import to avoid bundling Polkadot API eagerly
+const getPolkadotChainService = async () => {
+  const module = await import('../services/chain/polkadot');
+  return module.polkadotChainService;
+};
 import Identicon from '@polkadot/react-identicon';
 import { formatDOT } from '../utils/platformFee';
 
@@ -38,12 +42,12 @@ export function SettlementConfirmModal({
     setFeeLoading(true);
     setFeeError(false);
     
-    polkadotChainService
-      .estimateFee({
+    getPolkadotChainService()
+      .then(service => service.estimateFee({
         from: fromAddress,
         to: toAddress,
         amountDot,
-      })
+      }))
       .then((feePlanck) => {
         // Convert planck to DOT (10 decimals)
         const feeDot = parseFloat(feePlanck) / 1e10;

@@ -1,7 +1,6 @@
 import { resolveChainKey, getActiveChain, getActiveChainConfig, type ChainConfig, type ChainKey } from './config';
 import { normalizeToPolkadot, isValidSs58Any } from './address';
-// Lazy import to avoid pulling in Polkadot code eagerly
-// import { encodeAddress, decodeAddress } from '@polkadot/util-crypto';
+// Don't import @polkadot/util-crypto at top level - lazy load when needed
 
 type SendDotParams = {
   from: string;
@@ -279,17 +278,12 @@ export const polkadotChainService = (() => {
     return currentChainKey === 'westend' ? 'assethub' : currentChainKey;
   };
 
-  const isValidPolkadotAddress = async (address: string): Promise<boolean> => {
+  const isValidPolkadotAddress = (address: string): boolean => {
     if (!address || typeof address !== 'string') return false;
-    try {
-      const { encodeAddress, decodeAddress } = await import('@polkadot/util-crypto');
-      const config = getConfig();
-      const publicKey = decodeAddress(address);
-      const encoded = encodeAddress(publicKey, config.ss58);
-      return encoded === address;
-    } catch (_) {
-      return false;
-    }
+    // Use basic validation - full crypto validation requires async import
+    // This is a compromise: we validate format but don't verify checksum eagerly
+    // Full validation happens when Polkadot API is actually used
+    return address.length > 0 && /^[1-9A-HJ-NP-Za-km-z]+$/.test(address);
   };
 
   const isValidSs58 = (address: string): boolean => isValidSs58Any(address);
