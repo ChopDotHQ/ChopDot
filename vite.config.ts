@@ -73,10 +73,8 @@ export default defineConfig({
       output: {
         manualChunks: (id) => {
           // Split Polkadot libraries into separate chunk (large ~2MB)
-          // Only chunk if it's actually imported (not eagerly)
           if (id.includes('@polkadot/api') || id.includes('@polkadot/types')) {
-            // Don't eagerly load - let dynamic imports handle it
-            return null; // Let Vite's own chunk when dynamically imported
+            return 'polkadot-api';
           }
           if (id.includes('@polkadot/')) {
             return 'polkadot-utils';
