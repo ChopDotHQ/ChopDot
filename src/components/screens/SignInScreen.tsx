@@ -597,12 +597,17 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           await new Promise((resolve) => setTimeout(resolve, 400));
           
           // Request signature - this should trigger the wallet app to show the prompt
+          // Keep isWaitingForSignature true until signature is received
           const { signature } = await signer.signRaw({
             address,
             data: stringToHex(message),
           });
           
           console.log('[LoginScreen] Signature received, logging in...');
+          
+          // Clear waiting state before login (login might redirect)
+          setIsWaitingForSignature(false);
+          
           // Login with signature
           await login('rainbow', {
             type: 'wallet',
@@ -954,16 +959,19 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       console.log('[LoginScreen] 💡 Stay in your wallet app until you approve the signature');
       
       // Small delay to ensure wallet app is ready for signature request
-      // Reduced delay - user mentioned they could get signature without switching before
       await new Promise((resolve) => setTimeout(resolve, 400));
       
       // Request signature - this should trigger the wallet app to show the prompt
+      // Keep isWaitingForSignature true until signature is received
       const { signature } = await signer.signRaw({
         address,
         data: stringToHex(message),
       });
       
       console.log('[LoginScreen] Signature received, logging in...');
+      
+      // Clear waiting state before login (login might redirect)
+      setIsWaitingForSignature(false);
       
       // Login with signature
       await login('rainbow', {
@@ -1880,16 +1888,20 @@ const MobileWalletConnectPanel = ({
             
             {/* Prominent signature waiting banner - Mobile */}
             {isWaitingForSignature && (
-              <div className="rounded-2xl border-2 border-[var(--accent)] bg-[var(--accent)]/10 p-4 space-y-3 animate-pulse">
-                <div className="flex items-center gap-3">
-                  <Loader2 className="w-5 h-5 animate-spin text-[var(--accent)] flex-shrink-0" />
-                  <div className="flex-1 space-y-1">
-                    <p className="text-base font-semibold text-white">
-                      Waiting for signature approval
+              <div className="rounded-2xl border-2 border-[var(--accent)] bg-[var(--accent)]/15 p-5 space-y-3 shadow-lg animate-pulse">
+                <div className="flex items-start gap-3">
+                  <Loader2 className="w-6 h-6 animate-spin text-[var(--accent)] flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 space-y-2">
+                    <p className="text-lg font-bold text-white">
+                      ⚠️ Signature Approval Required
                     </p>
-                    <p className="text-sm text-white/80 leading-relaxed">
-                      Please go back to your wallet app (Nova Wallet) and approve the signature request. Stay in your wallet until you see the confirmation.
+                    <p className="text-sm text-white/90 leading-relaxed">
+                      <strong>Action needed:</strong> Go back to your wallet app (Nova Wallet) and approve the signature request. The app will automatically continue once you approve.
                     </p>
+                    <div className="flex items-center gap-2 text-xs text-white/70">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      <span>Waiting for your approval...</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1947,18 +1959,22 @@ const MobileWalletConnectPanel = ({
             </p>
           </div>
           
-          {/* Prominent signature waiting banner */}
+          {/* Prominent signature waiting banner - Desktop */}
           {isWaitingForSignature && (
-            <div className="rounded-2xl border-2 border-[var(--accent)] bg-[var(--accent)]/10 p-4 space-y-3 animate-pulse">
-              <div className="flex items-center gap-3">
-                <Loader2 className="w-5 h-5 animate-spin text-[var(--accent)] flex-shrink-0" />
-                <div className="flex-1 space-y-1">
-                  <p className="text-base font-semibold text-foreground">
-                    Waiting for signature approval
+            <div className="rounded-2xl border-2 border-[var(--accent)] bg-[var(--accent)]/15 p-5 space-y-3 shadow-lg animate-pulse">
+              <div className="flex items-start gap-3">
+                <Loader2 className="w-6 h-6 animate-spin text-[var(--accent)] flex-shrink-0 mt-0.5" />
+                <div className="flex-1 space-y-2">
+                  <p className="text-lg font-bold text-foreground">
+                    ⚠️ Signature Approval Required
                   </p>
                   <p className="text-sm text-muted leading-relaxed">
-                    Please go back to your wallet app (Nova Wallet) and approve the signature request. Stay in your wallet until you see the confirmation.
+                    <strong>Action needed:</strong> Go back to your wallet app (Nova Wallet) and approve the signature request. The app will automatically continue once you approve.
                   </p>
+                  <div className="flex items-center gap-2 text-xs text-muted/80">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    <span>Waiting for your approval...</span>
+                  </div>
                 </div>
               </div>
             </div>
