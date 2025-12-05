@@ -1,9 +1,16 @@
 /// <reference lib="deno.unstable" />
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import { corsHeaders } from "https://raw.githubusercontent.com/supabase-community/functions-kit/v1.4.1/edge/cors.ts";
+// CORS headers helper
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 import { createClient } from "npm:@supabase/supabase-js@2.48.0";
-import { blake2b } from "npm:@noble/hashes/blake2b";
-import { base64 } from "https://deno.land/x/b64@1.1.27/mod.ts";
+import { blake2b } from "npm:@noble/hashes@1.3.3/blake2b";
+// Base64 encoding helper
+const base64Encode = (bytes: Uint8Array): string => {
+  return btoa(String.fromCharCode(...bytes));
+};
 import { signatureVerify, cryptoWaitReady } from "npm:@polkadot/util-crypto";
 import { stringToU8a } from "npm:@polkadot/util";
 import { verifyMessage as verifyEvmMessage } from "npm:ethers@6.11.1";
@@ -26,7 +33,7 @@ const deriveWalletEmail = (address: string) => {
   const addr = address.toLowerCase().trim();
   const hashBytes = blake2b(addr, { dkLen: 32 });
   const firstNine = hashBytes.slice(0, 9);
-  const base64Encoded = base64.fromUint8Array(firstNine);
+  const base64Encoded = base64Encode(firstNine);
   const sanitized = base64Encoded
     .replace(/[+/=]/g, (c) => (c === "+" ? "p" : c === "/" ? "s" : "e"))
     .replace(/[^a-zA-Z0-9]/g, "")
