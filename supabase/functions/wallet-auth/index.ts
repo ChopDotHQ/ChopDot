@@ -83,14 +83,44 @@ async function verifyEvmSignature(address: string, message: string, signature: s
 
 async function fetchUserIdByEmail(email: string): Promise<string | null> {
   try {
-    const { data, error } = await supabaseAdmin.auth.admin.getUserByEmail(email);
-    if (error) {
-      console.error("[wallet-auth] getUserByEmail failed:", error);
-      return null;
+    // listUsers doesn't support direct email filtering, so we paginate and search
+    let page = 1;
+    const perPage = 1000;
+    
+    while (true) {
+      const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+        page,
+        perPage,
+      });
+      
+      if (error) {
+        console.error("[wallet-auth] listUsers failed:", error);
+        return null;
+      }
+      
+      const users = data?.users ?? [];
+      if (!users || users.length === 0) {
+        // No more users to check
+        break;
+      }
+      
+      // Search for user with matching email
+      const foundUser = users.find((user) => user.email === email);
+      if (foundUser) {
+        return foundUser.id;
+      }
+      
+      // If we got fewer users than perPage, we've reached the end
+      if (users.length < perPage) {
+        break;
+      }
+      
+      page++;
     }
-    return data?.user?.id ?? null;
+    
+    return null;
   } catch (err) {
-    console.error("[wallet-auth] getUserByEmail exception:", err);
+    console.error("[wallet-auth] fetchUserIdByEmail exception:", err);
     return null;
   }
 }

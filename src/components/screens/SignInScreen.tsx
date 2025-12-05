@@ -574,7 +574,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           // Wait longer for Nova/SubWallet to surface the signature prompt
           // Mobile wallets need time to process the connection and show the UI
           // 800ms gives enough time for the wallet app to be ready
-          await new Promise((resolve) => setTimeout(resolve, 800));
+          await new Promise((resolve) => setTimeout(resolve, 300));
 
           // Sign message via WalletConnect (guarded import)
           const signerModule = await import('../../services/chain/walletconnect').catch((err) => {
@@ -950,8 +950,8 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       console.log('[LoginScreen] Requesting signature from WalletConnect...');
       console.log('[LoginScreen] 💡 Stay in your wallet app until you approve the signature');
       
-      // Add delay to give wallet time to surface signature prompt
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      // Add delay to give wallet time to surface signature prompt (reduced from 800ms to 300ms)
+      await new Promise((resolve) => setTimeout(resolve, 300));
       
       const { signature } = await signer.signRaw({
         address,
