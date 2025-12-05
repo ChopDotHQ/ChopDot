@@ -26,8 +26,12 @@ const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const randomString = (bytes = 32) =>
-  crypto.randomUUID().replace(/-/g, "") + crypto.getRandomValues(new Uint8Array(bytes)).join("");
+// Generate a random password <= 72 characters (Supabase limit)
+const randomString = (length = 32) => {
+  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const randomBytes = crypto.getRandomValues(new Uint8Array(length));
+  return Array.from(randomBytes, (byte) => chars[byte % chars.length]).join("");
+};
 
 const deriveWalletEmail = (address: string) => {
   const addr = address.toLowerCase().trim();
@@ -261,7 +265,8 @@ async function handleVerify(body: VerifyPayload) {
     console.log("[wallet-auth] Nonce consumed");
 
     const email = deriveWalletEmail(address);
-    const password = randomString(16);
+    // Generate password <= 72 chars (Supabase limit: 72 characters)
+    const password = randomString(64);
     console.log("[wallet-auth] Creating/updating user:", { email, address, chain });
     
     let userId: string;
