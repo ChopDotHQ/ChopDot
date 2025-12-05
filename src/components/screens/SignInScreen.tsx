@@ -1921,6 +1921,24 @@ const MobileWalletConnectPanel = ({
               Sign in to ChopDot
             </p>
           </div>
+          
+          {/* Prominent signature waiting banner */}
+          {isWaitingForSignature && (
+            <div className="rounded-2xl border-2 border-[var(--accent)] bg-[var(--accent)]/10 p-4 space-y-3 animate-pulse">
+              <div className="flex items-center gap-3">
+                <Loader2 className="w-5 h-5 animate-spin text-[var(--accent)] flex-shrink-0" />
+                <div className="flex-1 space-y-1">
+                  <p className="text-base font-semibold text-foreground">
+                    Waiting for signature approval
+                  </p>
+                  <p className="text-sm text-muted leading-relaxed">
+                    Please go back to your wallet app (Nova Wallet) and approve the signature request. Stay in your wallet until you see the confirmation.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <WalletPanel theme={resolvedPanelTheme}>
             <div className="space-y-3">
               {appliedWalletOptions.map((option) => (
