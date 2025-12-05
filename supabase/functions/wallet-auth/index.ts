@@ -66,7 +66,9 @@ async function handleRequestNonce(body: RequestNoncePayload) {
 
 async function verifyPolkadotSignature(address: string, message: string, signature: string) {
   await cryptoWaitReady();
-  const result = signatureVerify(message, signature, address);
+  // Convert message to Uint8Array for signature verification
+  const messageBytes = stringToU8a(message);
+  const result = signatureVerify(messageBytes, signature, address);
   return result.isValid;
 }
 
@@ -152,7 +154,7 @@ async function handleVerify(body: VerifyPayload) {
   const message = buildMessage(nonceRow.nonce);
   let valid = false;
   if (chain === "polkadot") {
-    valid = await verifyPolkadotSignature(address, stringToU8a(message), signature);
+    valid = await verifyPolkadotSignature(address, message, signature);
   } else {
     valid = await verifyEvmSignature(address, message, signature);
   }
