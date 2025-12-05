@@ -82,36 +82,56 @@ async function verifyEvmSignature(address: string, message: string, signature: s
 }
 
 async function fetchUserIdByEmail(email: string): Promise<string | null> {
-  const { data, error } = await supabaseAdmin.from("auth.users").select("id").eq("email", email).maybeSingle();
-  if (error) {
-    console.error("[wallet-auth] fetch user by email failed:", error);
+  try {
+    const { data, error } = await supabaseAdmin.auth.admin.getUserByEmail(email);
+    if (error) {
+      console.error("[wallet-auth] getUserByEmail failed:", error);
+      return null;
+    }
+    return data?.user?.id ?? null;
+  } catch (err) {
+    console.error("[wallet-auth] getUserByEmail exception:", err);
     return null;
   }
-  return data?.id ?? null;
 }
 
 async function ensureUser(address: string, chain: "polkadot" | "evm", email: string, password: string) {
-  // Try to find existing user by email first
+  // Try to find existing user by email using Admin API
   let userId = await fetchUserIdByEmail(email);
 
   if (!userId) {
+    // User doesn't exist, create them
+    console.log("[wallet-auth] Creating new user:", { email, address, chain });
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
       user_metadata: { wallet_address: address, auth_method: chain },
     });
-    if (error && !error.message.includes("already registered")) {
-      console.error("[wallet-auth] createUser error:", error);
-      throw error;
+    
+    if (error) {
+      // If user already exists (race condition), fetch them
+      if (error.message?.includes("already registered") || error.code === "email_exists") {
+        console.log("[wallet-auth] User already exists, fetching:", email);
+        userId = await fetchUserIdByEmail(email);
+        if (!userId) {
+          console.error("[wallet-auth] User exists but couldn't fetch:", error);
+          throw new Error("User exists but couldn't be retrieved");
+        }
+      } else {
+        console.error("[wallet-auth] createUser error:", error);
+        throw error;
+      }
+    } else {
+      userId = data?.user?.id ?? null;
     }
-    userId = data?.user?.id ?? (await fetchUserIdByEmail(email));
   }
 
   if (!userId) {
     throw new Error("Failed to create or fetch user");
   }
 
+  console.log("[wallet-auth] Updating user password and metadata:", userId);
   // Rotate password and metadata
   const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
     password,
