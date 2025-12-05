@@ -9,7 +9,14 @@
     "preview": "vite preview",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "lint:tokens": "! rg -n \"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\" src --glob '!**/*.{png,jpg,jpeg,svg,webp,gif}' | rg -v 'var\\(' && ! rg -n 'accent-orange|gradient-orange' src"
+    "lint:tokens": "! rg -n \"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\" src --glob '!**/*.{png,jpg,jpeg,svg,webp,gif}' | rg -v 'var\\(' && ! rg -n 'accent-orange|gradient-orange' src",
+    "db:setup": "./supabase-setup-local.sh",
+    "db:pull": "bash -c 'set -a && source .env && supabase db pull --db-url \"$SUPABASE_DB_URL\" && npm run db:reset'",
+    "db:push": "bash -c 'set -a && source .env && supabase db push --db-url \"$SUPABASE_DB_URL\"'",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:status": "supabase status",
+    "db:reset": "supabase db reset"
   },
   "dependencies": {
     "@automerge/automerge": "^3.2.0",

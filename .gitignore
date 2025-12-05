@@ -29,3 +29,10 @@ node_modules
 # Env
 .env
 .env.*
+
+# Supabase
+.temp/
+**/supabase/.branches
+**/supabase/.temp
+# Keep migrations in git
+# supabase/migrations/

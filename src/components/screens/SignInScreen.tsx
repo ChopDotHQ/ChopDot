@@ -507,6 +507,16 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     status: 'idle',
   });
   const hasTrackedMobilePanelRef = useRef(false);
+
+  // Debug: Check Supabase configuration on mount
+  useEffect(() => {
+    const supabase = getSupabase();
+    if (supabase) {
+      console.log('[SignInScreen] Supabase client configured');
+    } else {
+      console.error('[SignInScreen] Supabase client NOT configured - check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
+    }
+  }, []);
   const getInitialPanelMode = () => {
     if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       return 'dark' as PanelMode;
@@ -1057,7 +1067,8 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     try {
       setLoading(true);
       setSignupFeedback({ status: 'idle' });
-      const { error } = await supabase.auth.signUp({
+      console.log('[Signup] Starting signup for:', signupForm.email.trim());
+      const { data, error } = await supabase.auth.signUp({
         email: signupForm.email.trim(),
         password: signupForm.password,
         options: {
@@ -1065,16 +1076,46 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           data: signupForm.username ? { username: signupForm.username } : undefined,
         },
       });
+      console.log('[Signup] Result:', { data, error });
       if (error) {
         throw error;
       }
-      setSignupFeedback({
-        status: 'success',
-        message: 'Check your email to confirm your account, then sign in here.',
-      });
-      triggerHaptic('medium');
+      
+      // Check if user was created and session exists
+      if (data.user) {
+        console.log('[Signup] User created successfully:', data.user.id);
+        
+        // If session exists, user is auto-confirmed (no email verification needed)
+        if (data.session) {
+          console.log('[Signup] User auto-confirmed, logging in');
+          setSignupFeedback({
+            status: 'success',
+            message: 'Account created successfully! Signing you in...',
+          });
+          triggerHaptic('medium');
+          
+          // Auto-login after successful signup
+          setTimeout(() => {
+            onLoginSuccess?.();
+          }, 1500);
+        } else {
+          console.log('[Signup] Email confirmation required');
+          setSignupFeedback({
+            status: 'success',
+            message: 'Check your email to confirm your account, then sign in here.',
+          });
+          triggerHaptic('medium');
+        }
+      } else {
+        console.warn('[Signup] No user returned from signup');
+        setSignupFeedback({
+          status: 'success',
+          message: 'Check your email to confirm your account, then sign in here.',
+        });
+        triggerHaptic('medium');
+      }
     } catch (err: any) {
-      console.error('Signup failed:', err);
+      console.error('[Signup] Signup failed:', err);
       setSignupFeedback({ status: 'error', message: err.message || 'Unable to create account.' });
       triggerHaptic('error');
     } finally {
