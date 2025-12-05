@@ -1279,7 +1279,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   };
 
 const MobileWalletConnectPanel = ({
-  uri,
   loading,
   errorMessage,
   onRetry,
@@ -1289,8 +1288,6 @@ const MobileWalletConnectPanel = ({
   walletTheme,
   guestTheme,
   onGuestLogin,
-  onError,
-  preferDeepLinks,
   onEmailOptionToggle,
   emailTheme,
   showEmailForm,
@@ -1299,7 +1296,6 @@ const MobileWalletConnectPanel = ({
   waitingForSignature,
   onOpenModal,
 }: {
-  uri: string | null;
   loading: boolean;
   errorMessage: string | null;
   onRetry: () => Promise<string | null>;
@@ -1309,8 +1305,6 @@ const MobileWalletConnectPanel = ({
     walletTheme: Partial<WalletOptionTheme>;
     guestTheme: Partial<WalletOptionTheme>;
     onGuestLogin: () => Promise<void>;
-    onError: (message: string) => void;
-    preferDeepLinks: boolean;
     onEmailOptionToggle: () => void;
     emailTheme: Partial<WalletOptionTheme>;
   showEmailForm: boolean;
@@ -1778,7 +1772,6 @@ const MobileWalletConnectPanel = ({
             </div>
             
             <MobileWalletConnectPanel
-              uri={walletConnectUri}
               loading={loading}
               errorMessage={error}
               onRetry={async () => await startWalletConnectSession({ openQrModal: false, source: 'mobile-panel-retry' })}
@@ -1791,8 +1784,6 @@ const MobileWalletConnectPanel = ({
               walletTheme={variationWalletTheme}
               guestTheme={variationGuestTheme}
                 onGuestLogin={handleGuestLogin}
-              onError={(message) => setError(message)}
-              preferDeepLinks={device.isMobile}
               onEmailOptionToggle={() =>
                 setShowEmailLogin((prev) => {
                   const next = !prev;
