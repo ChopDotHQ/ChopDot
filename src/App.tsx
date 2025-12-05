@@ -5,7 +5,15 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { polkadotChainService } from "./services/chain/polkadot";
+// Lazy import to avoid bundling Polkadot API eagerly
+let polkadotChainService: any = null;
+const getPolkadotChainService = async () => {
+  if (!polkadotChainService) {
+    const module = await import("./services/chain/polkadot");
+    polkadotChainService = module.polkadotChainService;
+  }
+  return polkadotChainService;
+};
 import { useNav, type Screen } from "./nav";
 import { useTheme } from "./utils/useTheme";
 import { triggerHaptic } from "./utils/haptics";
@@ -3021,7 +3029,7 @@ function AppContent() {
                 setPots(pots.map(p => p.id === currentPotId ? { ...p, ...updates } : p));
               }
             } : undefined}
-            onConfirm={(method, reference) => {
+            onConfirm={async (method, reference) => {
               const newSettlement: Settlement = {
                 id: Date.now().toString(),
                 personId:
@@ -3043,6 +3051,7 @@ function AppContent() {
               if (settleScope === 'pot' && method === 'dot' && currentPotId && reference) {
                 const fromAddress = connectedWallet?.address || '';
                 const toAddress = recipientAddress || '';
+                const service = await getPolkadotChainService();
                 const historyEntry: PotHistory = {
                   id: `${Date.now()}`,
                   type: 'onchain_settlement',
@@ -3054,7 +3063,7 @@ function AppContent() {
                   txHash: reference,
                   status: 'in_block',
                   when: Date.now(),
-                  subscan: polkadotChainService.buildSubscanUrl(reference),
+                  subscan: service.buildSubscanUrl(reference),
                 };
                 const updatedPots = pots.map(p => p.id === currentPotId ? { ...p, history: [historyEntry, ...(p.history || [])] } : p);
                 setPots(updatedPots);
