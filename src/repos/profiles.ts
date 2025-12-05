@@ -3,22 +3,21 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 export interface ProfileRecord {
   id: string;
   username?: string | null;
-  wallet_address?: string | null;
+  // Note: profiles table only has: id, username, created_at, updated_at
+  // wallet_address column does not exist in the schema
 }
 
 export async function upsertProfile(
   supabase: SupabaseClient, 
   userId: string, 
   username?: string | null,
-  walletAddress?: string | null
+  _walletAddress?: string | null // Deprecated: profiles table doesn't have wallet_address column
 ): Promise<void> {
   const record: ProfileRecord = { id: userId };
   if (typeof username === 'string' && username.trim().length > 0) {
     record.username = username.trim();
   }
-  if (typeof walletAddress === 'string' && walletAddress.trim().length > 0) {
-    record.wallet_address = walletAddress.trim();
-  }
+  // wallet_address removed - column doesn't exist in profiles table schema
 
   const { error } = await supabase
     .from('profiles')
