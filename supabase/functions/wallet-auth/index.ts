@@ -172,12 +172,13 @@ async function ensureUser(address: string, chain: "polkadot" | "evm", email: str
     throw updateError;
   }
 
-  // Ensure profile row exists
+  // Ensure profile row exists (profiles table only has: id, username, created_at, updated_at)
   const { error: profileError } = await supabaseAdmin
     .from("profiles")
-    .upsert({ id: userId, wallet_address: address }, { onConflict: "id" });
+    .upsert({ id: userId }, { onConflict: "id" });
   if (profileError) {
     console.warn("[wallet-auth] profile upsert warning:", profileError.message);
+    // Non-fatal, continue
   }
 
   return userId;

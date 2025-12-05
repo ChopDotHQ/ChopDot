@@ -593,7 +593,13 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           console.log('[LoginScreen] Requesting signature from WalletConnect...');
           console.log('[LoginScreen] 💡 Stay in your wallet app until you approve the signature');
           
-          // Request signature - mobile wallets need time to surface the prompt
+          // On mobile, give wallet app time to surface the signature prompt
+          // The app may be in background when user switches to wallet
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+          const delay = isMobile ? 1000 : 500;
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          
+          // Request signature - this should trigger the wallet app to show the prompt
           const { signature } = await signer.signRaw({
             address,
             data: stringToHex(message),
@@ -950,9 +956,14 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       console.log('[LoginScreen] Requesting signature from WalletConnect...');
       console.log('[LoginScreen] 💡 Stay in your wallet app until you approve the signature');
       
-      // Add delay to give wallet time to surface signature prompt (reduced from 800ms to 300ms)
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      // On mobile, the app may go to background when switching to wallet app
+      // Give enough time for wallet to surface the signature prompt
+      // If user is on mobile, wait longer to ensure wallet app is ready
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const delay = isMobile ? 1000 : 500; // Longer delay on mobile
+      await new Promise((resolve) => setTimeout(resolve, delay));
       
+      // Request signature - this should trigger the wallet app to show the prompt
       const { signature } = await signer.signRaw({
         address,
         data: stringToHex(message),
