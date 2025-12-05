@@ -7,7 +7,7 @@
  */
 
 import { useState, useEffect, useRef, ReactNode, CSSProperties, useId, MouseEvent, FormEvent } from 'react';
-import { AlertCircle, Loader2, X, ChevronDown } from 'lucide-react';
+import { AlertCircle, Loader2, X } from 'lucide-react';
 import { useAuth, AuthMethod } from '../../contexts/AuthContext';
 import { useAccount } from '../../contexts/AccountContext';
 import {
@@ -28,7 +28,6 @@ declare global {
     };
   }
 }
-import { walletConnectLinks } from '../../config/wallet-connect-links';
 
 interface LoginScreenProps {
   onLoginSuccess?: () => void;
@@ -1320,64 +1319,8 @@ const MobileWalletConnectPanel = ({
   waitingForSignature: boolean;
   onOpenModal?: () => Promise<void>;
 }) => {
-    const [showSecondaryWallets, setShowSecondaryWallets] = useState(false);
     const textPrimary = mode === 'dark' ? 'text-white' : 'text-[#111111]';
     const textSecondary = mode === 'dark' ? 'text-white/70' : 'text-secondary/80';
-    const walletLinks = walletConnectLinks.filter((link) => link.id !== 'copy');
-    const primaryWalletIds: WalletOptionConfig['id'][] = ['subwallet', 'talisman', 'nova'];
-    const primaryWallets = primaryWalletIds
-      .map((id) => walletLinks.find((link) => link.id === id))
-      .filter((link): link is (typeof walletLinks)[number] => Boolean(link));
-    const secondaryWallets = walletLinks.filter((link) => !primaryWalletIds.includes(link.id));
-
-    const handleWalletClick = async (linkId: string) => {
-      const link = walletLinks.find((l) => l.id === linkId);
-      if (!link) {
-        return;
-      }
-      
-      // Check if we're on a real mobile device (not desktop browser simulation)
-      const isRealMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && 
-                           !/Chrome|Firefox|Safari/.test(navigator.userAgent) || 
-                           (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
-      
-      // On desktop, deep links won't work - suggest using QR code instead
-      if (!isRealMobile && !preferDeepLinks) {
-        onError('Mobile wallet links only work on real mobile devices. Please use "Switch to desktop wallet view" to scan the QR code, or test on your phone.');
-        return;
-      }
-      
-      let sessionUri = uri;
-      if (!sessionUri) {
-        sessionUri = await onRetry();
-      }
-      if (!sessionUri) {
-        onError('Unable to start WalletConnect session. Please try again.');
-        return;
-      }
-      const finalUri = sessionUri!;
-      
-      // Prefer deep links on mobile, skip universal links (they're unreliable)
-      const target = link.deepLink?.(finalUri);
-      if (!target) {
-        onError('Unable to open this wallet. Please switch to desktop QR or test on a real mobile device.');
-        return;
-      }
-      
-      try {
-        // Deep links must use window.location.href (can't open in popup)
-        window.location.href = target;
-        trackEvent('mobile_wallet_link_clicked', { walletId: link.id });
-      } catch (err) {
-        console.error('[MobileWalletConnect] Failed to open wallet link', err);
-        if (navigator?.clipboard?.writeText) {
-          await navigator.clipboard.writeText(finalUri);
-          onError('Could not open the wallet directly. WalletConnect link copied—paste it into your wallet app.');
-        } else {
-          onError('Could not open the wallet link. Please switch to the desktop QR view or test on a real mobile device.');
-        }
-      }
-    };
 
     return (
       <WalletPanel theme={panelTheme}>
@@ -1404,8 +1347,8 @@ const MobileWalletConnectPanel = ({
 
         {onOpenModal && (
           <WalletOption
-            title="WalletConnect (new picker)"
-            subtitle="Search + QR like ether.fi"
+            title="WalletConnect"
+            subtitle="Nova, Subwallet, Talisman"
             iconSrc={WALLETCONNECT_LOGO}
             iconAlt="WalletConnect logo"
             onClick={onOpenModal}
@@ -1425,58 +1368,6 @@ const MobileWalletConnectPanel = ({
               >
                 Try again
               </button>
-            </div>
-          )}
-
-          <div className="space-y-3">
-            {primaryWallets.map((link) => (
-              <WalletOption
-                key={link.id}
-                title={link.label}
-                subtitle={link.description}
-                iconSrc={link.icon}
-                iconAlt={`${link.label} icon`}
-                onClick={() => handleWalletClick(link.id)}
-                disabled={loading}
-                theme={walletTheme}
-              />
-            ))}
-          </div>
-
-          {secondaryWallets.length > 0 && (
-            <div
-              className={`rounded-2xl border px-3 py-2 transition-colors ${
-                mode === 'dark'
-                  ? 'border-white/15 bg-white/5'
-                  : 'border-black/5 bg-white/60'
-              }`}
-            >
-              <button
-                type="button"
-                onClick={() => setShowSecondaryWallets((prev) => !prev)}
-                className="w-full flex items-center justify-between text-sm font-semibold text-[var(--accent)]"
-              >
-                {showSecondaryWallets ? 'Hide more wallets' : 'More wallet options'}
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform ${showSecondaryWallets ? 'rotate-180' : 'rotate-0'}`}
-                />
-              </button>
-              {showSecondaryWallets && (
-                <div className="mt-3 space-y-3">
-                  {secondaryWallets.map((link) => (
-                    <WalletOption
-                      key={link.id}
-                      title={link.label}
-                      subtitle={link.description}
-                      iconSrc={link.icon}
-                      iconAlt={`${link.label} icon`}
-                      onClick={() => handleWalletClick(link.id)}
-                      disabled={loading}
-                      theme={walletTheme}
-                    />
-                  ))}
-                </div>
-              )}
             </div>
           )}
 
