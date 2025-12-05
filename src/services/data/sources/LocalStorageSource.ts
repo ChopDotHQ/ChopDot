@@ -8,6 +8,7 @@
  */
 
 import type { Pot } from '../types';
+import type { ListOptions } from '../repositories/PotRepository';
 import { migrateAllPotsOnLoad, needsMigration } from '../../../utils/migratePot';
 import { QuotaExceededError, ValidationError } from '../errors';
 import { PotSchema } from '../../../schema/pot';
@@ -42,8 +43,10 @@ export class LocalStorageSource {
    * Get all pots from localStorage
    * Runs migration on first access if needed
    */
-  async getPots(): Promise<Pot[]> {
+  async getPots(options?: ListOptions): Promise<Pot[]> {
     try {
+      let pots: Pot[] = [];
+      
       // Try main key first
       const savedPots = localStorage.getItem(STORAGE_KEYS.pots);
       
@@ -67,79 +70,91 @@ export class LocalStorageSource {
               console.warn('[LocalStorageSource] Failed to save migrated pots:', saveErr);
             }
             
-            return migrated;
-          }
-          
-          this.migrated = true;
-          let migrated = migrateAllPotsOnLoad(parsed); // Always migrate to ensure schema compliance
-          
-          // Ensure all default pots exist (adds missing ones without overwriting)
-          const beforeCount = migrated.length;
-          migrated = ensureDefaultPots(migrated);
-          const addedCount = migrated.length - beforeCount;
-          
-          // Save updated pots back to localStorage if any were added
-          if (addedCount > 0) {
-            try {
-              const updatedJson = JSON.stringify(migrated);
-              if (updatedJson.length < MAX_SIZES.pots) {
-                localStorage.setItem(STORAGE_KEYS.pots, updatedJson);
-                localStorage.setItem(STORAGE_KEYS.potsBackup, updatedJson);
-                console.log(`[LocalStorageSource] Added ${addedCount} default pot(s)`);
-              }
-            } catch (saveErr) {
-              console.warn('[LocalStorageSource] Failed to save updated pots:', saveErr);
-            }
-          }
-          
-          return migrated;
-        }
-      }
-
-      // Try backup if main key is missing or corrupted
-      const backupPots = localStorage.getItem(STORAGE_KEYS.potsBackup);
-      if (backupPots && backupPots.length < MAX_SIZES.pots) {
-        try {
-          const parsed = JSON.parse(backupPots);
-          if (Array.isArray(parsed)) {
-            console.warn('[LocalStorageSource] Restored pots from backup');
-            const migrated = migrateAllPotsOnLoad(parsed);
+            pots = migrated;
+          } else {
             this.migrated = true;
+            let migrated = migrateAllPotsOnLoad(parsed); // Always migrate to ensure schema compliance
             
-            // Restore to main key
-            try {
-              const migratedData = JSON.stringify(migrated);
-              if (migratedData.length < MAX_SIZES.pots) {
-                localStorage.setItem(STORAGE_KEYS.pots, migratedData);
+            // Ensure all default pots exist (adds missing ones without overwriting)
+            const beforeCount = migrated.length;
+            migrated = ensureDefaultPots(migrated);
+            const addedCount = migrated.length - beforeCount;
+            
+            // Save updated pots back to localStorage if any were added
+            if (addedCount > 0) {
+              try {
+                const updatedJson = JSON.stringify(migrated);
+                if (updatedJson.length < MAX_SIZES.pots) {
+                  localStorage.setItem(STORAGE_KEYS.pots, updatedJson);
+                  localStorage.setItem(STORAGE_KEYS.potsBackup, updatedJson);
+                  console.log(`[LocalStorageSource] Added ${addedCount} default pot(s)`);
+                }
+              } catch (saveErr) {
+                console.warn('[LocalStorageSource] Failed to save updated pots:', saveErr);
               }
-            } catch (saveErr) {
-              console.warn('[LocalStorageSource] Failed to restore migrated backup:', saveErr);
             }
             
-            return migrated;
+            pots = migrated;
           }
-        } catch (e) {
-          console.error('[LocalStorageSource] Failed to restore from backup:', e);
+        }
+      } else {
+        // Try backup if main key is missing or corrupted
+        const backupPots = localStorage.getItem(STORAGE_KEYS.potsBackup);
+        if (backupPots && backupPots.length < MAX_SIZES.pots) {
+          try {
+            const parsed = JSON.parse(backupPots);
+            if (Array.isArray(parsed)) {
+              console.warn('[LocalStorageSource] Restored pots from backup');
+              const migrated = migrateAllPotsOnLoad(parsed);
+              this.migrated = true;
+              
+              // Restore to main key
+              try {
+                const migratedData = JSON.stringify(migrated);
+                if (migratedData.length < MAX_SIZES.pots) {
+                  localStorage.setItem(STORAGE_KEYS.pots, migratedData);
+                }
+              } catch (saveErr) {
+                console.warn('[LocalStorageSource] Failed to restore migrated backup:', saveErr);
+              }
+              
+              pots = migrated;
+            }
+          } catch (e) {
+            console.error('[LocalStorageSource] Failed to restore from backup:', e);
+          }
         }
       }
 
-      // No data found - return default pots
-      this.migrated = true;
-      const defaultPots = ensureDefaultPots([]);
-      
-      // Save default pots to localStorage for future loads
-      try {
-        const defaultJson = JSON.stringify(defaultPots);
-        if (defaultJson.length < MAX_SIZES.pots) {
-          localStorage.setItem(STORAGE_KEYS.pots, defaultJson);
-          localStorage.setItem(STORAGE_KEYS.potsBackup, defaultJson);
-          console.log('[LocalStorageSource] Seeded default pots');
+      // If still empty, seed default
+      if (pots.length === 0) {
+        this.migrated = true;
+        const defaultPots = ensureDefaultPots([]);
+        
+        // Save default pots to localStorage for future loads
+        try {
+          const defaultJson = JSON.stringify(defaultPots);
+          if (defaultJson.length < MAX_SIZES.pots) {
+            localStorage.setItem(STORAGE_KEYS.pots, defaultJson);
+            localStorage.setItem(STORAGE_KEYS.potsBackup, defaultJson);
+            console.log('[LocalStorageSource] Seeded default pots');
+          }
+        } catch (saveErr) {
+          console.warn('[LocalStorageSource] Failed to save default pots:', saveErr);
         }
-      } catch (saveErr) {
-        console.warn('[LocalStorageSource] Failed to save default pots:', saveErr);
+        
+        pots = defaultPots;
       }
-      
-      return defaultPots;
+
+      // Handle pagination (if options provided)
+      // Note: LocalStorage is all-in-memory anyway, but we simulate pagination for consistent API behavior
+      if (options) {
+        const offset = options.offset ?? 0;
+        const limit = options.limit ?? 20;
+        return pots.slice(offset, offset + limit);
+      }
+
+      return pots;
     } catch (e) {
       console.error('[LocalStorageSource] Failed to load pots:', e);
       
@@ -311,4 +326,3 @@ export class LocalStorageSource {
     }
   }
 }
-

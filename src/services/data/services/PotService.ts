@@ -5,7 +5,7 @@
  * Wraps PotRepository with business rules.
  */
 
-import { PotRepository } from '../repositories/PotRepository';
+import { PotRepository, type ListOptions } from '../repositories/PotRepository';
 import type { Pot } from '../types';
 import type { CreatePotDTO, UpdatePotDTO } from '../types/dto';
 import { ValidationError } from '../errors';
@@ -76,13 +76,14 @@ export class PotService {
   /**
    * List all pots
    * 
+   * @param options - Pagination options (limit, offset)
    * @returns Array of pots
    */
-  async listPots(): Promise<Pot[]> {
+  async listPots(options?: ListOptions): Promise<Pot[]> {
     const start = performance.now();
     try {
-      const result = await this.repository.list();
-      logTiming('listPots', performance.now() - start, { count: result.length });
+      const result = await this.repository.list(options);
+      logTiming('listPots', performance.now() - start, { count: result.length, options });
       return result;
     } catch (error) {
       logTiming('listPots', performance.now() - start, { error: error instanceof Error ? error.message : 'unknown' });
@@ -163,4 +164,3 @@ export class PotService {
     };
   }
 }
-

@@ -1,4 +1,4 @@
-import type { DataSource } from '../repositories/PotRepository';
+import type { DataSource, ListOptions } from '../repositories/PotRepository';
 import type { Pot } from '../types';
 import { PotSchema } from '../../../schema/pot';
 import { getSupabase } from '../../../utils/supabase-client';
@@ -57,30 +57,50 @@ export class SupabaseSource implements DataSource {
     return this.client;
   }
 
-  async getPots(): Promise<Pot[]> {
+  async getPots(options?: ListOptions): Promise<Pot[]> {
     const supabase = this.ensureReady();
     const userId = await this.getCurrentUserId();
-    const { data, error } = await supabase
+    
+    let query = supabase
       .from('pots')
       .select(POT_COLUMNS.join(','))
       .eq('created_by', userId)
       .order('created_at', { ascending: false });
+
+    // Apply pagination if options provided
+    if (options) {
+      const limit = options.limit ?? 20; // Default limit
+      const offset = options.offset ?? 0;
+      query = query.range(offset, offset + limit - 1);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       throw new Error(`[SupabaseSource] Failed to fetch pots: ${error.message}`);
     }
 
     const rows = (data ?? []) as unknown as SupabasePotRow[];
-    if (rows.length === 0 && !this.seededUsers.has(userId)) {
-      this.seededUsers.add(userId);
-      try {
-        await this.seedSamplePots();
-        return this.getPots();
-      } catch (seedError) {
-        console.warn('[SupabaseSource] Failed to seed sample pots', seedError);
-        this.seededUsers.delete(userId);
+    
+    // Seed sample pots only if user has NO pots at all (and it's the first page/request)
+    const isFirstPage = !options || options.offset === 0;
+    if (rows.length === 0 && isFirstPage && !this.seededUsers.has(userId)) {
+      // Check if there are truly no pots (count query)
+      const { count } = await supabase.from('pots').select('id', { count: 'exact', head: true }).eq('created_by', userId);
+      
+      if (count === 0) {
+        this.seededUsers.add(userId);
+        try {
+          await this.seedSamplePots();
+          // Re-fetch after seeding
+          return this.getPots(options);
+        } catch (seedError) {
+          console.warn('[SupabaseSource] Failed to seed sample pots', seedError);
+          this.seededUsers.delete(userId);
+        }
       }
     }
+    
     return rows.map((row) => this.mapRow(row));
   }
 

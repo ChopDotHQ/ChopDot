@@ -9,8 +9,13 @@ import type { Pot } from '../types';
 import type { CreatePotDTO, UpdatePotDTO } from '../types/dto';
 import { NotFoundError } from '../errors';
 
+export interface ListOptions {
+  limit?: number;
+  offset?: number;
+}
+
 export interface DataSource {
-  getPots(): Promise<Pot[]>;
+  getPots(options?: ListOptions): Promise<Pot[]>;
   getPot(id: string): Promise<Pot | null>;
   savePots(pots: Pot[]): Promise<void>;
   savePot(pot: Pot): Promise<void>;
@@ -57,27 +62,31 @@ export class PotRepository {
   }
 
   /**
-   * Get all pots
-   * Uses cache if available and not expired
+   * Get all pots (optionally paginated)
+   * Uses cache if available and not expired (only for non-paginated requests)
    */
-  async list(): Promise<Pot[]> {
+  async list(options?: ListOptions): Promise<Pot[]> {
     const now = Date.now();
     
-    // Check cache
-    if (this.listCache && (now - this.listCache.timestamp) < this.ttl) {
+    // Check cache (only for full list requests without pagination options)
+    const isFullListRequest = !options || (options.limit === undefined && options.offset === undefined);
+    
+    if (isFullListRequest && this.listCache && (now - this.listCache.timestamp) < this.ttl) {
       return [...this.listCache.data]; // Return copy
     }
 
     // Fetch from source
-    const pots = await this.source.getPots();
+    const pots = await this.source.getPots(options);
     
-    // Update cache
-    this.listCache = {
-      data: pots,
-      timestamp: now,
-    };
+    // Update cache only for full list requests
+    if (isFullListRequest) {
+      this.listCache = {
+        data: pots,
+        timestamp: now,
+      };
+    }
 
-    // Update individual pot cache
+    // Update individual pot cache (always beneficial)
     pots.forEach(pot => {
       this.cache.set(pot.id, {
         data: pot,
@@ -178,6 +187,8 @@ export class PotRepository {
 
     await this.source.savePot(updated);
     this.invalidate(id); // Invalidate this pot's cache
+    // Also invalidate list cache as summary data might change
+    this.listCache = null; 
 
     return { ...updated }; // Return copy
   }

@@ -1,4 +1,4 @@
-import { Plus, Bell, TrendingUp, Search, Eye, EyeOff, ListFilter, Receipt, ArrowLeftRight, QrCode, Send } from "lucide-react";
+import { Plus, Bell, TrendingUp, Search, Eye, EyeOff, ListFilter, Receipt, ArrowLeftRight, QrCode, Send, Loader2 } from "lucide-react";
 import { WalletBanner } from "../WalletBanner";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { useState, useMemo } from "react";
@@ -74,7 +74,8 @@ export function PotsHome({
   
   // Task 3: Read pots from Data Layer (if flag enabled) with fallback
   const preferDLReads = shouldPreferDLReads();
-  const dlPots = usePots();
+  // Use paginated hook
+  const { pots: dlPots, loading: potsLoading, hasMore, loadMore } = usePots(10); // Page size 10
   
   // Transform Data Layer pots to potSummaries format
   const transformPotToSummary = useMemo(() => {
@@ -389,7 +390,7 @@ export function PotsHome({
               </div>
             </div>
             <div className="space-y-2">
-              {filteredPots.length === 0 ? (
+              {filteredPots.length === 0 && !potsLoading ? (
                 <div className="pt-8">
                   <EmptyState
                     icon={Receipt}
@@ -402,121 +403,143 @@ export function PotsHome({
                   />
                 </div>
               ) : (
-                filteredPots.map((pot) => {
-                const budgetPercentage = pot.budgetEnabled && pot.budget 
-                  ? Math.min((pot.totalExpenses / pot.budget) * 100, 100) 
-                  : 0;
-                const isOverBudget = pot.budgetEnabled && pot.budget 
-                  ? pot.totalExpenses > pot.budget 
-                  : false;
-                
-                return (
-                  <button
-                    key={pot.id}
-                    onClick={() => onPotClick?.(pot.id)}
-                    className="w-full p-4 card text-left card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200"
-                  >
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2 flex-1">
-                        {pot.type === "savings" && (
-                          <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--success)' }} />
+                <>
+                  {filteredPots.map((pot) => {
+                    const budgetPercentage = pot.budgetEnabled && pot.budget 
+                      ? Math.min((pot.totalExpenses / pot.budget) * 100, 100) 
+                      : 0;
+                    const isOverBudget = pot.budgetEnabled && pot.budget 
+                      ? pot.totalExpenses > pot.budget 
+                      : false;
+                    
+                    return (
+                      <button
+                        key={pot.id}
+                        onClick={() => onPotClick?.(pot.id)}
+                        className="w-full p-4 card text-left card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200"
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex items-center gap-2 flex-1">
+                            {pot.type === "savings" && (
+                              <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--success)' }} />
+                            )}
+                            <p className="text-body flex-1" style={{ fontWeight: 500 }}>{pot.name}</p>
+                          </div>
+                          {pot.type === "savings" && pot.yieldRate && (
+                            <span className="px-2 py-0.5 rounded text-caption whitespace-nowrap flex-shrink-0 tabular-nums" style={{ background: 'rgba(25, 195, 125, 0.15)', color: 'var(--success)' }}>
+                              {pot.yieldRate.toFixed(1)}% APY
+                            </span>
+                          )}
+                        </div>
+                        {balancesVisible && (
+                          <div className="flex items-center justify-between">
+                            {pot.type === "savings" ? (
+                              <>
+                                <div>
+                                  <p className="text-micro text-secondary mb-0.5">Your contribution</p>
+                                  <p className="text-[18px] tabular-nums" style={{ fontWeight: 600 }}>
+                                    ${pot.myExpenses.toFixed(2)}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-micro text-secondary mb-0.5">Total pooled</p>
+                                  <p className="text-[24px] tabular-nums" style={{ fontWeight: 700, color: 'var(--money)' }}>
+                                    ${pot.totalExpenses.toFixed(2)}
+                                  </p>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div>
+                                  <p className="text-micro text-secondary mb-0.5">Total expenses</p>
+                                  <p className="text-[18px] tabular-nums" style={{ fontWeight: 600 }}>
+                                    ${pot.totalExpenses.toFixed(2)}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-micro text-secondary mb-0.5">Your balance</p>
+                                  <p 
+                                    className="text-[24px] tabular-nums" 
+                                    style={{ 
+                                      fontWeight: 700,
+                                      color: Math.abs(pot.net) < 0.01 
+                                        ? 'var(--muted)' 
+                                        : pot.net >= 0 
+                                          ? 'var(--money)' 
+                                          : 'var(--ink)'
+                                    }}
+                                  >
+                                    {Math.abs(pot.net) < 0.01 
+                                      ? 'Settled' 
+                                      : `${pot.net >= 0 ? '+' : '-'}$${Math.abs(pot.net).toFixed(2)}`
+                                    }
+                                  </p>
+                                </div>
+                              </>
+                            )}
+                          </div>
                         )}
-                        <p className="text-body flex-1" style={{ fontWeight: 500 }}>{pot.name}</p>
-                      </div>
-                      {pot.type === "savings" && pot.yieldRate && (
-                        <span className="px-2 py-0.5 rounded text-caption whitespace-nowrap flex-shrink-0 tabular-nums" style={{ background: 'rgba(25, 195, 125, 0.15)', color: 'var(--success)' }}>
-                          {pot.yieldRate.toFixed(1)}% APY
-                        </span>
-                      )}
-                    </div>
-                    {balancesVisible && (
-                      <div className="flex items-center justify-between">
-                        {pot.type === "savings" ? (
+                        {pot.budgetEnabled && pot.budget && pot.type !== "savings" && (
+                          <div className="mt-1.5">
+                            <div className="flex items-center justify-between mb-0.5">
+                              <span className="text-micro text-secondary">Budget</span>
+                              <span className="text-micro text-foreground tabular-nums">
+                                <span className={isOverBudget ? "text-destructive" : ""}>
+                                  ${pot.totalExpenses}
+                                </span>
+                                <span className="text-secondary"> / ${pot.budget}</span>
+                              </span>
+                            </div>
+                            <div className="h-1 bg-muted rounded-full overflow-hidden">
+                              <div
+                                className={`h-full transition-all duration-300 ${
+                                  isOverBudget ? "bg-destructive" : "bg-primary"
+                                }`}
+                                style={{ width: `${budgetPercentage}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {pot.type === "savings" && (
+                          <div className="mt-1.5">
+                            <div className="flex items-center justify-between mb-0.5">
+                              <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Total Pooled</span>
+                              <span className="text-micro text-foreground tabular-nums">
+                                ${pot.totalPooled}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between mb-0.5">
+                              <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Yield Rate</span>
+                              <span className="text-micro text-foreground tabular-nums">
+                                ${pot.yieldRate}%
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                  
+                  {/* Load More Button */}
+                  {hasMore && preferDLReads && (
+                    <div className="pt-2 text-center">
+                      <button
+                        onClick={() => loadMore()}
+                        disabled={potsLoading}
+                        className="px-4 py-2 rounded-lg bg-muted/20 hover:bg-muted/30 text-caption font-medium transition-colors flex items-center justify-center gap-2 mx-auto disabled:opacity-50"
+                      >
+                        {potsLoading ? (
                           <>
-                            <div>
-                              <p className="text-micro text-secondary mb-0.5">Your contribution</p>
-                              <p className="text-[18px] tabular-nums" style={{ fontWeight: 600 }}>
-                                ${pot.myExpenses.toFixed(2)}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-micro text-secondary mb-0.5">Total pooled</p>
-                              <p className="text-[24px] tabular-nums" style={{ fontWeight: 700, color: 'var(--money)' }}>
-                                ${pot.totalExpenses.toFixed(2)}
-                              </p>
-                            </div>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            Loading...
                           </>
                         ) : (
-                          <>
-                            <div>
-                              <p className="text-micro text-secondary mb-0.5">Total expenses</p>
-                              <p className="text-[18px] tabular-nums" style={{ fontWeight: 600 }}>
-                                ${pot.totalExpenses.toFixed(2)}
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-micro text-secondary mb-0.5">Your balance</p>
-                              <p 
-                                className="text-[24px] tabular-nums" 
-                                style={{ 
-                                  fontWeight: 700,
-                                  color: Math.abs(pot.net) < 0.01 
-                                    ? 'var(--muted)' 
-                                    : pot.net >= 0 
-                                      ? 'var(--money)' 
-                                      : 'var(--ink)'
-                                }}
-                              >
-                                {Math.abs(pot.net) < 0.01 
-                                  ? 'Settled' 
-                                  : `${pot.net >= 0 ? '+' : '-'}$${Math.abs(pot.net).toFixed(2)}`
-                                }
-                              </p>
-                            </div>
-                          </>
+                          'Load older pots'
                         )}
-                      </div>
-                    )}
-                    {pot.budgetEnabled && pot.budget && pot.type !== "savings" && (
-                      <div className="mt-1.5">
-                        <div className="flex items-center justify-between mb-0.5">
-                          <span className="text-micro text-secondary">Budget</span>
-                          <span className="text-micro text-foreground tabular-nums">
-                            <span className={isOverBudget ? "text-destructive" : ""}>
-                              ${pot.totalExpenses}
-                            </span>
-                            <span className="text-secondary"> / ${pot.budget}</span>
-                          </span>
-                        </div>
-                        <div className="h-1 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className={`h-full transition-all duration-300 ${
-                              isOverBudget ? "bg-destructive" : "bg-primary"
-                            }`}
-                            style={{ width: `${budgetPercentage}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                    {pot.type === "savings" && (
-                      <div className="mt-1.5">
-                        <div className="flex items-center justify-between mb-0.5">
-                          <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Total Pooled</span>
-                          <span className="text-micro text-foreground tabular-nums">
-                            ${pot.totalPooled}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between mb-0.5">
-                          <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Yield Rate</span>
-                          <span className="text-micro text-foreground tabular-nums">
-                            ${pot.yieldRate}%
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </button>
-                );
-              })
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
