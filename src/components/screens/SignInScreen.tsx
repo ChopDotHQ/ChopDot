@@ -558,7 +558,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       // Close QR modal immediately
       setShowWalletConnectQR(false);
       setWalletConnectQRCode(null);
-      setWalletConnectUri(null);
       setIsWaitingForWalletConnect(false);
       setIsWaitingForSignature(true);
 
@@ -637,7 +636,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           console.warn('[LoginScreen] WalletConnect connection timeout');
           setShowWalletConnectQR(false);
           setWalletConnectQRCode(null);
-          setWalletConnectUri(null);
           setIsWaitingForWalletConnect(false);
           setError('WalletConnect connection timed out. Please try again.');
           toast.warning('WalletConnect is taking too long. Please try again.');
@@ -1235,7 +1233,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         margin: 2,
       });
 
-      setWalletConnectUri(uri);
       setWalletConnectQRCode(qrCodeDataUrl);
       setShowWalletConnectQR(openQrModal);
       setIsWaitingForWalletConnect(true);
@@ -1247,7 +1244,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       console.error('WalletConnect login failed:', err);
       setShowWalletConnectQR(false);
       setWalletConnectQRCode(null);
-      setWalletConnectUri(null);
       setIsWaitingForWalletConnect(false);
       setIsWaitingForSignature(false);
 
