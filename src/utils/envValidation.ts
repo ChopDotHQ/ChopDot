@@ -11,9 +11,14 @@ interface EnvValidationResult {
   errors: string[];
 }
 
-const REQUIRED_ENV_VARS = {
+// Critical vars - app won't work without these
+const CRITICAL_ENV_VARS = {
   VITE_SUPABASE_URL: 'Supabase project URL (e.g., https://xxx.supabase.co)',
   VITE_SUPABASE_ANON_KEY: 'Supabase anonymous/public API key',
+} as const;
+
+// Optional vars - app works but features may be disabled
+const OPTIONAL_ENV_VARS = {
   VITE_WALLETCONNECT_PROJECT_ID: 'WalletConnect Cloud project ID',
 } as const;
 
@@ -24,13 +29,22 @@ export function validateEnvironment(): EnvValidationResult {
   const missing: string[] = [];
   const errors: string[] = [];
 
-  // Check each required variable
-  Object.entries(REQUIRED_ENV_VARS).forEach(([key, description]) => {
+  // Check critical variables (must be present)
+  Object.entries(CRITICAL_ENV_VARS).forEach(([key, description]) => {
     const value = import.meta.env[key];
     
     if (!value || value.trim() === '') {
       missing.push(key);
       errors.push(`❌ ${key} is required but not set\n   Description: ${description}`);
+    }
+  });
+
+  // Check optional variables (warn but don't fail)
+  Object.entries(OPTIONAL_ENV_VARS).forEach(([key, description]) => {
+    const value = import.meta.env[key];
+    
+    if (!value || value.trim() === '') {
+      errors.push(`⚠️  ${key} is not set (optional)\n   Description: ${description}`);
     }
   });
 
@@ -42,17 +56,23 @@ export function validateEnvironment(): EnvValidationResult {
 }
 
 /**
- * Validate environment and throw if invalid
+ * Validate environment and throw if critical vars are missing
  * Use this at application startup
+ * Only throws for critical vars; warns about optional vars
  */
 export function requireValidEnvironment(): void {
   const result = validateEnvironment();
   
-  if (!result.valid) {
+  // Only throw if critical vars are missing
+  const criticalMissing = result.errors.filter(err => err.startsWith('❌'));
+  const optionalMissing = result.errors.filter(err => err.startsWith('⚠️'));
+  
+  if (criticalMissing.length > 0) {
     const errorMessage = [
       '\n🚨 ENVIRONMENT CONFIGURATION ERROR 🚨\n',
       'ChopDot requires the following environment variables to be set:\n',
-      ...result.errors,
+      ...criticalMissing,
+      ...(optionalMissing.length > 0 ? ['\nOptional (features may be disabled):', ...optionalMissing] : []),
       '\n📝 How to fix:',
       '1. Copy .env.example to .env (if you haven\'t already)',
       '2. Fill in the missing values in your .env file',
@@ -67,6 +87,13 @@ export function requireValidEnvironment(): void {
     throw new Error(
       `Missing required environment variables: ${result.missing.join(', ')}`
     );
+  }
+  
+  // Log warnings for optional vars but don't throw
+  if (optionalMissing.length > 0) {
+    console.warn('\n⚠️  WARNING: Optional environment variables not set:\n');
+    optionalMissing.forEach(err => console.warn(err));
+    console.warn('\nSome features (like WalletConnect) may not work until these are configured.\n');
   }
 }
 
