@@ -305,16 +305,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       setIsLoading(true);
+      
+      // Disconnect all wallets if connected
+      if (account.status === 'connected') {
+        console.log('[AuthContext] Disconnecting wallet on logout:', account.connector);
+        
+        // Handle WalletConnect disconnection (requires async disconnect call)
+        if (account.connector === 'walletconnect') {
+          try {
+            // Dynamically import to avoid loading WalletConnect packages at module init
+            const walletConnectModule = await import('../services/chain/walletconnect');
+            await walletConnectModule.disconnectWalletConnect();
+            console.log('[AuthContext] WalletConnect disconnected on logout');
+          } catch (err) {
+            console.warn('[AuthContext] WalletConnect disconnect failed (continuing):', err);
+          }
+        }
+        
+        // Disconnect account state (clears local storage and resets state)
+        // This handles extension wallets and cleans up WalletConnect state
+        account.disconnect();
+        console.log('[AuthContext] All wallet connections cleared');
+      }
+      
+      // Sign out from Supabase
       const supabase = getSupabase();
       if (supabase) {
         await supabase.auth.signOut();
+        console.log('[AuthContext] Supabase session cleared');
       }
-      // Disconnect WalletConnect session if present
-      try {
-        account.disconnect();
-      } catch (err) {
-        console.warn('[AuthContext] WC disconnect on logout failed (continuing):', err);
-      }
+      
       // Clear local storage
       localStorage.removeItem('chopdot_user');
       localStorage.removeItem('chopdot_auth_token');
@@ -358,6 +378,84 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = async () => {
     await checkAuth();
   };
+
+  // Auto-login when a linked wallet is detected
+  useEffect(() => {
+    if (account.linkedUserId && account.status === 'connected' && account.address && !user && !isLoading) {
+      console.log('[AuthContext] Linked wallet detected, triggering auto-login...');
+      
+      // Trigger wallet auth flow automatically
+      (async () => {
+        try {
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+          const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+          
+          if (!supabaseUrl || !anonKey) {
+            console.warn('[AuthContext] Supabase not configured for auto-login');
+            return;
+          }
+
+          // Request nonce
+          const nonceRes = await fetch(`${supabaseUrl}/functions/v1/wallet-auth/nonce`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': anonKey,
+              'Authorization': `Bearer ${anonKey}`,
+            },
+            body: JSON.stringify({ address: account.address }),
+          });
+
+          if (!nonceRes.ok) {
+            throw new Error('Failed to request nonce');
+          }
+
+          const { nonce } = await nonceRes.json();
+          const message = `Sign this message to login to ChopDot.\nNonce: ${nonce}`;
+
+          // Request signature from wallet
+          let signature: string;
+          
+          if (account.connector === 'extension') {
+            const { web3FromAddress } = await import('@polkadot/extension-dapp');
+            const injector = await web3FromAddress(account.address);
+            const signRaw = injector?.signer?.signRaw;
+            
+            if (!signRaw) {
+              throw new Error('Wallet does not support signing');
+            }
+
+            const result = await signRaw({
+              address: account.address,
+              data: message,
+              type: 'bytes',
+            });
+            
+            signature = result.signature;
+          } else if (account.connector === 'walletconnect') {
+            const walletConnectModule = await import('../services/chain/walletconnect');
+            const result = await walletConnectModule.signMessage(account.address, message);
+            signature = result.signature;
+          } else {
+            throw new Error('Unsupported wallet connector');
+          }
+
+          // Login with the signature
+          await login('polkadot', {
+            type: 'wallet',
+            address: account.address,
+            signature,
+            chain: 'polkadot',
+          });
+
+          console.log('[AuthContext] ✓ Auto-login successful!');
+        } catch (error) {
+          console.error('[AuthContext] Auto-login failed:', error);
+          // Don't throw - allow manual login
+        }
+      })();
+    }
+  }, [account.linkedUserId, account.status, account.address, account.connector, user, isLoading, login]);
 
   return (
     <AuthContext.Provider

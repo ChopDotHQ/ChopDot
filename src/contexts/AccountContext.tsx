@@ -11,6 +11,8 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { normalizeToPolkadot } from '../services/chain/address';
 import { chain } from '../services/chain';
+import { getSupabase } from '../utils/supabase-client';
+import { linkWalletToUser, findVerifiedWalletLink } from '../repos/walletLinks';
 // Dynamic imports for WalletConnect to avoid "require is not defined" error
 // These are loaded only when needed, not at module initialization
 
@@ -28,6 +30,7 @@ export interface AccountState {
   balanceHuman: string | null; // DOT string (10 decimals)
   walletName?: string; // e.g., "Polkadot.js", "Nova Wallet", "SubWallet"
   error?: string | null;
+  linkedUserId?: string | null; // Set when wallet is linked to an existing account (but user not logged in)
 }
 
 interface AccountContextType extends AccountState {
@@ -39,6 +42,7 @@ interface AccountContextType extends AccountState {
   refreshBalance: () => Promise<void>;
   canAfford: (amountDot: string) => boolean;
   requireAccountOrToast: (showToast: (message: string, type?: 'success' | 'error' | 'info') => void) => boolean;
+  triggerWalletAuth: () => Promise<void>; // Trigger wallet authentication for linked wallet
 }
 
 const AccountContext = createContext<AccountContextType | undefined>(undefined);
@@ -46,6 +50,49 @@ const AccountContext = createContext<AccountContextType | undefined>(undefined);
 const STORAGE_KEY = 'account.connector';
 const BALANCE_POLL_INTERVAL = 25000; // 25 seconds
 const FEE_BUFFER_DOT = '0.005'; // 0.005 DOT buffer for fees
+
+// Helper: Link wallet to authenticated user OR detect if wallet is already linked
+const linkWalletIfAuthenticated = async (
+  address: string,
+  provider: string,
+  chainType: 'polkadot' | 'evm' = 'polkadot',
+  onLinkedAccountFound?: (userId: string) => void
+): Promise<{ linkedUserId?: string }> => {
+  try {
+    const supabase = getSupabase();
+    if (!supabase) {
+      console.log('[Account] Supabase not configured, skipping wallet link');
+      return {};
+    }
+
+    const { data } = await supabase.auth.getSession();
+    const userId = data.session?.user?.id;
+    
+    if (userId) {
+      // User is already authenticated, just link the wallet
+      await linkWalletToUser(supabase, userId, chainType, address, provider);
+      console.log('[Account] Wallet linked to user:', { userId, chain: chainType, address, provider });
+      return {};
+    }
+
+    // User is not authenticated - check if this wallet is linked to an existing account
+    console.log('[Account] Checking for existing wallet link:', { chain: chainType, address });
+    const linkedUserId = await findVerifiedWalletLink(supabase, chainType, address);
+    
+    if (linkedUserId) {
+      console.log('[Account] ✓ Found existing wallet link!', { userId: linkedUserId });
+      onLinkedAccountFound?.(linkedUserId);
+      return { linkedUserId };
+    }
+
+    console.log('[Account] No existing wallet link found');
+    return {};
+  } catch (error) {
+    // Non-fatal - log but don't block wallet connection
+    console.warn('[Account] Failed to link wallet (non-blocking):', error);
+    return {};
+  }
+};
 
 // Helper to format planck to DOT
 const fmtPlanckToDot = (planck: string): string => {
@@ -81,6 +128,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
     balanceHuman: null,
     walletName: undefined,
     error: null,
+    linkedUserId: null,
   });
 
   // Track if user has explicitly logged in (vs auto-reconnect)
@@ -288,7 +336,15 @@ export function AccountProvider({ children }: AccountProviderProps) {
         balanceHuman,
         walletName,
         error: null,
+        linkedUserId: null,
       });
+
+      // Link wallet to user if authenticated OR detect linked account (non-blocking)
+      if (!isAutoReconnect) {
+        linkWalletIfAuthenticated(address, walletName, 'polkadot', (userId) => {
+          setState(prev => ({ ...prev, linkedUserId: userId }));
+        }).catch(console.warn);
+      }
     } catch (error: any) {
       console.error('[Account] Extension connection error:', error);
       setState(prev => ({
@@ -351,6 +407,11 @@ export function AccountProvider({ children }: AccountProviderProps) {
             .catch((error) => {
               console.warn('[Account] Balance check failed (non-blocking):', error?.message || error);
             });
+          
+          // Link wallet to user if authenticated OR detect linked account (non-blocking)
+          linkWalletIfAuthenticated(address, 'WalletConnect', 'polkadot', (userId) => {
+            setState(prev => ({ ...prev, linkedUserId: userId }));
+          }).catch(console.warn);
         }
       }
     } catch (error) {
@@ -418,6 +479,11 @@ export function AccountProvider({ children }: AccountProviderProps) {
               console.warn('[Account] Balance check failed (non-blocking):', error?.message || error);
               // Optionally show a warning toast, but don't prevent login
             });
+
+          // Link wallet to user if authenticated OR detect linked account (non-blocking)
+          linkWalletIfAuthenticated(address, walletName, 'polkadot', (userId) => {
+            setState(prev => ({ ...prev, linkedUserId: userId }));
+          }).catch(console.warn);
         })
         .catch((error: any) => {
           console.error('[Account] WalletConnect connection error:', error);
@@ -561,6 +627,24 @@ export function AccountProvider({ children }: AccountProviderProps) {
     return () => clearInterval(interval);
   }, [state.status, hasExplicitlyLoggedIn, refreshBalance]);
 
+  // Trigger wallet authentication for a linked wallet
+  const triggerWalletAuth = useCallback(async () => {
+    if (state.status !== 'connected' || !state.address) {
+      throw new Error('No wallet connected');
+    }
+
+    if (!state.linkedUserId) {
+      throw new Error('Wallet not linked to an account');
+    }
+
+    console.log('[Account] Triggering wallet auth for linked account:', state.linkedUserId);
+    
+    // This will be handled by the AuthContext login flow
+    // The UI should call auth.login with wallet credentials
+    // For now, just log that it should happen
+    return;
+  }, [state.status, state.address, state.linkedUserId]);
+
   const value: AccountContextType = {
     ...state,
     connect: async (wallet: any) => {
@@ -577,6 +661,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
     refreshBalance,
     canAfford,
     requireAccountOrToast,
+    triggerWalletAuth,
   };
 
   return (

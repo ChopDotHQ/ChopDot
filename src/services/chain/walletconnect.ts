@@ -365,3 +365,31 @@ export function createWalletConnectSigner(address: string) {
   };
 }
 
+/**
+ * Sign a message via WalletConnect
+ */
+export async function signMessage(
+  address: string,
+  message: string
+): Promise<{ signature: string }> {
+  if (!signClient || !session) {
+    throw new Error('WalletConnect session not found');
+  }
+
+  const chainId = POLKADOT_CHAIN_ID;
+  
+  const response = await signClient.request({
+    topic: session.topic,
+    chainId,
+    request: {
+      method: 'polkadot_signMessage',
+      params: {
+        address,
+        message,
+      },
+    },
+  });
+
+  return { signature: response as string };
+}
+

@@ -185,6 +185,28 @@ async function ensureUser(address: string, chain: "polkadot" | "evm", email: str
     // Non-fatal, continue
   }
 
+  // Link wallet to user (upsert to handle existing links)
+  const walletProvider = chain === "polkadot" ? "Polkadot" : "EVM";
+  const { error: walletLinkError } = await supabaseAdmin
+    .from("wallet_links")
+    .upsert({
+      user_id: userId,
+      chain,
+      address: address.toLowerCase().trim(),
+      provider: walletProvider,
+      verified_at: new Date().toISOString(),
+    }, {
+      onConflict: "user_id,chain,lower(address)",
+      ignoreDuplicates: false,
+    });
+  
+  if (walletLinkError) {
+    console.warn("[wallet-auth] wallet_links upsert warning:", walletLinkError.message);
+    // Non-fatal, continue
+  } else {
+    console.log("[wallet-auth] Wallet linked to user:", { userId, chain, address, provider: walletProvider });
+  }
+
   return userId;
 }
 

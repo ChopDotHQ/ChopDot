@@ -1711,6 +1711,7 @@ const MobileWalletConnectPanel = ({
             walletDisplayName: 'SubWallet',
             notFoundMessage: 'SubWallet extension not found. Please install SubWallet browser extension.',
           }),
+        showsLoadingIndicator: true,
       },
       {
         id: 'talisman',
@@ -1727,6 +1728,7 @@ const MobileWalletConnectPanel = ({
             walletDisplayName: 'Talisman',
             notFoundMessage: 'Talisman extension not found. Please install Talisman browser extension.',
           }),
+        showsLoadingIndicator: true,
       },
       {
         id: 'walletconnect',
