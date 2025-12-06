@@ -387,6 +387,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Trigger wallet auth flow automatically
       (async () => {
         try {
+          const walletAddress = account.address;
+          if (!walletAddress) {
+            console.warn('[AuthContext] No wallet address available for auto-login');
+            return;
+          }
+
           const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
           const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
           
@@ -403,7 +409,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               'apikey': anonKey,
               'Authorization': `Bearer ${anonKey}`,
             },
-            body: JSON.stringify({ address: account.address }),
+            body: JSON.stringify({ address: walletAddress }),
           });
 
           if (!nonceRes.ok) {
@@ -418,7 +424,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           
           if (account.connector === 'extension') {
             const { web3FromAddress } = await import('@polkadot/extension-dapp');
-            const injector = await web3FromAddress(account.address);
+            const injector = await web3FromAddress(walletAddress);
             const signRaw = injector?.signer?.signRaw;
             
             if (!signRaw) {
@@ -426,7 +432,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
 
             const result = await signRaw({
-              address: account.address,
+              address: walletAddress,
               data: message,
               type: 'bytes',
             });
@@ -434,7 +440,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             signature = result.signature;
           } else if (account.connector === 'walletconnect') {
             const walletConnectModule = await import('../services/chain/walletconnect');
-            const result = await walletConnectModule.signMessage(account.address, message);
+            const result = await walletConnectModule.signMessage(walletAddress, message);
             signature = result.signature;
           } else {
             throw new Error('Unsupported wallet connector');
@@ -443,7 +449,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Login with the signature
           await login('polkadot', {
             type: 'wallet',
-            address: account.address,
+            address: walletAddress,
             signature,
             chain: 'polkadot',
           });
