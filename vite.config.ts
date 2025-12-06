@@ -9,27 +9,43 @@ function validateEnvPlugin() {
     name: 'validate-env',
     configResolved(config: any) {
       const env = config.env;
-      const requiredVars = {
+      
+      // Critical vars that must be present for build
+      const criticalVars = {
         VITE_SUPABASE_URL: 'Supabase project URL',
         VITE_SUPABASE_ANON_KEY: 'Supabase anonymous/public API key',
+      };
+
+      // Runtime-only vars (warn but don't fail build)
+      const runtimeVars = {
         VITE_WALLETCONNECT_PROJECT_ID: 'WalletConnect Cloud project ID',
       };
 
-      const missing = Object.entries(requiredVars)
+      const missingCritical = Object.entries(criticalVars)
         .filter(([key]) => !env[key] || env[key].trim() === '')
         .map(([key, desc]) => `  ❌ ${key} - ${desc}`);
 
-      if (missing.length > 0) {
+      const missingRuntime = Object.entries(runtimeVars)
+        .filter(([key]) => !env[key] || env[key].trim() === '')
+        .map(([key, desc]) => `  ⚠️  ${key} - ${desc} (runtime only)`);
+
+      if (missingCritical.length > 0) {
         console.error('\n🚨 BUILD ERROR: Missing required environment variables:\n');
-        console.error(missing.join('\n'));
+        console.error(missingCritical.join('\n'));
         console.error('\n📝 How to fix:');
         console.error('1. Copy .env.example to .env');
         console.error('2. Fill in the missing values');
         console.error('3. Restart the build\n');
-        throw new Error(`Missing required environment variables: ${missing.length} variable(s)`);
+        throw new Error(`Missing required environment variables: ${missingCritical.length} variable(s)`);
       }
 
-      console.log('✅ All required environment variables validated');
+      if (missingRuntime.length > 0) {
+        console.warn('\n⚠️  WARNING: Missing runtime environment variables:\n');
+        console.warn(missingRuntime.join('\n'));
+        console.warn('\nThese are only needed at runtime. WalletConnect features may not work until set.\n');
+      }
+
+      console.log('✅ All critical environment variables validated');
     },
   };
 }
