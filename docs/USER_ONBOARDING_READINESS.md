@@ -31,8 +31,8 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
 - 🔴 Migration verification — **TEDDY**  
   - Current: not documented for prod/preview.  
   - Needed: list expected migrations; confirm applied; fix gaps.
-- 🔴 Env validation — **TEDDY**  
-  - Needed: startup check for `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_WALLETCONNECT_PROJECT_ID` with clear error.
+- 🟢 Env validation — **DEV**  
+  - Done: startup check for `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_WALLETCONNECT_PROJECT_ID` with clear error messages at both build-time (vite.config.ts) and runtime (main.tsx).
 
 ## UX & Polish
 - 🔴 Safari keyboard issue — **DEV**  
@@ -75,7 +75,7 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
 - 🟢 Feature flags doc (internal) — **DEV**  
   - FEATURE_FLAGS.md: name | purpose | default (e.g., `VITE_ENABLE_MOBILE_WC_UI`, `VITE_ENABLE_WC_MODAL`, `VITE_ENABLE_POLKADOT_BALANCE_UI`, `VITE_ENABLE_LUNOKIT`, `VITE_ENABLE_EMBEDDED_WALLET`, `VITE_ENABLE_CRUST`, `VITE_ENABLE_PRICE_API`, etc.).  
   - Update: Added `docs/FEATURE_FLAGS.md` with the current flags, defaults, and intent.
-- 🔴 Env validation — **TEDDY** (see Data & Sync).
+- 🟢 Env validation — **DEV** (see Data & Sync).
 - 🟡 Prod/preview parity checks — **DEV**  
   - Checklist to verify both environments before go-live:  
     - Env: `VITE_DATA_SOURCE=supabase`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_WALLETCONNECT_PROJECT_ID` present; planned feature flags set as intended.  

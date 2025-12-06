@@ -1,11 +1,43 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
+// Validate required environment variables at build time
+function validateEnvPlugin() {
+  return {
+    name: 'validate-env',
+    configResolved(config: any) {
+      const env = config.env;
+      const requiredVars = {
+        VITE_SUPABASE_URL: 'Supabase project URL',
+        VITE_SUPABASE_ANON_KEY: 'Supabase anonymous/public API key',
+        VITE_WALLETCONNECT_PROJECT_ID: 'WalletConnect Cloud project ID',
+      };
+
+      const missing = Object.entries(requiredVars)
+        .filter(([key]) => !env[key] || env[key].trim() === '')
+        .map(([key, desc]) => `  ❌ ${key} - ${desc}`);
+
+      if (missing.length > 0) {
+        console.error('\n🚨 BUILD ERROR: Missing required environment variables:\n');
+        console.error(missing.join('\n'));
+        console.error('\n📝 How to fix:');
+        console.error('1. Copy .env.example to .env');
+        console.error('2. Fill in the missing values');
+        console.error('3. Restart the build\n');
+        throw new Error(`Missing required environment variables: ${missing.length} variable(s)`);
+      }
+
+      console.log('✅ All required environment variables validated');
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    validateEnvPlugin(),
     react(),
     tailwindcss(),
   ],
