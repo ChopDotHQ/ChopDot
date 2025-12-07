@@ -164,6 +164,7 @@ interface Pot {
   currentCheckpoint?: ExpenseCheckpoint;
   archived?: boolean;
   history?: PotHistory[];
+  createdAt?: string;
 }
 
 interface Settlement {
@@ -194,7 +195,7 @@ interface PaymentMethod {
 
 interface ActivityItem {
   id: string;
-  type: "expense" | "settlement" | "attestation" | "member";
+  type: "expense" | "settlement" | "attestation" | "member" | "pot_created";
   timestamp: string;
   title: string;
   subtitle: string;
@@ -376,6 +377,19 @@ function AppContent() {
     if (cidParam) {
       return { type: 'import-pot' };
     }
+    
+    // Read route from pathname
+    const pathname = window.location.pathname;
+    if (pathname === '/activity') {
+      return { type: 'activity-home' };
+    } else if (pathname === '/people') {
+      return { type: 'people-home' };
+    } else if (pathname === '/you') {
+      return { type: 'you-tab' };
+    } else if (pathname === '/' || pathname === '/pots') {
+      return { type: 'pots-home' };
+    }
+    
     return { type: 'pots-home' };
   };
 
@@ -404,6 +418,55 @@ function AppContent() {
       }
     }
   }, [screen?.type, reset]);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const pathname = window.location.pathname;
+      const routeToScreen: Record<string, Screen['type']> = {
+        '/': 'pots-home',
+        '/pots': 'pots-home',
+        '/activity': 'activity-home',
+        '/people': 'people-home',
+        '/you': 'you-tab',
+      };
+      
+      const screenType = routeToScreen[pathname];
+      if (screenType && screen?.type !== screenType) {
+        reset({ type: screenType });
+      }
+    };
+    
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [screen?.type, reset]);
+
+  // Sync URL with current screen for tab navigation
+  useEffect(() => {
+    if (!screen) return;
+    
+    const screenToRoute: Record<string, string> = {
+      'pots-home': '/pots',
+      'activity-home': '/activity',
+      'people-home': '/people',
+      'you-tab': '/you',
+    };
+    
+    const newPath = screenToRoute[screen.type];
+    if (newPath && window.location.pathname !== newPath && window.location.pathname !== '/') {
+      // Use replaceState to avoid adding unnecessary history entries
+      // Only push when explicitly triggered by handleTabChange
+      const isTabScreen = ['pots-home', 'activity-home', 'people-home', 'you-tab'].includes(screen.type);
+      if (isTabScreen && stack.length === 1) {
+        window.history.replaceState({}, '', newPath);
+      }
+    }
+    
+    // Handle root path - redirect to /pots
+    if (window.location.pathname === '/' && screen.type === 'pots-home') {
+      window.history.replaceState({}, '', '/pots');
+    }
+  }, [screen, stack.length]);
 
   const showToast = (
     message: string,
@@ -454,281 +517,9 @@ function AppContent() {
     | undefined
   >();
 
-  const [settlements, setSettlements] = useState<Settlement[]>(
-    () => [
-      {
-        id: "s1",
-        personId: "alice",
-        amount: 45.5,
-        currency: "USD",
-        method: "bank",
-        potIds: ["1"],
-        date: new Date(
-          Date.now() - 2 * 24 * 60 * 60 * 1000,
-        ).toISOString(),
-      },
-      {
-        id: "s2",
-        personId: "bob",
-        amount: 28.34,
-        currency: "USD",
-        method: "twint",
-        potIds: ["1"],
-        date: new Date(
-          Date.now() - 5 * 24 * 60 * 60 * 1000,
-        ).toISOString(),
-      },
-      {
-        id: "s3",
-        personId: "charlie",
-        amount: 150.0,
-        currency: "USD",
-        method: "dot",
-        potIds: ["2"],
-        date: new Date(
-          Date.now() - 10 * 24 * 60 * 60 * 1000,
-        ).toISOString(),
-        txHash:
-          "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-      },
-      {
-        id: "s4",
-        personId: "alice",
-        amount: 32.0,
-        currency: "USD",
-        method: "cash",
-        potIds: ["1"],
-        date: new Date(
-          Date.now() - 15 * 24 * 60 * 60 * 1000,
-        ).toISOString(),
-      },
-    ],
-  );
+  const [settlements, setSettlements] = useState<Settlement[]>([]);
 
-  const [pots, setPots] = useState<Pot[]>(() => [
-    {
-      id: "1",
-      name: "Devconnect Buenos Aires",
-      type: "expense",
-      baseCurrency: "USD",
-      members: [
-        {
-          id: "owner",
-          name: "You",
-          role: "Owner",
-          status: "active",
-        },
-        {
-          id: "alice",
-          name: "Alice",
-          role: "Member",
-          status: "active",
-        },
-        {
-          id: "bob",
-          name: "Bob",
-          role: "Member",
-          status: "active",
-        },
-      ],
-      expenses: [
-        {
-          id: "e1",
-          amount: 120.5,
-          currency: "USD",
-          paidBy: "owner",
-          memo: "Groceries at Whole Foods",
-          date: new Date(
-            Date.now() - 2 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 40.17 },
-            { memberId: "alice", amount: 40.17 },
-            { memberId: "bob", amount: 40.16 },
-          ],
-          attestations: ["alice", "bob"],
-          hasReceipt: true,
-        },
-        {
-          id: "e2",
-          amount: 85.0,
-          currency: "USD",
-          paidBy: "alice",
-          memo: "Electricity bill",
-          date: new Date(
-            Date.now() - 5 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 28.33 },
-            { memberId: "alice", amount: 28.33 },
-            { memberId: "bob", amount: 28.34 },
-          ],
-          attestations: [],
-          hasReceipt: false,
-        },
-        {
-          id: "e4",
-          amount: 45.0,
-          currency: "USD",
-          paidBy: "alice",
-          memo: "Internet bill",
-          date: new Date(
-            Date.now() - 8 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 15.0 },
-            { memberId: "alice", amount: 15.0 },
-            { memberId: "bob", amount: 15.0 },
-          ],
-          attestations: [],
-          hasReceipt: false,
-        },
-        {
-          id: "e5",
-          amount: 60.0,
-          currency: "USD",
-          paidBy: "bob",
-          memo: "Cleaning supplies",
-          date: new Date(
-            Date.now() - 12 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 20.0 },
-            { memberId: "alice", amount: 20.0 },
-            { memberId: "bob", amount: 20.0 },
-          ],
-          attestations: [],
-          hasReceipt: false,
-        },
-        {
-          id: "e6",
-          amount: 90.0,
-          currency: "USD",
-          paidBy: "alice",
-          memo: "Water & trash",
-          date: new Date(
-            Date.now() - 15 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 30.0 },
-            { memberId: "alice", amount: 30.0 },
-            { memberId: "bob", amount: 30.0 },
-          ],
-          attestations: [],
-          hasReceipt: false,
-        },
-        {
-          id: "e7",
-          amount: 75.0,
-          currency: "USD",
-          paidBy: "bob",
-          memo: "Gas bill",
-          date: new Date(
-            Date.now() - 18 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 25.0 },
-            { memberId: "alice", amount: 25.0 },
-            { memberId: "bob", amount: 25.0 },
-          ],
-          attestations: [],
-          hasReceipt: false,
-        },
-      ],
-      budget: 500,
-      budgetEnabled: true,
-      checkpointEnabled: false,
-    },
-    {
-      id: "2",
-      name: "Urbe Campus Rome",
-      type: "expense",
-      baseCurrency: "USD",
-      members: [
-        {
-          id: "owner",
-          name: "You",
-          role: "Owner",
-          status: "active",
-        },
-        {
-          id: "charlie",
-          name: "Charlie",
-          role: "Member",
-          status: "active",
-        },
-        {
-          id: "diana",
-          name: "Diana",
-          role: "Member",
-          status: "pending",
-        },
-      ],
-      expenses: [
-        {
-          id: "e3",
-          amount: 450.0,
-          currency: "USD",
-          paidBy: "owner",
-          memo: "Flight tickets",
-          date: new Date(
-            Date.now() - 1 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          split: [
-            { memberId: "owner", amount: 150.0 },
-            { memberId: "charlie", amount: 150.0 },
-            { memberId: "diana", amount: 150.0 },
-          ],
-          attestations: ["charlie"],
-          hasReceipt: true,
-        },
-      ],
-      budget: 3000,
-      budgetEnabled: true,
-      checkpointEnabled: false,
-    },
-    {
-      id: "3",
-      name: "💰 Emergency Fund",
-      type: "savings",
-      baseCurrency: "DOT",
-      members: [
-        {
-          id: "owner",
-          name: "You",
-          role: "Owner",
-          status: "active",
-        },
-      ],
-      expenses: [],
-      contributions: [
-        {
-          id: "c1",
-          memberId: "owner",
-          amount: 500,
-          date: new Date(
-            Date.now() - 10 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          txHash: "0x1234567890abcdef",
-        },
-        {
-          id: "c2",
-          memberId: "owner",
-          amount: 250,
-          date: new Date(
-            Date.now() - 3 * 24 * 60 * 60 * 1000,
-          ).toISOString(),
-          txHash: "0xabcdef1234567890",
-        },
-      ],
-      totalPooled: 750,
-      yieldRate: 12.5,
-      defiProtocol: "Acala",
-      goalAmount: 5000,
-      goalDescription: "Build a 6-month emergency fund",
-    },
-    createPolkadotBuilderPartyPot(),
-  ]);
+  const [pots, setPots] = useState<Pot[]>([]);
 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => [
     {
@@ -747,30 +538,7 @@ function AppContent() {
   const [preferredMethodId, setPreferredMethodId] =
     useState<string>("1");
 
-  const [notifications, setNotifications] = useState<
-    Notification[]
-  >(() => [
-    {
-      id: "1",
-      type: "attestation",
-      title: "Expense needs confirmation",
-      message: "Alice added 'Groceries' for $45.00",
-      timestamp: new Date(
-        Date.now() - 2 * 60 * 60 * 1000,
-      ).toISOString(),
-      read: false,
-    },
-    {
-      id: "2",
-      type: "settlement",
-      title: "Payment received",
-      message: "Bob settled $28.34 via bank transfer",
-      timestamp: new Date(
-        Date.now() - 1 * 24 * 60 * 60 * 1000,
-      ).toISOString(),
-      read: true,
-    },
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const people: Person[] = useMemo(() => {
     const peopleMap = new Map<string, Person>();
@@ -1239,6 +1007,19 @@ function AppContent() {
   const handleTabChange = (
     tab: "pots" | "people" | "activity" | "you",
   ) => {
+    // Update URL based on tab
+    const routes = {
+      pots: '/pots',
+      people: '/people',
+      activity: '/activity',
+      you: '/you',
+    };
+    
+    const newPath = routes[tab];
+    if (window.location.pathname !== newPath) {
+      window.history.pushState({}, '', newPath);
+    }
+    
     if (tab === "pots") {
       reset({ type: "pots-home" });
     } else if (tab === "people") {
@@ -1398,37 +1179,17 @@ function AppContent() {
       });
     }
     
-    const pot: Pot = {
-      id: Date.now().toString(),
-      name: newPot.name || "Unnamed Pot",
-      type: newPot.type || "expense",
-      baseCurrency: newPot.baseCurrency || "USD",
-      members: processedMembers,
-      expenses: [],
-      budget: newPot.budget,
-      budgetEnabled: newPot.budgetEnabled,
-      contributions: newPot.type === "savings" ? [] : undefined,
-      totalPooled: newPot.type === "savings" ? 0 : undefined,
-      yieldRate: newPot.type === "savings" ? 0 : undefined,
-      goalAmount: newPot.goalAmount,
-      goalDescription: newPot.goalDescription,
-      checkpointEnabled:
-        newPot.type === "expense" ? false : undefined,
-    };
-
-    setPots([...pots, pot]);
-    
     try {
       const createDto = {
-        name: pot.name,
-        type: pot.type,
-        baseCurrency: pot.baseCurrency as 'DOT' | 'USD',
-        budget: pot.budget ?? null,
-        budgetEnabled: pot.budgetEnabled ?? false,
-        checkpointEnabled: pot.checkpointEnabled,
-        goalAmount: pot.goalAmount,
-        goalDescription: pot.goalDescription,
-        members: pot.members.map(m => ({
+        name: newPot.name || "Unnamed Pot",
+        type: newPot.type || "expense",
+        baseCurrency: (newPot.baseCurrency || "USD") as 'DOT' | 'USD',
+        budget: newPot.budget ?? null,
+        budgetEnabled: newPot.budgetEnabled ?? false,
+        checkpointEnabled: newPot.type === "expense" ? false : undefined,
+        goalAmount: newPot.goalAmount,
+        goalDescription: newPot.goalDescription,
+        members: processedMembers.map(m => ({
           id: m.id,
           name: m.name,
           address: m.address || null,
@@ -1438,32 +1199,40 @@ function AppContent() {
         })),
       };
       
-      await potService.createPot(createDto);
-      logDev(`Pot created via service`, { potId: pot.id });
+      const createdPot = await potService.createPot(createDto);
+      logDev(`Pot created via service`, { potId: createdPot.id });
+      
+      // If using Supabase, trigger a refresh to show the new pot
+      if (usingSupabaseSource) {
+        window.dispatchEvent(new CustomEvent('pots-refresh'));
+      } else {
+        // For local storage, update state directly
+        setPots([...pots, createdPot as unknown as Pot]);
+      }
+      
+      setNewPot({
+        name: "",
+        type: "expense",
+        baseCurrency: "USD",
+        members: [
+          {
+            id: "owner",
+            name: "You",
+            role: "Owner",
+            status: "active",
+          },
+        ],
+        expenses: [],
+        budgetEnabled: false,
+      });
+
+      setCurrentPotId(createdPot.id);
+      replace({ type: "pot-home", potId: createdPot.id });
+      showToast("Pot created successfully!", "success");
     } catch (error) {
       warnDev('Service create failed', error);
-      showToast('Saved locally (service write failed)', 'info');
+      showToast('Failed to create pot', 'error');
     }
-    
-    setNewPot({
-      name: "",
-      type: "expense",
-      baseCurrency: "USD",
-      members: [
-        {
-          id: "owner",
-          name: "You",
-          role: "Owner",
-          status: "active",
-        },
-      ],
-      expenses: [],
-      budgetEnabled: false,
-    });
-
-    setCurrentPotId(pot.id);
-    replace({ type: "pot-home", potId: pot.id });
-    showToast("Pot created successfully!", "success");
   };
 
   const addExpense = (data: {
@@ -1905,6 +1674,20 @@ function AppContent() {
       });
     });
 
+    // Add pot creation events
+    pots.forEach((pot) => {
+      if (pot.createdAt) {
+        items.push({
+          id: `pot-created-${pot.id}`,
+          type: "pot_created",
+          timestamp: pot.createdAt,
+          title: `Created ${pot.name}`,
+          subtitle: pot.type === 'savings' ? 'Savings pot' : 'Expense pot',
+          amount: undefined,
+        });
+      }
+    });
+
     pots.forEach((pot) => {
       pot.expenses.forEach((expense) => {
         items.push({
@@ -1974,7 +1757,7 @@ function AppContent() {
     0,
   );
 
-  const remotePots = useRemotePots();
+  const { pots: remotePots } = useRemotePots();
   const dataSourceType = import.meta.env.VITE_DATA_SOURCE || 'local';
   const usingSupabaseSource = dataSourceType === 'supabase';
   const remoteSyncSnapshot = useRef<string>("");
@@ -1988,6 +1771,7 @@ function AppContent() {
       return;
     }
     remoteSyncSnapshot.current = serialized;
+    console.log('[App] Syncing remotePots to state', { count: remotePots.length, potIds: remotePots.map(p => p.id) });
     setPots(remotePots as unknown as Pot[]);
   }, [remotePots, usingSupabaseSource, authLoading, isAuthenticated]);
   const totalOwing = balances.youOwe.reduce(
@@ -2190,6 +1974,13 @@ function AppContent() {
                   setCurrentPotId(pot.id);
                   setCurrentExpenseId(expenseId!);
                   push({ type: "expense-detail", expenseId: expenseId! });
+                }
+              } else if (activity.type === "pot_created") {
+                const potId = activity.id.replace("pot-created-", "");
+                const pot = pots.find((p) => p.id === potId);
+                if (pot) {
+                  setCurrentPotId(pot.id);
+                  push({ type: "pot-home", potId: pot.id });
                 }
               } else {
                 showToast(

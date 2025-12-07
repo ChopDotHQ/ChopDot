@@ -61,6 +61,8 @@ export class SupabaseSource implements DataSource {
     const supabase = this.ensureReady();
     const userId = await this.getCurrentUserId();
     
+    // With current RLS policies, users can only read pots they created
+    // Future enhancement: implement shared pots via different approach
     let query = supabase
       .from('pots')
       .select(POT_COLUMNS.join(','))
@@ -82,24 +84,9 @@ export class SupabaseSource implements DataSource {
 
     const rows = (data ?? []) as unknown as SupabasePotRow[];
     
-    // Seed sample pots only if user has NO pots at all (and it's the first page/request)
-    const isFirstPage = !options || options.offset === 0;
-    if (rows.length === 0 && isFirstPage && !this.seededUsers.has(userId)) {
-      // Check if there are truly no pots (count query)
-      const { count } = await supabase.from('pots').select('id', { count: 'exact', head: true }).eq('created_by', userId);
-      
-      if (count === 0) {
-        this.seededUsers.add(userId);
-        try {
-          await this.seedSamplePots();
-          // Re-fetch after seeding
-          return this.getPots(options);
-        } catch (seedError) {
-          console.warn('[SupabaseSource] Failed to seed sample pots', seedError);
-          this.seededUsers.delete(userId);
-        }
-      }
-    }
+    // Auto-seeding disabled - users should create their own pots
+    // Previously this would seed sample pots, but now we return empty results
+    // if the user has no pots yet
     
     return rows.map((row) => this.mapRow(row));
   }
@@ -107,6 +94,8 @@ export class SupabaseSource implements DataSource {
   async getPot(id: string): Promise<Pot | null> {
     const supabase = this.ensureReady();
     const userId = await this.getCurrentUserId();
+    
+    // With current RLS policies, users can only read pots they created
     const { data, error } = await supabase
       .from('pots')
       .select(POT_COLUMNS.join(','))
@@ -389,6 +378,7 @@ export class SupabaseSource implements DataSource {
       currentCheckpoint: metadata.currentCheckpoint as Pot['currentCheckpoint'],
       lastCheckpoint: metadata.lastCheckpoint as Pot['lastCheckpoint'],
       lastEditAt: row.last_edit_at ? new Date(row.last_edit_at).toISOString() : (metadata.lastEditAt as string | undefined),
+      createdAt: row.created_at ? new Date(row.created_at).toISOString() : undefined,
       contributions: Array.isArray(metadata.contributions) ? (metadata.contributions as Pot['contributions']) : undefined,
       totalPooled: (metadata.totalPooled as number | undefined) ?? undefined,
       yieldRate: (metadata.yieldRate as number | undefined) ?? undefined,

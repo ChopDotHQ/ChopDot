@@ -9,7 +9,7 @@ import { EmptyState } from "../EmptyState";
 
 interface ActivityItem {
   id: string;
-  type: "expense" | "settlement" | "attestation" | "member";
+  type: "expense" | "settlement" | "attestation" | "member" | "pot_created";
   timestamp: string;
   title: string;
   subtitle?: string;
@@ -142,6 +142,8 @@ export function ActivityHome({
         return <Check className="w-4 h-4 text-white" />;
       case "member":
         return <UserPlus className="w-4 h-4 text-foreground" />;
+      case "pot_created":
+        return <Activity className="w-4 h-4 text-white" />;
     }
   };
 
@@ -390,7 +392,9 @@ export function ActivityHome({
                               ? "var(--money)"
                               : activity.type === "attestation"
                                 ? "var(--accent)"
-                                : "var(--secondary)",
+                                : activity.type === "pot_created"
+                                  ? "var(--primary)"
+                                  : "var(--secondary)",
                       }}
                     >
                       {getActivityIcon(activity.type)}

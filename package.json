@@ -4,7 +4,7 @@
   "description": "ChopDot - Expense splitting and group financial management app with Polkadot blockchain integration",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "supabase start && vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "type-check": "tsc --noEmit",

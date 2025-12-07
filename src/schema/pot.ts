@@ -167,7 +167,7 @@ export const PotSchema = z.object({
   goalAmount: z.number().optional(),
   goalDescription: z.string().optional(),
   // Legacy fields
-  createdAt: z.number().int().nonnegative().optional(),
+  createdAt: z.union([z.number().int().nonnegative(), z.string()]).optional(),
   updatedAt: z.number().int().nonnegative().optional(),
   lastBackupCid: z.string().nullable().optional(),
 }).passthrough() // Allow unknown fields for forward compatibility
