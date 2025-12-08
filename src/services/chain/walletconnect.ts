@@ -7,9 +7,11 @@ import SignClient from '@walletconnect/sign-client';
 import type { SessionTypes } from '@walletconnect/types';
 import { WalletConnectModal } from '@walletconnect/modal';
 
-// WalletConnect Project ID from environment variable
-// Fallback to default project ID if not set
-const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '15e72db89587fa8bd14473b8ff73a0bb';
+// WalletConnect Project ID from environment variable (must be provided)
+const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+if (!WALLETCONNECT_PROJECT_ID) {
+  throw new Error('[WalletConnect] VITE_WALLETCONNECT_PROJECT_ID is required. Add it to your environment.');
+}
 
 // Polkadot chain IDs for WalletConnect
 // Format: namespace:chainId (genesis hash in hex)
@@ -392,4 +394,3 @@ export async function signMessage(
 
   return { signature: response as string };
 }
-
