@@ -433,7 +433,7 @@ function AppContent() {
       
       const screenType = routeToScreen[pathname];
       if (screenType && screen?.type !== screenType) {
-        reset({ type: screenType });
+        reset({ type: screenType } as Screen);
       }
     };
     

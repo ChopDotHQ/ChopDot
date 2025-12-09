@@ -1286,7 +1286,7 @@ const MobileWalletConnectPanel = ({
   onEmailOptionToggle,
   emailTheme,
   showEmailForm,
-  renderEmailForm,
+  emailForm,
   onSignupLink,
   waitingForSignature,
   onOpenModal,

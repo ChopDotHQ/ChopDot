@@ -40,7 +40,6 @@ const POT_COLUMNS = [
 export class SupabaseSource implements DataSource {
   private client = getSupabase();
   private ensuredUsers = new Set<string>();
-  private seededUsers = new Set<string>();
 
   /**
    * Returns true when Supabase is configured (URL + anon key).
@@ -250,21 +249,6 @@ export class SupabaseSource implements DataSource {
     }
   }
 
-  private async seedSamplePots(): Promise<void> {
-    const now = new Date().toISOString();
-    const templates = DEFAULT_POTS.slice(0, 2); // Expense + savings examples
-    for (const template of templates) {
-      const sample = this.cloneTemplatePot(template);
-      sample.id = this.generatePotId();
-      sample.lastEditAt = now;
-      sample.name = template.name.includes('Sample') ? template.name : `${template.name} (Sample)`;
-      try {
-        await this.savePot(sample);
-      } catch (error) {
-        console.warn('[SupabaseSource] Failed to seed sample pot', sample.name, error);
-      }
-    }
-  }
 
   private cloneTemplatePot(template: Pot): Pot {
     const cloned = JSON.parse(JSON.stringify(template)) as Pot;
