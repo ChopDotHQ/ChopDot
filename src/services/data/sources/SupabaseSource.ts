@@ -4,7 +4,6 @@ import { PotSchema } from '../../../schema/pot';
 import { getSupabase } from '../../../utils/supabase-client';
 import type { SupabasePotRow } from '../types/supabase';
 import { AuthError, ValidationError } from '../errors';
-import { DEFAULT_POTS } from '../seeds/defaultPots';
 
 /**
  * SupabaseSource
@@ -250,15 +249,6 @@ export class SupabaseSource implements DataSource {
   }
 
 
-  private cloneTemplatePot(template: Pot): Pot {
-    const cloned = JSON.parse(JSON.stringify(template)) as Pot;
-    cloned.members = (cloned.members ?? [{ ...DEFAULT_MEMBER }]).map((member, index) =>
-      index === 0 ? { ...member, name: 'You', role: 'Owner', status: 'active' } : { ...member }
-    );
-    cloned.expenses = [...(cloned.expenses ?? [])];
-    cloned.history = [...(cloned.history ?? [])];
-    return cloned;
-  }
 
   private async ensureUserRecord(userId: string): Promise<void> {
     if (this.ensuredUsers.has(userId)) {
@@ -316,17 +306,6 @@ export class SupabaseSource implements DataSource {
     }, {});
   }
 
-  private generatePotId(): string {
-    const cryptoObj = typeof globalThis !== 'undefined' ? globalThis.crypto : undefined;
-    if (cryptoObj?.randomUUID) {
-      return cryptoObj.randomUUID();
-    }
-
-    if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
-      const buffer = new Uint8Array(16);
-      cryptoObj.getRandomValues(buffer);
-      const value6 = buffer[6] ?? 0;
-      const value8 = buffer[8] ?? 0;
       // eslint-disable-next-line no-bitwise
       buffer[6] = (value6 & 0x0f) | 0x40;
       // eslint-disable-next-line no-bitwise
