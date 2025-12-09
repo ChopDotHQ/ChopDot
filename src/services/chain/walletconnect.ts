@@ -7,11 +7,18 @@ import SignClient from '@walletconnect/sign-client';
 import type { SessionTypes } from '@walletconnect/types';
 import { WalletConnectModal } from '@walletconnect/modal';
 
-// WalletConnect Project ID from environment variable (must be provided)
-const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
-if (!WALLETCONNECT_PROJECT_ID) {
-  throw new Error('[WalletConnect] VITE_WALLETCONNECT_PROJECT_ID is required. Add it to your environment.');
-}
+// WalletConnect Project ID from environment variable (optional - checked lazily)
+const getWalletConnectProjectId = (): string => {
+  const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+  if (!projectId) {
+    throw new Error(
+      '[WalletConnect] VITE_WALLETCONNECT_PROJECT_ID is required but not set. ' +
+      'Add it to your Vercel environment variables or .env file. ' +
+      'Get your project ID from https://cloud.walletconnect.com/'
+    );
+  }
+  return projectId;
+};
 
 // Polkadot chain IDs for WalletConnect
 // Format: namespace:chainId (genesis hash in hex)
@@ -33,7 +40,7 @@ export async function initWalletConnect(): Promise<SignClient> {
   }
 
   signClient = await SignClient.init({
-    projectId: WALLETCONNECT_PROJECT_ID,
+    projectId: getWalletConnectProjectId(),
     metadata: {
       name: 'ChopDot',
       description: 'Polkadot Chain Test',
@@ -49,7 +56,7 @@ export async function initWalletConnect(): Promise<SignClient> {
   if (!walletConnectModal) {
     try {
       walletConnectModal = new WalletConnectModal({
-        projectId: WALLETCONNECT_PROJECT_ID,
+        projectId: getWalletConnectProjectId(),
         chains: [POLKADOT_RELAY_CHAIN_ID, POLKADOT_ASSET_HUB_CHAIN_ID],
         // Prioritize Polkadot-native wallets at the top
         // Wallet IDs from WalletConnect Explorer API: https://explorer-api.walletconnect.com/
