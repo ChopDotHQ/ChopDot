@@ -379,6 +379,140 @@ const SUBWALLET_LOGO = '/assets/Logos/Subwallet Logo.png';
 const TALISMAN_LOGO = '/assets/Logos/Talisman Wallet Logo.png';
 const EMAIL_LOGIN_LOGO = '/assets/Logos/choptdot_whitebackground.png';
 
+interface MobileWalletConnectPanelProps {
+  loading: boolean;
+  errorMessage: string | null;
+  onRetry: () => Promise<string | null>;
+  onSwitchToDesktop: () => void;
+  mode: PanelMode;
+  panelTheme: PanelTheme;
+  walletTheme: Partial<WalletOptionTheme>;
+  guestTheme: Partial<WalletOptionTheme>;
+  onGuestLogin: () => Promise<void>;
+  onEmailOptionToggle: () => void;
+  emailTheme: Partial<WalletOptionTheme>;
+  showEmailForm: boolean;
+  emailForm?: ReactNode;
+  onSignupLink: () => void;
+  waitingForSignature: boolean;
+  onOpenModal?: () => Promise<void>;
+}
+
+const MobileWalletConnectPanel = ({
+  loading,
+  errorMessage,
+  onRetry,
+  onSwitchToDesktop,
+  mode,
+  panelTheme,
+  walletTheme,
+  guestTheme,
+  onGuestLogin,
+  onEmailOptionToggle,
+  emailTheme,
+  showEmailForm,
+  emailForm,
+  onSignupLink,
+  waitingForSignature,
+  onOpenModal,
+}: MobileWalletConnectPanelProps) => {
+  const textPrimary = mode === 'dark' ? 'text-white' : 'text-[#111111]';
+  const textSecondary = mode === 'dark' ? 'text-white/70' : 'text-secondary/80';
+
+  return (
+    <WalletPanel theme={panelTheme}>
+      <div className="space-y-4">
+        <div className="text-center space-y-1">
+          <p className={`text-base font-semibold ${textPrimary}`}>Open your wallet</p>
+          <p className={`text-sm ${textSecondary}`}>
+            Tap your wallet below. After approving the connection, stay inside your wallet until you confirm the signature.
+          </p>
+          {waitingForSignature && (
+            <div className="mt-3 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent)]/10 p-3 space-y-2">
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-[var(--accent)] flex-shrink-0" />
+                <p className="text-sm font-semibold text-foreground">
+                  Signature pending in wallet
+                </p>
+              </div>
+              <p className="text-xs text-muted leading-relaxed pl-6">
+                Go back to your wallet app and approve the signature request. Stay in your wallet until confirmed.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {onOpenModal && (
+          <WalletOption
+            title="WalletConnect"
+            subtitle="Nova, Subwallet, Talisman"
+            iconSrc={WALLETCONNECT_LOGO}
+            iconAlt="WalletConnect logo"
+            onClick={onOpenModal}
+            disabled={loading}
+            theme={walletTheme}
+          />
+        )}
+
+        {errorMessage && (
+          <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive space-y-2">
+            <p>{errorMessage}</p>
+            <button
+              type="button"
+              onClick={onRetry}
+              className="text-xs font-semibold underline underline-offset-2"
+              disabled={loading}
+            >
+              Try again
+            </button>
+          </div>
+        )}
+
+        <div className="space-y-3">
+          <WalletOption
+            title="Email & password"
+            subtitle="Sign in with your ChopDot account"
+            iconSrc={EMAIL_LOGIN_LOGO}
+            iconAlt="Email login icon"
+            onClick={onEmailOptionToggle}
+            disabled={loading}
+            theme={{
+              ...walletTheme,
+              ...emailTheme,
+            }}
+          />
+          {showEmailForm && emailForm}
+          <button
+            type="button"
+            onClick={onSignupLink}
+            className="text-xs text-[var(--accent)] underline underline-offset-4"
+          >
+            Need an account? Create one
+          </button>
+        </div>
+
+        <WalletOption
+          title="Continue as guest"
+          onClick={onGuestLogin}
+          disabled={loading}
+          variant="ghost"
+          theme={guestTheme}
+        />
+
+        <div className="text-center space-y-2">
+          <button
+            type="button"
+            onClick={onSwitchToDesktop}
+            className="text-xs font-semibold text-[var(--accent)] underline underline-offset-4"
+          >
+            Switch to desktop wallet view
+          </button>
+        </div>
+      </div>
+    </WalletPanel>
+  );
+};
+
 const isFlagEnabled = (value?: string) => value === '1' || value?.toLowerCase() === 'true';
 
 interface ViewModeToggleProps {
@@ -1273,138 +1407,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     );
   };
 
-const MobileWalletConnectPanel = ({
-  loading,
-  errorMessage,
-  onRetry,
-  onSwitchToDesktop,
-  mode,
-  panelTheme,
-  walletTheme,
-  guestTheme,
-  onGuestLogin,
-  onEmailOptionToggle,
-  emailTheme,
-  showEmailForm,
-  emailForm,
-  onSignupLink,
-  waitingForSignature,
-  onOpenModal,
-}: {
-  loading: boolean;
-  errorMessage: string | null;
-  onRetry: () => Promise<string | null>;
-    onSwitchToDesktop: () => void;
-    mode: PanelMode;
-    panelTheme: PanelTheme;
-    walletTheme: Partial<WalletOptionTheme>;
-    guestTheme: Partial<WalletOptionTheme>;
-    onGuestLogin: () => Promise<void>;
-    onEmailOptionToggle: () => void;
-    emailTheme: Partial<WalletOptionTheme>;
-  showEmailForm: boolean;
-  emailForm?: ReactNode;
-  onSignupLink: () => void;
-  waitingForSignature: boolean;
-  onOpenModal?: () => Promise<void>;
-}) => {
-    const textPrimary = mode === 'dark' ? 'text-white' : 'text-[#111111]';
-    const textSecondary = mode === 'dark' ? 'text-white/70' : 'text-secondary/80';
-
-    return (
-      <WalletPanel theme={panelTheme}>
-        <div className="space-y-4">
-          <div className="text-center space-y-1">
-            <p className={`text-base font-semibold ${textPrimary}`}>Open your wallet</p>
-            <p className={`text-sm ${textSecondary}`}>
-              Tap your wallet below. After approving the connection, stay inside your wallet until you confirm the signature.
-            </p>
-          {waitingForSignature && (
-            <div className="mt-3 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent)]/10 p-3 space-y-2">
-              <div className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin text-[var(--accent)] flex-shrink-0" />
-                <p className="text-sm font-semibold text-foreground">
-                  Signature pending in wallet
-                </p>
-              </div>
-              <p className="text-xs text-muted leading-relaxed pl-6">
-                Go back to your wallet app and approve the signature request. Stay in your wallet until confirmed.
-              </p>
-            </div>
-          )}
-        </div>
-
-        {onOpenModal && (
-          <WalletOption
-            title="WalletConnect"
-            subtitle="Nova, Subwallet, Talisman"
-            iconSrc={WALLETCONNECT_LOGO}
-            iconAlt="WalletConnect logo"
-            onClick={onOpenModal}
-            disabled={loading}
-            theme={walletTheme}
-          />
-        )}
-
-        {errorMessage && (
-          <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive space-y-2">
-            <p>{errorMessage}</p>
-            <button
-                type="button"
-                onClick={onRetry}
-                className="text-xs font-semibold underline underline-offset-2"
-                disabled={loading}
-              >
-                Try again
-              </button>
-            </div>
-          )}
-
-          <div className="space-y-3">
-            <WalletOption
-              title="Email & password"
-              subtitle="Sign in with your ChopDot account"
-              iconSrc={EMAIL_LOGIN_LOGO}
-              iconAlt="Email login icon"
-              onClick={onEmailOptionToggle}
-              disabled={loading}
-              theme={{
-                ...walletTheme,
-                ...emailTheme,
-              }}
-            />
-            {showEmailForm && emailForm}
-            <button
-              type="button"
-              onClick={onSignupLink}
-              className="text-xs text-[var(--accent)] underline underline-offset-4"
-            >
-              Need an account? Create one
-            </button>
-          </div>
-
-          <WalletOption
-            title="Continue as guest"
-            onClick={onGuestLogin}
-            disabled={loading}
-            variant="ghost"
-            theme={guestTheme}
-          />
-
-          <div className="text-center space-y-2">
-            <button
-              type="button"
-              onClick={onSwitchToDesktop}
-              className="text-xs font-semibold text-[var(--accent)] underline underline-offset-4"
-            >
-              Switch to desktop wallet view
-            </button>
-          </div>
-        </div>
-      </WalletPanel>
-    );
-  };
-
   // Email login form JSX - rendered directly (not via function call) to prevent keyboard dismissal
   // This fixes the Safari keyboard issue where typing one letter dismisses the keyboard
   // Key fix: Render JSX directly ({emailLoginForm}) instead of calling a function ({renderEmailLoginForm()})
@@ -1778,9 +1780,13 @@ const MobileWalletConnectPanel = ({
               loading={loading}
               errorMessage={error}
               onRetry={async () => await startWalletConnectSession({ openQrModal: false, source: 'mobile-panel-retry' })}
-              onSwitchToDesktop={async () => {
+              onSwitchToDesktop={() => {
+                // Only switch views; do not auto-trigger WalletConnect
                 setViewModeOverride('desktop');
-                await startWalletConnectSession({ openQrModal: true, source: 'mobile-panel-switch-desktop' });
+                setShowWalletConnectQR(false);
+                setIsWaitingForWalletConnect(false);
+                setIsWaitingForSignature(false);
+                setLoading(false);
               }}
               mode={panelMode}
               panelTheme={resolvedPanelTheme}
