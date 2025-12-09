@@ -306,21 +306,6 @@ export class SupabaseSource implements DataSource {
     }, {});
   }
 
-      // eslint-disable-next-line no-bitwise
-      buffer[6] = (value6 & 0x0f) | 0x40;
-      // eslint-disable-next-line no-bitwise
-      buffer[8] = (value8 & 0x3f) | 0x80;
-      const hex = Array.from(buffer, (b) => b.toString(16).padStart(2, '0')).join('');
-      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
-    }
-
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
-      const rand = Math.random() * 16 | 0;
-      const value = char === 'x' ? rand : ((rand & 0x3) | 0x8);
-      return value.toString(16);
-    });
-  }
-
   private mapRow(row: SupabasePotRow): Pot {
     const metadata = (row.metadata ?? {}) as Record<string, unknown>;
 
