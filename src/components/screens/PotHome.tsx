@@ -4,7 +4,6 @@ import { ExpensesTab } from "./ExpensesTab";
 import { SavingsTab } from "./SavingsTab";
 import { MembersTab } from "./MembersTab";
 import { SettingsTab } from "./SettingsTab";
-import { SharePotSheet } from "./SharePotSheet";
 import { Download, Share2, ExternalLink, Copy } from "lucide-react";
 import { exportPotExpensesToCSV } from "../../utils/export";
 import { triggerHaptic } from "../../utils/haptics";
@@ -248,7 +247,6 @@ export function PotHome({
   const [isCheckpointing] = useState(false);
   const [isBackingUp, setIsBackingUp] = useState(false);
   const [lastCheckpointClick, setLastCheckpointClick] = useState(0);
-  const [showShareSheet, setShowShareSheet] = useState(false);
   
   // Task 2: Use DL-loaded pot history as source of truth
   // Ensure all history entries have required status field (default to 'submitted')
@@ -544,7 +542,11 @@ export function PotHome({
             {potType === "expense" && (
               <button
                 onClick={() => {
-                  setShowShareSheet(true);
+                  if (onCopyInviteLink) {
+                    onCopyInviteLink();
+                  } else {
+                    setShowShareSheet(true);
+                  }
                 }}
                 className="p-2 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
                 title="Share invite"
@@ -895,39 +897,12 @@ export function PotHome({
             onLeavePot={onLeavePot}
             onArchivePot={onArchivePot}
             onDeletePot={onDeletePot}
-            onSharePot={() => setShowShareSheet(true)}
+            onSharePot={() => {
+              if (onCopyInviteLink) onCopyInviteLink();
+            }}
           />
         )}
       </div>
-
-      {/* Share Pot Sheet */}
-      <SharePotSheet
-        isOpen={showShareSheet}
-        onClose={() => setShowShareSheet(false)}
-        pot={pot ? {
-          ...pot,
-          id: pot.id || potId || '',
-          name: pot.name || potName,
-          type: pot.type || potType,
-          baseCurrency: (pot.baseCurrency || baseCurrency) as 'USD' | 'DOT',
-          members: pot.members || members.map(m => ({ id: m.id, name: m.name, address: m.address || null })),
-          expenses: pot.expenses || expenses.map(e => ({
-            id: e.id,
-            amount: e.amount,
-            currency: e.currency,
-            paidBy: e.paidBy,
-            memo: e.memo,
-            date: e.date,
-            split: e.split,
-            attestations: e.attestations,
-            hasReceipt: e.hasReceipt,
-            receiptUrl: e.receiptUrl,
-          })),
-          createdAt: pot.createdAt,
-          updatedAt: pot.updatedAt,
-        } : null}
-        onShowToast={onShowToast}
-      />
     </div>
 
     {/* Quick Keypad Sheet */}

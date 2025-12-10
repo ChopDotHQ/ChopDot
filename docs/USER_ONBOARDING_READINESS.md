@@ -8,7 +8,7 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
 - Keep risky features gated behind flags; avoid breaking existing UX while we onboard.
 
 ## Auth & WalletConnect
-- 🔴 Logout should also disconnect WC — **TEDDY**  
+- 🟢 Logout should also disconnect WC — **TEDDY**  
   - Current: logout clears Supabase only; WC session persists.  
   - Needed: call `AccountContext.disconnect()` and clear WC storage on logout.
 - 🟡 Mobile WC stability — **DEV**  
@@ -23,16 +23,23 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
 - 🟡 WC Modal (ether.fi-style) behind `VITE_ENABLE_WC_MODAL` — **DEV**  
   - Current: wired, flag off by default.  
   - Needed: test polkadot namespace; keep legacy as default.
+- 🟡 Auth UI refactor — **DEV**  
+  - Current: `SignInScreen.tsx` ~2k lines with duplicated signup logic.  
+  - Needed: split into subcomponents/hooks (wallet auth, email auth), unify signup flow.
+- 🟢 Secure wallet auth (nonce/signature) — **DEV**  
+  - Added `auth_nonces` table + `wallet-auth` edge function; frontend uses nonce → sign → verify → `setSession`; address-as-password path removed. Rotation scripts available for dormant accounts.
 
 ## Data & Sync (Supabase)
-- 🔴 Profiles schema/upsert — **TEDDY**  
-  - Current: `profiles.upsert` uses `wallet_address`; may be missing/mismatched in prod/preview.  
-  - Needed: verify column exists/type; align code/schema.
-- 🔴 Migration verification — **TEDDY**  
+- 🟢 Profiles schema/upsert — **TEDDY**  
+  - Confirmed `wallet_address` alignment and upsert working.
+- 🟡 Migration verification — **TEDDY**  
   - Current: not documented for prod/preview.  
   - Needed: list expected migrations; confirm applied; fix gaps.
 - 🟢 Env validation — **DEV**  
   - Done: startup check for `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_WALLETCONNECT_PROJECT_ID` with clear error messages at both build-time (vite.config.ts) and runtime (main.tsx).
+- 🔴 Cross-user pots & invites — **DEV**  
+  - Current: `VITE_DATA_SOURCE=local`; invites are local-only UI and never reach other users. No `invites` table/email/link flow.  
+  - Needed: switch to Supabase data source, add `invites` table + RLS + email/join link, route AddMember/Invite through Supabase, test two-account send/accept/reject/expire.
 
 ## UX & Polish
 - 🔴 Safari keyboard issue — **DEV**  
@@ -46,10 +53,12 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
 ## Payments & Flows
 - 🟡 Pot create/settle smoke test — **DEV**  
   - Re-run on mobile/desktop; fix regressions.
+- 🔴 Financial precision — **DEV**  
+  - Current: JS `number` math with partial rounding; risk of drift in settlements.  
+  - Needed: move to decimal/integer math or consistent rounding at every step; cover with tests.
 - 🟢 DOT balance display retained — **DEV**.
-- 🟡 Receive QR — **TEDDY**  
-  - Add a simple receive QR for connected wallet.  
-  - @Devinson to test.
+- 🟢 Receive QR — **TEDDY**  
+  - Receive QR/copy implemented and tested; transactions require DOT to fully validate transfer.
 
 ## Activity/Notifications
 - 🔴 ChopDot-only activity feed — **Open**  
@@ -60,16 +69,24 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
   - Verification: UI test run confirmed Sonner Toaster present and success toasts firing (e.g., Copy handle); no console errors.
 
 ## Stability & Performance
-- 🟡 Toast systems — **TEDDY**  
+- 🟢 Toast systems — **TEDDY**  
   - Pick one or document use (Toast vs TxToast vs sonner).  
   - Update: Teddy picked Sonner for production flows; legacy TxToast stays for on-chain status; CRDT demo still uses alerts (dev-only).
 - 🟢 Console warning audit — **DEV**  
   - Report: `docs/CONSOLE_WARNING_AUDIT.md` (2025-01-27).  
   - Quick wins (optional): add toasts for clipboard failures and WC timeouts; wrap dev logs in `if (import.meta.env.DEV)`.
+- 🟡 Pagination / large-data handling — **DEV**  
+  - Current: fetch-all for pots/expenses; will degrade with history.  
+  - Needed: cursor/offset pagination in data layer + UI “load more”/infinite scroll.
+- 🔴 Test coverage gaps — **DEV**  
+  - Current: minimal tests for settlements/data layer.  
+  - Needed: unit tests for calc/settlements (rounding, multi-party), integration tests for data source/repo basics.
 
 ## Safety & Security
-- 🔴 Logout completeness / WC storage cleared — **TEDDY**  
+- 🟢 Logout completeness / WC storage cleared — **TEDDY**  
   - Ensure AuthContext + AccountContext cleared and WC session/storage removed on logout.
+- 🟢 Wallet auth hardened — **DEV**  
+  - Address-as-password removed; nonce/signature verification via edge function; passwords rotated on login; bulk rotation script available for dormant accounts.
 
 ## Ops
 - 🟢 Feature flags doc (internal) — **DEV**  
@@ -90,7 +107,7 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
   - Purpose: small, safe step toward a wallet home without derailing core.
 
 ## Future (parked)
-- Full “Home Wallet” / multi-chain (balances, price history, tx feed, send/swap) — out of current scope; requires additional infra and product decisions.
+- Full “Home Wallet” / multi-chain (balances, price history, tx feed, send/swap) — out of current scope; requires additional infra and product decisions. Reference brief: https://www.notion.so/Home-Wallet-brief-proposal-2b97ca876ac380e7a21dd311a0d27688?pvs=21
 
 ## Ready-to-Push (definition of done)
 - Mobile WC login on prod/preview works: no import/CSP errors; signature completes; Supabase accepts wallet email.  
@@ -100,3 +117,14 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
 - Mobile login usable: Safari keyboard fixed; loading states present; no dead buttons.  
 - Console mostly clean; toast usage standardized/documented.  
 - Flags/envs correct: required envs validated; flags documented; optional features behind flags can be turned off instantly.
+
+## Cross-User Pots & Invites Tracker
+- ✅ Supabase data source live (`VITE_DATA_SOURCE=supabase`, URL/anon key set)
+- ✅ Invites table + policies applied
+- ✅ Pot access via `can_access_pot` (members can read pots; creator-only updates)
+- ⬜ Make invites migration idempotent (add `drop policy if exists` guards)
+- ⬜ Invite acceptance endpoint (Edge Function/RPC): token → mark accepted → insert `pot_members`
+- ⬜ Client send: AddMember writes to `invites` (Supabase), returns/copies join link
+- ⬜ Client accept: join route + call acceptance endpoint; handle invalid/expired/duplicate
+- ⬜ Show pending/accepted invites in UI (pull from `invites`)
+- ⬜ QA: two-account send/accept; invalid/expired/duplicate/self-invite cases

@@ -160,13 +160,19 @@ export class SupabaseSource implements DataSource {
   async deletePot(id: string): Promise<void> {
     const supabase = this.ensureReady();
     const userId = await this.getCurrentUserId();
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('pots')
       .delete()
       .eq('id', id)
-      .eq('created_by', userId);
+      .eq('created_by', userId)
+      .select('id');
     if (error) {
       throw new Error(`[SupabaseSource] Failed to delete pot ${id}: ${error.message}`);
+    }
+    if (!data || data.length === 0) {
+      throw new Error(
+        `[SupabaseSource] No pot deleted. Make sure you are the creator and have permission to delete this pot.`,
+      );
     }
   }
 

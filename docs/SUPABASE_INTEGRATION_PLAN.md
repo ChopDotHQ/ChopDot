@@ -29,6 +29,15 @@ This document captures the agreed-upon plan for wiring the ChopDot app into the 
 
 **Deliverable:** CRUD flow working against Supabase so pots/expenses sync across devices.
 
+### Critical Readiness: Cross-user Pots & Invites (Unblocked once CRUD is live)
+
+| Item | Description | Owner |
+|------|-------------|-------|
+| Invites table | Add `invites` table (pot_id, invitee_email, inviter_user_id, status, token, expires_at). Apply RLS: inviter + pot members can read/write; invitee can read/accept via token/email. | App |
+| Email / link | Generate signed join link or email (via Supabase SMTP or webhook). Include pot context + token; mark accepted/expired. | App |
+| Client wiring | AddMember “invite” writes to `invites` in Supabase; show pending/accepted; handle join via link/email on the recipient device. | App |
+| QA | Two-account test (desktop + mobile): send, accept, reject, expire. | App |
+
 ---
 
 ## Phase 2 – CRDT Sync (Queued)

@@ -2,6 +2,22 @@
 
 Based on the initial architectural review of the ChopDot codebase, the following areas have been identified for improvement to enhance robustness, scalability, and financial accuracy.
 
+## 0. Cross-user Pots & Invites (Blocked)
+
+**Current State:**
+- App runs with `VITE_DATA_SOURCE=local`; pots/members never leave the device.
+- “Invite sent” is purely local UI — no backend record, email, or join link is issued.
+- Supabase integration (CRUD) is marked “In Progress” but not wired into the live env; CRDT sync is deferred to Phase 2.
+
+**Risk:**
+**High Severity / Feature Blocker.** Users cannot share pots or collaborate. Any “invite” silently fails to reach other accounts, preventing real-world use and testing.
+
+**Recommendation:**
+1. **Enable Supabase data source:** Set `VITE_DATA_SOURCE=supabase` and provide `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`; apply migrations.
+2. **Add invites backend:** Create `invites` table with RLS, insert on invite, send email or generate join link; include pot id, inviter, invitee email, status.
+3. **Client wiring:** Route AddMember/Invite flows through Supabase; show pending/accepted states; handle join via link/email on the recipient device.
+4. **QA:** Two-account test (desktop + mobile) covering send, accept, reject, and expiration.
+
 ## 1. Critical Security Vulnerability: Wallet Auth Bypass 🚨
 
 **Current State:**

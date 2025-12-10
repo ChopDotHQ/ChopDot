@@ -519,6 +519,42 @@ function AppContent() {
     | undefined
   >();
 
+  const copyInviteLink = useCallback(
+    async (potId: string) => {
+      const supabase = getSupabase();
+      if (!supabase) {
+        showToast("Supabase not configured", "error");
+        return;
+      }
+      const { data, error } = await supabase
+        .from("invites")
+        .select("token, invitee_email, status")
+        .eq("pot_id", potId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        console.error("[Invite] copy link failed", error);
+        showToast("Failed to load invite link", "error");
+        return;
+      }
+      if (!data?.token) {
+        showToast("No invite found. Add a member first.", "info");
+        return;
+      }
+
+      const link = `${window.location.origin}/join?token=${data.token}`;
+      try {
+        await navigator.clipboard?.writeText(link);
+        showToast("Invite link copied", "success");
+      } catch {
+        showToast(`Invite link: ${link}`, "success");
+      }
+    },
+    [showToast],
+  );
+
   const joinProcessingRef = useRef(false);
   const fetchInvites = useCallback(
     async (potId: string) => {
@@ -722,6 +758,18 @@ function AppContent() {
   };
 
   useEffect(() => {
+    const isSupabase = import.meta.env.VITE_DATA_SOURCE === 'supabase';
+    if (isSupabase) {
+      try {
+        localStorage.removeItem("chopdot_pots");
+        localStorage.removeItem("chopdot_pots_backup");
+      } catch (e) {
+        console.warn('[App] Failed to clear local pots in supabase mode', e);
+      }
+      setHasLoadedInitialData(true);
+      return;
+    }
+
     (async () => {
       try {
         const savedPots = localStorage.getItem("chopdot_pots");
@@ -2475,6 +2523,7 @@ function AppContent() {
               }
             }}
             onAddMember={() => setShowAddMember(true)}
+            onCopyInviteLink={() => copyInviteLink(pot.id)}
             onRemoveMember={(memberId) => {
               if (!currentPotId) return;
               setPots(

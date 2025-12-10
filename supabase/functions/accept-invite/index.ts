@@ -66,6 +66,12 @@ serve(async (req) => {
       return gone("invite expired");
     }
 
+    // Ensure the auth user exists in public.users (FK target for pot_members)
+    const { error: ensureUserError } = await admin
+      .from("users")
+      .upsert({ id: user.id }, { onConflict: "id" });
+    if (ensureUserError) return json({ error: ensureUserError.message }, 500);
+
     // Check if user is already a member
     const { data: existingMember, error: memberError } = await admin
       .from("pot_members")
