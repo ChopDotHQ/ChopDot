@@ -57,14 +57,10 @@ export class SupabaseSource implements DataSource {
 
   async getPots(options?: ListOptions): Promise<Pot[]> {
     const supabase = this.ensureReady();
-    const userId = await this.getCurrentUserId();
-    
-    // With current RLS policies, users can only read pots they created
-    // Future enhancement: implement shared pots via different approach
+    // Rely on RLS to scope pots to those the user can access (created or member)
     let query = supabase
       .from('pots')
       .select(POT_COLUMNS.join(','))
-      .eq('created_by', userId)
       .order('created_at', { ascending: false });
 
     // Apply pagination if options provided
@@ -91,14 +87,10 @@ export class SupabaseSource implements DataSource {
 
   async getPot(id: string): Promise<Pot | null> {
     const supabase = this.ensureReady();
-    const userId = await this.getCurrentUserId();
-    
-    // With current RLS policies, users can only read pots they created
     const { data, error } = await supabase
       .from('pots')
       .select(POT_COLUMNS.join(','))
       .eq('id', id)
-      .eq('created_by', userId)
       .maybeSingle();
 
     if (error) {

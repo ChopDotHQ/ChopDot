@@ -22,6 +22,7 @@ import {
   calculateSettlements,
   calculatePotSettlements,
 } from "./utils/settlements";
+import { getSupabase } from "./utils/supabase-client";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { FeatureFlagsProvider, useFeatureFlags } from "./contexts/FeatureFlagsContext";
 import { useAccount } from "./contexts/AccountContext";
@@ -505,6 +506,7 @@ function AppContent() {
   >(null);
   const [selectedCounterpartyId, setSelectedCounterpartyId] =
     useState<string | null>(null);
+  const [invitesByPot, setInvitesByPot] = useState<Record<string, { id: string; invitee_email: string; status: string; token: string }[]>>({});
   const notifyPotRefresh = useCallback((potId: string) => {
     window.dispatchEvent(
       new CustomEvent("pot-refresh", { detail: { potId } }),
@@ -516,6 +518,90 @@ function AppContent() {
     | { provider: string; address: string; name?: string }
     | undefined
   >();
+
+  const joinProcessingRef = useRef(false);
+  const fetchInvites = useCallback(
+    async (potId: string) => {
+      const supabase = getSupabase();
+      if (!supabase) return;
+      const { data, error } = await supabase
+        .from("invites")
+        .select("id, invitee_email, status, token")
+        .eq("pot_id", potId);
+      if (error) {
+        console.warn("[Invites] fetch failed", error.message);
+        return;
+      }
+      setInvitesByPot((prev) => ({ ...prev, [potId]: data ?? [] }));
+    },
+    []
+  );
+  useEffect(() => {
+    if (currentPotId) {
+      fetchInvites(currentPotId);
+    }
+  }, [currentPotId, fetchInvites]);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const token = url.searchParams.get("token") || url.searchParams.get("invite");
+    if (!token || joinProcessingRef.current) return;
+    joinProcessingRef.current = true;
+
+    (async () => {
+      try {
+        const supabase = getSupabase();
+        if (!supabase) {
+          showToast("Supabase not configured", "error");
+          return;
+        }
+
+        const { data: sessionData } = await supabase.auth.getSession();
+        const accessToken = sessionData.session?.access_token;
+        if (!accessToken) {
+          showToast("Log in to accept invite", "info");
+          return;
+        }
+
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accept-invite`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({ token }),
+          },
+        );
+
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || result?.error) {
+          showToast(result?.error || "Failed to accept invite", "error");
+        } else {
+          showToast("Invite accepted!", "success");
+          const potId = result?.potId as string | undefined;
+          if (potId) {
+            setCurrentPotId(potId);
+            reset({ type: "pot-home", potId });
+            notifyPotRefresh(potId);
+          }
+        }
+
+        // Clean token from URL
+        const cleaned = new URL(window.location.href);
+        cleaned.searchParams.delete("token");
+        cleaned.searchParams.delete("invite");
+        window.history.replaceState({}, "", cleaned.toString());
+      } catch (err) {
+        console.error("[Invite] accept failed", err);
+        showToast("Failed to accept invite", "error");
+      } finally {
+        // Reset ref to allow processing another invite
+        joinProcessingRef.current = false;
+      }
+    })();
+  }, [reset, notifyPotRefresh, showToast]);
 
   const [settlements, setSettlements] = useState<Settlement[]>([]);
 
@@ -2324,13 +2410,23 @@ function AppContent() {
 
       case "pot-home":
         if (!pot) return null;
+        const potInvites = invitesByPot[pot.id] || [];
+        // Filter out accepted invites (they're now in pot.members via pot_members table)
+        const pendingInvites = potInvites.filter((inv) => inv.status === "pending");
+        const inviteMembers = pendingInvites.map((inv) => ({
+          id: `invite-${inv.token}`,
+          name: inv.invitee_email,
+          role: "Member" as const,
+          status: "pending" as const,
+        }));
+        const mergedMembers = [...pot.members, ...inviteMembers];
         return (
           <PotHome
             potId={pot.id}
             potType={pot.type}
             potName={pot.name}
             baseCurrency={pot.baseCurrency}
-            members={pot.members}
+            members={mergedMembers}
             expenses={pot.expenses}
             budget={pot.budget}
             budgetEnabled={pot.budgetEnabled}
@@ -2400,8 +2496,9 @@ function AppContent() {
                   logDev('[DataLayer] Member removed via service', { potId: currentPotId, memberId });
                   notifyPotRefresh(currentPotId);
                 } catch (error) {
+                  console.error("[Member] remove failed", error);
                   warnDev('[DataLayer] Service removeMember failed', error);
-                  showToast('Saved locally (service write failed)', 'info');
+                  showToast(error instanceof Error ? error.message : 'Failed to remove member', 'error');
                 }
               })();
 
@@ -2457,11 +2554,17 @@ function AppContent() {
               showToast(toastLabel, "success");
             }}
             
-            onDeletePot={() => {
+            onDeletePot={async () => {
               if (!currentPotId) return;
-              setPots(pots.filter((p) => p.id !== currentPotId));
-              showToast("Pot deleted", "info");
-              reset({ type: "pots-home" });
+              try {
+                await potService.deletePot(currentPotId);
+                setPots(pots.filter((p) => p.id !== currentPotId));
+                showToast("Pot deleted", "success");
+                reset({ type: "pots-home" });
+              } catch (error: any) {
+                console.error("[Pot] delete failed", error);
+                showToast(error?.message || "Failed to delete pot", "error");
+              }
             }}
             onLeavePot={() => {
               if (!currentPotId) return;
@@ -3474,51 +3577,63 @@ function AppContent() {
             showToast(`${person.name} added to pot`, "success");
           }}
           onInviteNew={(nameOrEmail) => {
-            const newMemberId = `pending-${Date.now()}`;
-            const newMember = {
-              id: newMemberId,
-              name: nameOrEmail,
-              role: "Member" as const,
-              status: "pending" as const,
-            };
-
-            setPots(
-              pots.map((p) =>
-                p.id === currentPotId
-                  ? {
-                      ...p,
-                      members: [
-                        ...p.members,
-                        newMember,
-                      ],
-                    }
-                  : p,
-              ),
-            );
+            const supabase = getSupabase();
+            const email = nameOrEmail.trim();
+            if (!currentPotId) {
+              showToast("Select a pot first", "error");
+              return;
+            }
+            if (!supabase) {
+              showToast("Supabase is not configured", "error");
+              return;
+            }
 
             (async () => {
               try {
-                const createMemberDTO = {
-                  potId: currentPotId!,
-                  name: nameOrEmail,
-                  role: "Member" as const,
-                  status: "pending" as const,
-                  address: null,
-                  verified: false,
-                };
+                const { data: userData, error: userError } = await supabase.auth.getUser();
+                if (userError || !userData.user) {
+                  showToast("Log in to invite members", "error");
+                  return;
+                }
 
-                await memberService.addMember(currentPotId!, createMemberDTO);
-                logDev('[DataLayer] Member invited via service', { potId: currentPotId, memberId: newMemberId });
-              } catch (error) {
-                warnDev('[DataLayer] Service addMember (invite) failed', error);
-                showToast('Saved locally (service write failed)', 'info');
+                const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7 days
+                const { data, error } = await supabase
+                  .from("invites")
+                  .insert({
+                    pot_id: currentPotId!,
+                    invitee_email: email,
+                    expires_at: expiresAt,
+                    created_by: userData.user.id,
+                  })
+                  .select("token, pot_id")
+                  .maybeSingle();
+
+                if (error) {
+                  console.error("[Invite] failed to create invite", error);
+                  showToast(error.message || "Failed to send invite", "error");
+                  return;
+                }
+
+                const token = data?.token;
+                if (!token) {
+                  showToast("Invite created but no token returned", "error");
+                  return;
+                }
+
+                const link = `${window.location.origin}/join?token=${token}`;
+                try {
+                  await navigator.clipboard?.writeText(link);
+                  showToast(`Invite ready for ${email}. Link copied.`, "success");
+                } catch {
+                  showToast(`Invite ready for ${email}. Copy this link:\n${link}`, "success");
+                }
+
+                fetchInvites(currentPotId!);
+              } catch (err: any) {
+                console.error("[Invite] unexpected error", err);
+                showToast("Failed to send invite", "error");
               }
             })();
-
-            showToast(
-              `Invite sent to ${nameOrEmail}`,
-              "success",
-            );
           }}
           onShowQR={() => {
             setShowAddMember(false);

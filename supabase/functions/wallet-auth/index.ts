@@ -186,25 +186,82 @@ async function ensureUser(address: string, chain: "polkadot" | "evm", email: str
   }
 
   // Link wallet to user (upsert to handle existing links)
+  // Note: For SS58 addresses (Polkadot), preserve case as they're checksummed
+  // For EVM addresses, lowercase is standard
   const walletProvider = chain === "polkadot" ? "Polkadot" : "EVM";
-  const { error: walletLinkError } = await supabaseAdmin
-    .from("wallet_links")
-    .upsert({
-      user_id: userId,
-      chain,
-      address: address.toLowerCase().trim(),
-      provider: walletProvider,
-      verified_at: new Date().toISOString(),
-    }, {
-      onConflict: "user_id,chain,lower(address)",
-      ignoreDuplicates: false,
-    });
+  const normalizedAddress = chain === "evm" 
+    ? address.toLowerCase().trim() 
+    : address.trim(); // Preserve SS58 case for Polkadot
   
-  if (walletLinkError) {
-    console.warn("[wallet-auth] wallet_links upsert warning:", walletLinkError.message);
-    // Non-fatal, continue
+  // Manual upsert: fetch existing links and match case-insensitively
+  // The unique index is on (user_id, chain, LOWER(address))
+  const { data: links, error: selectError } = await supabaseAdmin
+    .from("wallet_links")
+    .select("id, address")
+    .eq("user_id", userId)
+    .eq("chain", chain);
+  
+  // Find matching link case-insensitively
+  const matchingLink = links?.find(link => 
+    link.address.toLowerCase() === normalizedAddress.toLowerCase()
+  );
+  
+  if (matchingLink) {
+    // Update existing link
+    const { error: updateError } = await supabaseAdmin
+      .from("wallet_links")
+      .update({
+        address: normalizedAddress, // Update address in case case changed
+        provider: walletProvider,
+        verified_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", matchingLink.id);
+    
+    if (updateError) {
+      console.warn("[wallet-auth] wallet_links update warning:", updateError.message);
+    } else {
+      console.log("[wallet-auth] Wallet link updated:", { userId, chain, address: normalizedAddress, provider: walletProvider });
+    }
   } else {
-    console.log("[wallet-auth] Wallet linked to user:", { userId, chain, address, provider: walletProvider });
+    // Try to insert new link
+    const { error: insertError } = await supabaseAdmin
+      .from("wallet_links")
+      .insert({
+        user_id: userId,
+        chain,
+        address: normalizedAddress,
+        provider: walletProvider,
+        verified_at: new Date().toISOString(),
+      });
+    
+    if (insertError) {
+      // If duplicate key error, the link already exists - that's fine, just log it
+      if (insertError.message?.includes("duplicate key") || insertError.message?.includes("unique constraint")) {
+        console.log("[wallet-auth] Wallet link already exists (duplicate key):", { userId, chain, address: normalizedAddress });
+        // Try to update it anyway to refresh verified_at
+        const { data: allLinks } = await supabaseAdmin
+          .from("wallet_links")
+          .select("id, address")
+          .eq("user_id", userId)
+          .eq("chain", chain);
+        
+        const existing = allLinks?.find(l => l.address.toLowerCase() === normalizedAddress.toLowerCase());
+        if (existing) {
+          await supabaseAdmin
+            .from("wallet_links")
+            .update({
+              verified_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", existing.id);
+        }
+      } else {
+        console.warn("[wallet-auth] wallet_links insert warning:", insertError.message);
+      }
+    } else {
+      console.log("[wallet-auth] Wallet linked to user:", { userId, chain, address: normalizedAddress, provider: walletProvider });
+    }
   }
 
   return userId;
