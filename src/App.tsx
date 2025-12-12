@@ -1985,6 +1985,10 @@ function AppContent() {
   const dataSourceType = import.meta.env.VITE_DATA_SOURCE || 'local';
   const usingSupabaseSource = dataSourceType === 'supabase';
   const remoteSyncSnapshot = useRef<string>("");
+  const hasRemotePot = useMemo(
+    () => (currentPotId ? remotePots.some((p) => p.id === currentPotId) : false),
+    [remotePots, currentPotId],
+  );
   const {
     pot: remoteCurrentPot,
     loading: currentPotLoading,
@@ -2026,12 +2030,12 @@ function AppContent() {
       currentPotId &&
       !currentPot &&
       !currentPotLoading &&
-      currentPotError
+      currentPotError &&
+      !hasRemotePot
     ) {
       showToast('Pot not found or you no longer have access.', 'error');
-      reset({ type: 'pots-home' });
     }
-  }, [usingSupabaseSource, currentPotId, currentPot, currentPotLoading, currentPotError, reset]);
+  }, [usingSupabaseSource, currentPotId, currentPot, currentPotLoading, currentPotError, hasRemotePot, reset]);
   const totalOwing = balances.youOwe.reduce(
     (sum, p) => sum + p.totalAmount,
     0,
