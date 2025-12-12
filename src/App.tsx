@@ -105,6 +105,98 @@ interface Contribution {
   txHash?: string;
 }
 
+// Helpers to normalize data to strict types
+const normalizeMembers = (members: any[]): Member[] =>
+  (members || []).map((m) => ({
+    id: m.id,
+    name: m.name ?? "Member",
+    role: m.role === "Owner" ? "Owner" : "Member",
+    status: m.status === "pending" ? "pending" : "active",
+    address: m.address ?? undefined,
+    verified: m.verified,
+  }));
+
+const normalizeExpenses = (expenses: any[], fallbackCurrency: string): Expense[] =>
+  (expenses || []).map((e) => ({
+    id: e.id,
+    amount: Number(e.amount ?? 0),
+    currency: e.currency ?? fallbackCurrency ?? "USD",
+    paidBy: e.paidBy ?? "owner",
+    memo: e.memo ?? e.description ?? "",
+    date: e.date ?? new Date().toISOString(),
+    split: Array.isArray(e.split) ? e.split : [],
+    attestations: Array.isArray(e.attestations) ? e.attestations : [],
+    hasReceipt: Boolean(e.hasReceipt),
+    attestationTxHash: e.attestationTxHash,
+    attestationTimestamp: e.attestationTimestamp,
+  }));
+
+type CheckpointConfirmation = { confirmed: boolean; confirmedAt?: string };
+const normalizeConfirmations = (
+  confirmations?: Map<string, unknown> | Record<string, unknown>,
+): Map<string, CheckpointConfirmation> | Record<string, CheckpointConfirmation> | undefined => {
+  if (!confirmations) return undefined;
+  if (confirmations instanceof Map) {
+    const normalized = new Map<string, CheckpointConfirmation>();
+    confirmations.forEach((val, key) => {
+      if (typeof val === "object" && val !== null && "confirmed" in (val as any)) {
+        normalized.set(key, val as CheckpointConfirmation);
+      } else {
+        normalized.set(key, { confirmed: Boolean(val) });
+      }
+    });
+    return normalized;
+  }
+  const normalized: Record<string, CheckpointConfirmation> = {};
+  Object.entries(confirmations).forEach(([key, val]) => {
+    if (typeof val === "object" && val !== null && "confirmed" in (val as any)) {
+      normalized[key] = val as CheckpointConfirmation;
+    } else {
+      normalized[key] = { confirmed: Boolean(val) };
+    }
+  });
+  return normalized;
+};
+
+const normalizeHistory = (history: any[]): PotHistory[] =>
+  (history || [])
+    .map((h) => {
+      const status = h.status ?? "submitted";
+      if (h.type === "onchain_settlement") {
+        return {
+          id: h.id,
+          when: Number(h.when ?? Date.now()),
+          type: "onchain_settlement" as const,
+          fromMemberId: h.fromMemberId,
+          toMemberId: h.toMemberId,
+          fromAddress: h.fromAddress,
+          toAddress: h.toAddress,
+          amountDot: h.amountDot ?? "0",
+          txHash: h.txHash ?? "",
+          block: h.block,
+          status,
+          subscan: h.subscan ?? "",
+          note: h.note,
+        };
+      }
+      if (h.type === "remark_checkpoint") {
+        return {
+          id: h.id,
+          when: Number(h.when ?? Date.now()),
+          type: "remark_checkpoint" as const,
+          message: h.message ?? "",
+          potHash: h.potHash ?? "",
+          cid: h.cid,
+          txHash: h.txHash,
+          block: h.block,
+          status,
+          subscan: h.subscan,
+        };
+      }
+      return null;
+    })
+    .filter(Boolean) as PotHistory[];
+
 interface ExpenseCheckpoint {
   id: string;
   createdBy: string;
@@ -1903,6 +1995,18 @@ function AppContent() {
     ? remoteCurrentPot
     : pots.find((p) => p.id === currentPotId);
 
+  const normalizedCurrentPot = currentPot
+    ? ({
+        ...currentPot,
+        members: normalizeMembers(currentPot.members),
+        expenses: normalizeExpenses(currentPot.expenses, currentPot.baseCurrency),
+        history: normalizeHistory(currentPot.history || []),
+        budget: currentPot.budget ?? undefined,
+        goalAmount: currentPot.goalAmount ?? undefined,
+        totalPooled: currentPot.totalPooled ?? undefined,
+      } as Pot)
+    : undefined;
+
   useEffect(() => {
     if (!usingSupabaseSource || authLoading || !isAuthenticated) {
       return;
@@ -2489,7 +2593,13 @@ function AppContent() {
           role: "Member" as const,
           status: "pending" as const,
         }));
-        const mergedMembers = [...pot.members, ...inviteMembers];
+        const normalizedMembers = normalizeMembers(pot.members);
+        const mergedMembers = [...normalizedMembers, ...inviteMembers];
+        const normalizedExpenses = normalizeExpenses(pot.expenses, pot.baseCurrency);
+        const normalizedHistory = normalizeHistory(pot.history || []);
+        const normalizedCheckpointConfirmations = normalizeConfirmations(
+          pot.currentCheckpoint?.confirmations,
+        );
         return (
           <PotHome
             potId={pot.id}
@@ -2497,21 +2607,21 @@ function AppContent() {
             potName={pot.name}
             baseCurrency={pot.baseCurrency}
             members={mergedMembers}
-            expenses={pot.expenses}
-            budget={pot.budget}
+            expenses={normalizedExpenses}
+            budget={pot.budget ?? undefined}
             budgetEnabled={pot.budgetEnabled}
             checkpointEnabled={pot.checkpointEnabled}
             hasActiveCheckpoint={
               pot.currentCheckpoint?.status === "pending"
             }
             checkpointConfirmations={
-              pot.currentCheckpoint?.confirmations
+              normalizedCheckpointConfirmations
             }
             contributions={pot.contributions}
-            totalPooled={pot.totalPooled}
-            yieldRate={pot.yieldRate}
+            totalPooled={pot.totalPooled ?? undefined}
+            yieldRate={pot.yieldRate ?? undefined}
             defiProtocol={pot.defiProtocol}
-            goalAmount={pot.goalAmount}
+            goalAmount={pot.goalAmount ?? undefined}
             goalDescription={pot.goalDescription}
             onBack={back}
             onImportPot={(importedPot) => {
@@ -2695,7 +2805,7 @@ function AppContent() {
               showToast("Pot archived", "info");
               reset({ type: "pots-home" });
             }}
-            potHistory={pot.history || []}
+            potHistory={normalizedHistory}
             onUpdatePot={(updates) => {
               if (!currentPotId) return;
               setPots(
@@ -2778,10 +2888,11 @@ function AppContent() {
 
       case "add-expense":
         if (!pot) return null;
+        const addExpenseMembers = normalizeMembers(pot.members);
         return (
           <AddExpense
             potName={pot.name}
-            members={pot.members}
+            members={addExpenseMembers}
             baseCurrency={pot.baseCurrency}
             onBack={back}
             onSave={addExpense}
@@ -2790,7 +2901,9 @@ function AppContent() {
 
       case "edit-expense":
         if (!pot) return null;
-        const editingExpense = pot.expenses.find(
+        const editExpenseMembers = normalizeMembers(pot.members);
+        const editExpenses = normalizeExpenses(pot.expenses, pot.baseCurrency);
+        const editingExpense = editExpenses.find(
           (e) => e.id === screen.expenseId,
         );
         if (!editingExpense) return null;
@@ -2798,7 +2911,7 @@ function AppContent() {
         return (
           <AddExpense
             potName={pot.name}
-            members={pot.members}
+            members={editExpenseMembers}
             baseCurrency={pot.baseCurrency}
             existingExpense={editingExpense}
             onBack={back}
@@ -2808,7 +2921,9 @@ function AppContent() {
 
       case "expense-detail":
         if (!pot) return null;
-        const expense = pot.expenses.find(
+        const detailMembers = normalizeMembers(pot.members);
+        const detailExpenses = normalizeExpenses(pot.expenses, pot.baseCurrency);
+        const expense = detailExpenses.find(
           (e) => e.id === screen.expenseId,
         );
         if (!expense) return null;
@@ -2816,7 +2931,7 @@ function AppContent() {
         return (
           <ExpenseDetail
             expense={expense}
-            members={pot.members}
+            members={detailMembers}
             currentUserId="owner"
             baseCurrency={pot.baseCurrency}
             walletConnected={walletConnected}
@@ -2856,8 +2971,8 @@ function AppContent() {
 
       case "settle-selection":
         const potSettlements =
-          currentPot
-            ? calculatePotSettlements(currentPot, "owner")
+          normalizedCurrentPot
+            ? calculatePotSettlements(normalizedCurrentPot, "owner")
             : balances;
 
         const selectionBalances = [
@@ -2907,8 +3022,8 @@ function AppContent() {
           : "All pots";
 
         const scopedSettlements =
-          currentPot
-            ? calculatePotSettlements(currentPot, "owner")
+          normalizedCurrentPot
+            ? calculatePotSettlements(normalizedCurrentPot, "owner")
             : balances;
 
         if (!personIdFromNav) {
@@ -2984,7 +3099,7 @@ function AppContent() {
         let recipientAddress: string | undefined = undefined;
         if (personIdFromNav) {
           if (currentPotId) {
-            const currentPotSnapshot = currentPot;
+            const currentPotSnapshot = normalizedCurrentPot;
             const recipientMember = currentPotSnapshot?.members.find(m => m.id === personIdFromNav);
             recipientAddress = recipientMember?.address;
           } else {
@@ -3016,7 +3131,11 @@ function AppContent() {
             recipientAddress={recipientAddress}
             baseCurrency={currentPot?.baseCurrency || "USD"}
             onShowToast={showToast}
-            pot={currentPot ? ({ ...currentPot, mode: 'casual' as const } as any) : undefined}
+            pot={
+              normalizedCurrentPot
+                ? ({ ...normalizedCurrentPot, mode: "casual" as const } as any)
+                : undefined
+            }
             onUpdatePot={currentPotId ? (updates) => {
               if (currentPot) {
                 setPots(pots.map(p => p.id === currentPotId ? { ...p, ...updates } : p));
