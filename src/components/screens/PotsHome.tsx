@@ -40,6 +40,8 @@ interface PotsHomeProps {
   owedToYou?: PersonDebt[];
   onCreatePot: () => void;
   onPotClick?: (potId: string) => void;
+  onAcceptInvite?: (token: string) => void;
+  showAcceptInvite?: boolean;
   onSettleWithPerson?: (personId: string) => void;
   onRemindSent?: () => void;
   onNotificationClick?: () => void;
@@ -58,6 +60,8 @@ export function PotsHome({
   owedToYou = [],
   onCreatePot, 
   onPotClick,
+  onAcceptInvite,
+  showAcceptInvite = false,
   onSettleWithPerson: _onSettleWithPerson,
   onRemindSent: _onRemindSent,
   onNotificationClick,
@@ -350,6 +354,26 @@ export function PotsHome({
               <span className="text-caption text-secondary">Request</span>
             </button>
           </div>
+
+          {showAcceptInvite && (
+            <div className="card p-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-body" style={{ fontWeight: 500 }}>You have a pending invite</p>
+                <p className="text-caption text-secondary">Enter your invite token to join the pot.</p>
+              </div>
+              <button
+                onClick={() => {
+                  const token = window.prompt("Enter invite token");
+                  if (token) {
+                    onAcceptInvite?.(token.trim());
+                  }
+                }}
+                className="px-3 py-2 card rounded-lg text-caption text-secondary hover:text-foreground hover:bg-muted/10 transition-all duration-200 active:scale-95"
+              >
+                Accept invite
+              </button>
+            </div>
+          )}
 
           {/* Search bar (when multiple pots) */}
           {pots.length > 3 && (

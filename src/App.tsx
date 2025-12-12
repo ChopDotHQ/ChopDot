@@ -587,6 +587,8 @@ function AppContent() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod | null>(null);
   const [showAddMember, setShowAddMember] = useState(false);
+  const [pendingInviteToken, setPendingInviteToken] = useState<string | null>(null);
+  const [showInviteModal, setShowInviteModal] = useState(false);
   const [fabQuickAddPotId, setFabQuickAddPotId] = useState<string | null>(null);
   const [showIPFSAuthOnboarding, setShowIPFSAuthOnboarding] = useState(false);
   const [pendingIPFSAction, setPendingIPFSAction] = useState<(() => Promise<void>) | null>(null);
@@ -649,6 +651,73 @@ function AppContent() {
   );
 
   const joinProcessingRef = useRef(false);
+  const [hasPendingInvites, setHasPendingInvites] = useState(false);
+
+  const refreshPendingInvites = useCallback(async () => {
+    const supabase = getSupabase();
+    if (!supabase) return;
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const email = user?.email;
+    if (!email) {
+      setHasPendingInvites(false);
+      return;
+    }
+    const { data, error } = await supabase
+      .from("invites")
+      .select("id")
+      .eq("invitee_email", email)
+      .eq("status", "pending")
+      .limit(1);
+    if (error) {
+      console.warn("[Invites] pending check failed", error.message);
+      return;
+    }
+    setHasPendingInvites((data?.length ?? 0) > 0);
+  }, []);
+
+  useEffect(() => {
+    refreshPendingInvites();
+  }, [refreshPendingInvites]);
+
+  const cleanInviteParams = useCallback(() => {
+    const cleaned = new URL(window.location.href);
+    cleaned.searchParams.delete("token");
+    cleaned.searchParams.delete("invite");
+    window.history.replaceState({}, "", cleaned.toString());
+  }, []);
+
+  const renderInviteModal = () => {
+    if (!showInviteModal) return null;
+    return (
+      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/40 px-4">
+        <div className="bg-background card p-4 w-full max-w-sm shadow-lg">
+          <h3 className="text-section mb-2" style={{ fontWeight: 600 }}>
+            Accept invite?
+          </h3>
+          <p className="text-body text-secondary mb-4">
+            You were invited to join a pot. Accept to add it to your list.
+          </p>
+          <div className="flex items-center justify-end gap-2">
+            <button
+              onClick={cancelPendingInvite}
+              className="px-3 py-2 rounded-lg text-caption text-secondary hover:text-foreground hover:bg-muted/10 transition-all duration-200 active:scale-95"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmPendingInvite}
+              className="px-3 py-2 rounded-lg text-caption text-white"
+              style={{ background: 'var(--accent)' }}
+            >
+              Accept
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
   const fetchInvites = useCallback(
     async (potId: string) => {
       const supabase = getSupabase();
@@ -671,66 +740,83 @@ function AppContent() {
     }
   }, [currentPotId, fetchInvites]);
 
+  const acceptInvite = useCallback(
+    async (token: string) => {
+      const supabase = getSupabase();
+      if (!supabase) {
+        showToast("Supabase not configured", "error");
+        return;
+      }
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) {
+        showToast("Log in to accept invite", "info");
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accept-invite`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ token }),
+        },
+      );
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result?.error) {
+        showToast(result?.error || "Failed to accept invite", "error");
+      } else {
+        showToast("Invite accepted!", "success");
+        const potId = result?.potId as string | undefined;
+        if (potId) {
+          setCurrentPotId(potId);
+          reset({ type: "pot-home", potId });
+          notifyPotRefresh(potId);
+        }
+        refreshPendingInvites();
+        cleanInviteParams();
+      }
+    },
+    [showToast, reset, notifyPotRefresh, refreshPendingInvites, cleanInviteParams],
+  );
+
   useEffect(() => {
     const url = new URL(window.location.href);
     const token = url.searchParams.get("token") || url.searchParams.get("invite");
     if (!token || joinProcessingRef.current) return;
     joinProcessingRef.current = true;
 
-    (async () => {
-      try {
-        const supabase = getSupabase();
-        if (!supabase) {
-          showToast("Supabase not configured", "error");
-          return;
-        }
+    setPendingInviteToken(token);
+    setShowInviteModal(true);
+  }, [cleanInviteParams]);
 
-        const { data: sessionData } = await supabase.auth.getSession();
-        const accessToken = sessionData.session?.access_token;
-        if (!accessToken) {
-          showToast("Log in to accept invite", "info");
-          return;
-        }
+  const confirmPendingInvite = useCallback(async () => {
+    if (!pendingInviteToken) {
+      setShowInviteModal(false);
+      joinProcessingRef.current = false;
+      cleanInviteParams();
+      return;
+    }
+    try {
+      await acceptInvite(pendingInviteToken);
+    } finally {
+      setPendingInviteToken(null);
+      setShowInviteModal(false);
+      joinProcessingRef.current = false;
+    }
+  }, [pendingInviteToken, acceptInvite, cleanInviteParams]);
 
-        const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accept-invite`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify({ token }),
-          },
-        );
-
-        const result = await response.json().catch(() => ({}));
-        if (!response.ok || result?.error) {
-          showToast(result?.error || "Failed to accept invite", "error");
-        } else {
-          showToast("Invite accepted!", "success");
-          const potId = result?.potId as string | undefined;
-          if (potId) {
-            setCurrentPotId(potId);
-            reset({ type: "pot-home", potId });
-            notifyPotRefresh(potId);
-          }
-        }
-
-        // Clean token from URL
-        const cleaned = new URL(window.location.href);
-        cleaned.searchParams.delete("token");
-        cleaned.searchParams.delete("invite");
-        window.history.replaceState({}, "", cleaned.toString());
-      } catch (err) {
-        console.error("[Invite] accept failed", err);
-        showToast("Failed to accept invite", "error");
-      } finally {
-        // Reset ref to allow processing another invite
-        joinProcessingRef.current = false;
-      }
-    })();
-  }, [reset, notifyPotRefresh, showToast]);
+  const cancelPendingInvite = useCallback(() => {
+    setPendingInviteToken(null);
+    setShowInviteModal(false);
+    joinProcessingRef.current = false;
+    cleanInviteParams();
+  }, [cleanInviteParams]);
 
   const [settlements, setSettlements] = useState<Settlement[]>([]);
 
@@ -2342,6 +2428,11 @@ function AppContent() {
               setCurrentPotId(potId);
               push({ type: "pot-home", potId });
             }}
+            onAcceptInvite={(token) => {
+              joinProcessingRef.current = false; // allow manual trigger even if previous attempt
+              acceptInvite(token);
+            }}
+            showAcceptInvite={hasPendingInvites}
             onSettleWithPerson={(personId) => {
               setSelectedCounterpartyId(personId);
               push({ type: "settle-home" });
@@ -3633,6 +3724,8 @@ function AppContent() {
           fabColor={fabState.color}
         />
       )}
+
+      {renderInviteModal()}
 
 
       
