@@ -1995,8 +1995,16 @@ function AppContent() {
     error: currentPotError,
   } = useRemotePot(usingSupabaseSource ? currentPotId : null);
 
+  const fallbackRemotePot = useMemo(
+    () =>
+      usingSupabaseSource && currentPotId
+        ? remotePots.find((p) => p.id === currentPotId) || null
+        : null,
+    [usingSupabaseSource, currentPotId, remotePots],
+  );
+
   const currentPot = usingSupabaseSource
-    ? remoteCurrentPot
+    ? remoteCurrentPot ?? fallbackRemotePot
     : pots.find((p) => p.id === currentPotId);
 
   const normalizedCurrentPot = currentPot
