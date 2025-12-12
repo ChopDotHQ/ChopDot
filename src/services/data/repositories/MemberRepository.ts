@@ -132,6 +132,14 @@ export class MemberRepository {
    * Remove a member from a pot
    */
   async remove(potId: string, memberId: string): Promise<void> {
+    // Supabase path: delete membership row directly (members can leave without owning the pot)
+    const sourceAny = this.source as any;
+    if (typeof sourceAny.deleteMemberRow === 'function') {
+      await sourceAny.deleteMemberRow(potId, memberId);
+      return;
+    }
+
+    // Local/other sources: mutate pot metadata
     const pot = await this.source.getPot(potId);
     if (!pot) {
       throw new NotFoundError('Pot', potId);
@@ -151,5 +159,6 @@ export class MemberRepository {
     };
 
     await this.source.savePot(updatedPot);
+
   }
 }

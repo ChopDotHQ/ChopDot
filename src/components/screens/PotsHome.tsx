@@ -470,7 +470,7 @@ export function PotsHome({
                                     }}
                                   >
                                     {Math.abs(pot.net) < 0.01 
-                                      ? 'Settled' 
+                                      ? '$0.00' 
                                       : `${pot.net >= 0 ? '+' : '-'}$${Math.abs(pot.net).toFixed(2)}`
                                     }
                                   </p>

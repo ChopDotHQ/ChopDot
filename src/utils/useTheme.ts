@@ -46,6 +46,7 @@ export function useTheme() {
     
     // Store preference
     localStorage.setItem('chopdot-theme', theme);
+
   }, [theme]);
 
   // Listen for system theme changes when in system mode

@@ -354,4 +354,18 @@ export class SupabaseSource implements DataSource {
 
     return parsed.data;
   }
+
+  // Remove a membership row (used when a member leaves a pot).
+  async deleteMemberRow(potId: string, memberId: string): Promise<void> {
+    const supabase = this.ensureReady();
+    const { error } = await supabase
+      .from('pot_members')
+      .delete()
+      .eq('pot_id', potId)
+      .eq('user_id', memberId);
+
+    if (error) {
+      throw new Error(`[SupabaseSource] Failed to remove member ${memberId} from pot ${potId}: ${error.message}`);
+    }
+  }
 }

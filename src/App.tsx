@@ -72,6 +72,7 @@ import { ImportPot } from "./components/screens/ImportPot";
 import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
 import { setOnboardingCallback, resetOnboardingFlag } from "./services/storage/ipfsWithOnboarding";
 import { usePots as useRemotePots } from "./hooks/usePots";
+import { usePot as useRemotePot } from "./hooks/usePot";
 
 interface Member {
   id: string;
@@ -1295,9 +1296,6 @@ function AppContent() {
     return !rootScreens.includes(screen.type);
   };
 
-  const getCurrentPot = () =>
-    pots.find((p) => p.id === currentPotId);
-
   const createPot = async () => {
     let processedMembers = newPot.members || [];
     const { getMockAddressForMember, isSimulationMode } = await import('./utils/simulation');
@@ -1713,7 +1711,7 @@ function AppContent() {
     method: "wallet" | "bank",
   ) => {
     if (!currentPotId) return;
-    const pot = getCurrentPot();
+    const pot = currentPot;
     if (!pot || pot.type !== "savings") return;
 
     const contribution: Contribution = {
@@ -1753,7 +1751,7 @@ function AppContent() {
 
   const withdrawFunds = (amount: number) => {
     if (!currentPotId) return;
-    const pot = getCurrentPot();
+    const pot = currentPot;
     if (!pot || pot.type !== "savings") return;
 
     const userContributions = (pot.contributions || [])
@@ -1895,6 +1893,15 @@ function AppContent() {
   const dataSourceType = import.meta.env.VITE_DATA_SOURCE || 'local';
   const usingSupabaseSource = dataSourceType === 'supabase';
   const remoteSyncSnapshot = useRef<string>("");
+  const {
+    pot: remoteCurrentPot,
+    loading: currentPotLoading,
+    error: currentPotError,
+  } = useRemotePot(usingSupabaseSource ? currentPotId : null);
+
+  const currentPot = usingSupabaseSource
+    ? remoteCurrentPot
+    : pots.find((p) => p.id === currentPotId);
 
   useEffect(() => {
     if (!usingSupabaseSource || authLoading || !isAuthenticated) {
@@ -1908,6 +1915,19 @@ function AppContent() {
     console.log('[App] Syncing remotePots to state', { count: remotePots.length, potIds: remotePots.map(p => p.id) });
     setPots(remotePots as unknown as Pot[]);
   }, [remotePots, usingSupabaseSource, authLoading, isAuthenticated]);
+
+  useEffect(() => {
+    if (
+      usingSupabaseSource &&
+      currentPotId &&
+      !currentPot &&
+      !currentPotLoading &&
+      currentPotError
+    ) {
+      showToast('Pot not found or you no longer have access.', 'error');
+      reset({ type: 'pots-home' });
+    }
+  }, [usingSupabaseSource, currentPotId, currentPot, currentPotLoading, currentPotError, reset]);
   const totalOwing = balances.youOwe.reduce(
     (sum, p) => sum + p.totalAmount,
     0,
@@ -1971,8 +1991,10 @@ function AppContent() {
   useEffect(() => {
     if (!screen) return;
 
-    const pot = getCurrentPot();
+    const pot = currentPot;
     const screenType = screen.type;
+
+    if (currentPotLoading) return;
 
     if (
       (screenType === "add-expense" ||
@@ -2070,10 +2092,10 @@ function AppContent() {
     if (!validScreenTypes.includes(screenType)) {
       reset({ type: "pots-home" });
     }
-  }, [screen, pots, people, currentPotId, reset, replace]);
+  }, [screen, pots, people, currentPotId, reset, replace, currentPotLoading]);
 
   const renderScreen = () => {
-    const pot = getCurrentPot();
+    const pot = currentPot;
 
     switch (screen!.type) {
       case "activity-home":
@@ -2604,7 +2626,17 @@ function AppContent() {
             }}
             
             onDeletePot={async () => {
-              if (!currentPotId) return;
+              if (!currentPotId || !pot) return;
+              const currentUserId = user?.id || 'owner';
+              const isOwner = pot.members.some(
+                (m) =>
+                  (m.role?.toLowerCase() === 'owner' || m.id === 'owner') &&
+                  (m.id === currentUserId),
+              );
+              if (!isOwner) {
+                showToast("Only the pot owner can delete this pot", "error");
+                return;
+              }
               try {
                 await potService.deletePot(currentPotId);
                 setPots(pots.filter((p) => p.id !== currentPotId));
@@ -2616,8 +2648,15 @@ function AppContent() {
               }
             }}
             onLeavePot={() => {
-              if (!currentPotId) return;
-              const currentUserId = "owner";
+              if (!currentPotId || !pot) return;
+              const currentUserId = user?.id || 'owner';
+              const shouldEnforceClientMembership = !usingSupabaseSource;
+              const isMember = pot.members.some((m) => m.id === currentUserId);
+              if (shouldEnforceClientMembership && !isMember) {
+                showToast("You are not a member of this pot", "error");
+                return;
+              }
+
               setPots(
                 pots.map((p) =>
                   p.id === currentPotId
@@ -2628,8 +2667,21 @@ function AppContent() {
                     : p,
                 ),
               );
-              showToast("You left the pot", "info");
-              reset({ type: "pots-home" });
+
+              (async () => {
+                try {
+                  await memberService.removeMember(currentPotId, currentUserId);
+                  logDev('[Pot] Left pot via service', { potId: currentPotId });
+                  notifyPotRefresh(currentPotId);
+                } catch (error) {
+                  console.error("[Pot] leave failed", error);
+                  warnDev('[Pot] Service leave failed', error);
+                  showToast(error instanceof Error ? error.message : "Failed to leave pot", "error");
+                  return;
+                }
+                showToast("You left the pot", "info");
+                reset({ type: "pots-home" });
+              })();
             }}
             onArchivePot={() => {
               if (!currentPotId) return;
@@ -2804,8 +2856,8 @@ function AppContent() {
 
       case "settle-selection":
         const potSettlements =
-          currentPotId && getCurrentPot()
-            ? calculatePotSettlements(getCurrentPot()!, "owner")
+          currentPot
+            ? calculatePotSettlements(currentPot, "owner")
             : balances;
 
         const selectionBalances = [
@@ -2827,7 +2879,6 @@ function AppContent() {
           })),
         ];
 
-        const currentPot = currentPotId ? getCurrentPot() : undefined;
         return (
           <SettleSelection
             potName={currentPot?.name}
@@ -2852,12 +2903,12 @@ function AppContent() {
 
         const settleScope = currentPotId ? "pot" : "global";
         const settleLabel = currentPotId
-          ? getCurrentPot()?.name
+          ? currentPot?.name
           : "All pots";
 
         const scopedSettlements =
-          currentPotId && getCurrentPot()
-            ? calculatePotSettlements(getCurrentPot()!, "owner")
+          currentPot
+            ? calculatePotSettlements(currentPot, "owner")
             : balances;
 
         if (!personIdFromNav) {
@@ -2933,8 +2984,8 @@ function AppContent() {
         let recipientAddress: string | undefined = undefined;
         if (personIdFromNav) {
           if (currentPotId) {
-            const currentPot = pots.find(p => p.id === currentPotId);
-            const recipientMember = currentPot?.members.find(m => m.id === personIdFromNav);
+            const currentPotSnapshot = currentPot;
+            const recipientMember = currentPotSnapshot?.members.find(m => m.id === personIdFromNav);
             recipientAddress = recipientMember?.address;
           } else {
             for (const pot of pots) {
@@ -2963,12 +3014,11 @@ function AppContent() {
             personId={personIdFromNav || undefined}
             preferredMethod={preferredPaymentMethod}
             recipientAddress={recipientAddress}
-            baseCurrency={currentPotId && getCurrentPot() ? getCurrentPot()!.baseCurrency : "USD"}
+            baseCurrency={currentPot?.baseCurrency || "USD"}
             onShowToast={showToast}
-            pot={currentPotId && getCurrentPot() ? ({ ...getCurrentPot()!, mode: 'casual' as const } as any) : undefined}
+            pot={currentPot ? ({ ...currentPot, mode: 'casual' as const } as any) : undefined}
             onUpdatePot={currentPotId ? (updates) => {
-              const pot = getCurrentPot();
-              if (pot) {
+              if (currentPot) {
                 setPots(pots.map(p => p.id === currentPotId ? { ...p, ...updates } : p));
               }
             } : undefined}
@@ -2980,7 +3030,7 @@ function AppContent() {
                   activeSettlements[0]?.id ||
                   "unknown",
                 amount: settlementAmount,
-                currency: (currentPotId && getCurrentPot() ? getCurrentPot()!.baseCurrency : "USD") as any,
+                currency: (currentPot?.baseCurrency || "USD") as any,
                 method: method as any,
                 potIds: currentPotId
                   ? [currentPotId]
@@ -3045,7 +3095,7 @@ function AppContent() {
                   scope: settleScope as "pot" | "person-all" | "expense",
                   ref: method === "bank" ? reference : undefined,
                   txHash: method === "dot" ? reference : undefined,
-                  pots: currentPotId && getCurrentPot() ? [{ id: currentPotId, name: getCurrentPot()!.name, amount: Number(settlementAmount.toFixed(6)) }] : [],
+                  pots: currentPot ? [{ id: currentPotId!, name: currentPot.name, amount: Number(settlementAmount.toFixed(6)) }] : [],
                   at: Date.now(),
                 },
               });
@@ -3659,7 +3709,11 @@ function AppContent() {
 
                 if (error) {
                   console.error("[Invite] failed to create invite", error);
-                  showToast(error.message || "Failed to send invite", "error");
+                  if ((error as any)?.code === '23505') {
+                    showToast("Invite already sent to this email for this pot.", "info");
+                  } else {
+                    showToast(error.message || "Failed to send invite", "error");
+                  }
                   return;
                 }
 
@@ -3698,7 +3752,7 @@ function AppContent() {
             ).length,
           }))}
           currentMembers={
-            getCurrentPot()?.members.map((m) => m.id) || []
+            currentPot?.members.map((m) => m.id) || []
           }
         />
       )}

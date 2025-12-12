@@ -545,7 +545,7 @@ export function PotHome({
                   if (onCopyInviteLink) {
                     onCopyInviteLink();
                   } else {
-                    setShowShareSheet(true);
+                    onShowToast?.("No invite link available", "info");
                   }
                 }}
                 className="p-2 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"

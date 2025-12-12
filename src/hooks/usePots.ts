@@ -19,9 +19,13 @@ export function usePots(pageSize = 10): UsePotsResult {
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const refreshTriggerRef = useRef(0);
+  const isFetchingRef = useRef(false);
+  const didInitRef = useRef(false);
 
   // Initial load
   const loadPots = useCallback(async (isRefresh = false) => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     try {
       setLoading(true);
       
@@ -56,13 +60,14 @@ export function usePots(pageSize = 10): UsePotsResult {
       console.error('[usePots] Failed to load pots:', error);
       if (isRefresh) setPots([]);
     } finally {
+      isFetchingRef.current = false;
       setLoading(false);
     }
   }, [potService, offset, pageSize]);
 
   // Handle load more
   const loadMore = async () => {
-    if (!loading && hasMore) {
+    if (!loading && hasMore && !isFetchingRef.current) {
       await loadPots(false);
     }
   };
@@ -74,8 +79,11 @@ export function usePots(pageSize = 10): UsePotsResult {
 
   // Initial fetch
   useEffect(() => {
+    if (didInitRef.current) return;
+    didInitRef.current = true;
     loadPots(true); // Treat initial load as a refresh (start from 0)
-  }, []); // Only run once on mount (deps empty intentionally, loadPots handles logic)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once on mount; guarded by didInitRef
 
   // Listen for global refresh events (e.g. after creating a pot)
   useEffect(() => {
