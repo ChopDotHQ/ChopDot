@@ -2007,15 +2007,24 @@ function AppContent() {
     ? remoteCurrentPot ?? fallbackRemotePot
     : pots.find((p) => p.id === currentPotId);
 
-  const normalizedCurrentPot = currentPot
+  // Preserve last known pot to avoid UI snapback while remote detail loads
+  const lastPotRef = useRef<Pot | null>(null);
+  useEffect(() => {
+    if (currentPot) {
+      lastPotRef.current = currentPot as Pot;
+    }
+  }, [currentPot]);
+  const potForView = usingSupabaseSource ? currentPot ?? lastPotRef.current : currentPot;
+
+  const normalizedCurrentPot = potForView
     ? ({
-        ...currentPot,
-        members: normalizeMembers(currentPot.members),
-        expenses: normalizeExpenses(currentPot.expenses, currentPot.baseCurrency),
-        history: normalizeHistory(currentPot.history || []),
-        budget: currentPot.budget ?? undefined,
-        goalAmount: currentPot.goalAmount ?? undefined,
-        totalPooled: currentPot.totalPooled ?? undefined,
+        ...potForView,
+        members: normalizeMembers(potForView.members),
+        expenses: normalizeExpenses(potForView.expenses, potForView.baseCurrency),
+        history: normalizeHistory(potForView.history || []),
+        budget: potForView.budget ?? undefined,
+        goalAmount: potForView.goalAmount ?? undefined,
+        totalPooled: potForView.totalPooled ?? undefined,
       } as Pot)
     : undefined;
 
@@ -2749,15 +2758,17 @@ function AppContent() {
             
             onDeletePot={async () => {
               if (!currentPotId || !pot) return;
-              const currentUserId = user?.id || 'owner';
-              const isOwner = pot.members.some(
-                (m) =>
-                  (m.role?.toLowerCase() === 'owner' || m.id === 'owner') &&
-                  (m.id === currentUserId),
-              );
-              if (!isOwner) {
-                showToast("Only the pot owner can delete this pot", "error");
-                return;
+              if (!usingSupabaseSource) {
+                const currentUserId = user?.id || 'owner';
+                const isOwner = pot.members.some(
+                  (m) =>
+                    (m.role?.toLowerCase() === 'owner' || m.id === 'owner') &&
+                    m.id === currentUserId,
+                );
+                if (!isOwner) {
+                  showToast("Only the pot owner can delete this pot", "error");
+                  return;
+                }
               }
               try {
                 await potService.deletePot(currentPotId);

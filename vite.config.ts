@@ -150,8 +150,11 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'lucide-react', 'buffer'],
+    include: ['react', 'react-dom', 'lucide-react', 'buffer', 'eventemitter3'],
     exclude: ['@polkadot/api', '@polkadot/types'], // Exclude from pre-bundling to avoid initialization errors
+    // Fix dev-only ESM/CJS interop issue where browser ESM can't default-import CJS `eventemitter3`.
+    // This shows up as: "does not provide an export named 'default'" when fetching balances.
+    needsInterop: ['eventemitter3'],
     esbuildOptions: {
       define: {
         global: 'globalThis',
