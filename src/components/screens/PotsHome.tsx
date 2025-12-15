@@ -40,8 +40,9 @@ interface PotsHomeProps {
   owedToYou?: PersonDebt[];
   onCreatePot: () => void;
   onPotClick?: (potId: string) => void;
+  pendingInvites?: Array<{ id: string; token: string; created_at?: string; expires_at?: string }>;
   onAcceptInvite?: (token: string) => void;
-  showAcceptInvite?: boolean;
+  onDeclineInvite?: (token: string) => void;
   onSettleWithPerson?: (personId: string) => void;
   onRemindSent?: () => void;
   onNotificationClick?: () => void;
@@ -60,8 +61,9 @@ export function PotsHome({
   owedToYou = [],
   onCreatePot, 
   onPotClick,
+  pendingInvites = [],
   onAcceptInvite,
-  showAcceptInvite = false,
+  onDeclineInvite,
   onSettleWithPerson: _onSettleWithPerson,
   onRemindSent: _onRemindSent,
   onNotificationClick,
@@ -355,23 +357,33 @@ export function PotsHome({
             </button>
           </div>
 
-          {showAcceptInvite && (
-            <div className="card p-3 flex items-center justify-between gap-3">
-              <div>
-                <p className="text-body" style={{ fontWeight: 500 }}>You have a pending invite</p>
-                <p className="text-caption text-secondary">Enter your invite token to join the pot.</p>
-              </div>
-              <button
-                onClick={() => {
-                  const token = window.prompt("Enter invite token");
-                  if (token) {
-                    onAcceptInvite?.(token.trim());
-                  }
-                }}
-                className="px-3 py-2 card rounded-lg text-caption text-secondary hover:text-foreground hover:bg-muted/10 transition-all duration-200 active:scale-95"
-              >
-                Accept invite
-              </button>
+          {pendingInvites.length > 0 && (
+            <div className="space-y-2">
+              {pendingInvites.map((invite) => (
+                <div key={invite.id} className="card p-3 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-body" style={{ fontWeight: 500 }}>You have a pending invite</p>
+                    <p className="text-caption text-secondary">
+                      Accept to join. {invite.expires_at ? `Expires ${new Date(invite.expires_at).toLocaleDateString()}.` : ''}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => onDeclineInvite?.(invite.token)}
+                      className="px-3 py-2 rounded-lg text-caption text-secondary hover:text-foreground hover:bg-muted/10 transition-all duration-200 active:scale-95"
+                    >
+                      Decline
+                    </button>
+                    <button
+                      onClick={() => onAcceptInvite?.(invite.token)}
+                      className="px-3 py-2 rounded-lg text-caption text-white transition-all duration-200 active:scale-95"
+                      style={{ background: 'var(--accent)' }}
+                    >
+                      Accept
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
