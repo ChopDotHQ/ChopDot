@@ -465,7 +465,6 @@ function AppContent() {
     logout,
   } = useAuth();
   const userEmail = (user as any)?.email as string | undefined;
-  const currentUserId = (user as any)?.id ?? 'owner';
 
   const getInitialScreen = (): Screen => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -2504,7 +2503,7 @@ function AppContent() {
               joinProcessingRef.current = false;
               acceptInvite(token);
             }}
-            onDeclineInvite={(token) => {
+            onDeclineInvite={(token: string) => {
               joinProcessingRef.current = false;
               declineInvite(token);
             }}
