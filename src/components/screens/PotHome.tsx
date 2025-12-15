@@ -60,6 +60,7 @@ interface PotHomeProps {
   potType: "expense" | "savings";
   potName: string;
   baseCurrency: string;
+  currentUserId: string;
   members: Member[];
   expenses: Expense[];
   budget?: number;
@@ -121,6 +122,7 @@ export function PotHome({
   potType: potTypeProp,
   potName: potNameProp,
   baseCurrency: baseCurrencyProp,
+  currentUserId,
   members: membersProp,
   expenses: expensesProp,
   budget: budgetProp,
@@ -437,8 +439,7 @@ export function PotHome({
     }, 0);
   }
 
-  // Calculate summary
-  const currentUserId = "owner"; // Mock current user
+  // Calculate summary for the current (authenticated) user
   const myExpenses = expenses
     .filter((e) => e.paidBy === currentUserId)
     .reduce((sum, e) => sum + e.amount, 0);

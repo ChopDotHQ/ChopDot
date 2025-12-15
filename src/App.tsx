@@ -464,6 +464,8 @@ function AppContent() {
     isAuthenticated,
     logout,
   } = useAuth();
+  const userEmail = (user as any)?.email as string | undefined;
+  const currentUserId = (user as any)?.id ?? 'owner';
 
   const getInitialScreen = (): Screen => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -651,35 +653,65 @@ function AppContent() {
   );
 
   const joinProcessingRef = useRef(false);
-  const [hasPendingInvites, setHasPendingInvites] = useState(false);
+  const [pendingInvites, setPendingInvites] = useState<
+    Array<{ id: string; token: string; created_at?: string; expires_at?: string }>
+  >([]);
 
   const refreshPendingInvites = useCallback(async () => {
     const supabase = getSupabase();
-    if (!supabase) return;
+    if (!supabase) {
+      setPendingInvites([]);
+      return;
+    }
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    const email = user?.email;
+    const email = user?.email?.trim().toLowerCase();
     if (!email) {
-      setHasPendingInvites(false);
+      setPendingInvites([]);
       return;
     }
     const { data, error } = await supabase
       .from("invites")
-      .select("id")
-      .eq("invitee_email", email)
+      .select("id, token, created_at, expires_at")
+      .ilike("invitee_email", email)
       .eq("status", "pending")
-      .limit(1);
+      .order("created_at", { ascending: false })
+      .limit(10);
     if (error) {
       console.warn("[Invites] pending check failed", error.message);
+      setPendingInvites([]);
       return;
     }
-    setHasPendingInvites((data?.length ?? 0) > 0);
+    setPendingInvites((data ?? []) as any);
   }, []);
 
   useEffect(() => {
+    if (authLoading) return;
     refreshPendingInvites();
-  }, [refreshPendingInvites]);
+  }, [authLoading, isAuthenticated, user?.id, refreshPendingInvites]);
+
+  // Ensure the public.users profile exists (and has a display name) for this auth user.
+  // This improves member displays in shared pots (e.g., pot_members -> users.name).
+  useEffect(() => {
+    if (authLoading) return;
+    if (!isAuthenticated) return;
+    if (!user?.id) return;
+    const email = userEmail?.trim?.();
+    if (!email) return;
+
+    const supabase = getSupabase();
+    if (!supabase) return;
+
+    (async () => {
+      const { error } = await supabase
+        .from("users")
+        .upsert({ id: user.id, name: email }, { onConflict: "id" });
+      if (error) {
+        console.warn("[Users] ensure profile failed", error.message);
+      }
+    })();
+  }, [authLoading, isAuthenticated, user?.id, userEmail]);
 
   const cleanInviteParams = useCallback(() => {
     const cleaned = new URL(window.location.href);
@@ -783,6 +815,45 @@ function AppContent() {
       }
     },
     [showToast, reset, notifyPotRefresh, refreshPendingInvites, cleanInviteParams],
+  );
+
+  const declineInvite = useCallback(
+    async (token: string) => {
+      const supabase = getSupabase();
+      if (!supabase) {
+        showToast("Supabase not configured", "error");
+        return;
+      }
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) {
+        showToast("Log in to decline invite", "info");
+        return;
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/decline-invite`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ token }),
+        },
+      );
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result?.error) {
+        showToast(result?.error || "Failed to decline invite", "error");
+      } else {
+        showToast("Invite declined", "success");
+        refreshPendingInvites();
+        cleanInviteParams();
+      }
+    },
+    [showToast, refreshPendingInvites, cleanInviteParams],
   );
 
   useEffect(() => {
@@ -2428,11 +2499,15 @@ function AppContent() {
               setCurrentPotId(potId);
               push({ type: "pot-home", potId });
             }}
+            pendingInvites={pendingInvites}
             onAcceptInvite={(token) => {
-              joinProcessingRef.current = false; // allow manual trigger even if previous attempt
+              joinProcessingRef.current = false;
               acceptInvite(token);
             }}
-            showAcceptInvite={hasPendingInvites}
+            onDeclineInvite={(token) => {
+              joinProcessingRef.current = false;
+              declineInvite(token);
+            }}
             onSettleWithPerson={(personId) => {
               setSelectedCounterpartyId(personId);
               push({ type: "settle-home" });
@@ -2698,8 +2773,8 @@ function AppContent() {
         if (!pot) return null;
         const potInvites = invitesByPot[pot.id] || [];
         // Filter out accepted invites (they're now in pot.members via pot_members table)
-        const pendingInvites = potInvites.filter((inv) => inv.status === "pending");
-        const inviteMembers = pendingInvites.map((inv) => ({
+        const pendingMemberInvites = potInvites.filter((inv) => inv.status === "pending");
+        const inviteMembers = pendingMemberInvites.map((inv) => ({
           id: `invite-${inv.token}`,
           name: inv.invitee_email,
           role: "Member" as const,
@@ -2718,6 +2793,7 @@ function AppContent() {
             potType={pot.type}
             potName={pot.name}
             baseCurrency={pot.baseCurrency}
+            currentUserId={user?.id || 'owner'}
             members={mergedMembers}
             expenses={normalizedExpenses}
             budget={pot.budget ?? undefined}
@@ -3912,9 +3988,13 @@ function AppContent() {
           }}
           onInviteNew={(nameOrEmail) => {
             const supabase = getSupabase();
-            const email = nameOrEmail.trim();
+            const email = nameOrEmail.trim().toLowerCase();
             if (!currentPotId) {
               showToast("Select a pot first", "error");
+              return;
+            }
+            if (!email || !email.includes("@")) {
+              showToast("Enter a valid email address", "error");
               return;
             }
             if (!supabase) {
