@@ -346,6 +346,15 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
+
+  /* iOS Safari: prevent auto-zoom on form fields with <16px font-size. */
+  @supports (-webkit-touch-callout: none) {
+    input.text-body,
+    textarea.text-body,
+    select.text-body {
+      font-size: max(16px, var(--text-body));
+    }
+  }
 }
 
 /* ===== DESIGN SYSTEM HELPERS ===== */

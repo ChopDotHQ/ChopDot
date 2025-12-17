@@ -11,6 +11,6 @@
  * @returns true if VITE_DL_READS=on, false otherwise
  */
 export function shouldPreferDLReads(): boolean {
-  return true; // TEMPORARY TESTING OVERRIDE
+  const rawValue = String(import.meta.env.VITE_DL_READS ?? 'off').toLowerCase().trim();
+  return rawValue === 'on' || rawValue === 'true' || rawValue === '1';
 }
-

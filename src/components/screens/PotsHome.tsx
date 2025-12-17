@@ -449,24 +449,24 @@ export function PotsHome({
                       : false;
                     
                     return (
-                      <button
-                        key={pot.id}
-                        onClick={() => onPotClick?.(pot.id)}
-                        className="w-full p-4 card text-left card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200"
-                      >
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <div className="flex items-center gap-2 flex-1">
-                            {pot.type === "savings" && (
-                              <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--success)' }} />
-                            )}
-                            <p className="text-body flex-1" style={{ fontWeight: 500 }}>{pot.name}</p>
-                          </div>
-                          {pot.type === "savings" && pot.yieldRate && (
-                            <span className="px-2 py-0.5 rounded text-caption whitespace-nowrap flex-shrink-0 tabular-nums" style={{ background: 'rgba(25, 195, 125, 0.15)', color: 'var(--success)' }}>
-                              {pot.yieldRate.toFixed(1)}% APY
-                            </span>
-                          )}
-                        </div>
+	                      <button
+	                        key={pot.id}
+	                        onClick={() => onPotClick?.(pot.id)}
+	                        className="w-full p-4 card text-left card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200"
+	                      >
+	                        <div className="flex items-start justify-between gap-2 mb-2">
+	                          <div className="flex items-center gap-2 flex-1 min-w-0">
+	                            {pot.type === "savings" && (
+	                              <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--success)' }} />
+	                            )}
+	                            <p className="text-body flex-1 truncate" style={{ fontWeight: 500 }}>{pot.name}</p>
+	                          </div>
+	                          {pot.type === "savings" && pot.yieldRate && (
+	                            <span className="px-2 py-0.5 rounded text-caption whitespace-nowrap flex-shrink-0 tabular-nums" style={{ background: 'rgba(25, 195, 125, 0.15)', color: 'var(--success)' }}>
+	                              {pot.yieldRate.toFixed(1)}% APY
+	                            </span>
+	                          )}
+	                        </div>
                         {balancesVisible && (
                           <div className="flex items-center justify-between">
                             {pot.type === "savings" ? (
