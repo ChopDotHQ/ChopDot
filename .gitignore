@@ -37,3 +37,6 @@ node_modules
 **/supabase/.temp
 # Keep migrations in git
 # supabase/migrations/
+
+# Local private docs (never commit)
+private-docs/

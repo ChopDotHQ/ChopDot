@@ -98,7 +98,7 @@ export function NotificationCenter({
       />
       
       {/* Modal Card - matches ChoosePot style */}
-      <div className="absolute inset-x-0 top-20 bottom-20 card flex flex-col animate-slideUp mx-4 w-[390px] left-1/2 -translate-x-1/2">
+      <div className="absolute inset-x-4 top-20 bottom-20 card flex flex-col animate-slideUp mx-auto w-full max-w-[390px]">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border flex-shrink-0 rounded-t-2xl">
           <div className="flex items-center gap-2">
