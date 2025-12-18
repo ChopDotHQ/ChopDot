@@ -105,6 +105,7 @@ export function MembersTab({
         {members.map((member) => {
           const balance = getMemberBalance(member.id);
           const isCurrentUser = member.id === currentUserId;
+          const displayName = isCurrentUser ? "You" : member.name;
           const paymentPref = getPaymentPreference(member.id);
           const trustScore = getTrustScore(member.id);
           const isPositive = balance >= 0;
@@ -134,7 +135,7 @@ export function MembersTab({
                             opacity: 1,
                           }}
                         >
-                          {member.name.charAt(0).toUpperCase()}
+                          {displayName.charAt(0).toUpperCase()}
                         </span>
                       </div>
                       {/* TrustDots overlay - bottom-right corner */}
@@ -153,7 +154,7 @@ export function MembersTab({
                           className="text-body truncate"
                           style={{ fontWeight: 500 }}
                         >
-                          {member.name}
+                          {displayName}
                         </p>
                         
                         {/* Role Badge */}

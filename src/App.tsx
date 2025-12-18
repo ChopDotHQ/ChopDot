@@ -3131,7 +3131,7 @@ function AppContent() {
           <ExpenseDetail
             expense={expense}
             members={detailMembers}
-            currentUserId="owner"
+            currentUserId={user?.id || 'owner'}
             baseCurrency={pot.baseCurrency}
             walletConnected={walletConnected}
             onBack={back}
