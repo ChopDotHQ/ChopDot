@@ -3169,9 +3169,10 @@ function AppContent() {
         );
 
       case "settle-selection":
+        const settleCurrentUserId = user?.id || 'owner';
         const potSettlements =
           normalizedCurrentPot
-            ? calculatePotSettlements(normalizedCurrentPot, "owner")
+            ? calculatePotSettlements(normalizedCurrentPot, settleCurrentUserId)
             : balances;
 
         const selectionBalances = [
@@ -3222,7 +3223,7 @@ function AppContent() {
 
         const scopedSettlements =
           normalizedCurrentPot
-            ? calculatePotSettlements(normalizedCurrentPot, "owner")
+            ? calculatePotSettlements(normalizedCurrentPot, user?.id || 'owner')
             : balances;
 
         if (!personIdFromNav) {
