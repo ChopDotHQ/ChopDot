@@ -432,12 +432,15 @@ export function PotHome({
   };
 
   // Open keypad when requested by parent (e.g., FAB)
-  if (openQuickAdd && !keypadOpen) {
-    setTimeout(() => {
-      setKeypadOpen(true);
-      onClearQuickAdd && onClearQuickAdd();
-    }, 0);
-  }
+  useEffect(() => {
+    if (!openQuickAdd) return;
+    if (potType !== 'expense') {
+      onClearQuickAdd?.();
+      return;
+    }
+    setKeypadOpen(true);
+    onClearQuickAdd?.();
+  }, [openQuickAdd, onClearQuickAdd, potType]);
 
   // Calculate summary for the current (authenticated) user
   const myExpenses = expenses

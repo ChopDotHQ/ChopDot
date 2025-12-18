@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { triggerHaptic } from '../utils/haptics';
 import { BottomSheet } from './BottomSheet';
 
@@ -33,9 +33,17 @@ export function QuickKeypadSheet({
   lastSplit,
   onSave,
 }: QuickKeypadSheetProps) {
+  const fallbackPayerId = useMemo(() => {
+    if (members.some((member) => member.id === currentUserId)) {
+      return currentUserId;
+    }
+    return members[0]?.id ?? currentUserId;
+  }, [members, currentUserId]);
+
   const [amount, setAmount] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
-  const [paidBy, setPaidBy] = useState<string>(currentUserId);
+  const [paidBy, setPaidBy] = useState<string>(fallbackPayerId);
+  const [didAttemptSave, setDidAttemptSave] = useState(false);
   const hasLast = !!(lastSplit && lastSplit.length > 0);
   void hasLast;
   const [participantIds, setParticipantIds] = useState<Set<string>>(new Set(members.map(m => m.id)));
@@ -52,11 +60,11 @@ export function QuickKeypadSheet({
     const next = new Set(participantIds);
     if (next.has(id)) {
       next.delete(id);
-      if (paidBy === id) setPaidBy(currentUserId);
+      if (paidBy === id) setPaidBy(fallbackPayerId);
     } else {
       next.add(id);
     }
-    if (next.size === 0) next.add(currentUserId);
+    if (next.size === 0) next.add(fallbackPayerId);
     setParticipantIds(next);
     if (splitType !== 'equal') {
     }
@@ -71,16 +79,26 @@ export function QuickKeypadSheet({
   };
 
   const amountNum = Number(amount);
-  const totalPercent = members.reduce((sum, m) => sum + parseFloat(customPercents[m.id] || '0'), 0);
+  const participants = useMemo(() => members.filter((m) => participantIds.has(m.id)), [members, participantIds]);
+  const totalPercent = participants.reduce((sum, m) => sum + parseFloat(customPercents[m.id] || '0'), 0);
   const isSplitValid = splitType !== 'custom' || Math.abs(totalPercent - 100) < 0.01;
   const minAmount = baseCurrency === 'DOT' ? 0.000001 : 0.01;
-  const isValid = amount.length > 0 && !Number.isNaN(amountNum) && amountNum >= minAmount - 0.0000001 && isSplitValid;
+  const paidByValid = members.some((m) => m.id === paidBy);
+  const memoValid = memo.trim().length > 0;
+  const amountValid =
+    amount.length > 0 &&
+    !Number.isNaN(amountNum) &&
+    amountNum >= minAmount - 0.0000001;
+  const isValid =
+    amountValid &&
+    isSplitValid &&
+    paidByValid &&
+    memoValid;
 
   const decimals = baseCurrency === 'DOT' ? 6 : 2;
   
   const computedSplit = useMemo(() => {
     if (!isValid) return [] as { memberId: string; amount: number }[];
-    const participants = members.filter(m => participantIds.has(m.id));
     if (splitType === 'equal') {
       const count = participants.length || 1;
       const per = Number((amountNum / count).toFixed(decimals));
@@ -109,21 +127,37 @@ export function QuickKeypadSheet({
   }, [members, paidBy, participantIds, splitType, memo]);
 
   const save = () => {
-    if (!isValid) return;
-          onSave({
-            amount: Number(amountNum.toFixed(decimals)),
-            currency: baseCurrency,
-            paidBy,
-            memo: memo.trim(),
-            date: new Date().toISOString(),
-            split: computedSplit.length > 0 ? computedSplit : [{ memberId: currentUserId, amount: Number(amountNum.toFixed(decimals)) }],
-            hasReceipt: false,
-          });
+    if (!isValid) {
+      setDidAttemptSave(true);
+      triggerHaptic('warning');
+      return;
+    }
+    onSave({
+      amount: Number(amountNum.toFixed(decimals)),
+      currency: baseCurrency,
+      paidBy,
+      memo: memo.trim(),
+      date,
+      split: computedSplit.length > 0 ? computedSplit : [{ memberId: fallbackPayerId, amount: Number(amountNum.toFixed(decimals)) }],
+      hasReceipt: false,
+    });
     setAmount('');
     setMemo('');
-    setPaidBy(currentUserId);
+    setPaidBy(fallbackPayerId);
     onClose();
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      setDidAttemptSave(false);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!members.some((m) => m.id === paidBy)) {
+      setPaidBy(fallbackPayerId);
+    }
+  }, [fallbackPayerId, members, paidBy]);
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title={`Quick add (${baseCurrency})`}>
@@ -158,9 +192,12 @@ export function QuickKeypadSheet({
           <input
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
-            placeholder="Optional"
+            placeholder="Required"
             className="w-full px-2 py-2 input-field text-sm"
           />
+          {didAttemptSave && !memoValid && (
+            <div className="mt-1 text-xs text-destructive">Title is required.</div>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-2">
@@ -171,6 +208,9 @@ export function QuickKeypadSheet({
                 <option key={m.id} value={m.id}>{m.id === currentUserId ? 'You' : m.name}</option>
               ))}
             </select>
+            {didAttemptSave && !paidByValid && (
+              <div className="mt-1 text-xs text-destructive">Select who paid.</div>
+            )}
           </div>
           <div>
             <label className="text-xs text-secondary mb-1 block">Date</label>
@@ -219,6 +259,9 @@ export function QuickKeypadSheet({
               );
             })}
             <p className={`text-xs ${isSplitValid ? 'text-secondary' : 'text-destructive'}`}>Total: {totalPercent.toFixed(1)}% {!isSplitValid && '(must equal 100%)'}</p>
+            {didAttemptSave && !isSplitValid && (
+              <div className="text-xs text-destructive">Percent split must total 100%.</div>
+            )}
           </div>
         )}
         {splitType === 'shares' && (
@@ -240,9 +283,26 @@ export function QuickKeypadSheet({
         )}
 
         <div className="pt-3 bg-card border-t border-border" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 96px)', backdropFilter: 'blur(6px)' }}>
-          <button disabled={!isValid} onClick={() => { triggerHaptic('success'); save(); }} className="w-full px-4 py-3 rounded-lg btn-accent disabled:opacity-40 active:scale-98 transition-transform">
+          <button
+            onClick={() => {
+              if (isValid) {
+                triggerHaptic('success');
+              }
+              save();
+            }}
+            className={`w-full px-4 py-3 rounded-lg btn-accent active:scale-98 transition-transform ${!isValid ? 'opacity-40' : ''}`}
+          >
             {isValid ? `Save ${baseCurrency} ${amountNum.toFixed(decimals)}` : 'Save'}
           </button>
+          {didAttemptSave && !amountValid && (
+            <div className="mt-2 text-center text-xs text-destructive">
+              {amount.length === 0
+                ? 'Enter an amount.'
+                : Number.isNaN(amountNum)
+                  ? 'Amount must be a number.'
+                  : `Minimum is ${minAmount.toFixed(decimals)} ${baseCurrency}.`}
+            </div>
+          )}
           <div className="mt-1 text-center text-caption text-secondary">{sublabel}</div>
           <div className="flex justify-center mt-2">
             <button onClick={onClose} className="text-caption underline">Cancel</button>
@@ -252,5 +312,3 @@ export function QuickKeypadSheet({
     </BottomSheet>
   );
 }
-
-

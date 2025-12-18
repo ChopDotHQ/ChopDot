@@ -11,13 +11,18 @@ export function SwipeableScreen({
   onSwipeBack,
   canSwipeBack = true,
 }: SwipeableScreenProps) {
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchCurrent, setTouchCurrent] = useState<number | null>(null);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+  const trackingSwipeRef = useRef(false);
+  const swipeOffsetXRef = useRef(0);
+
+  const [swipeOffsetX, setSwipeOffsetX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const SWIPE_THRESHOLD = 100; // px to trigger navigation
-  const EDGE_ZONE = 40; // px from left edge to start swipe
+  const EDGE_ZONE = 28; // px from left edge to start tracking
+  const SWIPE_ACTIVATION_DELTA = 12; // px before we treat it as a swipe (prevents blocking taps)
+  const VERTICAL_CANCEL_DELTA = 14; // px vertical movement cancels swipe tracking
 
   const handleTouchStart = (e: React.TouchEvent) => {
     if (!canSwipeBack || !onSwipeBack) return;
@@ -25,54 +30,72 @@ export function SwipeableScreen({
     const touch = e.touches[0];
     // Only start if touch begins near the left edge
     if (touch && touch.clientX <= EDGE_ZONE) {
-      setTouchStart(touch.clientX);
-      setIsSwiping(true);
+      touchStartXRef.current = touch.clientX;
+      touchStartYRef.current = touch.clientY;
+      trackingSwipeRef.current = true;
+      swipeOffsetXRef.current = 0;
     }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isSwiping || touchStart === null) return;
+    if (!trackingSwipeRef.current) return;
     
     const touch = e.touches[0];
     if (!touch) return;
-    const diff = touch.clientX - touchStart;
+    const startX = touchStartXRef.current;
+    const startY = touchStartYRef.current;
+    if (startX === null || startY === null) return;
+
+    const diffX = touch.clientX - startX;
+    const diffY = touch.clientY - startY;
+
+    // If the user is scrolling vertically, cancel swipe tracking so taps still work.
+    if (!isSwiping && Math.abs(diffY) > VERTICAL_CANCEL_DELTA && Math.abs(diffY) > Math.abs(diffX)) {
+      trackingSwipeRef.current = false;
+      touchStartXRef.current = null;
+      touchStartYRef.current = null;
+      swipeOffsetXRef.current = 0;
+      setSwipeOffsetX(0);
+      return;
+    }
     
     // Only allow rightward swipes
-    if (diff > 0) {
-      setTouchCurrent(touch.clientX);
+    if (diffX > 0) {
+      // Don't enter "swiping" state until the user has moved enough to indicate intent.
+      if (!isSwiping) {
+        if (diffX < SWIPE_ACTIVATION_DELTA) return;
+        setIsSwiping(true);
+      }
+      swipeOffsetXRef.current = diffX;
+      setSwipeOffsetX(diffX);
     }
   };
 
   const handleTouchEnd = () => {
-    if (!isSwiping || touchStart === null) {
-      setIsSwiping(false);
-      setTouchStart(null);
-      setTouchCurrent(null);
-      return;
-    }
+    const diff = swipeOffsetXRef.current;
 
-    const diff = touchCurrent ? touchCurrent - touchStart : 0;
-
-    if (diff > SWIPE_THRESHOLD && onSwipeBack) {
+    if (isSwiping && diff > SWIPE_THRESHOLD && onSwipeBack) {
       onSwipeBack();
     }
 
     setIsSwiping(false);
-    setTouchStart(null);
-    setTouchCurrent(null);
+    setSwipeOffsetX(0);
+    swipeOffsetXRef.current = 0;
+    trackingSwipeRef.current = false;
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
   };
 
   // Calculate transform and opacity based on swipe progress
   const getSwipeStyles = () => {
-    if (!isSwiping || touchStart === null || touchCurrent === null) {
+    if (!isSwiping) {
       return {};
     }
 
-    const diff = touchCurrent - touchStart;
-    const progress = Math.min(diff / SWIPE_THRESHOLD, 1);
+    const progress = Math.min(swipeOffsetX / SWIPE_THRESHOLD, 1);
 
     return {
-      transform: `translateX(${diff}px)`,
+      transform: `translateX(${swipeOffsetX}px)`,
       transition: "none",
       opacity: 1 - progress * 0.3,
     };
@@ -80,12 +103,11 @@ export function SwipeableScreen({
 
   // Show previous screen shadow effect
   const getBackgroundStyles = () => {
-    if (!isSwiping || touchStart === null || touchCurrent === null) {
+    if (!isSwiping) {
       return { opacity: 0 };
     }
 
-    const diff = touchCurrent - touchStart;
-    const progress = Math.min(diff / SWIPE_THRESHOLD, 1);
+    const progress = Math.min(swipeOffsetX / SWIPE_THRESHOLD, 1);
 
     return {
       opacity: progress * 0.3,
@@ -105,12 +127,12 @@ export function SwipeableScreen({
       
       {/* Main content */}
       <div
-        ref={containerRef}
-        className="h-full relative z-10"
+        className="h-full relative"
         style={getSwipeStyles()}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
       >
         {children}
       </div>

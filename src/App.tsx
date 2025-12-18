@@ -591,6 +591,7 @@ function AppContent() {
   const [pendingInviteToken, setPendingInviteToken] = useState<string | null>(null);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [fabQuickAddPotId, setFabQuickAddPotId] = useState<string | null>(null);
+  const clearFabQuickAddPotId = useCallback(() => setFabQuickAddPotId(null), [setFabQuickAddPotId]);
   const [showIPFSAuthOnboarding, setShowIPFSAuthOnboarding] = useState(false);
   const [pendingIPFSAction, setPendingIPFSAction] = useState<(() => Promise<void>) | null>(null);
 
@@ -1615,7 +1616,9 @@ function AppContent() {
     }
   };
 
-  const addExpense = (data: {
+  const addExpenseToPot = (
+    potId: string,
+    data: {
     amount: number;
     currency: string;
     paidBy: string;
@@ -1624,8 +1627,9 @@ function AppContent() {
     split: { memberId: string; amount: number }[];
     hasReceipt: boolean;
     receiptUrl?: string;
-  }) => {
-    if (!currentPotId) return;
+  },
+  ) => {
+    if (!potId) return;
 
     const expense: Expense = {
       id: Date.now().toString(),
@@ -1642,7 +1646,7 @@ function AppContent() {
 
     setPots(
       pots.map((p) => {
-        if (p.id !== currentPotId) return p;
+        if (p.id !== potId) return p;
 
         let updatedCheckpoint = p.currentCheckpoint;
         if (
@@ -1673,7 +1677,7 @@ function AppContent() {
     (async () => {
       try {
         const createExpenseDTO = {
-          potId: currentPotId,
+          potId,
           amount: expense.amount,
           currency: expense.currency,
           paidBy: expense.paidBy,
@@ -1684,16 +1688,22 @@ function AppContent() {
           ...((expense as any).receiptUrl && { receiptUrl: (expense as any).receiptUrl }),
         };
 
-        await expenseService.addExpense(currentPotId, createExpenseDTO);
-        logDev('[DataLayer] Expense added via service', { potId: currentPotId, expenseId: expense.id });
-        notifyPotRefresh(currentPotId);
+        await expenseService.addExpense(potId, createExpenseDTO);
+        logDev('[DataLayer] Expense added via service', { potId, expenseId: expense.id });
+        notifyPotRefresh(potId);
       } catch (error) {
         warnDev('[DataLayer] Service addExpense failed', error);
-        showToast('Saved locally (service write failed)', 'info');
+        const message =
+          error instanceof Error
+            ? error.message
+            : typeof error === 'string'
+              ? error
+              : 'Unknown error';
+        showToast(`Saved locally (service write failed): ${message}`, 'info');
       }
     })();
 
-    replace({ type: "pot-home", potId: currentPotId });
+    replace({ type: "pot-home", potId });
     showToast("Expense added successfully!", "success");
   };
 
@@ -3068,10 +3078,10 @@ function AppContent() {
             }
             onQuickAddSave={(data) => {
               setCurrentPotId(pot.id);
-              addExpense(data);
+              addExpenseToPot(pot.id, data);
             }}
             openQuickAdd={fabQuickAddPotId === pot.id}
-            onClearQuickAdd={() => setFabQuickAddPotId(null)}
+            onClearQuickAdd={clearFabQuickAddPotId}
           />
         );
 
@@ -3084,7 +3094,7 @@ function AppContent() {
             members={addExpenseMembers}
             baseCurrency={pot.baseCurrency}
             onBack={back}
-            onSave={addExpense}
+            onSave={(data) => addExpenseToPot(pot.id, data)}
           />
         );
 
