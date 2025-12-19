@@ -902,6 +902,22 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   });
   const hasTrackedMobilePanelRef = useRef(false);
 
+  const openEmailLoginDrawer = (source: string) => {
+    setLoading(false);
+    setError(null);
+    setAuthPanelView('login');
+    if (import.meta.env.DEV) {
+      console.log('[SignInScreen] Opening email drawer', { source });
+    }
+    // Open on next frame to avoid edge-cases with click-outside handlers.
+    requestAnimationFrame(() => setShowEmailLogin(true));
+  };
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    console.log('[SignInScreen] Email drawer state', { showEmailLogin, authPanelView });
+  }, [showEmailLogin, authPanelView]);
+
   // Debug: Check Supabase configuration on mount
   useEffect(() => {
     const supabase = getSupabase();
@@ -2099,10 +2115,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         },
         integrationKind: 'email',
         handler: () => {
-          setLoading(false);
-          setError(null);
-          setAuthPanelView('login');
-          setShowEmailLogin(true);
+          openEmailLoginDrawer('desktop-option');
         },
         themeOverride: emailOptionTheme,
       },
@@ -2228,12 +2241,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               guestTheme={variationGuestTheme}
               useGlassmorphism={useGlassmorphism}
               onGuestLogin={handleGuestLogin}
-	              onEmailOptionToggle={() => {
-                  setLoading(false);
-                  setError(null);
-                  setAuthPanelView('login');
-                  setShowEmailLogin(true);
-                }}
+	              onEmailOptionToggle={() => openEmailLoginDrawer('mobile-option')}
 	              emailTheme={emailOptionTheme}
 	              waitingForSignature={isWaitingForSignature}
 	              onOpenModal={enableWcModal ? handleWalletConnectModal : undefined}
