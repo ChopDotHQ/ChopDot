@@ -398,7 +398,7 @@ interface WalletOptionConfig {
     alt: string;
   };
   integrationKind: WalletIntegrationKind;
-  handler: () => void;
+  handler: (e?: React.MouseEvent) => void;
   showsLoadingIndicator?: boolean;
   themeOverride?: Partial<WalletOptionTheme>;
 }
@@ -408,7 +408,7 @@ interface WalletOptionProps {
   subtitle?: string;
   iconSrc?: string;
   iconAlt?: string;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent) => void;
   disabled?: boolean;
   loading?: boolean;
   variant?: 'default' | 'ghost';
@@ -482,7 +482,10 @@ const WalletOption = ({
 
   return (
     <button
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.(e);
+      }}
       disabled={disabled}
       className={`${baseClasses} ${variantClasses} ${borderClass} ${borderStyleClass} ${glassClass} transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]`}
       style={{
@@ -2114,7 +2117,9 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           alt: 'Email login icon',
         },
         integrationKind: 'email',
-        handler: () => {
+        handler: (e?: React.MouseEvent) => {
+          e?.stopPropagation();
+          e?.preventDefault();
           openEmailLoginDrawer('desktop-option');
         },
         themeOverride: emailOptionTheme,
@@ -2378,6 +2383,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
             setError(null);
           }}
           direction={device.isMobile ? 'bottom' : 'right'}
+          autoFocus={!device.isMobile}
         >
           <DrawerContent className="p-0">
             <div className="flex items-start justify-between gap-4 px-4 pt-4">

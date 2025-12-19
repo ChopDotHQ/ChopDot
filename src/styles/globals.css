@@ -391,6 +391,52 @@
     max-height: 92svh;
     max-height: 92dvh;
   }
+
+  /* Vaul drawers: position the content based on direction.
+   * Tailwind's data-attribute variants aren't reliably emitted in our build,
+   * so we use attribute selectors for the critical positioning rules.
+   */
+  [data-slot='drawer-content'][data-vaul-drawer-direction='bottom'] {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin-top: 1.5rem; /* mt-6 */
+    border-top-left-radius: var(--r-2xl);
+    border-top-right-radius: var(--r-2xl);
+    border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  [data-slot='drawer-content'][data-vaul-drawer-direction='top'] {
+    left: 0;
+    right: 0;
+    top: 0;
+    margin-bottom: 1.5rem; /* mb-6 */
+    border-bottom-left-radius: var(--r-2xl);
+    border-bottom-right-radius: var(--r-2xl);
+    border-bottom: 1px solid var(--border);
+    padding-top: env(safe-area-inset-top);
+  }
+
+  [data-slot='drawer-content'][data-vaul-drawer-direction='right'] {
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: auto;
+    width: min(75vw, 24rem);
+    border-left: 1px solid var(--border);
+    max-height: none;
+  }
+
+  [data-slot='drawer-content'][data-vaul-drawer-direction='left'] {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: min(75vw, 24rem);
+    border-right: 1px solid var(--border);
+    max-height: none;
+  }
   
   /* ===== CARD UTILITIES - Ultra clean iOS style ===== */
   /* 
