@@ -21,7 +21,7 @@ import useClientDevice from '../../hooks/useClientDevice';
 import { getSupabase } from '../../utils/supabase-client';
 import { toast } from 'sonner';
 import { useTheme } from '../../utils/useTheme';
-import { Drawer, DrawerClose, DrawerContent } from '../ui/drawer';
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerTitle } from '../ui/drawer';
 
 declare global {
   interface Window {
@@ -2099,17 +2099,10 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         },
         integrationKind: 'email',
         handler: () => {
-          // Ensure loading is cleared when toggling the email form
           setLoading(false);
-          setShowEmailLogin((prev) => {
-            setAuthPanelView('login');
-            const next = !prev;
-            if (!next) {
-              setEmailCredentials({ email: '', password: '' });
-            }
-            setError(null);
-            return next;
-          });
+          setError(null);
+          setAuthPanelView('login');
+          setShowEmailLogin(true);
         },
         themeOverride: emailOptionTheme,
       },
@@ -2235,16 +2228,12 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               guestTheme={variationGuestTheme}
               useGlassmorphism={useGlassmorphism}
               onGuestLogin={handleGuestLogin}
-	              onEmailOptionToggle={() =>
-	                setShowEmailLogin((prev) => {
-	                  const next = !prev;
-	                  if (!next) {
-	                    setEmailCredentials({ email: '', password: '' });
-	                  }
-	                  setError(null);
-	                  return next;
-	                })
-	              }
+	              onEmailOptionToggle={() => {
+                  setLoading(false);
+                  setError(null);
+                  setAuthPanelView('login');
+                  setShowEmailLogin(true);
+                }}
 	              emailTheme={emailOptionTheme}
 	              waitingForSignature={isWaitingForSignature}
 	              onOpenModal={enableWcModal ? handleWalletConnectModal : undefined}
@@ -2383,8 +2372,15 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           direction={device.isMobile ? 'bottom' : 'right'}
         >
           <DrawerContent className="p-0">
-            <div className="flex items-center justify-between px-4 pt-4">
-              <h2 className="text-base font-semibold text-foreground">Email & password</h2>
+            <div className="flex items-start justify-between gap-4 px-4 pt-4">
+              <div className="space-y-1">
+                <DrawerTitle asChild>
+                  <h2 className="text-base font-semibold text-foreground">Email & password</h2>
+                </DrawerTitle>
+                <DrawerDescription className="text-xs text-muted-foreground">
+                  Sign in with your ChopDot account
+                </DrawerDescription>
+              </div>
               <DrawerClose asChild>
                 <button
                   type="button"
