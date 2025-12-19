@@ -349,9 +349,9 @@
 
   /* iOS Safari: prevent auto-zoom on form fields with <16px font-size. */
   @supports (-webkit-touch-callout: none) {
-    input.text-body,
-    textarea.text-body,
-    select.text-body {
+    input,
+    textarea,
+    select {
       font-size: max(16px, var(--text-body));
     }
   }
@@ -385,6 +385,11 @@
   .bg-app {
     background: var(--bg);
     color: var(--ink);
+  }
+
+  .drawer-max-h {
+    max-height: 92svh;
+    max-height: 92dvh;
   }
   
   /* ===== CARD UTILITIES - Ultra clean iOS style ===== */
