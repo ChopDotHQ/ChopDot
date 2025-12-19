@@ -8,6 +8,7 @@ import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { useState, useMemo } from "react";
 import { AccountMenu } from "../AccountMenu";
 import { PeopleView } from "./PeopleView";
+import { usePSAStyle } from "../../utils/usePSAStyle";
 
 interface DebtBreakdown {
   potName: string;
@@ -62,6 +63,7 @@ export function PeopleHome({
   isDarkMode = false,
   onToggleTheme,
 }: PeopleHomeProps) {
+  const { isPSA, psaStyles, psaClasses } = usePSAStyle();
   const [remindOverlayOpen, setRemindOverlayOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<PersonDebt | null>(null);
   void remindOverlayOpen; void selectedPerson; void onToggleTheme; void isDarkMode;
@@ -164,7 +166,10 @@ export function PeopleHome({
     return (
       <div
         key={person.id}
-        className="p-4 card rounded-lg card-hover-lift transition-shadow duration-200 hover:shadow-[var(--shadow-fab)]"
+        className={isPSA ? `p-4 ${psaClasses.card} rounded-lg transition-shadow duration-200` : 'p-4 card rounded-lg card-hover-lift transition-shadow duration-200 hover:shadow-[var(--shadow-fab)]'}
+        style={isPSA ? psaStyles.card : undefined}
+        onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+        onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
       >
         <button
           onClick={() => onPersonClick?.({ 
@@ -240,9 +245,14 @@ export function PeopleHome({
 
   return (
     <>
-      <div className="h-full pb-[68px] overflow-auto">
+      <div 
+        className={`h-full pb-[68px] overflow-auto ${isPSA ? '' : 'bg-background'}`}
+        style={isPSA ? psaStyles.background : undefined}
+      >
         {/* Unified Header */}
-        <div className="bg-background border-b border-border sticky top-0 z-10">
+        <div className={`${isPSA ? '' : 'bg-background'} border-b border-border sticky top-0 z-10`}
+          style={isPSA ? { background: 'transparent' } : undefined}
+        >
           <div className="px-4 py-3 flex items-center justify-between">
             <h1 className="text-screen-title">People</h1>
             <div className="flex items-center gap-2">
@@ -307,7 +317,10 @@ export function PeopleHome({
             <WalletBanner />
 
             {/* Overview Chips */}
-            <div className="card p-4 transition-shadow duration-200">
+            <div 
+              className={isPSA ? `${psaClasses.card} p-4 transition-shadow duration-200` : 'card p-4 transition-shadow duration-200'}
+              style={isPSA ? psaStyles.card : undefined}
+            >
               <div className="flex items-center gap-2 flex-wrap text-micro">
                 <div>
                   <span className="text-secondary">You owe </span>

@@ -3,7 +3,8 @@ import { useEffect, useState, FormEvent } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { triggerHaptic } from "../../utils/haptics";
 import { HelpSheet } from "../HelpSheet";
-import { Theme } from "../../utils/useTheme";
+import { Theme, useTheme } from "../../utils/useTheme";
+import { usePSAStyle } from "../../utils/usePSAStyle";
 import { AccountMenu } from "../AccountMenu";
 import { getSupabase } from "../../utils/supabase-client";
 
@@ -60,6 +61,8 @@ export function YouTab({
   isGuest = false,
   walletConnected,
 }: YouTabProps) {
+  const { brandVariant, setBrandVariant } = useTheme();
+  const { isPSA, psaStyles, psaClasses } = usePSAStyle();
   const [openGeneral, setOpenGeneral] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
   void openProfile; void setOpenProfile;
@@ -178,7 +181,10 @@ export function YouTab({
   };
 
   return (
-    <div className="h-full overflow-auto pb-[88px] bg-background">
+    <div 
+      className={`h-full overflow-auto pb-[88px] ${isPSA ? '' : 'bg-background'}`}
+      style={isPSA ? psaStyles.background : undefined}
+    >
       <div className="p-4 flex items-center justify-between">
         <h1 className="text-screen-title">You</h1>
         <div className="flex items-center gap-2">
@@ -202,7 +208,10 @@ export function YouTab({
       </div>
 
       <div className="px-4 space-y-3">
-        <div className="card p-4">
+        <div 
+          className={isPSA ? psaClasses.card : 'card'}
+          style={isPSA ? psaStyles.card : undefined}
+        >
           <div className="flex flex-col items-center mb-4">
             <div className="w-16 h-16 rounded-full bg-muted/20 flex items-center justify-center mb-3">
               <UserIcon className="w-8 h-8 text-secondary" />
@@ -250,7 +259,18 @@ export function YouTab({
 
         <button
           onClick={onViewInsights}
-          className="card p-4 w-full text-left transition-all duration-200 active:scale-[0.98] hover:shadow-fab"
+          className={isPSA ? `${psaClasses.card} p-4 w-full text-left transition-all duration-200 active:scale-[0.98]` : 'card p-4 w-full text-left transition-all duration-200 active:scale-[0.98] hover:shadow-fab'}
+          style={isPSA ? psaStyles.card : undefined}
+          onMouseEnter={(e) => {
+            if (isPSA) {
+              Object.assign(e.currentTarget.style, psaStyles.cardHover);
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (isPSA) {
+              Object.assign(e.currentTarget.style, psaStyles.card);
+            }
+          }}
         >
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-label" style={{ fontWeight: 600 }}>Quick insights</h3>
@@ -280,7 +300,10 @@ export function YouTab({
                   triggerHaptic('light');
                   setOpenGeneral(!openGeneral);
                 }}
-                className="w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
+                className={isPSA ? `w-full ${psaClasses.card} rounded-xl p-4 flex items-start justify-between transition-all duration-200 active:scale-[0.98]` : 'w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]'}
+                style={isPSA ? psaStyles.card : undefined}
+                onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+                onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
               >
                 <div className="flex-1 text-left">
                   <p className="text-label" style={{ fontWeight: 600 }}>General</p>
@@ -295,7 +318,10 @@ export function YouTab({
                 )}
               </button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="mt-2 card rounded-xl p-4 space-y-3">
+            <CollapsibleContent 
+              className={isPSA ? `mt-2 ${psaClasses.card} rounded-xl p-4 space-y-3` : 'mt-2 card rounded-xl p-4 space-y-3'}
+              style={isPSA ? psaStyles.card : undefined}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Globe className="w-4 h-4 text-secondary" />
@@ -377,6 +403,46 @@ export function YouTab({
                   </button>
                 </div>
               </div>
+
+              <div className="space-y-2 pt-2">
+                <div className="flex items-center gap-3">
+                  <Palette className="w-4 h-4 text-secondary" />
+                  <span className="text-micro">Style Variant</span>
+                </div>
+                <div className="p-1 bg-secondary/50 dark:bg-secondary/30 rounded-lg flex gap-1">
+                  <button
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setBrandVariant("default");
+                    }}
+                    className={`flex-1 py-1.5 px-2 text-micro rounded-md transition-all duration-200 ${
+                      brandVariant === "default"
+                        ? "bg-card shadow-sm text-foreground"
+                        : "text-secondary"
+                    }`}
+                  >
+                    Default
+                  </button>
+                  <button
+                    onClick={() => {
+                      triggerHaptic('light');
+                      setBrandVariant("polkadot-second-age");
+                    }}
+                    className={`flex-1 py-1.5 px-2 text-micro rounded-md transition-all duration-200 ${
+                      brandVariant === "polkadot-second-age"
+                        ? "bg-card shadow-sm text-foreground"
+                        : "text-secondary"
+                    }`}
+                  >
+                    PSA Glass
+                  </button>
+                </div>
+                {brandVariant === "polkadot-second-age" && (
+                  <p className="text-micro text-secondary px-1">
+                    Polkadot Second Age glassmorphism style
+                  </p>
+                )}
+              </div>
             </CollapsibleContent>
           </Collapsible>
 
@@ -385,7 +451,10 @@ export function YouTab({
               triggerHaptic('light');
               onPaymentMethods();
             }}
-            className="w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
+            className={isPSA ? `${psaClasses.card} w-full rounded-xl p-4 flex items-start justify-between transition-all duration-200 active:scale-[0.98]` : 'w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]'}
+            style={isPSA ? psaStyles.card : undefined}
+            onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+            onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
           >
             <div className="flex-1 text-left">
               <p className="text-label" style={{ fontWeight: 600 }}>Payment methods</p>
@@ -403,7 +472,10 @@ export function YouTab({
                   triggerHaptic('light');
                   setOpenNotifications(!openNotifications);
                 }}
-                className="w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
+                className={isPSA ? `${psaClasses.card} w-full rounded-xl p-4 flex items-start justify-between transition-all duration-200 active:scale-[0.98]` : 'w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]'}
+                style={isPSA ? psaStyles.card : undefined}
+                onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+                onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
               >
                 <div className="flex-1 text-left">
                   <p className="text-label" style={{ fontWeight: 600 }}>Notifications</p>
@@ -485,7 +557,10 @@ export function YouTab({
                   triggerHaptic('light');
                   setOpenSecurity(!openSecurity);
                 }}
-                className="w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
+                className={isPSA ? `${psaClasses.card} w-full rounded-xl p-4 flex items-start justify-between transition-all duration-200 active:scale-[0.98]` : 'w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]'}
+                style={isPSA ? psaStyles.card : undefined}
+                onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+                onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
               >
                 <div className="flex-1 text-left">
                   <p className="text-label" style={{ fontWeight: 600 }}>Security & Privacy</p>
@@ -500,7 +575,10 @@ export function YouTab({
                 )}
               </button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="mt-2 card rounded-xl p-4 space-y-3">
+            <CollapsibleContent 
+              className={isPSA ? `mt-2 ${psaClasses.card} rounded-xl p-4 space-y-3` : 'mt-2 card rounded-xl p-4 space-y-3'}
+              style={isPSA ? psaStyles.card : undefined}
+            >
               {!isGuest && (
                 <div className="space-y-4 rounded-xl border border-border/60 p-4">
                   <h3 className="text-label font-semibold">Account security</h3>
@@ -626,7 +704,10 @@ export function YouTab({
                   triggerHaptic('light');
                   setOpenAdvanced(!openAdvanced);
                 }}
-                className="w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
+                className={isPSA ? `${psaClasses.card} w-full rounded-xl p-4 flex items-start justify-between transition-all duration-200 active:scale-[0.98]` : 'w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]'}
+                style={isPSA ? psaStyles.card : undefined}
+                onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+                onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
               >
                 <div className="flex-1 text-left">
                   <p className="text-label" style={{ fontWeight: 600 }}>Advanced</p>
@@ -641,7 +722,10 @@ export function YouTab({
                 )}
               </button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="mt-2 card rounded-xl p-4 space-y-2">
+            <CollapsibleContent 
+              className={isPSA ? `mt-2 ${psaClasses.card} rounded-xl p-4 space-y-2` : 'mt-2 card rounded-xl p-4 space-y-2'}
+              style={isPSA ? psaStyles.card : undefined}
+            >
               <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
                 <Code className="w-4 h-4 text-secondary" />
                 <span className="text-micro">Developer mode</span>
@@ -662,7 +746,10 @@ export function YouTab({
               triggerHaptic('light');
               setShowHelp(true);
             }}
-            className="w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
+            className={isPSA ? `${psaClasses.card} w-full rounded-xl p-4 flex items-start justify-between transition-all duration-200 active:scale-[0.98]` : 'w-full card rounded-xl p-4 flex items-start justify-between hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]'}
+            style={isPSA ? psaStyles.card : undefined}
+            onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+            onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
           >
             <div className="flex items-center gap-3 flex-1 text-left">
               <div className="w-8 h-8 rounded-full bg-accent-pink-soft flex items-center justify-center">
@@ -684,7 +771,10 @@ export function YouTab({
                 triggerHaptic('medium');
                 onLogout();
               }}
-              className="w-full card rounded-xl p-4 flex items-center gap-3 hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
+              className={isPSA ? `${psaClasses.card} w-full rounded-xl p-4 flex items-center gap-3 transition-all duration-200 active:scale-[0.98]` : 'w-full card rounded-xl p-4 flex items-center gap-3 hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]'}
+              style={isPSA ? psaStyles.card : undefined}
+              onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+              onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
             >
               <LogOut className="w-5 h-5 text-foreground" />
               <span className="text-label">Sign out</span>
@@ -695,7 +785,10 @@ export function YouTab({
                 triggerHaptic('medium');
                 onDeleteAccount();
               }}
-              className="w-full card rounded-xl p-4 flex items-center gap-3 hover:bg-destructive/10 transition-all duration-200 active:scale-[0.98]"
+              className={isPSA ? `${psaClasses.card} w-full rounded-xl p-4 flex items-center gap-3 transition-all duration-200 active:scale-[0.98]` : 'w-full card rounded-xl p-4 flex items-center gap-3 hover:bg-destructive/10 transition-all duration-200 active:scale-[0.98]'}
+              style={isPSA ? psaStyles.card : undefined}
+              onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+              onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
             >
               <Trash2 className="w-5 h-5 text-destructive" />
               <span className="text-label text-destructive">Delete account</span>

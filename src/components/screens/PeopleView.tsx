@@ -1,4 +1,5 @@
 import { TrustDots } from "../TrustDots";
+import { usePSAStyle } from "../../utils/usePSAStyle";
 
 interface Person {
   id: string;
@@ -18,6 +19,8 @@ interface PeopleViewProps {
 }
 
 export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: PeopleViewProps) {
+  const { isPSA, psaStyles, psaClasses } = usePSAStyle();
+  
   return (
     <div className="p-3 space-y-2">
       {people.map((person) => {
@@ -29,7 +32,10 @@ export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: 
           <button
             key={person.id}
             onClick={() => onSettle(person.id)}
-            className="w-full card p-4 text-left hover:shadow-[var(--shadow-fab)] active:opacity-60 transition-all duration-200"
+            className={isPSA ? `w-full ${psaClasses.card} p-4 text-left active:opacity-60 transition-all duration-200` : 'w-full card p-4 text-left hover:shadow-[var(--shadow-fab)] active:opacity-60 transition-all duration-200'}
+            style={isPSA ? psaStyles.card : undefined}
+            onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+            onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
           >
             <div className="flex items-center justify-between gap-3">
               {/* Left: Avatar + Name + Payment Preference */}

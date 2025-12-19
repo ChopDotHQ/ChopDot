@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { getAuthPersistence } from './authPersistence';
 
 let cached: SupabaseClient | null | undefined;
 
@@ -13,10 +14,22 @@ export const getSupabase = (): SupabaseClient | null => {
     return cached;
   }
 
+  const persistence = getAuthPersistence();
+  const storage =
+    typeof window !== 'undefined' && persistence === 'session'
+      ? window.sessionStorage
+      : typeof window !== 'undefined'
+        ? window.localStorage
+        : undefined;
+
   cached = createClient(url, anon, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: false,
+      storage,
+    },
   });
   return cached;
 };
-
 

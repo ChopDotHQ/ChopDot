@@ -95,6 +95,13 @@ if (window.location.pathname === '/chain-test') {
       renderWithProviders(<ChainTestPage />),
     )
   })()
+} else if (window.location.pathname === '/reset-password') {
+  (async () => {
+    const { default: ResetPasswordScreen } = await import('./components/screens/ResetPasswordScreen');
+    createRoot(rootEl).render(
+      renderWithProviders(<ResetPasswordScreen />),
+    )
+  })()
   } else {
   createRoot(rootEl).render(
     renderWithProviders(<App />),

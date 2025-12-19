@@ -12,6 +12,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { useAccount } from './AccountContext';
 import { getSupabase } from '../utils/supabase-client';
 import { upsertProfile } from '../repos/profiles';
+import { getAuthPersistence } from '../utils/authPersistence';
 
 export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'email' | 'guest';
 
@@ -43,6 +44,34 @@ export type LoginCredentials =
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const AUTH_USER_KEY = 'chopdot_user';
+const AUTH_TOKEN_KEY = 'chopdot_auth_token';
+
+const getPreferredStorage = () => {
+  if (typeof window === 'undefined') return null;
+  return getAuthPersistence() === 'session' ? window.sessionStorage : window.localStorage;
+};
+
+const setAuthItem = (key: string, value: string) => {
+  const storage = getPreferredStorage();
+  if (!storage || typeof window === 'undefined') return;
+  storage.setItem(key, value);
+  const other = storage === window.sessionStorage ? window.localStorage : window.sessionStorage;
+  other.removeItem(key);
+};
+
+const getAuthItem = (key: string) => {
+  const storage = getPreferredStorage();
+  if (!storage) return null;
+  return storage.getItem(key);
+};
+
+const clearAuthItem = (key: string) => {
+  if (typeof window === 'undefined') return;
+  window.localStorage.removeItem(key);
+  window.sessionStorage.removeItem(key);
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,8 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               createdAt: new Date().toISOString(),
             };
             setUser(mapped);
-            localStorage.setItem('chopdot_user', JSON.stringify(mapped));
-            localStorage.setItem('chopdot_auth_token', session.access_token);
+            setAuthItem(AUTH_USER_KEY, JSON.stringify(mapped));
+            setAuthItem(AUTH_TOKEN_KEY, session.access_token);
           }
 
           const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
@@ -81,26 +110,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 createdAt: new Date().toISOString(),
               };
               setUser(mapped);
-              localStorage.setItem('chopdot_user', JSON.stringify(mapped));
-              localStorage.setItem('chopdot_auth_token', newSession.access_token);
+              setAuthItem(AUTH_USER_KEY, JSON.stringify(mapped));
+              setAuthItem(AUTH_TOKEN_KEY, newSession.access_token);
             } else {
               setUser(null);
-              localStorage.removeItem('chopdot_user');
-              localStorage.removeItem('chopdot_auth_token');
+              clearAuthItem(AUTH_USER_KEY);
+              clearAuthItem(AUTH_TOKEN_KEY);
             }
           });
           unsubscribe = () => sub.subscription.unsubscribe();
         } else {
           // Fallback to local storage only when Supabase is not configured
-          const storedUser = localStorage.getItem('chopdot_user');
-          const storedToken = localStorage.getItem('chopdot_auth_token');
+          const storedUser = getAuthItem(AUTH_USER_KEY);
+          const storedToken = getAuthItem(AUTH_TOKEN_KEY);
           if (storedUser && storedToken) {
             try {
               const userData = JSON.parse(storedUser);
               setUser(userData);
             } catch {
-              localStorage.removeItem('chopdot_user');
-              localStorage.removeItem('chopdot_auth_token');
+              clearAuthItem(AUTH_USER_KEY);
+              clearAuthItem(AUTH_TOKEN_KEY);
             }
           }
         }
@@ -130,13 +159,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             createdAt: new Date().toISOString(),
           };
           setUser(mapped);
-          localStorage.setItem('chopdot_user', JSON.stringify(mapped));
-          localStorage.setItem('chopdot_auth_token', session.access_token);
+          setAuthItem(AUTH_USER_KEY, JSON.stringify(mapped));
+          setAuthItem(AUTH_TOKEN_KEY, session.access_token);
           return;
         }
       }
-      const storedUser = localStorage.getItem('chopdot_user');
-      const storedToken = localStorage.getItem('chopdot_auth_token');
+      const storedUser = getAuthItem(AUTH_USER_KEY);
+      const storedToken = getAuthItem(AUTH_TOKEN_KEY);
       if (storedUser && storedToken) {
         const userData = JSON.parse(storedUser);
         setUser(userData);
@@ -245,14 +274,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error('Authentication failed: missing user data');
       }
 
-      localStorage.setItem('chopdot_user', JSON.stringify(userData));
+      setAuthItem(AUTH_USER_KEY, JSON.stringify(userData));
       const supabase = getSupabase();
       if (supabase) {
         const { data } = await supabase.auth.getSession();
         const token = data.session?.access_token ?? `mock_jwt_token_${Date.now()}`;
-        localStorage.setItem('chopdot_auth_token', token);
+        setAuthItem(AUTH_TOKEN_KEY, token);
       } else {
-        localStorage.setItem('chopdot_auth_token', `mock_jwt_token_${Date.now()}`);
+        setAuthItem(AUTH_TOKEN_KEY, `mock_jwt_token_${Date.now()}`);
       }
       
       setUser(userData);
@@ -287,8 +316,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           createdAt: new Date().toISOString(),
         };
         setUser(mapped);
-        localStorage.setItem('chopdot_user', JSON.stringify(mapped));
-        localStorage.setItem('chopdot_auth_token', session.access_token);
+        setAuthItem(AUTH_USER_KEY, JSON.stringify(mapped));
+        setAuthItem(AUTH_TOKEN_KEY, session.access_token);
 
         // Ensure profile row exists (non-blocking)
         try {
@@ -336,8 +365,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       // Clear local storage
-      localStorage.removeItem('chopdot_user');
-      localStorage.removeItem('chopdot_auth_token');
+      clearAuthItem(AUTH_USER_KEY);
+      clearAuthItem(AUTH_TOKEN_KEY);
       
       // Clear user state
       setUser(null);
@@ -363,8 +392,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
       
       // Store guest session (no token needed)
-      localStorage.setItem('chopdot_user', JSON.stringify(guestUser));
-      localStorage.setItem('chopdot_auth_token', 'guest_session');
+      setAuthItem(AUTH_USER_KEY, JSON.stringify(guestUser));
+      setAuthItem(AUTH_TOKEN_KEY, 'guest_session');
       
       setUser(guestUser);
     } catch (error) {

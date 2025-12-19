@@ -4,6 +4,7 @@ import { triggerHaptic } from "../utils/haptics";
 import { useState, useEffect } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { BalanceDisplay } from "./polkadot/BalanceDisplay";
+import { usePSAStyle } from "../utils/usePSAStyle";
 
 const isFlagEnabled = (value?: string) =>
   value === '1' || value?.toLowerCase() === 'true';
@@ -109,10 +110,13 @@ export function WalletBanner() {
       );
     }
 
+    const { isPSA, psaStyles, psaClasses } = usePSAStyle();
+    
     return (
-      <div className={`p-3 glass-sm rounded-lg border transition-all duration-200 ${
-        showSuccess ? 'ring-2 ring-success/50' : ''
-      }`} style={{ borderColor: 'var(--border)' }}>
+      <div 
+        className={isPSA ? `p-3 ${psaClasses.card} rounded-lg border transition-all duration-200 ${showSuccess ? 'ring-2 ring-success/50' : ''}` : `p-3 glass-sm rounded-lg border transition-all duration-200 ${showSuccess ? 'ring-2 ring-success/50' : ''}`}
+        style={isPSA ? { ...psaStyles.card, borderColor: 'var(--border)' } : { borderColor: 'var(--border)' }}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex-shrink-0" />

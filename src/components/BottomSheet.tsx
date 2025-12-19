@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { ReactNode } from "react";
+import { usePSAStyle } from "../utils/usePSAStyle";
 
 interface BottomSheetProps {
   isOpen: boolean;
@@ -9,6 +10,8 @@ interface BottomSheetProps {
 }
 
 export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetProps) {
+  const { isPSA, psaStyles, psaClasses } = usePSAStyle();
+  
   if (!isOpen) return null;
 
   return (
@@ -16,8 +19,8 @@ export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetPro
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <div className="w-full max-w-[420px] md:max-w-[560px] mx-auto px-4">
       <div
-          className="relative w-full bg-card rounded-2xl shadow-[var(--shadow-card)] flex flex-col mx-auto overflow-hidden"
-          style={{ maxHeight: '85vh' }}
+          className={isPSA ? `relative w-full ${psaClasses.panel} rounded-2xl flex flex-col mx-auto overflow-hidden` : "relative w-full bg-card rounded-2xl shadow-[var(--shadow-card)] flex flex-col mx-auto overflow-hidden"}
+          style={isPSA ? { ...psaStyles.panel, maxHeight: '85vh' } : { maxHeight: '85vh' }}
       >
         <div className="flex items-center justify-between p-4 pb-3 flex-shrink-0 border-b border-border">
           <h2 className="text-body font-medium">{title}</h2>

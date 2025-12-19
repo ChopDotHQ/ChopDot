@@ -7,6 +7,7 @@ import { EmptyState } from "../EmptyState";
 import { usePots } from "../../hooks/usePots";
 import { warnDev } from "../../utils/logDev";
 import { shouldPreferDLReads } from "../../utils/dlReadsFlag";
+import { usePSAStyle } from "../../utils/usePSAStyle";
 import type { Pot as DataLayerPot } from "../../services/data/types";
 
 interface Pot {
@@ -73,6 +74,7 @@ export function PotsHome({
   onQuickScan,
   onQuickRequest,
 }: PotsHomeProps) {
+  const { isPSA, psaStyles, psaClasses } = usePSAStyle();
   const [balancesVisible, setBalancesVisible] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSortSheet, setShowSortSheet] = useState(false);
@@ -205,9 +207,14 @@ export function PotsHome({
   }, [pots, searchQuery, sortBy]);
 
   return (
-    <div className="flex flex-col h-full pb-[68px] bg-background">
+    <div 
+      className={`flex flex-col h-full pb-[68px] ${isPSA ? '' : 'bg-background'}`}
+      style={isPSA ? psaStyles.background : undefined}
+    >
       {/* Unified Header */}
-      <div className="bg-background border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+      <div className={`${isPSA ? '' : 'bg-background'} border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 z-10`}
+        style={isPSA ? { background: 'transparent' } : undefined}
+      >
         <h1 className="text-screen-title">Pots</h1>
         <div className="flex items-center gap-2">
           {/* Account Menu - unified wallet connection */}
@@ -238,7 +245,10 @@ export function PotsHome({
           <WalletBanner />
 
           {/* Balance Summary with Privacy Toggle */}
-          <div className="card p-4 transition-shadow duration-200">
+          <div 
+            className={isPSA ? `${psaClasses.card} p-4 transition-shadow duration-200` : 'card p-4 transition-shadow duration-200'}
+            style={isPSA ? psaStyles.card : undefined}
+          >
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-section" style={{ fontWeight: 500 }}>Totals across all pots</h3>
               <button 
@@ -299,15 +309,17 @@ export function PotsHome({
             {/* Add Expense - Primary Action */}
             <button
               onClick={onQuickAddExpense}
-              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95"
-              style={{ 
+              className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 ${isPSA ? '' : ''}`}
+              style={isPSA ? psaStyles.pinkAccentButton : { 
                 background: 'var(--accent)',
                 boxShadow: '0 2px 8px rgba(230, 0, 122, 0.25)'
               }}
+              onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.pinkAccentButtonHover) : undefined}
+              onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.pinkAccentButton) : undefined}
             >
               <div 
                 className="w-10 h-10 rounded-full flex items-center justify-center"
-                style={{ background: 'rgba(255, 255, 255, 0.2)' }}
+                style={{ background: isPSA ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.2)' }}
               >
                 <Receipt className="w-5 h-5 text-white" />
               </div>
@@ -317,7 +329,10 @@ export function PotsHome({
             {/* Settle - Secondary */}
             <button
               onClick={onQuickSettle}
-              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]"
+              className={isPSA ? `flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 ${psaClasses.card}` : 'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]'}
+              style={isPSA ? psaStyles.card : undefined}
+              onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+              onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
             >
               <div 
                 className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -331,7 +346,10 @@ export function PotsHome({
             {/* Scan QR - Tertiary */}
             <button
               onClick={onQuickScan}
-              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]"
+              className={isPSA ? `flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 ${psaClasses.card}` : 'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]'}
+              style={isPSA ? psaStyles.card : undefined}
+              onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+              onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
             >
               <div 
                 className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -345,7 +363,10 @@ export function PotsHome({
             {/* Request - Tertiary */}
             <button
               onClick={onQuickRequest}
-              className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]"
+              className={isPSA ? `flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 ${psaClasses.card}` : 'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]'}
+              style={isPSA ? psaStyles.card : undefined}
+              onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+              onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
             >
               <div 
                 className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -360,7 +381,11 @@ export function PotsHome({
           {pendingInvites.length > 0 && (
             <div className="space-y-2">
               {pendingInvites.map((invite) => (
-                <div key={invite.id} className="card p-3 flex items-center justify-between gap-3">
+                <div 
+                  key={invite.id} 
+                  className={isPSA ? `${psaClasses.card} p-3 flex items-center justify-between gap-3` : 'card p-3 flex items-center justify-between gap-3'}
+                  style={isPSA ? psaStyles.card : undefined}
+                >
                   <div>
                     <p className="text-body" style={{ fontWeight: 500 }}>You have a pending invite</p>
                     <p className="text-caption text-secondary">
@@ -452,7 +477,10 @@ export function PotsHome({
 	                      <button
 	                        key={pot.id}
 	                        onClick={() => onPotClick?.(pot.id)}
-	                        className="w-full p-4 card text-left card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200"
+	                        className={isPSA ? `w-full p-4 ${psaClasses.card} text-left transition-all duration-200` : 'w-full p-4 card text-left card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200'}
+	                        style={isPSA ? psaStyles.card : undefined}
+	                        onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+	                        onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
 	                      >
 	                        <div className="flex items-start justify-between gap-2 mb-2">
 	                          <div className="flex items-center gap-2 flex-1 min-w-0">

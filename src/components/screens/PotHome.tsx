@@ -18,6 +18,7 @@ import { warnDev, logDev } from "../../utils/logDev";
 import { shouldPreferDLReads } from "../../utils/dlReadsFlag";
 import { savePotSnapshot } from "../../services/backup/backupService";
 import { useData } from "../../services/data/DataContext";
+import { usePSAStyle } from "../../utils/usePSAStyle";
 import type { Pot as DataLayerPot } from "../../services/data/types";
 
 interface Member {
@@ -163,6 +164,7 @@ export function PotHome({
   potHistory = [],
   onUpdatePot,
 }: PotHomeProps) {
+  const { isPSA, psaStyles, psaClasses } = usePSAStyle();
   // Task 3: Read pot from Data Layer (if flag enabled) with fallback to props
   const preferDLReads = shouldPreferDLReads();
   const { pot: dlPot, error: dlError, refresh: refreshPot } = usePot(potId);
@@ -537,7 +539,10 @@ export function PotHome({
 
   return (
     <>
-    <div className="flex flex-col h-full pb-[68px]">
+    <div 
+      className={`flex flex-col h-full pb-[68px] ${isPSA ? '' : 'bg-background'}`}
+      style={isPSA ? psaStyles.background : undefined}
+    >
       <TopBar 
         title={potName} 
         onBack={onBack}
@@ -574,7 +579,10 @@ export function PotHome({
 
       {false && showCheckpointSection && (
         <div className="px-4 pt-3">
-          <div className="card p-4 space-y-3">
+          <div 
+            className={isPSA ? `${psaClasses.card} p-4 space-y-3` : 'card p-4 space-y-3'}
+            style={isPSA ? psaStyles.card : undefined}
+          >
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-caption text-secondary uppercase tracking-wide">Verifiability</p>

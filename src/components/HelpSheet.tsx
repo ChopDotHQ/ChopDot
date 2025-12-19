@@ -10,6 +10,7 @@
 import { X, ChevronDown, HelpCircle } from "lucide-react";
 import { useState } from "react";
 import { triggerHaptic } from "../utils/haptics";
+import { usePSAStyle } from "../utils/usePSAStyle";
 
 interface HelpSheetProps {
   onClose: () => void;
@@ -68,6 +69,7 @@ const FAQ_ITEMS: FAQItem[] = [
 ];
 
 export function HelpSheet({ onClose }: HelpSheetProps) {
+  const { isPSA, psaStyles, psaClasses } = usePSAStyle();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggleItem = (index: number) => {
@@ -86,8 +88,8 @@ export function HelpSheet({ onClose }: HelpSheetProps) {
       {/* Sheet */}
       <div className="fixed inset-x-0 bottom-0 z-50 animate-slideUp">
         <div
-          className="bg-card rounded-t-[24px] max-h-[85vh] flex flex-col"
-          style={{
+          className={isPSA ? `${psaClasses.panel} rounded-t-[24px] max-h-[85vh] flex flex-col` : "bg-card rounded-t-[24px] max-h-[85vh] flex flex-col"}
+          style={isPSA ? psaStyles.panel : {
             boxShadow: 'var(--shadow-elev)',
           }}
         >
@@ -113,7 +115,8 @@ export function HelpSheet({ onClose }: HelpSheetProps) {
               {FAQ_ITEMS.map((item, index) => (
                 <div
                   key={index}
-                  className="card overflow-hidden"
+                  className={isPSA ? `${psaClasses.card} overflow-hidden` : 'card overflow-hidden'}
+                  style={isPSA ? psaStyles.card : undefined}
                 >
                   {/* Question */}
                   <button
@@ -142,7 +145,10 @@ export function HelpSheet({ onClose }: HelpSheetProps) {
 
             {/* Footer Note */}
             <div className="px-4 pb-6 pt-2">
-              <div className="card p-4 bg-accent-pink-soft border border-accent-pink/10">
+              <div 
+                className={isPSA ? `${psaClasses.card} p-4 border border-accent-pink/10` : 'card p-4 bg-accent-pink-soft border border-accent-pink/10'}
+                style={isPSA ? { ...psaStyles.card, background: 'var(--accent-pink-soft)' } : undefined}
+              >
                 <p className="text-sm text-secondary text-center">
                   Need more help? Reach out to{" "}
                   <span className="text-accent-pink">support@chopdot.app</span>

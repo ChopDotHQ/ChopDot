@@ -3,7 +3,7 @@ import { TopBar } from "../TopBar";
 import { InputField } from "../InputField";
 import { SelectField } from "../SelectField";
 import { useState } from "react";
-import { Theme } from "../../utils/useTheme";
+import { Theme, BrandVariant, useTheme } from "../../utils/useTheme";
 
 interface SettingsProps {
   onBack?: () => void;
@@ -16,6 +16,7 @@ interface SettingsProps {
 }
 
 export function Settings({ onBack, onPaymentMethods, onCrustStorage, onLogout, onDeleteAccount, theme, onThemeChange }: SettingsProps) {
+  const { brandVariant, setBrandVariant } = useTheme();
   const [name, setName] = useState("You");
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("you@example.com");
@@ -194,6 +195,46 @@ export function Settings({ onBack, onPaymentMethods, onCrustStorage, onLogout, o
               {theme === "system" && (
                 <p className="text-micro text-secondary px-1">
                   Follows your device theme
+                </p>
+              )}
+            </div>
+
+            {/* Brand Variant Toggle */}
+            <div className="space-y-2">
+              <label className="text-label text-secondary px-1">
+                Style Variant
+              </label>
+              <div className="p-1 bg-secondary/50 dark:bg-secondary/30 rounded-xl flex gap-1">
+                <button
+                  onClick={() => {
+                    setBrandVariant("default");
+                    markChanged();
+                  }}
+                  className={`flex-1 py-2 px-3 text-label rounded-lg transition-all duration-200 ${
+                    brandVariant === "default"
+                      ? "bg-card shadow-sm text-foreground"
+                      : "text-secondary hover:text-foreground"
+                  }`}
+                >
+                  Default
+                </button>
+                <button
+                  onClick={() => {
+                    setBrandVariant("polkadot-second-age");
+                    markChanged();
+                  }}
+                  className={`flex-1 py-2 px-3 text-label rounded-lg transition-all duration-200 ${
+                    brandVariant === "polkadot-second-age"
+                      ? "bg-card shadow-sm text-foreground"
+                      : "text-secondary hover:text-foreground"
+                  }`}
+                >
+                  PSA Glass
+                </button>
+              </div>
+              {brandVariant === "polkadot-second-age" && (
+                <p className="text-micro text-secondary px-1">
+                  Polkadot Second Age glassmorphism style
                 </p>
               )}
             </div>

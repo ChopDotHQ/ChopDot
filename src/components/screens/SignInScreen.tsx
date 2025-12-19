@@ -19,6 +19,8 @@ import { triggerHaptic } from '../../utils/haptics';
 import QRCodeLib from 'qrcode';
 import useClientDevice from '../../hooks/useClientDevice';
 import { getSupabase } from '../../utils/supabase-client';
+import { getAuthPersistence, setAuthPersistence } from '../../utils/authPersistence';
+import { getRememberedEmail, setRememberedEmail } from '../../utils/rememberedEmail';
 import { toast } from 'sonner';
 import { useTheme } from '../../utils/useTheme';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerTitle } from '../ui/drawer';
@@ -35,9 +37,24 @@ interface LoginScreenProps {
   onLoginSuccess?: () => void;
 }
 
-const ChopDotMark = ({ size = 48, useBlackAndWhite = false }: { size?: number; useBlackAndWhite?: boolean }) => {
+const ChopDotMark = ({ 
+  size = 48, 
+  useBlackAndWhite = false,
+  useWhite = false 
+}: { 
+  size?: number; 
+  useBlackAndWhite?: boolean;
+  useWhite?: boolean;
+}) => {
   const maskId = useId();
-  const fillColor = useBlackAndWhite ? '#000000' : 'var(--accent)';
+  let fillColor: string;
+  if (useWhite) {
+    fillColor = '#FFFFFF';
+  } else if (useBlackAndWhite) {
+    fillColor = '#000000';
+  } else {
+    fillColor = 'var(--accent)';
+  }
   return (
     <svg
       width={size}
@@ -336,8 +353,21 @@ const polkadotSecondAgeGuestThemes: Record<PanelMode, Partial<WalletOptionTheme>
   },
 };
 
-const polkadotSecondAgeWalletOverrides: Record<string, Partial<WalletOptionTheme>> = {
-  email: {
+// Email theme overrides for PSA Glass - will be applied conditionally based on panelMode
+const getPolkadotSecondAgeEmailOverride = (panelMode: PanelMode): Partial<WalletOptionTheme> => {
+  if (panelMode === 'dark') {
+    return {
+      background: 'rgba(28, 25, 23, 0.4)',
+      hoverBackground: 'rgba(40, 36, 33, 0.6)',
+      borderColor: 'rgba(255, 255, 255, 0.2)',
+      iconBackground: 'rgba(255, 255, 255, 0.1)',
+      iconBorderColor: 'rgba(255, 255, 255, 0.2)',
+      titleColor: '#FAFAF9',
+      subtitleColor: 'rgba(250, 250, 249, 0.85)',
+      shadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.3), inset 0 -1px 10px rgba(255, 255, 255, 0.08)',
+    };
+  }
+  return {
     background: 'rgba(255, 255, 255, 0.5)',
     hoverBackground: 'rgba(255, 255, 255, 0.7)',
     borderColor: 'rgba(0, 0, 0, 0.15)',
@@ -346,7 +376,11 @@ const polkadotSecondAgeWalletOverrides: Record<string, Partial<WalletOptionTheme
     titleColor: '#000000',
     subtitleColor: '#4A4A4A',
     shadow: '0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.7), inset 0 -1px 10px rgba(255, 255, 255, 0.15)',
-  },
+  };
+};
+
+const polkadotSecondAgeWalletOverrides: Record<string, Partial<WalletOptionTheme>> = {
+  // Email override is now handled dynamically via getPolkadotSecondAgeEmailOverride
   // Polkadot.js uses the same base theme as other wallets - no special override
 };
 
@@ -358,12 +392,21 @@ const POLKADOT_BACKGROUNDS = [
   '/assets/background-polka-d.png',
 ];
 
+const POLKADOT_BACKGROUNDS_INVERTED = [
+  '/assets/background-polka-a_inverted.png',
+  '/assets/background-polka-b.png', // Fallback to regular if inverted doesn't exist
+  '/assets/background-polka-c.png',
+  '/assets/background-polka-d.png',
+];
+
 // Function to get background styles based on current background index
 const getPolkadotSecondAgeSceneBackgroundStyles = (
   panelMode: PanelMode,
   backgroundIndex: number
 ): CSSProperties => {
-  const backgroundImage = POLKADOT_BACKGROUNDS[backgroundIndex % POLKADOT_BACKGROUNDS.length];
+  // Use inverted backgrounds for dark mode, regular for light mode
+  const backgrounds = panelMode === 'dark' ? POLKADOT_BACKGROUNDS_INVERTED : POLKADOT_BACKGROUNDS;
+  const backgroundImage = backgrounds[backgroundIndex % backgrounds.length];
   
   // Try to use the image, but provide a nice fallback gradient
   return {
@@ -509,7 +552,7 @@ const WalletOption = ({
         >
           {shouldUseGlassmorphism && iconSrc === EMAIL_LOGIN_LOGO ? (
             <div className="h-7 w-7 flex items-center justify-center">
-              <ChopDotMark size={28} useBlackAndWhite={true} />
+              <ChopDotMark size={28} useWhite={panelMode === 'dark'} useBlackAndWhite={panelMode === 'light'} />
             </div>
           ) : (
             <div className="h-9 w-9 flex items-center justify-center rounded-full overflow-hidden">
@@ -568,6 +611,8 @@ interface MobileWalletConnectPanelProps {
   useGlassmorphism?: boolean;
   onGuestLogin: () => Promise<void>;
   onEmailOptionToggle: () => void;
+  keepSignedIn: boolean;
+  onKeepSignedInChange: (checked: boolean) => void;
   emailTheme: Partial<WalletOptionTheme>;
   waitingForSignature: boolean;
   onOpenModal?: () => Promise<void>;
@@ -585,6 +630,8 @@ const MobileWalletConnectPanel = ({
   useGlassmorphism = false,
   onGuestLogin,
   onEmailOptionToggle,
+  keepSignedIn,
+  onKeepSignedInChange,
   emailTheme,
   waitingForSignature,
   onOpenModal,
@@ -669,6 +716,17 @@ const MobileWalletConnectPanel = ({
           panelMode={mode}
           useGlassmorphism={useGlassmorphism}
         />
+
+        <label className={`flex items-center justify-between gap-3 rounded-xl border border-border/60 px-4 py-3 text-sm ${useGlassmorphism && mode === 'dark' ? 'text-white' : ''}`}>
+          <span className={`font-semibold ${useGlassmorphism && mode === 'dark' ? 'text-white' : 'text-foreground'}`}>Keep me signed in</span>
+          <input
+            type="checkbox"
+            className="h-4 w-4 accent-[var(--accent)]"
+            checked={keepSignedIn}
+            onChange={(event) => onKeepSignedInChange(event.target.checked)}
+            disabled={loading}
+          />
+        </label>
 
         <div className="text-center space-y-2">
           <button
@@ -853,16 +911,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   useEffect(() => {
     localStorage.setItem('chopdot.loginVariant', loginVariant);
   }, [loginVariant]);
-
-  // Rotate backgrounds for Polkadot Second Age variant
-  useEffect(() => {
-    if (loginVariant === 'polkadot-second-age-glass') {
-      const interval = setInterval(() => {
-        setBackgroundIndex((prevIndex) => (prevIndex + 1) % POLKADOT_BACKGROUNDS.length);
-      }, 12000); // Change background every 12 seconds
-      return () => clearInterval(interval);
-    }
-  }, [loginVariant]);
   const [showWalletConnectQR, setShowWalletConnectQR] = useState(false);
   const [walletConnectQRCode, setWalletConnectQRCode] = useState<string | null>(null);
   const [isWaitingForWalletConnect, setIsWaitingForWalletConnect] = useState(false);
@@ -891,8 +939,11 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   const device = useClientDevice();
   const [viewModeOverride, setViewModeOverride] = useState<LoginViewOverride>('auto');
   const [showEmailLogin, setShowEmailLogin] = useState(false);
-  const [emailCredentials, setEmailCredentials] = useState({ email: '', password: '' });
+  const initialRememberedEmail = getRememberedEmail();
+  const [emailCredentials, setEmailCredentials] = useState({ email: initialRememberedEmail, password: '' });
   const [authPanelView, setAuthPanelView] = useState<'login' | 'signup'>('login');
+  const [keepSignedIn, setKeepSignedIn] = useState(() => getAuthPersistence() === 'local');
+  const [rememberEmail, setRememberEmail] = useState(Boolean(initialRememberedEmail));
   const [signupForm, setSignupForm] = useState({
     email: '',
     password: '',
@@ -1094,6 +1145,25 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       }
     };
   }, []);
+
+  // Rotate backgrounds for Polkadot Second Age variant
+  // In dark mode, stay on inverted background (no rotation)
+  // In light mode, rotate through regular backgrounds
+  useEffect(() => {
+    if (loginVariant === 'polkadot-second-age-glass') {
+      // Reset to index 0 when switching to dark mode
+      if (panelMode === 'dark') {
+        setBackgroundIndex(0);
+        return; // Don't rotate in dark mode
+      }
+      
+      // Only rotate in light mode
+      const interval = setInterval(() => {
+        setBackgroundIndex((prevIndex) => (prevIndex + 1) % POLKADOT_BACKGROUNDS.length);
+      }, 12000); // Change background every 12 seconds
+      return () => clearInterval(interval);
+    }
+  }, [loginVariant, panelMode]);
 
   useEffect(() => {
     if (!enableMobileUi && viewModeOverride === 'mobile') {
@@ -1433,6 +1503,10 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     }
   };
 
+  useEffect(() => {
+    setRememberedEmail(emailCredentials.email.trim(), rememberEmail);
+  }, [emailCredentials.email, rememberEmail]);
+
   const handleEmailLogin = async (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
     // Reset loading if switching from another handler
@@ -1452,14 +1526,54 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         email: trimmedEmail,
         password: emailCredentials.password,
       });
+      setRememberedEmail(trimmedEmail, rememberEmail);
       triggerHaptic('medium');
       setShowEmailLogin(false);
-      setEmailCredentials({ email: '', password: '' });
+      setEmailCredentials({ email: rememberEmail ? trimmedEmail : '', password: '' });
       onLoginSuccess?.();
     } catch (err: any) {
       console.error('Email login failed:', err);
       setError(err.message || 'Failed to login with email and password');
       triggerHaptic('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeepSignedInChange = (nextKeepSignedIn: boolean) => {
+    setKeepSignedIn(nextKeepSignedIn);
+    setAuthPersistence(nextKeepSignedIn ? 'local' : 'session');
+    toast.message('Applying sign-in setting…');
+    window.setTimeout(() => window.location.reload(), 75);
+  };
+
+  const handlePasswordRecovery = async () => {
+    const trimmedEmail = emailCredentials.email.trim();
+    if (!trimmedEmail) {
+      toast.error('Enter your email first.');
+      return;
+    }
+    const supabase = getSupabase();
+    if (!supabase) {
+      toast.error('Supabase auth is not configured.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      const { error } = await supabase.auth.resetPasswordForEmail(trimmedEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) {
+        // Avoid account enumeration: show the same success message even if user does not exist.
+        console.warn('[SignInScreen] Password recovery request failed:', error.message);
+      }
+      toast.success("If an account exists, you'll receive a password reset email shortly.");
+      triggerHaptic('light');
+    } catch (err: any) {
+      console.warn('[SignInScreen] Password recovery request failed:', err?.message || err);
+      toast.success("If an account exists, you'll receive a password reset email shortly.");
     } finally {
       setLoading(false);
     }
@@ -1753,6 +1867,23 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         />
       </div>
       <div className="space-y-2">
+        <label
+          className={`flex items-center gap-2 text-xs ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}
+        >
+          <input
+            type="checkbox"
+            className="h-3.5 w-3.5 accent-[var(--accent)]"
+            checked={rememberEmail}
+            onChange={(event) => setRememberEmail(event.target.checked)}
+            disabled={loading}
+          />
+          Remember this email on this device
+        </label>
+        <p className={`text-[11px] ${panelMode === 'dark' ? 'text-white/60' : 'text-secondary/70'}`}>
+          Passwords are saved by your browser or device password manager.
+        </p>
+      </div>
+      <div className="space-y-2">
         <button
           type="submit"
           className="w-full rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted/10 disabled:opacity-60"
@@ -1762,9 +1893,17 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         </button>
         <button
           type="button"
+          onClick={handlePasswordRecovery}
+          className="w-full rounded-xl border border-border/0 px-4 py-2 text-sm font-semibold text-[var(--accent)] transition-colors hover:bg-muted/10 disabled:opacity-60"
+          disabled={loading}
+        >
+          Forgot password?
+        </button>
+        <button
+          type="button"
           onClick={() => {
             setShowEmailLogin(false);
-            setEmailCredentials({ email: '', password: '' });
+            setEmailCredentials({ email: rememberEmail ? getRememberedEmail() : '', password: '' });
           }}
           className="w-full rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted/10"
         >
@@ -1785,7 +1924,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-sm space-y-6">
           <div className="flex flex-col items-center gap-3 text-center">
-            <ChopDotMark size={52} />
+            <ChopDotMark size={52} useWhite={panelMode === 'dark'} />
             <p className={panelMode === 'dark' ? 'text-sm font-medium text-white/90' : 'text-sm font-medium text-secondary/80'}>
               Create your ChopDot account
             </p>
@@ -1907,12 +2046,13 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
 
   const renderFooterContent = () => {
     const useGlassmorphism = loginVariant === 'polkadot-second-age-glass';
-    // For glassmorphism, use darker text for better contrast on light backgrounds
-    const isDarkText = useGlassmorphism ? false : (panelMode === 'dark');
+    // For glassmorphism in dark mode, use white text. In light mode, use dark text.
+    // For non-glassmorphism, use white text in dark mode.
+    const isDarkText = useGlassmorphism ? (panelMode === 'dark') : (panelMode === 'dark');
     
     // Use inline styles for glassmorphism to ensure they override inherited colors
-    const linkStyle = useGlassmorphism ? { color: '#1C1917' } : undefined;
-    const textStyle = useGlassmorphism ? { color: '#57534E' } : undefined;
+    const linkStyle = useGlassmorphism && panelMode === 'light' ? { color: '#1C1917' } : (panelMode === 'dark' ? { color: '#FFFFFF' } : undefined);
+    const textStyle = useGlassmorphism && panelMode === 'light' ? { color: '#57534E' } : (panelMode === 'dark' ? { color: 'rgba(255, 255, 255, 0.7)' } : undefined);
     
     return (
       <div className="space-y-3">
@@ -1973,10 +2113,10 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         <div className="flex-1 flex items-center justify-center px-4 py-12">
           <div className="w-full max-w-sm space-y-6">
             <div className="flex flex-col items-center gap-3 text-center">
-              <ChopDotMark size={52} useBlackAndWhite={useGlassmorphism} />
+              <ChopDotMark size={52} useWhite={useGlassmorphism && panelMode === 'dark'} useBlackAndWhite={useGlassmorphism && panelMode === 'light'} />
               <p className={
                 useGlassmorphism 
-                  ? 'text-sm font-medium text-[#1C1917]' 
+                  ? (panelMode === 'dark' ? 'text-sm font-medium text-white/90' : 'text-sm font-medium text-[#1C1917]')
                   : (panelMode === 'dark' ? 'text-sm font-medium text-white/90' : 'text-sm font-medium text-secondary/80')
               }>
                 Create your ChopDot account
@@ -2195,9 +2335,15 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       : frostedGuestThemes[panelMode];
 
     const appliedWalletOptions = walletOptionConfigs.map((option) => {
-      const overrideTheme = useGlassmorphism
-        ? (polkadotSecondAgeWalletOverrides[option.id] ?? frostedWalletOverrides[option.id] ?? {})
-        : (frostedWalletOverrides[option.id] ?? {});
+      let overrideTheme: Partial<WalletOptionTheme> = {};
+      if (useGlassmorphism && option.id === 'email') {
+        // Use dynamic email theme based on panelMode
+        overrideTheme = getPolkadotSecondAgeEmailOverride(panelMode);
+      } else {
+        overrideTheme = useGlassmorphism
+          ? (polkadotSecondAgeWalletOverrides[option.id] ?? frostedWalletOverrides[option.id] ?? {})
+          : (frostedWalletOverrides[option.id] ?? {});
+      }
       const baseThemeOverride = option.themeOverride;
       
       const finalThemeOverride: Partial<WalletOptionTheme> = {
@@ -2217,14 +2363,14 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         <div className="flex-1 flex items-center justify-center px-4 py-12">
           <div className="w-full max-w-sm space-y-6">
             <div className="flex flex-col items-center gap-3 text-center">
-              <ChopDotMark size={52} useBlackAndWhite={useGlassmorphism} />
+              <ChopDotMark size={52} useWhite={useGlassmorphism && panelMode === 'dark'} useBlackAndWhite={useGlassmorphism && panelMode === 'light'} />
               <p 
                 className={
                   useGlassmorphism 
-                    ? 'text-sm font-medium' 
+                    ? (panelMode === 'dark' ? 'text-sm font-medium text-white/90' : 'text-sm font-medium')
                     : (panelMode === 'dark' ? 'text-sm font-medium text-white/90' : 'text-sm font-medium text-secondary/80')
                 }
-                style={useGlassmorphism ? { color: '#1C1917' } : undefined}
+                style={useGlassmorphism ? (panelMode === 'dark' ? { color: 'rgba(255, 255, 255, 0.9)' } : { color: '#1C1917' }) : undefined}
               >Sign in to ChopDot</p>
             </div>
             
@@ -2247,7 +2393,9 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               useGlassmorphism={useGlassmorphism}
               onGuestLogin={handleGuestLogin}
 	              onEmailOptionToggle={() => openEmailLoginDrawer('mobile-option')}
-	              emailTheme={emailOptionTheme}
+              keepSignedIn={keepSignedIn}
+              onKeepSignedInChange={handleKeepSignedInChange}
+	              emailTheme={useGlassmorphism ? getPolkadotSecondAgeEmailOverride(panelMode) : emailOptionTheme}
 	              waitingForSignature={isWaitingForSignature}
 	              onOpenModal={enableWcModal ? handleWalletConnectModal : undefined}
 	            />
@@ -2261,14 +2409,14 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         <div className="flex-1 flex items-center justify-center px-4 py-12">
           <div className="w-full max-w-sm space-y-6">
             <div className="flex flex-col items-center gap-3 text-center">
-              <ChopDotMark size={52} useBlackAndWhite={useGlassmorphism} />
+              <ChopDotMark size={52} useWhite={useGlassmorphism && panelMode === 'dark'} useBlackAndWhite={useGlassmorphism && panelMode === 'light'} />
               <p 
                 className={
                   useGlassmorphism 
-                    ? 'text-sm font-medium' 
+                    ? (panelMode === 'dark' ? 'text-sm font-medium text-white/90' : 'text-sm font-medium')
                     : (panelMode === 'dark' ? 'text-sm font-medium text-white/90' : 'text-sm font-medium text-secondary/80')
                 }
-                style={useGlassmorphism ? { color: '#1C1917' } : undefined}
+                style={useGlassmorphism ? (panelMode === 'dark' ? { color: 'rgba(255, 255, 255, 0.9)' } : { color: '#1C1917' }) : undefined}
               >
                 Sign in to ChopDot
               </p>
@@ -2315,7 +2463,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
 	              ))}
 	            </div>
 
-            <WalletOption
+          <WalletOption
               title="Continue as guest"
               onClick={handleGuestLogin}
               disabled={loading}
@@ -2324,6 +2472,17 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               panelMode={panelMode}
               useGlassmorphism={useGlassmorphism}
             />
+
+            <label className={`flex items-center justify-between gap-3 rounded-xl border border-border/60 px-4 py-3 text-sm ${useGlassmorphism && panelMode === 'dark' ? 'text-white' : ''}`}>
+              <span className={`font-semibold ${useGlassmorphism && panelMode === 'dark' ? 'text-white' : 'text-foreground'}`}>Keep me signed in</span>
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-[var(--accent)]"
+                checked={keepSignedIn}
+                onChange={(event) => handleKeepSignedInChange(event.target.checked)}
+                disabled={loading}
+              />
+            </label>
 
             {renderErrorAlert()}
           </WalletPanel>
@@ -2337,7 +2496,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
                 className={`text-xs font-semibold underline underline-offset-4 ${
                   useGlassmorphism ? '' : 'text-[var(--accent)]'
                 }`}
-                style={useGlassmorphism ? { color: '#1C1917' } : undefined}
+                style={useGlassmorphism ? (panelMode === 'dark' ? { color: '#FFFFFF' } : { color: '#1C1917' }) : undefined}
               >
                 Switch to mobile wallets view
               </button>
@@ -2378,7 +2537,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           onOpenChange={(open) => {
             setShowEmailLogin(open);
             if (!open) {
-              setEmailCredentials({ email: '', password: '' });
+              setEmailCredentials({ email: rememberEmail ? getRememberedEmail() : '', password: '' });
             }
             setError(null);
           }}

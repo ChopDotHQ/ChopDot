@@ -6,6 +6,7 @@ import { usePullToRefresh } from "../../utils/usePullToRefresh";
 import { triggerHaptic } from "../../utils/haptics";
 import { AccountMenu } from "../AccountMenu";
 import { EmptyState } from "../EmptyState";
+import { usePSAStyle } from "../../utils/usePSAStyle";
 
 interface ActivityItem {
   id: string;
@@ -67,6 +68,7 @@ export function ActivityHome({
   onRefresh,
   notificationCount = 0,
 }: ActivityHomeProps) {
+  const { isPSA, psaStyles, psaClasses } = usePSAStyle();
   const [filter, setFilter] = useState<"all" | "expenses" | "settlements" | "attestations">("all");
   const [attestationsExpanded, setAttestationsExpanded] = useState(false);
   const [showSettleSheet, setShowSettleSheet] = useState(false);
@@ -148,9 +150,14 @@ export function ActivityHome({
   };
 
   return (
-    <div className="flex flex-col h-full pb-[68px] bg-background">
+    <div 
+      className={`flex flex-col h-full pb-[68px] ${isPSA ? '' : 'bg-background'}`}
+      style={isPSA ? psaStyles.background : undefined}
+    >
       {/* Header with wallet and notification icons */}
-      <div className="bg-background border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+      <div className={`${isPSA ? '' : 'bg-background'} border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 z-10`}
+        style={isPSA ? { background: 'transparent' } : undefined}
+      >
         <h1 className="text-screen-title">Activity</h1>
         <div className="flex items-center gap-2">
           {/* Pending confirmations badge */}
@@ -205,7 +212,10 @@ export function ActivityHome({
       >
         <div className="p-4 space-y-3">
           {/* Balance Overview Card */}
-          <div className="card p-4 transition-shadow duration-200">
+          <div 
+            className={isPSA ? `${psaClasses.card} p-4 transition-shadow duration-200` : 'card p-4 transition-shadow duration-200'}
+            style={isPSA ? psaStyles.card : undefined}
+          >
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-section" style={{ fontWeight: 500 }}>Your balance</h3>
               <button 
@@ -249,7 +259,10 @@ export function ActivityHome({
 
           {/* Pending Attestations Banner - REMOVED */}
           {false && hasPendingAttestations && showBanner && (
-            <div className="card p-4 bg-muted/10 transition-shadow duration-200">
+            <div 
+              className={isPSA ? `${psaClasses.card} p-4 transition-shadow duration-200` : 'card p-4 bg-muted/10 transition-shadow duration-200'}
+              style={isPSA ? psaStyles.card : undefined}
+            >
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--foreground)' }} />
                 <div className="flex-1 min-w-0">
@@ -309,7 +322,10 @@ export function ActivityHome({
           {topPersonToSettle && (
             <button
               onClick={() => setShowSettleSheet(true)}
-              className="w-full card p-4 text-left hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
+              className={isPSA ? `w-full ${psaClasses.card} p-4 text-left transition-all duration-200 active:scale-[0.98]` : 'w-full card p-4 text-left hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]'}
+              style={isPSA ? psaStyles.card : undefined}
+              onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+              onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
@@ -379,7 +395,10 @@ export function ActivityHome({
                 <button
                   key={activity.id}
                   onClick={() => onActivityClick(activity)}
-                  className="w-full card p-3 text-left hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]"
+                  className={isPSA ? `w-full ${psaClasses.card} p-3 text-left transition-all duration-200 active:scale-[0.98]` : 'w-full card p-3 text-left hover:bg-muted/10 transition-all duration-200 active:scale-[0.98]'}
+                  style={isPSA ? psaStyles.card : undefined}
+                  onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+                  onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
                 >
                   <div className="flex items-start gap-3">
                     <div 

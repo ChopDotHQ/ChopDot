@@ -278,6 +278,58 @@ If you need to migrate to the experimental typography system:
 
 ---
 
+## 🎨 Polkadot Second Age (PSA) Style Tokens
+
+ChopDot supports an optional **Polkadot Second Age** glassmorphism style that can be toggled throughout the app. This style uses a greyscale palette with glassmorphism effects.
+
+### PSA Greyscale Palette
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--psa-grey-50` | `#FAFAF9` | Lightest background |
+| `--psa-grey-100` | `#F5F5F4` | Light mode background |
+| `--psa-grey-200` | `#E7E5E4` | Borders |
+| `--psa-grey-300` | `#D6D3D1` | Disabled states |
+| `--psa-grey-400` | `#A8A29E` | Placeholder text |
+| `--psa-grey-500` | `#78716C` | Secondary text |
+| `--psa-grey-600/700` | `#57534E` | Secondary text (dark mode) |
+| `--psa-grey-800` | `#292524` | Dark mode surface |
+| `--psa-grey-900` | `#1C1917` | Primary text (light mode) |
+| `--psa-grey-950` | `#0F0F0F` | Dark mode background |
+
+### PSA Accent
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--psa-accent-pink` | `#FF2867` | Highlights, CTAs (use sparingly) |
+
+### PSA Utility Classes
+
+| Class | Usage |
+|-------|-------|
+| `.psa-glass-panel` | Main glass panels with backdrop blur |
+| `.psa-glass-card` | Glass cards with hover effects |
+| `.psa-glass-guest-card` | Guest/login cards |
+
+### Using PSA Styles
+
+```tsx
+import { usePSAStyle } from '@/utils/usePSAStyle';
+
+const { isPSA, psaStyles, psaClasses } = usePSAStyle();
+
+<div
+  className={isPSA ? psaClasses.panel : 'card'}
+  style={isPSA ? psaStyles.panel : undefined}
+>
+  Content
+</div>
+```
+
+**For complete PSA documentation, see:** [`/CHOPDOT_SECOND_AGE_BRAND_KIT.md`](./CHOPDOT_SECOND_AGE_BRAND_KIT.md)
+
+---
+
 ## 📝 Notes for Developers
 
 1. **Never use raw `--sh-l*` tokens** - always use semantic aliases (`--shadow-card`, etc.)
@@ -285,6 +337,7 @@ If you need to migrate to the experimental typography system:
 3. **Never use experimental tokens** (`--fs-*`) until they're activated
 4. **Always use utility classes** when available (`.card`, `.text-body`, etc.)
 5. **Respect the accent color guidelines** - pink is for active states only, orange is for financial actions
+6. **PSA styles are optional** - always provide fallback to default styles when using PSA
 
 ---
 

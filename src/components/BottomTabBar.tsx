@@ -1,5 +1,6 @@
 import { LayoutGrid, Home, Users, User, Receipt, LucideIcon } from "lucide-react";
 import { triggerHaptic } from "../utils/haptics";
+import { usePSAStyle } from "../utils/usePSAStyle";
 
 interface BottomTabBarProps {
   activeTab: "pots" | "people" | "activity" | "you";
@@ -18,9 +19,17 @@ export function BottomTabBar({
   fabIcon: FabIcon = Receipt,
   fabColor = "var(--accent)",
 }: BottomTabBarProps) {
+  const { isPSA, psaStyles } = usePSAStyle();
+  
   return (
     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full z-50" style={{ maxWidth: '420px', paddingBottom: 'env(safe-area-inset-bottom)' }}>
-      <div className="mx-3 mb-2 rounded-2xl border border-border bg-background/80 backdrop-blur-sm shadow-[var(--shadow-card)]">
+      <div 
+        className={isPSA ? "mx-3 mb-2 rounded-2xl border shadow-[var(--shadow-card)]" : "mx-3 mb-2 rounded-2xl border border-border bg-background/80 backdrop-blur-sm shadow-[var(--shadow-card)]"}
+        style={isPSA ? {
+          ...psaStyles.panel,
+          borderColor: 'var(--border)',
+        } : undefined}
+      >
         <div className="flex items-center justify-around px-2 h-[68px] relative">
         {/* Pots Tab */}
         <button
@@ -71,10 +80,12 @@ export function BottomTabBar({
                 onFabClick();
               }}
               className="flex items-center justify-center w-14 h-14 rounded-full -mt-8 transition-all duration-200 active:scale-95"
-              style={{ 
+              style={isPSA ? psaStyles.pinkAccentButton : { 
                 background: fabColor,
                 boxShadow: 'var(--shadow-fab)',
               }}
+              onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.pinkAccentButtonHover) : undefined}
+              onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.pinkAccentButton) : undefined}
             >
               <FabIcon className="w-6 h-6 text-white" strokeWidth={2} />
             </button>

@@ -1,6 +1,7 @@
 import { LucideIcon } from "lucide-react";
 import { PrimaryButton } from "./PrimaryButton";
 import { SecondaryButton } from "./SecondaryButton";
+import { usePSAStyle } from "../utils/usePSAStyle";
 
 interface EmptyStateProps {
   icon: LucideIcon;
@@ -23,8 +24,13 @@ export function EmptyState({
   primaryAction,
   secondaryAction 
 }: EmptyStateProps) {
+  const { isPSA, psaStyles, psaClasses } = usePSAStyle();
+  
   return (
-    <div className="flex flex-col items-center justify-center gap-4 p-8 card rounded-[var(--r-xl)] transition-shadow duration-200">
+    <div 
+      className={isPSA ? `flex flex-col items-center justify-center gap-4 p-8 ${psaClasses.card} rounded-[var(--r-xl)] transition-shadow duration-200` : 'flex flex-col items-center justify-center gap-4 p-8 card rounded-[var(--r-xl)] transition-shadow duration-200'}
+      style={isPSA ? psaStyles.card : undefined}
+    >
       <div className="w-16 h-16 rounded-full bg-muted/10 flex items-center justify-center">
         <Icon className="w-8 h-8" style={{ color: 'var(--text-secondary)' }} />
       </div>
