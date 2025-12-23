@@ -3,7 +3,9 @@ import { TopBar } from "../TopBar";
 import { InputField } from "../InputField";
 import { SelectField } from "../SelectField";
 import { useState } from "react";
-import { Theme, BrandVariant, useTheme } from "../../utils/useTheme";
+import { Theme, useTheme } from "../../utils/useTheme";
+import { getPreferredCurrency, setPreferredCurrency } from "../../utils/currencyPreference";
+import type { CurrencyCode } from "../../services/prices/types";
 
 interface SettingsProps {
   onBack?: () => void;
@@ -21,7 +23,7 @@ export function Settings({ onBack, onPaymentMethods, onCrustStorage, onLogout, o
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("you@example.com");
   const [notifications, setNotifications] = useState(true);
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState<CurrencyCode>(() => getPreferredCurrency() ?? "USD");
   const [language, setLanguage] = useState("English");
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -120,14 +122,19 @@ export function Settings({ onBack, onPaymentMethods, onCrustStorage, onLogout, o
               label="Currency"
               value={currency}
               onChange={(value) => {
-                setCurrency(value);
+                const next = value as CurrencyCode;
+                setCurrency(next);
+                setPreferredCurrency(next);
                 markChanged();
               }}
               options={[
                 { value: "USD", label: "USD ($)" },
+                { value: "USDC", label: "USDC" },
                 { value: "EUR", label: "EUR (€)" },
                 { value: "GBP", label: "GBP (£)" },
+                { value: "CHF", label: "CHF" },
                 { value: "JPY", label: "JPY (¥)" },
+                { value: "DOT", label: "DOT" },
               ]}
             />
 
