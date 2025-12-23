@@ -14,6 +14,14 @@ create table if not exists public.invites (
   created_at timestamptz not null default now()
 );
 
+-- Clean up any duplicate invites before creating unique index
+-- Keep the most recent invite for each pot_id + invitee_email combination
+delete from public.invites a
+using public.invites b
+where a.id < b.id
+  and a.pot_id = b.pot_id
+  and a.invitee_email = b.invitee_email;
+
 -- Avoid duplicate invites to the same email for the same pot
 create unique index if not exists invites_pot_email_idx on public.invites(pot_id, invitee_email);
 -- Fast lookup by token for acceptance flow
