@@ -53,16 +53,14 @@
 - **Verification:** `supabase db reset` succeeds
 
 ### Preview Environment
-- **Status:** ⚠️ Migration Drift Detected
-- **Applied Migrations:** Same as Production (4 migrations)
-- **Missing Migrations:** 8 migrations need to be pushed
-- **Risk:** Schema mismatch between local and preview/prod
+- **Status:** ✅ Synced (2025-12-23)
+- **Applied Migrations:** All 12 migrations applied
+- **Last Sync:** 2025-12-23 via `supabase db push`
 
 ### Production Environment
-- **Status:** ⚠️ Migration Drift Detected
-- **Applied Migrations:** 4 migrations (see Cloud Migrations section above)
-- **Missing Migrations:** 8 migrations need to be pushed
-- **Risk:** Schema mismatch between local and production
+- **Status:** ✅ Synced (2025-12-23)
+- **Applied Migrations:** All 12 migrations applied
+- **Last Sync:** 2025-12-23 via `supabase db push`
 
 ## Verification Checklist
 
@@ -178,12 +176,26 @@ supabase db reset
 
 ## Next Steps
 
-1. **Immediate:** Run `supabase db pull` to get cloud migrations
-2. **Compare:** Document differences between local and cloud migration lists
-3. **Coordinate:** Check with Liam/Teddy about any migrations they added
-4. **Verify:** Run schema parity checks for all environments
-5. **Fix:** Resolve any migration conflicts or schema drift
-6. **Test:** Run smoke tests once migrations are verified
+1. ✅ **Completed:** Ran `supabase migration list` - identified 8 missing migrations
+2. ✅ **Completed:** Fixed migration idempotency issues (added DROP IF EXISTS)
+3. ✅ **Completed:** Pushed all 8 missing migrations to cloud (2025-12-23)
+4. **Next:** Run schema parity checks to verify everything matches
+5. **Next:** Run smoke tests (pot create/settle) to verify functionality
+6. **Next:** Coordinate with Liam/Teddy to confirm no conflicts
+
+## Migration Drift Analysis
+
+**Root Cause:** Local has 12 migrations, cloud only has 4 applied. This suggests:
+- Migrations were created locally but never pushed to cloud
+- OR migrations were applied manually to cloud without proper tracking
+- OR cloud database was reset/recreated at some point
+
+**Impact:**
+- Local development may have features (wallet auth, invites, RLS fixes) that don't exist in production
+- Production may be missing critical bug fixes (RLS infinite recursion fix)
+- Schema differences could cause runtime errors in production
+
+**Recommendation:** Review each missing migration and push them if they're needed for production.
 
 ## Commands Reference
 
