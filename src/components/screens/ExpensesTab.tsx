@@ -9,6 +9,7 @@ import { normalizeToPolkadot } from "../../services/chain/address";
 import { useAccount } from "../../contexts/AccountContext";
 import type { PotHistory } from "../../App";
 import { ConfirmModal } from "../ConfirmModal";
+import { formatCurrencyAmount, normalizeCurrency } from "../../utils/currencyFormat";
 
 interface Member {
   id: string;
@@ -111,22 +112,26 @@ export function ExpensesTab({
     toAddress: string;
     fromName: string;
     toName: string;
-    amountDot: number;
+    amountDot?: number; // For DOT settlements
+    amountUsdc?: number; // For USDC settlements
   } | null>(null);
   const [isSending, setIsSending] = useState(false);
   
   const account = useAccount();
   
-  // Check if this is a DOT pot
-  const isDotPot = baseCurrency === "DOT";
+  const normalizedBaseCurrency = normalizeCurrency(baseCurrency);
+  // Check if this is a DOT or USDC pot
+  const isDotPot = normalizedBaseCurrency === "DOT";
+  const isUsdcPot = normalizedBaseCurrency === "USDC";
+  const isCryptoPot = isDotPot || isUsdcPot;
   
-  // Ensure we're on Asset Hub for DOT pots
+  // Ensure we're on Asset Hub for crypto pots
   useMemo(() => {
-    if (isDotPot) {
+    if (isCryptoPot) {
       // Lazy load to set chain
       import("../../services/chain/polkadot").then(m => m.polkadotChainService.setChain('assethub'));
     }
-  }, [isDotPot]);
+  }, [isCryptoPot]);
   
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
 
@@ -162,7 +167,7 @@ export function ExpensesTab({
       id: potId || 'temp',
       name: 'Pot',
       type: 'expense' as const,
-      baseCurrency: 'USD' as const,
+      baseCurrency: normalizedBaseCurrency as Pot['baseCurrency'],
       mode: 'casual' as const,
       members: potMembers,
       expenses: potExpenses,
@@ -187,15 +192,13 @@ export function ExpensesTab({
   const budgetRemaining = budget ? Math.max(budget - totalExpenses, 0) : 0;
   const isOverBudget = budget ? totalExpenses > budget : false;
   
-  const formatPotAmount = (value: number, digits = baseCurrency === 'DOT' ? 6 : 2) =>
-    baseCurrency === 'DOT'
-      ? `${value.toFixed(digits)} DOT`
-      : `$${value.toFixed(digits)}`;
+  const formatPotAmount = (value: number, withSign: boolean = false) =>
+    formatCurrencyAmount(value, normalizedBaseCurrency, { withSign });
 
   // Convert to display format (exclude current user)
-  // For DOT pots, use a much smaller threshold (0.000001 DOT = 1 micro-DOT)
-  // For USD pots, use 0.01 as threshold
-  const settleThreshold = baseCurrency === 'DOT' ? 0.000001 : 0.01;
+  // For crypto pots (DOT/USDC), use a much smaller threshold (0.000001 = 1 micro-unit)
+  // For fiat pots, use 0.01 as threshold
+  const settleThreshold = isCryptoPot ? 0.000001 : 0.01;
 
   const totalOutstanding = computedBalances.reduce((sum, balance) => {
     if (balance.net > settleThreshold) {
@@ -298,7 +301,7 @@ export function ExpensesTab({
       actor: paidByMember?.name || "Unknown",
       metadata: {
         amount: expense.amount,
-        currency: baseCurrency,
+        currency: expense.currency || normalizedBaseCurrency,
         expenseMemo: expense.memo,
       }
     });
@@ -325,12 +328,12 @@ export function ExpensesTab({
       type: contribution.amount > 0 ? "contribution" : "withdrawal",
       timestamp: contribution.date,
       description: contribution.amount > 0 
-        ? `${contributor?.name === "You" ? "You" : contributor?.name} added ${baseCurrency} ${contribution.amount.toFixed(2)}`
-        : `${contributor?.name === "You" ? "You" : contributor?.name} withdrew ${baseCurrency} ${Math.abs(contribution.amount).toFixed(2)}`,
+        ? `${contributor?.name === "You" ? "You" : contributor?.name} added ${formatPotAmount(contribution.amount)}`
+        : `${contributor?.name === "You" ? "You" : contributor?.name} withdrew ${formatPotAmount(Math.abs(contribution.amount))}`,
       actor: contributor?.name || "Unknown",
       metadata: {
         amount: Math.abs(contribution.amount),
-        currency: baseCurrency,
+        currency: normalizedBaseCurrency,
       }
     });
   });
@@ -366,51 +369,103 @@ export function ExpensesTab({
       let blockHash: string | undefined;
       let status: 'in_block' | 'finalized' | 'failed' = 'in_block';
       
-      // Send DOT transaction with lifecycle tracking
       const { chain } = await import('../../services/chain');
-      await chain.sendDot({
-        from: settlementModal.fromAddress,
-        to: settlementModal.toAddress,
-        amountDot: settlementModal.amountDot,
-        onStatus: (s, ctx) => {
-          if (s === 'submitted') {
-            onShowToast?.('Transaction submitted...', 'info');
-          } else if (s === 'inBlock') {
-            txHash = ctx?.txHash || txHash;
-            blockHash = ctx?.blockHash || blockHash;
-            status = 'in_block';
-            onShowToast?.(`Transaction in block! ${txHash ? `Hash: ${txHash.slice(0, 8)}...` : ''}`, 'success');
-          } else if (s === 'finalized') {
-            status = 'finalized';
-            blockHash = ctx?.blockHash || blockHash;
-            onShowToast?.('Transaction finalized!', 'success');
-          }
-        },
-      });
       
-      if (!txHash) {
-        throw new Error('Transaction hash not received');
+      if (isUsdcPot && settlementModal.amountUsdc !== undefined) {
+        // USDC settlement
+        await chain.sendUsdc({
+          from: settlementModal.fromAddress,
+          to: settlementModal.toAddress,
+          amountUsdc: settlementModal.amountUsdc,
+          onStatus: (s, ctx) => {
+            if (s === 'submitted') {
+              onShowToast?.('Transaction submitted...', 'info');
+            } else if (s === 'inBlock') {
+              txHash = ctx?.txHash || txHash;
+              blockHash = ctx?.blockHash || blockHash;
+              status = 'in_block';
+              onShowToast?.(`Transaction in block! ${txHash ? `Hash: ${txHash.slice(0, 8)}...` : ''}`, 'success');
+            } else if (s === 'finalized') {
+              status = 'finalized';
+              blockHash = ctx?.blockHash || blockHash;
+              onShowToast?.('Transaction finalized!', 'success');
+            }
+          },
+        });
+        
+        if (!txHash) {
+          throw new Error('Transaction hash not received');
+        }
+        
+        // Create history entry for USDC
+        const historyEntry: PotHistory = {
+          id: `settlement-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          type: 'onchain_settlement',
+          fromMemberId: settlementModal.fromMemberId,
+          toMemberId: settlementModal.toMemberId,
+          fromAddress: settlementModal.fromAddress,
+          toAddress: settlementModal.toAddress,
+          amountUsdc: settlementModal.amountUsdc.toFixed(6),
+          amountDot: undefined, // USDC settlement
+          assetId: 1337, // USDC asset ID
+          txHash,
+          block: blockHash,
+          status: status,
+          when: Date.now(),
+          subscan: buildSubscanUrl(txHash),
+        } as PotHistory;
+        
+        // Update pot history
+        const updatedHistory = [historyEntry, ...potHistory];
+        onUpdatePot({ history: updatedHistory });
+      } else if (settlementModal.amountDot !== undefined) {
+        // DOT settlement (existing logic)
+        await chain.sendDot({
+          from: settlementModal.fromAddress,
+          to: settlementModal.toAddress,
+          amountDot: settlementModal.amountDot,
+          onStatus: (s, ctx) => {
+            if (s === 'submitted') {
+              onShowToast?.('Transaction submitted...', 'info');
+            } else if (s === 'inBlock') {
+              txHash = ctx?.txHash || txHash;
+              blockHash = ctx?.blockHash || blockHash;
+              status = 'in_block';
+              onShowToast?.(`Transaction in block! ${txHash ? `Hash: ${txHash.slice(0, 8)}...` : ''}`, 'success');
+            } else if (s === 'finalized') {
+              status = 'finalized';
+              blockHash = ctx?.blockHash || blockHash;
+              onShowToast?.('Transaction finalized!', 'success');
+            }
+          },
+        });
+        
+        if (!txHash) {
+          throw new Error('Transaction hash not received');
+        }
+        
+        // Create history entry for DOT
+        const historyEntry: PotHistory = {
+          id: `settlement-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          type: 'onchain_settlement',
+          fromMemberId: settlementModal.fromMemberId,
+          toMemberId: settlementModal.toMemberId,
+          fromAddress: settlementModal.fromAddress,
+          toAddress: settlementModal.toAddress,
+          amountDot: settlementModal.amountDot.toFixed(6),
+          txHash,
+          block: blockHash,
+          status: status, // Will be 'in_block' initially, 'finalized' if callback fired
+          when: Date.now(),
+          subscan: buildSubscanUrl(txHash),
+        };
+        
+        // Update pot history
+        const updatedHistory = [historyEntry, ...potHistory];
+        onUpdatePot({ history: updatedHistory });
+      } else {
+        throw new Error('No settlement amount provided');
       }
-      
-      // Create history entry (status will be updated if finalized callback fires)
-      const historyEntry: PotHistory = {
-        id: `settlement-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-        type: 'onchain_settlement',
-        fromMemberId: settlementModal.fromMemberId,
-        toMemberId: settlementModal.toMemberId,
-        fromAddress: settlementModal.fromAddress,
-        toAddress: settlementModal.toAddress,
-        amountDot: settlementModal.amountDot.toFixed(6),
-        txHash,
-        block: blockHash,
-        status: status, // Will be 'in_block' initially, 'finalized' if callback fired
-        when: Date.now(),
-        subscan: buildSubscanUrl(txHash),
-      };
-      
-      // Update pot history
-      const updatedHistory = [historyEntry, ...potHistory];
-      onUpdatePot({ history: updatedHistory });
       
       // Refresh balance
       try {
@@ -466,20 +521,20 @@ export function ExpensesTab({
                     color: netBalance >= 0 ? 'var(--success)' : 'var(--ink)'
                   }}
                 >
-                  {netBalance >= 0 ? '+' : ''}{baseCurrency === 'DOT' ? `${Math.abs(netBalance).toFixed(6)} DOT` : `$${Math.abs(netBalance).toFixed(2)}`}
+                  {formatPotAmount(netBalance, true)}
                 </p>
               </div>
               
               {/* Quick context line: Total spent + Budget */}
               <div className="flex items-center justify-center gap-3 mt-2">
                 <span className="text-caption text-secondary">
-                  {baseCurrency === 'DOT' ? `${totalExpenses.toFixed(6)} DOT` : `$${totalExpenses.toFixed(0)}`} spent
+                  {formatPotAmount(totalExpenses)} spent
                 </span>
                 {budgetEnabled && budget && (
                   <>
                     <span className="text-caption text-secondary">•</span>
                     <span className="text-caption text-secondary" style={{ color: isOverBudget ? 'var(--danger)' : undefined }}>
-                      {isOverBudget ? `${(totalExpenses - budget).toFixed(0)} over` : `${budgetRemaining.toFixed(0)} left`} of ${budget.toFixed(0)}
+                  {isOverBudget ? `${formatPotAmount(totalExpenses - budget)} over` : `${formatPotAmount(budgetRemaining)} left`} of {formatPotAmount(budget)}
                     </span>
                   </>
                 )}
@@ -531,7 +586,7 @@ export function ExpensesTab({
                           fontWeight: 500,
                           color: balance > 0 ? 'var(--success)' : 'var(--ink)'
                         }}>
-                          {balance > 0 ? '+' : '-'}{isDotPot ? `${Math.abs(balance).toFixed(6)} DOT` : `$${Math.abs(balance).toFixed(2)}`}
+                          {formatPotAmount(balance, true)}
                         </span>
                         <p className="text-caption text-secondary">
                           {balance > 0 ? 'owes you' : 'you owe'}
@@ -557,9 +612,9 @@ export function ExpensesTab({
                     const hasRecipientAddress = !!(toMember as any).address;
                     const fromMemberAddress = (fromMember as any).address;
                     
-                    // For DOT pots: check if current user is the sender and has wallet connected
+                    // For crypto pots: check if current user is the sender and has wallet connected
                     const isCurrentUserSender = fromMember.id === currentUserId;
-                    const canSettleWithDot = isDotPot && 
+                    const canSettleWithCrypto = isCryptoPot && 
                       isCurrentUserSender && 
                       hasRecipientAddress && 
                       fromMemberAddress && 
@@ -567,9 +622,9 @@ export function ExpensesTab({
                       account.address0 &&
                       normalizeToPolkadot(fromMemberAddress) === account.address0;
                     
-                    // For DOT pots, amounts are already in DOT; for non-DOT pots, we don't show settle button
-                    const amountDot = suggestion.amount; // Always in pot's base currency
-                    const displayAmount = isDotPot ? `${suggestion.amount.toFixed(6)} DOT` : `$${suggestion.amount.toFixed(2)}`;
+                    // For crypto pots, amounts are already in the pot's currency
+                    const settlementAmount = suggestion.amount; // Always in pot's base currency
+                    const displayAmount = formatPotAmount(suggestion.amount);
                     
                     return (
                       <div 
@@ -597,7 +652,7 @@ export function ExpensesTab({
                           <span className="text-label tabular-nums" style={{ fontWeight: 500 }}>
                             {displayAmount}
                           </span>
-                          {canSettleWithDot && (
+                          {canSettleWithCrypto && (
                             <button
                               onClick={() => {
                                 setSettlementModal({
@@ -607,14 +662,17 @@ export function ExpensesTab({
                                   toAddress: normalizeToPolkadot((toMember as any).address),
                                   fromName: fromMember.name,
                                   toName: toMember.name,
-                                  amountDot,
+                                  ...(isUsdcPot 
+                                    ? { amountUsdc: settlementAmount }
+                                    : { amountDot: settlementAmount }
+                                  ),
                                 });
                               }}
                               className="px-2 py-1 rounded text-[10px] font-medium bg-accent text-white hover:opacity-90 transition-opacity flex items-center gap-1"
                               disabled={isSending}
                             >
                               <Wallet className="w-3 h-3" />
-                              Settle with DOT
+                              Settle with {isUsdcPot ? 'USDC' : 'DOT'}
                             </button>
                           )}
                         </div>
@@ -623,16 +681,16 @@ export function ExpensesTab({
                   })}
                 </div>
                 <p className="text-caption text-secondary mt-2" style={{ fontSize: '10px' }}>
-                  {isDotPot 
-                    ? "Settle directly on-chain with DOT. Minimal transfers to settle all balances."
+                  {isCryptoPot 
+                    ? `Settle directly on-chain with ${isUsdcPot ? 'USDC' : 'DOT'}. Minimal transfers to settle all balances.`
                     : "These are minimal transfers to settle all balances. Use \"Settle Up\" to initiate settlements."
                   }
                 </p>
               </div>
             )}
             
-            {/* Recent Settlements (DOT pots only) */}
-            {isDotPot && settlementHistory.length > 0 && (
+            {/* Recent Settlements (Crypto pots only) */}
+            {isCryptoPot && settlementHistory.length > 0 && (
               <div className="pt-3 border-t border-border/50">
                 <p className="text-caption text-secondary mb-2">Recent settlements</p>
                 <div className="space-y-1.5">
@@ -665,7 +723,13 @@ export function ExpensesTab({
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <span className="text-label tabular-nums" style={{ fontWeight: 500 }}>
-                            {parseFloat(entry.amountDot).toFixed(6)} DOT
+                            {(() => {
+                              // Support both DOT and USDC history entries
+                              if ((entry as any).amountUsdc !== undefined) {
+                                return formatCurrencyAmount(parseFloat((entry as any).amountUsdc), 'USDC');
+                              }
+                              return formatCurrencyAmount(parseFloat(entry.amountDot || '0'), 'DOT');
+                            })()}
                           </span>
                           {entry.status === 'finalized' && (
                             <a
@@ -749,7 +813,7 @@ export function ExpensesTab({
                   {pendingAttestations} expense{pendingAttestations !== 1 ? 's' : ''} need{pendingAttestations === 1 ? 's' : ''} your confirmation
                 </p>
                 <p className="text-micro text-secondary">
-                  Paid by others · Your share: {baseCurrency} {totalPendingAmount.toFixed(2)}
+                  Paid by others · Your share: {formatPotAmount(totalPendingAmount)}
                 </p>
               </div>
             </div>
@@ -877,7 +941,7 @@ export function ExpensesTab({
                           color: 'var(--text-secondary)',
                           fontWeight: 500 
                         }}>
-                          {event.metadata.currency || baseCurrency} {event.metadata.amount.toFixed(baseCurrency === 'DOT' ? 6 : 2)}
+                          {formatCurrencyAmount(event.metadata.amount, event.metadata.currency || normalizedBaseCurrency)}
                         </span>
                       )}
                     </div>
@@ -931,7 +995,7 @@ export function ExpensesTab({
               <div className="flex items-center justify-between px-1">
                 <h3 className="text-micro" style={{ color: 'var(--text-secondary)' }}>{dateLabel}</h3>
                 <span className="text-micro tabular-nums" style={{ color: 'var(--text-secondary)' }}>
-                  {baseCurrency} {dateExpenses.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}
+                  {formatPotAmount(dateExpenses.reduce((sum, e) => sum + e.amount, 0))}
                 </span>
               </div>
               
@@ -944,7 +1008,7 @@ export function ExpensesTab({
                       expense={expense as any}
                       members={members}
                       currentUserId={currentUserId}
-                      baseCurrency={baseCurrency}
+                      baseCurrency={normalizedBaseCurrency}
                       onClick={() => handleExpenseClick(expense)}
                       onDelete={onDeleteExpense ? () => onDeleteExpense(expense.id) : undefined}
                     />
@@ -965,6 +1029,7 @@ export function ExpensesTab({
           fromName={settlementModal.fromName}
           toName={settlementModal.toName}
           amountDot={settlementModal.amountDot}
+          amountUsdc={settlementModal.amountUsdc}
           onConfirm={handleSettleConfirm}
           onCancel={handleSettleCancel}
           isSending={isSending}

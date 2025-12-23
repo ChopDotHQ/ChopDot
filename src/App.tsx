@@ -28,6 +28,7 @@ import { FeatureFlagsProvider, useFeatureFlags } from "./contexts/FeatureFlagsCo
 import { useAccount } from "./contexts/AccountContext";
 import { cleanupBackupTimers } from "./services/backup/autoBackup";
 import { attemptAutoRestore } from "./services/restore/autoRestore";
+import { isBaseCurrency } from "./schema/pot";
 import { AuthScreen } from "./components/screens/AuthScreen";
 import { ActivityHome } from "./components/screens/ActivityHome";
 import { PotsHome } from "./components/screens/PotsHome";
@@ -227,7 +228,9 @@ export type PotHistory =
       toMemberId: string;
       fromAddress: string;
       toAddress: string;
-      amountDot: string;
+      amountDot?: string; // Optional - required if amountUsdc not present
+      amountUsdc?: string; // Optional - required if amountDot not present
+      assetId?: number; // Asset ID for USDC (1337), undefined for DOT
       txHash: string;
       subscan: string;
       note?: string;
@@ -464,6 +467,7 @@ function AppContent() {
     isAuthenticated,
     logout,
   } = useAuth();
+  const isGuest = user?.authMethod === 'guest';
   const userEmail = (user as any)?.email as string | undefined;
 
   const getInitialScreen = (): Screen => {
@@ -961,6 +965,7 @@ function AppContent() {
       id: string;
       memo: string;
       amount: number;
+      currency?: string;
       paidBy: string;
       potName: string;
     }> = [];
@@ -975,6 +980,7 @@ function AppContent() {
             id: expense.id,
             memo: expense.memo,
             amount: expense.amount,
+            currency: expense.currency ?? pot.baseCurrency ?? 'USD',
             paidBy: expense.paidBy,
             potName: pot.name,
           });
@@ -1009,7 +1015,7 @@ function AppContent() {
 
   useEffect(() => {
     const isSupabase = import.meta.env.VITE_DATA_SOURCE === 'supabase';
-    if (isSupabase) {
+    if (isSupabase && !authLoading && user && !isGuest) {
       try {
         localStorage.removeItem("chopdot_pots");
         localStorage.removeItem("chopdot_pots_backup");
@@ -1017,6 +1023,14 @@ function AppContent() {
         console.warn('[App] Failed to clear local pots in supabase mode', e);
       }
       setHasLoadedInitialData(true);
+      return;
+    }
+
+    if (hasLoadedInitialData) {
+      return;
+    }
+
+    if (isSupabase && authLoading) {
       return;
     }
 
@@ -1177,7 +1191,7 @@ function AppContent() {
 
       setHasLoadedInitialData(true);
     })();
-  }, []); // Only run once on mount - pots state has initial values
+  }, [authLoading, hasLoadedInitialData, isGuest, pots, user]); // Load local pots for guests or non-supabase
 
   useEffect(() => {
     if (!hasLoadedInitialData) return;
@@ -1548,7 +1562,10 @@ function AppContent() {
   const createPot = async () => {
     let processedMembers = newPot.members || [];
     const { getMockAddressForMember, isSimulationMode } = await import('./utils/simulation');
-    if (isSimulationMode() && (newPot.baseCurrency || "USD") === 'DOT') {
+    const rawBaseCurrency = newPot.baseCurrency || "USD";
+    const baseCurrency = isBaseCurrency(rawBaseCurrency) ? rawBaseCurrency : "USD";
+
+    if (isSimulationMode() && baseCurrency === 'DOT') {
       processedMembers = processedMembers.map((m) => {
         if (!m.address) {
           const mockAddr = getMockAddressForMember(m.name);
@@ -1564,7 +1581,7 @@ function AppContent() {
       const createDto = {
         name: newPot.name || "Unnamed Pot",
         type: newPot.type || "expense",
-        baseCurrency: (newPot.baseCurrency || "USD") as 'DOT' | 'USD',
+        baseCurrency,
         budget: newPot.budget ?? null,
         budgetEnabled: newPot.budgetEnabled ?? false,
         checkpointEnabled: newPot.type === "expense" ? false : undefined,
@@ -2147,9 +2164,9 @@ function AppContent() {
     0,
   );
 
-  const { pots: remotePots } = useRemotePots();
+  const { pots: remotePots, loading: remotePotsLoading } = useRemotePots();
   const dataSourceType = import.meta.env.VITE_DATA_SOURCE || 'local';
-  const usingSupabaseSource = dataSourceType === 'supabase';
+  const usingSupabaseSource = dataSourceType === 'supabase' && !authLoading && !!user && !isGuest;
   const remoteSyncSnapshot = useRef<string>("");
   const hasRemotePot = useMemo(
     () => (currentPotId ? remotePots.some((p) => p.id === currentPotId) : false),
@@ -2170,8 +2187,8 @@ function AppContent() {
   );
 
   const currentPot = usingSupabaseSource
-    ? remoteCurrentPot ?? fallbackRemotePot
-    : pots.find((p) => p.id === currentPotId);
+    ? (remoteCurrentPot ?? fallbackRemotePot) as Pot | null | undefined
+    : (pots.find((p) => p.id === currentPotId) as Pot | undefined);
 
   // Preserve last known pot to avoid UI snapback while remote detail loads
   const lastPotRef = useRef<Pot | null>(null);
@@ -2386,7 +2403,7 @@ function AppContent() {
   }, [screen, pots, people, currentPotId, reset, replace, currentPotLoading]);
 
   const renderScreen = () => {
-    const pot = currentPot;
+    const pot: Pot | null | undefined = currentPot;
 
     switch (screen!.type) {
       case "activity-home":
@@ -2591,6 +2608,7 @@ function AppContent() {
             youOwe={balances.youOwe}
             owedToYou={balances.owedToYou}
             people={people}
+            isLoading={usingSupabaseSource ? remotePotsLoading : !hasLoadedInitialData}
             walletConnected={walletConnected}
             onConnectWallet={() => setWalletConnected(true)}
             onSettle={(personId) => {
@@ -3119,6 +3137,22 @@ function AppContent() {
         );
 
       case "expense-detail":
+        if (!pot && (currentPotLoading || !hasLoadedInitialData)) {
+          return (
+            <ExpenseDetail
+              currentUserId={user?.id || 'owner'}
+              baseCurrency={(pot as Pot | null | undefined)?.baseCurrency || 'USD'}
+              walletConnected={walletConnected}
+              onBack={back}
+              isLoading
+              onEdit={() => undefined}
+              onDelete={() => undefined}
+              onAttest={() => undefined}
+              onCopyReceiptLink={() => undefined}
+              onConnectWallet={() => setWalletConnected(true)}
+            />
+          );
+        }
         if (!pot) return null;
         const detailMembers = normalizeMembers(pot.members);
         const detailExpenses = normalizeExpenses(pot.expenses, pot.baseCurrency);
@@ -3364,6 +3398,9 @@ function AppContent() {
                 const fromAddress = connectedWallet?.address || '';
                 const toAddress = recipientAddress || '';
                 const service = await getPolkadotChainService();
+                const baseCurrency = currentPot?.baseCurrency || 'USD';
+                const isUsdcPot = baseCurrency === 'USDC';
+                
                 const historyEntry: PotHistory = {
                   id: `${Date.now()}`,
                   type: 'onchain_settlement',
@@ -3371,7 +3408,18 @@ function AppContent() {
                   toMemberId: personIdFromNav || 'unknown',
                   fromAddress,
                   toAddress,
-                  amountDot: String(Number(settlementAmount.toFixed(6))),
+                  ...(isUsdcPot 
+                    ? { 
+                        amountUsdc: String(Number(settlementAmount.toFixed(6))),
+                        amountDot: undefined, // USDC settlement
+                        assetId: 1337 
+                      }
+                    : { 
+                        amountDot: String(Number(settlementAmount.toFixed(6))),
+                        amountUsdc: undefined, // DOT settlement
+                        assetId: undefined
+                      }
+                  ),
                   txHash: reference,
                   status: 'in_block',
                   when: Date.now(),

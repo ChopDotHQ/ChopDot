@@ -1,7 +1,8 @@
 import type { DataSource, ListOptions } from '../repositories/PotRepository';
 import type { Pot } from '../types';
-import { PotSchema } from '../../../schema/pot';
+import { PotSchema, isBaseCurrency } from '../../../schema/pot';
 import { getSupabase } from '../../../utils/supabase-client';
+import { LocalStorageSource } from './LocalStorageSource';
 import type { SupabasePotRow } from '../types/supabase';
 import { AuthError, ValidationError } from '../errors';
 
@@ -41,6 +42,7 @@ export class SupabaseSource implements DataSource {
   private client = getSupabase();
   private ensuredUsers = new Set<string>();
   private ensuredMembership = new Set<string>();
+  private guestSource = new LocalStorageSource();
 
   /**
    * Returns true when Supabase is configured (URL + anon key).
@@ -57,7 +59,7 @@ export class SupabaseSource implements DataSource {
     return this.client;
   }
 
-  private async requireAuthenticatedUser(context: string): Promise<string> {
+  private async getOptionalUserId(context: string): Promise<string | null> {
     const supabase = this.ensureReady();
     const { data, error } = await supabase.auth.getSession();
     if (error) {
@@ -65,6 +67,11 @@ export class SupabaseSource implements DataSource {
     }
 
     const userId = data.session?.user?.id;
+    return userId ?? null;
+  }
+
+  private async requireAuthenticatedUser(context: string): Promise<string> {
+    const userId = await this.getOptionalUserId(context);
     if (!userId) {
       throw new AuthError(`[SupabaseSource] Authentication required (${context})`);
     }
@@ -73,7 +80,10 @@ export class SupabaseSource implements DataSource {
 
   async getPots(options?: ListOptions): Promise<Pot[]> {
     const supabase = this.ensureReady();
-    await this.requireAuthenticatedUser('read pots');
+    const userId = await this.getOptionalUserId('read pots');
+    if (!userId) {
+      return this.guestSource.getPots(options);
+    }
     // Rely on RLS to scope pots to those the user can access (created or member)
     let query = supabase
       .from('pots')
@@ -105,7 +115,10 @@ export class SupabaseSource implements DataSource {
 
   async getPot(id: string): Promise<Pot | null> {
     const supabase = this.ensureReady();
-    await this.requireAuthenticatedUser('read pot');
+    const userId = await this.getOptionalUserId('read pot');
+    if (!userId) {
+      return this.guestSource.getPot(id);
+    }
     const { data, error } = await supabase
       .from('pots')
       .select(POT_COLUMNS.join(','))
@@ -126,6 +139,11 @@ export class SupabaseSource implements DataSource {
   }
 
   async savePots(pots: Pot[]): Promise<void> {
+    const userId = await this.getOptionalUserId('modify pots');
+    if (!userId) {
+      await this.guestSource.savePots(pots);
+      return;
+    }
     for (const pot of pots) {
       await this.savePot(pot);
     }
@@ -133,6 +151,11 @@ export class SupabaseSource implements DataSource {
 
   async savePot(pot: Pot): Promise<void> {
     const supabase = this.ensureReady();
+    const userId = await this.getOptionalUserId('modify pots');
+    if (!userId) {
+      await this.guestSource.savePot(pot);
+      return;
+    }
     const validation = PotSchema.safeParse(pot);
     if (!validation.success) {
       throw new ValidationError('Invalid pot data', validation.error.issues);
@@ -141,7 +164,7 @@ export class SupabaseSource implements DataSource {
     const sanitized = validation.data;
     const lastEditAt = sanitized.lastEditAt ?? new Date().toISOString();
     const metadata = this.buildMetadata(sanitized, lastEditAt);
-    const actorId = await this.getCurrentUserId();
+    const actorId = userId;
     const existing = await this.findExistingPot(sanitized.id);
 
     const payload: Record<string, unknown> = {
@@ -179,7 +202,11 @@ export class SupabaseSource implements DataSource {
 
   async deletePot(id: string): Promise<void> {
     const supabase = this.ensureReady();
-    const userId = await this.getCurrentUserId();
+    const userId = await this.getOptionalUserId('delete pot');
+    if (!userId) {
+      await this.guestSource.deletePot(id);
+      return;
+    }
     const { data, error } = await supabase
       .from('pots')
       .delete()
@@ -214,6 +241,8 @@ export class SupabaseSource implements DataSource {
     return validation.data;
   }
 
+  // Note: getCurrentUserId kept for potential future use but currently unused
+  // @ts-expect-error - Intentionally unused, kept for future use
   private async getCurrentUserId(): Promise<string> {
     return this.requireAuthenticatedUser('modify pots');
   }
@@ -485,11 +514,14 @@ export class SupabaseSource implements DataSource {
       return Array.from(merged.values());
     })();
 
+    const rawBaseCurrency = row.base_currency ?? metadata.baseCurrency ?? 'USD';
+    const baseCurrency = isBaseCurrency(rawBaseCurrency) ? rawBaseCurrency : 'USD';
+
     const basePot: Pot = {
       id: row.id,
       name: row.name ?? (metadata.name as string) ?? 'Untitled Pot',
       type: ((row.pot_type ?? metadata.type ?? 'expense') === 'savings' ? 'savings' : 'expense') as Pot['type'],
-      baseCurrency: ((row.base_currency ?? metadata.baseCurrency ?? 'USD') === 'DOT' ? 'DOT' : 'USD') as Pot['baseCurrency'],
+      baseCurrency,
       members: mergedMembers.length > 0 ? mergedMembers : [{ ...DEFAULT_MEMBER }],
       expenses: expensesFromMetadata,
       history: historyFromMetadata,

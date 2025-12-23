@@ -6,6 +6,8 @@ import { useState } from "react";
 import { pushTxToast, updateTxToast } from "../../hooks/useTxToasts";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
+import { Skeleton } from "../Skeleton";
+import { formatCurrencyAmount, normalizeCurrency } from "../../utils/currencyFormat";
 
 interface Member {
   id: string;
@@ -28,12 +30,13 @@ interface Expense {
 }
 
 interface ExpenseDetailProps {
-  expense: Expense;
-  members: Member[];
+  expense?: Expense;
+  members?: Member[];
   currentUserId: string;
   baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
   walletConnected?: boolean;
   onBack: () => void;
+  isLoading?: boolean;
   onAttest: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -50,6 +53,7 @@ export function ExpenseDetail({
   baseCurrency = 'USD',
   walletConnected = false,
   onBack,
+  isLoading = false,
   onAttest,
   onEdit,
   onDelete,
@@ -58,24 +62,47 @@ export function ExpenseDetail({
   onUpdateExpense,
   onConnectWallet,
 }: ExpenseDetailProps) {
-  const isDotPot = baseCurrency === 'DOT';
-  const decimals = isDotPot ? 6 : 2;
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-full pb-[68px] bg-background">
+        <TopBar title="Expense" onBack={onBack} />
+        <div className="flex-1 overflow-auto p-3 space-y-3">
+          <div className="p-4 card space-y-3">
+            <Skeleton height={12} width="25%" />
+            <Skeleton height={26} width="40%" />
+          </div>
+          <div className="p-4 card space-y-3">
+            <Skeleton height={14} width="50%" />
+            <Skeleton height={14} width="70%" />
+            <Skeleton height={14} width="35%" />
+          </div>
+          <div className="p-4 card space-y-3">
+            <Skeleton height={12} width="30%" />
+            <Skeleton height={16} width="60%" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!expense) {
+    return null;
+  }
+
+  const safeMembers = members ?? [];
+  const normalizedBaseCurrency = normalizeCurrency(baseCurrency);
+  const isDotPot = normalizedBaseCurrency === 'DOT';
   // For DOT pots, always use baseCurrency; for others, use expense.currency if available
-  const displayCurrency = isDotPot ? baseCurrency : (expense.currency || baseCurrency);
-  const formatAmount = (amt: number) => {
-    if (displayCurrency === 'DOT') {
-      return `${amt.toFixed(decimals)} DOT`;
-    }
-    return `$${amt.toFixed(decimals)}`;
-  };
+  const displayCurrency = isDotPot ? normalizedBaseCurrency : (expense.currency || normalizedBaseCurrency);
+  const formatAmount = (amt: number) => formatCurrencyAmount(amt, displayCurrency);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showReceiptViewer, setShowReceiptViewer] = useState(false);
   const [showAttestationDetail, setShowAttestationDetail] = useState(false);
   void showAttestationDetail;
   const [isAttesting, setIsAttesting] = useState(false);
-  const paidByMember = members.find(m => m.id === expense.paidBy);
+  const paidByMember = safeMembers.find(m => m.id === expense.paidBy);
   const hasAttested = expense.attestations.includes(currentUserId);
-  const allAttested = expense.attestations.length === members.length;
+  const allAttested = expense.attestations.length === safeMembers.length;
 
   // Handle attestation with on-chain flow if wallet connected
   const handleAttest = async () => {
@@ -289,7 +316,7 @@ export function ExpenseDetail({
           <div className="space-y-1.5">
             <p className="text-micro text-secondary">Split breakdown</p>
             {expense.split.map(({ memberId, amount }) => {
-              const member = members.find(m => m.id === memberId);
+              const member = members?.find(m => m.id === memberId);
               const isAttested = expense.attestations.includes(memberId);
               return (
                 <div
@@ -309,7 +336,7 @@ export function ExpenseDetail({
               );
             })}
             <p className="text-micro text-secondary px-1.5 pt-0.5">
-              {expense.attestations.length}/{members.length} confirmed
+              {expense.attestations.length}/{members?.length || 0} confirmed
             </p>
           </div>
         </div>
