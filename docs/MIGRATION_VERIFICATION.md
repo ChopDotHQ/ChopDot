@@ -24,35 +24,45 @@
 
 **Total Local Migrations:** 12
 
-### Cloud Migrations (To Verify)
+### Cloud Migrations (Verified 2025-12-23)
 
-Check Supabase Dashboard: https://supabase.com/dashboard/project/jpzacnkirymlyxwmafox/database/migrations
+**Applied in Cloud:** 4 migrations
+- ✅ `20241113000001_initial_schema.sql`
+- ✅ `20251117163627_drop_all_public_tables.sql`
+- ✅ `20251118144415_remote_schema.sql`
+- ✅ `20251118160000_add_payload_columns.sql`
 
-**Expected Cloud Migrations:**
-- All 12 local migrations above (if pushed)
-- Any migrations added by Liam/Teddy (unknown - need to verify)
+**Missing from Cloud:** 8 migrations (exist locally but not applied to cloud)
+- ❌ `20251118173000_fix_pot_members_rls.sql`
+- ❌ `20251127120000_create_auth_nonces.sql`
+- ❌ `20251205000000_create_wallet_links.sql`
+- ❌ `20251207070112_fix_rls_infinite_recursion.sql`
+- ❌ `20251207070744_add_users_insert_policy.sql`
+- ❌ `20251208000000_create_invites.sql`
+- ❌ `20251208001500_enable_pot_access_for_members.sql`
+- ❌ `20251217190000_fix_pot_create_rls.sql`
+
+**Action Required:** Push missing migrations to cloud or verify they're not needed
 
 ## Environment Status
 
 ### Local Development
 - **Status:** ✅ Working (after conflict fixes)
 - **Last Reset:** 2025-12-23
-- **Applied Migrations:** All 5 local migrations
+- **Applied Migrations:** All 12 local migrations
 - **Verification:** `supabase db reset` succeeds
 
 ### Preview Environment
-- **Status:** ❓ Unknown
-- **Needs Verification:** 
-  - Which migrations are applied?
-  - Does schema match local?
-  - Any migration conflicts?
+- **Status:** ⚠️ Migration Drift Detected
+- **Applied Migrations:** Same as Production (4 migrations)
+- **Missing Migrations:** 8 migrations need to be pushed
+- **Risk:** Schema mismatch between local and preview/prod
 
 ### Production Environment
-- **Status:** ❓ Unknown
-- **Needs Verification:**
-  - Which migrations are applied?
-  - Does schema match local?
-  - Any migration conflicts?
+- **Status:** ⚠️ Migration Drift Detected
+- **Applied Migrations:** 4 migrations (see Cloud Migrations section above)
+- **Missing Migrations:** 8 migrations need to be pushed
+- **Risk:** Schema mismatch between local and production
 
 ## Verification Checklist
 
