@@ -29,7 +29,7 @@
 Check Supabase Dashboard: https://supabase.com/dashboard/project/jpzacnkirymlyxwmafox/database/migrations
 
 **Expected Cloud Migrations:**
-- All 5 local migrations above (if pushed)
+- All 12 local migrations above (if pushed)
 - Any migrations added by Liam/Teddy (unknown - need to verify)
 
 ## Environment Status
