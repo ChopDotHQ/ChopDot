@@ -12,12 +12,14 @@ DROP POLICY IF EXISTS "Pot owners can manage members" ON public.pot_members;
 -- ============================================================================
 
 -- SELECT: Users can read pots they created
+DROP POLICY IF EXISTS "Users can read their own pots" ON public.pots;
 CREATE POLICY "Users can read their own pots"
 ON public.pots
 FOR SELECT
 USING (created_by = auth.uid());
 
 -- UPDATE: Users can update pots they created
+DROP POLICY IF EXISTS "Users can update their own pots" ON public.pots;
 CREATE POLICY "Users can update their own pots"
 ON public.pots
 FOR UPDATE
@@ -28,6 +30,7 @@ USING (created_by = auth.uid());
 -- ============================================================================
 
 -- SELECT: Users can read pot_members for pots they created
+DROP POLICY IF EXISTS "Users can read members of their pots" ON public.pot_members;
 CREATE POLICY "Users can read members of their pots"
 ON public.pot_members
 FOR SELECT
@@ -40,6 +43,7 @@ USING (
 );
 
 -- INSERT: Only pot creators can add members
+DROP POLICY IF EXISTS "Pot creators can add members" ON public.pot_members;
 CREATE POLICY "Pot creators can add members"
 ON public.pot_members
 FOR INSERT
@@ -52,6 +56,7 @@ WITH CHECK (
 );
 
 -- UPDATE: Only pot creators can update members
+DROP POLICY IF EXISTS "Pot creators can update members" ON public.pot_members;
 CREATE POLICY "Pot creators can update members"
 ON public.pot_members
 FOR UPDATE
@@ -64,6 +69,7 @@ USING (
 );
 
 -- DELETE: Only pot creators can remove members
+DROP POLICY IF EXISTS "Pot creators can remove members" ON public.pot_members;
 CREATE POLICY "Pot creators can remove members"
 ON public.pot_members
 FOR DELETE
