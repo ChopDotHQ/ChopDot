@@ -124,6 +124,21 @@ export function AccountMenu() {
           source,
           accounts: accs,
         }));
+      // Reduce clicks: if there's only one extension, connect immediately.
+      if (extensionList.length === 1 && extensionList[0].accounts.length > 0) {
+        try {
+          const firstAccount = extensionList[0].accounts[0];
+          await account.connectExtension(firstAccount.address);
+          setAvailableExtensions([]);
+          setAvailableAccounts([]);
+          setSelectedExtension(null);
+          setConnecting(false);
+          return;
+        } catch (err) {
+          // Fall back to selector on error
+          console.warn('[AccountMenu] Auto-connect failed, showing selector:', err);
+        }
+      }
 
       setAvailableExtensions(extensionList);
       setShowExtensionSelector(true);
@@ -409,7 +424,7 @@ export function AccountMenu() {
   }
 
   return (
-    <>
+    <div className="relative inline-block">
       <button
         onClick={() => setShowMenu(!showMenu)}
         className="px-4 py-2 rounded-lg border bg-card hover:bg-muted transition-colors flex items-center gap-2 disabled:opacity-50"
@@ -503,28 +518,38 @@ export function AccountMenu() {
         </>
       )}
 
-      {/* Extension Selector Modal */}
+      {/* Extension Selector (anchored dropdown) */}
       {showExtensionSelector && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={() => {
-          setShowExtensionSelector(false);
-          setAvailableExtensions([]);
-          setConnecting(false);
-        }}>
-          <div className="bg-card rounded-lg p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()} style={{ background: 'var(--background)', color: 'var(--foreground)' }}>
-            <h2 className="text-lg font-semibold mb-4">Select Wallet Extension</h2>
-            <p className="text-sm opacity-70 mb-4">Choose which wallet extension to connect:</p>
-            <div className="flex flex-col gap-2">
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => {
+              setShowExtensionSelector(false);
+              setAvailableExtensions([]);
+              setConnecting(false);
+            }}
+          />
+          <div
+            className="absolute right-0 top-full mt-2 w-80 rounded-lg border bg-card shadow-lg z-50"
+            style={{ borderColor: 'var(--border)' }}
+          >
+            <div className="p-3 border-b" style={{ borderColor: 'var(--border)' }}>
+              <div className="text-sm font-semibold">Select Wallet Extension</div>
+              <div className="text-xs opacity-70 mt-1">Choose which wallet to connect:</div>
+            </div>
+            <div className="p-2 flex flex-col gap-2">
               {availableExtensions.map((extension, idx) => (
                 <button
                   key={extension.source + idx}
                   className="p-3 rounded-lg border text-left transition-all hover:bg-muted"
+                  style={{ borderColor: 'var(--border)' }}
                   onClick={() => handleSelectExtension(extension.source)}
                 >
                   <div className="flex items-center gap-2">
                     <Wallet className="w-5 h-5" />
-                    <div className="flex-1">
-                      <div className="font-medium">{extension.name}</div>
-                      <div className="text-xs opacity-70 mt-1">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium truncate">{extension.name}</div>
+                      <div className="text-[11px] opacity-70 mt-1">
                         {extension.accounts.length} account{extension.accounts.length !== 1 ? 's' : ''} available
                       </div>
                     </div>
@@ -532,40 +557,43 @@ export function AccountMenu() {
                 </button>
               ))}
             </div>
-            <button
-              className="mt-4 px-4 py-2 rounded-md border w-full"
-              onClick={() => {
-                setShowExtensionSelector(false);
-                setAvailableExtensions([]);
-                setConnecting(false);
-              }}
-            >
-              Cancel
-            </button>
+            <div className="p-2 border-t" style={{ borderColor: 'var(--border)' }}>
+              <button
+                className="w-full px-3 py-2 rounded-md border hover:bg-muted transition-colors"
+                style={{ borderColor: 'var(--border)' }}
+                onClick={() => {
+                  setShowExtensionSelector(false);
+                  setAvailableExtensions([]);
+                  setConnecting(false);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
-      {/* WalletConnect Modal - QR code on desktop, wallet selection on mobile */}
+      {/* WalletConnect: anchored dropdown on desktop, bottom sheet-like on mobile */}
       {showNovaQR && account.status !== 'disconnected' && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-          onClick={() => {
-            // Allow closing if not actively connecting
-            if (account.status !== 'connecting') {
-              setShowNovaQR(false);
-              setNovaQRCode(null);
-              setNovaURI(null);
-              setConnecting(false);
-            }
-          }}
-        >
+        isMobile && !novaQRCode ? (
+          // Mobile: lightweight sheet
           <div
-            className="bg-card rounded-xl p-6 max-w-sm w-full mx-4 border-2"
-            onClick={(e) => e.stopPropagation()}
-            style={{ borderColor: 'var(--border)' }}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-40"
+            onClick={() => {
+              if (account.status !== 'connecting') {
+                setShowNovaQR(false);
+                setNovaQRCode(null);
+                setNovaURI(null);
+                setConnecting(false);
+              }
+            }}
           >
-            {isMobile && !novaQRCode ? (
+            <div
+              className="bg-card rounded-t-xl p-6 w-full mx-0 border-t"
+              onClick={(e) => e.stopPropagation()}
+              style={{ borderColor: 'var(--border)' }}
+            >
               // Mobile: Show wallet selection
               <>
                 <h3 className="text-lg font-semibold mb-2">Choose Your Wallet</h3>
@@ -604,41 +632,61 @@ export function AccountMenu() {
                   Cancel
                 </button>
               </>
-            ) : (
-              // Desktop: Show QR code
-              <>
-                <h3 className="text-lg font-semibold mb-2">Connect via WalletConnect</h3>
-                <p className="text-sm opacity-70 mb-4">
-                  {account.status === 'connecting' 
-                    ? 'Scan this QR code with Nova Wallet, SubWallet mobile, or Talisman mobile'
+            </div>
+          </div>
+        ) : (
+          // Desktop: anchored dropdown with QR
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => {
+                if (account.status !== 'connecting') {
+                  setShowNovaQR(false);
+                  setNovaQRCode(null);
+                  setNovaURI(null);
+                  setConnecting(false);
+                }
+              }}
+            />
+            <div
+              className="absolute right-0 top-full mt-2 w-[22rem] rounded-lg border bg-card shadow-lg z-50"
+              style={{ borderColor: 'var(--border)' }}
+            >
+              <div className="p-3 border-b" style={{ borderColor: 'var(--border)' }}>
+                <div className="text-sm font-semibold">Connect via WalletConnect</div>
+                <div className="text-[11px] opacity-70 mt-1">
+                  {account.status === 'connecting'
+                    ? 'Scan with Nova, SubWallet, or Talisman'
                     : account.status === 'connected'
                     ? 'Connected! Closing...'
                     : account.error
                     ? `Connection failed: ${account.error}`
                     : 'Waiting for connection...'}
-                </p>
+                </div>
+              </div>
+              <div className="p-3">
                 {account.error && (
-                  <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                  <div className="mb-3 p-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
                     <div className="flex items-center gap-2 text-red-700 dark:text-red-300">
-                      <span className="text-sm">{account.error}</span>
+                      <span className="text-xs">{account.error}</span>
                     </div>
                   </div>
                 )}
                 {novaQRCode && (
-                  <div className="flex justify-center mb-4 p-4 bg-white rounded-lg">
-                    <img src={novaQRCode} alt="WalletConnect QR Code" className="w-64 h-64" />
+                  <div className="flex justify-center mb-3 p-2 bg-white rounded-lg">
+                    <img src={novaQRCode} alt="WalletConnect QR Code" className="w-56 h-56" />
                   </div>
                 )}
                 {(account.status as string) === 'connected' && (
-                  <div className="mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                  <div className="mb-3 p-2 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
                     <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
                       <CheckCircle className="w-4 h-4" />
-                      <span className="text-sm font-medium">Successfully connected!</span>
+                      <span className="text-xs font-medium">Successfully connected!</span>
                     </div>
                   </div>
                 )}
                 <button
-                  className="w-full px-4 py-2 rounded-lg bg-accent text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+                  className="w-full px-3 py-2 rounded-lg bg-accent text-white hover:opacity-90 transition-opacity disabled:opacity-50"
                   onClick={() => {
                     setShowNovaQR(false);
                     setNovaQRCode(null);
@@ -648,10 +696,10 @@ export function AccountMenu() {
                 >
                   {(account.status as string) === 'connected' ? 'Close' : 'Cancel'}
                 </button>
-              </>
-            )}
-          </div>
-        </div>
+              </div>
+            </div>
+          </>
+        )
       )}
       
       {/* Auto-close QR modal when connected */}
@@ -663,6 +711,6 @@ export function AccountMenu() {
           setConnecting(false);
         }} />
       )}
-    </>
+    </div>
   );
 }

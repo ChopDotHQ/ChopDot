@@ -22,6 +22,8 @@ export function WalletBanner() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [previousBalance, setPreviousBalance] = useState<string | null>(null);
+  // Hooks must be called unconditionally to avoid React hook order errors
+  const { isPSA, psaStyles, psaClasses } = usePSAStyle();
 
   // Track balance changes to show update animation
   useEffect(() => {
@@ -109,8 +111,6 @@ export function WalletBanner() {
         />
       );
     }
-
-    const { isPSA, psaStyles, psaClasses } = usePSAStyle();
     
     return (
       <div 
