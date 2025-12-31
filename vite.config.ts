@@ -126,6 +126,9 @@ export default defineConfig({
           if (id.includes('@polkadot/api') || id.includes('@polkadot/types')) {
             return undefined;
           }
+          if (id.includes('@polkadot/extension-dapp') || id.includes('@polkadot/react-identicon')) {
+            return 'polkadot-extension';
+          }
           if (id.includes('@polkadot/util-crypto') || id.includes('@polkadot/util')) {
             return 'polkadot-utils';
           }
