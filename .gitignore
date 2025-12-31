@@ -40,3 +40,6 @@ node_modules
 
 # Local private docs (never commit)
 private-docs/
+
+# Local worktrees
+.worktrees/
