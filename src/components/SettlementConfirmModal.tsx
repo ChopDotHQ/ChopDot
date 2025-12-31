@@ -15,7 +15,8 @@ interface SettlementConfirmModalProps {
   toAddress: string; // SS58-0
   fromName: string;
   toName: string;
-  amountDot: number; // Amount in DOT (number, e.g. 0.017)
+  amountDot?: number; // Amount in DOT (number, e.g. 0.017)
+  amountUsdc?: number; // Amount in USDC (number, e.g. 1.234567)
   onConfirm: () => Promise<void>;
   onCancel: () => void;
   isSending?: boolean;
@@ -27,6 +28,7 @@ export function SettlementConfirmModal({
   toAddress,
   toName,
   amountDot,
+  amountUsdc,
   onConfirm,
   onCancel,
   isSending = false,
@@ -34,10 +36,14 @@ export function SettlementConfirmModal({
   const [estimatedFee, setEstimatedFee] = useState<string | null>(null);
   const [feeLoading, setFeeLoading] = useState(false);
   const [feeError, setFeeError] = useState(false);
+  const isUsdc = typeof amountUsdc === 'number';
+  const amountValue = isUsdc ? amountUsdc : amountDot ?? 0;
+  const currencyLabel = isUsdc ? 'USDC' : 'DOT';
+  const showFeeEstimate = !isUsdc && typeof amountDot === 'number';
 
   // Estimate fee when modal opens
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !showFeeEstimate) return;
     
     setFeeLoading(true);
     setFeeError(false);
@@ -46,7 +52,7 @@ export function SettlementConfirmModal({
       .then(service => service.estimateFee({
         from: fromAddress,
         to: toAddress,
-        amountDot,
+        amountDot: amountDot ?? 0,
       }))
       .then((feePlanck) => {
         // Convert planck to DOT (10 decimals)
@@ -59,13 +65,13 @@ export function SettlementConfirmModal({
         setFeeError(true);
         setFeeLoading(false);
       });
-  }, [isOpen, fromAddress, toAddress, amountDot]);
+  }, [isOpen, fromAddress, toAddress, amountDot, showFeeEstimate]);
 
   const handleCopyAddress = (address: string) => {
     navigator.clipboard.writeText(address);
   };
 
-  const totalAmount = amountDot + (estimatedFee ? parseFloat(estimatedFee) : 0);
+  const totalAmount = amountValue + (estimatedFee ? parseFloat(estimatedFee) : 0);
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onCancel} title="Confirm Settlement">
@@ -105,35 +111,47 @@ export function SettlementConfirmModal({
           
           <div className="flex justify-between items-center">
             <span className="text-xs text-muted-foreground">Amount:</span>
-            <span className="text-sm font-semibold tabular-nums">{amountDot.toFixed(6)} DOT</span>
+            <span className="text-sm font-semibold tabular-nums">{amountValue.toFixed(6)} {currencyLabel}</span>
           </div>
           
           {/* Fee Estimate */}
-          {feeLoading && (
+          {showFeeEstimate && feeLoading && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Loader2 className="w-3 h-3 animate-spin" />
               <span>Estimating fee…</span>
             </div>
           )}
           
-          {!feeLoading && estimatedFee && !feeError && (
+          {showFeeEstimate && !feeLoading && estimatedFee && !feeError && (
             <div className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground">Network fee (est.):</span>
               <span className="text-xs tabular-nums text-muted-foreground">{formatDOT(parseFloat(estimatedFee))}</span>
             </div>
           )}
           
-          {!feeLoading && feeError && (
+          {showFeeEstimate && !feeLoading && feeError && (
             <div className="flex justify-between items-center">
               <span className="text-xs text-muted-foreground">Network fee (est.):</span>
               <span className="text-xs text-muted-foreground">Fee unavailable</span>
             </div>
           )}
           
+          {isUsdc && (
+            <div className="text-xs text-muted-foreground">
+              Network fee will be paid in DOT.
+            </div>
+          )}
+          
           <div className="border-t border-border/50 pt-2 flex justify-between items-center">
             <span className="text-sm font-medium">Total:</span>
             <span className="text-sm font-semibold tabular-nums">
-              {feeLoading ? '...' : feeError ? `${amountDot.toFixed(6)} + fee` : `${totalAmount.toFixed(6)} DOT`}
+              {showFeeEstimate
+                ? feeLoading
+                  ? '...'
+                  : feeError
+                    ? `${amountValue.toFixed(6)} ${currencyLabel} + fee`
+                    : `${totalAmount.toFixed(6)} DOT`
+                : `${amountValue.toFixed(6)} ${currencyLabel} + DOT fee`}
             </span>
           </div>
         </div>
@@ -157,11 +175,10 @@ export function SettlementConfirmModal({
             }`}
           >
             {isSending && <Loader2 className="w-4 h-4 animate-spin" />}
-            <span>{isSending ? 'Sending...' : 'Send DOT'}</span>
+            <span>{isSending ? 'Sending...' : `Send ${currencyLabel}`}</span>
           </button>
         </div>
       </div>
     </BottomSheet>
   );
 }
-

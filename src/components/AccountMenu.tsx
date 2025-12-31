@@ -125,9 +125,13 @@ export function AccountMenu() {
           accounts: accs,
         }));
       // Reduce clicks: if there's only one extension, connect immediately.
-      if (extensionList.length === 1 && extensionList[0].accounts.length > 0) {
+      const firstExtension = extensionList[0];
+      if (extensionList.length === 1 && firstExtension && firstExtension.accounts.length > 0) {
         try {
-          const firstAccount = extensionList[0].accounts[0];
+          const firstAccount = firstExtension.accounts[0];
+          if (!firstAccount) {
+            throw new Error('No accounts found in your wallet.');
+          }
           await account.connectExtension(firstAccount.address);
           setAvailableExtensions([]);
           setAvailableAccounts([]);
