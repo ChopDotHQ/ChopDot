@@ -14,9 +14,9 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
 - 🟡 Mobile WC stability — **DEV**  
   - Current: ipfsAuth import fixed; signer import may still fail on mobile.  
   - Needed: preload/guard WC signer import; retest on mobile; capture first error if any.
-- 🔴 CSP headers — **Open**  
-  - Current: CSP via meta; `frame-ancestors` ignored.  
-  - Needed: set CSP in HTTP headers (Vercel/nginx); remove/adjust meta.
+- 🟢 CSP headers — **DEV**  
+  - Done: CSP enforced via HTTP headers; `frame-ancestors 'none'` verified in prod.  
+  - Note: meta tag removed; cached pages may still show the old warning until hard reload.
 - 🟢 Waiting-for-signature state / no auto-launch — **DEV**.
 - 🟢 Wallet email format fixed (no “+”) — **DEV**.
 - 🟢 ipfsAuth WC import dynamic — **DEV**.
@@ -37,6 +37,8 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
   - Needed: list expected migrations; confirm applied; fix gaps.
 - 🟢 Env validation — **DEV**  
   - Done: startup check for `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_WALLETCONNECT_PROJECT_ID` with clear error messages at both build-time (vite.config.ts) and runtime (main.tsx).
+- 🟢 Guest mode local-only — **DEV**  
+  - Done: guest sessions bypass Supabase reads/writes; pots persist in local storage (no 403s).
 - 🔴 Cross-user pots & invites — **DEV**  
   - Current: `VITE_DATA_SOURCE=local`; invites are local-only UI and never reach other users. No `invites` table/email/link flow.  
   - Needed: switch to Supabase data source, add `invites` table + RLS + email/join link, route AddMember/Invite through Supabase, test two-account send/accept/reject/expire.
@@ -52,7 +54,8 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
 
 ## Payments & Flows
 - 🟡 Pot create/settle smoke test — **DEV**  
-  - Re-run on mobile/desktop; fix regressions.
+  - Update: guest pot creation verified in prod (2025-12-31); wallet login verified.  
+  - Still needed: authenticated pot create + settle on mobile/desktop; fix regressions.
 - 🔴 Financial precision — **DEV**  
   - Current: JS `number` math with partial rounding; risk of drift in settlements.  
   - Needed: move to decimal/integer math or consistent rounding at every step; cover with tests.
@@ -98,7 +101,7 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
     - Env: `VITE_DATA_SOURCE=supabase`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_WALLETCONNECT_PROJECT_ID` present; planned feature flags set as intended.  
     - Schema/migrations: expected migrations applied; `profiles.wallet_address` exists with correct type; tables match `SUPABASE_SCHEMA_INVENTORY.md`.  
     - Flags: `VITE_ENABLE_WC_MODAL` on by default; experimental flags off unless testing.  
-    - CSP: header-based CSP in place; no frame-ancestors warnings.  
+    - CSP: header-based CSP in place; verified 2025-12-31; no frame-ancestors warnings.  
     - Smoke: WC login succeeds (signature completes); CRUD (pots/expenses) works.
 
 ## Wallet Home Lite (integrated task)
