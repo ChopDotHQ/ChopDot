@@ -1,4 +1,4 @@
-import type { PolkadotChainService, SignAndSendArgs, SendDotArgs, EstimateFeeArgs } from './adapter';
+import type { PolkadotChainService, SignAndSendArgs, SendDotArgs, SendUsdcArgs, EstimateFeeArgs } from './adapter';
 import { isValidSs58Any, normalizeToPolkadot } from './address';
 import type { ChainConfig } from './config';
 
@@ -111,5 +111,12 @@ export const simChain: PolkadotChainService = {
       onStatus,
     });
   },
-};
 
+  async sendUsdc({ from, onStatus }: SendUsdcArgs) {
+    return this.signAndSendExtrinsic({
+      buildTx: () => ({}),
+      from,
+      onStatus,
+    });
+  },
+};

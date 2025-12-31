@@ -10,6 +10,7 @@ import { useAccount } from "../../contexts/AccountContext";
 import type { PotHistory } from "../../App";
 import { ConfirmModal } from "../ConfirmModal";
 import { formatCurrencyAmount, normalizeCurrency } from "../../utils/currencyFormat";
+import type { TxStatus } from "../../services/chain/adapter";
 
 interface Member {
   id: string;
@@ -377,7 +378,7 @@ export function ExpensesTab({
           from: settlementModal.fromAddress,
           to: settlementModal.toAddress,
           amountUsdc: settlementModal.amountUsdc,
-          onStatus: (s, ctx) => {
+          onStatus: (s: TxStatus, ctx?: { txHash?: string; blockHash?: string }) => {
             if (s === 'submitted') {
               onShowToast?.('Transaction submitted...', 'info');
             } else if (s === 'inBlock') {
@@ -424,7 +425,7 @@ export function ExpensesTab({
           from: settlementModal.fromAddress,
           to: settlementModal.toAddress,
           amountDot: settlementModal.amountDot,
-          onStatus: (s, ctx) => {
+          onStatus: (s: TxStatus, ctx?: { txHash?: string; blockHash?: string }) => {
             if (s === 'submitted') {
               onShowToast?.('Transaction submitted...', 'info');
             } else if (s === 'inBlock') {

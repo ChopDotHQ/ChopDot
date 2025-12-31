@@ -1,6 +1,16 @@
 {
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' http://127.0.0.1:54321 https: wss: wss://rpc.polkadot.io wss://polkadot-asset-hub-rpc.polkadot.io wss://relay.walletconnect.com wss://relay.walletconnect.org; frame-ancestors 'none'; frame-src https://verify.walletconnect.org https://verify.walletconnect.com; child-src 'none'; base-uri 'self'; form-action 'self'"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
-

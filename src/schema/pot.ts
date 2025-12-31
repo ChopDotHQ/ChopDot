@@ -141,11 +141,21 @@ const LastCheckpointSchema = z.object({
 }).optional();
 
 // Pot schema - matches runtime Pot interface with passthrough for future fields
+// Base currency type - supports DOT, USD, USDC, and common fiat currencies
+export type BaseCurrency = 'DOT' | 'USD' | 'USDC' | 'EUR' | 'GBP' | 'CHF' | 'JPY';
+
+/**
+ * Type guard to check if a string is a valid base currency
+ */
+export function isBaseCurrency(currency: string): currency is BaseCurrency {
+  return ['DOT', 'USD', 'USDC', 'EUR', 'GBP', 'CHF', 'JPY'].includes(currency);
+}
+
 export const PotSchema = z.object({
   id: z.string().min(1, 'Pot ID is required'),
   name: z.string().min(1, 'Pot name is required'),
   type: z.enum(['expense', 'savings']),
-  baseCurrency: z.enum(['DOT', 'USD']).default('USD'),
+  baseCurrency: z.enum(['DOT', 'USD', 'USDC', 'EUR', 'GBP', 'CHF', 'JPY']).default('USD'),
   members: z.array(MemberSchema).min(1, 'Pot must have at least one member'),
   expenses: z.array(ExpenseSchema).default([]),
   history: z.array(PotHistorySchema).optional().default([]),
@@ -260,4 +270,3 @@ export function validatePot(pot: unknown): { success: boolean; data?: Pot; error
     return { success: false, error: 'Invalid pot' };
   }
 }
-

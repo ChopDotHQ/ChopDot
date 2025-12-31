@@ -43,6 +43,8 @@ export class SupabaseSource implements DataSource {
   private ensuredUsers = new Set<string>();
   private ensuredMembership = new Set<string>();
   private guestSource = new LocalStorageSource();
+  private static readonly AUTH_TOKEN_KEY = 'chopdot_auth_token';
+  private static readonly GUEST_TOKEN = 'guest_session';
 
   /**
    * Returns true when Supabase is configured (URL + anon key).
@@ -59,7 +61,17 @@ export class SupabaseSource implements DataSource {
     return this.client;
   }
 
+  private isGuestSession(): boolean {
+    if (typeof window === 'undefined') return false;
+    const localToken = window.localStorage.getItem(SupabaseSource.AUTH_TOKEN_KEY);
+    const sessionToken = window.sessionStorage.getItem(SupabaseSource.AUTH_TOKEN_KEY);
+    return localToken === SupabaseSource.GUEST_TOKEN || sessionToken === SupabaseSource.GUEST_TOKEN;
+  }
+
   private async getOptionalUserId(context: string): Promise<string | null> {
+    if (this.isGuestSession()) {
+      return null;
+    }
     const supabase = this.ensureReady();
     const { data, error } = await supabase.auth.getSession();
     if (error) {
@@ -514,7 +526,12 @@ export class SupabaseSource implements DataSource {
       return Array.from(merged.values());
     })();
 
-    const rawBaseCurrency = row.base_currency ?? metadata.baseCurrency ?? 'USD';
+    const rawBaseCurrency =
+      typeof row.base_currency === 'string'
+        ? row.base_currency
+        : typeof metadata.baseCurrency === 'string'
+          ? metadata.baseCurrency
+          : 'USD';
     const baseCurrency = isBaseCurrency(rawBaseCurrency) ? rawBaseCurrency : 'USD';
 
     const basePot: Pot = {

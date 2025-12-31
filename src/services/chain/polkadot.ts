@@ -10,6 +10,15 @@ type SendDotParams = {
   forceBrowserExtension?: boolean;
 };
 
+type SendUsdcParams = {
+  from: string;
+  to: string;
+  amountUsdc: number;
+  assetId?: number;
+  onStatus?: (s: 'submitted' | 'inBlock' | 'finalized', ctx?: { txHash?: string; blockHash?: string }) => void;
+  forceBrowserExtension?: boolean;
+};
+
 type SendDotResult = {
   txHash: string;
   finalizedBlock?: string;
@@ -23,6 +32,8 @@ type SignAndSendParams = {
 };
 
 const DEFAULT_CHAIN: ChainKey = getActiveChain();
+const DEFAULT_USDC_ASSET_ID = 1337;
+const USDC_DECIMALS = 6;
 
 let apiPromise: Promise<any> | null = null;
 let currentChainKey: ChainKey = DEFAULT_CHAIN;
@@ -492,6 +503,29 @@ export const polkadotChainService = (() => {
     });
   };
 
+  const sendUsdc = async ({
+    from,
+    to,
+    amountUsdc,
+    assetId = DEFAULT_USDC_ASSET_ID,
+    onStatus,
+    forceBrowserExtension = false,
+  }: SendUsdcParams): Promise<SendDotResult> => {
+    return signAndSendExtrinsic({
+      from,
+      onStatus,
+      forceBrowserExtension,
+      buildTx: ({ api }) => {
+        if (!api?.tx?.assets?.transfer) {
+          throw new Error('Assets pallet unavailable');
+        }
+        const value = toPlanckString(amountUsdc, USDC_DECIMALS);
+        const toNorm = normalizeToPolkadot(to);
+        return api.tx.assets.transfer(assetId, toNorm, value);
+      },
+    });
+  };
+
   const estimateFee = async ({ from, to, amountDot }: { from: string; to: string; amountDot: number }): Promise<string> => {
     try {
       const config = getConfig();
@@ -525,6 +559,7 @@ export const polkadotChainService = (() => {
     isValidSs58,
     normalizeToPolkadot,
     sendDot,
+    sendUsdc,
     estimateFee,
     signAndSendExtrinsic,
     buildSubscanUrl,
