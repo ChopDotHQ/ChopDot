@@ -39,6 +39,7 @@ interface PeopleHomeProps {
   youOwe: PersonDebt[];
   owedToYou: PersonDebt[];
   people: Person[];
+  isLoading?: boolean;
   walletConnected: boolean;
   onConnectWallet: () => void;
   onSettle: (personId: string) => void;
@@ -55,6 +56,7 @@ export function PeopleHome({
   youOwe,
   owedToYou,
   people,
+  isLoading = false,
   onSettle,
   onRemindSent: _onRemindSent,
   onPersonClick,
@@ -66,7 +68,7 @@ export function PeopleHome({
   const { isPSA, psaStyles, psaClasses } = usePSAStyle();
   const [remindOverlayOpen, setRemindOverlayOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<PersonDebt | null>(null);
-  void remindOverlayOpen; void selectedPerson; void onToggleTheme; void isDarkMode;
+  void remindOverlayOpen; void selectedPerson; void onToggleTheme; void isDarkMode; void isLoading;
   const [activeTab, setActiveTab] = useState<"people" | "balances">("people"); // FLIPPED DEFAULT
   const [showSortSheet, setShowSortSheet] = useState(false);
   const [sortBy, setSortBy] = useState<string>("amount-high");

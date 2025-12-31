@@ -19,6 +19,7 @@ const COINGECKO_API_BASE = 'https://api.coingecko.com/api/v3';
 
 // In-memory cache
 let priceCache: PriceCache | null = null;
+let usdcPriceCache: PriceCache | null = null;
 
 /**
  * Fetch DOT price in multiple fiat currencies
@@ -86,6 +87,72 @@ export async function getDotPrices(
 }
 
 /**
+ * Fetch USDC price in multiple fiat currencies
+ */
+export async function getUsdcPrices(
+  currencies: FiatCurrency[] = ['usd', 'chf', 'eur']
+): Promise<Record<FiatCurrency, number>> {
+  if (usdcPriceCache && Date.now() - usdcPriceCache.timestamp < CACHE_DURATION_MS) {
+    return usdcPriceCache.prices;
+  }
+
+  try {
+    const vsCurrencies = currencies.join(',');
+    const url = `${COINGECKO_API_BASE}/simple/price?ids=usd-coin&vs_currencies=${vsCurrencies}`;
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`CoinGecko API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const usdcData = data['usd-coin'];
+
+    if (!usdcData) {
+      throw new Error('USDC price data not found');
+    }
+
+    const prices: Record<FiatCurrency, number> = {
+      usd: usdcData.usd || 0,
+      chf: usdcData.chf || 0,
+      eur: usdcData.eur || 0,
+      gbp: usdcData.gbp || 0,
+      jpy: usdcData.jpy || 0,
+    };
+
+    usdcPriceCache = {
+      prices,
+      timestamp: Date.now(),
+    };
+
+    return prices;
+  } catch (error) {
+    console.error('[CoinGecko] Failed to fetch USDC prices:', error);
+
+    if (usdcPriceCache) {
+      console.warn('[CoinGecko] Using stale USDC cache due to API error');
+      return usdcPriceCache.prices;
+    }
+
+    return {
+      usd: 0,
+      chf: 0,
+      eur: 0,
+      gbp: 0,
+      jpy: 0,
+    };
+  }
+}
+
+/**
+ * Get USDC price in a specific fiat currency
+ */
+export async function getUsdcPrice(currency: FiatCurrency = 'usd'): Promise<number> {
+  const prices = await getUsdcPrices([currency]);
+  return prices[currency] || 0;
+}
+
+/**
  * Get DOT price in a specific fiat currency
  * Convenience wrapper around getDotPrices
  */
@@ -110,5 +177,5 @@ export async function dotToFiat(
  */
 export function clearPriceCache(): void {
   priceCache = null;
+  usdcPriceCache = null;
 }
-

@@ -17,6 +17,15 @@ export type SendDotArgs = {
   forceBrowserExtension?: boolean;
 };
 
+export type SendUsdcArgs = {
+  from: string;
+  to: string;
+  amountUsdc: number;
+  assetId?: number;
+  onStatus?: (s: TxStatus, ctx?: { txHash?: string; blockHash?: string }) => void;
+  forceBrowserExtension?: boolean;
+};
+
 export type EstimateFeeArgs = {
   from: string;
   to: string;
@@ -43,10 +52,10 @@ export interface PolkadotChainService {
   // txs
   signAndSendExtrinsic: (args: SignAndSendArgs) => Promise<{ txHash: string; finalizedBlock?: string }>;
   sendDot: (args: SendDotArgs) => Promise<{ txHash: string; finalizedBlock?: string }>;
+  sendUsdc: (args: SendUsdcArgs) => Promise<{ txHash: string; finalizedBlock?: string }>;
 }
 
 export type SendDotResult = {
   txHash: string;
   finalizedBlock?: string;
 };
-

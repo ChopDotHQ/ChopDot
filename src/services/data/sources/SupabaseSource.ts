@@ -514,7 +514,12 @@ export class SupabaseSource implements DataSource {
       return Array.from(merged.values());
     })();
 
-    const rawBaseCurrency = row.base_currency ?? metadata.baseCurrency ?? 'USD';
+    const rawBaseCurrency =
+      typeof row.base_currency === 'string'
+        ? row.base_currency
+        : typeof metadata.baseCurrency === 'string'
+          ? metadata.baseCurrency
+          : 'USD';
     const baseCurrency = isBaseCurrency(rawBaseCurrency) ? rawBaseCurrency : 'USD';
 
     const basePot: Pot = {

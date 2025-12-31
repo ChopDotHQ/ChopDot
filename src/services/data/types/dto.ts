@@ -12,7 +12,7 @@ import { MemberSchema, ExpenseSchema, PotSchema } from '../../../schema/pot';
 export const CreatePotDTOSchema = z.object({
   name: z.string().min(1, 'Pot name is required'),
   type: z.enum(['expense', 'savings']),
-  baseCurrency: z.enum(['DOT', 'USD']).default('USD'),
+  baseCurrency: z.enum(['DOT', 'USD', 'USDC', 'EUR', 'GBP', 'CHF', 'JPY']).default('USD'),
   budget: z.number().nullable().optional(),
   budgetEnabled: z.boolean().optional().default(false),
   checkpointEnabled: z.boolean().optional(),
@@ -105,4 +105,3 @@ export interface OnchainSettlementHistory {
   subscan?: string;
   note?: string;
 }
-
