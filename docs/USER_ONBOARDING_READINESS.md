@@ -27,7 +27,8 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
   - Current: `SignInScreen.tsx` ~2k lines with duplicated signup logic.  
   - Needed: split into subcomponents/hooks (wallet auth, email auth), unify signup flow.
 - 🟢 Secure wallet auth (nonce/signature) — **DEV**  
-  - Added `auth_nonces` table + `wallet-auth` edge function; frontend uses nonce → sign → verify → `setSession`; address-as-password path removed. Rotation scripts available for dormant accounts.
+  - Added `auth_nonces` table + `wallet-auth` edge function; frontend uses nonce → sign → verify → `setSession`; address-as-password path removed. Rotation scripts available for dormant accounts.  
+  - Update: `wallet-auth` function source restored in repo and deployed; request-nonce + verify endpoints confirmed working.
 
 ## Data & Sync (Supabase)
 - 🟢 Profiles schema/upsert — **TEDDY**  
@@ -39,9 +40,9 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
   - Done: startup check for `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_WALLETCONNECT_PROJECT_ID` with clear error messages at both build-time (vite.config.ts) and runtime (main.tsx).
 - 🟢 Guest mode local-only — **DEV**  
   - Done: guest sessions bypass Supabase reads/writes; pots persist in local storage (no 403s).
-- 🔴 Cross-user pots & invites — **DEV**  
-  - Current: `VITE_DATA_SOURCE=local`; invites are local-only UI and never reach other users. No `invites` table/email/link flow.  
-  - Needed: switch to Supabase data source, add `invites` table + RLS + email/join link, route AddMember/Invite through Supabase, test two-account send/accept/reject/expire.
+- 🟡 Cross-user pots & invites — **DEV**  
+  - Current: Supabase data source live for authenticated users; `invites` table + RLS exist; accept/decline edge functions in repo and deployed.  
+  - Needed: complete client send/accept flows, link handling, and two-account QA (invalid/expired/duplicate/self-invite).
 
 ## UX & Polish
 - 🔴 Safari keyboard issue — **DEV**  
@@ -90,6 +91,10 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
   - Ensure AuthContext + AccountContext cleared and WC session/storage removed on logout.
 - 🟢 Wallet auth hardened — **DEV**  
   - Address-as-password removed; nonce/signature verification via edge function; passwords rotated on login; bulk rotation script available for dormant accounts.
+- 🟢 Auth nonces locked down — **DEV**  
+  - Grants removed for `anon`/`authenticated`; `auth_nonces` is service_role-only now.
+- 🟢 Financial tables protected — **DEV**  
+  - RLS enabled + member policies for `expenses`, `contributions`, `settlements`, `payments`; anon grants revoked.
 
 ## Ops
 - 🟢 Feature flags doc (internal) — **DEV**  
