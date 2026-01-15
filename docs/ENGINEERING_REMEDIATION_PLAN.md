@@ -171,7 +171,7 @@ Phase 2: Maintainability + UX + docs (Weeks 4–8)
 Phase 0
 - [x] CRDT actor IDs stabilized and hash upgraded; tests added.
 - [x] `anon` grants revoked in new migration; verified in staging.
-- [ ] IPFS rate limiting in place; 429 verified.
+- [x] IPFS rate limiting in place; 429 verified.
 - [x] Settlement logic unified; UI matches service output.
 - [x] Canonical data ownership decision documented.
 
@@ -183,10 +183,10 @@ Phase 1
 - [x] Error tracking configured; parity checklist enforced.
 
 Phase 2
-- [ ] SignInScreen modularized into components/hooks.
-- [ ] App shell modularized by feature areas.
-- [ ] Cache invalidation strategy documented or implemented.
-- [ ] Public docs IA drafted and linked plan documented.
+- [x] SignInScreen modularized into components/hooks.
+- [x] App shell modularized by feature areas.
+- [x] Cache invalidation strategy documented or implemented.
+- [x] Public docs IA drafted and linked plan documented.
 
 ## Open Questions
 - Should CRDT be required for all pots, or only offline/guest usage?

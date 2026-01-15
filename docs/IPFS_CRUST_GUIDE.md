@@ -144,9 +144,18 @@ CRUST_IPFS_GATEWAY=https://ipfs.io
 
 # Global token (fallback if no user auth)
 CRUST_W3AUTH_TOKEN=<optional-global-token>
+
+# Rate limiting (proxy)
+IPFS_RATE_LIMIT_MAX=15
+IPFS_RATE_LIMIT_WINDOW_MS=60000
+IPFS_UPLOAD_MAX_BYTES=15728640
 ```
 
 **Note:** Global token is optional - user-specific tokens are generated automatically.
+
+### Rate Limiting
+
+The `/api/ipfs/upload` proxy enforces a per-IP rate limit and returns HTTP 429 when exceeded. The limits are configurable via the environment variables above.
 
 ---
 
@@ -219,4 +228,3 @@ When users share a pot via IPFS link, each person gets a snapshot copy. Changes 
 **After:** Users just connect wallet and upload - it works automatically! 🎉
 
 No more manual setup, no more `.env` editing, no more technical barriers!
-
