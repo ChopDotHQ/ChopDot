@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useState,
   useMemo,
   useCallback,
@@ -33,47 +35,100 @@ import { AuthScreen } from "./components/screens/AuthScreen";
 import { ActivityHome } from "./components/screens/ActivityHome";
 import { PotsHome } from "./components/screens/PotsHome";
 import { PeopleHome } from "./components/screens/PeopleHome";
-import { Settings } from "./components/screens/Settings";
-import { PaymentMethods } from "./components/screens/PaymentMethods";
-import { CreatePot } from "./components/screens/CreatePot";
-import { PotHome } from "./components/screens/PotHome";
-import { AddExpense } from "./components/screens/AddExpense";
-import { ExpenseDetail } from "./components/screens/ExpenseDetail";
-import { SettleSelection } from "./components/screens/SettleSelection";
-import { SettleHome } from "./components/screens/SettleHome";
-import { SettlementHistory } from "./components/screens/SettlementHistory";
-import { SettlementConfirmation } from "./components/screens/SettlementConfirmation";
-import { InsightsScreen } from "./components/screens/InsightsScreen";
 import { BottomTabBar } from "./components/BottomTabBar";
 import { SwipeableScreen } from "./components/SwipeableScreen";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
-import { ChoosePot } from "./components/screens/ChoosePot";
 import { useData } from "./services/data/DataContext";
 import { logDev, warnDev } from "./utils/logDev";
-import { MyQR } from "./components/screens/MyQR";
-import { ScanQR } from "./components/screens/ScanQR";
-import { AddPaymentMethod } from "./components/screens/AddPaymentMethod";
-import { AddMember } from "./components/screens/AddMember";
-import { ViewPaymentMethod } from "./components/screens/ViewPaymentMethod";
-import { NotificationCenter } from "./components/screens/NotificationCenter";
-import { MemberDetail } from "./components/screens/MemberDetail";
-import { AddContribution } from "./components/screens/AddContribution";
-import { WithdrawFunds } from "./components/screens/WithdrawFunds";
 import { YouSheet } from "./components/YouSheet";
 import { YouTab } from "./components/screens/YouTab";
 import { TxToast } from "./components/TxToast";
-import { RequestPayment } from "./components/screens/RequestPayment";
-import { CrustStorage } from "./components/screens/CrustStorage";
-import { CrustAuthSetup } from "./components/screens/CrustAuthSetup";
-import { ReceiveQR } from "./components/screens/ReceiveQR";
 import { IPFSAuthOnboarding } from "./components/IPFSAuthOnboarding";
 import { WalletConnectionSheet } from "./components/WalletConnectionSheet";
-import { ImportPot } from "./components/screens/ImportPot";
 import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
 import { setOnboardingCallback, resetOnboardingFlag } from "./services/storage/ipfsWithOnboarding";
 import { usePots as useRemotePots } from "./hooks/usePots";
 import { usePot as useRemotePot } from "./hooks/usePot";
+
+const Settings = lazy(() =>
+  import("./components/screens/Settings").then((module) => ({ default: module.Settings }))
+);
+const PaymentMethods = lazy(() =>
+  import("./components/screens/PaymentMethods").then((module) => ({ default: module.PaymentMethods }))
+);
+const CreatePot = lazy(() =>
+  import("./components/screens/CreatePot").then((module) => ({ default: module.CreatePot }))
+);
+const PotHome = lazy(() =>
+  import("./components/screens/PotHome").then((module) => ({ default: module.PotHome }))
+);
+const AddExpense = lazy(() =>
+  import("./components/screens/AddExpense").then((module) => ({ default: module.AddExpense }))
+);
+const ExpenseDetail = lazy(() =>
+  import("./components/screens/ExpenseDetail").then((module) => ({ default: module.ExpenseDetail }))
+);
+const SettleSelection = lazy(() =>
+  import("./components/screens/SettleSelection").then((module) => ({ default: module.SettleSelection }))
+);
+const SettleHome = lazy(() =>
+  import("./components/screens/SettleHome").then((module) => ({ default: module.SettleHome }))
+);
+const SettlementHistory = lazy(() =>
+  import("./components/screens/SettlementHistory").then((module) => ({ default: module.SettlementHistory }))
+);
+const SettlementConfirmation = lazy(() =>
+  import("./components/screens/SettlementConfirmation").then((module) => ({ default: module.SettlementConfirmation }))
+);
+const InsightsScreen = lazy(() =>
+  import("./components/screens/InsightsScreen").then((module) => ({ default: module.InsightsScreen }))
+);
+const ChoosePot = lazy(() =>
+  import("./components/screens/ChoosePot").then((module) => ({ default: module.ChoosePot }))
+);
+const MyQR = lazy(() =>
+  import("./components/screens/MyQR").then((module) => ({ default: module.MyQR }))
+);
+const ScanQR = lazy(() =>
+  import("./components/screens/ScanQR").then((module) => ({ default: module.ScanQR }))
+);
+const AddPaymentMethod = lazy(() =>
+  import("./components/screens/AddPaymentMethod").then((module) => ({ default: module.AddPaymentMethod }))
+);
+const AddMember = lazy(() =>
+  import("./components/screens/AddMember").then((module) => ({ default: module.AddMember }))
+);
+const ViewPaymentMethod = lazy(() =>
+  import("./components/screens/ViewPaymentMethod").then((module) => ({ default: module.ViewPaymentMethod }))
+);
+const NotificationCenter = lazy(() =>
+  import("./components/screens/NotificationCenter").then((module) => ({ default: module.NotificationCenter }))
+);
+const MemberDetail = lazy(() =>
+  import("./components/screens/MemberDetail").then((module) => ({ default: module.MemberDetail }))
+);
+const AddContribution = lazy(() =>
+  import("./components/screens/AddContribution").then((module) => ({ default: module.AddContribution }))
+);
+const WithdrawFunds = lazy(() =>
+  import("./components/screens/WithdrawFunds").then((module) => ({ default: module.WithdrawFunds }))
+);
+const RequestPayment = lazy(() =>
+  import("./components/screens/RequestPayment").then((module) => ({ default: module.RequestPayment }))
+);
+const CrustStorage = lazy(() =>
+  import("./components/screens/CrustStorage").then((module) => ({ default: module.CrustStorage }))
+);
+const CrustAuthSetup = lazy(() =>
+  import("./components/screens/CrustAuthSetup").then((module) => ({ default: module.CrustAuthSetup }))
+);
+const ReceiveQR = lazy(() =>
+  import("./components/screens/ReceiveQR").then((module) => ({ default: module.ReceiveQR }))
+);
+const ImportPot = lazy(() =>
+  import("./components/screens/ImportPot").then((module) => ({ default: module.ImportPot }))
+);
 
 interface Member {
   id: string;
@@ -3839,136 +3894,143 @@ function AppContent() {
 
   return (
     <div className="app-shell bg-background overflow-hidden">
-      <SwipeableScreen
-        onSwipeBack={canSwipeBack() ? back : undefined}
-        key={screen?.type ?? 'screen'}
+      <Suspense
+        fallback={(
+          <div className="flex h-full items-center justify-center text-sm text-secondary">
+            Loading...
+          </div>
+        )}
       >
-        {renderScreen()}
-      </SwipeableScreen>
+        <SwipeableScreen
+          onSwipeBack={canSwipeBack() ? back : undefined}
+          key={screen?.type ?? 'screen'}
+        >
+          {renderScreen()}
+        </SwipeableScreen>
 
 
-      
-      {shouldShowTabBar() && (
-        <BottomTabBar
-          activeTab={getActiveTab()}
-          onTabChange={handleTabChange}
-          onFabClick={fabState.action}
-          fabVisible={fabState.visible}
-          fabIcon={fabState.icon}
-          fabColor={fabState.color}
-        />
-      )}
+        
+        {shouldShowTabBar() && (
+          <BottomTabBar
+            activeTab={getActiveTab()}
+            onTabChange={handleTabChange}
+            onFabClick={fabState.action}
+            fabVisible={fabState.visible}
+            fabIcon={fabState.icon}
+            fabColor={fabState.color}
+          />
+        )}
 
-      {renderInviteModal()}
+        {renderInviteModal()}
 
 
-      
-      {showWalletSheet && (
-        <WalletConnectionSheet
-          isConnected={walletConnected}
-          connectedWallet={connectedWallet}
-          onConnect={(provider) => {
-            setWalletConnected(true);
-            setConnectedWallet({
-              provider,
-              address:
-                "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
-              name: "My Polkadot Wallet",
-            });
-            setShowWalletSheet(false);
-            showToast(
-              "Wallet connected successfully!",
-              "success",
-            );
-          }}
-          onDisconnect={() => {
-            setWalletConnected(false);
-            setConnectedWallet(undefined);
-            setShowWalletSheet(false);
-            showToast("Wallet disconnected", "info");
-          }}
-          onClose={() => setShowWalletSheet(false)}
-        />
-      )}
+        
+        {showWalletSheet && (
+          <WalletConnectionSheet
+            isConnected={walletConnected}
+            connectedWallet={connectedWallet}
+            onConnect={(provider) => {
+              setWalletConnected(true);
+              setConnectedWallet({
+                provider,
+                address:
+                  "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+                name: "My Polkadot Wallet",
+              });
+              setShowWalletSheet(false);
+              showToast(
+                "Wallet connected successfully!",
+                "success",
+              );
+            }}
+            onDisconnect={() => {
+              setWalletConnected(false);
+              setConnectedWallet(undefined);
+              setShowWalletSheet(false);
+              showToast("Wallet disconnected", "info");
+            }}
+            onClose={() => setShowWalletSheet(false)}
+          />
+        )}
 
-      {showNotifications && (
-        <NotificationCenter
-          notifications={notifications}
-          onClose={() => setShowNotifications(false)}
-          onMarkAllRead={() => {
-            setNotifications(
-              notifications.map((n) => ({ ...n, read: true })),
-            );
-            triggerHaptic("light");
-          }}
-          onNotificationClick={(notification) => {
-            setNotifications(
-              notifications.map((n) =>
-                n.id === notification.id
-                  ? { ...n, read: true }
-                  : n,
-              ),
-            );
-            notification.onAction?.();
-          }}
-        />
-      )}
+        {showNotifications && (
+          <NotificationCenter
+            notifications={notifications}
+            onClose={() => setShowNotifications(false)}
+            onMarkAllRead={() => {
+              setNotifications(
+                notifications.map((n) => ({ ...n, read: true })),
+              );
+              triggerHaptic("light");
+            }}
+            onNotificationClick={(notification) => {
+              setNotifications(
+                notifications.map((n) =>
+                  n.id === notification.id
+                    ? { ...n, read: true }
+                    : n,
+                ),
+              );
+              notification.onAction?.();
+            }}
+          />
+        )}
 
-      {showYouSheet && (
-        <YouSheet
-          onClose={() => setShowYouSheet(false)}
-          onShowQR={() => {
-            setShowYouSheet(false);
-            setShowMyQR(true);
-          }}
-          onScanQR={() => {
-            setShowYouSheet(false);
-            setShowScanQR(true);
-          }}
-          onPaymentMethods={() => {
-            setShowYouSheet(false);
-            push({ type: "payment-methods" });
-          }}
-          onViewInsights={() => {
-            setShowYouSheet(false);
-            push({ type: "insights" });
-          }}
-          onSettings={() => {
-            setShowYouSheet(false);
-            push({ type: "settings" });
-          }}
-          insights={youTabInsights}
-        />
-      )}
+        {showYouSheet && (
+          <YouSheet
+            onClose={() => setShowYouSheet(false)}
+            onShowQR={() => {
+              setShowYouSheet(false);
+              setShowMyQR(true);
+            }}
+            onScanQR={() => {
+              setShowYouSheet(false);
+              setShowScanQR(true);
+            }}
+            onPaymentMethods={() => {
+              setShowYouSheet(false);
+              push({ type: "payment-methods" });
+            }}
+            onViewInsights={() => {
+              setShowYouSheet(false);
+              push({ type: "insights" });
+            }}
+            onSettings={() => {
+              setShowYouSheet(false);
+              push({ type: "settings" });
+            }}
+            insights={youTabInsights}
+          />
+        )}
 
-      {showMyQR && (
-        <MyQR onClose={() => setShowMyQR(false)} onCopyHandle={() => showToast('Handle copied', 'info')} />
-      )}
-      {showScanQR && (
-        <ScanQR onClose={() => setShowScanQR(false)} />
-      )}
+        {showMyQR && (
+          <MyQR onClose={() => setShowMyQR(false)} onCopyHandle={() => showToast('Handle copied', 'info')} />
+        )}
+        {showScanQR && (
+          <ScanQR onClose={() => setShowScanQR(false)} />
+        )}
 
-      {showChoosePot && (
-        <ChoosePot
-          pots={pots.filter(p => !p.archived).map((p) => ({
-            id: p.id,
-            name: p.name,
-            myExpenses: p.expenses.filter(
-              (e) => e.paidBy === "owner",
-            ).length,
-            totalExpenses: p.expenses.length,
-            memberCount: p.members.length,
-          }))}
-          onClose={() => setShowChoosePot(false)}
-          onCreatePot={() => push({ type: "create-pot" })}
-          onSelectPot={(potId) => {
-            setCurrentPotId(potId);
-            setFabQuickAddPotId(potId);
-            setShowChoosePot(false);
-            push({ type: "pot-home", potId });
-          }}
-        />
-      )}
+        {showChoosePot && (
+          <ChoosePot
+            pots={pots.filter(p => !p.archived).map((p) => ({
+              id: p.id,
+              name: p.name,
+              myExpenses: p.expenses.filter(
+                (e) => e.paidBy === "owner",
+              ).length,
+              totalExpenses: p.expenses.length,
+              memberCount: p.members.length,
+            }))}
+            onClose={() => setShowChoosePot(false)}
+            onCreatePot={() => push({ type: "create-pot" })}
+            onSelectPot={(potId) => {
+              setCurrentPotId(potId);
+              setFabQuickAddPotId(potId);
+              setShowChoosePot(false);
+              push({ type: "pot-home", potId });
+            }}
+          />
+        )}
 
       {showAddPaymentMethod && (
         <AddPaymentMethod
@@ -4158,7 +4220,7 @@ function AppContent() {
           }}
         />
       )}
-
+      </Suspense>
     </div>
   );
 }
