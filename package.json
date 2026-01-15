@@ -113,6 +113,7 @@
     "node": "22.x",
     "npm": ">=9.0.0"
   },
+  "packageManager": "npm@11.3.0",
   "keywords": [
     "expense-splitting",
     "group-finance",
