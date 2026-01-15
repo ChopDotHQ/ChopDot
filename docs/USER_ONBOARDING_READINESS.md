@@ -101,6 +101,10 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
   - FEATURE_FLAGS.md: name | purpose | default (e.g., `VITE_ENABLE_MOBILE_WC_UI`, `VITE_ENABLE_WC_MODAL`, `VITE_ENABLE_POLKADOT_BALANCE_UI`, `VITE_ENABLE_LUNOKIT`, `VITE_ENABLE_EMBEDDED_WALLET`, `VITE_ENABLE_CRUST`, `VITE_ENABLE_PRICE_API`, etc.).  
   - Update: Added `docs/FEATURE_FLAGS.md` with the current flags, defaults, and intent.
 - 🟢 Env validation — **DEV** (see Data & Sync).
+- 🟡 How-to wiki / docs site — **DEV**  
+  - Summary: add a public-facing "How to Use" docs site inspired by Polkadot's developer docs (strong IA, left nav, search, "In this section" cards).  
+  - Direction: keep docs in this repo, deploy as a separate site under `docs.chopdot.app`, and link from the in-app Help sheet for deeper guidance.  
+  - Needed: decide audience scope (end-user vs dev), choose doc stack, build IA/structure, and wire domain later.
 - 🟡 Prod/preview parity checks — **DEV**  
   - Checklist to verify both environments before go-live:  
     - Env: `VITE_DATA_SOURCE=supabase`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_WALLETCONNECT_PROJECT_ID` present; planned feature flags set as intended.  

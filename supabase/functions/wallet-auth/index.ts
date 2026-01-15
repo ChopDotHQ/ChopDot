@@ -84,8 +84,47 @@ async function verifyEvmSignature(address: string, message: string, signature: s
   }
 }
 
+async function fetchUserIdByWallet(address: string, chain: "polkadot" | "evm"): Promise<string | null> {
+  try {
+    const normalizedAddress = chain === "evm"
+      ? address.toLowerCase().trim()
+      : address.trim();
+    const { data, error } = await supabaseAdmin
+      .from("wallet_links")
+      .select("user_id")
+      .eq("chain", chain)
+      .eq("address", normalizedAddress)
+      .maybeSingle();
+
+    if (error) {
+      console.warn("[wallet-auth] wallet_links lookup failed:", error.message);
+      return null;
+    }
+
+    return data?.user_id ?? null;
+  } catch (err) {
+    console.warn("[wallet-auth] wallet_links lookup exception:", err);
+    return null;
+  }
+}
+
 async function fetchUserIdByEmail(email: string): Promise<string | null> {
   try {
+    const { data, error } = await supabaseAdmin
+      .schema("auth")
+      .from("users")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
+
+    if (!error && data?.id) {
+      return data.id;
+    }
+
+    if (error) {
+      console.warn("[wallet-auth] auth.users lookup failed:", error.message);
+    }
+
     let page = 1;
     const perPage = 1000;
 
@@ -130,7 +169,11 @@ async function ensureUser(
   email: string,
   password: string,
 ) {
-  let userId = await fetchUserIdByEmail(email);
+  let userId = await fetchUserIdByWallet(address, chain);
+
+  if (!userId) {
+    userId = await fetchUserIdByEmail(email);
+  }
 
   if (!userId) {
     console.log("[wallet-auth] Creating new user:", { email, address, chain });

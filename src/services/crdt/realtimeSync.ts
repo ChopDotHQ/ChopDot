@@ -79,8 +79,8 @@ export class PotRealtimeSync {
     }
 
     try {
-      const hash = this.hashChange(change);
-      const actor = this.getActor(doc);
+      const hash = await this.hashChange(change);
+      const actor = this.getActor(userId);
       const seq = this.getSequenceNumber(doc);
 
       const { error } = await supabase.from('crdt_changes').insert({
@@ -149,23 +149,62 @@ export class PotRealtimeSync {
   /**
    * Hash a change for deduplication
    */
-  private hashChange(change: Uint8Array): string {
-    let hash = 0;
-    for (let i = 0; i < change.length; i++) {
-      const byte = change[i];
-      if (byte !== undefined) {
-        hash = ((hash << 5) - hash) + byte;
-        hash = hash & hash;
-      }
+  private async hashChange(change: Uint8Array): Promise<string> {
+    const cryptoObj = globalThis.crypto;
+    if (!cryptoObj?.subtle) {
+      throw new Error('[PotRealtimeSync] crypto.subtle unavailable for hashing');
     }
-    return hash.toString(16);
+    const data = new Uint8Array(change);
+    const digest = await cryptoObj.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(digest))
+      .map((byte) => byte.toString(16).padStart(2, '0'))
+      .join('');
   }
 
   /**
    * Get actor ID from document
    */
-  private getActor(_doc: Automerge.Doc<CRDTPotDocument>): string {
-    return 'actor-' + Math.random().toString(36).substr(2, 9);
+  private getActor(userId: string): string {
+    const deviceId = this.getDeviceId();
+    return `${userId}:${deviceId}`;
+  }
+
+  private getDeviceId(): string {
+    if (typeof window === 'undefined') {
+      return 'server';
+    }
+
+    const key = 'chopdot_device_id';
+    const existing = window.localStorage.getItem(key);
+    if (existing) {
+      return existing;
+    }
+
+    const id = this.generateId();
+    window.localStorage.setItem(key, id);
+    return id;
+  }
+
+  private generateId(): string {
+    const cryptoObj = typeof globalThis !== 'undefined' ? globalThis.crypto : undefined;
+    if (cryptoObj?.randomUUID) {
+      return cryptoObj.randomUUID();
+    }
+
+    if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
+      const buf = new Uint8Array(16);
+      cryptoObj.getRandomValues(buf);
+      const value6 = buf[6] ?? 0;
+      const value8 = buf[8] ?? 0;
+      // eslint-disable-next-line no-bitwise
+      buf[6] = (value6 & 0x0f) | 0x40;
+      // eslint-disable-next-line no-bitwise
+      buf[8] = (value8 & 0x3f) | 0x80;
+      const hex = Array.from(buf, (b) => b.toString(16).padStart(2, '0')).join('');
+      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+
+    return `device-${Math.random().toString(36).slice(2, 10)}`;
   }
 
   /**

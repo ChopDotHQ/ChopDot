@@ -6,7 +6,7 @@
  * - Other wallets via WalletConnect (SubWallet, Talisman, MetaMask, Rainbow, etc.)
  */
 
-import { useState, useEffect, useRef, ReactNode, CSSProperties, useId, MouseEvent, FormEvent } from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { AlertCircle, Loader2, X } from 'lucide-react';
 import { useAuth, AuthMethod } from '../../contexts/AuthContext';
 import { useAccount } from '../../contexts/AccountContext';
@@ -24,6 +24,33 @@ import { getRememberedEmail, setRememberedEmail } from '../../utils/rememberedEm
 import { toast } from 'sonner';
 import { useTheme } from '../../utils/useTheme';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerTitle } from '../ui/drawer';
+import {
+  ChopDotMark,
+  WalletPanel,
+  WalletOption,
+  MobileWalletConnectPanel,
+  ViewModeToggle,
+  LoginVariantToggle,
+  WalletConnectModalToggle,
+} from '../auth/SignInComponents';
+import {
+  type PanelMode,
+  type WalletOptionTheme,
+  defaultPanelTheme,
+  emailOptionTheme,
+  sceneBackgroundStyles,
+  frostedPanelThemes,
+  frostedWalletThemes,
+  frostedGuestThemes,
+  frostedWalletOverrides,
+  polkadotSecondAgePanelThemes,
+  polkadotSecondAgeWalletThemes,
+  polkadotSecondAgeGuestThemes,
+  polkadotSecondAgeWalletOverrides,
+  getPolkadotSecondAgeEmailOverride,
+  getPolkadotSecondAgeSceneBackgroundStyles,
+  POLKADOT_BACKGROUNDS,
+} from '../auth/SignInThemes';
 
 declare global {
   interface Window {
@@ -37,398 +64,8 @@ interface LoginScreenProps {
   onLoginSuccess?: () => void;
 }
 
-const ChopDotMark = ({ 
-  size = 48, 
-  useBlackAndWhite = false,
-  useWhite = false 
-}: { 
-  size?: number; 
-  useBlackAndWhite?: boolean;
-  useWhite?: boolean;
-}) => {
-  const maskId = useId();
-  let fillColor: string;
-  if (useWhite) {
-    fillColor = '#FFFFFF';
-  } else if (useBlackAndWhite) {
-    fillColor = '#000000';
-  } else {
-    fillColor = 'var(--accent)';
-  }
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 256 256"
-      role="img"
-      aria-hidden="true"
-    >
-      <defs>
-        <mask id={maskId}>
-          <rect x="0" y="0" width="256" height="256" fill="white" />
-          <rect
-            x="-64"
-            y="112"
-            width="384"
-            height="32"
-            fill="black"
-            transform="rotate(-35 128 128)"
-          />
-        </mask>
-      </defs>
-      <circle cx="128" cy="128" r="96" fill={fillColor} mask={`url(#${maskId})`} />
-    </svg>
-  );
-};
-
-const WalletLogo = ({
-  src,
-  alt,
-  className = '',
-  useGrayscale = false,
-}: {
-  src: string;
-  alt: string;
-  className?: string;
-  useGrayscale?: boolean;
-}) => (
-  <img
-    src={src}
-    alt={alt}
-    className={`h-8 w-8 object-contain ${className}`}
-    style={useGrayscale ? { 
-      filter: 'grayscale(75%) contrast(0.9) brightness(0.95)',
-      opacity: 0.9
-    } : undefined}
-    draggable={false}
-  />
-);
-
-interface PanelTheme {
-  background: string;
-  borderColor: string;
-  shadow: string;
-  backdropFilter?: string;
-}
-
-const defaultPanelTheme: PanelTheme = {
-  background: 'rgba(10,10,15,0.55)',
-  borderColor: 'rgba(255,255,255,0.08)',
-  shadow: '0 0 65px rgba(230,0,122,0.4), 0 38px 120px rgba(0,0,0,0.65)',
-  backdropFilter: 'blur(30px)',
-};
-
-const WalletPanel = ({
-  children,
-  theme = defaultPanelTheme,
-  useGlassmorphism = false,
-  mode = 'dark',
-}: {
-  children: ReactNode;
-  theme?: PanelTheme;
-  useGlassmorphism?: boolean;
-  mode?: PanelMode;
-}) => {
-  if (useGlassmorphism) {
-    return (
-      <div
-        className={`glass-panel rounded-2xl border px-6 py-8 sm:px-8 sm:py-8 space-y-4 transition-all duration-300 ${
-          mode === 'dark' ? 'glass-panel-dark' : 'glass-panel-light'
-        }`}
-        style={{
-          backdropFilter: 'blur(16px) saturate(120%)',
-          WebkitBackdropFilter: 'blur(16px) saturate(120%)',
-        }}
-      >
-        {children}
-      </div>
-    );
-  }
-  return (
-    <div
-      className="rounded-2xl border px-6 py-8 sm:px-8 sm:py-8 space-y-4 transition-colors"
-      style={{
-        background: theme.background,
-        borderColor: theme.borderColor,
-        boxShadow: theme.shadow,
-        backdropFilter: theme.backdropFilter,
-        WebkitBackdropFilter: theme.backdropFilter,
-      }}
-    >
-      {children}
-    </div>
-  );
-};
-
-interface WalletOptionTheme {
-  background: string;
-  hoverBackground?: string;
-  borderColor: string;
-  iconBackground?: string;
-  iconBorderColor?: string;
-  iconShadow?: string;
-  titleColor?: string;
-  subtitleColor?: string;
-  shadow?: string;
-  borderStyle?: 'solid' | 'dashed' | 'none';
-}
-
-const defaultOptionTheme: WalletOptionTheme = {
-  background: 'linear-gradient(135deg, #05060c 0%, #111b36 100%)',
-  hoverBackground: 'linear-gradient(135deg, #080914 0%, #152144 100%)',
-  borderColor: 'rgba(255,255,255,0.18)',
-  iconBackground: 'linear-gradient(145deg, #1f1c2d, #0f0c18)',
-  iconBorderColor: 'rgba(255,255,255,0.25)',
-  iconShadow: '0 8px 20px rgba(0,0,0,0.35)',
-  titleColor: '#ffffff',
-  subtitleColor: 'rgba(255,255,255,0.8)',
-  shadow: '0 15px 35px rgba(0,0,0,0.4)',
-  borderStyle: 'solid',
-};
-
-const ghostOptionTheme: WalletOptionTheme = {
-  background: 'transparent',
-  hoverBackground: 'rgba(255,255,255,0.05)',
-  borderColor: 'rgba(255,255,255,0.3)',
-  iconBackground: 'transparent',
-  iconBorderColor: 'transparent',
-  titleColor: '#ffffff',
-  subtitleColor: 'rgba(255,255,255,0.7)',
-  borderStyle: 'dashed',
-};
-
-const emailOptionTheme: Partial<WalletOptionTheme> = {
-  background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(255,240,249,0.92) 100%)',
-  hoverBackground: '#ffffff',
-  borderColor: 'rgba(0,0,0,0.08)',
-  iconBackground: '#ffffff',
-  iconBorderColor: 'rgba(0,0,0,0.05)',
-  titleColor: '#111111',
-  subtitleColor: '#5a5a66',
-  shadow: '0 12px 30px rgba(0,0,0,0.08)',
-};
-
-type PanelMode = 'dark' | 'light';
 type LoginViewOverride = 'auto' | 'desktop' | 'mobile';
 type LoginVariant = 'default' | 'polkadot-second-age-glass';
-
-
-const sceneBackgroundStyles: Record<PanelMode, CSSProperties> = {
-  dark: {
-    backgroundColor: '#050105',
-    color: '#ffffff',
-    backgroundImage:
-      'radial-gradient(rgba(230,0,122,0.15) 1.2px, transparent 1.2px), radial-gradient(rgba(230,0,122,0.07) 1.2px, transparent 1.2px)',
-    backgroundSize: '48px 48px, 48px 48px',
-    backgroundPosition: '0 0, 24px 24px',
-  },
-  light: {
-    backgroundColor: '#fdf7ff',
-    color: '#0f0f11',
-    backgroundImage:
-      'radial-gradient(rgba(230,0,122,0.06) 1px, transparent 1px), radial-gradient(rgba(230,0,122,0.03) 1px, transparent 1px)',
-    backgroundSize: '52px 52px, 52px 52px',
-    backgroundPosition: '0 0, 26px 26px',
-  },
-};
-
-const frostedPanelThemes: Record<PanelMode, PanelTheme> = {
-  dark: {
-    background: 'rgba(10,10,15,0.55)',
-    borderColor: 'rgba(255,255,255,0.08)',
-    shadow: '0 0 65px rgba(230,0,122,0.4), 0 38px 120px rgba(0,0,0,0.65)',
-    backdropFilter: 'blur(30px)',
-  },
-  light: {
-    background: 'linear-gradient(150deg, rgba(255,255,255,0.55), rgba(255,240,249,0.85))',
-    borderColor: 'rgba(255,255,255,0.35)',
-    shadow: '0 0 60px rgba(230,0,122,0.2), 0 25px 90px rgba(0,0,0,0.08)',
-    backdropFilter: 'blur(28px)',
-  },
-};
-
-const frostedWalletThemes: Record<PanelMode, Partial<WalletOptionTheme>> = {
-  dark: {
-    background: 'rgba(15,15,22,0.72)',
-    hoverBackground: 'rgba(21,21,30,0.8)',
-    borderColor: 'rgba(255,255,255,0.08)',
-    iconBackground: 'rgba(255,255,255,0.12)',
-    iconBorderColor: 'rgba(255,255,255,0.2)',
-    titleColor: '#ffffff',
-    subtitleColor: 'rgba(255,255,255,0.78)',
-    shadow: 'none',
-  },
-  light: {
-    background: 'rgba(255,255,255,0.9)',
-    hoverBackground: '#ffffff',
-    borderColor: 'rgba(0,0,0,0.04)',
-    iconBackground: '#ffffff',
-    iconBorderColor: 'rgba(0,0,0,0.04)',
-    titleColor: '#1c1c22',
-    subtitleColor: '#5a5a66',
-    shadow: 'none',
-  },
-};
-
-const frostedGuestThemes: Record<PanelMode, Partial<WalletOptionTheme>> = {
-  dark: {
-    background: 'rgba(255,255,255,0.12)',
-    hoverBackground: 'rgba(255,255,255,0.2)',
-    borderColor: 'rgba(255,255,255,0.45)',
-    titleColor: '#ffffff',
-    subtitleColor: 'rgba(255,255,255,0.72)',
-    borderStyle: 'solid',
-  },
-  light: {
-    background: '#ffffff',
-    hoverBackground: '#f5f5f8',
-    borderColor: 'rgba(0,0,0,0.05)',
-    titleColor: '#111111',
-    subtitleColor: '#6b7280',
-    borderStyle: 'solid',
-  },
-};
-
-const frostedWalletOverrides: Record<string, Partial<WalletOptionTheme>> = {
-  // No special overrides - all wallets use the same base theme
-};
-
-// Polkadot Second Age Glassmorphism Themes (Greyscale)
-const polkadotSecondAgePanelThemes: Record<PanelMode, PanelTheme> = {
-  dark: {
-    background: 'rgba(255, 255, 255, 0.15)',
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    shadow: '0 10px 40px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.7), inset 0 -1px 20px rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(16px) saturate(120%)',
-  },
-  light: {
-    background: 'rgba(255, 255, 255, 0.2)',
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-    shadow: '0 10px 40px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.7), inset 0 -1px 20px rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(16px) saturate(120%)',
-  },
-};
-
-const polkadotSecondAgeWalletThemes: Record<PanelMode, Partial<WalletOptionTheme>> = {
-  dark: {
-    background: 'rgba(28, 25, 23, 0.4)',
-    hoverBackground: 'rgba(40, 36, 33, 0.6)',
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-    iconBackground: 'rgba(255, 255, 255, 0.1)',
-    iconBorderColor: 'rgba(255, 255, 255, 0.2)',
-    titleColor: '#FAFAF9',
-    subtitleColor: 'rgba(250, 250, 249, 0.85)',
-    shadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.3), inset 0 -1px 10px rgba(255, 255, 255, 0.08)',
-  },
-  light: {
-    background: 'rgba(255, 255, 255, 0.5)',
-    hoverBackground: 'rgba(255, 255, 255, 0.7)',
-    borderColor: 'rgba(255, 255, 255, 0.4)',
-    iconBackground: 'rgba(0, 0, 0, 0.05)',
-    iconBorderColor: 'rgba(0, 0, 0, 0.1)',
-    titleColor: '#1C1917',
-    subtitleColor: '#57534E',
-    shadow: '0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.7), inset 0 -1px 10px rgba(255, 255, 255, 0.15)',
-  },
-};
-
-const polkadotSecondAgeGuestThemes: Record<PanelMode, Partial<WalletOptionTheme>> = {
-  dark: {
-    background: 'rgba(255, 255, 255, 0.08)',
-    hoverBackground: 'rgba(255, 255, 255, 0.12)',
-    borderColor: 'rgba(255, 255, 255, 0.25)',
-    titleColor: '#FAFAF9',
-    subtitleColor: 'rgba(250, 250, 249, 0.8)',
-    borderStyle: 'solid',
-    shadow: '0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-  },
-  light: {
-    background: 'rgba(0, 0, 0, 0.04)',
-    hoverBackground: 'rgba(0, 0, 0, 0.06)',
-    borderColor: 'rgba(0, 0, 0, 0.15)',
-    titleColor: '#1C1917',
-    subtitleColor: '#57534E',
-    borderStyle: 'solid',
-    shadow: '0 2px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-  },
-};
-
-// Email theme overrides for PSA Glass - will be applied conditionally based on panelMode
-const getPolkadotSecondAgeEmailOverride = (panelMode: PanelMode): Partial<WalletOptionTheme> => {
-  if (panelMode === 'dark') {
-    return {
-      background: 'rgba(28, 25, 23, 0.4)',
-      hoverBackground: 'rgba(40, 36, 33, 0.6)',
-      borderColor: 'rgba(255, 255, 255, 0.2)',
-      iconBackground: 'rgba(255, 255, 255, 0.1)',
-      iconBorderColor: 'rgba(255, 255, 255, 0.2)',
-      titleColor: '#FAFAF9',
-      subtitleColor: 'rgba(250, 250, 249, 0.85)',
-      shadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.3), inset 0 -1px 10px rgba(255, 255, 255, 0.08)',
-    };
-  }
-  return {
-    background: 'rgba(255, 255, 255, 0.5)',
-    hoverBackground: 'rgba(255, 255, 255, 0.7)',
-    borderColor: 'rgba(0, 0, 0, 0.15)',
-    iconBackground: 'transparent',
-    iconBorderColor: 'transparent',
-    titleColor: '#000000',
-    subtitleColor: '#4A4A4A',
-    shadow: '0 4px 16px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.7), inset 0 -1px 10px rgba(255, 255, 255, 0.15)',
-  };
-};
-
-const polkadotSecondAgeWalletOverrides: Record<string, Partial<WalletOptionTheme>> = {
-  // Email override is now handled dynamically via getPolkadotSecondAgeEmailOverride
-  // Polkadot.js uses the same base theme as other wallets - no special override
-};
-
-// Background images for Polkadot Second Age variant - rotate through them
-const POLKADOT_BACKGROUNDS = [
-  '/assets/background-polka-a.png',
-  '/assets/background-polka-b.png',
-  '/assets/background-polka-c.png',
-  '/assets/background-polka-d.png',
-];
-
-const POLKADOT_BACKGROUNDS_INVERTED = [
-  '/assets/background-polka-a_inverted.png',
-  '/assets/background-polka-b.png', // Fallback to regular if inverted doesn't exist
-  '/assets/background-polka-c.png',
-  '/assets/background-polka-d.png',
-];
-
-// Function to get background styles based on current background index
-const getPolkadotSecondAgeSceneBackgroundStyles = (
-  panelMode: PanelMode,
-  backgroundIndex: number
-): CSSProperties => {
-  // Use inverted backgrounds for dark mode, regular for light mode
-  const backgrounds = panelMode === 'dark' ? POLKADOT_BACKGROUNDS_INVERTED : POLKADOT_BACKGROUNDS;
-  const backgroundImage = backgrounds[backgroundIndex % backgrounds.length];
-  
-  // Try to use the image, but provide a nice fallback gradient
-  return {
-    backgroundColor: panelMode === 'dark' ? '#050505' : '#F5F5F5',
-    color: panelMode === 'dark' ? '#FAFAF9' : '#1C1917',
-    backgroundImage: `url('${backgroundImage}'), ${
-      panelMode === 'dark'
-        ? `radial-gradient(ellipse at 20% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-           radial-gradient(ellipse at 80% 80%, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
-           radial-gradient(ellipse at 40% 20%, rgba(255, 255, 255, 0.04) 0%, transparent 50%),
-           linear-gradient(135deg, #050505 0%, #0A0A0A 50%, #050505 100%)`
-        : `radial-gradient(ellipse at 20% 50%, rgba(0, 0, 0, 0.03) 0%, transparent 50%),
-           radial-gradient(ellipse at 80% 80%, rgba(0, 0, 0, 0.02) 0%, transparent 50%),
-           radial-gradient(ellipse at 40% 20%, rgba(0, 0, 0, 0.01) 0%, transparent 50%),
-           linear-gradient(135deg, #F5F5F5 0%, #FAFAF9 50%, #F5F5F5 100%)`
-    }`,
-    backgroundSize: 'cover, 100% 100%, 100% 100%, 100% 100%, 100% 100%',
-    backgroundPosition: 'center, 0% 0%, 100% 100%, 50% 50%, 0% 0%',
-    backgroundRepeat: 'no-repeat, no-repeat, no-repeat, no-repeat, no-repeat',
-    transition: 'background-image 2s ease-in-out',
-  };
-};
 
 type WalletIntegrationKind = 'official-extension' | 'browser-extension' | 'walletconnect' | 'email';
 
@@ -446,429 +83,12 @@ interface WalletOptionConfig {
   themeOverride?: Partial<WalletOptionTheme>;
 }
 
-interface WalletOptionProps {
-  title: string;
-  subtitle?: string;
-  iconSrc?: string;
-  iconAlt?: string;
-  onClick?: (e?: React.MouseEvent) => void;
-  disabled?: boolean;
-  loading?: boolean;
-  variant?: 'default' | 'ghost';
-  theme?: Partial<WalletOptionTheme>;
-  panelMode?: PanelMode;
-  useGlassmorphism?: boolean;
-}
-
-const WalletOption = ({
-  title,
-  subtitle,
-  iconSrc,
-  iconAlt,
-  onClick,
-  disabled,
-  loading,
-  variant = 'default',
-  theme,
-  panelMode = 'dark',
-  useGlassmorphism = false,
-}: WalletOptionProps) => {
-  const isGhost = variant === 'ghost';
-  const baseClasses =
-    'group flex w-full items-center gap-4 rounded-xl p-4 transition-all active:scale-[0.995] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 disabled:opacity-60';
-  const variantClasses =
-    isGhost
-      ? 'justify-center text-sm font-semibold'
-      : 'text-left';
-  const contentAlignment = isGhost && !iconSrc ? 'text-center' : 'text-left';
-  const resolvedTheme = {
-    ...(isGhost ? ghostOptionTheme : defaultOptionTheme),
-    ...theme,
-  };
-  const buttonStyle: CSSProperties = {
-    background: resolvedTheme.background,
-    borderColor: resolvedTheme.borderColor,
-    boxShadow: resolvedTheme.shadow,
-  };
-  const titleStyle: CSSProperties = resolvedTheme.titleColor 
-    ? { color: resolvedTheme.titleColor } 
-    : {};
-  const subtitleStyle: CSSProperties = resolvedTheme.subtitleColor 
-    ? { color: resolvedTheme.subtitleColor } 
-    : {};
-  const borderClass = resolvedTheme.borderStyle === 'none' ? 'border-0' : 'border';
-  const borderStyleClass = resolvedTheme.borderStyle === 'dashed' ? 'border-dashed' : '';
-  const handleMouseEnter = !isGhost && resolvedTheme.hoverBackground
-    ? (event: MouseEvent<HTMLButtonElement>) => {
-        event.currentTarget.style.background = resolvedTheme.hoverBackground as string;
-      }
-    : undefined;
-  const handleMouseLeave = !isGhost && resolvedTheme.hoverBackground
-    ? (event: MouseEvent<HTMLButtonElement>) => {
-        event.currentTarget.style.background = resolvedTheme.background as string;
-      }
-    : undefined;
-
-  // Check if we should use glassmorphism
-  const bgStr = typeof resolvedTheme.background === 'string' ? resolvedTheme.background : '';
-  const detectedGlassmorphism = bgStr.includes('rgba') && 
-    (bgStr.includes('0.2') || bgStr.includes('0.3') || bgStr.includes('0.25') || bgStr.includes('0.17'));
-  const shouldUseGlassmorphism = useGlassmorphism || detectedGlassmorphism;
-  
-  // Polkadot button always needs dark class (dark background) regardless of panelMode
-  const isPolkadotButton = title === 'Polkadot.js';
-  const glassClass = shouldUseGlassmorphism
-    ? (isPolkadotButton 
-        ? 'glass-button glass-button-dark'
-        : (panelMode === 'dark' ? 'glass-button glass-button-dark' : 'glass-button glass-button-light'))
-    : '';
-
-  return (
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick?.(e);
-      }}
-      disabled={disabled}
-      className={`${baseClasses} ${variantClasses} ${borderClass} ${borderStyleClass} ${glassClass} transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]`}
-      style={{
-        ...buttonStyle,
-        ...(shouldUseGlassmorphism && {
-          backdropFilter: 'blur(8px) saturate(150%)',
-          WebkitBackdropFilter: 'blur(8px) saturate(150%)',
-        }),
-      }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {iconSrc && (
-        <div
-          className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl border p-1.5"
-          style={{
-            background: resolvedTheme.iconBackground,
-            borderColor: resolvedTheme.iconBorderColor,
-            boxShadow: resolvedTheme.iconShadow,
-          }}
-        >
-          {shouldUseGlassmorphism && iconSrc === EMAIL_LOGIN_LOGO ? (
-            <div className="h-7 w-7 flex items-center justify-center">
-              <ChopDotMark size={28} useWhite={panelMode === 'dark'} useBlackAndWhite={panelMode === 'light'} />
-            </div>
-          ) : (
-            <div className="h-9 w-9 flex items-center justify-center rounded-full overflow-hidden">
-              <WalletLogo 
-                src={iconSrc} 
-                alt={iconAlt ?? ''} 
-                className="h-full w-full object-cover"
-                useGrayscale={shouldUseGlassmorphism && iconSrc !== EMAIL_LOGIN_LOGO}
-              />
-            </div>
-          )}
-        </div>
-      )}
-      <div className={`flex-1 ${contentAlignment} leading-tight`}>
-        <p
-          className={`text-base ${isGhost ? 'font-semibold' : 'font-medium'}`}
-          style={{
-            color: resolvedTheme.titleColor || (title === 'Polkadot.js' ? '#FAFAF9' : (panelMode === 'dark' ? '#FAFAF9' : '#1C1917')),
-            ...titleStyle,
-          }}
-        >
-          {title}
-        </p>
-        {subtitle && (
-          <p 
-            className="text-sm" 
-            style={{
-              color: resolvedTheme.subtitleColor || (title === 'Polkadot.js' ? 'rgba(250, 250, 249, 0.95)' : (panelMode === 'dark' ? 'rgba(250, 250, 249, 0.85)' : '#57534E')),
-              ...subtitleStyle,
-            }}
-          >
-            {subtitle}
-          </p>
-        )}
-      </div>
-      {loading && <Loader2 className="h-5 w-5 animate-spin text-white/80" />}
-    </button>
-  );
-};
-
 const POLKADOT_JS_LOGO = '/assets/Logos/Polkadot Js Logo.png';
 const WALLETCONNECT_LOGO = '/assets/Logos/Wallet Connect Logo.png';
 const SUBWALLET_LOGO = '/assets/Logos/Subwallet Logo.png';
 const TALISMAN_LOGO = '/assets/Logos/Talisman Wallet Logo.png';
 const EMAIL_LOGIN_LOGO = '/assets/Logos/choptdot_whitebackground.png';
-
-interface MobileWalletConnectPanelProps {
-  loading: boolean;
-  errorMessage: string | null;
-  onRetry: () => Promise<string | null>;
-  onSwitchToDesktop: () => void;
-  mode: PanelMode;
-  panelTheme: PanelTheme;
-  walletTheme: Partial<WalletOptionTheme>;
-  guestTheme: Partial<WalletOptionTheme>;
-  useGlassmorphism?: boolean;
-  onGuestLogin: () => Promise<void>;
-  onEmailOptionToggle: () => void;
-  keepSignedIn: boolean;
-  onKeepSignedInChange: (checked: boolean) => void;
-  emailTheme: Partial<WalletOptionTheme>;
-  waitingForSignature: boolean;
-  onOpenModal?: () => Promise<void>;
-}
-
-const MobileWalletConnectPanel = ({
-  loading,
-  errorMessage,
-  onRetry,
-  onSwitchToDesktop,
-  mode,
-  panelTheme,
-  walletTheme,
-  guestTheme,
-  useGlassmorphism = false,
-  onGuestLogin,
-  onEmailOptionToggle,
-  keepSignedIn,
-  onKeepSignedInChange,
-  emailTheme,
-  waitingForSignature,
-  onOpenModal,
-}: MobileWalletConnectPanelProps) => {
-  const textPrimary = mode === 'dark' ? 'text-white' : 'text-[#111111]';
-  const textSecondary = mode === 'dark' ? 'text-white/70' : 'text-secondary/80';
-
-  return (
-    <WalletPanel theme={panelTheme} useGlassmorphism={useGlassmorphism} mode={mode}>
-      <div className="space-y-4">
-        <div className="text-center space-y-1">
-          <p className={`text-base font-semibold ${textPrimary}`}>Open your wallet</p>
-          <p className={`text-sm ${textSecondary}`}>
-            Tap your wallet below. After approving the connection, stay inside your wallet until you confirm the signature.
-          </p>
-          {waitingForSignature && (
-            <div className="mt-3 rounded-xl border-2 border-[var(--accent)] bg-[var(--accent)]/10 p-3 space-y-2">
-              <div className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin text-[var(--accent)] flex-shrink-0" />
-                <p className="text-sm font-semibold text-foreground">
-                  Signature pending in wallet
-                </p>
-              </div>
-              <p className="text-xs text-muted leading-relaxed pl-6">
-                Go back to your wallet app and approve the signature request. Stay in your wallet until confirmed.
-              </p>
-            </div>
-          )}
-        </div>
-
-        {onOpenModal && (
-          <WalletOption
-            title="WalletConnect"
-            subtitle="Nova, Subwallet, Talisman"
-            iconSrc={WALLETCONNECT_LOGO}
-            iconAlt="WalletConnect logo"
-            onClick={onOpenModal}
-            disabled={loading}
-            theme={walletTheme}
-            panelMode={mode}
-            useGlassmorphism={useGlassmorphism}
-          />
-        )}
-
-        {errorMessage && (
-          <div className="rounded-2xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive space-y-2">
-            <p>{errorMessage}</p>
-            <button
-              type="button"
-              onClick={onRetry}
-              className="text-xs font-semibold underline underline-offset-2"
-              disabled={loading}
-            >
-              Try again
-            </button>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          <WalletOption
-            title="Email & password"
-            subtitle="Sign in with your ChopDot account"
-            iconSrc={EMAIL_LOGIN_LOGO}
-            iconAlt="Email login icon"
-            onClick={onEmailOptionToggle}
-            disabled={loading}
-            theme={{
-              ...walletTheme,
-              ...emailTheme,
-            }}
-            panelMode={mode}
-            useGlassmorphism={useGlassmorphism}
-          />
-        </div>
-
-        <WalletOption
-          title="Continue as guest"
-          onClick={onGuestLogin}
-          disabled={loading}
-          variant="ghost"
-          theme={guestTheme}
-          panelMode={mode}
-          useGlassmorphism={useGlassmorphism}
-        />
-
-        <label className={`flex items-center justify-between gap-3 rounded-xl border border-border/60 px-4 py-3 text-sm ${useGlassmorphism && mode === 'dark' ? 'text-white' : ''}`}>
-          <span className={`font-semibold ${useGlassmorphism && mode === 'dark' ? 'text-white' : 'text-foreground'}`}>Keep me signed in</span>
-          <input
-            type="checkbox"
-            className="h-4 w-4 accent-[var(--accent)]"
-            checked={keepSignedIn}
-            onChange={(event) => onKeepSignedInChange(event.target.checked)}
-            disabled={loading}
-          />
-        </label>
-
-        <div className="text-center space-y-2">
-          <button
-            type="button"
-            onClick={onSwitchToDesktop}
-            className="text-xs font-semibold text-[var(--accent)] underline underline-offset-4"
-          >
-            Switch to desktop wallet view
-          </button>
-        </div>
-      </div>
-    </WalletPanel>
-  );
-};
-
 const isFlagEnabled = (value?: string) => value === '1' || value?.toLowerCase() === 'true';
-
-interface ViewModeToggleProps {
-  value: LoginViewOverride;
-  onChange: (value: LoginViewOverride) => void;
-  resolvedView: 'desktop' | 'mobile';
-  mode: PanelMode;
-}
-
-const ViewModeToggle = ({ value, onChange, resolvedView, mode }: ViewModeToggleProps) => {
-  const options: { id: LoginViewOverride; label: string }[] = [
-    { id: 'auto', label: `Auto (${resolvedView})` },
-    { id: 'desktop', label: 'Desktop' },
-    { id: 'mobile', label: 'Mobile' },
-  ];
-  const isDark = mode === 'dark';
-
-  return (
-    <div className="fixed top-4 right-4 z-[80]">
-      <div className={`flex items-center gap-2 rounded-full border ${isDark ? 'border-white/20 bg-black/60 text-white' : 'border-black/20 bg-white/90 text-black'} px-3 py-2 shadow-lg backdrop-blur-lg`}>
-        <span className={`text-[11px] font-semibold uppercase tracking-[0.08em] ${isDark ? 'text-white/70' : 'text-black/70'}`}>Login view</span>
-        <div className={`flex rounded-full ${isDark ? 'bg-white/10' : 'bg-black/10'} p-0.5`}>
-          {options.map((option) => {
-            const isActive = value === option.id;
-            return (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => onChange(option.id)}
-                className={`px-3 py-1 text-[11px] font-medium rounded-full transition-colors ${
-                  isActive 
-                    ? (isDark ? 'bg-white text-black' : 'bg-black text-white')
-                    : (isDark ? 'text-white/70 hover:text-white' : 'text-black/70 hover:text-black')
-                }`}
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-interface WalletConnectModalToggleProps {
-  enabled: boolean;
-  onChange: (enabled: boolean) => void;
-  mode: PanelMode;
-}
-
-interface LoginVariantToggleProps {
-  value: LoginVariant;
-  onChange: (value: LoginVariant) => void;
-  mode: PanelMode;
-}
-
-const LoginVariantToggle = ({ value, onChange, mode }: LoginVariantToggleProps) => {
-  const isDark = mode === 'dark';
-  return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[80] pointer-events-auto">
-      <div className={`flex items-center gap-2 rounded-full border ${isDark ? 'border-white/20 bg-black/60 text-white' : 'border-black/20 bg-white/90 text-black'} px-3 py-2 shadow-lg backdrop-blur-lg`}>
-        <span className={`text-[11px] font-semibold uppercase tracking-[0.08em] ${isDark ? 'text-white/70' : 'text-black/70'}`}>Style</span>
-        <div className="flex rounded-full bg-muted/50 p-0.5">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onChange('default');
-            }}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
-              value === 'default'
-                ? (isDark ? 'bg-white/20 text-white' : 'bg-black/10 text-black')
-                : (isDark ? 'text-white/60' : 'text-black/60')
-            }`}
-          >
-            Default
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onChange('polkadot-second-age-glass');
-            }}
-            className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer ${
-              value === 'polkadot-second-age-glass'
-                ? (isDark ? 'bg-white/20 text-white' : 'bg-black/10 text-black')
-                : (isDark ? 'text-white/60' : 'text-black/60')
-            }`}
-          >
-            PSA Glass
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const WalletConnectModalToggle = ({ enabled, onChange, mode }: WalletConnectModalToggleProps) => {
-  const isDark = mode === 'dark';
-  return (
-    <div className="fixed top-4 left-4 z-[80]">
-      <div className={`flex items-center gap-2 rounded-full border ${isDark ? 'border-white/20 bg-black/60 text-white' : 'border-black/20 bg-white/90 text-black'} px-3 py-2 shadow-lg backdrop-blur-lg`}>
-        <span className={`text-[11px] font-semibold uppercase tracking-[0.08em] ${isDark ? 'text-white/70' : 'text-black/70'}`}>WC Modal</span>
-        <div className={`flex rounded-full ${isDark ? 'bg-white/10' : 'bg-black/10'} p-0.5`}>
-          <button
-            type="button"
-            onClick={() => {
-              const newValue = !enabled;
-              onChange(newValue);
-              localStorage.setItem('chopdot.wcModal.enabled', String(newValue));
-            }}
-            className={`px-3 py-1 text-[11px] font-medium rounded-full transition-colors ${
-              enabled 
-                ? (isDark ? 'bg-white text-black' : 'bg-black text-white')
-                : (isDark ? 'text-white/70 hover:text-white' : 'text-black/70 hover:text-black')
-            }`}
-          >
-            {enabled ? 'ON' : 'OFF'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const trackEvent = (name: string, payload?: Record<string, unknown>) => {
   try {
@@ -2374,11 +1594,11 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               >Sign in to ChopDot</p>
             </div>
             
-	            <MobileWalletConnectPanel
-	              loading={loading}
-	              errorMessage={error}
-	              onRetry={async () => await startWalletConnectSession({ openQrModal: false, source: 'mobile-panel-retry' })}
-	              onSwitchToDesktop={() => {
+            <MobileWalletConnectPanel
+              loading={loading}
+              errorMessage={error}
+              onRetry={async () => await startWalletConnectSession({ openQrModal: false, source: 'mobile-panel-retry' })}
+              onSwitchToDesktop={() => {
                 // Only switch views; do not auto-trigger WalletConnect
                 setViewModeOverride('desktop');
                 setShowWalletConnectQR(false);
@@ -2392,13 +1612,17 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
               guestTheme={variationGuestTheme}
               useGlassmorphism={useGlassmorphism}
               onGuestLogin={handleGuestLogin}
-	              onEmailOptionToggle={() => openEmailLoginDrawer('mobile-option')}
+              onEmailOptionToggle={() => openEmailLoginDrawer('mobile-option')}
               keepSignedIn={keepSignedIn}
               onKeepSignedInChange={handleKeepSignedInChange}
-	              emailTheme={useGlassmorphism ? getPolkadotSecondAgeEmailOverride(panelMode) : emailOptionTheme}
-	              waitingForSignature={isWaitingForSignature}
-	              onOpenModal={enableWcModal ? handleWalletConnectModal : undefined}
-	            />
+              emailTheme={useGlassmorphism ? getPolkadotSecondAgeEmailOverride(panelMode) : emailOptionTheme}
+              waitingForSignature={isWaitingForSignature}
+              onOpenModal={enableWcModal ? handleWalletConnectModal : undefined}
+              walletConnectIconSrc={WALLETCONNECT_LOGO}
+              walletConnectIconAlt="WalletConnect logo"
+              emailIconSrc={EMAIL_LOGIN_LOGO}
+              emailIconAlt="Email login icon"
+            />
             {renderFooterContent()}
           </div>
         </div>
@@ -2456,6 +1680,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
                     disabled={loading}
                     panelMode={panelMode}
                     useGlassmorphism={useGlassmorphism}
+                    useMarkForIcon={option.id === 'email'}
 	                    loading={option.showsLoadingIndicator && loading}
 	                    theme={option.themeOverride}
 	                  />
