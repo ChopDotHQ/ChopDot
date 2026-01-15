@@ -180,7 +180,7 @@ Phase 1
 - [x] Expense IDs use UUIDs.
 - [x] Pagination implemented in UI and data layer.
 - [x] Release gating suite defined and running in CI.
-- [ ] Error tracking configured; parity checklist enforced.
+- [x] Error tracking configured; parity checklist enforced.
 
 Phase 2
 - [ ] SignInScreen modularized into components/hooks.

@@ -8,9 +8,11 @@ import { AccountProviderLuno } from './contexts/AccountContextLuno'
 import { EvmAccountProvider } from './contexts/EvmAccountContext'
 import { DataProvider } from './services/data/DataContext'
 import { requireValidEnvironment } from './utils/envValidation'
+import { initErrorTracking, reportError } from './utils/errorTracking'
 
 // Validate required environment variables before app starts
 requireValidEnvironment();
+initErrorTracking();
 
 // Simple error boundary to catch render errors and show them
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
@@ -25,6 +27,9 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('App Error:', error, errorInfo);
+    reportError(error, {
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   render() {

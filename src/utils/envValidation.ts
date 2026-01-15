@@ -20,6 +20,7 @@ const CRITICAL_ENV_VARS = {
 // Optional vars - app works but features may be disabled
 const OPTIONAL_ENV_VARS = {
   VITE_WALLETCONNECT_PROJECT_ID: 'WalletConnect Cloud project ID',
+  VITE_SENTRY_DSN: 'Sentry DSN for error tracking',
 } as const;
 
 /**

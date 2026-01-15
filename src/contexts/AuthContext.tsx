@@ -13,6 +13,7 @@ import { useAccount } from './AccountContext';
 import { getSupabase } from '../utils/supabase-client';
 import { upsertProfile } from '../repos/profiles';
 import { getAuthPersistence } from '../utils/authPersistence';
+import { setErrorTrackingUser } from '../utils/errorTracking';
 
 export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'email' | 'guest';
 
@@ -142,6 +143,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       unsubscribe?.();
     };
   }, []);
+
+  useEffect(() => {
+    setErrorTrackingUser(user ? { id: user.id, email: user.email } : null);
+  }, [user]);
 
   const checkAuth = async () => {
     setIsLoading(true);
