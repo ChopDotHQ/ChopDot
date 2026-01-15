@@ -41,5 +41,11 @@ node_modules
 # Local private docs (never commit)
 private-docs/
 
+# Local investigation notes (can be unignored later)
+docs/DATA_SOURCE_CONTRACT.md
+docs/GROUP_CARD_HOLY_GRAIL_ANALYSIS.md
+docs/SMART_CONTRACT_TESTING_GUIDE.md
+docs/WISE_EXPENSE_SPLITTING_ANALYSIS.md
+
 # Local worktrees
 .worktrees/
