@@ -45,3 +45,9 @@ export interface Settlement {
   txHash?: string;
 }
 
+export interface ExpenseSummary {
+  potId: string;
+  totalExpenses: number;
+  myExpenses: number;
+  myShare: number;
+}

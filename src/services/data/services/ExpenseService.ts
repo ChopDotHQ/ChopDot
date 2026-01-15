@@ -5,12 +5,13 @@
  * Wraps ExpenseRepository with business rules.
  */
 
-import { ExpenseRepository } from '../repositories/ExpenseRepository';
+import { ExpenseRepository, type ExpenseListOptions } from '../repositories/ExpenseRepository';
 import type { Expense } from '../types';
 import type { CreateExpenseDTO, UpdateExpenseDTO } from '../types/dto';
 import { ValidationError } from '../errors';
 import type { PotRepository } from '../repositories/PotRepository';
 import { logTiming } from '../../../utils/logDev';
+import type { ExpenseSummary } from '../types';
 
 /**
  * Expense Service
@@ -71,7 +72,10 @@ export class ExpenseService {
       await this.potRepository.update(potId, updates);
 
       // Create expense
-      const result = await this.repository.create(potId, dto);
+      const result = await this.repository.create(potId, {
+        ...dto,
+        currency: dto.currency || pot.baseCurrency,
+      });
       logTiming('addExpense', performance.now() - start, { potId, expenseId: result.id });
       return result;
     } catch (error) {
@@ -140,8 +144,15 @@ export class ExpenseService {
    * @returns Array of expenses
    * @throws {NotFoundError} If pot not found
    */
-  async listExpenses(potId: string): Promise<Expense[]> {
-    return this.repository.list(potId);
+  async listExpenses(potId: string, options?: ExpenseListOptions): Promise<Expense[]> {
+    return this.repository.list(potId, options);
+  }
+
+  async getExpenseSummaries(
+    potIds: string[],
+    userId: string,
+  ): Promise<Record<string, ExpenseSummary>> {
+    return this.repository.summaries(potIds, userId);
   }
 
   /**
@@ -162,4 +173,3 @@ export class ExpenseService {
     }
   }
 }
-

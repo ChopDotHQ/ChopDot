@@ -16,7 +16,7 @@ import { LocalStorageSource } from './sources/LocalStorageSource';
 import { HttpSource } from './sources/HttpSource';
 import { SupabaseSource } from './sources/SupabaseSource';
 import { PotRepository } from './repositories/PotRepository';
-import { ExpenseRepository } from './repositories/ExpenseRepository';
+import { ExpenseRepository, type ExpenseDataSource } from './repositories/ExpenseRepository';
 import { MemberRepository } from './repositories/MemberRepository';
 import { SettlementRepository } from './repositories/SettlementRepository';
 import { PotService } from './services/PotService';
@@ -45,9 +45,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const services = useMemo(() => {
     // Determine data source from environment variable
     const dataSource = import.meta.env.VITE_DATA_SOURCE || 'local';
+    const strictSupabase = import.meta.env.VITE_SUPABASE_STRICT === 'true';
     
     // Create source instance
-    let source: DataSource;
+    let source: DataSource & ExpenseDataSource;
 
     if (dataSource === 'api') {
       source = new HttpSource();
@@ -56,6 +57,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (supabaseSource.isConfigured()) {
         source = supabaseSource;
       } else {
+        if (strictSupabase) {
+          throw new Error('[DataContext] Supabase not configured and strict mode enabled.');
+        }
         console.warn('[DataContext] Supabase not configured. Falling back to LocalStorageSource.');
         source = new LocalStorageSource();
       }

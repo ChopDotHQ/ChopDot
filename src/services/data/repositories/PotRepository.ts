@@ -86,20 +86,20 @@ export class PotRepository {
       };
     }
 
-    // Update individual pot cache (always beneficial)
-    pots.forEach(pot => {
-      this.cache.set(pot.id, {
-        data: pot,
-        timestamp: now,
+    if (isFullListRequest) {
+      pots.forEach((pot) => {
+        this.cache.set(pot.id, {
+          data: pot,
+          timestamp: now,
+        });
       });
-    });
 
-    // Enforce cache size limit
-    if (this.cache.size > this.maxCacheSize) {
-      const entries = Array.from(this.cache.entries());
-      entries.sort((a, b) => a[1].timestamp - b[1].timestamp); // Oldest first
-      const toRemove = entries.slice(0, entries.length - this.maxCacheSize);
-      toRemove.forEach(([id]) => this.cache.delete(id));
+      if (this.cache.size > this.maxCacheSize) {
+        const entries = Array.from(this.cache.entries());
+        entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+        const toRemove = entries.slice(0, entries.length - this.maxCacheSize);
+        toRemove.forEach(([id]) => this.cache.delete(id));
+      }
     }
 
     return [...pots]; // Return copy
