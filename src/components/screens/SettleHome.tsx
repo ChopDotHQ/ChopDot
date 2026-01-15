@@ -9,6 +9,7 @@ import { useAccount } from "../../contexts/AccountContext";
 import { triggerHaptic } from "../../utils/haptics";
 import { HyperbridgeBridgeSheet } from "../HyperbridgeBridgeSheet";
 import type { Pot } from "../../schema/pot";
+import { getChain } from "../../services/chain";
 import {
   computeDisplayPlatformFee,
   shouldShowPlatformFee,
@@ -145,7 +146,7 @@ export function SettleHome({
     const isDotMethodSelected = selectedMethod === 'dot';
     if (isDotMethodSelected && canEstimateFee && recipientAddress && totalAmount > 0) {
       try {
-        const { chain } = await import('../../services/chain');
+        const chain = await getChain();
         const fromAddress = isSimulationMode && !account.address0 
           ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
           : account.address0!;
@@ -278,7 +279,7 @@ export function SettleHome({
           
         setIsSettling(true);
         
-        const { chain } = await import('../../services/chain');
+        const chain = await getChain();
         
         // State 1: Signing
         pushTxToast('signing', {
