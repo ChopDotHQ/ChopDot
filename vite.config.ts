@@ -136,6 +136,19 @@ export default defineConfig({
           if (id.includes('@walletconnect/') || id.includes('walletconnect')) {
             return 'walletconnect-vendor';
           }
+          // Data and sync vendors
+          if (id.includes('@supabase/')) {
+            return 'supabase-vendor';
+          }
+          if (id.includes('@automerge/')) {
+            return 'automerge-vendor';
+          }
+          if (id.includes('ipfs-http-client') || id.includes('ipfs-only-hash')) {
+            return 'ipfs-vendor';
+          }
+          if (id.includes('date-fns') || id.includes('decimal.js') || id.includes('zod')) {
+            return 'data-vendor';
+          }
           // React vendor chunk
           if (id.includes('react') || id.includes('react-dom')) {
             return 'react-vendor';
