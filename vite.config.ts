@@ -132,7 +132,10 @@ export default defineConfig({
           if (id.includes('@polkadot/util-crypto') || id.includes('@polkadot/util')) {
             return 'polkadot-utils';
           }
-          // Split WalletConnect into separate chunk (already large)
+          // Split WalletConnect into separate chunks (core vs EVM provider)
+          if (id.includes('@walletconnect/ethereum-provider') || id.includes('universal-provider')) {
+            return 'walletconnect-evm';
+          }
           if (id.includes('@walletconnect/') || id.includes('walletconnect')) {
             return 'walletconnect-vendor';
           }
