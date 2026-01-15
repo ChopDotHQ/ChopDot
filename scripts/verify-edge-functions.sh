@@ -9,7 +9,12 @@ if ! command -v rg >/dev/null 2>&1; then
   exit 1
 fi
 
-mapfile -t functions < <(rg -o "functions/v1/[a-z0-9-]+" src -g "*.ts" -g "*.tsx" | sed 's#.*/##' | sort -u)
+functions=()
+while IFS= read -r fn; do
+  if [ -n "$fn" ]; then
+    functions+=("$fn")
+  fi
+done < <(rg -o "functions/v1/[a-z0-9-]+" src -g "*.ts" -g "*.tsx" | sed 's#.*/##' | sort -u || true)
 
 if [ ${#functions[@]} -eq 0 ]; then
   echo "No edge functions referenced in src."
