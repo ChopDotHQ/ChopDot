@@ -37,19 +37,17 @@ import { PotsHome } from "./components/screens/PotsHome";
 import { PeopleHome } from "./components/screens/PeopleHome";
 import { BottomTabBar } from "./components/BottomTabBar";
 import { SwipeableScreen } from "./components/SwipeableScreen";
-import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
 import { useData } from "./services/data/DataContext";
 import { logDev, warnDev } from "./utils/logDev";
-import { YouSheet } from "./components/YouSheet";
 import { YouTab } from "./components/screens/YouTab";
-import { TxToast } from "./components/TxToast";
-import { IPFSAuthOnboarding } from "./components/IPFSAuthOnboarding";
-import { WalletConnectionSheet } from "./components/WalletConnectionSheet";
+import { AppOverlays } from "./components/app/AppOverlays";
 import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
 import { setOnboardingCallback, resetOnboardingFlag } from "./services/storage/ipfsWithOnboarding";
 import { usePots as useRemotePots } from "./hooks/usePots";
 import { usePot as useRemotePot } from "./hooks/usePot";
+import type { PaymentMethod } from "./components/screens/PaymentMethods";
+import type { Notification } from "./components/screens/NotificationCenter";
 
 const Settings = lazy(() =>
   import("./components/screens/Settings").then((module) => ({ default: module.Settings }))
@@ -83,27 +81,6 @@ const SettlementConfirmation = lazy(() =>
 );
 const InsightsScreen = lazy(() =>
   import("./components/screens/InsightsScreen").then((module) => ({ default: module.InsightsScreen }))
-);
-const ChoosePot = lazy(() =>
-  import("./components/screens/ChoosePot").then((module) => ({ default: module.ChoosePot }))
-);
-const MyQR = lazy(() =>
-  import("./components/screens/MyQR").then((module) => ({ default: module.MyQR }))
-);
-const ScanQR = lazy(() =>
-  import("./components/screens/ScanQR").then((module) => ({ default: module.ScanQR }))
-);
-const AddPaymentMethod = lazy(() =>
-  import("./components/screens/AddPaymentMethod").then((module) => ({ default: module.AddPaymentMethod }))
-);
-const AddMember = lazy(() =>
-  import("./components/screens/AddMember").then((module) => ({ default: module.AddMember }))
-);
-const ViewPaymentMethod = lazy(() =>
-  import("./components/screens/ViewPaymentMethod").then((module) => ({ default: module.ViewPaymentMethod }))
-);
-const NotificationCenter = lazy(() =>
-  import("./components/screens/NotificationCenter").then((module) => ({ default: module.NotificationCenter }))
 );
 const MemberDetail = lazy(() =>
   import("./components/screens/MemberDetail").then((module) => ({ default: module.MemberDetail }))
@@ -330,21 +307,6 @@ interface Settlement {
   txHash?: string;
 }
 
-interface PaymentMethod {
-  id: string;
-  kind: "bank" | "twint" | "paypal" | "crypto";
-  iban?: string;
-  holder?: string;
-  note?: string;
-  phone?: string;
-  twintHandle?: string;
-  email?: string;
-  username?: string;
-  network?: "polkadot" | "assethub";
-  address?: string;
-  label?: string;
-}
-
 interface ActivityItem {
   id: string;
   type: "expense" | "settlement" | "attestation" | "member" | "pot_created";
@@ -361,17 +323,6 @@ interface Person {
   trustScore: number;
   paymentPreference: string;
   potCount: number;
-}
-
-interface Notification {
-  id: string;
-  type: "attestation" | "settlement" | "invite";
-  title: string;
-  message: string;
-  timestamp: string;
-  read: boolean;
-  actionLabel?: string;
-  onAction?: () => void;
 }
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -2351,6 +2302,283 @@ function AppContent() {
     };
   }, [pots, settlements]);
 
+  const existingContacts = useMemo(() => (
+    people.map((person) => ({
+      id: person.id,
+      name: person.name,
+      trustScore: person.trustScore,
+      paymentPreference: person.paymentPreference,
+      sharedPots: pots.filter((pot) =>
+        pot.members.some((member) => member.id === person.id),
+      ).length,
+    }))
+  ), [people, pots]);
+
+  const currentMemberIds = useMemo(
+    () => currentPot?.members.map((member) => member.id) || [],
+    [currentPot]
+  );
+
+  const handleWalletConnect = useCallback((provider: string) => {
+    setWalletConnected(true);
+    setConnectedWallet({
+      provider,
+      address: "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+      name: "My Polkadot Wallet",
+    });
+    setShowWalletSheet(false);
+    showToast("Wallet connected successfully!", "success");
+  }, [showToast]);
+
+  const handleWalletDisconnect = useCallback(() => {
+    setWalletConnected(false);
+    setConnectedWallet(undefined);
+    setShowWalletSheet(false);
+    showToast("Wallet disconnected", "info");
+  }, [showToast]);
+
+  const handleWalletClose = useCallback(() => {
+    setShowWalletSheet(false);
+  }, []);
+
+  const handleNotificationsClose = useCallback(() => {
+    setShowNotifications(false);
+  }, []);
+
+  const handleNotificationsMarkAllRead = useCallback(() => {
+    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })));
+    triggerHaptic("light");
+  }, []);
+
+  const handleNotificationClick = useCallback((notification: Notification) => {
+    setNotifications((prev) =>
+      prev.map((item) =>
+        item.id === notification.id ? { ...item, read: true } : item,
+      ),
+    );
+    notification.onAction?.();
+  }, []);
+
+  const handleYouSheetClose = useCallback(() => {
+    setShowYouSheet(false);
+  }, []);
+
+  const handleYouShowQR = useCallback(() => {
+    setShowYouSheet(false);
+    setShowMyQR(true);
+  }, []);
+
+  const handleYouScanQR = useCallback(() => {
+    setShowYouSheet(false);
+    setShowScanQR(true);
+  }, []);
+
+  const handleYouPaymentMethods = useCallback(() => {
+    setShowYouSheet(false);
+    push({ type: "payment-methods" });
+  }, [push]);
+
+  const handleYouViewInsights = useCallback(() => {
+    setShowYouSheet(false);
+    push({ type: "insights" });
+  }, [push]);
+
+  const handleYouSettings = useCallback(() => {
+    setShowYouSheet(false);
+    push({ type: "settings" });
+  }, [push]);
+
+  const handleMyQRClose = useCallback(() => {
+    setShowMyQR(false);
+  }, []);
+
+  const handleCopyHandle = useCallback(() => {
+    showToast("Handle copied", "info");
+  }, [showToast]);
+
+  const handleScanQRClose = useCallback(() => {
+    setShowScanQR(false);
+  }, []);
+
+  const handleChoosePotClose = useCallback(() => {
+    setShowChoosePot(false);
+  }, []);
+
+  const handleChoosePotCreate = useCallback(() => {
+    push({ type: "create-pot" });
+  }, [push]);
+
+  const handleChoosePotSelect = useCallback((potId: string) => {
+    setCurrentPotId(potId);
+    setFabQuickAddPotId(potId);
+    setShowChoosePot(false);
+    push({ type: "pot-home", potId });
+  }, [push]);
+
+  const handleAddPaymentMethodClose = useCallback(() => {
+    setShowAddPaymentMethod(false);
+  }, []);
+
+  const handleAddPaymentMethodSave = useCallback((method: Omit<PaymentMethod, "id">, setAsPreferred: boolean) => {
+    const newId = Date.now().toString();
+    setPaymentMethods((prev) => [
+      ...prev,
+      { ...method, id: newId },
+    ]);
+    if (setAsPreferred) {
+      setPreferredMethodId(newId);
+    }
+    setShowAddPaymentMethod(false);
+    showToast("Payment method added", "success");
+  }, [showToast]);
+
+  const handleSelectedPaymentMethodClose = useCallback(() => {
+    setSelectedPaymentMethod(null);
+  }, []);
+
+  const handleAddMemberClose = useCallback(() => {
+    setShowAddMember(false);
+  }, []);
+
+  const handleAddMemberExisting = useCallback((contactId: string) => {
+    const person = people.find((candidate) => candidate.id === contactId);
+    if (!person || !currentPotId) {
+      return;
+    }
+
+    const newMember = {
+      id: person.id,
+      name: person.name,
+      role: "Member" as const,
+      status: "active" as const,
+    };
+
+    setPots((prev) =>
+      prev.map((pot) =>
+        pot.id === currentPotId
+          ? {
+              ...pot,
+              members: [...pot.members, newMember],
+            }
+          : pot,
+      ),
+    );
+
+    (async () => {
+      try {
+        const createMemberDTO = {
+          potId: currentPotId,
+          name: person.name,
+          role: "Member" as const,
+          status: "active" as const,
+          address: null,
+          verified: false,
+        };
+
+        await memberService.addMember(currentPotId, createMemberDTO);
+        logDev('[DataLayer] Member added via service', { potId: currentPotId, memberId: person.id });
+      } catch (error) {
+        warnDev('[DataLayer] Service addMember failed', error);
+        showToast('Saved locally (service write failed)', 'info');
+      }
+    })();
+
+    showToast(`${person.name} added to pot`, "success");
+  }, [currentPotId, memberService, people, showToast]);
+
+  const handleInviteNew = useCallback((nameOrEmail: string) => {
+    const supabase = getSupabase();
+    const email = nameOrEmail.trim().toLowerCase();
+    if (!currentPotId) {
+      showToast("Select a pot first", "error");
+      return;
+    }
+    if (!email || !email.includes("@")) {
+      showToast("Enter a valid email address", "error");
+      return;
+    }
+    if (!supabase) {
+      showToast("Supabase is not configured", "error");
+      return;
+    }
+
+    (async () => {
+      try {
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        if (userError || !userData.user) {
+          showToast("Log in to invite members", "error");
+          return;
+        }
+
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+        const { data, error } = await supabase
+          .from("invites")
+          .insert({
+            pot_id: currentPotId,
+            invitee_email: email,
+            expires_at: expiresAt,
+            created_by: userData.user.id,
+          })
+          .select("token, pot_id")
+          .maybeSingle();
+
+        if (error) {
+          console.error("[Invite] failed to create invite", error);
+          if ((error as any)?.code === "23505") {
+            showToast("Invite already sent to this email for this pot.", "info");
+          } else {
+            showToast(error.message || "Failed to send invite", "error");
+          }
+          return;
+        }
+
+        const token = data?.token;
+        if (!token) {
+          showToast("Invite created but no token returned", "error");
+          return;
+        }
+
+        const link = `${window.location.origin}/join?token=${token}`;
+        try {
+          await navigator.clipboard?.writeText(link);
+          showToast(`Invite ready for ${email}. Link copied.`, "success");
+        } catch {
+          showToast(`Invite ready for ${email}. Copy this link:\n${link}`, "success");
+        }
+
+        fetchInvites(currentPotId);
+      } catch (err) {
+        console.error("[Invite] unexpected error", err);
+        showToast("Failed to send invite", "error");
+      }
+    })();
+  }, [currentPotId, fetchInvites, showToast]);
+
+  const handleAddMemberShowQR = useCallback(() => {
+    setShowAddMember(false);
+    setShowMyQR(true);
+  }, []);
+
+  const handleIPFSContinue = useCallback(async () => {
+    setShowIPFSAuthOnboarding(false);
+    if (pendingIPFSAction) {
+      try {
+        await pendingIPFSAction();
+      } catch (error) {
+        console.error('[App] Pending IPFS action failed:', error);
+        showToast('Upload failed. Please try again.', 'error');
+      } finally {
+        setPendingIPFSAction(null);
+      }
+    }
+  }, [pendingIPFSAction, showToast]);
+
+  const handleIPFSCancel = useCallback(() => {
+    setShowIPFSAuthOnboarding(false);
+    setPendingIPFSAction(null);
+    resetOnboardingFlag();
+  }, []);
+
   useEffect(() => {
     if (!screen) return;
 
@@ -3921,305 +4149,54 @@ function AppContent() {
           />
         )}
 
-        {renderInviteModal()}
-
-
-        
-        {showWalletSheet && (
-          <WalletConnectionSheet
-            isConnected={walletConnected}
-            connectedWallet={connectedWallet}
-            onConnect={(provider) => {
-              setWalletConnected(true);
-              setConnectedWallet({
-                provider,
-                address:
-                  "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
-                name: "My Polkadot Wallet",
-              });
-              setShowWalletSheet(false);
-              showToast(
-                "Wallet connected successfully!",
-                "success",
-              );
-            }}
-            onDisconnect={() => {
-              setWalletConnected(false);
-              setConnectedWallet(undefined);
-              setShowWalletSheet(false);
-              showToast("Wallet disconnected", "info");
-            }}
-            onClose={() => setShowWalletSheet(false)}
-          />
-        )}
-
-        {showNotifications && (
-          <NotificationCenter
-            notifications={notifications}
-            onClose={() => setShowNotifications(false)}
-            onMarkAllRead={() => {
-              setNotifications(
-                notifications.map((n) => ({ ...n, read: true })),
-              );
-              triggerHaptic("light");
-            }}
-            onNotificationClick={(notification) => {
-              setNotifications(
-                notifications.map((n) =>
-                  n.id === notification.id
-                    ? { ...n, read: true }
-                    : n,
-                ),
-              );
-              notification.onAction?.();
-            }}
-          />
-        )}
-
-        {showYouSheet && (
-          <YouSheet
-            onClose={() => setShowYouSheet(false)}
-            onShowQR={() => {
-              setShowYouSheet(false);
-              setShowMyQR(true);
-            }}
-            onScanQR={() => {
-              setShowYouSheet(false);
-              setShowScanQR(true);
-            }}
-            onPaymentMethods={() => {
-              setShowYouSheet(false);
-              push({ type: "payment-methods" });
-            }}
-            onViewInsights={() => {
-              setShowYouSheet(false);
-              push({ type: "insights" });
-            }}
-            onSettings={() => {
-              setShowYouSheet(false);
-              push({ type: "settings" });
-            }}
-            insights={youTabInsights}
-          />
-        )}
-
-        {showMyQR && (
-          <MyQR onClose={() => setShowMyQR(false)} onCopyHandle={() => showToast('Handle copied', 'info')} />
-        )}
-        {showScanQR && (
-          <ScanQR onClose={() => setShowScanQR(false)} />
-        )}
-
-        {showChoosePot && (
-          <ChoosePot
-            pots={pots.filter(p => !p.archived).map((p) => ({
-              id: p.id,
-              name: p.name,
-              myExpenses: p.expenses.filter(
-                (e) => e.paidBy === "owner",
-              ).length,
-              totalExpenses: p.expenses.length,
-              memberCount: p.members.length,
-            }))}
-            onClose={() => setShowChoosePot(false)}
-            onCreatePot={() => push({ type: "create-pot" })}
-            onSelectPot={(potId) => {
-              setCurrentPotId(potId);
-              setFabQuickAddPotId(potId);
-              setShowChoosePot(false);
-              push({ type: "pot-home", potId });
-            }}
-          />
-        )}
-
-      {showAddPaymentMethod && (
-        <AddPaymentMethod
-          onClose={() => setShowAddPaymentMethod(false)}
-          onSave={(method, setAsPreferred) => {
-            const newId = Date.now().toString();
-            setPaymentMethods([
-              ...paymentMethods,
-              { ...method, id: newId },
-            ]);
-            if (setAsPreferred) setPreferredMethodId(newId);
-            setShowAddPaymentMethod(false);
-            showToast("Payment method added", "success");
-          }}
-        />
-      )}
-
-      {selectedPaymentMethod && (
-        <ViewPaymentMethod
-          method={selectedPaymentMethod as PaymentMethod}
-          onClose={() => setSelectedPaymentMethod(null)}
-        />
-      )}
-
-      {showAddMember && currentPotId && (
-        <AddMember
-          onClose={() => setShowAddMember(false)}
-          onAddExisting={(contactId) => {
-            const person = people.find(
-              (p) => p.id === contactId,
-            );
-            if (!person) return;
-
-            const newMember = {
-              id: person.id,
-              name: person.name,
-              role: "Member" as const,
-              status: "active" as const,
-            };
-
-            setPots(
-              pots.map((p) =>
-                p.id === currentPotId
-                  ? {
-                      ...p,
-                      members: [
-                        ...p.members,
-                        newMember,
-                      ],
-                    }
-                  : p,
-              ),
-            );
-
-            (async () => {
-              try {
-                const createMemberDTO = {
-                  potId: currentPotId!,
-                  name: person.name,
-                  role: "Member" as const,
-                  status: "active" as const,
-                  address: null, // Existing contact may not have address
-                  verified: false,
-                };
-
-                await memberService.addMember(currentPotId!, createMemberDTO);
-                logDev('[DataLayer] Member added via service', { potId: currentPotId, memberId: person.id });
-              } catch (error) {
-                warnDev('[DataLayer] Service addMember failed', error);
-                showToast('Saved locally (service write failed)', 'info');
-              }
-            })();
-
-            showToast(`${person.name} added to pot`, "success");
-          }}
-          onInviteNew={(nameOrEmail) => {
-            const supabase = getSupabase();
-            const email = nameOrEmail.trim().toLowerCase();
-            if (!currentPotId) {
-              showToast("Select a pot first", "error");
-              return;
-            }
-            if (!email || !email.includes("@")) {
-              showToast("Enter a valid email address", "error");
-              return;
-            }
-            if (!supabase) {
-              showToast("Supabase is not configured", "error");
-              return;
-            }
-
-            (async () => {
-              try {
-                const { data: userData, error: userError } = await supabase.auth.getUser();
-                if (userError || !userData.user) {
-                  showToast("Log in to invite members", "error");
-                  return;
-                }
-
-                const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(); // 7 days
-                const { data, error } = await supabase
-                  .from("invites")
-                  .insert({
-                    pot_id: currentPotId!,
-                    invitee_email: email,
-                    expires_at: expiresAt,
-                    created_by: userData.user.id,
-                  })
-                  .select("token, pot_id")
-                  .maybeSingle();
-
-                if (error) {
-                  console.error("[Invite] failed to create invite", error);
-                  if ((error as any)?.code === '23505') {
-                    showToast("Invite already sent to this email for this pot.", "info");
-                  } else {
-                    showToast(error.message || "Failed to send invite", "error");
-                  }
-                  return;
-                }
-
-                const token = data?.token;
-                if (!token) {
-                  showToast("Invite created but no token returned", "error");
-                  return;
-                }
-
-                const link = `${window.location.origin}/join?token=${token}`;
-                try {
-                  await navigator.clipboard?.writeText(link);
-                  showToast(`Invite ready for ${email}. Link copied.`, "success");
-                } catch {
-                  showToast(`Invite ready for ${email}. Copy this link:\n${link}`, "success");
-                }
-
-                fetchInvites(currentPotId!);
-              } catch (err: any) {
-                console.error("[Invite] unexpected error", err);
-                showToast("Failed to send invite", "error");
-              }
-            })();
-          }}
-          onShowQR={() => {
-            setShowAddMember(false);
-            setShowMyQR(true);
-          }}
-          existingContacts={people.map((p) => ({
-            id: p.id,
-            name: p.name,
-            trustScore: p.trustScore,
-            paymentPreference: p.paymentPreference,
-            sharedPots: pots.filter((pot) =>
-              pot.members.some((m) => m.id === p.id),
-            ).length,
-          }))}
-          currentMembers={
-            currentPot?.members.map((m) => m.id) || []
-          }
-        />
-      )}
-
-      <Toaster />
-
-      <TxToast />
-
-      
-      {showIPFSAuthOnboarding && account.address0 && (
-        <IPFSAuthOnboarding
+        <AppOverlays
+          inviteModal={renderInviteModal()}
+          showWalletSheet={showWalletSheet}
+          walletConnected={walletConnected}
+          connectedWallet={connectedWallet}
+          onWalletConnect={handleWalletConnect}
+          onWalletDisconnect={handleWalletDisconnect}
+          onWalletClose={handleWalletClose}
+          showNotifications={showNotifications}
+          notifications={notifications}
+          onNotificationsClose={handleNotificationsClose}
+          onNotificationsMarkAllRead={handleNotificationsMarkAllRead}
+          onNotificationClick={handleNotificationClick}
+          showYouSheet={showYouSheet}
+          youSheetInsights={youTabInsights}
+          onYouSheetClose={handleYouSheetClose}
+          onYouShowQR={handleYouShowQR}
+          onYouScanQR={handleYouScanQR}
+          onYouPaymentMethods={handleYouPaymentMethods}
+          onYouViewInsights={handleYouViewInsights}
+          onYouSettings={handleYouSettings}
+          showMyQR={showMyQR}
+          onMyQRClose={handleMyQRClose}
+          onCopyHandle={handleCopyHandle}
+          showScanQR={showScanQR}
+          onScanQRClose={handleScanQRClose}
+          showChoosePot={showChoosePot}
+          pots={pots}
+          onChoosePotClose={handleChoosePotClose}
+          onChoosePotCreate={handleChoosePotCreate}
+          onChoosePotSelect={handleChoosePotSelect}
+          showAddPaymentMethod={showAddPaymentMethod}
+          onAddPaymentMethodClose={handleAddPaymentMethodClose}
+          onAddPaymentMethodSave={handleAddPaymentMethodSave}
+          selectedPaymentMethod={selectedPaymentMethod}
+          onSelectedPaymentMethodClose={handleSelectedPaymentMethodClose}
+          showAddMember={showAddMember && !!currentPotId}
+          existingContacts={existingContacts}
+          currentMembers={currentMemberIds}
+          onAddMemberClose={handleAddMemberClose}
+          onAddMemberExisting={handleAddMemberExisting}
+          onInviteNew={handleInviteNew}
+          onAddMemberShowQR={handleAddMemberShowQR}
+          showIPFSAuthOnboarding={showIPFSAuthOnboarding}
           walletAddress={account.address0}
-          onContinue={async () => {
-            setShowIPFSAuthOnboarding(false);
-            if (pendingIPFSAction) {
-              try {
-                await pendingIPFSAction();
-              } catch (error) {
-                console.error('[App] Pending IPFS action failed:', error);
-                showToast('Upload failed. Please try again.', 'error');
-              } finally {
-                setPendingIPFSAction(null);
-              }
-            }
-          }}
-          onCancel={() => {
-            setShowIPFSAuthOnboarding(false);
-            setPendingIPFSAction(null);
-            resetOnboardingFlag(); // Reset flag so user can try again later
-          }}
+          onIPFSContinue={handleIPFSContinue}
+          onIPFSCancel={handleIPFSCancel}
         />
-      )}
       </Suspense>
     </div>
   );

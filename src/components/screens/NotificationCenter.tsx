@@ -2,7 +2,7 @@ import { X, Clock, Check, DollarSign, UserPlus } from "lucide-react";
 import { EmptyState } from "../EmptyState";
 import { triggerHaptic } from "../../utils/haptics";
 
-interface Notification {
+export interface Notification {
   id: string;
   type: "attestation" | "settlement" | "reminder" | "invite";
   title: string;
