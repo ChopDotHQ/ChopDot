@@ -249,8 +249,7 @@ export function generateSignInMessage(address: string): string {
  * Request a server-issued nonce for wallet auth (edge function)
  */
 export async function requestWalletNonce(address: string): Promise<string> {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const { url: supabaseUrl, anonKey } = getSupabaseConfig();
   if (!supabaseUrl || !anonKey) {
     throw new Error('Supabase env vars missing for wallet auth');
   }
@@ -324,3 +323,4 @@ declare global {
     ethereum?: any;
   }
 }
+import { getSupabaseConfig } from './supabase-client';

@@ -12,10 +12,16 @@ interface EnvValidationResult {
 }
 
 // Critical vars - app won't work without these
-const CRITICAL_ENV_VARS = {
-  VITE_SUPABASE_URL: 'Supabase project URL (e.g., https://xxx.supabase.co)',
-  VITE_SUPABASE_ANON_KEY: 'Supabase anonymous/public API key',
-} as const;
+const CRITICAL_ENV_VAR_GROUPS = [
+  {
+    keys: ['VITE_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_URL'] as const,
+    description: 'Supabase project URL (e.g., https://xxx.supabase.co)',
+  },
+  {
+    keys: ['VITE_SUPABASE_ANON_KEY', 'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY'] as const,
+    description: 'Supabase anonymous/public API key',
+  },
+] as const;
 
 // Optional vars - app works but features may be disabled
 const OPTIONAL_ENV_VARS = {
@@ -29,13 +35,16 @@ export function validateEnvironment(): EnvValidationResult {
   const missing: string[] = [];
   const errors: string[] = [];
 
-  // Check critical variables (must be present)
-  Object.entries(CRITICAL_ENV_VARS).forEach(([key, description]) => {
-    const value = import.meta.env[key];
-    
-    if (!value || value.trim() === '') {
-      missing.push(key);
-      errors.push(`❌ ${key} is required but not set\n   Description: ${description}`);
+  // Check critical variable groups (at least one key in each group must be present)
+  CRITICAL_ENV_VAR_GROUPS.forEach(({ keys, description }) => {
+    const found = keys.some((key) => {
+      const value = import.meta.env[key];
+      return !!value && value.trim() !== '';
+    });
+    if (!found) {
+      const joined = keys.join(' or ');
+      missing.push(joined);
+      errors.push(`❌ ${joined} is required but not set\n   Description: ${description}`);
     }
   });
 

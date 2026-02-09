@@ -12,7 +12,7 @@
  * @param data - Optional data to log
  */
 export function logDev(message: string, data?: unknown): void {
-  if (import.meta.env.DEV) {
+  if (import.meta.env.DEV && !import.meta.env.VITEST) {
     if (data !== undefined) {
       console.log(`[DataLayer] ${message}`, data);
     } else {
@@ -28,7 +28,7 @@ export function logDev(message: string, data?: unknown): void {
  * @param data - Optional data to log
  */
 export function warnDev(message: string, data?: unknown): void {
-  if (import.meta.env.DEV) {
+  if (import.meta.env.DEV && !import.meta.env.VITEST) {
     if (data !== undefined) {
       console.warn(`[DataLayer] ${message}`, data);
     } else {
@@ -45,7 +45,7 @@ export function warnDev(message: string, data?: unknown): void {
  * @param params - Optional parameters to log
  */
 export function logTiming(method: string, durationMs: number, params?: Record<string, unknown>): void {
-  if (import.meta.env.DEV) {
+  if (import.meta.env.DEV && !import.meta.env.VITEST) {
     const logData: Record<string, unknown> = { method, ms: durationMs.toFixed(2) };
     if (params) {
       Object.assign(logData, params);
@@ -53,4 +53,3 @@ export function logTiming(method: string, durationMs: number, params?: Record<st
     console.log(`[DL][timing]`, logData);
   }
 }
-
