@@ -978,7 +978,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     if (supabase) {
       console.log('[SignInScreen] Supabase client configured');
     } else {
-      console.error('[SignInScreen] Supabase client NOT configured - check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY');
+      console.error('[SignInScreen] Supabase client NOT configured - check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY');
     }
   }, []);
   const getInitialPanelMode = () => {

@@ -10,11 +10,12 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAccount } from './AccountContext';
-import { getSupabase } from '../utils/supabase-client';
+import { getSupabase, getSupabaseConfig } from '../utils/supabase-client';
 import { upsertProfile } from '../repos/profiles';
 import { getAuthPersistence } from '../utils/authPersistence';
+import { loginWithEmailAction, signUpWithEmailAction } from './authActions';
 
-export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'email' | 'guest';
+export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'email' | 'guest' | 'anonymous';
 
 export interface User {
   id: string;
@@ -24,6 +25,19 @@ export interface User {
   name?: string;
   createdAt: string;
   isGuest?: boolean;
+}
+
+function mapSupabaseSessionUser(sessionUser: any): User {
+  const isAnonymous = Boolean(sessionUser?.is_anonymous);
+  const email = sessionUser?.email ?? undefined;
+  return {
+    id: sessionUser.id,
+    email,
+    authMethod: isAnonymous ? 'anonymous' : 'email',
+    name: email?.split('@')[0] ?? (isAnonymous ? 'Anonymous User' : undefined),
+    createdAt: new Date().toISOString(),
+    isGuest: !isAnonymous ? undefined : false,
+  };
 }
 
 interface AuthContextType {
@@ -88,13 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const { data } = await supabase.auth.getSession();
           const session = data.session || null;
           if (session?.user) {
-            const mapped: User = {
-              id: session.user.id,
-              email: session.user.email ?? undefined,
-              authMethod: 'email',
-              name: session.user.email?.split('@')[0],
-              createdAt: new Date().toISOString(),
-            };
+            const mapped = mapSupabaseSessionUser(session.user);
             setUser(mapped);
             setAuthItem(AUTH_USER_KEY, JSON.stringify(mapped));
             setAuthItem(AUTH_TOKEN_KEY, session.access_token);
@@ -102,13 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
             if (newSession?.user) {
-              const mapped: User = {
-                id: newSession.user.id,
-                email: newSession.user.email ?? undefined,
-                authMethod: 'email',
-                name: newSession.user.email?.split('@')[0],
-                createdAt: new Date().toISOString(),
-              };
+              const mapped = mapSupabaseSessionUser(newSession.user);
               setUser(mapped);
               setAuthItem(AUTH_USER_KEY, JSON.stringify(mapped));
               setAuthItem(AUTH_TOKEN_KEY, newSession.access_token);
@@ -151,13 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data } = await supabase.auth.getSession();
         const session = data.session || null;
         if (session?.user) {
-          const mapped: User = {
-            id: session.user.id,
-            email: session.user.email ?? undefined,
-            authMethod: 'email',
-            name: session.user.email?.split('@')[0],
-            createdAt: new Date().toISOString(),
-          };
+          const mapped = mapSupabaseSessionUser(session.user);
           setUser(mapped);
           setAuthItem(AUTH_USER_KEY, JSON.stringify(mapped));
           setAuthItem(AUTH_TOKEN_KEY, session.access_token);
@@ -182,8 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       let userData: User | null = null;
       if (credentials.type === 'wallet') {
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        const { url: supabaseUrl, anonKey } = getSupabaseConfig();
         const supabase = getSupabase();
         if (!supabase || !supabaseUrl || !anonKey) {
           throw new Error('Supabase not configured for wallet auth');
@@ -246,24 +241,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         const supabase = getSupabase();
         if (!supabase) {
-          throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+          throw new Error('Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
         }
         const { email, password } = credentials as { type: 'email'; email: string; password: string };
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        const session = data.session;
-        if (!session?.user) throw new Error('Login failed: no session.');
-        userData = {
-          id: session.user.id,
-          email: session.user.email ?? undefined,
-          authMethod: 'email',
-          name: session.user.email?.split('@')[0],
-          createdAt: new Date().toISOString(),
-        };
+        const result = await loginWithEmailAction(supabase as any, email, password);
+        userData = result.user;
 
         // Ensure profile row exists (non-blocking)
         try {
-          await upsertProfile(supabase, session.user.id, session.user.user_metadata?.username ?? null);
+          await upsertProfile(supabase, result.sessionUser.id, result.sessionUser.user_metadata?.username ?? null);
         } catch (e) {
           console.warn('[auth.login] profile upsert failed:', (e as Error).message);
         }
@@ -298,30 +284,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       const supabase = getSupabase();
       if (!supabase) {
-        throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+        throw new Error('Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
       }
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { username } },
-      });
-      if (error) throw error;
-      const session = data.session; // may be null if email confirmation enabled
-      if (session?.user) {
-        const mapped: User = {
-          id: session.user.id,
-          email: session.user.email ?? undefined,
-          authMethod: 'email',
-          name: session.user.email?.split('@')[0],
-          createdAt: new Date().toISOString(),
-        };
-        setUser(mapped);
-        setAuthItem(AUTH_USER_KEY, JSON.stringify(mapped));
-        setAuthItem(AUTH_TOKEN_KEY, session.access_token);
+      const result = await signUpWithEmailAction(supabase as any, email, password, username);
+      if (result?.user) {
+        setUser(result.user);
+        setAuthItem(AUTH_USER_KEY, JSON.stringify(result.user));
+        setAuthItem(AUTH_TOKEN_KEY, result.accessToken);
 
         // Ensure profile row exists (non-blocking)
         try {
-          await upsertProfile(supabase, session.user.id, username ?? null);
+          await upsertProfile(supabase, result.sessionUser.id, username ?? null);
         } catch (e) {
           console.warn('[auth.signUp] profile upsert failed:', (e as Error).message);
         }
@@ -381,8 +354,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginAsGuest = async () => {
     try {
       setIsLoading(true);
-      
-      // Create guest user
+
+      const useSupabaseAnonymous =
+        (import.meta.env.VITE_DATA_SOURCE || 'local') === 'supabase';
+      const supabase = getSupabase();
+
+      if (useSupabaseAnonymous && supabase) {
+        const { data, error } = await supabase.auth.signInAnonymously();
+        if (error) throw error;
+
+        const session = data.session;
+        if (!session?.user) {
+          throw new Error('Anonymous login failed: no session');
+        }
+
+        const anonUser: User = {
+          id: session.user.id,
+          authMethod: 'anonymous',
+          name: 'Anonymous User',
+          createdAt: new Date().toISOString(),
+          isGuest: false,
+        };
+
+        setAuthItem(AUTH_USER_KEY, JSON.stringify(anonUser));
+        setAuthItem(AUTH_TOKEN_KEY, session.access_token);
+        setUser(anonUser);
+        return;
+      }
+
+      // Local fallback guest session (non-Supabase mode)
       const guestUser: User = {
         id: `guest_${Date.now()}`,
         authMethod: 'guest',
@@ -390,11 +390,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         createdAt: new Date().toISOString(),
         isGuest: true,
       };
-      
-      // Store guest session (no token needed)
+
       setAuthItem(AUTH_USER_KEY, JSON.stringify(guestUser));
       setAuthItem(AUTH_TOKEN_KEY, 'guest_session');
-      
       setUser(guestUser);
     } catch (error) {
       console.error('Guest login failed:', error);
@@ -422,8 +420,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return;
           }
 
-          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-          const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+          const { url: supabaseUrl, anonKey } = getSupabaseConfig();
           
           if (!supabaseUrl || !anonKey) {
             console.warn('[AuthContext] Supabase not configured for auto-login');

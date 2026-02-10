@@ -22,7 +22,7 @@ import {
   calculateSettlements,
   calculatePotSettlements,
 } from "./utils/settlements";
-import { getSupabase } from "./utils/supabase-client";
+import { getSupabase, getSupabaseConfig } from "./utils/supabase-client";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { FeatureFlagsProvider, useFeatureFlags } from "./contexts/FeatureFlagsContext";
 import { useAccount } from "./contexts/AccountContext";
@@ -623,8 +623,13 @@ function AppContent() {
   const copyInviteLink = useCallback(
     async (potId: string) => {
       const supabase = getSupabase();
+      const supabaseUrl = getSupabaseConfig().url;
       if (!supabase) {
         showToast("Supabase not configured", "error");
+        return;
+      }
+      if (!supabaseUrl) {
+        showToast("Supabase URL missing", "error");
         return;
       }
       const { data, error } = await supabase
@@ -779,8 +784,13 @@ function AppContent() {
   const acceptInvite = useCallback(
     async (token: string) => {
       const supabase = getSupabase();
+      const supabaseUrl = getSupabaseConfig().url;
       if (!supabase) {
         showToast("Supabase not configured", "error");
+        return;
+      }
+      if (!supabaseUrl) {
+        showToast("Supabase URL missing", "error");
         return;
       }
 
@@ -792,7 +802,7 @@ function AppContent() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/accept-invite`,
+        `${supabaseUrl}/functions/v1/accept-invite`,
         {
           method: "POST",
           headers: {
@@ -824,8 +834,13 @@ function AppContent() {
   const declineInvite = useCallback(
     async (token: string) => {
       const supabase = getSupabase();
+      const supabaseUrl = getSupabaseConfig().url;
       if (!supabase) {
         showToast("Supabase not configured", "error");
+        return;
+      }
+      if (!supabaseUrl) {
+        showToast("Supabase URL missing", "error");
         return;
       }
 
@@ -837,7 +852,7 @@ function AppContent() {
       }
 
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/decline-invite`,
+        `${supabaseUrl}/functions/v1/decline-invite`,
         {
           method: "POST",
           headers: {
@@ -1560,6 +1575,12 @@ function AppContent() {
   };
 
   const createPot = async () => {
+    const isSupabaseSyncMode = (import.meta.env.VITE_DATA_SOURCE || 'local') === 'supabase';
+    if (isSupabaseSyncMode && isGuest) {
+      showToast('Guest mode is local-only. Sign in to save to Supabase.', 'info');
+      return;
+    }
+
     let processedMembers = newPot.members || [];
     const { getMockAddressForMember, isSimulationMode } = await import('./utils/simulation');
     const rawBaseCurrency = newPot.baseCurrency || "USD";
@@ -1647,6 +1668,11 @@ function AppContent() {
   },
   ) => {
     if (!potId) return;
+    const isSupabaseSyncMode = (import.meta.env.VITE_DATA_SOURCE || 'local') === 'supabase';
+    if (isSupabaseSyncMode && isGuest) {
+      showToast('Sign in to save expenses to Supabase.', 'info');
+      return;
+    }
 
     const expense: Expense = {
       id: Date.now().toString(),

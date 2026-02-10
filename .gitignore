@@ -40,3 +40,8 @@ node_modules
 
 # Local private docs (never commit)
 private-docs/
+
+expo-app/.expo/
+expo-app
+expo-app/
+/expo-app

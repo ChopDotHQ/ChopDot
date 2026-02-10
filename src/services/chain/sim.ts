@@ -16,6 +16,23 @@ function fakeBlockHash() {
   return fakeHash('0xblock');
 }
 
+function getMockStorageValue(key: string): string | null {
+  if (typeof window === 'undefined') return null;
+  return window.localStorage.getItem(key);
+}
+
+function getBalancePlanck(): bigint {
+  const raw = getMockStorageValue('mock_balance');
+  const value = raw && raw.trim().length > 0 ? raw : '1000000000000';
+  return BigInt(value);
+}
+
+function getFeePlanck(): bigint {
+  const raw = getMockStorageValue('mock_fee_planck');
+  const value = raw && raw.trim().length > 0 ? raw : '100000000';
+  return BigInt(value);
+}
+
 const mockConfig: ChainConfig = {
   key: 'assethub',
   ss58: 0,
@@ -103,7 +120,13 @@ export const simChain: PolkadotChainService = {
     return { txHash, finalizedBlock: finalizedBlockHash };
   },
 
-  async sendDot({ from, onStatus }: SendDotArgs) {
+  async sendDot({ from, amountDot, onStatus }: SendDotArgs) {
+    const required = BigInt(this.toPlanckString(amountDot)) + getFeePlanck();
+    const balance = getBalancePlanck();
+    if (balance < required) {
+      throw new Error('Insufficient balance');
+    }
+
     // Delegate to simulated signAndSendExtrinsic lifecycle (matches real implementation)
     return this.signAndSendExtrinsic({
       buildTx: () => ({}), // Not used in sim
@@ -112,7 +135,14 @@ export const simChain: PolkadotChainService = {
     });
   },
 
-  async sendUsdc({ from, onStatus }: SendUsdcArgs) {
+  async sendUsdc({ from, amountUsdc, onStatus }: SendUsdcArgs) {
+    // Treat amountUsdc as DOT-equivalent for simulation preflight checks.
+    const required = BigInt(this.toPlanckString(amountUsdc)) + getFeePlanck();
+    const balance = getBalancePlanck();
+    if (balance < required) {
+      throw new Error('Insufficient balance');
+    }
+
     return this.signAndSendExtrinsic({
       buildTx: () => ({}),
       from,
