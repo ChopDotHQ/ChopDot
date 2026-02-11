@@ -416,7 +416,7 @@ Add a new payment method.
 ```json
 {
   "kind": "bank",
-  "iban": "CH93 0076 2011 6238 5295 7",
+  "iban": "CH93 0000 0000 0000 0000 0",
   "bankName": "UBS",
   "isPreferred": true
 }

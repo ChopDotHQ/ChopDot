@@ -62,7 +62,7 @@ export function MemberDetail({
 
   const getFullPaymentDetails = (kind: string, masked: string) => {
     switch (kind) {
-      case "bank": return `IBAN: CH93 0076 2011 6238 ${masked}`;
+      case "bank": return `IBAN: CH93 0000 0000 0000 ${masked}`;
       case "twint": return `Phone: +41 79 123 ${masked}`;
       case "paypal": return `Email: ${masked.replace("****", "alice")}`;
       case "crypto": return `Wallet: 1A1zP1eP5QGefi2DM${masked}`;

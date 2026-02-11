@@ -15,7 +15,7 @@ SELECT
 FROM public.pots
 WHERE created_by = (
   SELECT id FROM auth.users 
-  WHERE email = 'devpen787@gmail.com'  -- Replace with your email
+  WHERE email = 'YOUR_EMAIL@example.com'  -- Replace with your email
   LIMIT 1
 )
 ORDER BY created_at DESC;

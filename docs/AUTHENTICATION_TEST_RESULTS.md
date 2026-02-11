@@ -8,8 +8,8 @@
 
 ## Test Credentials
 
-- **Email**: `Devpen787@gmail.com`
-- **Password**: `testdot123!?`
+- **Email**: `test@example.com` (use disposable account for testing)
+- **Password**: [Stored in .env, never commit]
 
 ---
 
