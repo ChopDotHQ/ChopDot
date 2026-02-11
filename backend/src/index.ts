@@ -8,6 +8,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
 import { ipfsRouter } from './routes/ipfs.routes';
 
@@ -17,6 +18,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
+
+// Rate limit IPFS uploads (15 requests per minute per IP)
+const ipfsLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: parseInt(process.env.IPFS_RATE_LIMIT_MAX || '15', 10),
+  message: { error: { code: 'RATE_LIMIT', message: 'Too many upload requests. Try again later.' } },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Middleware
 app.use(helmet());
@@ -37,8 +47,8 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API routes
-app.use('/api/ipfs', ipfsRouter);
+// API routes (rate limit IPFS uploads)
+app.use('/api/ipfs', ipfsLimiter, ipfsRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

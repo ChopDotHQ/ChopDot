@@ -92,8 +92,8 @@ if (!(window as any).Buffer) {
   })
 }
 
-// Throwaway path-level page: /chain-test
-if (window.location.pathname === '/chain-test') {
+// Throwaway path-level page: /chain-test (dev only)
+if (import.meta.env.DEV && window.location.pathname === '/chain-test') {
   (async () => {
     const { ChainTestPage } = await import('./chain/chain-test-page');
     createRoot(rootEl).render(
