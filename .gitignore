@@ -50,3 +50,8 @@ docs/WISE_EXPENSE_SPLITTING_ANALYSIS.md
 
 # Local worktrees
 .worktrees/
+
+expo-app/.expo/
+expo-app
+expo-app/
+/expo-app

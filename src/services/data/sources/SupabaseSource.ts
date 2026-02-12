@@ -58,7 +58,7 @@ export class SupabaseSource implements DataSource {
 
   private ensureReady() {
     if (!this.client) {
-      throw new Error('[SupabaseSource] Supabase client not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+      throw new Error('[SupabaseSource] Supabase client not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY.');
     }
     return this.client;
   }
@@ -154,11 +154,7 @@ export class SupabaseSource implements DataSource {
   }
 
   async savePots(pots: Pot[]): Promise<void> {
-    const userId = await this.getOptionalUserId('modify pots');
-    if (!userId) {
-      await this.guestSource.savePots(pots);
-      return;
-    }
+    await this.requireAuthenticatedUser('modify pots');
     for (const pot of pots) {
       await this.savePot(pot);
     }
@@ -166,11 +162,7 @@ export class SupabaseSource implements DataSource {
 
   async savePot(pot: Pot): Promise<void> {
     const supabase = this.ensureReady();
-    const userId = await this.getOptionalUserId('modify pots');
-    if (!userId) {
-      await this.guestSource.savePot(pot);
-      return;
-    }
+    const userId = await this.requireAuthenticatedUser('modify pots');
     const validation = PotSchema.safeParse(pot);
     if (!validation.success) {
       throw new ValidationError('Invalid pot data', validation.error.issues);
@@ -182,7 +174,7 @@ export class SupabaseSource implements DataSource {
     const actorId = userId;
     const existing = await this.findExistingPot(sanitized.id);
 
-    const payload: Record<string, unknown> = {
+    const basePayload: Record<string, unknown> = {
       id: sanitized.id,
       name: sanitized.name,
       metadata,
@@ -197,17 +189,26 @@ export class SupabaseSource implements DataSource {
       archived_at: sanitized.archived ? (existing?.archived_at ?? new Date().toISOString()) : null,
     };
 
-    if (!existing) {
+    if (existing) {
+      const { error } = await supabase
+        .from('pots')
+        .update(basePayload)
+        .eq('id', sanitized.id);
+      if (error) {
+        throw new Error(`[SupabaseSource] Failed to save pot ${sanitized.id}: ${error.message}`);
+      }
+    } else {
       await this.ensureUserRecord(actorId);
-      payload.created_by = actorId;
-    }
-
-    const { error } = await supabase
-      .from('pots')
-      .upsert(payload, { onConflict: 'id' });
-
-    if (error) {
-      throw new Error(`[SupabaseSource] Failed to save pot ${sanitized.id}: ${error.message}`);
+      // For inserts, let DB defaults/trigger derive created_by from auth.uid().
+      const { error } = await supabase
+        .from('pots')
+        .insert({
+          ...basePayload,
+          created_by: actorId,
+        });
+      if (error) {
+        throw new Error(`[SupabaseSource] Failed to save pot ${sanitized.id}: ${error.message}`);
+      }
     }
 
     if (!existing) {
@@ -217,11 +218,7 @@ export class SupabaseSource implements DataSource {
 
   async deletePot(id: string): Promise<void> {
     const supabase = this.ensureReady();
-    const userId = await this.getOptionalUserId('delete pot');
-    if (!userId) {
-      await this.guestSource.deletePot(id);
-      return;
-    }
+    const userId = await this.requireAuthenticatedUser('delete pot');
     const { data, error } = await supabase
       .from('pots')
       .delete()

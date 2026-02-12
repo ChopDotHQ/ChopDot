@@ -3,11 +3,20 @@ import { getAuthPersistence } from './authPersistence';
 
 let cached: SupabaseClient | null | undefined;
 
+export const getSupabaseConfig = (): { url?: string; anonKey?: string } => {
+  const url =
+    (import.meta.env.VITE_SUPABASE_URL as string | undefined) ||
+    (import.meta.env.NEXT_PUBLIC_SUPABASE_URL as string | undefined);
+  const anonKey =
+    (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined) ||
+    (import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY as string | undefined);
+  return { url, anonKey };
+};
+
 export const getSupabase = (): SupabaseClient | null => {
   if (cached !== undefined) return cached;
 
-  const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-  const anon = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+  const { url, anonKey: anon } = getSupabaseConfig();
 
   if (!url || !anon) {
     cached = null; // Not configured; callers should handle gracefully
@@ -32,4 +41,3 @@ export const getSupabase = (): SupabaseClient | null => {
   });
   return cached;
 };
-
