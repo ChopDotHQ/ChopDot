@@ -65,4 +65,32 @@ describe('simChain payout flows', () => {
     expect(result.txHash).toMatch(/^0xsim/);
     expect(statuses).toEqual(['submitted', 'inBlock', 'finalized']);
   });
+
+  it('supports USDC simulated transfer lifecycle', async () => {
+    window.localStorage.setItem('mock_balance', '90000000000'); // 9 DOT-equivalent preflight
+    const statuses: string[] = [];
+
+    const result = await simChain.sendUsdc({
+      from: 'addr1',
+      to: 'addr2',
+      amountUsdc: 1.5,
+      onStatus: (status) => statuses.push(status),
+    });
+
+    expect(result.txHash).toMatch(/^0xsim/);
+    expect(statuses).toEqual(['submitted', 'inBlock', 'finalized']);
+  });
+
+  it('fails USDC transfer with insufficient funds', async () => {
+    window.localStorage.setItem('mock_balance', '100000000'); // 0.01 DOT-equivalent
+    window.localStorage.setItem('mock_fee_planck', '100000000'); // 0.01 DOT fee
+
+    await expect(
+      simChain.sendUsdc({
+        from: 'addr1',
+        to: 'addr2',
+        amountUsdc: 0.05,
+      }),
+    ).rejects.toThrow('Insufficient balance');
+  });
 });

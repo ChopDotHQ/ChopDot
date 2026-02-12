@@ -4,10 +4,11 @@ import { Download, CheckCircle } from "lucide-react";
 import { useMemo } from "react";
 import { buildSubscanUrl } from "../../services/chain/utils";
 import { EmptyState } from "../EmptyState";
+import { exportSettlementHistoryToCSV } from "../../utils/export";
 
 interface Settlement {
   id: string;
-  method: "cash" | "bank" | "paypal" | "twint" | "dot";
+  method: "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc";
   personName: string;
   amount: number;
   currency: string;
@@ -43,6 +44,7 @@ export function SettlementHistory({ settlements, onBack, personId }: SettlementH
       paypal: "PayPal",
       twint: "TWINT",
       dot: "DOT",
+      usdc: "USDC",
     };
     return methodLabels[method] || method;
   };
@@ -120,7 +122,10 @@ export function SettlementHistory({ settlements, onBack, personId }: SettlementH
         )}
       </div>
       <div className="p-4 border-t border-border">
-        <PrimaryButton fullWidth>
+        <PrimaryButton
+          fullWidth
+          onClick={() => exportSettlementHistoryToCSV(filteredSettlements)}
+        >
           <Download className="w-4 h-4 inline mr-1" />
           Export CSV
         </PrimaryButton>

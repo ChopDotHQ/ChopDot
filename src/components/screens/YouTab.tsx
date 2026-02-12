@@ -87,6 +87,29 @@ export function YouTab({
   const [pushNotifications, setPushNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [settlementReminders, setSettlementReminders] = useState(true);
+  const [developerMode, setDeveloperMode] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("chopdot_dev_mode") === "1";
+  });
+
+  const exportLocalData = () => {
+    if (typeof window === "undefined") return;
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      pots: window.localStorage.getItem("chopdot_pots"),
+      settlements: window.localStorage.getItem("chopdot_settlements"),
+      notifications: window.localStorage.getItem("chopdot_notifications"),
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `chopdot-data-export-${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     setEmailUpdate((prev) => ({ ...prev, value: userEmail ?? "" }));
@@ -672,7 +695,13 @@ export function YouTab({
                 </div>
               )}
 
-              <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
+              <button
+                onClick={() => {
+                  triggerHaptic("light");
+                  exportLocalData();
+                }}
+                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left"
+              >
                 <Download className="w-4 h-4 text-secondary" />
                 <span className="text-micro">Export data</span>
               </button>
@@ -686,11 +715,23 @@ export function YouTab({
                 <Cloud className="w-4 h-4 text-secondary" />
                 <span className="text-micro">Crust Storage (IPFS)</span>
               </button>
-              <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
+              <button
+                onClick={() => {
+                  triggerHaptic("light");
+                  setShowHelp(true);
+                }}
+                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left"
+              >
                 <Shield className="w-4 h-4 text-secondary" />
                 <span className="text-micro">Privacy settings</span>
               </button>
-              <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
+              <button
+                onClick={() => {
+                  triggerHaptic("light");
+                  onCrustStorage();
+                }}
+                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left"
+              >
                 <Lock className="w-4 h-4 text-secondary" />
                 <span className="text-micro">Backup wallet</span>
               </button>
@@ -726,11 +767,35 @@ export function YouTab({
               className={isPSA ? `mt-2 ${psaClasses.card} rounded-xl p-4 space-y-2` : 'mt-2 card rounded-xl p-4 space-y-2'}
               style={isPSA ? psaStyles.card : undefined}
             >
-              <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
+              <button
+                onClick={() => {
+                  triggerHaptic("light");
+                  const next = !developerMode;
+                  setDeveloperMode(next);
+                  if (typeof window !== "undefined") {
+                    window.localStorage.setItem("chopdot_dev_mode", next ? "1" : "0");
+                  }
+                }}
+                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left"
+              >
                 <Code className="w-4 h-4 text-secondary" />
-                <span className="text-micro">Developer mode</span>
+                <span className="text-micro">Developer mode: {developerMode ? "On" : "Off"}</span>
               </button>
-              <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left">
+              <button
+                onClick={() => {
+                  triggerHaptic("medium");
+                  if (typeof window === "undefined") return;
+                  const keys = [
+                    "chopdot_pots",
+                    "chopdot_pots_backup",
+                    "chopdot_settlements",
+                    "chopdot_notifications",
+                  ];
+                  keys.forEach((key) => window.localStorage.removeItem(key));
+                  window.location.reload();
+                }}
+                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted/10 transition-all duration-200 active:scale-[0.98] text-left"
+              >
                 <Database className="w-4 h-4 text-secondary" />
                 <span className="text-micro">Clear cache</span>
               </button>

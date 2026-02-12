@@ -32,7 +32,7 @@ interface Settlement {
 interface SettleHomeProps {
   settlements: Settlement[];
   onBack: () => void;
-  onConfirm: (method: "cash" | "bank" | "paypal" | "twint" | "dot", reference?: string) => void;
+  onConfirm: (method: "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc", reference?: string) => void;
   onHistory?: () => void;
   scope?: "pot" | "global";
   scopeLabel?: string;
@@ -63,6 +63,7 @@ export function SettleHome({
   onUpdatePot: _onUpdatePot,
 }: SettleHomeProps) {
   const isDotPot = baseCurrency === 'DOT';
+  const isUsdcPot = baseCurrency === 'USDC';
   // Check for simulation mode (allows DOT settlement without wallet)
   const isSimulationMode = import.meta.env.VITE_SIMULATE_CHAIN === '1';
   // Read feature flags
@@ -72,19 +73,20 @@ export function SettleHome({
   const walletConnected = account.status === 'connected';
 
   // Preselection logic
-  const getPreselectedMethod = (): "cash" | "bank" | "paypal" | "twint" | "dot" => {
+  const getPreselectedMethod = (): "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc" => {
     const pref = preferredMethod?.toLowerCase();
     
     if (pref === "bank") return "bank";
     if (pref === "paypal") return "paypal";
     if (pref === "twint") return "twint";
+    if (pref === "usdc" && walletConnected && POLKADOT_APP_ENABLED) return "usdc";
     if (pref === "dot" && walletConnected && POLKADOT_APP_ENABLED) return "dot";
     
     // Fallback order: Bank → PayPal → TWINT → DOT (only if wallet connected and enabled)
     return "bank";
   };
   
-  const [selectedMethod, setSelectedMethod] = useState<"cash" | "bank" | "paypal" | "twint" | "dot">(getPreselectedMethod());
+  const [selectedMethod, setSelectedMethod] = useState<"cash" | "bank" | "paypal" | "twint" | "dot" | "usdc">(getPreselectedMethod());
   const [bankReference, setBankReference] = useState("");
   const [paypalEmail, setPaypalEmail] = useState("");
   const [twintPhone, setTwintPhone] = useState("");
@@ -114,7 +116,7 @@ export function SettleHome({
 
   // Fetch DOT price for fiat equivalent display (for DOT pots OR when DOT method is selected)
   useEffect(() => {
-    const shouldFetchPrice = (isDotPot || selectedMethod === 'dot') && 
+    const shouldFetchPrice = (isDotPot || selectedMethod === 'dot' || selectedMethod === 'usdc') &&
                              import.meta.env.VITE_ENABLE_PRICE_API !== '0';
     if (shouldFetchPrice) {
       getDotPrice('usd')
@@ -137,15 +139,17 @@ export function SettleHome({
   // Choose the active side: if you owe anything, you are paying; otherwise you are receiving
   const totalAmount = amountYouOwe > 0 ? amountYouOwe : -amountOwedToYou;
 
-  // Fee estimator - uses real chain service for DOT payments
+  // Fee estimator - uses real chain service for on-chain payments
   // Defined after totalAmount to avoid "before initialization" error
   const estimateNetworkFee = async (): Promise<number> => {
     // In simulation mode, allow fee estimation without wallet
     const canEstimateFee = isSimulationMode || (walletConnected && account.address0);
-    // Allow fee estimation when DOT method is selected (regardless of pot currency)
-    const isDotMethodSelected = selectedMethod === 'dot';
-    if (isDotMethodSelected && canEstimateFee && recipientAddress && totalAmount > 0) {
+    const isOnchainMethodSelected = selectedMethod === 'dot' || selectedMethod === 'usdc';
+    if (isOnchainMethodSelected && canEstimateFee && recipientAddress && totalAmount > 0) {
       try {
+        if (selectedMethod === 'usdc') {
+          return 0.0025;
+        }
         const chain = await getChain();
         const fromAddress = isSimulationMode && !account.address0 
           ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
@@ -173,14 +177,14 @@ export function SettleHome({
         return 0.0025;
       }
     }
-    // Stub for non-DOT method or when not connected
+    // Stub for non-onchain method or when not connected
     await new Promise(resolve => setTimeout(resolve, 800));
     return 0.0015 + Math.random() * 0.002;
   };
 
-  // Estimate network fee when DOT method is selected
+  // Estimate network fee for on-chain methods
   useEffect(() => {
-    if (selectedMethod === 'dot' && recipientAddress && totalAmount > 0) {
+    if ((selectedMethod === 'dot' || selectedMethod === 'usdc') && recipientAddress && totalAmount > 0) {
       setFeeLoading(true);
       setFeeError(false);
       estimateNetworkFee()
@@ -213,12 +217,15 @@ export function SettleHome({
     if (isDotPot) {
       return `${Math.abs(amount).toFixed(6)} DOT`;
     }
+    if (isUsdcPot) {
+      return `${Math.abs(amount).toFixed(6)} USDC`;
+    }
     return `$${Math.abs(amount).toFixed(2)}`;
   };
 
   const handleConfirm = async () => {
-    // For DOT method, wallet must be connected (handled by AccountMenu in header)
-    if (selectedMethod === "dot" && !walletConnected) {
+    // For on-chain methods, wallet must be connected (handled by AccountMenu in header)
+    if ((selectedMethod === "dot" || selectedMethod === "usdc") && !walletConnected) {
       // Wallet connection is handled by AccountMenu - user should connect via header
       return;
     }
@@ -228,8 +235,8 @@ export function SettleHome({
     await performSettlement();
     
     async function performSettlement() {
-    // For non-DOT methods, show loading state
-    if (selectedMethod !== "dot") {
+    // For non-onchain methods, show loading state
+    if (selectedMethod !== "dot" && selectedMethod !== "usdc") {
       setIsSettling(true);
       
       // Simulate settlement processing
@@ -243,14 +250,14 @@ export function SettleHome({
       return;
     }
 
-    // DOT settlement - use real chain service from Prompt 1
+    // On-chain settlement - use real chain service
     // In simulation mode, allow without wallet connection (will use mock address)
-    const canProceedDot = isSimulationMode || (walletConnected && account.address0);
-    if (selectedMethod === "dot" && canProceedDot && recipientAddress) {
+    const canProceedOnchain = isSimulationMode || (walletConnected && account.address0);
+    if ((selectedMethod === "dot" || selectedMethod === "usdc") && canProceedOnchain && recipientAddress) {
       try {
-          // Convert amount to DOT if pot is fiat-based
+          // Convert amount to DOT only when DOT method is selected for non-DOT pot.
           let amountDot = Math.abs(totalAmount);
-          if (!isDotPot) {
+          if (selectedMethod === "dot" && !isDotPot) {
             if (!dotPriceUsd || dotPriceUsd <= 0) {
               onShowToast?.(
                 'Unable to convert amount to DOT. Please try again.',
@@ -264,7 +271,7 @@ export function SettleHome({
           
           // Balance validation: check amount + fee
           const conservativeFee = feeEstimate ?? 0.01; // Use estimate or conservative fallback
-          const required = amountDot + conservativeFee;
+          const required = (selectedMethod === "dot" ? amountDot : 0) + conservativeFee;
           
           if (walletConnected && account.balanceHuman) {
             const walletBalance = parseFloat(account.balanceHuman || '0');
@@ -283,44 +290,74 @@ export function SettleHome({
         
         // State 1: Signing
         pushTxToast('signing', {
-          amount: amountDot,
-          currency: 'DOT',
+          amount: selectedMethod === "dot" ? amountDot : Math.abs(totalAmount),
+          currency: selectedMethod === "dot" ? 'DOT' : 'USDC',
         });
 
-        // Send real DOT transaction (or simulated in simulation mode)
+        // Send real on-chain transaction (or simulated in simulation mode)
         // Use mock address in simulation mode if no wallet connected
         const fromAddress = isSimulationMode && !account.address0 
           ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
           : account.address0!;
-        const result = await chain.sendDot({
-          from: fromAddress,
-          to: recipientAddress,
-          amountDot,
-          onStatus: (status, ctx) => {
-            if (status === 'submitted') {
-              updateTxToast('broadcast', {
-                amount: amountDot,
-                currency: 'DOT',
-              });
-            } else if (status === 'inBlock' && ctx?.txHash) {
-              updateTxToast('inBlock', {
-                amount: amountDot,
-                currency: 'DOT',
-                txHash: ctx.txHash,
-                fee: feeEstimate || 0.0024,
-                feeCurrency: 'DOT',
-              });
-            } else if (status === 'finalized' && ctx?.blockHash) {
-              updateTxToast('finalized', {
-                amount: amountDot,
-                currency: 'DOT',
-                txHash: result.txHash,
-                fee: feeEstimate || 0.0024,
-                feeCurrency: 'DOT',
-              });
-            }
-          },
-        });
+        const result = selectedMethod === "dot"
+          ? await chain.sendDot({
+              from: fromAddress,
+              to: recipientAddress,
+              amountDot,
+              onStatus: (status, ctx) => {
+                if (status === 'submitted') {
+                  updateTxToast('broadcast', {
+                    amount: amountDot,
+                    currency: 'DOT',
+                  });
+                } else if (status === 'inBlock' && ctx?.txHash) {
+                  updateTxToast('inBlock', {
+                    amount: amountDot,
+                    currency: 'DOT',
+                    txHash: ctx.txHash,
+                    fee: feeEstimate || 0.0024,
+                    feeCurrency: 'DOT',
+                  });
+                } else if (status === 'finalized' && ctx?.blockHash) {
+                  updateTxToast('finalized', {
+                    amount: amountDot,
+                    currency: 'DOT',
+                    txHash: result.txHash,
+                    fee: feeEstimate || 0.0024,
+                    feeCurrency: 'DOT',
+                  });
+                }
+              },
+            })
+          : await chain.sendUsdc({
+              from: fromAddress,
+              to: recipientAddress,
+              amountUsdc: Math.abs(totalAmount),
+              onStatus: (status, ctx) => {
+                if (status === 'submitted') {
+                  updateTxToast('broadcast', {
+                    amount: Math.abs(totalAmount),
+                    currency: 'USDC',
+                  });
+                } else if (status === 'inBlock' && ctx?.txHash) {
+                  updateTxToast('inBlock', {
+                    amount: Math.abs(totalAmount),
+                    currency: 'USDC',
+                    txHash: ctx.txHash,
+                    fee: feeEstimate || 0.0024,
+                    feeCurrency: 'DOT',
+                  });
+                } else if (status === 'finalized' && ctx?.blockHash) {
+                  updateTxToast('finalized', {
+                    amount: Math.abs(totalAmount),
+                    currency: 'USDC',
+                    txHash: result.txHash,
+                    fee: feeEstimate || 0.0024,
+                    feeCurrency: 'DOT',
+                  });
+                }
+              },
+            });
 
         // Refresh balance after successful transaction
         try {
@@ -337,7 +374,7 @@ export function SettleHome({
 
         return;
       } catch (error: any) {
-        console.error('[SettleHome] DOT transfer error:', error);
+        console.error('[SettleHome] on-chain transfer error:', error);
         setIsSettling(false);
         
         if (error?.message === 'USER_REJECTED') {
@@ -351,7 +388,7 @@ export function SettleHome({
       }
     }
 
-    // Non-DOT methods: direct confirmation
+    // Non-onchain methods: direct confirmation
     let reference: string | undefined;
     if (selectedMethod === "bank") reference = bankReference;
     if (selectedMethod === "paypal") reference = paypalEmail;
@@ -361,14 +398,18 @@ export function SettleHome({
     }
   };
 
-  // Check if DOT settlement is valid (requires wallet connected AND recipient address)
+  // Check if on-chain settlement is valid (requires wallet connected AND recipient address)
   // In simulation mode, bypass wallet requirement
-  const isDotValid = selectedMethod === "dot" && (isSimulationMode || walletConnected) && !!recipientAddress;
-  // Show DOT method whenever Polkadot is enabled (regardless of recipient address or wallet connection)
+  const isOnchainMethod = selectedMethod === "dot" || selectedMethod === "usdc";
+  const isDotValid = isOnchainMethod && (isSimulationMode || walletConnected) && !!recipientAddress;
+  // Show on-chain methods whenever Polkadot is enabled (regardless of recipient address or wallet connection)
   // This creates FOMO - users see DOT option even without setup, encouraging them to connect wallet and add addresses
   const showDotMethod = POLKADOT_APP_ENABLED;
+  const showUsdcMethod = POLKADOT_APP_ENABLED && isUsdcPot;
   const isDotMethodEnabled = walletConnected && !!recipientAddress; // Actually usable
   const isDotFlowActive = selectedMethod === 'dot';
+  const isUsdcFlowActive = selectedMethod === 'usdc';
+  const isOnchainFlowActive = isDotFlowActive || isUsdcFlowActive;
   // Calculate DOT amount (convert from fiat if needed)
   const getAmountDot = (): number | null => {
     if (totalAmount <= 0) return null;
@@ -381,7 +422,7 @@ export function SettleHome({
   // const canAffordDotPayment = amountDotString && walletConnected
   //   ? account.canAfford(amountDotString)
   //   : true;
-  const showConnectWalletNotice = isDotFlowActive && account.status !== 'connected';
+  const showConnectWalletNotice = isOnchainFlowActive && account.status !== 'connected';
   
   const isValid = 
     selectedMethod === "cash" || 
@@ -480,15 +521,17 @@ export function SettleHome({
               {settlements[0]?.pots?.map(pot => (
                 <div key={pot.potId} className="flex justify-between text-caption text-secondary">
                   <span>{pot.potName}</span>
-                  <span className="tabular-nums" style={{ fontWeight: 500 }}>{isDotPot ? `${pot.amount.toFixed(6)} DOT` : `$${pot.amount.toFixed(2)}`}</span>
+                  <span className="tabular-nums" style={{ fontWeight: 500 }}>
+                    {isDotPot ? `${pot.amount.toFixed(6)} DOT` : isUsdcPot ? `${pot.amount.toFixed(6)} USDC` : `$${pot.amount.toFixed(2)}`}
+                  </span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Wallet Banner for DOT - Only show when wallet is connected to display balance */}
-        {selectedMethod === "dot" && walletConnected && (
+        {/* Wallet Banner for on-chain methods - Only show when wallet is connected to display balance */}
+        {(selectedMethod === "dot" || selectedMethod === "usdc") && walletConnected && (
           <WalletBanner />
         )}
 
@@ -497,8 +540,8 @@ export function SettleHome({
         <div className="space-y-2">
           <label className="text-caption text-secondary">Payment Method</label>
           
-          {/* Tab Buttons - 4-5 methods: Cash, Bank, PayPal, TWINT, DOT (conditional) */}
-          <div className={`card p-1 grid gap-1 ${POLKADOT_APP_ENABLED && showDotMethod ? 'grid-cols-5' : 'grid-cols-4'}`}>
+          {/* Tab Buttons */}
+          <div className={`card p-1 grid gap-1 ${showUsdcMethod ? 'grid-cols-6' : POLKADOT_APP_ENABLED && showDotMethod ? 'grid-cols-5' : 'grid-cols-4'}`}>
             <button
               onClick={() => setSelectedMethod("cash")}
               className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${
@@ -621,19 +664,50 @@ export function SettleHome({
                 </div>
               </button>
             )}
+            {showUsdcMethod && (
+              <button
+                onClick={() => {
+                  if (isDotMethodEnabled) {
+                    setSelectedMethod("usdc");
+                  } else {
+                    triggerHaptic('light');
+                    onShowToast?.('Connect your wallet to pay with USDC', 'info');
+                  }
+                }}
+                disabled={!isDotMethodEnabled}
+                className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all relative ${
+                  selectedMethod === "usdc"
+                    ? 'bg-background shadow-sm'
+                    : isDotMethodEnabled
+                    ? 'hover:bg-muted/5'
+                    : 'opacity-60 cursor-not-allowed'
+                }`}
+                title={!isDotMethodEnabled ? 'Connect wallet to pay with USDC' : undefined}
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <Wallet className="w-5 h-5" style={{ color: selectedMethod === "usdc" ? 'var(--foreground)' : 'var(--muted)' }} />
+                  <span className="text-caption" style={{ color: selectedMethod === "usdc" ? 'var(--foreground)' : 'var(--muted)', fontWeight: selectedMethod === "usdc" ? 500 : 400 }}>
+                    USDC
+                  </span>
+                  {!walletConnected && (
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-[var(--accent)] rounded-full border border-background" title="Connect wallet to unlock" />
+                  )}
+                </div>
+              </button>
+            )}
           </div>
           {/* Show FOMO message when wallet not connected (DOT button is visible) */}
-          {showDotMethod && !walletConnected && (
+          {(showDotMethod || showUsdcMethod) && !walletConnected && (
             <div className="mt-2 p-2 rounded-lg bg-[var(--accent)]/10 border border-[var(--accent)]/20">
               <p className="text-caption" style={{ color: 'var(--accent)' }}>
-                💡 Connect your wallet to pay with DOT — fast, secure, and on-chain
+                💡 Connect your wallet to unlock on-chain settlement (DOT/USDC)
               </p>
             </div>
           )}
           {/* Show message when wallet connected but no recipient address */}
-          {showDotMethod && walletConnected && !isDotMethodEnabled && (
+          {(showDotMethod || showUsdcMethod) && walletConnected && !isDotMethodEnabled && (
             <p className="text-caption text-secondary mt-2">
-              Add a wallet address for this person in Members to complete DOT settlement.
+              Add a wallet address for this person in Members to complete on-chain settlement.
             </p>
           )}
         </div>
@@ -777,7 +851,7 @@ export function SettleHome({
           </div>
         )}
 
-        {POLKADOT_APP_ENABLED && selectedMethod === "dot" && (
+        {POLKADOT_APP_ENABLED && isOnchainFlowActive && (
           <div className="card p-4 space-y-3">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-gradient-to-br from-pink-400 to-purple-500" />
@@ -785,7 +859,7 @@ export function SettleHome({
             </div>
                     <p className="text-caption text-secondary">
                       {isSimulationMode || walletConnected
-                        ? `Send ${formatAmount(totalAmount)} on Polkadot. This will create an on-chain transaction${isSimulationMode ? ' (simulated)' : ''}.`
+                        ? `Send ${formatAmount(totalAmount)} on Polkadot${isUsdcFlowActive ? ' Asset Hub (USDC)' : ''}. This will create an on-chain transaction${isSimulationMode ? ' (simulated)' : ''}.`
                         : `Connect your Polkadot wallet to settle on-chain in ${baseCurrency}.`
                       }
                     </p>
@@ -857,7 +931,7 @@ export function SettleHome({
                 )}
 
                 {/* Network Fee Row - Always show for DOT transactions */}
-                {selectedMethod === 'dot' && (
+                {isOnchainFlowActive && (
                   <div className="flex justify-between text-caption">
                     <span className="text-muted">Network fee (est.):</span>
                     {feeLoading ? (
@@ -922,7 +996,7 @@ export function SettleHome({
                       ) : (
                         <p className="text-body font-medium tabular-nums">{formatAmount(totalAmount)}</p>
                       )}
-                      {selectedMethod === 'dot' && (
+                      {isOnchainFlowActive && (
                         <p className="text-caption text-muted tabular-nums">
                           + {feeEstimate !== null && !feeError 
                             ? formatDOT(feeEstimate) 
@@ -935,8 +1009,15 @@ export function SettleHome({
               </div>
             )}
 
-            {/* DOT Method Info - Show when DOT selected but wallet not connected */}
-            {isDotFlowActive && !walletConnected && (
+            <button
+              onClick={() => setShowBridgeSheet(true)}
+              className="text-caption underline text-secondary hover:text-foreground transition-colors"
+            >
+              Need funds? Open Hyperbridge
+            </button>
+
+            {/* On-chain method info - Show when selected but wallet not connected */}
+            {isOnchainFlowActive && !walletConnected && (
               <div className="pt-3 border-t border-border/50">
                 <div className="card p-4 space-y-3 bg-[var(--accent)]/5 border border-[var(--accent)]/20">
                   <div className="flex items-start gap-3">
@@ -967,11 +1048,11 @@ export function SettleHome({
             )}
 
             {/* Warning: No recipient address */}
-            {walletConnected && !recipientAddress && isDotFlowActive && (
+            {walletConnected && !recipientAddress && isOnchainFlowActive && (
               <div className="pt-3 border-t border-border/50">
                 <div className="p-2 bg-yellow-500/10 dark:bg-yellow-500/20 rounded-lg border border-yellow-500/30">
                   <p className="text-micro text-yellow-700 dark:text-yellow-300">
-                    ⚠️ No wallet address on file for {counterparty}. Please add their wallet address in the Members tab to settle via DOT.
+                    ⚠️ No wallet address on file for {counterparty}. Please add their wallet address in the Members tab to settle on-chain.
                   </p>
                 </div>
               </div>
@@ -982,7 +1063,7 @@ export function SettleHome({
 
       {/* Bottom CTA */}
       <div className="p-4 bg-background border-t border-border">
-        {isDotFlowActive && (
+        {isOnchainFlowActive && (
           <>
             {showConnectWalletNotice && (
               <div className="mb-3 p-3 rounded-lg border bg-muted/10 space-y-2" style={{ borderColor: 'var(--border)' }}>
@@ -1002,18 +1083,18 @@ export function SettleHome({
             )}
           </>
         )}
-        <div title={selectedMethod === "dot" && !recipientAddress ? "No wallet address on file for this member" : undefined}>
+        <div title={isOnchainFlowActive && !recipientAddress ? "No wallet address on file for this member" : undefined}>
           <PrimaryButton
             fullWidth
             onClick={handleConfirm}
             disabled={!isValid || isLoading}
             loading={isLoading}
           >
-            {selectedMethod === "dot" && !isSimulationMode && !walletConnected 
+            {isOnchainFlowActive && !isSimulationMode && !walletConnected
               ? "Connect Wallet in Header"
-              : selectedMethod === "dot" && !recipientAddress
+              : isOnchainFlowActive && !recipientAddress
               ? "Add Wallet Address Required"
-              : `Confirm ${selectedMethod === "cash" ? "Cash" : selectedMethod === "bank" ? "Bank" : selectedMethod === "paypal" ? "PayPal" : selectedMethod === "twint" ? "TWINT" : "DOT"} Settlement`
+              : `Confirm ${selectedMethod === "cash" ? "Cash" : selectedMethod === "bank" ? "Bank" : selectedMethod === "paypal" ? "PayPal" : selectedMethod === "twint" ? "TWINT" : selectedMethod === "usdc" ? "USDC" : "DOT"} Settlement`
             }
           </PrimaryButton>
         </div>
@@ -1034,7 +1115,7 @@ export function SettleHome({
           }
         }}
         dest="Polkadot"
-        asset="DOT"
+        asset={isUsdcFlowActive ? "USDC" : "DOT"}
       />
     </div>
   );

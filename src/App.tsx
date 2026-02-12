@@ -70,6 +70,8 @@ import { ReceiveQR } from "./components/screens/ReceiveQR";
 import { IPFSAuthOnboarding } from "./components/IPFSAuthOnboarding";
 import { WalletConnectionSheet } from "./components/WalletConnectionSheet";
 import { ImportPot } from "./components/screens/ImportPot";
+import { SharePotSheet } from "./components/screens/SharePotSheet";
+import { TopBar } from "./components/TopBar";
 import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
 import { setOnboardingCallback, resetOnboardingFlag } from "./services/storage/ipfsWithOnboarding";
 import { usePots as useRemotePots } from "./hooks/usePots";
@@ -269,7 +271,7 @@ interface Settlement {
   personId: string;
   amount: number;
   currency: string;
-  method: "cash" | "bank" | "paypal" | "twint" | "dot";
+  method: "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc";
   potIds?: string[];
   date: string;
   txHash?: string;
@@ -586,6 +588,7 @@ function AppContent() {
   const [showYouSheet, setShowYouSheet] = useState(false);
   const [showMyQR, setShowMyQR] = useState(false);
   const [showScanQR, setShowScanQR] = useState(false);
+  const [showSharePot, setShowSharePot] = useState(false);
   const [showChoosePot, setShowChoosePot] = useState(false);
   const [showAddPaymentMethod, setShowAddPaymentMethod] =
     useState(false);
@@ -2897,6 +2900,7 @@ function AppContent() {
             }}
             onAddMember={() => setShowAddMember(true)}
             onCopyInviteLink={() => copyInviteLink(pot.id)}
+            onSharePot={() => setShowSharePot(true)}
             onRemoveMember={(memberId) => {
               if (!currentPotId) return;
               setPots(
@@ -3045,8 +3049,16 @@ function AppContent() {
                     : p,
                 ),
               );
-              showToast("Pot archived", "info");
-              reset({ type: "pots-home" });
+              (async () => {
+                try {
+                  await potService.updatePot(currentPotId, { archived: true } as any);
+                  notifyPotRefresh(currentPotId);
+                } catch (error) {
+                  warnDev('[Pot] Service archive failed', error);
+                }
+                showToast("Pot archived", "info");
+                reset({ type: "pots-home" });
+              })();
             }}
             potHistory={normalizedHistory}
             onUpdatePot={(updates) => {
@@ -3103,6 +3115,21 @@ function AppContent() {
               if (settings.potName || settings.baseCurrency || settings.budget !== undefined) {
               showToast("Settings updated", "success");
               }
+              (async () => {
+                try {
+                  await potService.updatePot(currentPotId, {
+                    ...(settings.potName !== undefined ? { name: settings.potName } : {}),
+                    ...(settings.baseCurrency !== undefined ? { baseCurrency: settings.baseCurrency } : {}),
+                    ...(settings.budgetEnabled !== undefined ? { budgetEnabled: settings.budgetEnabled } : {}),
+                    ...(settings.budget !== undefined ? { budget: settings.budget } : {}),
+                    ...(settings.checkpointEnabled !== undefined ? { checkpointEnabled: settings.checkpointEnabled } : {}),
+                    ...(typeof settings.archived === 'boolean' ? { archived: settings.archived } : {}),
+                  } as any);
+                  notifyPotRefresh(currentPotId);
+                } catch (error) {
+                  warnDev('[Pot] Service settings update failed', error);
+                }
+              })();
             }}
             onDeleteExpense={deleteExpense}
             onAttestExpense={(expenseId, silent) => {
@@ -3416,16 +3443,16 @@ function AppContent() {
                   : undefined,
                 date: new Date().toISOString(),
                 txHash:
-                  method === "dot" ? reference : undefined,
+                  method === "dot" || method === "usdc" ? reference : undefined,
               };
               setSettlements([newSettlement, ...settlements]);
 
-              if (settleScope === 'pot' && method === 'dot' && currentPotId && reference) {
+              if (settleScope === 'pot' && (method === 'dot' || method === 'usdc') && currentPotId && reference) {
                 const fromAddress = connectedWallet?.address || '';
                 const toAddress = recipientAddress || '';
                 const service = await getPolkadotChainService();
                 const baseCurrency = currentPot?.baseCurrency || 'USD';
-                const isUsdcPot = baseCurrency === 'USDC';
+                const isUsdcPot = method === 'usdc' || baseCurrency === 'USDC';
                 
                 const historyEntry: PotHistory = {
                   id: `${Date.now()}`,
@@ -3466,6 +3493,7 @@ function AppContent() {
                 paypal: "PayPal",
                 twint: "TWINT",
                 dot: "DOT wallet",
+                usdc: "USDC wallet",
               };
               const methodLabel =
                 methodLabels[method] || method;
@@ -3487,7 +3515,7 @@ function AppContent() {
                   counterpartyName,
                   scope: settleScope as "pot" | "person-all" | "expense",
                   ref: method === "bank" ? reference : undefined,
-                  txHash: method === "dot" ? reference : undefined,
+                  txHash: method === "dot" || method === "usdc" ? reference : undefined,
                   pots: currentPot ? [{ id: currentPotId!, name: currentPot.name, amount: Number(settlementAmount.toFixed(6)) }] : [],
                   at: Date.now(),
                 },
@@ -3505,6 +3533,95 @@ function AppContent() {
             }}
           />
         );
+
+      case "checkpoint-status": {
+        if (!pot || !currentPotId || !pot.currentCheckpoint) {
+          return null;
+        }
+
+        const normalized = normalizeConfirmations(pot.currentCheckpoint.confirmations);
+        const confirmations: Map<string, CheckpointConfirmation> =
+          normalized instanceof Map
+            ? normalized
+            : new Map(Object.entries(normalized ?? {}));
+        const total = pot.members.length;
+        const confirmed = Array.from(confirmations.values()).filter((entry) => entry.confirmed).length;
+        const currentUserId = user?.id || "owner";
+        const me = confirmations.get(currentUserId);
+        const canProceed = confirmed >= total;
+
+        return (
+          <div className="flex flex-col h-full pb-[68px]">
+            <TopBar title="Checkpoint Status" onBack={back} />
+            <div className="flex-1 overflow-auto p-4 space-y-3">
+              <div className="card p-4 space-y-2">
+                <p className="text-body" style={{ fontWeight: 600 }}>
+                  Settlement requires checkpoint confirmations
+                </p>
+                <p className="text-caption text-secondary">
+                  {confirmed}/{total} confirmed
+                </p>
+              </div>
+
+              <div className="card p-4 space-y-2">
+                {pot.members.map((member) => {
+                  const status = confirmations.get(member.id);
+                  return (
+                    <div key={member.id} className="flex items-center justify-between">
+                      <span className="text-body">{member.name}</span>
+                      <span className="text-caption text-secondary">
+                        {status?.confirmed ? "Confirmed" : "Pending"}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="p-4 border-t border-border space-y-2">
+              {!me?.confirmed && (
+                <button
+                  className="w-full py-3 rounded-xl bg-[var(--accent)] text-white text-body"
+                  onClick={() => {
+                    const updatedConfirmations = new Map(confirmations);
+                    updatedConfirmations.set(currentUserId, {
+                      confirmed: true,
+                      confirmedAt: new Date().toISOString(),
+                    });
+                    const updatedConfirmed = Array.from(updatedConfirmations.values()).filter((entry) => entry.confirmed).length;
+                    const nextStatus = updatedConfirmed >= total ? "confirmed" : "pending";
+
+                    setPots(
+                      pots.map((p) =>
+                        p.id === currentPotId
+                          ? {
+                              ...p,
+                              currentCheckpoint: {
+                                ...p.currentCheckpoint!,
+                                status: nextStatus as any,
+                                confirmations: updatedConfirmations as any,
+                              },
+                            }
+                          : p,
+                      ),
+                    );
+                    showToast("Checkpoint confirmed", "success");
+                  }}
+                >
+                  Confirm My Checkpoint
+                </button>
+              )}
+
+              <button
+                className="w-full py-3 rounded-xl border border-border text-body disabled:opacity-50"
+                disabled={!canProceed}
+                onClick={() => replace({ type: "settle-selection" })}
+              >
+                Continue to Settlement
+              </button>
+            </div>
+          </div>
+        );
+      }
 
       case "settlement-history":
         const personNames = new Map<string, string>();
@@ -3972,6 +4089,14 @@ function AppContent() {
       )}
       {showScanQR && (
         <ScanQR onClose={() => setShowScanQR(false)} />
+      )}
+      {showSharePot && (
+        <SharePotSheet
+          isOpen={showSharePot}
+          onClose={() => setShowSharePot(false)}
+          pot={(currentPot as any) ?? null}
+          onShowToast={showToast}
+        />
       )}
 
       {showChoosePot && (

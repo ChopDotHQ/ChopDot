@@ -5,7 +5,7 @@ const HYPERBRIDGE_BASE_URL = 'https://app.hyperbridge.network';
 type HyperbridgeParams = {
   src?: string;
   dest?: string;
-  asset: string;
+  asset?: string;
   destAsset?: string;
 };
 
@@ -20,8 +20,8 @@ type HyperbridgeParams = {
  * TODO: Verify actual parameter format with Hyperbridge documentation or API.
  */
 export function getHyperbridgeUrl({ src, dest, asset, destAsset }: HyperbridgeParams): string {
-  // If no destination/asset specified, return base URL
-  if (!dest && !asset) {
+  // If no routing params are specified, return base URL
+  if (!src && !dest && !asset && !destAsset) {
     return HYPERBRIDGE_BASE_URL;
   }
 
