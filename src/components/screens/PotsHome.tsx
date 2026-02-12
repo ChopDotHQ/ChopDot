@@ -5,6 +5,7 @@ import { useState, useMemo } from "react";
 import { AccountMenu } from "../AccountMenu";
 import { EmptyState } from "../EmptyState";
 import { usePots } from "../../hooks/usePots";
+import { useAuth } from "../../contexts/AuthContext";
 import { warnDev } from "../../utils/logDev";
 import { shouldPreferDLReads } from "../../utils/dlReadsFlag";
 import { usePSAStyle } from "../../utils/usePSAStyle";
@@ -83,27 +84,32 @@ export function PotsHome({
   // Task 3: Read pots from Data Layer (if flag enabled) with fallback
   const preferDLReads = shouldPreferDLReads();
   // Use paginated hook
-  const { pots: dlPots, loading: potsLoading, hasMore, loadMore } = usePots(10); // Page size 10
+  const { pots: dlPots, loading: potsLoading, hasMore, loadMore, summaries } = usePots(10); // Page size 10
+  const { user } = useAuth();
+  const summaryUserId = user?.id ?? 'owner';
   
   // Transform Data Layer pots to potSummaries format
   const transformPotToSummary = useMemo(() => {
-    return (pot: DataLayerPot): Pot => {
-      const myExpenses = pot.expenses
-        .filter((e) => e.paidBy === "owner")
+    return (pot: DataLayerPot, summary?: { totalExpenses: number; myExpenses: number; myShare: number }): Pot => {
+      const fallbackMyExpenses = pot.expenses
+        .filter((e) => e.paidBy === summaryUserId)
         .reduce((sum, e) => sum + e.amount, 0);
 
-      const totalExpenses = pot.expenses.reduce(
+      const fallbackTotalExpenses = pot.expenses.reduce(
         (sum, e) => sum + e.amount,
         0,
       );
 
-      const myShare = pot.expenses.reduce((sum, e) => {
+      const fallbackMyShare = pot.expenses.reduce((sum, e) => {
         const split = (e.split || []).find(
-          (s) => s.memberId === "owner",
+          (s) => s.memberId === summaryUserId,
         );
         return sum + (split?.amount || 0);
       }, 0);
 
+      const myExpenses = summary?.myExpenses ?? fallbackMyExpenses;
+      const totalExpenses = summary?.totalExpenses ?? fallbackTotalExpenses;
+      const myShare = summary?.myShare ?? fallbackMyShare;
       const net = myExpenses - myShare;
 
       return {
@@ -119,7 +125,7 @@ export function PotsHome({
         yieldRate: pot.yieldRate,
       };
     };
-  }, []);
+  }, [summaryUserId]);
   
   // Task 3: Determine which pots to use (Data Layer or fallback based on flag)
   const pots = useMemo(() => {
@@ -130,7 +136,7 @@ export function PotsHome({
         try {
           const transformed = dlPots
             .filter(p => !p.archived)
-            .map(transformPotToSummary);
+            .map((pot) => transformPotToSummary(pot, summaries[pot.id]));
           return transformed;
         } catch (error) {
           warnDev('[DataLayer] Read failed, using UI state fallback', error);
@@ -145,7 +151,7 @@ export function PotsHome({
         try {
           const transformed = dlPots
             .filter(p => !p.archived)
-            .map(transformPotToSummary);
+            .map((pot) => transformPotToSummary(pot, summaries[pot.id]));
           return transformed;
         } catch (error) {
           warnDev('[DataLayer] Read failed, using UI state fallback', error);
@@ -154,7 +160,7 @@ export function PotsHome({
       }
       return potsProp;
     }
-  }, [dlPots, potsProp, transformPotToSummary, preferDLReads]);
+  }, [dlPots, potsProp, transformPotToSummary, preferDLReads, summaries]);
   
 
   const sortOptions: SortOption[] = [

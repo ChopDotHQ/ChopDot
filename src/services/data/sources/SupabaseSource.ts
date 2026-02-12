@@ -1,10 +1,12 @@
 import type { DataSource, ListOptions } from '../repositories/PotRepository';
-import type { Pot } from '../types';
+import type { ExpenseListOptions } from '../repositories/ExpenseRepository';
+import type { Expense, ExpenseSummary, Pot } from '../types';
 import { PotSchema, isBaseCurrency } from '../../../schema/pot';
 import { getSupabase } from '../../../utils/supabase-client';
 import { LocalStorageSource } from './LocalStorageSource';
-import type { SupabasePotRow } from '../types/supabase';
+import type { SupabaseExpenseRow, SupabaseExpenseSplitRow, SupabasePotRow } from '../types/supabase';
 import { AuthError, ValidationError } from '../errors';
+import { fromMinorAmount, toMinorAmount } from '../utils/amounts';
 
 /**
  * SupabaseSource
@@ -122,7 +124,7 @@ export class SupabaseSource implements DataSource {
     // Previously this would seed sample pots, but now we return empty results
     // if the user has no pots yet
     
-    return rows.map((row) => this.mapRow(row, potMembersByPotId.get(row.id) ?? null));
+    return rows.map((row) => this.mapRow(row, potMembersByPotId.get(row.id) ?? null, []));
   }
 
   async getPot(id: string): Promise<Pot | null> {
@@ -147,7 +149,8 @@ export class SupabaseSource implements DataSource {
 
     const potRow = data as unknown as SupabasePotRow;
     const potMembersByPotId = await this.fetchMembersByPotId([potRow.id]);
-    return this.mapRow(potRow, potMembersByPotId.get(potRow.id) ?? null);
+    const expenses = await this.listExpenses(potRow.id);
+    return this.mapRow(potRow, potMembersByPotId.get(potRow.id) ?? null, expenses);
   }
 
   async savePots(pots: Pot[]): Promise<void> {
@@ -232,6 +235,235 @@ export class SupabaseSource implements DataSource {
     }
   }
 
+  async listExpenses(potId: string, options?: ExpenseListOptions): Promise<Expense[]> {
+    const supabase = this.ensureReady();
+    const userId = await this.getOptionalUserId('read expenses');
+    if (!userId) {
+      return this.guestSource.listExpenses(potId, options);
+    }
+
+    const selectColumns = [
+      'id',
+      'pot_id',
+      'creator_id',
+      'paid_by',
+      'amount_minor',
+      'currency_code',
+      'description',
+      'expense_date',
+      'created_at',
+      'legacy_id',
+      'metadata',
+    ].join(',');
+
+    const buildQuery = () =>
+      supabase
+        .from('expenses')
+        .select(selectColumns)
+        .eq('pot_id', potId)
+        .order('expense_date', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false });
+
+    const fetchPage = async (offset: number, limit: number) => {
+      const { data, error } = await buildQuery().range(offset, offset + limit - 1);
+      if (error) {
+        throw new Error(`[SupabaseSource] Failed to fetch expenses: ${error.message}`);
+      }
+      return (data ?? []) as unknown as SupabaseExpenseRow[];
+    };
+
+    let rows: SupabaseExpenseRow[] = [];
+    if (options && (options.limit !== undefined || options.offset !== undefined)) {
+      const limit = options.limit ?? 50;
+      const offset = options.offset ?? 0;
+      rows = await fetchPage(offset, limit);
+    } else {
+      const pageSize = 200;
+      let offset = 0;
+      while (true) {
+        const page = await fetchPage(offset, pageSize);
+        rows = rows.concat(page);
+        if (page.length < pageSize) break;
+        offset += pageSize;
+      }
+    }
+
+    const splitsByExpenseId = await this.fetchExpenseSplits(rows.map((row) => row.id));
+    return rows.map((row) => this.mapExpenseRow(row, splitsByExpenseId.get(row.id)));
+  }
+
+  async getExpense(potId: string, expenseId: string): Promise<Expense | null> {
+    const supabase = this.ensureReady();
+    const userId = await this.getOptionalUserId('read expense');
+    if (!userId) {
+      return this.guestSource.getExpense(potId, expenseId);
+    }
+
+    const { data, error } = await supabase
+      .from('expenses')
+      .select('id,pot_id,creator_id,paid_by,amount_minor,currency_code,description,expense_date,created_at,legacy_id,metadata')
+      .eq('id', expenseId)
+      .eq('pot_id', potId)
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`[SupabaseSource] Failed to fetch expense ${expenseId}: ${error.message}`);
+    }
+    if (!data) {
+      return null;
+    }
+
+    const splitMap = await this.fetchExpenseSplits([expenseId]);
+    return this.mapExpenseRow(data as SupabaseExpenseRow, splitMap.get(expenseId));
+  }
+
+  async saveExpense(potId: string, expense: Expense): Promise<void> {
+    const supabase = this.ensureReady();
+    const userId = await this.requireAuthenticatedUser('modify expense');
+
+    const { data: existing, error: existingError } = await supabase
+      .from('expenses')
+      .select('id, creator_id')
+      .eq('id', expense.id)
+      .maybeSingle();
+
+    if (existingError && existingError.code !== 'PGRST116') {
+      throw new Error(`[SupabaseSource] Failed to inspect expense ${expense.id}: ${existingError.message}`);
+    }
+
+    const creatorId = (existing as { creator_id?: string } | null)?.creator_id ?? userId;
+    const legacyId = (expense as { legacyId?: string; legacy_id?: string }).legacyId
+      ?? (expense as { legacy_id?: string }).legacy_id;
+    const resolvedPaidBy = expense.paidBy === 'owner' ? userId : (expense.paidBy || userId);
+    const payload = {
+      id: expense.id,
+      pot_id: potId,
+      creator_id: creatorId,
+      paid_by: resolvedPaidBy,
+      amount_minor: toMinorAmount(expense.amount),
+      currency_code: expense.currency ?? 'USD',
+      description: expense.memo ?? (expense as any).description ?? '',
+      expense_date: expense.date ? new Date(expense.date).toISOString() : null,
+      legacy_id: legacyId ?? null,
+      metadata: this.stripUndefined({
+        split: expense.split ?? [],
+        attestations: expense.attestations ?? [],
+        hasReceipt: expense.hasReceipt ?? false,
+        receiptUrl: expense.receiptUrl,
+        memo: expense.memo,
+        description: (expense as any).description,
+      }),
+    };
+
+    const { error } = await supabase
+      .from('expenses')
+      .upsert(payload, { onConflict: 'id' });
+
+    if (error) {
+      throw new Error(`[SupabaseSource] Failed to save expense ${expense.id}: ${error.message}`);
+    }
+
+    await supabase
+      .from('expense_splits')
+      .delete()
+      .eq('expense_id', expense.id);
+
+    const splits = (expense.split ?? []).filter((split) => split.amount > 0);
+    if (splits.length > 0) {
+      const splitRows = splits.map((split) => ({
+        expense_id: expense.id,
+        member_id: split.memberId === 'owner' ? userId : split.memberId,
+        amount_minor: toMinorAmount(split.amount),
+      }));
+      const { error: splitError } = await supabase
+        .from('expense_splits')
+        .insert(splitRows);
+      if (splitError) {
+        throw new Error(`[SupabaseSource] Failed to save expense splits: ${splitError.message}`);
+      }
+    }
+  }
+
+  async deleteExpense(potId: string, expenseId: string): Promise<void> {
+    const supabase = this.ensureReady();
+    const userId = await this.getOptionalUserId('delete expense');
+    if (!userId) {
+      await this.guestSource.deleteExpense(potId, expenseId);
+      return;
+    }
+    const { error } = await supabase
+      .from('expenses')
+      .delete()
+      .eq('id', expenseId)
+      .eq('pot_id', potId);
+    if (error) {
+      throw new Error(`[SupabaseSource] Failed to delete expense ${expenseId}: ${error.message}`);
+    }
+  }
+
+  async getExpenseSummaries(
+    potIds: string[],
+    userId: string,
+  ): Promise<Record<string, ExpenseSummary>> {
+    const supabase = this.ensureReady();
+    const resolvedUserId = userId || (await this.requireAuthenticatedUser('read expense summaries'));
+    if (potIds.length === 0) {
+      return {};
+    }
+
+    const { data: expenseRows, error } = await supabase
+      .from('expenses')
+      .select('id, pot_id, amount_minor, paid_by')
+      .in('pot_id', potIds);
+
+    if (error) {
+      throw new Error(`[SupabaseSource] Failed to load expense summaries: ${error.message}`);
+    }
+
+    const totals: Record<string, ExpenseSummary> = {};
+    const expenseIdToPotId = new Map<string, string>();
+    for (const row of (expenseRows ?? []) as Array<{ id: string; pot_id: string; amount_minor: number | string; paid_by: string | null }>) {
+      const potId = row.pot_id;
+      const amount = fromMinorAmount(row.amount_minor);
+      expenseIdToPotId.set(row.id, potId);
+      if (!totals[potId]) {
+        totals[potId] = {
+          potId,
+          totalExpenses: 0,
+          myExpenses: 0,
+          myShare: 0,
+        };
+      }
+      totals[potId].totalExpenses += amount;
+      if (row.paid_by === resolvedUserId) {
+        totals[potId].myExpenses += amount;
+      }
+    }
+
+    const expenseIds = Array.from(expenseIdToPotId.keys());
+    if (expenseIds.length === 0) {
+      return totals;
+    }
+
+    const { data: splitRows, error: splitError } = await supabase
+      .from('expense_splits')
+      .select('expense_id, member_id, amount_minor')
+      .in('expense_id', expenseIds)
+      .eq('member_id', resolvedUserId);
+
+    if (splitError) {
+      throw new Error(`[SupabaseSource] Failed to load expense splits summary: ${splitError.message}`);
+    }
+
+    for (const split of (splitRows ?? []) as SupabaseExpenseSplitRow[]) {
+      const potId = expenseIdToPotId.get(split.expense_id);
+      if (!potId || !totals[potId]) continue;
+      totals[potId].myShare += fromMinorAmount(split.amount_minor);
+    }
+
+    return totals;
+  }
+
   async exportPot(id: string): Promise<Pot> {
     const pot = await this.getPot(id);
     if (!pot) {
@@ -246,8 +478,18 @@ export class SupabaseSource implements DataSource {
       throw new ValidationError('Invalid pot data', validation.error.issues);
     }
 
-    await this.savePot(validation.data);
-    return validation.data;
+    const sanitized = validation.data;
+    await this.savePot(sanitized);
+
+    const normalizedExpenses = (sanitized.expenses ?? []).map((expense) => this.normalizeExpenseId(expense));
+    for (const expense of normalizedExpenses) {
+      await this.saveExpense(sanitized.id, expense);
+    }
+
+    return {
+      ...sanitized,
+      expenses: normalizedExpenses,
+    };
   }
 
   // Note: getCurrentUserId kept for potential future use but currently unused
@@ -325,7 +567,6 @@ export class SupabaseSource implements DataSource {
       type: pot.type,
       baseCurrency: pot.baseCurrency,
       members: pot.members ?? [],
-      expenses: pot.expenses ?? [],
       history: pot.history ?? [],
       budget: pot.budget ?? null,
       budgetEnabled: pot.budgetEnabled ?? false,
@@ -402,7 +643,87 @@ export class SupabaseSource implements DataSource {
     return result;
   }
 
-  private mapRow(row: SupabasePotRow, membershipMembers: Pot['members'] | null): Pot {
+  private async fetchExpenseSplits(expenseIds: string[]): Promise<Map<string, Expense['split']>> {
+    const supabase = this.ensureReady();
+    const result = new Map<string, Expense['split']>();
+    if (expenseIds.length === 0) {
+      return result;
+    }
+
+    const { data, error } = await supabase
+      .from('expense_splits')
+      .select('expense_id, member_id, amount_minor')
+      .in('expense_id', expenseIds);
+
+    if (error) {
+      console.warn('[SupabaseSource] Failed to fetch expense splits', error.message);
+      return result;
+    }
+
+    const rows = (data ?? []) as SupabaseExpenseSplitRow[];
+    for (const row of rows) {
+      const list = result.get(row.expense_id) ?? [];
+      list.push({
+        memberId: row.member_id,
+        amount: fromMinorAmount(row.amount_minor),
+      });
+      result.set(row.expense_id, list);
+    }
+
+    return result;
+  }
+
+  private mapExpenseRow(row: SupabaseExpenseRow, splitsOverride?: Expense['split']): Expense {
+    const metadata = (row.metadata ?? {}) as Record<string, unknown>;
+    const memo = (metadata.memo as string | undefined)
+      ?? (metadata.description as string | undefined)
+      ?? row.description
+      ?? '';
+    const splitFromMetadata = Array.isArray(metadata.split)
+      ? (metadata.split as Array<{ memberId: string; amount: number }>)
+      : [];
+
+    return {
+      id: row.id,
+      potId: row.pot_id,
+      amount: fromMinorAmount(row.amount_minor),
+      currency: row.currency_code ?? 'USD',
+      paidBy: row.paid_by ?? row.creator_id,
+      memo,
+      date: row.expense_date ?? row.created_at ?? new Date().toISOString(),
+      split: splitsOverride ?? splitFromMetadata,
+      attestations: (metadata.attestations as Expense['attestations']) ?? [],
+      hasReceipt: (metadata.hasReceipt as boolean | undefined) ?? false,
+      receiptUrl: metadata.receiptUrl as string | undefined,
+    };
+  }
+
+  private normalizeExpenseId(expense: Expense): Expense {
+    if (this.isUuid(expense.id)) {
+      return expense;
+    }
+
+    const cryptoObj = typeof globalThis !== 'undefined' ? globalThis.crypto : undefined;
+    const newId = cryptoObj?.randomUUID
+      ? cryptoObj.randomUUID()
+      : `expense-${Math.random().toString(36).slice(2, 10)}`;
+
+    return {
+      ...expense,
+      id: newId,
+      legacyId: expense.id,
+    } as Expense & { legacyId: string };
+  }
+
+  private isUuid(value: string): boolean {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+  }
+
+  private mapRow(
+    row: SupabasePotRow,
+    membershipMembers: Pot['members'] | null,
+    expensesOverride?: Pot['expenses'],
+  ): Pot {
     const metadata = (row.metadata ?? {}) as Record<string, unknown>;
     const ownerUserId = row.created_by;
 
@@ -444,7 +765,8 @@ export class SupabaseSource implements DataSource {
       });
 
     const rawExpenses = Array.isArray(metadata.expenses) ? (metadata.expenses as Array<Record<string, unknown>>) : [];
-    const expensesFromMetadata: Pot['expenses'] = rawExpenses.map((expense) => {
+    const baseExpenses = expensesOverride ?? (rawExpenses as unknown as Pot['expenses']);
+    const expenses: Pot['expenses'] = (baseExpenses ?? []).map((expense) => {
       const paidBy = typeof expense.paidBy === 'string' ? mapMemberId(expense.paidBy) : expense.paidBy;
       const split = Array.isArray(expense.split)
         ? (expense.split as Array<Record<string, unknown>>).map((s) => ({
@@ -537,7 +859,7 @@ export class SupabaseSource implements DataSource {
       type: ((row.pot_type ?? metadata.type ?? 'expense') === 'savings' ? 'savings' : 'expense') as Pot['type'],
       baseCurrency,
       members: mergedMembers.length > 0 ? mergedMembers : [{ ...DEFAULT_MEMBER }],
-      expenses: expensesFromMetadata,
+      expenses,
       history: historyFromMetadata,
       budget: (row.budget ?? metadata.budget ?? null) as Pot['budget'],
       budgetEnabled: (row.budget_enabled ?? metadata.budgetEnabled ?? false) as Pot['budgetEnabled'],

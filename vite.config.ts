@@ -133,12 +133,31 @@ export default defineConfig({
           if (id.includes('@polkadot/api') || id.includes('@polkadot/types')) {
             return undefined;
           }
+          if (id.includes('@polkadot/extension-dapp') || id.includes('@polkadot/react-identicon')) {
+            return 'polkadot-extension';
+          }
           if (id.includes('@polkadot/util-crypto') || id.includes('@polkadot/util')) {
             return 'polkadot-utils';
           }
-          // Split WalletConnect into separate chunk (already large)
+          // Split WalletConnect into separate chunks (core vs EVM provider)
+          if (id.includes('@walletconnect/ethereum-provider') || id.includes('universal-provider')) {
+            return 'walletconnect-evm';
+          }
           if (id.includes('@walletconnect/') || id.includes('walletconnect')) {
             return 'walletconnect-vendor';
+          }
+          // Data and sync vendors
+          if (id.includes('@supabase/')) {
+            return 'supabase-vendor';
+          }
+          if (id.includes('@automerge/')) {
+            return 'automerge-vendor';
+          }
+          if (id.includes('ipfs-http-client') || id.includes('ipfs-only-hash')) {
+            return 'ipfs-vendor';
+          }
+          if (id.includes('date-fns') || id.includes('decimal.js') || id.includes('zod')) {
+            return 'data-vendor';
           }
           // React vendor chunk
           if (id.includes('react') || id.includes('react-dom')) {

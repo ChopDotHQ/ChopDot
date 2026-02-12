@@ -73,6 +73,26 @@ export class HttpSource {
     throw new NetworkError('HTTP source not implemented yet');
   }
 
+  async listExpenses(): Promise<never> {
+    throw new NetworkError('HTTP source not implemented yet');
+  }
+
+  async getExpense(): Promise<never> {
+    throw new NetworkError('HTTP source not implemented yet');
+  }
+
+  async saveExpense(): Promise<never> {
+    throw new NetworkError('HTTP source not implemented yet');
+  }
+
+  async deleteExpense(): Promise<never> {
+    throw new NetworkError('HTTP source not implemented yet');
+  }
+
+  async getExpenseSummaries(): Promise<never> {
+    throw new NetworkError('HTTP source not implemented yet');
+  }
+
   /**
    * Get settlements from API
    * @throws {NetworkError} Always (not implemented)
@@ -89,4 +109,3 @@ export class HttpSource {
     throw new NetworkError('HTTP source not implemented yet');
   }
 }
-

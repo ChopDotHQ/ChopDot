@@ -10,7 +10,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { normalizeToPolkadot } from '../services/chain/address';
-import { chain } from '../services/chain';
+import { getChain } from '../services/chain';
 import { getSupabase } from '../utils/supabase-client';
 import { linkWalletToUser, findVerifiedWalletLink } from '../repos/walletLinks';
 // Dynamic imports for WalletConnect to avoid "require is not defined" error
@@ -177,7 +177,8 @@ export function AccountProvider({ children }: AccountProviderProps) {
       
       while (attempts < maxAttempts) {
         try {
-          const balancePromise = chain.getFreeBalance(state.address);
+          const chainService = await getChain();
+          const balancePromise = chainService.getFreeBalance(state.address);
           const timeoutPromise = new Promise<string>((_, reject) => 
             setTimeout(() => reject(new Error('Balance fetch timeout')), 30000) // 30 seconds - allow time for RPC connection
           );
@@ -265,7 +266,8 @@ export function AccountProvider({ children }: AccountProviderProps) {
       // Get initial balance (non-blocking - fetch in background)
       // Don't wait for balance during login - it will be fetched via polling
       // Skip balance fetch for auto-reconnect to prevent console spam on login screen
-      chain.setChain('assethub'); // Default to Asset Hub
+      const chainService = await getChain();
+      chainService.setChain('assethub'); // Default to Asset Hub
       let balancePlanck = '0';
       let balanceHuman = '0';
       
@@ -280,7 +282,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
           
           while (attempts < maxAttempts) {
             try {
-              const balancePromise = chain.getFreeBalance(address);
+              const balancePromise = chainService.getFreeBalance(address);
               const timeoutPromise = new Promise<string>((_, reject) => 
                 setTimeout(() => reject(new Error('Balance fetch timeout')), 30000) // 30 seconds
               );
@@ -389,8 +391,9 @@ export function AccountProvider({ children }: AccountProviderProps) {
           });
           
           // Try to get initial balance (non-blocking)
-          chain.setChain('assethub');
-          chain.getFreeBalance(address)
+          const chainService = await getChain();
+          chainService.setChain('assethub');
+          chainService.getFreeBalance(address)
             .then(balancePlanck => {
               const balanceHuman = fmtPlanckToDot(balancePlanck);
               setState(prev => {
@@ -431,7 +434,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
       
       // Wait for connection asynchronously (handled by AccountMenu showing QR)
       onConnect
-        .then(({ address }) => {
+        .then(async ({ address }) => {
           const address0 = normalizeToPolkadot(address);
           const walletName = 'Nova Wallet';
 
@@ -458,8 +461,9 @@ export function AccountProvider({ children }: AccountProviderProps) {
 
           // Try to get initial balance (non-blocking)
           // If WebSockets are blocked, this will fail but login can still proceed
-          chain.setChain('assethub'); // Default to Asset Hub
-          chain.getFreeBalance(address)
+          const chainService = await getChain();
+          chainService.setChain('assethub'); // Default to Asset Hub
+          chainService.getFreeBalance(address)
             .then(balancePlanck => {
               const balanceHuman = fmtPlanckToDot(balancePlanck);
               // Update state with balance (if still connected)
@@ -576,7 +580,8 @@ export function AccountProvider({ children }: AccountProviderProps) {
               const address = accounts[0]?.split(':').slice(2).join(':');
               if (address) {
                 const address0 = normalizeToPolkadot(address);
-                chain.setChain('assethub');
+                const chainService = await getChain();
+                chainService.setChain('assethub');
                 // Don't fetch balance on auto-reconnect - wait for explicit login
                 // This prevents WebSocket connection attempts on login screen
                 // Don't set hasExplicitlyLoggedIn for auto-reconnect

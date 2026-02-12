@@ -5,6 +5,7 @@ Cheat sheet for the main env flags/toggles we use. Defaults are what the app doe
 ## Core connectivity
 - `VITE_DATA_SOURCE` (default: `local`) — `local` keeps data in localStorage; `supabase` uses Supabase CRUD.
 - `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` — required when `VITE_DATA_SOURCE=supabase`.
+- `VITE_SUPABASE_STRICT` (default: off) — when `true`, throw if Supabase is misconfigured instead of falling back to local storage.
 - `VITE_WALLETCONNECT_PROJECT_ID` — required for WalletConnect; app has a fallback dev ID but set your own in prod.
 - `VITE_API_URL` (default: `/api`) — backend proxy base for IPFS uploads when using the backend.
 

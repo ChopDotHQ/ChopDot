@@ -10,7 +10,7 @@
 import type { Pot } from '../types';
 import type { ListOptions } from '../repositories/PotRepository';
 import { migrateAllPotsOnLoad, needsMigration } from '../../../utils/migratePot';
-import { QuotaExceededError, ValidationError } from '../errors';
+import { QuotaExceededError, ValidationError, NotFoundError } from '../errors';
 import { PotSchema } from '../../../schema/pot';
 import { ensureDefaultPots } from '../seeds/defaultPots';
 
@@ -213,6 +213,89 @@ export class LocalStorageSource {
   async getPot(id: string): Promise<Pot | null> {
     const pots = await this.getPots();
     return pots.find(p => p.id === id) || null;
+  }
+
+  async listExpenses(potId: string, options?: { limit?: number; offset?: number }): Promise<Pot['expenses']> {
+    const pot = await this.getPot(potId);
+    if (!pot) {
+      throw new NotFoundError('Pot', potId);
+    }
+    const expenses = pot.expenses || [];
+    if (options) {
+      const offset = options.offset ?? 0;
+      const limit = options.limit ?? 50;
+      return expenses.slice(offset, offset + limit).map((expense) => ({ ...expense, potId }));
+    }
+    return expenses.map((expense) => ({ ...expense, potId }));
+  }
+
+  async getExpense(potId: string, expenseId: string): Promise<Pot['expenses'][number] | null> {
+    const expenses = await this.listExpenses(potId);
+    return expenses.find((expense) => expense.id === expenseId) ?? null;
+  }
+
+  async saveExpense(potId: string, expense: Pot['expenses'][number]): Promise<void> {
+    const pot = await this.getPot(potId);
+    if (!pot) {
+      throw new NotFoundError('Pot', potId);
+    }
+
+    const expenses = pot.expenses || [];
+    const index = expenses.findIndex((item) => item.id === expense.id);
+    const updatedExpenses = [...expenses];
+    if (index >= 0) {
+      updatedExpenses[index] = expense;
+    } else {
+      updatedExpenses.push(expense);
+    }
+
+    await this.savePot({
+      ...pot,
+      expenses: updatedExpenses,
+      lastEditAt: new Date().toISOString(),
+    });
+  }
+
+  async deleteExpense(potId: string, expenseId: string): Promise<void> {
+    const pot = await this.getPot(potId);
+    if (!pot) {
+      throw new NotFoundError('Pot', potId);
+    }
+    const updatedExpenses = (pot.expenses || []).filter((expense) => expense.id !== expenseId);
+    if (updatedExpenses.length === (pot.expenses || []).length) {
+      return;
+    }
+    await this.savePot({
+      ...pot,
+      expenses: updatedExpenses,
+      lastEditAt: new Date().toISOString(),
+    });
+  }
+
+  async getExpenseSummaries(
+    potIds: string[],
+    userId: string,
+  ): Promise<Record<string, { potId: string; totalExpenses: number; myExpenses: number; myShare: number }>> {
+    const summaries: Record<string, { potId: string; totalExpenses: number; myExpenses: number; myShare: number }> = {};
+    for (const potId of potIds) {
+      const pot = await this.getPot(potId);
+      const expenses = pot?.expenses || [];
+      const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+      const myExpenses = expenses
+        .filter((expense) => expense.paidBy === userId)
+        .reduce((sum, expense) => sum + expense.amount, 0);
+      const myShare = expenses.reduce((sum, expense) => {
+        const share = (expense.split ?? []).find((split) => split.memberId === userId);
+        return sum + (share?.amount || 0);
+      }, 0);
+      summaries[potId] = {
+        potId,
+        totalExpenses,
+        myExpenses,
+        myShare,
+      };
+    }
+    return summaries;
   }
 
   /**

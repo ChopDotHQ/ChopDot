@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useData } from '../services/data/DataContext';
-import type { Pot } from '../services/data/types';
+import type { ExpenseSummary, Pot } from '../services/data/types';
+import { useAuth } from '../contexts/AuthContext';
 
 let globalRefreshTrigger = 0;
 
@@ -10,14 +11,18 @@ export interface UsePotsResult {
   hasMore: boolean;
   loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
+  summaries: Record<string, ExpenseSummary>;
 }
 
 export function usePots(pageSize = 10): UsePotsResult {
-  const { pots: potService } = useData();
+  const { pots: potService, expenses: expenseService } = useData();
+  const { user } = useAuth();
+  const summaryUserId = user?.id ?? 'owner';
   const [pots, setPots] = useState<Pot[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
+  const [summaries, setSummaries] = useState<Record<string, ExpenseSummary>>({});
   const refreshTriggerRef = useRef(0);
   const isFetchingRef = useRef(false);
   const didInitRef = useRef(false);
@@ -36,9 +41,20 @@ export function usePots(pageSize = 10): UsePotsResult {
         offset: currentOffset 
       });
       
+      const potIds = newPots.map((pot) => pot.id);
+      let summaryBatch: Record<string, ExpenseSummary> = {};
+      if (potIds.length > 0) {
+        try {
+          summaryBatch = await expenseService.getExpenseSummaries(potIds, summaryUserId);
+        } catch (summaryError) {
+          console.warn('[usePots] Failed to load expense summaries:', summaryError);
+        }
+      }
+
       if (isRefresh) {
         setPots(newPots);
         setOffset(pageSize);
+        setSummaries(summaryBatch);
       } else {
         setPots(prev => {
           // De-duplicate in case of race conditions
@@ -47,6 +63,7 @@ export function usePots(pageSize = 10): UsePotsResult {
           return [...prev, ...uniqueNewPots];
         });
         setOffset(prev => prev + pageSize);
+        setSummaries(prev => ({ ...prev, ...summaryBatch }));
       }
       
       // Determine if there are more
@@ -63,7 +80,7 @@ export function usePots(pageSize = 10): UsePotsResult {
       isFetchingRef.current = false;
       setLoading(false);
     }
-  }, [potService, offset, pageSize]);
+  }, [potService, expenseService, offset, pageSize, summaryUserId]);
 
   // Handle load more
   const loadMore = async () => {
@@ -105,7 +122,8 @@ export function usePots(pageSize = 10): UsePotsResult {
     loading,
     hasMore,
     loadMore,
-    refresh
+    refresh,
+    summaries,
   };
 }
 

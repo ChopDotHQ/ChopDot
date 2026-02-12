@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PotRepository, type DataSource } from '../repositories/PotRepository';
-import { ExpenseRepository } from '../repositories/ExpenseRepository';
+import { ExpenseRepository, type ExpenseDataSource } from '../repositories/ExpenseRepository';
 import { MemberRepository } from '../repositories/MemberRepository';
 import { SettlementRepository } from '../repositories/SettlementRepository';
 import { PotService } from './PotService';
@@ -8,9 +8,9 @@ import { ExpenseService } from './ExpenseService';
 import { MemberService } from './MemberService';
 import { SettlementService } from './SettlementService';
 import { runActionWithRecovery } from '../../../utils/actionRecovery';
-import type { Pot } from '../types';
+import type { Expense, Pot } from '../types';
 
-function createInMemorySource(): DataSource {
+function createInMemorySource(): DataSource & ExpenseDataSource {
   const pots = new Map<string, Pot>();
 
   return {
@@ -42,6 +42,35 @@ function createInMemorySource(): DataSource {
     async importPot(pot) {
       pots.set(pot.id, pot);
       return pot;
+    },
+    async listExpenses(potId) {
+      const pot = pots.get(potId);
+      if (!pot) throw new Error('Pot not found');
+      return [...(pot.expenses ?? [])] as Expense[];
+    },
+    async getExpense(potId, expenseId) {
+      const pot = pots.get(potId);
+      if (!pot) throw new Error('Pot not found');
+      return ((pot.expenses ?? []) as Expense[]).find((expense) => expense.id === expenseId) ?? null;
+    },
+    async saveExpense(potId, expense) {
+      const pot = pots.get(potId);
+      if (!pot) throw new Error('Pot not found');
+      const expenses = (pot.expenses ?? []) as Expense[];
+      const index = expenses.findIndex((item) => item.id === expense.id);
+      const next = [...expenses];
+      if (index >= 0) {
+        next[index] = expense;
+      } else {
+        next.push(expense);
+      }
+      pots.set(potId, { ...pot, expenses: next });
+    },
+    async deleteExpense(potId, expenseId) {
+      const pot = pots.get(potId);
+      if (!pot) throw new Error('Pot not found');
+      const expenses = (pot.expenses ?? []) as Expense[];
+      pots.set(potId, { ...pot, expenses: expenses.filter((expense) => expense.id !== expenseId) });
     },
   };
 }

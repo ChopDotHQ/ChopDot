@@ -1,0 +1,21 @@
+# Gitleaks config - scan for secrets before commit
+# Run: gitleaks detect --config .gitleaks.toml --source . --verbose
+# Install: brew install gitleaks
+
+title = "ChopDot Secret Detection"
+
+[extend]
+useDefault = true
+
+# Custom rules for ChopDot-specific patterns (prevent re-adding removed credentials)
+[[rules]]
+id = "chopdot-email-credential"
+description = "Real email in credential docs - use test@example.com"
+regex = '''Devpen787@gmail\.com|devpen787@gmail\.com'''
+tags = ["credentials", "email"]
+
+[[rules]]
+id = "chopdot-test-password"
+description = "Test password in docs - use .env instead"
+regex = '''testdot123\!\?'''
+tags = ["credentials", "password"]

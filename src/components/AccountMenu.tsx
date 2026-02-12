@@ -13,7 +13,7 @@ import Identicon from '@polkadot/react-identicon';
 import QRCode from 'qrcode';
 import { AddressDisplay } from './AddressDisplay';
 import { getHyperbridgeUrl } from '../services/bridge/hyperbridge';
-import { chain } from '../services/chain';
+import { getChain } from '../services/chain';
 import { useIsMobile } from './ui/use-mobile';
 import { walletConnectLinks } from '../config/wallet-connect-links';
 import { toast } from 'sonner';
@@ -38,6 +38,27 @@ export function AccountMenu() {
   const [novaQRCode, setNovaQRCode] = useState<string | null>(null);
   const [novaURI, setNovaURI] = useState<string | null>(null);
   const [connecting, setConnecting] = useState(false);
+  const [currentRpc, setCurrentRpc] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV || !showMenu) {
+      return;
+    }
+    let active = true;
+    (async () => {
+      try {
+        const chainService = await getChain();
+        if (active) {
+          setCurrentRpc(chainService.getCurrentRpc());
+        }
+      } catch (error) {
+        console.warn('[AccountMenu] Failed to read current RPC:', error);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [showMenu, account.status]);
 
   // Reset connecting state and close modals when account status changes
   useEffect(() => {
@@ -361,13 +382,13 @@ export function AccountMenu() {
                     <span className="font-semibold">{formatBalance(account.balanceHuman)} DOT</span>
                   </div>
                   {/* dev: show active RPC */}
-                  {import.meta.env.DEV && chain.getCurrentRpc() && (
+                  {import.meta.env.DEV && currentRpc && (
                     <div 
                       data-testid="dev-active-rpc" 
                       style={{ fontSize: 12, opacity: 0.7, marginTop: 6 }}
                       className="text-xs opacity-60"
                     >
-                      RPC: {chain.getCurrentRpc()}
+                      RPC: {currentRpc}
                     </div>
                   )}
                 </div>
@@ -452,13 +473,13 @@ export function AccountMenu() {
             style={{ borderColor: 'var(--border)' }}
           >
             {/* dev: show active RPC (even when disconnected) */}
-            {import.meta.env.DEV && chain.getCurrentRpc() && (
+            {import.meta.env.DEV && currentRpc && (
               <div 
                 data-testid="dev-active-rpc" 
                 className="p-3 border-b text-xs opacity-60"
                 style={{ borderColor: 'var(--border)' }}
               >
-                RPC: {chain.getCurrentRpc()}
+                RPC: {currentRpc}
               </div>
             )}
             <div className="p-2">

@@ -1,5 +1,5 @@
 import { blake2AsHex } from '@polkadot/util-crypto';
-import { chain } from './index';
+import { getChain } from './index';
 import type { PotHistory } from '../../App';
 import { stableStringify } from '../../utils/stableStringify';
 
@@ -127,6 +127,7 @@ export async function checkpointPot({
   onStatusUpdate,
 }: CheckpointPotParams): Promise<PotHistory> {
   const { potHash, message } = buildCheckpointSnapshot(pot, { cid: cid ?? pot.lastBackupCid ?? null, mode });
+  const chainService = await getChain();
 
   let stagedEntry: PotHistory | null = null;
 
@@ -137,7 +138,7 @@ export async function checkpointPot({
   };
 
   try {
-    const { txHash } = await chain.signAndSendExtrinsic({
+    const { txHash } = await chainService.signAndSendExtrinsic({
       from: signerAddress,
       forceBrowserExtension,
       buildTx: ({ api }) => api.tx.system.remark(message),
@@ -154,7 +155,7 @@ export async function checkpointPot({
             cid: undefined,
             txHash: txHashCtx,
             block: ctx?.blockHash,
-            subscan: chain.buildSubscanUrl(txHashCtx),
+            subscan: chainService.buildSubscanUrl(txHashCtx),
           };
           emitUpdate();
           return;
@@ -190,7 +191,7 @@ export async function checkpointPot({
         message,
             cid: undefined,
         txHash,
-        subscan: chain.buildSubscanUrl(txHash),
+        subscan: chainService.buildSubscanUrl(txHash),
       };
       emitUpdate();
     }

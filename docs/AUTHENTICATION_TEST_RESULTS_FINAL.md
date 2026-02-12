@@ -30,7 +30,7 @@
 
 ### ✅ Test 3: Email/Password Login
 - **Status**: ✅ PASSED
-- **Credentials**: `Devpen787@gmail.com` / `testdot123!?`
+- **Credentials**: `test@example.com` / [use .env]
 - **Result**: Successfully logged in
 - **UI**: Redirected to Pots home screen
 - **Console**: No errors

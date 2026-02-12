@@ -8,6 +8,7 @@ import { triggerHaptic } from "../../utils/haptics";
 import { uploadToIPFS } from "../../services/storage/ipfsWithOnboarding";
 import { getIPFSGatewayUrl } from "../../services/storage/ipfs";
 import { useAccount } from "../../contexts/AccountContext";
+import { getChain } from "../../services/chain";
 import QRCodeLib from 'qrcode';
 
 interface UploadedFile {
@@ -221,13 +222,13 @@ export function CrustStorage({ onAuthSetup }: CrustStorageProps = {}) {
       
       if (account.connector === 'walletconnect') {
         // WalletConnect signing is handled via chain service
-        const chainService = await import('../../services/chain');
+        const chainService = await getChain();
         if (!api.tx.market?.placeStorageOrder) {
           throw new Error('Market pallet not available');
         }
         const tx = api.tx.market.placeStorageOrder(cid, fileSize, 0, "");
         
-        await chainService.chain.signAndSendExtrinsic({
+        await chainService.signAndSendExtrinsic({
           from: account.address0,
           buildTx: () => tx,
           onStatus: (status, ctx) => {

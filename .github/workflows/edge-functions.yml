@@ -1,0 +1,30 @@
+name: Edge Functions Sync
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - 12-23-feat_add_usdc_implementation
+
+jobs:
+  verify-edge-functions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install ripgrep
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify edge functions
+        run: npm run verify:edge-functions

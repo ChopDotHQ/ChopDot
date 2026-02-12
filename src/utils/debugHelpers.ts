@@ -121,9 +121,10 @@ export const debugHelpers = {
    * Show current localStorage state
    */
   showState: () => {
+    const token = localStorage.getItem('chopdot_auth_token');
     console.log('📊 [Debug] Current localStorage state:');
     console.log('User:', localStorage.getItem('chopdot_user'));
-    console.log('Token:', localStorage.getItem('chopdot_auth_token'));
+    console.log('Token:', token ? `${token.slice(0, 20)}...[redacted]` : 'none');
     console.log('Pots:', localStorage.getItem('chopdot_pots'));
     console.log('Settlements:', localStorage.getItem('chopdot_settlements'));
     console.log('Notifications:', localStorage.getItem('chopdot_notifications'));

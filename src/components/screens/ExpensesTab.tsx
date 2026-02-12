@@ -6,6 +6,7 @@ import type { Pot, Expense as PotExpense } from "../../schema/pot";
 import { SettlementConfirmModal } from "../SettlementConfirmModal";
 import { buildSubscanUrl } from "../../services/chain/utils";
 import { normalizeToPolkadot } from "../../services/chain/address";
+import { getChain } from "../../services/chain";
 import { useAccount } from "../../contexts/AccountContext";
 import type { PotHistory } from "../../App";
 import { ConfirmModal } from "../ConfirmModal";
@@ -370,7 +371,7 @@ export function ExpensesTab({
       let blockHash: string | undefined;
       let status: 'in_block' | 'finalized' | 'failed' = 'in_block';
       
-      const { chain } = await import('../../services/chain');
+      const chain = await getChain();
       
       if (isUsdcPot && settlementModal.amountUsdc !== undefined) {
         // USDC settlement

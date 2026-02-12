@@ -5,10 +5,25 @@
  * Handles caching and CRUD operations within a pot.
  */
 
-import type { Expense } from '../types';
+import type { Expense, ExpenseSummary } from '../types';
 import type { CreateExpenseDTO, UpdateExpenseDTO } from '../types/dto';
 import { NotFoundError } from '../errors';
-import type { DataSource } from './PotRepository';
+
+export interface ExpenseListOptions {
+  limit?: number;
+  offset?: number;
+}
+
+export interface ExpenseDataSource {
+  listExpenses(potId: string, options?: ExpenseListOptions): Promise<Expense[]>;
+  getExpense(potId: string, expenseId: string): Promise<Expense | null>;
+  saveExpense(potId: string, expense: Expense): Promise<void>;
+  deleteExpense(potId: string, expenseId: string): Promise<void>;
+  getExpenseSummaries?(
+    potIds: string[],
+    userId: string,
+  ): Promise<Record<string, ExpenseSummary>>;
+}
 
 interface CacheEntry<T> {
   data: T;
@@ -24,12 +39,12 @@ interface CacheEntry<T> {
  * Note: Expenses are stored within pots, so operations require potId.
  */
 export class ExpenseRepository {
-  private source: DataSource;
+  private source: ExpenseDataSource;
   private cache = new Map<string, CacheEntry<Expense[]>>(); // potId -> expenses[]
   private readonly ttl: number;
   private readonly maxCacheSize: number;
 
-  constructor(source: DataSource, ttl: number = 5_000, maxCacheSize: number = 100) {
+  constructor(source: ExpenseDataSource, ttl: number = 5_000, maxCacheSize: number = 100) {
     this.source = source;
     this.ttl = ttl;
     this.maxCacheSize = maxCacheSize;
@@ -51,35 +66,32 @@ export class ExpenseRepository {
    * Get all expenses for a pot
    * Uses cache if available and not expired
    */
-  async list(potId: string): Promise<Expense[]> {
+  async list(potId: string, options?: ExpenseListOptions): Promise<Expense[]> {
     const now = Date.now();
-    
-    // Check cache
-    const cached = this.cache.get(potId);
-    if (cached && (now - cached.timestamp) < this.ttl) {
-      return cached.data.map(e => ({ ...e })); // Return copies
+
+    const isFullListRequest = !options || (options.limit === undefined && options.offset === undefined);
+    if (isFullListRequest) {
+      const cached = this.cache.get(potId);
+      if (cached && (now - cached.timestamp) < this.ttl) {
+        return cached.data.map((e) => ({ ...e }));
+      }
     }
 
-    // Fetch pot to get expenses
-    const pot = await this.source.getPot(potId);
-    if (!pot) {
-      throw new NotFoundError('Pot', potId);
-    }
-
-    const expenses = pot.expenses || [];
+    const expenses = await this.source.listExpenses(potId, options);
 
     // Update cache
-    this.cache.set(potId, {
-      data: expenses,
-      timestamp: now,
-    });
+    if (isFullListRequest) {
+      this.cache.set(potId, {
+        data: expenses,
+        timestamp: now,
+      });
 
-    // Enforce cache size limit
-    if (this.cache.size > this.maxCacheSize) {
-      const entries = Array.from(this.cache.entries());
-      entries.sort((a, b) => a[1].timestamp - b[1].timestamp); // Oldest first
-      const toRemove = entries.slice(0, entries.length - this.maxCacheSize);
-      toRemove.forEach(([id]) => this.cache.delete(id));
+      if (this.cache.size > this.maxCacheSize) {
+        const entries = Array.from(this.cache.entries());
+        entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+        const toRemove = entries.slice(0, entries.length - this.maxCacheSize);
+        toRemove.forEach(([id]) => this.cache.delete(id));
+      }
     }
 
     return expenses.map(e => ({ ...e })); // Return copies
@@ -89,30 +101,23 @@ export class ExpenseRepository {
    * Get a single expense by ID
    */
   async get(potId: string, expenseId: string): Promise<Expense> {
-    const expenses = await this.list(potId);
-    const expense = expenses.find(e => e.id === expenseId);
-    
+    const expense = await this.source.getExpense(potId, expenseId);
     if (!expense) {
       throw new NotFoundError('Expense', expenseId);
     }
 
-    return { ...expense }; // Return copy
+    return { ...expense };
   }
 
   /**
    * Create a new expense in a pot
    */
   async create(potId: string, input: CreateExpenseDTO): Promise<Expense> {
-    const pot = await this.source.getPot(potId);
-    if (!pot) {
-      throw new NotFoundError('Pot', potId);
-    }
-
     const expense: Expense = {
-      id: Date.now().toString(), // Temporary ID generation
+      id: this.generateExpenseId(),
       potId,
       amount: input.amount,
-      currency: input.currency || pot.baseCurrency,
+      currency: input.currency,
       paidBy: input.paidBy,
       memo: input.memo || '',
       date: input.date || new Date().toISOString(),
@@ -121,14 +126,7 @@ export class ExpenseRepository {
       hasReceipt: input.hasReceipt || false,
     };
 
-    // Add expense to pot
-    const updatedPot: typeof pot = {
-      ...pot,
-      expenses: [...(pot.expenses || []), expense],
-      lastEditAt: new Date().toISOString(),
-    };
-
-    await this.source.savePot(updatedPot);
+    await this.source.saveExpense(potId, expense);
     this.invalidate(potId); // Invalidate cache
 
     return { ...expense }; // Return copy
@@ -138,18 +136,7 @@ export class ExpenseRepository {
    * Update an existing expense
    */
   async update(potId: string, expenseId: string, updates: UpdateExpenseDTO): Promise<Expense> {
-    const pot = await this.source.getPot(potId);
-    if (!pot) {
-      throw new NotFoundError('Pot', potId);
-    }
-
-    const expenses = pot.expenses || [];
-    const expenseIndex = expenses.findIndex(e => e.id === expenseId);
-    if (expenseIndex === -1) {
-      throw new NotFoundError('Expense', expenseId);
-    }
-
-    const existing = expenses[expenseIndex];
+    const existing = await this.source.getExpense(potId, expenseId);
     if (!existing) {
       throw new NotFoundError('Expense', expenseId);
     }
@@ -161,17 +148,7 @@ export class ExpenseRepository {
       amount: updates.amount ?? existing.amount, // Ensure amount is always defined
     };
 
-    // Update expense in pot
-    const updatedExpenses = [...(pot.expenses || [])];
-    updatedExpenses[expenseIndex] = updated;
-
-    const updatedPot: typeof pot = {
-      ...pot,
-      expenses: updatedExpenses,
-      lastEditAt: new Date().toISOString(),
-    };
-
-    await this.source.savePot(updatedPot);
+    await this.source.saveExpense(potId, updated);
     this.invalidate(potId); // Invalidate cache
 
     return { ...updated }; // Return copy
@@ -181,25 +158,59 @@ export class ExpenseRepository {
    * Remove an expense
    */
   async remove(potId: string, expenseId: string): Promise<void> {
-    const pot = await this.source.getPot(potId);
-    if (!pot) {
-      throw new NotFoundError('Pot', potId);
-    }
-
-    const updatedExpenses = (pot.expenses || []).filter(e => e.id !== expenseId);
-    
-    if (updatedExpenses.length === pot.expenses?.length) {
-      // Expense not found - this is OK, idempotent operation
-      return;
-    }
-
-    const updatedPot: typeof pot = {
-      ...pot,
-      expenses: updatedExpenses,
-      lastEditAt: new Date().toISOString(),
-    };
-
-    await this.source.savePot(updatedPot);
+    await this.source.deleteExpense(potId, expenseId);
     this.invalidate(potId); // Invalidate cache
+  }
+
+  async summaries(
+    potIds: string[],
+    userId: string,
+  ): Promise<Record<string, ExpenseSummary>> {
+    if (this.source.getExpenseSummaries) {
+      return this.source.getExpenseSummaries(potIds, userId);
+    }
+
+    const result: Record<string, ExpenseSummary> = {};
+    for (const potId of potIds) {
+      const expenses = await this.list(potId);
+      const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+      const myExpenses = expenses
+        .filter((expense) => expense.paidBy === userId)
+        .reduce((sum, expense) => sum + expense.amount, 0);
+      const myShare = expenses.reduce((sum, expense) => {
+        const share = (expense.split ?? []).find((split) => split.memberId === userId);
+        return sum + (share?.amount || 0);
+      }, 0);
+      result[potId] = {
+        potId,
+        totalExpenses,
+        myExpenses,
+        myShare,
+      };
+    }
+
+    return result;
+  }
+
+  private generateExpenseId(): string {
+    const cryptoObj = typeof globalThis !== 'undefined' ? globalThis.crypto : undefined;
+    if (cryptoObj?.randomUUID) {
+      return cryptoObj.randomUUID();
+    }
+
+    if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
+      const buf = new Uint8Array(16);
+      cryptoObj.getRandomValues(buf);
+      const value6 = buf[6] ?? 0;
+      const value8 = buf[8] ?? 0;
+      // eslint-disable-next-line no-bitwise
+      buf[6] = (value6 & 0x0f) | 0x40;
+      // eslint-disable-next-line no-bitwise
+      buf[8] = (value8 & 0x3f) | 0x80;
+      const hex = Array.from(buf, (b) => b.toString(16).padStart(2, '0')).join('');
+      return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+
+    return `expense-${Math.random().toString(36).slice(2, 10)}`;
   }
 }

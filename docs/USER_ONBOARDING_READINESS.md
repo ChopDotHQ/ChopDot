@@ -14,9 +14,9 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
 - 🟡 Mobile WC stability — **DEV**  
   - Current: ipfsAuth import fixed; signer import may still fail on mobile.  
   - Needed: preload/guard WC signer import; retest on mobile; capture first error if any.
-- 🔴 CSP headers — **Open**  
-  - Current: CSP via meta; `frame-ancestors` ignored.  
-  - Needed: set CSP in HTTP headers (Vercel/nginx); remove/adjust meta.
+- 🟢 CSP headers — **DEV**  
+  - Done: CSP enforced via HTTP headers; `frame-ancestors 'none'` verified in prod.  
+  - Note: meta tag removed; cached pages may still show the old warning until hard reload.
 - 🟢 Waiting-for-signature state / no auto-launch — **DEV**.
 - 🟢 Wallet email format fixed (no “+”) — **DEV**.
 - 🟢 ipfsAuth WC import dynamic — **DEV**.
@@ -27,7 +27,8 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
   - Current: `SignInScreen.tsx` ~2k lines with duplicated signup logic.  
   - Needed: split into subcomponents/hooks (wallet auth, email auth), unify signup flow.
 - 🟢 Secure wallet auth (nonce/signature) — **DEV**  
-  - Added `auth_nonces` table + `wallet-auth` edge function; frontend uses nonce → sign → verify → `setSession`; address-as-password path removed. Rotation scripts available for dormant accounts.
+  - Added `auth_nonces` table + `wallet-auth` edge function; frontend uses nonce → sign → verify → `setSession`; address-as-password path removed. Rotation scripts available for dormant accounts.  
+  - Update: `wallet-auth` function source restored in repo and deployed; request-nonce + verify endpoints confirmed working.
 
 ## Data & Sync (Supabase)
 - 🟢 Profiles schema/upsert — **TEDDY**  
@@ -37,9 +38,11 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
   - Needed: list expected migrations; confirm applied; fix gaps.
 - 🟢 Env validation — **DEV**  
   - Done: startup check for `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_WALLETCONNECT_PROJECT_ID` with clear error messages at both build-time (vite.config.ts) and runtime (main.tsx).
-- 🔴 Cross-user pots & invites — **DEV**  
-  - Current: `VITE_DATA_SOURCE=local`; invites are local-only UI and never reach other users. No `invites` table/email/link flow.  
-  - Needed: switch to Supabase data source, add `invites` table + RLS + email/join link, route AddMember/Invite through Supabase, test two-account send/accept/reject/expire.
+- 🟢 Guest mode local-only — **DEV**  
+  - Done: guest sessions bypass Supabase reads/writes; pots persist in local storage (no 403s).
+- 🟡 Cross-user pots & invites — **DEV**  
+  - Current: Supabase data source live for authenticated users; `invites` table + RLS exist; accept/decline edge functions in repo and deployed.  
+  - Needed: complete client send/accept flows, link handling, and two-account QA (invalid/expired/duplicate/self-invite).
 
 ## UX & Polish
 - 🔴 Safari keyboard issue — **DEV**  
@@ -52,7 +55,8 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
 
 ## Payments & Flows
 - 🟡 Pot create/settle smoke test — **DEV**  
-  - Re-run on mobile/desktop; fix regressions.
+  - Update: guest pot creation verified in prod (2025-12-31); wallet login verified.  
+  - Still needed: authenticated pot create + settle on mobile/desktop; fix regressions.
 - 🔴 Financial precision — **DEV**  
   - Current: JS `number` math with partial rounding; risk of drift in settlements.  
   - Needed: move to decimal/integer math or consistent rounding at every step; cover with tests.
@@ -87,18 +91,26 @@ Owners: **DEV** = primary (you/me). **Open** = unassigned (Teddy can take).
   - Ensure AuthContext + AccountContext cleared and WC session/storage removed on logout.
 - 🟢 Wallet auth hardened — **DEV**  
   - Address-as-password removed; nonce/signature verification via edge function; passwords rotated on login; bulk rotation script available for dormant accounts.
+- 🟢 Auth nonces locked down — **DEV**  
+  - Grants removed for `anon`/`authenticated`; `auth_nonces` is service_role-only now.
+- 🟢 Financial tables protected — **DEV**  
+  - RLS enabled + member policies for `expenses`, `contributions`, `settlements`, `payments`; anon grants revoked.
 
 ## Ops
 - 🟢 Feature flags doc (internal) — **DEV**  
   - FEATURE_FLAGS.md: name | purpose | default (e.g., `VITE_ENABLE_MOBILE_WC_UI`, `VITE_ENABLE_WC_MODAL`, `VITE_ENABLE_POLKADOT_BALANCE_UI`, `VITE_ENABLE_LUNOKIT`, `VITE_ENABLE_EMBEDDED_WALLET`, `VITE_ENABLE_CRUST`, `VITE_ENABLE_PRICE_API`, etc.).  
   - Update: Added `docs/FEATURE_FLAGS.md` with the current flags, defaults, and intent.
 - 🟢 Env validation — **DEV** (see Data & Sync).
+- 🟡 How-to wiki / docs site — **DEV**  
+  - Summary: add a public-facing "How to Use" docs site inspired by Polkadot's developer docs (strong IA, left nav, search, "In this section" cards).  
+  - Direction: keep docs in this repo, deploy as a separate site under `docs.chopdot.app`, and link from the in-app Help sheet for deeper guidance.  
+  - Needed: decide audience scope (end-user vs dev), choose doc stack, build IA/structure, and wire domain later.
 - 🟡 Prod/preview parity checks — **DEV**  
   - Checklist to verify both environments before go-live:  
     - Env: `VITE_DATA_SOURCE=supabase`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_WALLETCONNECT_PROJECT_ID` present; planned feature flags set as intended.  
     - Schema/migrations: expected migrations applied; `profiles.wallet_address` exists with correct type; tables match `SUPABASE_SCHEMA_INVENTORY.md`.  
     - Flags: `VITE_ENABLE_WC_MODAL` on by default; experimental flags off unless testing.  
-    - CSP: header-based CSP in place; no frame-ancestors warnings.  
+    - CSP: header-based CSP in place; verified 2025-12-31; no frame-ancestors warnings.  
     - Smoke: WC login succeeds (signature completes); CRUD (pots/expenses) works.
 
 ## Wallet Home Lite (integrated task)

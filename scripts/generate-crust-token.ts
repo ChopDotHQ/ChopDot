@@ -29,8 +29,9 @@ export async function generateCrustToken(): Promise<string> {
   const token = await generateCrustTokenFromWallet(walletAddress);
   
   console.log('\n✅ Crust Web3Auth Token Generated!\n');
-  console.log('Add this to backend/.env:');
-  console.log(`CRUST_W3AUTH_TOKEN=${token}\n`);
+  console.log('Add to backend/.env (copy from return value - token not logged for security):');
+  console.log('CRUST_W3AUTH_TOKEN=<paste token here>\n');
+  console.log('Run: const t = await generateCrustToken(); copy(t)  // in console to copy');
   console.log('Then restart your backend server.');
   
   return token;

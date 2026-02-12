@@ -2,8 +2,8 @@
 
 **For testing email/password authentication**
 
-- **Email**: `Devpen787@gmail.com`
-- **Password**: `testdot123!?`
+- **Email**: `test@example.com` (create a disposable test account or use your own)
+- **Password**: Set via environment or use a throwaway password
 
-**Note**: These are test credentials for development/testing purposes only.
+**Note**: Never commit real credentials. Use `.env` for local testing. Rotate any exposed credentials immediately.
 
