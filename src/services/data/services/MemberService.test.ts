@@ -8,8 +8,11 @@ describe('MemberService', () => {
     update: vi.fn(),
     remove: vi.fn(),
   };
+  const cacheInvalidator = {
+    invalidate: vi.fn(),
+  };
 
-  const service = new MemberService(repository as any);
+  const service = new MemberService(repository as any, cacheInvalidator);
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -26,6 +29,7 @@ describe('MemberService', () => {
 
     expect(result).toEqual({ id: 'm1', name: 'Alice' });
     expect(repository.create).toHaveBeenCalledWith('pot-1', expect.objectContaining({ name: 'Alice' }));
+    expect(cacheInvalidator.invalidate).toHaveBeenCalledWith('pot-1');
   });
 
   it('updateMember and removeMember delegate to repository', async () => {
@@ -36,5 +40,6 @@ describe('MemberService', () => {
 
     expect(repository.update).toHaveBeenCalledWith('pot-1', 'm1', { name: 'Bob' });
     expect(repository.remove).toHaveBeenCalledWith('pot-1', 'm1');
+    expect(cacheInvalidator.invalidate).toHaveBeenCalledWith('pot-1');
   });
 });

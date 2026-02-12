@@ -39,7 +39,7 @@ export interface Settlement {
   personId: string;
   amount: number;
   currency: string;
-  method: 'cash' | 'bank' | 'paypal' | 'twint' | 'dot';
+  method: 'cash' | 'bank' | 'paypal' | 'twint' | 'dot' | 'usdc';
   potIds?: string[];
   date: string;
   txHash?: string;

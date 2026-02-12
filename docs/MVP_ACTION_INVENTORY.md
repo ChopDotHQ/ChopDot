@@ -1,14 +1,14 @@
 # MVP Action Inventory (Teddy Checklist)
 
-Generated: 2026-02-11
+Generated: 2026-02-12
 
 This list is intended to be the pre-Cypress source of truth for MVP action coverage.
 
 ## Summary
 
 - Total identified actions: 175
-- `READY`: 155
-- `PARTIAL`: 20
+- `READY`: 175
+- `PARTIAL`: 0
 
 Legend:
 - `READY` = action appears wired and should be included in Cypress coverage.
@@ -97,7 +97,7 @@ Primary code references used for this inventory:
 - [ ] MVP-058 | READY | Open expenses sort/filter controls | Cypress
 - [ ] MVP-059 | READY | Swipe action: attest expense from list row | Cypress
 - [ ] MVP-060 | READY | Swipe action: delete expense from list row | Cypress
-- [ ] MVP-061 | PARTIAL | Checkpoint confirmation flow before settlement | Manual
+- [ ] MVP-061 | READY | Checkpoint confirmation flow before settlement | Manual
 - [ ] MVP-062 | READY | Start settle flow from Expenses tab | Cypress
 - [ ] MVP-063 | READY | Batch confirm pending expenses | Cypress
 - [ ] MVP-064 | READY | Savings tab: Add contribution CTA | Cypress
@@ -109,7 +109,7 @@ Primary code references used for this inventory:
 
 ### Pot Members
 
-- [ ] MVP-070 | PARTIAL | Open Add Member flow from pot-home members tab | Cypress
+- [ ] MVP-070 | READY | Open Add Member flow from pot-home members tab | Cypress
 - [ ] MVP-071 | READY | Search contacts in Add Member sheet | Cypress
 - [ ] MVP-072 | READY | Add existing contact to pot from Add Member sheet | Cypress
 - [ ] MVP-073 | READY | Send invite to new member via Add Member sheet | Cypress
@@ -119,32 +119,32 @@ Primary code references used for this inventory:
 - [ ] MVP-077 | READY | Copy member wallet address from member card | Cypress
 - [ ] MVP-078 | READY | Resend pending invite from member menu | Cypress
 - [ ] MVP-079 | READY | Revoke pending invite from member menu | Cypress
-- [ ] MVP-080 | PARTIAL | Remove member from pot via member menu | Cypress
+- [ ] MVP-080 | READY | Remove member from pot via member menu | Cypress
 - [ ] MVP-081 | READY | Open member-detail screen | Cypress
 - [ ] MVP-082 | READY | Open payment details modal in member-detail screen | Cypress
 - [ ] MVP-083 | READY | Run settle action from member-detail screen | Cypress
 
 ### Pot Settings
 
-- [ ] MVP-084 | PARTIAL | Update pot name in Settings tab (persisted update) | Cypress
-- [ ] MVP-085 | PARTIAL | Update pot base currency in Settings tab (persisted update) | Cypress
-- [ ] MVP-086 | PARTIAL | Toggle budget tracking in Settings tab (persisted update) | Cypress
-- [ ] MVP-087 | PARTIAL | Update budget amount in Settings tab (persisted update) | Cypress
+- [ ] MVP-084 | READY | Update pot name in Settings tab (persisted update) | Cypress
+- [ ] MVP-085 | READY | Update pot base currency in Settings tab (persisted update) | Cypress
+- [ ] MVP-086 | READY | Toggle budget tracking in Settings tab (persisted update) | Cypress
+- [ ] MVP-087 | READY | Update budget amount in Settings tab (persisted update) | Cypress
 - [ ] MVP-088 | READY | Copy invite link from Settings tab | Cypress
-- [ ] MVP-089 | PARTIAL | Open Share Pot (IPFS) sheet from Settings tab | Manual
+- [ ] MVP-089 | READY | Open Share Pot (IPFS) sheet from Settings tab | Manual
 - [ ] MVP-090 | READY | Export pot as JSON file | Cypress
 - [ ] MVP-091 | READY | Import pot from JSON file | Cypress
 - [ ] MVP-092 | READY | Export encrypted pot (.chop) with password | Cypress
 - [ ] MVP-093 | READY | Import encrypted pot (.chop) with password | Cypress
 - [ ] MVP-094 | READY | Open password modal for encrypted export | Cypress
 - [ ] MVP-095 | READY | Open password modal for encrypted import | Cypress
-- [ ] MVP-096 | PARTIAL | Leave pot action from Settings tab | Cypress
-- [ ] MVP-097 | PARTIAL | Archive pot action from Settings tab | Cypress
-- [ ] MVP-098 | PARTIAL | Delete pot action from Settings tab | Cypress
+- [ ] MVP-096 | READY | Leave pot action from Settings tab | Cypress
+- [ ] MVP-097 | READY | Archive pot action from Settings tab | Cypress
+- [ ] MVP-098 | READY | Delete pot action from Settings tab | Cypress
 
 ### Import Pot
 
-- [ ] MVP-099 | PARTIAL | Reach import-pot flow from normal in-app navigation | Cypress
+- [ ] MVP-099 | READY | Reach import-pot flow from normal in-app navigation | Cypress
 - [ ] MVP-100 | READY | Reach import-pot flow via cid URL parameter | Cypress
 - [ ] MVP-101 | READY | Confirm import-pot and open imported pot-home | Cypress
 - [ ] MVP-102 | READY | Cancel import-pot flow and return to previous screen | Cypress
@@ -165,7 +165,7 @@ Primary code references used for this inventory:
 - [ ] MVP-114 | READY | Save new expense and return to pot-home | Cypress
 - [ ] MVP-115 | READY | Open edit-expense prefilled with existing data | Cypress
 - [ ] MVP-116 | READY | Save edits to existing expense | Cypress
-- [ ] MVP-117 | PARTIAL | Open receipt upload sheet from add-expense UI | Cypress
+- [ ] MVP-117 | READY | Open receipt upload sheet from add-expense UI | Cypress
 
 ### Expense Detail
 
@@ -183,8 +183,8 @@ Primary code references used for this inventory:
 ### Settlement
 
 USDC note:
-- Chain service supports USDC transfer (`sendUsdc`), but current settle UI does not expose a USDC method tab.
-- Track USDC readiness with `MVP-174` and `MVP-175` until UI wiring is implemented.
+- Chain service and settle-home UI support USDC transfers via `sendUsdc`.
+- Keep `MVP-174` and `MVP-175` as dedicated USDC regression checks.
 
 - [ ] MVP-128 | READY | Open settle-selection from pot-home | Cypress
 - [ ] MVP-129 | READY | Return from settle-selection to pot-home | Cypress
@@ -200,14 +200,14 @@ USDC note:
 - [ ] MVP-139 | READY | Confirm PayPal settlement with email requirement | Cypress
 - [ ] MVP-140 | READY | Confirm TWINT settlement with phone requirement | Cypress
 - [ ] MVP-141 | READY | Submit DOT on-chain settlement transaction | Manual
-- [ ] MVP-174 | PARTIAL | Choose USDC settlement method tab (not exposed in current settle-home UI) | Manual
-- [ ] MVP-175 | PARTIAL | Submit USDC on-chain settlement transaction from settle-home flow | Manual
+- [ ] MVP-174 | READY | Choose USDC settlement method tab in settle-home UI | Manual
+- [ ] MVP-175 | READY | Submit USDC on-chain settlement transaction from settle-home flow | Manual
 - [ ] MVP-142 | READY | Copy bank transfer details from settle-home | Cypress
 - [ ] MVP-143 | READY | Copy PayPal payment details from settle-home | Cypress
 - [ ] MVP-144 | READY | Copy TWINT payment details from settle-home | Cypress
-- [ ] MVP-145 | PARTIAL | Open Hyperbridge bridge sheet from settle-home | Manual
+- [ ] MVP-145 | READY | Open Hyperbridge bridge sheet from settle-home | Manual
 - [ ] MVP-146 | READY | Open settlement history from settle-home | Cypress
-- [ ] MVP-147 | PARTIAL | Export settlement history as CSV from history screen | Cypress
+- [ ] MVP-147 | READY | Export settlement history as CSV from history screen | Cypress
 - [ ] MVP-148 | READY | Open settlement confirmation: view history action | Cypress
 - [ ] MVP-149 | READY | Open settlement confirmation: done action | Cypress
 
@@ -232,8 +232,8 @@ USDC note:
 
 ### You Tab
 
-- [ ] MVP-163 | PARTIAL | Open My QR sheet from You tab | Cypress
-- [ ] MVP-164 | PARTIAL | Open Scan QR sheet from You tab | Cypress
+- [ ] MVP-163 | READY | Open My QR sheet from You tab | Cypress
+- [ ] MVP-164 | READY | Open Scan QR sheet from You tab | Cypress
 - [ ] MVP-165 | READY | Open Receive QR screen from You tab (wallet connected) | Cypress
 - [ ] MVP-166 | READY | Open Payment Methods from You tab | Cypress
 - [ ] MVP-167 | READY | Set preferred payment method in Payment Methods screen | Cypress
@@ -241,31 +241,12 @@ USDC note:
 - [ ] MVP-169 | READY | Open View Insights from You tab | Cypress
 - [ ] MVP-170 | READY | Update profile email from Security section | Cypress
 - [ ] MVP-171 | READY | Update password from Security section | Cypress
-- [ ] MVP-172 | PARTIAL | Run advanced actions (export data/privacy/backup/dev/clear cache) | Manual
+- [ ] MVP-172 | READY | Run advanced actions (export data/privacy/backup/dev/clear cache) | Manual
 - [ ] MVP-173 | READY | Logout and delete-account actions from You tab | Manual
 
 ## Known Partial Hotspots
 
-- `MVP-061` Checkpoint confirmation flow before settlement
-- `MVP-070` Open Add Member flow from pot-home members tab
-- `MVP-080` Remove member from pot via member menu
-- `MVP-084` Update pot name in Settings tab (persisted update)
-- `MVP-085` Update pot base currency in Settings tab (persisted update)
-- `MVP-086` Toggle budget tracking in Settings tab (persisted update)
-- `MVP-087` Update budget amount in Settings tab (persisted update)
-- `MVP-089` Open Share Pot (IPFS) sheet from Settings tab
-- `MVP-096` Leave pot action from Settings tab
-- `MVP-097` Archive pot action from Settings tab
-- `MVP-098` Delete pot action from Settings tab
-- `MVP-099` Reach import-pot flow from normal in-app navigation
-- `MVP-117` Open receipt upload sheet from add-expense UI
-- `MVP-145` Open Hyperbridge bridge sheet from settle-home
-- `MVP-147` Export settlement history as CSV from history screen
-- `MVP-174` Choose USDC settlement method tab (not exposed in current settle-home UI)
-- `MVP-175` Submit USDC on-chain settlement transaction from settle-home flow
-- `MVP-163` Open My QR sheet from You tab
-- `MVP-164` Open Scan QR sheet from You tab
-- `MVP-172` Run advanced actions (export data/privacy/backup/dev/clear cache)
+No known partial hotspots remain after current implementation pass.
 
 ## Suggested Cypress Execution Order
 

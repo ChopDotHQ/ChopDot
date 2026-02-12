@@ -42,6 +42,18 @@ describe('ExpenseService', () => {
     expect(repository.create).toHaveBeenCalledWith('pot-1', expect.objectContaining({ memo: 'Lunch' }));
   });
 
+  it('addExpense does not force lastCheckpoint field when no checkpoint exists', async () => {
+    const expense = { id: 'e2', amount: 20 };
+    potRepository.get.mockResolvedValue({ id: 'pot-2' });
+    repository.create.mockResolvedValue(expense);
+
+    await service.addExpense('pot-2', { amount: 20, paidBy: 'owner', memo: 'Coffee', potId: 'pot-2' } as any);
+
+    const updateArg = potRepository.update.mock.calls[0]?.[1] ?? {};
+    expect(updateArg.lastEditAt).toEqual(expect.any(String));
+    expect(Object.prototype.hasOwnProperty.call(updateArg, 'lastCheckpoint')).toBe(false);
+  });
+
   it('updateExpense validates, updates metadata, and delegates update', async () => {
     potRepository.get.mockResolvedValue({ id: 'pot-1', lastCheckpoint: { hash: 'h1' } });
     repository.update.mockResolvedValue({ id: 'e1', amount: 12 });

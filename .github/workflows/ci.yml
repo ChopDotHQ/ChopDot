@@ -35,5 +35,11 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Coverage gate
+        run: npm run test:coverage
+
+      - name: Verify MVP inventory
+        run: npm run verify:mvp
+
       - name: Build
         run: npm run build

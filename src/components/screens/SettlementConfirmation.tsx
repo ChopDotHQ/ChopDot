@@ -24,6 +24,7 @@ export function SettlementConfirmation({
     paypal: "PayPal",
     twint: "TWINT",
     dot: "DOT Wallet",
+    usdc: "USDC Wallet",
   };
 
   return (

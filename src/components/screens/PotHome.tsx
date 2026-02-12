@@ -87,6 +87,7 @@ interface PotHomeProps {
   onUpdateSettings: (settings: any) => void;
   onSettle: () => void;
   onCopyInviteLink?: () => void;
+  onSharePot?: () => void;
   onResendInvite?: (memberId: string) => void;
   onDeleteExpense?: (expenseId: string) => void;
   onAttestExpense?: (expenseId: string, silent?: boolean) => void;
@@ -146,6 +147,7 @@ export function PotHome({
   onUpdateSettings,
   onSettle,
   onCopyInviteLink,
+  onSharePot,
   onResendInvite,
   onDeleteExpense,
   onAttestExpense,
@@ -859,7 +861,7 @@ export function PotHome({
               id: pot.id || potId || '',
               name: pot.name || potName,
               type: pot.type || potType,
-              baseCurrency: (pot.baseCurrency || baseCurrency) as 'USD' | 'DOT',
+              baseCurrency: (pot.baseCurrency || baseCurrency) as 'USD' | 'DOT' | 'USDC' | 'EUR' | 'GBP' | 'CHF' | 'JPY',
               members: pot.members || members.map(m => ({ id: m.id, name: m.name, address: m.address || null })),
               expenses: pot.expenses || expenses.map(e => ({
                 id: e.id,
@@ -882,7 +884,7 @@ export function PotHome({
               id: potId || '',
               name: potName,
               type: potType,
-              baseCurrency: baseCurrency as 'USD' | 'DOT',
+              baseCurrency: baseCurrency as 'USD' | 'DOT' | 'USDC' | 'EUR' | 'GBP' | 'CHF' | 'JPY',
               members: members.map(m => ({ id: m.id, name: m.name, address: m.address || null })),
               expenses: expenses.map(e => ({
                 id: e.id,
@@ -909,9 +911,7 @@ export function PotHome({
             onLeavePot={onLeavePot}
             onArchivePot={onArchivePot}
             onDeletePot={onDeletePot}
-            onSharePot={() => {
-              if (onCopyInviteLink) onCopyInviteLink();
-            }}
+            onSharePot={onSharePot ?? onCopyInviteLink}
           />
         )}
       </div>

@@ -99,7 +99,9 @@ export interface OnchainSettlementHistory {
   toMemberId: string;
   fromAddress: string;
   toAddress: string;
-  amountDot: string;
+  amountDot?: string;
+  amountUsdc?: string;
+  assetId?: number;
   txHash: string;
   status: 'submitted' | 'in_block' | 'finalized' | 'failed';
   subscan?: string;

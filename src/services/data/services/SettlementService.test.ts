@@ -73,4 +73,31 @@ describe('SettlementService', () => {
       ],
     });
   });
+
+  it('recordOnchainSettlement supports USDC entries', async () => {
+    const entry = {
+      id: 'h2',
+      when: Date.now(),
+      type: 'onchain_settlement' as const,
+      fromMemberId: 'owner',
+      toMemberId: 'alice',
+      fromAddress: 'addr1',
+      toAddress: 'addr2',
+      amountUsdc: '12.345600',
+      assetId: 1337,
+      txHash: '0x456',
+      status: 'finalized' as const,
+    };
+
+    potRepository.get.mockResolvedValue({
+      id: 'pot-1',
+      history: [],
+    });
+
+    await service.recordOnchainSettlement('pot-1', entry);
+
+    expect(potRepository.update).toHaveBeenCalledWith('pot-1', {
+      history: [entry],
+    });
+  });
 });

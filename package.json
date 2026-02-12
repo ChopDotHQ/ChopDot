@@ -11,6 +11,7 @@
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "verify:mvp": "node scripts/verify-mvp-inventory.mjs",
     "lint:tokens": "! rg -n \"#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\" src --glob '!**/*.{png,jpg,jpeg,svg,webp,gif}' | rg -v 'var\\(' && ! rg -n 'accent-orange|gradient-orange' src",
     "verify:edge-functions": "./scripts/verify-edge-functions.sh",
     "db:setup": "./supabase-setup-local.sh",
@@ -92,6 +93,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/vite": "^4.0.0",
     "@types/node": "^22.10.2",
     "@types/pako": "^2.0.4",

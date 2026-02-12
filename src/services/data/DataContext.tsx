@@ -76,7 +76,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     // Create services
     const potService = new PotService(potRepo);
     const expenseService = new ExpenseService(expenseRepo, potRepo);
-    const memberService = new MemberService(memberRepo);
+    const memberService = new MemberService(memberRepo, potRepo);
     const settlementService = new SettlementService(settlementRepo, potRepo);
 
     return {
