@@ -87,7 +87,7 @@ export type UpdateMemberDTO = z.infer<typeof UpdateMemberDTOSchema>;
 export interface SettlementSuggestion {
   from: string; // memberId who owes
   to: string;   // memberId who is owed
-  amount: number;
+  amount: string;
 }
 
 // On-chain Settlement History Entry

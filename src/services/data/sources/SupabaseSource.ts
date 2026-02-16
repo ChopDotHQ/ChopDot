@@ -119,11 +119,11 @@ export class SupabaseSource implements DataSource {
 
     const rows = (data ?? []) as unknown as SupabasePotRow[];
     const potMembersByPotId = await this.fetchMembersByPotId(rows.map((row) => row.id));
-    
+
     // Auto-seeding disabled - users should create their own pots
     // Previously this would seed sample pots, but now we return empty results
     // if the user has no pots yet
-    
+
     return rows.map((row) => this.mapRow(row, potMembersByPotId.get(row.id) ?? null, []));
   }
 
@@ -133,6 +133,10 @@ export class SupabaseSource implements DataSource {
     if (!userId) {
       return this.guestSource.getPot(id);
     }
+    if (!this.isUuid(id)) {
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('pots')
       .select(POT_COLUMNS.join(','))
@@ -222,6 +226,10 @@ export class SupabaseSource implements DataSource {
       await this.guestSource.deletePot(id);
       return;
     }
+    if (!this.isUuid(id)) {
+      await this.guestSource.deletePot(id);
+      return;
+    }
     const { data, error } = await supabase
       .from('pots')
       .delete()
@@ -302,6 +310,10 @@ export class SupabaseSource implements DataSource {
       return this.guestSource.getExpense(potId, expenseId);
     }
 
+    if (!this.isUuid(expenseId) || !this.isUuid(potId)) {
+      return this.guestSource.getExpense(potId, expenseId);
+    }
+
     const { data, error } = await supabase
       .from('expenses')
       .select('id,pot_id,creator_id,paid_by,amount_minor,currency_code,description,expense_date,created_at,legacy_id,metadata')
@@ -322,24 +334,31 @@ export class SupabaseSource implements DataSource {
 
   async saveExpense(potId: string, expense: Expense): Promise<void> {
     const supabase = this.ensureReady();
-    const userId = await this.requireAuthenticatedUser('modify expense');
+    const userId = await this.getOptionalUserId('modify expense');
+
+    if (!userId) {
+      await this.guestSource.saveExpense(potId, expense);
+      return;
+    }
+
+    const normalizedExpense = this.normalizeExpenseId(expense);
 
     const { data: existing, error: existingError } = await supabase
       .from('expenses')
       .select('id, creator_id')
-      .eq('id', expense.id)
+      .eq('id', normalizedExpense.id)
       .maybeSingle();
 
     if (existingError && existingError.code !== 'PGRST116') {
-      throw new Error(`[SupabaseSource] Failed to inspect expense ${expense.id}: ${existingError.message}`);
+      throw new Error(`[SupabaseSource] Failed to inspect expense ${normalizedExpense.id}: ${existingError.message}`);
     }
 
     const creatorId = (existing as { creator_id?: string } | null)?.creator_id ?? userId;
-    const legacyId = (expense as { legacyId?: string; legacy_id?: string }).legacyId
-      ?? (expense as { legacy_id?: string }).legacy_id;
-    const resolvedPaidBy = expense.paidBy === 'owner' ? userId : (expense.paidBy || userId);
+    const legacyId = (normalizedExpense as { legacyId?: string; legacy_id?: string }).legacyId
+      ?? (normalizedExpense as { legacy_id?: string }).legacy_id;
+    const resolvedPaidBy = normalizedExpense.paidBy === 'owner' ? userId : (normalizedExpense.paidBy || userId);
     const payload = {
-      id: expense.id,
+      id: normalizedExpense.id,
       pot_id: potId,
       creator_id: creatorId,
       paid_by: resolvedPaidBy,
@@ -773,9 +792,9 @@ export class SupabaseSource implements DataSource {
       const paidBy = typeof expense.paidBy === 'string' ? mapMemberId(expense.paidBy) : expense.paidBy;
       const split = Array.isArray(expense.split)
         ? (expense.split as Array<Record<string, unknown>>).map((s) => ({
-            ...s,
-            memberId: typeof s.memberId === 'string' ? mapMemberId(s.memberId) : s.memberId,
-          }))
+          ...s,
+          memberId: typeof s.memberId === 'string' ? mapMemberId(s.memberId) : s.memberId,
+        }))
         : expense.split;
       const attestations = mapAttestations(expense.attestations);
       return {
