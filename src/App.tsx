@@ -1,5 +1,4 @@
 import {
-  lazy,
   Suspense,
   useState,
   useMemo,
@@ -7,26 +6,15 @@ import {
   useEffect,
   useRef,
 } from "react";
-// Lazy import to avoid bundling Polkadot API eagerly
-let polkadotChainService: any = null;
-const getPolkadotChainService = async () => {
-  if (!polkadotChainService) {
-    const module = await import("./services/chain/polkadot");
-    polkadotChainService = module.polkadotChainService;
-  }
-  return polkadotChainService;
-};
 import { AppRouter } from "./components/AppRouter";
-import { Screen, useNav } from "./nav";
+import { useNav } from "./nav";
 import { useTheme } from "./utils/useTheme";
 import { triggerHaptic } from "./utils/haptics";
-import type { PersonSettlement, SettlementBreakdown } from "./utils/settlements";
 import Decimal from "decimal.js";
 import { InviteService } from "./services/InviteService";
 import { AcceptInviteModal } from "./components/modals/AcceptInviteModal";
 import {
   calculateSettlements,
-  calculatePotSettlements,
 } from "./utils/settlements";
 import { getSupabase } from "./utils/supabase-client";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
@@ -34,237 +22,36 @@ import { FeatureFlagsProvider, useFeatureFlags } from "./contexts/FeatureFlagsCo
 import { useAccount } from "./contexts/AccountContext";
 import { cleanupBackupTimers } from "./services/backup/autoBackup";
 import { attemptAutoRestore } from "./services/restore/autoRestore";
-import { isBaseCurrency } from "./schema/pot";
 import { AuthScreen } from "./components/screens/AuthScreen";
-import { ActivityHome } from "./components/screens/ActivityHome";
-import { PotsHome } from "./components/screens/PotsHome";
-import { PeopleHome } from "./components/screens/PeopleHome";
 import { BottomTabBar } from "./components/BottomTabBar";
 import { SwipeableScreen } from "./components/SwipeableScreen";
 import { toast } from "sonner";
 import { useData } from "./services/data/DataContext";
 import { logDev, warnDev } from "./utils/logDev";
-import { YouTab } from "./components/screens/YouTab";
 import { AppOverlays } from "./components/app/AppOverlays";
 import { Receipt, CheckCircle, ArrowLeftRight, Plus, LucideIcon } from "lucide-react";
 import { setOnboardingCallback, resetOnboardingFlag } from "./services/storage/ipfsWithOnboarding";
 import { usePots as useRemotePots } from "./hooks/usePots";
 import { usePot as useRemotePot } from "./hooks/usePot";
+import { getInitialScreenFromLocation, useUrlSync } from "./hooks/useUrlSync";
+import { useInviteFlow } from "./hooks/useInviteFlow";
+import { useBusinessActions } from "./hooks/useBusinessActions";
+import { useSettlementActions } from "./hooks/useSettlementActions";
+import { createPolkadotBuilderPartyPot } from "./data/builder-party";
 import type { PaymentMethod } from "./components/screens/PaymentMethods";
 import type { Notification } from "./components/screens/NotificationCenter";
 
-const Settings = lazy(() =>
-  import("./components/screens/Settings").then((module) => ({ default: module.Settings }))
-);
-const PaymentMethods = lazy(() =>
-  import("./components/screens/PaymentMethods").then((module) => ({ default: module.PaymentMethods }))
-);
-const CreatePot = lazy(() =>
-  import("./components/screens/CreatePot").then((module) => ({ default: module.CreatePot }))
-);
-const PotHome = lazy(() =>
-  import("./components/screens/PotHome").then((module) => ({ default: module.PotHome }))
-);
-const AddExpense = lazy(() =>
-  import("./components/screens/AddExpense").then((module) => ({ default: module.AddExpense }))
-);
-const ExpenseDetail = lazy(() =>
-  import("./components/screens/ExpenseDetail").then((module) => ({ default: module.ExpenseDetail }))
-);
-const SettleSelection = lazy(() =>
-  import("./components/screens/SettleSelection").then((module) => ({ default: module.SettleSelection }))
-);
-const SettleHome = lazy(() =>
-  import("./components/screens/SettleHome").then((module) => ({ default: module.SettleHome }))
-);
-const SettlementHistory = lazy(() =>
-  import("./components/screens/SettlementHistory").then((module) => ({ default: module.SettlementHistory }))
-);
-const SettlementConfirmation = lazy(() =>
-  import("./components/screens/SettlementConfirmation").then((module) => ({ default: module.SettlementConfirmation }))
-);
-const InsightsScreen = lazy(() =>
-  import("./components/screens/InsightsScreen").then((module) => ({ default: module.InsightsScreen }))
-);
-const MemberDetail = lazy(() =>
-  import("./components/screens/MemberDetail").then((module) => ({ default: module.MemberDetail }))
-);
-const AddContribution = lazy(() =>
-  import("./components/screens/AddContribution").then((module) => ({ default: module.AddContribution }))
-);
-const WithdrawFunds = lazy(() =>
-  import("./components/screens/WithdrawFunds").then((module) => ({ default: module.WithdrawFunds }))
-);
-const RequestPayment = lazy(() =>
-  import("./components/screens/RequestPayment").then((module) => ({ default: module.RequestPayment }))
-);
-const CrustStorage = lazy(() =>
-  import("./components/screens/CrustStorage").then((module) => ({ default: module.CrustStorage }))
-);
-const CrustAuthSetup = lazy(() =>
-  import("./components/screens/CrustAuthSetup").then((module) => ({ default: module.CrustAuthSetup }))
-);
-const ReceiveQR = lazy(() =>
-  import("./components/screens/ReceiveQR").then((module) => ({ default: module.ReceiveQR }))
-);
-const ImportPot = lazy(() =>
-  import("./components/screens/ImportPot").then((module) => ({ default: module.ImportPot }))
-);
-
 import {
-  Member,
-  Expense,
-  Contribution,
-  PotHistory,
   Pot,
   Settlement,
   ActivityItem,
-  Person,
-  CheckpointConfirmation,
-  ExpenseCheckpoint
+  Person
 } from "./types/app";
 import {
   normalizeMembers,
   normalizeExpenses,
-  normalizeConfirmations,
   normalizeHistory
 } from "./utils/normalization";
-
-const DAY_IN_MS = 24 * 60 * 60 * 1000;
-
-const builderPartyMembersTemplate: Member[] = [
-  {
-    id: "owner",
-    name: "You",
-    role: "Owner",
-    status: "active",
-    address: "15GrwkvKWLJUXwKZFXChsVGdfnRDEhinYMiGWXnV8Pfv7Hjq",
-  },
-  {
-    id: "alice",
-    name: "Alice",
-    role: "Member",
-    status: "active",
-    address: "15Jh2k3Xm29ry1CNtXNvzPTC2QgHYMnyqcG4cSnhpV9MrAbf",
-  },
-  {
-    id: "bob",
-    name: "Bob",
-    role: "Member",
-    status: "active",
-    address: "13FJ4i6TJyGXPRvWHzRvDDDeZPAHDq6cHruM3aMcDwZJWLEH",
-  },
-  {
-    id: "charlie",
-    name: "Charlie",
-    role: "Member",
-    status: "active",
-    address: "16Hk8qqBPGF6NQvM6PgZGZXzx9Dj2TqkBTsEz9wqgFudaGt3",
-  },
-];
-
-type BuilderPartyExpenseTemplate = Omit<Expense, "date"> & { daysAgo: number };
-
-const builderPartyExpenseTemplates: BuilderPartyExpenseTemplate[] = [
-  {
-    id: "pb1",
-    amount: 1.2,
-    currency: "DOT",
-    paidBy: "owner",
-    memo: "Hack lounge deposit",
-    daysAgo: 6,
-    split: [
-      { memberId: "owner", amount: 0.3 },
-      { memberId: "alice", amount: 0.3 },
-      { memberId: "bob", amount: 0.3 },
-      { memberId: "charlie", amount: 0.3 },
-    ],
-    attestations: ["alice", "bob", "charlie"],
-    hasReceipt: true,
-  },
-  {
-    id: "pb2",
-    amount: 1.2,
-    currency: "DOT",
-    paidBy: "alice",
-    memo: "Night market dinner",
-    daysAgo: 4,
-    split: [
-      { memberId: "owner", amount: 0.3 },
-      { memberId: "alice", amount: 0.3 },
-      { memberId: "bob", amount: 0.3 },
-      { memberId: "charlie", amount: 0.3 },
-    ],
-    attestations: ["owner", "charlie"],
-    hasReceipt: true,
-  },
-  {
-    id: "pb3",
-    amount: 1.2,
-    currency: "DOT",
-    paidBy: "bob",
-    memo: "Recharge snacks & coffee",
-    daysAgo: 3,
-    split: [
-      { memberId: "owner", amount: 0.3 },
-      { memberId: "alice", amount: 0.3 },
-      { memberId: "bob", amount: 0.3 },
-      { memberId: "charlie", amount: 0.3 },
-    ],
-    attestations: ["alice"],
-    hasReceipt: false,
-  },
-  {
-    id: "pb4",
-    amount: 1.2,
-    currency: "DOT",
-    paidBy: "charlie",
-    memo: "Badge print run",
-    daysAgo: 1,
-    split: [
-      { memberId: "owner", amount: 0.3 },
-      { memberId: "alice", amount: 0.3 },
-      { memberId: "bob", amount: 0.3 },
-      { memberId: "charlie", amount: 0.3 },
-    ],
-    attestations: [],
-    hasReceipt: true,
-  },
-  {
-    id: "pb5",
-    amount: 0.001,
-    currency: "DOT",
-    paidBy: "bob",
-    memo: "Micro-settlement demo",
-    daysAgo: 0,
-    split: [{ memberId: "owner", amount: 0.001 }],
-    attestations: [],
-    hasReceipt: false,
-  },
-];
-
-const createBuilderPartyMembers = (): Member[] =>
-  builderPartyMembersTemplate.map((member) => ({ ...member }));
-
-const createBuilderPartyExpenses = (now = Date.now()): Expense[] =>
-  builderPartyExpenseTemplates.map(({ daysAgo, ...expense }) => ({
-    ...expense,
-    date: new Date(now - daysAgo * DAY_IN_MS).toISOString(),
-    split: expense.split.map((split) => ({ ...split })),
-    attestations: [...expense.attestations],
-  }));
-
-const createPolkadotBuilderPartyPot = (now = Date.now()): Pot => ({
-  id: "4",
-  name: "Polkadot Builder Party",
-  type: "expense",
-  baseCurrency: "DOT",
-  members: createBuilderPartyMembers(),
-  expenses: createBuilderPartyExpenses(now),
-  budget: 6,
-  budgetEnabled: true,
-  checkpointEnabled: false,
-});
 
 function AppContent() {
   const { DEMO_MODE, POLKADOT_APP_ENABLED } = useFeatureFlags();
@@ -281,28 +68,6 @@ function AppContent() {
   const isGuest = user?.authMethod === 'guest';
   const userEmail = (user as any)?.email as string | undefined;
 
-  const getInitialScreen = (): Screen => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const cidParam = urlParams.get('cid');
-    if (cidParam) {
-      return { type: 'import-pot' };
-    }
-
-    // Read route from pathname
-    const pathname = window.location.pathname;
-    if (pathname === '/activity') {
-      return { type: 'activity-home' };
-    } else if (pathname === '/people') {
-      return { type: 'people-home' };
-    } else if (pathname === '/you') {
-      return { type: 'you-tab' };
-    } else if (pathname === '/' || pathname === '/pots') {
-      return { type: 'pots-home' };
-    }
-
-    return { type: 'pots-home' };
-  };
-
   const {
     current: screen,
     stack,
@@ -310,73 +75,9 @@ function AppContent() {
     back,
     reset,
     replace,
-  } = useNav(getInitialScreen());
+  } = useNav(getInitialScreenFromLocation());
 
-  const lastCidRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const cidParam = urlParams.get('cid');
-
-    if (cidParam !== lastCidRef.current) {
-      lastCidRef.current = cidParam;
-
-      if (cidParam && screen?.type !== 'import-pot') {
-        reset({ type: 'import-pot' });
-      } else if (!cidParam && screen?.type === 'import-pot') {
-        reset({ type: 'pots-home' });
-      }
-    }
-  }, [screen?.type, reset]);
-
-  // Handle browser back/forward buttons
-  useEffect(() => {
-    const handlePopState = () => {
-      const pathname = window.location.pathname;
-      const routeToScreen: Record<string, Screen['type']> = {
-        '/': 'pots-home',
-        '/pots': 'pots-home',
-        '/activity': 'activity-home',
-        '/people': 'people-home',
-        '/you': 'you-tab',
-      };
-
-      const screenType = routeToScreen[pathname];
-      if (screenType && screen?.type !== screenType) {
-        reset({ type: screenType } as Screen);
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [screen?.type, reset]);
-
-  // Sync URL with current screen for tab navigation
-  useEffect(() => {
-    if (!screen) return;
-
-    const screenToRoute: Record<string, string> = {
-      'pots-home': '/pots',
-      'activity-home': '/activity',
-      'people-home': '/people',
-      'you-tab': '/you',
-    };
-
-    const newPath = screenToRoute[screen.type];
-    if (newPath && window.location.pathname !== newPath && window.location.pathname !== '/') {
-      // Use replaceState to avoid adding unnecessary history entries
-      // Only push when explicitly triggered by handleTabChange
-      const isTabScreen = ['pots-home', 'activity-home', 'people-home', 'you-tab'].includes(screen.type);
-      if (isTabScreen && stack.length === 1) {
-        window.history.replaceState({}, '', newPath);
-      }
-    }
-
-    // Handle root path - redirect to /pots
-    if (window.location.pathname === '/' && screen.type === 'pots-home') {
-      window.history.replaceState({}, '', '/pots');
-    }
-  }, [screen, stack.length]);
+  useUrlSync({ screen, stackLength: stack.length, reset });
 
   const showToast = (
     message: string,
@@ -403,11 +104,7 @@ function AppContent() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod | null>(null);
   const [showAddMember, setShowAddMember] = useState(false);
-  const [pendingInviteToken, setPendingInviteToken] = useState<string | null>(null);
-  const [showInviteModal, setShowInviteModal] = useState(false);
-  const [isProcessingInvite, setIsProcessingInvite] = useState(false);
   const [fabQuickAddPotId, setFabQuickAddPotId] = useState<string | null>(null);
-  const clearFabQuickAddPotId = useCallback(() => setFabQuickAddPotId(null), [setFabQuickAddPotId]);
   const [showIPFSAuthOnboarding, setShowIPFSAuthOnboarding] = useState(false);
   const [pendingIPFSAction, setPendingIPFSAction] = useState<(() => Promise<void>) | null>(null);
 
@@ -422,7 +119,6 @@ function AppContent() {
   >(null);
   const [selectedCounterpartyId, setSelectedCounterpartyId] =
     useState<string | null>(null);
-  const [invitesByPot, setInvitesByPot] = useState<Record<string, { id: string; invitee_email: string; status: string; token: string }[]>>({});
   const notifyPotRefresh = useCallback((potId: string) => {
     window.dispatchEvent(
       new CustomEvent("pot-refresh", { detail: { potId } }),
@@ -434,45 +130,6 @@ function AppContent() {
     | { provider: string; address: string; name?: string }
     | undefined
   >();
-
-
-  const copyInviteLink = useCallback(
-    async (potId: string) => {
-      const invites = await inviteService.getPotInvites(potId);
-      // Logic: find a valid one or use the latest
-      // For now, let's grab the latest pending one or just the latest one
-      const invite = invites[0];
-
-      if (!invite?.token) {
-        showToast("No invite found. Add a member first.", "info");
-        return;
-      }
-
-      const link = `${window.location.origin}/join?token=${invite.token}`;
-      try {
-        await navigator.clipboard?.writeText(link);
-        showToast("Invite link copied", "success");
-      } catch {
-        showToast(`Invite link: ${link}`, "success");
-      }
-    },
-    [inviteService, showToast],
-  );
-
-  const joinProcessingRef = useRef(false);
-  const [pendingInvites, setPendingInvites] = useState<
-    Array<{ id: string; token: string; created_at?: string; expires_at?: string }>
-  >([]);
-
-  const refreshPendingInvites = useCallback(async () => {
-    const invites = await inviteService.getMyPendingInvites();
-    setPendingInvites(invites);
-  }, [inviteService]);
-
-  useEffect(() => {
-    if (authLoading) return;
-    refreshPendingInvites();
-  }, [authLoading, isAuthenticated, user?.id, refreshPendingInvites]);
 
   // Ensure the public.users profile exists (and has a display name) for this auth user.
   // This improves member displays in shared pots (e.g., pot_members -> users.name).
@@ -496,92 +153,29 @@ function AppContent() {
     })();
   }, [authLoading, isAuthenticated, user?.id, userEmail]);
 
-  const cleanInviteParams = useCallback(() => {
-    const cleaned = new URL(window.location.href);
-    cleaned.searchParams.delete("token");
-    cleaned.searchParams.delete("invite");
-    window.history.replaceState({}, "", cleaned.toString());
-  }, []);
-
-
-  const fetchInvites = useCallback(
-    async (potId: string) => {
-      const invites = await inviteService.getPotInvites(potId);
-      setInvitesByPot((prev) => ({ ...prev, [potId]: invites }));
-    },
-    [inviteService]
-  );
-  useEffect(() => {
-    if (currentPotId) {
-      fetchInvites(currentPotId);
-    }
-  }, [currentPotId, fetchInvites]);
-
-  const acceptInvite = useCallback(
-    async (token: string) => {
-      setIsProcessingInvite(true);
-      const result = await inviteService.acceptInvite(token);
-      setIsProcessingInvite(false);
-
-      if (!result.success) {
-        showToast(result.error || "Failed to accept invite", "error");
-      } else {
-        showToast("Invite accepted!", "success");
-        if (result.potId) {
-          setCurrentPotId(result.potId);
-          reset({ type: "pot-home", potId: result.potId });
-          notifyPotRefresh(result.potId);
-        }
-        refreshPendingInvites();
-        cleanInviteParams();
-        setShowInviteModal(false);
-      }
-    },
-    [inviteService, showToast, reset, notifyPotRefresh, refreshPendingInvites, cleanInviteParams],
-  );
-
-  const declineInvite = useCallback(
-    async (token: string) => {
-      setIsProcessingInvite(true);
-      const result = await inviteService.declineInvite(token);
-      setIsProcessingInvite(false);
-
-      if (!result.success) {
-        showToast(result.error || "Failed to decline invite", "error");
-      } else {
-        showToast("Invite declined", "success");
-        refreshPendingInvites();
-        cleanInviteParams();
-        setShowInviteModal(false);
-      }
-    },
-    [inviteService, showToast, refreshPendingInvites, cleanInviteParams],
-  );
-
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const token = url.searchParams.get("token") || url.searchParams.get("invite");
-    if (!token || joinProcessingRef.current) return;
-    joinProcessingRef.current = true;
-
-    setPendingInviteToken(token);
-    setShowInviteModal(true);
-  }, [cleanInviteParams]);
-
-  const confirmPendingInvite = useCallback(async () => {
-    if (!pendingInviteToken) return;
-    await acceptInvite(pendingInviteToken);
-  }, [pendingInviteToken, acceptInvite]);
-
-  const cancelPendingInvite = useCallback(() => {
-    // If we want to decline on cancel:
-    // if (pendingInviteToken) declineInvite(pendingInviteToken);
-    // OR just close modal:
-    setPendingInviteToken(null);
-    setShowInviteModal(false);
-    joinProcessingRef.current = false;
-    cleanInviteParams();
-  }, [cleanInviteParams]);
+  const {
+    invitesByPot,
+    pendingInviteToken,
+    isProcessingInvite,
+    pendingInvites,
+    showInviteModal,
+    joinProcessingRef,
+    fetchInvites,
+    acceptInvite,
+    declineInvite,
+    confirmPendingInvite,
+    cancelPendingInvite,
+  } = useInviteFlow({
+    inviteService,
+    authLoading,
+    isAuthenticated,
+    userId: user?.id,
+    currentPotId,
+    setCurrentPotId,
+    reset,
+    notifyPotRefresh,
+    showToast,
+  });
 
   const [settlements, setSettlements] = useState<Settlement[]>([]);
 
@@ -1249,517 +843,6 @@ function AppContent() {
     return !rootScreens.includes(screen.type);
   };
 
-  const createPot = async () => {
-    let processedMembers = newPot.members || [];
-    const { getMockAddressForMember, isSimulationMode } = await import('./utils/simulation');
-    const rawBaseCurrency = newPot.baseCurrency || "USD";
-    const baseCurrency = isBaseCurrency(rawBaseCurrency) ? rawBaseCurrency : "USD";
-
-    if (isSimulationMode() && baseCurrency === 'DOT') {
-      processedMembers = processedMembers.map((m) => {
-        if (!m.address) {
-          const mockAddr = getMockAddressForMember(m.name);
-          if (mockAddr) {
-            return { ...m, address: mockAddr };
-          }
-        }
-        return m;
-      });
-    }
-
-    try {
-      const createDto = {
-        name: newPot.name || "Unnamed Pot",
-        type: newPot.type || "expense",
-        baseCurrency,
-        budget: newPot.budget ?? null,
-        budgetEnabled: newPot.budgetEnabled ?? false,
-        checkpointEnabled: newPot.type === "expense" ? false : undefined,
-        goalAmount: newPot.goalAmount,
-        goalDescription: newPot.goalDescription,
-        members: processedMembers.map(m => ({
-          id: m.id,
-          name: m.name,
-          address: m.address || null,
-          verified: m.verified,
-          role: m.role,
-          status: m.status,
-        })),
-      };
-
-      const createdPot = await potService.createPot(createDto);
-      logDev(`Pot created via service`, { potId: createdPot.id });
-
-      // If using Supabase, trigger a refresh to show the new pot
-      if (usingSupabaseSource) {
-        window.dispatchEvent(new CustomEvent('pots-refresh'));
-      } else {
-        // For local storage, update state directly
-        setPots([...pots, createdPot as unknown as Pot]);
-      }
-
-      setNewPot({
-        name: "",
-        type: "expense",
-        baseCurrency: "USD",
-        members: [
-          {
-            id: "owner",
-            name: "You",
-            role: "Owner",
-            status: "active",
-          },
-        ],
-        expenses: [],
-        budgetEnabled: false,
-      });
-
-      setCurrentPotId(createdPot.id);
-      replace({ type: "pot-home", potId: createdPot.id });
-      showToast("Pot created successfully!", "success");
-    } catch (error) {
-      warnDev('Service create failed', error);
-      showToast('Failed to create pot', 'error');
-    }
-  };
-
-  const addExpenseToPot = (
-    potId: string,
-    data: {
-      amount: number;
-      currency: string;
-      paidBy: string;
-      memo: string;
-      date: string;
-      split: { memberId: string; amount: number }[];
-      hasReceipt: boolean;
-      receiptUrl?: string;
-    },
-  ) => {
-    if (!potId) return;
-
-    const expense: Expense = {
-      id: Date.now().toString(),
-      amount: data.amount,
-      currency: data.currency,
-      paidBy: data.paidBy,
-      memo: data.memo,
-      date: data.date,
-      split: data.split,
-      attestations: [],
-      hasReceipt: data.hasReceipt,
-      ...(data.receiptUrl && { receiptUrl: data.receiptUrl }),
-    };
-
-    setPots(
-      pots.map((p) => {
-        if (p.id !== potId) return p;
-
-        let updatedCheckpoint = p.currentCheckpoint;
-        if (
-          p.currentCheckpoint?.status === "pending" &&
-          p.currentCheckpoint.confirmations.get("owner")
-            ?.confirmed
-        ) {
-          const updatedConfirmations = new Map(
-            p.currentCheckpoint.confirmations,
-          );
-          updatedConfirmations.set("owner", {
-            confirmed: false,
-          });
-          updatedCheckpoint = {
-            ...p.currentCheckpoint,
-            confirmations: updatedConfirmations,
-          };
-        }
-
-        return {
-          ...p,
-          expenses: [...p.expenses, expense],
-          currentCheckpoint: updatedCheckpoint,
-        };
-      }),
-    );
-
-    (async () => {
-      try {
-        const createExpenseDTO = {
-          potId,
-          amount: expense.amount,
-          currency: expense.currency,
-          paidBy: expense.paidBy,
-          memo: expense.memo,
-          date: expense.date,
-          split: expense.split,
-          hasReceipt: expense.hasReceipt,
-          ...((expense as any).receiptUrl && { receiptUrl: (expense as any).receiptUrl }),
-        };
-
-        await expenseService.addExpense(potId, createExpenseDTO);
-        logDev('[DataLayer] Expense added via service', { potId, expenseId: expense.id });
-        notifyPotRefresh(potId);
-      } catch (error) {
-        warnDev('[DataLayer] Service addExpense failed', error);
-        const message =
-          error instanceof Error
-            ? error.message
-            : typeof error === 'string'
-              ? error
-              : 'Unknown error';
-        showToast(`Saved locally (service write failed): ${message}`, 'info');
-      }
-    })();
-
-    replace({ type: "pot-home", potId });
-    showToast("Expense added successfully!", "success");
-  };
-
-  const updateExpense = (data: {
-    amount: number;
-    currency: string;
-    paidBy: string;
-    memo: string;
-    date: string;
-    split: { memberId: string; amount: number }[];
-    hasReceipt: boolean;
-    receiptUrl?: string;
-  }) => {
-    if (!currentPotId || !currentExpenseId) return;
-
-    setPots(
-      pots.map((p) => {
-        if (p.id !== currentPotId) return p;
-
-        let updatedCheckpoint = p.currentCheckpoint;
-        if (
-          p.currentCheckpoint?.status === "pending" &&
-          p.currentCheckpoint.confirmations.get("owner")
-            ?.confirmed
-        ) {
-          const updatedConfirmations = new Map(
-            p.currentCheckpoint.confirmations,
-          );
-          updatedConfirmations.set("owner", {
-            confirmed: false,
-          });
-          updatedCheckpoint = {
-            ...p.currentCheckpoint,
-            confirmations: updatedConfirmations,
-          };
-        }
-
-        return {
-          ...p,
-          expenses: p.expenses.map((e) =>
-            e.id === currentExpenseId
-              ? {
-                ...e,
-                amount: data.amount,
-                currency: data.currency,
-                paidBy: data.paidBy,
-                memo: data.memo,
-                date: data.date,
-                split: data.split,
-                hasReceipt: data.hasReceipt,
-                receiptUrl: data.receiptUrl,
-              }
-              : e,
-          ),
-          currentCheckpoint: updatedCheckpoint,
-        };
-      }),
-    );
-
-    (async () => {
-      try {
-        const updateExpenseDTO = {
-          amount: data.amount,
-          currency: data.currency,
-          paidBy: data.paidBy,
-          memo: data.memo,
-          date: data.date,
-          split: data.split,
-          hasReceipt: data.hasReceipt,
-          receiptUrl: data.receiptUrl,
-        };
-
-        await expenseService.updateExpense(currentPotId, currentExpenseId, updateExpenseDTO);
-        logDev('[DataLayer] Expense updated via service', { potId: currentPotId, expenseId: currentExpenseId });
-        notifyPotRefresh(currentPotId);
-      } catch (error) {
-        warnDev('[DataLayer] Service updateExpense failed', error);
-        showToast('Saved locally (service write failed)', 'info');
-      }
-    })();
-
-    replace({ type: "pot-home", potId: currentPotId });
-    showToast("Expense updated!", "success");
-  };
-
-  const deleteExpense = (expenseId?: string, { navigateBack = false }: { navigateBack?: boolean } = {}) => {
-    if (!currentPotId) return;
-    const targetExpenseId = expenseId || currentExpenseId;
-    if (!targetExpenseId) return;
-
-    setPots(
-      pots.map((p) =>
-        p.id === currentPotId
-          ? {
-            ...p,
-            expenses: p.expenses.filter(
-              (e) => e.id !== targetExpenseId,
-            ),
-          }
-          : p,
-      ),
-    );
-
-    (async () => {
-      try {
-        await expenseService.removeExpense(currentPotId, targetExpenseId);
-        logDev('[DataLayer] Expense deleted via service', { potId: currentPotId, expenseId: targetExpenseId });
-        notifyPotRefresh(currentPotId);
-      } catch (error) {
-        warnDev('[DataLayer] Service removeExpense failed', error);
-        showToast('Saved locally (service write failed)', 'info');
-      }
-    })();
-
-    if (navigateBack) {
-      back();
-    }
-    showToast("Expense deleted", "info");
-  };
-
-  const attestExpense = (expenseId: string) => {
-    if (!currentPotId) return;
-
-    const pot = pots.find((p) => p.id === currentPotId);
-    const expense = pot?.expenses.find(
-      (e) => e.id === expenseId,
-    );
-
-    if (expense?.paidBy === "owner") {
-      showToast("You can't confirm your own expense", "error");
-      return;
-    }
-
-    const attestations = expense?.attestations ?? [];
-    const isConfirmed = Array.isArray(attestations) && (
-      (typeof attestations[0] === 'string' && attestations.includes("owner")) ||
-      (typeof attestations[0] === 'object' && attestations.some((a: any) => a.memberId === "owner"))
-    );
-
-    if (isConfirmed) {
-      showToast("You already confirmed this expense", "info");
-      return;
-    }
-
-    setPots(
-      pots.map((p) =>
-        p.id === currentPotId
-          ? {
-            ...p,
-            expenses: p.expenses.map((e) =>
-              e.id === expenseId
-                ? {
-                  ...e,
-                  attestations: [
-                    ...(Array.isArray(attestations) ? attestations : []),
-                    "owner",
-                  ],
-                }
-                : e,
-            ),
-          }
-          : p,
-      ),
-    );
-
-    showToast("✓ Expense confirmed", "success");
-    triggerHaptic("light");
-  };
-
-  const batchAttestExpenses = (expenseIds: string[]) => {
-    if (!currentPotId) return;
-
-    const pot = pots.find((p) => p.id === currentPotId);
-    if (!pot) return;
-
-    const validExpenseIds = expenseIds.filter((expenseId) => {
-      const expense = pot.expenses.find(
-        (e) => e.id === expenseId,
-      );
-      return (
-        expense &&
-        expense.paidBy !== "owner" &&
-        !expense.attestations.includes("owner")
-      );
-    });
-
-    if (validExpenseIds.length === 0) {
-      showToast("No expenses to confirm", "info");
-      return;
-    }
-
-    setPots(
-      pots.map((p) =>
-        p.id === currentPotId
-          ? {
-            ...p,
-            expenses: p.expenses.map((e) =>
-              validExpenseIds.includes(e.id)
-                ? {
-                  ...e,
-                  attestations: [
-                    ...e.attestations,
-                    "owner",
-                  ],
-                }
-                : e,
-            ),
-          }
-          : p,
-      ),
-    );
-
-    showToast(
-      `✓ ${validExpenseIds.length} expense${validExpenseIds.length > 1 ? "s" : ""} confirmed`,
-      "success",
-    );
-    triggerHaptic("light");
-  };
-
-
-
-  const handleLogout = async () => {
-    try {
-      triggerHaptic("medium");
-      await logout();
-      showToast("Logged out successfully", "success");
-    } catch (error) {
-      console.error("Logout failed:", error);
-      showToast("Logout failed", "error");
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    try {
-      triggerHaptic("medium");
-      await logout();
-      showToast("Account deleted", "info");
-    } catch (error) {
-      console.error("Account deletion failed:", error);
-      showToast("Account deletion failed", "error");
-    }
-  };
-
-  const updatePaymentMethodValue = (
-    id: string,
-    updates: Partial<PaymentMethod>,
-  ) => {
-    setPaymentMethods(
-      paymentMethods.map((m) =>
-        m.id === id ? { ...m, ...updates } : m,
-      ),
-    );
-    showToast("Payment method updated", "success");
-  };
-
-  const setPreferredMethod = (id: string) => {
-    setPreferredMethodId(id);
-    showToast("Default payment method updated", "success");
-  };
-
-  const addContribution = (
-    amount: number,
-    method: "wallet" | "bank",
-  ) => {
-    if (!currentPotId) return;
-    const pot = currentPot;
-    if (!pot || pot.type !== "savings") return;
-
-    const contribution: Contribution = {
-      id: Date.now().toString(),
-      memberId: "owner",
-      amount,
-      date: new Date().toISOString(),
-      txHash:
-        method === "wallet"
-          ? `0x${Math.random().toString(16).substr(2, 40)}`
-          : undefined,
-    };
-
-    setPots(
-      pots.map((p) =>
-        p.id === currentPotId
-          ? {
-            ...p,
-            contributions: [
-              ...(p.contributions || []),
-              contribution,
-            ],
-            totalPooled: (p.totalPooled || 0) + amount,
-          }
-          : p,
-      ),
-    );
-
-    back();
-    showToast(
-      method === "wallet"
-        ? `${pot.baseCurrency} ${amount.toFixed(2)} added via wallet`
-        : `${pot.baseCurrency} ${amount.toFixed(2)} added via bank transfer`,
-      "success",
-    );
-  };
-
-  const withdrawFunds = (amount: number) => {
-    if (!currentPotId) return;
-    const pot = currentPot;
-    if (!pot || pot.type !== "savings") return;
-
-    const userContributions = (pot.contributions || [])
-      .filter((c) => c.memberId === "owner")
-      .reduce((sum, c) => sum + c.amount, 0);
-
-    if (amount > userContributions) {
-      showToast("Insufficient balance", "error");
-      return;
-    }
-
-    const withdrawal: Contribution = {
-      id: Date.now().toString(),
-      memberId: "owner",
-      amount: -amount,
-      date: new Date().toISOString(),
-      txHash: `0x${Math.random().toString(16).substr(2, 40)}`,
-    };
-
-    const newTotal = (pot.totalPooled || 0) - amount;
-
-    setPots(
-      pots.map((p) =>
-        p.id === currentPotId
-          ? {
-            ...p,
-            contributions: [
-              ...(p.contributions || []),
-              withdrawal,
-            ],
-            totalPooled: Math.max(0, newTotal),
-          }
-          : p,
-      ),
-    );
-
-    back();
-    showToast(
-      `${pot.baseCurrency} ${amount.toFixed(2)} withdrawn successfully`,
-      "success",
-    );
-  };
-
   const activities: ActivityItem[] = useMemo(() => {
     const start = performance.now();
     const items: ActivityItem[] = [];
@@ -1854,7 +937,7 @@ function AppContent() {
     0,
   );
 
-  const { pots: remotePots, loading: remotePotsLoading } = useRemotePots();
+  const { pots: remotePots } = useRemotePots();
   const dataSourceType = import.meta.env.VITE_DATA_SOURCE || 'local';
   const usingSupabaseSource = dataSourceType === 'supabase' && !authLoading && !!user && !isGuest;
   const remoteSyncSnapshot = useRef<string>("");
@@ -1900,6 +983,51 @@ function AppContent() {
       totalPooled: potForView.totalPooled ?? undefined,
     } as Pot)
     : undefined;
+
+  const {
+    createPot,
+    addExpenseToPot,
+    updateExpense,
+    deleteExpense,
+    attestExpense,
+    batchAttestExpenses,
+    handleLogout,
+    handleDeleteAccount,
+    updatePaymentMethodValue,
+    setPreferredMethod,
+    addContribution,
+    withdrawFunds,
+  } = useBusinessActions({
+    newPot,
+    setNewPot,
+    potService,
+    usingSupabaseSource,
+    pots,
+    setPots,
+    setCurrentPotId,
+    replace,
+    back,
+    showToast,
+    expenseService,
+    notifyPotRefresh,
+    currentPotId,
+    currentExpenseId,
+    currentPot,
+    logout,
+    paymentMethods,
+    setPaymentMethods,
+    setPreferredMethodId,
+  });
+
+  const { confirmSettlement } = useSettlementActions({
+    pots,
+    setPots,
+    addExpenseToPot,
+    showToast,
+    back,
+    currentUserId: user?.id || "owner",
+    currentUserAddress: user?.id || "unknown",
+  });
 
   useEffect(() => {
     if (!usingSupabaseSource || authLoading || !isAuthenticated) {
@@ -2213,21 +1341,6 @@ function AppContent() {
     })();
   }, [currentPotId, inviteService, fetchInvites, showToast]);
 
-  const handleRevokeInvite = useCallback(async (memberId: string) => {
-    // memberId for pending invites is "invite-{id}"
-    const inviteId = memberId.startsWith("invite-") ? memberId.replace("invite-", "") : memberId;
-
-    // Optimistic update?
-    // For now just wait for server
-    const { error } = await inviteService.revokeInvite(inviteId);
-    if (error) {
-      showToast(error, "error");
-    } else {
-      showToast("Invite revoked", "success");
-      if (currentPotId) fetchInvites(currentPotId);
-    }
-  }, [inviteService, currentPotId, fetchInvites, showToast]);
-
   const handleAddMemberShowQR = useCallback(() => {
     setShowAddMember(false);
     setShowMyQR(true);
@@ -2433,7 +1546,7 @@ function AppContent() {
               createPot, addExpenseToPot, updateExpense, deleteExpense, attestExpense,
               batchAttestExpenses, addContribution, withdrawFunds, handleLogout,
               handleDeleteAccount, updatePaymentMethodValue, setPreferredMethod,
-              handleInviteNew, acceptInvite, declineInvite, showToast,
+              handleInviteNew, acceptInvite, declineInvite, confirmSettlement, showToast,
               newPotState: newPot, joinProcessingRef, selectedCounterpartyId
             }}
             flags={{ DEMO_MODE, POLKADOT_APP_ENABLED }}
