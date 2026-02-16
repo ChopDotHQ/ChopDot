@@ -9,6 +9,7 @@ import { useState, useMemo } from "react";
 import { AccountMenu } from "../AccountMenu";
 import { PeopleView } from "./PeopleView";
 import { usePSAStyle } from "../../utils/usePSAStyle";
+import { Skeleton } from "../Skeleton";
 
 interface DebtBreakdown {
   potName: string;
@@ -103,7 +104,7 @@ export function PeopleHome({
   const totalYouOwe = youOwe.reduce((sum, person) => sum + person.totalAmount, 0);
   const totalOwedToYou = owedToYou.reduce((sum, person) => sum + person.totalAmount, 0);
   const net = totalOwedToYou - totalYouOwe;
-  
+
   // Determine if we should show DOT or USD for totals (use first breakdown currency if all same)
   const allCurrencies = [...youOwe, ...owedToYou]
     .flatMap(p => p.breakdown.map(b => b.currency || 'USD'))
@@ -174,9 +175,9 @@ export function PeopleHome({
         onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
       >
         <button
-          onClick={() => onPersonClick?.({ 
-            id: person.id, 
-            name: person.name, 
+          onClick={() => onPersonClick?.({
+            id: person.id,
+            name: person.name,
             balance: person.totalAmount,
             trustScore: person.trustScore || 95,
             paymentPreference: person.paymentPreference,
@@ -213,9 +214,9 @@ export function PeopleHome({
             </div>
           </div>
           <div className="text-right flex-shrink-0">
-            <p 
-              className="text-[18px] tabular-nums" 
-              style={{ 
+            <p
+              className="text-[18px] tabular-nums"
+              style={{
                 fontWeight: 700,
                 color: action === 'settle' ? 'var(--ink)' : 'var(--money)'
               }}
@@ -247,7 +248,7 @@ export function PeopleHome({
 
   return (
     <>
-      <div 
+      <div
         className={`h-full pb-[68px] overflow-auto ${isPSA ? '' : 'bg-background'}`}
         style={isPSA ? psaStyles.background : undefined}
       >
@@ -258,9 +259,9 @@ export function PeopleHome({
           <div className="px-4 py-3 flex items-center justify-between">
             <h1 className="text-screen-title">People</h1>
             <div className="flex items-center gap-2">
-            {/* Account Menu - unified wallet connection */}
-            <AccountMenu />
-              
+              {/* Account Menu - unified wallet connection */}
+              <AccountMenu />
+
               {/* Notification bell */}
               {onNotificationClick && (
                 <button
@@ -306,6 +307,7 @@ export function PeopleHome({
         {activeTab === "people" ? (
           <PeopleView
             people={people}
+            isLoading={isLoading}
             onPersonClick={(person) => {
               onPersonClick?.(person);
             }}
@@ -319,54 +321,87 @@ export function PeopleHome({
             <WalletBanner />
 
             {/* Overview Chips */}
-            <div 
+            <div
               className={isPSA ? `${psaClasses.card} p-4 transition-shadow duration-200` : 'card p-4 transition-shadow duration-200'}
               style={isPSA ? psaStyles.card : undefined}
             >
-              <div className="flex items-center gap-2 flex-wrap text-micro">
-                <div>
-                  <span className="text-secondary">You owe </span>
-                  <span 
-                    className="tabular-nums" 
-                    style={{ 
-                      fontWeight: 500,
-                      color: totalYouOwe > 0 ? 'var(--foreground)' : 'var(--foreground)' 
-                    }}
-                  >
-                    {formatAmount(totalYouOwe, totalCurrency)}
-                  </span>
+              {isLoading ? (
+                <div className="flex items-center gap-4 flex-wrap">
+                  <div className="space-y-1">
+                    <span className="text-secondary text-micro">You owe</span>
+                    <Skeleton height={20} width={80} />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-secondary text-micro">Owed to you</span>
+                    <Skeleton height={20} width={80} />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-secondary text-micro">Net</span>
+                    <Skeleton height={20} width={80} />
+                  </div>
                 </div>
-                <span className="text-secondary">•</span>
-                <div>
-                  <span className="text-secondary">Owed to you </span>
-                  <span 
-                    className="tabular-nums" 
-                    style={{ 
-                      fontWeight: 500,
-                      color: totalOwedToYou > 0 ? 'var(--success)' : 'var(--foreground)' 
-                    }}
-                  >
-                    {formatAmount(totalOwedToYou, totalCurrency)}
-                  </span>
+              ) : (
+                <div className="flex items-center gap-2 flex-wrap text-micro">
+                  <div>
+                    <span className="text-secondary">You owe </span>
+                    <span
+                      className="tabular-nums"
+                      style={{
+                        fontWeight: 500,
+                        color: totalYouOwe > 0 ? 'var(--foreground)' : 'var(--foreground)'
+                      }}
+                    >
+                      {formatAmount(totalYouOwe, totalCurrency)}
+                    </span>
+                  </div>
+                  <span className="text-secondary">•</span>
+                  <div>
+                    <span className="text-secondary">Owed to you </span>
+                    <span
+                      className="tabular-nums"
+                      style={{
+                        fontWeight: 500,
+                        color: totalOwedToYou > 0 ? 'var(--success)' : 'var(--foreground)'
+                      }}
+                    >
+                      {formatAmount(totalOwedToYou, totalCurrency)}
+                    </span>
+                  </div>
+                  <span className="text-secondary">•</span>
+                  <div>
+                    <span className="text-secondary">Net </span>
+                    <span
+                      className="tabular-nums"
+                      style={{
+                        fontWeight: 500,
+                        color: net >= 0 ? 'var(--money)' : 'var(--foreground)'
+                      }}
+                    >
+                      {net >= 0 ? '+' : ''}{formatAmount(Math.abs(net), totalCurrency)}
+                    </span>
+                  </div>
                 </div>
-                <span className="text-secondary">•</span>
-                <div>
-                  <span className="text-secondary">Net </span>
-                  <span 
-                    className="tabular-nums" 
-                    style={{ 
-                      fontWeight: 500,
-                      color: net >= 0 ? 'var(--money)' : 'var(--foreground)' 
-                    }}
-                  >
-                    {net >= 0 ? '+' : ''}{formatAmount(Math.abs(net), totalCurrency)}
-                  </span>
-                </div>
-              </div>
+              )}
             </div>
 
-            {/* People You Owe */}
-            {sortedYouOwe.length > 0 && (
+            {isLoading && (
+              <div className="space-y-3">
+                {[1, 2].map(i => (
+                  <div key={i} className="card p-4 rounded-lg flex justify-between items-center">
+                    <div className="flex gap-3 w-full">
+                      <div className="w-7 h-7 rounded-full bg-muted/20" />
+                      <div className="space-y-1 w-full">
+                        <Skeleton height={16} width="50%" />
+                        <Skeleton height={12} width="30%" />
+                      </div>
+                    </div>
+                    <Skeleton height={20} width={60} />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!isLoading && sortedYouOwe.length > 0 && (
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between px-1">
                   <p className="text-caption text-secondary">
@@ -385,8 +420,7 @@ export function PeopleHome({
               </div>
             )}
 
-            {/* People Who Owe You */}
-            {sortedOwedToYou.length > 0 && (
+            {!isLoading && sortedOwedToYou.length > 0 && (
               <div className="space-y-1.5">
                 <p className="text-caption text-secondary px-1">
                   People who owe you
@@ -396,7 +430,7 @@ export function PeopleHome({
             )}
 
             {/* Empty States */}
-            {sortedYouOwe.length === 0 && sortedOwedToYou.length === 0 && (
+            {!isLoading && sortedYouOwe.length === 0 && sortedOwedToYou.length === 0 && (
               <div className="pt-8">
                 <EmptyState
                   icon={HandCoins}
@@ -405,7 +439,7 @@ export function PeopleHome({
               </div>
             )}
 
-            {sortedYouOwe.length === 0 && sortedOwedToYou.length > 0 && (
+            {!isLoading && sortedYouOwe.length === 0 && sortedOwedToYou.length > 0 && (
               <div className="space-y-1.5">
                 <p className="text-caption text-secondary px-1">
                   People you owe
@@ -417,7 +451,7 @@ export function PeopleHome({
               </div>
             )}
 
-            {sortedYouOwe.length > 0 && sortedOwedToYou.length === 0 && (
+            {!isLoading && sortedYouOwe.length > 0 && sortedOwedToYou.length === 0 && (
               <div className="space-y-1.5">
                 <p className="text-caption text-secondary px-1">
                   People who owe you

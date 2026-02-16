@@ -29,18 +29,20 @@ interface MembersTabProps {
   onUpdateMember?: (member: { id: string; name: string; address?: string; verified?: boolean }) => void;
   onCopyInviteLink?: () => void;
   onResendInvite?: (memberId: string) => void;
+  onRevokeInvite?: (memberId: string) => void;
 }
 
-export function MembersTab({ 
-  members, 
+export function MembersTab({
+  members,
   expenses = [],
   currentUserId = "owner",
   baseCurrency = "USD",
-  onAddMember, 
+  onAddMember,
   onRemoveMember,
   onUpdateMember,
   onCopyInviteLink: _onCopyInviteLink,
   onResendInvite,
+  onRevokeInvite,
 }: MembersTabProps) {
   const isDotPot = baseCurrency === 'DOT';
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -65,7 +67,7 @@ export function MembersTab({
           theirShareOfMyExpenses += memberSplit.amount;
         }
       }
-      
+
       // If they paid, find your share
       if (expense.paidBy === memberId) {
         const yourSplit = expense.split.find(s => s.memberId === currentUserId);
@@ -84,7 +86,7 @@ export function MembersTab({
   const getPaymentPreference = (memberId: string): string | undefined => {
     // You don't have a payment preference shown
     if (memberId === currentUserId) return undefined;
-    
+
     // Mock data for other members
     const preferences: Record<string, string> = {
       alice: "Bank",
@@ -120,16 +122,16 @@ export function MembersTab({
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     {/* Avatar with TrustDots badge */}
                     <div className="relative flex-shrink-0">
-                      <div 
+                      <div
                         className="w-10 h-10 rounded-full flex items-center justify-center"
-                        style={{ 
+                        style={{
                           background: isCurrentUser ? 'var(--accent-pink-soft)' : 'var(--muted)',
                           opacity: 0.2,
                         }}
                       >
-                        <span 
+                        <span
                           className="text-body"
-                          style={{ 
+                          style={{
                             fontWeight: 500,
                             color: 'var(--foreground)',
                             opacity: 1,
@@ -140,27 +142,27 @@ export function MembersTab({
                       </div>
                       {/* TrustDots overlay - bottom-right corner */}
                       {!isCurrentUser && (
-                        <TrustDots 
-                          score={trustScore} 
+                        <TrustDots
+                          score={trustScore}
                           className="bottom-0 right-0"
                         />
                       )}
                     </div>
-                    
+
                     {/* Name + Role + Payment Preference */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <p 
+                        <p
                           className="text-body truncate"
                           style={{ fontWeight: 500 }}
                         >
                           {displayName}
                         </p>
-                        
+
                         {/* Role Badge */}
-                        <span 
+                        <span
                           className="inline-block px-1.5 py-0.5 rounded text-micro"
-                          style={{ 
+                          style={{
                             backgroundColor: member.role === "Owner" ? 'var(--accent-pink-soft)' : 'var(--muted)',
                             color: member.role === "Owner" ? 'var(--accent)' : 'var(--foreground)',
                             opacity: 0.8,
@@ -169,13 +171,13 @@ export function MembersTab({
                           {member.role}
                         </span>
                       </div>
-                      
+
                       {/* Payment Preference Pill - Only show for non-DOT pots or when no address */}
                       {paymentPref && !isDotPot && !member.address && (
                         <div className="flex items-center gap-1 mt-1">
-                          <span 
+                          <span
                             className="inline-block px-2 py-0.5 rounded-md text-caption"
-                            style={{ 
+                            style={{
                               backgroundColor: 'var(--muted)',
                               color: 'var(--bg)',
                               opacity: 0.8,
@@ -185,7 +187,7 @@ export function MembersTab({
                           </span>
                         </div>
                       )}
-                      
+
                       {/* Wallet Address Display - Show readiness or CTA */}
                       {member.address ? (
                         <div className="flex flex-wrap items-center gap-2 mt-1">
@@ -227,8 +229,8 @@ export function MembersTab({
                           Add DOT wallet
                         </button>
                       )}
-                      
-                      
+
+
                       {/* Status for pending members */}
                       {member.status === "pending" && (
                         <p className="text-caption text-secondary mt-0.5">
@@ -237,7 +239,7 @@ export function MembersTab({
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Right: Balance or Menu Button */}
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {/* Balance (if not current user and there are expenses) */}
@@ -248,15 +250,15 @@ export function MembersTab({
                           const settleThreshold = isDotPot ? 0.000001 : 0.01;
                           const isSettled = Math.abs(balance) < settleThreshold;
                           const decimals = isDotPot ? 6 : 2;
-                          const balanceDisplay = isSettled 
-                            ? "Settled" 
+                          const balanceDisplay = isSettled
+                            ? "Settled"
                             : `${isPositive ? '+' : ''}${isDotPot ? `${Math.abs(balance).toFixed(decimals)} DOT` : `$${Math.abs(balance).toFixed(decimals)}`}`;
-                          
+
                           return (
                             <>
-                              <p 
+                              <p
                                 className="text-[18px] tabular-nums"
-                                style={{ 
+                                style={{
                                   fontWeight: 700,
                                   color: isSettled ? 'var(--muted)' : amountColor,
                                 }}
@@ -273,7 +275,7 @@ export function MembersTab({
                         })()}
                       </div>
                     )}
-                    
+
                     {/* Menu Button (for non-owners) */}
                     {member.role !== "Owner" && (
                       <button
@@ -291,13 +293,13 @@ export function MembersTab({
               {showMenu && (
                 <>
                   {/* Backdrop */}
-                  <div 
+                  <div
                     className="fixed inset-0 z-40"
                     onClick={() => setOpenMenuId(null)}
                   />
-                  
+
                   {/* Menu */}
-                  <div 
+                  <div
                     className="absolute right-0 top-full mt-1 w-48 card p-1 z-50"
                     style={{ boxShadow: 'var(--shadow-fab)' }}
                   >
@@ -313,7 +315,7 @@ export function MembersTab({
                         <span className="text-body">Edit member</span>
                       </button>
                     )}
-                    
+
                     {member.status === "pending" && onResendInvite && (
                       <button
                         onClick={() => {
@@ -326,7 +328,21 @@ export function MembersTab({
                         <span className="text-body">Resend invite</span>
                       </button>
                     )}
-                    
+
+                    {member.status === "pending" && onRevokeInvite && (
+                      <button
+                        onClick={() => {
+                          onRevokeInvite(member.id);
+                          setOpenMenuId(null);
+                        }}
+                        className="w-full px-3 py-2 text-left rounded-lg hover:bg-muted/30 transition-colors flex items-center gap-2"
+                      >
+                        {/* Reusing UserMinus icon but maybe a differen style? */}
+                        <UserMinus className="w-4 h-4 text-secondary" />
+                        <span className="text-body">Revoke invite</span>
+                      </button>
+                    )}
+
                     <button
                       onClick={() => {
                         onRemoveMember(member.id);
@@ -346,7 +362,7 @@ export function MembersTab({
           );
         })}
       </div>
-      
+
       {/* Add Member Button */}
       <button
         onClick={onAddMember}

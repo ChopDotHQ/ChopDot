@@ -11,7 +11,7 @@ import { QuickKeypadSheet } from "../QuickKeypadSheet";
 import { useAccount } from "../../contexts/AccountContext";
 import { useFeatureFlags } from "../../contexts/FeatureFlagsContext";
 import { computePotHash, type PotCheckpointInput } from "../../services/chain/remark";
-import type { PotHistory } from "../../App";
+import type { PotHistory } from "../../types/app";
 import { PrimaryButton } from "../PrimaryButton";
 import { usePot } from "../../hooks/usePot";
 import { warnDev, logDev } from "../../utils/logDev";
@@ -87,7 +87,9 @@ interface PotHomeProps {
   onUpdateSettings: (settings: any) => void;
   onSettle: () => void;
   onCopyInviteLink?: () => void;
+
   onResendInvite?: (memberId: string) => void;
+  onRevokeInvite?: (memberId: string) => void;
   onDeleteExpense?: (expenseId: string) => void;
   onAttestExpense?: (expenseId: string, silent?: boolean) => void;
   onBatchAttestExpenses?: (expenseIds: string[]) => void;
@@ -114,8 +116,8 @@ interface PotHomeProps {
   onLeavePot?: () => void;
   onArchivePot?: () => void;
   // Pot history (on-chain settlements)
-  potHistory?: import('../../App').PotHistory[];
-  onUpdatePot?: (updates: { history?: import('../../App').PotHistory[] }) => void;
+  potHistory?: PotHistory[];
+  onUpdatePot?: (updates: { history?: PotHistory[]; lastCheckpoint?: any; lastEditAt?: string }) => void;
 }
 
 export function PotHome({
@@ -146,7 +148,9 @@ export function PotHome({
   onUpdateSettings,
   onSettle,
   onCopyInviteLink,
+
   onResendInvite,
+  onRevokeInvite,
   onDeleteExpense,
   onAttestExpense,
   onBatchAttestExpenses,
@@ -169,7 +173,7 @@ export function PotHome({
   const preferDLReads = shouldPreferDLReads();
   const { pot: dlPot, error: dlError, refresh: refreshPot } = usePot(potId);
   const { pots: potService } = useData();
-  
+
   // Use Data Layer pot if flag is on or if DL pot is available, otherwise fallback to props
   const pot = useMemo<DataLayerPot | null>(() => {
     if (preferDLReads) {
@@ -241,7 +245,7 @@ export function PotHome({
   const goalDescription = pot?.goalDescription ?? goalDescriptionProp;
 
   // Dynamic tabs based on pot type
-  const tabs = potType === "savings" 
+  const tabs = potType === "savings"
     ? ["Savings", "Members", "Settings"]
     : ["Expenses", "Members", "Settings"];
   const [activeTab, setActiveTab] = useState<string>(tabs[0] ?? "Expenses");
@@ -251,10 +255,10 @@ export function PotHome({
   const [isCheckpointing] = useState(false);
   const [isBackingUp, setIsBackingUp] = useState(false);
   const [lastCheckpointClick, setLastCheckpointClick] = useState(0);
-  
+
   // Task 2: Use DL-loaded pot history as source of truth
   // Ensure all history entries have required status field (default to 'submitted')
-  const normalizeHistory = (history: (PotHistory | { status?: string; [key: string]: unknown })[]): PotHistory[] => {
+  const normalizeHistory = (history: (PotHistory | { status?: string;[key: string]: unknown })[]): PotHistory[] => {
     return history.map(entry => {
       const baseEntry = entry as PotHistory;
       return {
@@ -263,18 +267,18 @@ export function PotHome({
       } as PotHistory;
     });
   };
-  
+
   const potHistoryFromDL = normalizeHistory(pot?.history ?? []);
-  const activeHistory = potHistoryFromDL.length > 0 ? potHistoryFromDL : normalizeHistory(potHistory as (PotHistory | { status?: string; [key: string]: unknown })[]);
-  
+  const activeHistory = potHistoryFromDL.length > 0 ? potHistoryFromDL : normalizeHistory(potHistory as (PotHistory | { status?: string;[key: string]: unknown })[]);
+
   // Dev log for history items
   useEffect(() => {
     if (import.meta.env.DEV && activeHistory.length > 0) {
       const settlementCount = activeHistory.filter(e => e.type === 'onchain_settlement').length;
       const checkpointCount = activeHistory.filter(e => e.type === 'remark_checkpoint').length;
-      logDev('[DL][history] items loaded', { 
-        total: activeHistory.length, 
-        settlements: settlementCount, 
+      logDev('[DL][history] items loaded', {
+        total: activeHistory.length,
+        settlements: settlementCount,
         checkpoints: checkpointCount,
         source: potHistoryFromDL.length > 0 ? 'DL' : 'props'
       });
@@ -296,7 +300,7 @@ export function PotHome({
   const showCheckpointSection = POLKADOT_APP_ENABLED && checkpointEnabled === true && isWalletConnected && (pot?.mode === 'auditable' || isDev);
 
   const latestCheckpointEntry = checkpointHistory[0];
-  
+
   // Task 7: Get lastBackupCid from pot (DL) or latest checkpoint entry
   const lastBackupCid = pot?.lastBackupCid ?? latestCheckpointEntry?.cid ?? null;
 
@@ -343,8 +347,8 @@ export function PotHome({
     latestCheckpointHash && latestCheckpointHash === currentPotHash
       ? 'unchanged'
       : latestCheckpointHash
-      ? 'changed'
-      : 'no checkpoint';
+        ? 'changed'
+        : 'no checkpoint';
 
   const truncateHash = (hash?: string) => {
     if (!hash) return '—';
@@ -360,7 +364,7 @@ export function PotHome({
       return;
     }
     setLastCheckpointClick(now);
-    
+
     if (!showCheckpointSection) return;
     if (!isWalletConnected || !account.address0) {
       onShowToast?.('Connect a wallet to checkpoint on-chain', 'error');
@@ -383,17 +387,17 @@ export function PotHome({
     setIsBackingUp(true);
     try {
       const { cid } = await savePotSnapshot(pot);
-      
+
       // Update pot's lastBackupCid via Data Layer
       await potService.updatePot(potId, {
         lastBackupCid: cid,
       });
-      
+
       // Refresh pot from Data Layer
       refreshPot();
-      
+
       onShowToast?.(`Backup saved to Crust (CID: ${cid.slice(0, 8)}...)`, 'success');
-      
+
       if (import.meta.env.DEV) {
         logDev('[BackupService] Backup completed and CID saved', { potId, cid });
       }
@@ -517,8 +521,8 @@ export function PotHome({
   // Checkpoint status (supports Map or plain object from localStorage)
   const confirmationsArray: CheckpointConfirmation[] = checkpointConfirmations
     ? (checkpointConfirmations instanceof Map
-        ? Array.from(checkpointConfirmations.values())
-        : Object.values(checkpointConfirmations as Record<string, CheckpointConfirmation>))
+      ? Array.from(checkpointConfirmations.values())
+      : Object.values(checkpointConfirmations as Record<string, CheckpointConfirmation>))
     : [];
   const confirmedCount = confirmationsArray.filter(c => c.confirmed).length;
   const totalCount = members.length;
@@ -526,7 +530,7 @@ export function PotHome({
   // Handle CSV export
   const handleExportCSV = () => {
     triggerHaptic('light');
-    
+
     if (potType === "expense" && expenses.length > 0) {
       exportPotExpensesToCSV(potName, expenses, members, currentUserId);
       onShowToast?.("✓ Expenses exported to CSV", "success");
@@ -539,401 +543,402 @@ export function PotHome({
 
   return (
     <>
-    <div 
-      className={`flex flex-col h-full pb-[68px] ${isPSA ? '' : 'bg-background'}`}
-      style={isPSA ? psaStyles.background : undefined}
-    >
-      <TopBar 
-        title={potName} 
-        onBack={onBack}
-        rightAction={
-          <div className="flex items-center gap-1.5">
-            {potType === "expense" && (
-              <button
-                onClick={() => {
-                  if (onCopyInviteLink) {
-                    onCopyInviteLink();
-                  } else {
-                    onShowToast?.("No invite link available", "info");
-                  }
-                }}
-                className="p-2 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
-                title="Share invite"
-              >
-                <Share2 className="w-5 h-5" />
-              </button>
-            )}
-            {potType === "expense" && expenses.length > 0 && (
-              <button
-                onClick={handleExportCSV}
-                className="p-2 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
-                title="Export to CSV"
-              >
-                <Download className="w-5 h-5" />
-              </button>
-            )}
-          </div>
-        }
-      />
-
-
-      {false && showCheckpointSection && (
-        <div className="px-4 pt-3">
-          <div 
-            className={isPSA ? `${psaClasses.card} p-4 space-y-3` : 'card p-4 space-y-3'}
-            style={isPSA ? psaStyles.card : undefined}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-caption text-secondary uppercase tracking-wide">Verifiability</p>
-                <h3 className="text-base font-semibold">Checkpoint on-chain</h3>
-              </div>
-              <PrimaryButton
-                onClick={handleCheckpoint}
-                disabled={isCheckpointing || !isWalletConnected}
-                loading={isCheckpointing}
-              >
-                {isWalletConnected ? 'Checkpoint on-chain' : 'Connect wallet'}
-              </PrimaryButton>
-            </div>
-            <p className="text-caption text-secondary">
-              Anchor a tamper-evident snapshot of this pot to Polkadot Asset Hub. Ideal before settlements or audits.
-            </p>
-            {isDev && (
-              <div className="text-[11px] text-secondary bg-muted/30 p-2 rounded-lg flex items-center justify-between gap-3">
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <span className="font-mono truncate">
-                    Current hash: {truncateHash(currentPotHash)}
-                  </span>
-                  <span className="font-mono truncate">
-                    Last checkpoint: {truncateHash(latestCheckpointHash)} ({hashComparison})
-                  </span>
-                </div>
+      <div
+        className={`flex flex-col h-full pb-[68px] ${isPSA ? '' : 'bg-background'}`}
+        style={isPSA ? psaStyles.background : undefined}
+      >
+        <TopBar
+          title={potName}
+          onBack={onBack}
+          rightAction={
+            <div className="flex items-center gap-1.5">
+              {potType === "expense" && (
                 <button
                   onClick={() => {
-                    navigator.clipboard.writeText(currentPotHash)
-                      .catch((error) => {
-                        console.warn('[PotHome] Failed to copy pot hash:', error);
-                        onShowToast?.('Failed to copy', 'error');
-                      });
+                    if (onCopyInviteLink) {
+                      onCopyInviteLink();
+                    } else {
+                      onShowToast?.("No invite link available", "info");
+                    }
                   }}
-                  className="text-micro text-foreground underline hover:opacity-80 transition-opacity flex items-center gap-1"
+                  className="p-2 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
+                  title="Share invite"
                 >
-                  <Copy className="w-3 h-3" />
-                  Copy
+                  <Share2 className="w-5 h-5" />
                 </button>
+              )}
+              {potType === "expense" && expenses.length > 0 && (
+                <button
+                  onClick={handleExportCSV}
+                  className="p-2 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
+                  title="Export to CSV"
+                >
+                  <Download className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          }
+        />
+
+
+        {false && showCheckpointSection && (
+          <div className="px-4 pt-3">
+            <div
+              className={isPSA ? `${psaClasses.card} p-4 space-y-3` : 'card p-4 space-y-3'}
+              style={isPSA ? psaStyles.card : undefined}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-caption text-secondary uppercase tracking-wide">Verifiability</p>
+                  <h3 className="text-base font-semibold">Checkpoint on-chain</h3>
+                </div>
+                <PrimaryButton
+                  onClick={handleCheckpoint}
+                  disabled={isCheckpointing || !isWalletConnected}
+                  loading={isCheckpointing}
+                >
+                  {isWalletConnected ? 'Checkpoint on-chain' : 'Connect wallet'}
+                </PrimaryButton>
               </div>
-            )}
-            
-            {/* Task 7: Backup to Crust button */}
-            <div className="pt-2 border-t border-border">
-              <button
-                onClick={handleBackupToCrust}
-                disabled={isBackingUp || !pot}
-                className="w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{
-                  background: isBackingUp ? 'var(--muted)' : 'var(--accent)',
-                  color: 'white',
-                }}
-              >
-                {isBackingUp ? 'Backing up...' : import.meta.env.DEV ? 'Backup to Crust (dev stub)' : 'Backup to Crust (coming soon)'}
-              </button>
-              {!import.meta.env.DEV && (
-                <p className="text-micro text-secondary mt-2 text-center">
-                  Crust backup integration coming soon
+              <p className="text-caption text-secondary">
+                Anchor a tamper-evident snapshot of this pot to Polkadot Asset Hub. Ideal before settlements or audits.
+              </p>
+              {isDev && (
+                <div className="text-[11px] text-secondary bg-muted/30 p-2 rounded-lg flex items-center justify-between gap-3">
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="font-mono truncate">
+                      Current hash: {truncateHash(currentPotHash)}
+                    </span>
+                    <span className="font-mono truncate">
+                      Last checkpoint: {truncateHash(latestCheckpointHash)} ({hashComparison})
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(currentPotHash)
+                        .catch((error) => {
+                          console.warn('[PotHome] Failed to copy pot hash:', error);
+                          onShowToast?.('Failed to copy', 'error');
+                        });
+                    }}
+                    className="text-micro text-foreground underline hover:opacity-80 transition-opacity flex items-center gap-1"
+                  >
+                    <Copy className="w-3 h-3" />
+                    Copy
+                  </button>
+                </div>
+              )}
+
+              {/* Task 7: Backup to Crust button */}
+              <div className="pt-2 border-t border-border">
+                <button
+                  onClick={handleBackupToCrust}
+                  disabled={isBackingUp || !pot}
+                  className="w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{
+                    background: isBackingUp ? 'var(--muted)' : 'var(--accent)',
+                    color: 'white',
+                  }}
+                >
+                  {isBackingUp ? 'Backing up...' : import.meta.env.DEV ? 'Backup to Crust (dev stub)' : 'Backup to Crust (coming soon)'}
+                </button>
+                {!import.meta.env.DEV && (
+                  <p className="text-micro text-secondary mt-2 text-center">
+                    Crust backup integration coming soon
+                  </p>
+                )}
+              </div>
+
+              {checkpointInput.lastBackupCid && (
+                <div className="flex items-center justify-between text-[11px] text-secondary bg-muted/20 px-3 py-2 rounded-lg">
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="uppercase tracking-wide text-[10px]">Backup CID</span>
+                    <span className="font-mono truncate">
+                      {checkpointInput.lastBackupCid}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <button
+                      onClick={() =>
+                        navigator.clipboard.writeText(checkpointInput.lastBackupCid || '')
+                          .catch((error) => {
+                            console.warn('[PotHome] Failed to copy CID:', error);
+                            onShowToast?.('Failed to copy', 'error');
+                          })
+                      }
+                      className="text-micro text-accent underline hover:opacity-80 transition-opacity"
+                    >
+                      Copy
+                    </button>
+                    {checkpointInput.lastBackupCid && (
+                      <a
+                        href={buildIpfsUrl(checkpointInput.lastBackupCid || '')}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-micro text-accent underline hover:opacity-80 transition-opacity"
+                      >
+                        Open on IPFS
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+              {checkpointHistory.length > 0 ? (
+                <div className="space-y-2">
+                  {checkpointHistory.slice(0, 3).map((entry) => {
+                    const badge = getCheckpointStatusBadge(entry.status);
+                    return (
+                      <div
+                        key={entry.id}
+                        className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border/50"
+                      >
+                        <div className="flex flex-col gap-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                              style={{
+                                background: `${badge.color}20`,
+                                color: badge.color,
+                              }}
+                            >
+                              {badge.label}
+                            </span>
+                            <span className="text-[10px] text-secondary">
+                              {formatCheckpointTimestamp(entry.when)}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-[11px] font-mono text-secondary truncate">
+                            <span className="truncate">
+                              Hash {truncateHash(entry.potHash)}
+                            </span>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(entry.potHash)
+                                  .catch((error) => {
+                                    console.warn('[PotHome] Failed to copy pot hash:', error);
+                                    onShowToast?.('Failed to copy', 'error');
+                                  });
+                              }}
+                              className="text-secondary hover:text-foreground transition-colors"
+                              title="Copy pot hash"
+                            >
+                              <Copy className="w-3 h-3" />
+                            </button>
+                          </div>
+                          {entry.cid && (
+                            <a
+                              href={buildIpfsUrl(entry.cid)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-micro text-foreground hover:underline flex items-center gap-1"
+                            >
+                              Open backup
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {entry.subscan && (
+                            <a
+                              href={entry.subscan}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-micro text-foreground hover:underline flex items-center gap-1"
+                            >
+                              View
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                          {entry.txHash && (
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(entry.txHash || '')
+                                  .catch((error) => {
+                                    console.warn('[PotHome] Failed to copy tx hash:', error);
+                                    onShowToast?.('Failed to copy', 'error');
+                                  });
+                              }}
+                              className="text-micro text-secondary hover:underline flex items-center gap-1"
+                            >
+                              <Copy className="w-3 h-3" />
+                              Copy hash
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-caption text-secondary">
+                  No checkpoints yet. Use the button above to publish the current state on-chain.
                 </p>
               )}
             </div>
-
-            {checkpointInput.lastBackupCid && (
-              <div className="flex items-center justify-between text-[11px] text-secondary bg-muted/20 px-3 py-2 rounded-lg">
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <span className="uppercase tracking-wide text-[10px]">Backup CID</span>
-                  <span className="font-mono truncate">
-                    {checkpointInput.lastBackupCid}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <button
-                    onClick={() =>
-                      navigator.clipboard.writeText(checkpointInput.lastBackupCid || '')
-                        .catch((error) => {
-                          console.warn('[PotHome] Failed to copy CID:', error);
-                          onShowToast?.('Failed to copy', 'error');
-                        })
-                    }
-                    className="text-micro text-accent underline hover:opacity-80 transition-opacity"
-                  >
-                    Copy
-                  </button>
-                  {checkpointInput.lastBackupCid && (
-                  <a
-                      href={buildIpfsUrl(checkpointInput.lastBackupCid || '')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-micro text-accent underline hover:opacity-80 transition-opacity"
-                  >
-                    Open on IPFS
-                  </a>
-                  )}
-                </div>
-              </div>
-            )}
-            {checkpointHistory.length > 0 ? (
-              <div className="space-y-2">
-                {checkpointHistory.slice(0, 3).map((entry) => {
-                  const badge = getCheckpointStatusBadge(entry.status);
-                  return (
-                    <div
-                      key={entry.id}
-                      className="flex items-center justify-between gap-3 p-3 rounded-lg border border-border/50"
-                    >
-                      <div className="flex flex-col gap-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                            style={{
-                              background: `${badge.color}20`,
-                              color: badge.color,
-                            }}
-                          >
-                            {badge.label}
-                          </span>
-                          <span className="text-[10px] text-secondary">
-                            {formatCheckpointTimestamp(entry.when)}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-[11px] font-mono text-secondary truncate">
-                          <span className="truncate">
-                            Hash {truncateHash(entry.potHash)}
-                          </span>
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(entry.potHash)
-                                .catch((error) => {
-                                  console.warn('[PotHome] Failed to copy pot hash:', error);
-                                  onShowToast?.('Failed to copy', 'error');
-                                });
-                            }}
-                            className="text-secondary hover:text-foreground transition-colors"
-                            title="Copy pot hash"
-                          >
-                            <Copy className="w-3 h-3" />
-                          </button>
-                        </div>
-                        {entry.cid && (
-                          <a
-                            href={buildIpfsUrl(entry.cid)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-micro text-foreground hover:underline flex items-center gap-1"
-                          >
-                            Open backup
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        {entry.subscan && (
-                          <a
-                            href={entry.subscan}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-micro text-foreground hover:underline flex items-center gap-1"
-                          >
-                            View
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )}
-                        {entry.txHash && (
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(entry.txHash || '')
-                                .catch((error) => {
-                                  console.warn('[PotHome] Failed to copy tx hash:', error);
-                                  onShowToast?.('Failed to copy', 'error');
-                                });
-                            }}
-                            className="text-micro text-secondary hover:underline flex items-center gap-1"
-                          >
-                            <Copy className="w-3 h-3" />
-                            Copy hash
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="text-caption text-secondary">
-                No checkpoints yet. Use the button above to publish the current state on-chain.
-              </p>
-            )}
           </div>
+        )}
+
+        {/* Tab Pills - Match People & Activity pages */}
+        <div className="px-4 py-3 flex items-center gap-2 border-b border-border bg-background">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                backgroundColor: activeTab === tab ? "var(--ink)" : "var(--card)",
+                color: activeTab === tab ? "var(--bg)" : "var(--ink)",
+              }}
+              className="px-3 py-1.5 rounded-lg text-[13px] transition-colors font-medium flex-shrink-0"
+            >
+              {tab}
+            </button>
+          ))}
         </div>
+        <div className="flex-1 overflow-auto">
+          {activeTab === "Savings" && potType === "savings" && (
+            <SavingsTab
+              members={members}
+              currentUserId={currentUserId}
+              baseCurrency={baseCurrency}
+              contributions={contributions}
+              totalPooled={totalPooled}
+              yieldRate={yieldRate}
+              defiProtocol={defiProtocol}
+              goalAmount={goalAmount}
+              goalDescription={goalDescription}
+              onAddContribution={onAddContribution || (() => { })}
+              onWithdraw={onWithdraw || (() => { })}
+            />
+          )}
+          {activeTab === "Expenses" && potType === "expense" && (
+            <ExpensesTab
+              expenses={expenses}
+              members={members}
+              currentUserId={currentUserId}
+              baseCurrency={baseCurrency}
+              budget={budget}
+              budgetEnabled={budgetEnabled}
+              totalExpenses={totalExpenses}
+              contributions={contributions}
+              potId={potId}
+              pot={pot ?? undefined}
+              potHistory={activeHistory}
+              onAddExpense={() => setKeypadOpen(true)}
+              onExpenseClick={onExpenseClick as any}
+              onSettle={onSettle}
+              onDeleteExpense={onDeleteExpense}
+              onAttestExpense={onAttestExpense}
+              onBatchAttestExpenses={onBatchAttestExpenses}
+              onShowToast={onShowToast}
+              onUpdatePot={onUpdatePot}
+              checkpointConfirmedCount={confirmedCount}
+              checkpointTotalCount={totalCount}
+            />
+          )}
+          {activeTab === "Members" && (
+            <MembersTab
+              members={members}
+              expenses={expenses}
+              currentUserId={currentUserId}
+              baseCurrency={baseCurrency}
+              onAddMember={onAddMember}
+              onRemoveMember={onRemoveMember}
+              onUpdateMember={onUpdateMember}
+              onCopyInviteLink={onCopyInviteLink}
+              onResendInvite={onResendInvite}
+              onRevokeInvite={onRevokeInvite}
+            />
+          )}
+          {activeTab === "Settings" && (
+            <SettingsTab
+              potName={potName}
+              baseCurrency={baseCurrency}
+              hasExpenses={expenses.length > 0}
+              budget={budget}
+              budgetEnabled={budgetEnabled}
+              checkpointEnabled={checkpointEnabled}
+              potType={potType}
+              members={members}
+              potId={potId}
+              pot={pot ? {
+                id: pot.id || potId || '',
+                name: pot.name || potName,
+                type: pot.type || potType,
+                baseCurrency: (pot.baseCurrency || baseCurrency) as 'USD' | 'DOT',
+                members: pot.members || members.map(m => ({ id: m.id, name: m.name, address: m.address || null })),
+                expenses: pot.expenses || expenses.map(e => ({
+                  id: e.id,
+                  potId: potId || '',
+                  description: e.memo,
+                  amount: e.amount,
+                  paidBy: e.paidBy,
+                  createdAt: e.date ? new Date(e.date).getTime() : Date.now(),
+                })),
+                history: pot.history || [],
+                budgetEnabled: pot.budgetEnabled ?? budgetEnabled,
+                budget: pot.budget ?? budget,
+                checkpointEnabled: pot.checkpointEnabled ?? checkpointEnabled ?? true,
+                mode: (pot as any).mode ?? 'casual',
+                confirmationsEnabled: (pot as any).confirmationsEnabled ?? false,
+                archived: pot.archived ?? false,
+                createdAt: pot.createdAt || Date.now(),
+                updatedAt: pot.updatedAt || Date.now(),
+              } as import('../../schema/pot').Pot : (onImportPot ? {
+                id: potId || '',
+                name: potName,
+                type: potType,
+                baseCurrency: baseCurrency as 'USD' | 'DOT',
+                members: members.map(m => ({ id: m.id, name: m.name, address: m.address || null })),
+                expenses: expenses.map(e => ({
+                  id: e.id,
+                  potId: potId || '',
+                  description: e.memo,
+                  amount: e.amount,
+                  paidBy: e.paidBy,
+                  createdAt: e.date ? new Date(e.date).getTime() : Date.now(),
+                })),
+                history: [],
+                budgetEnabled: false,
+                checkpointEnabled: checkpointEnabled ?? true,
+                mode: 'casual',
+                confirmationsEnabled: false,
+                archived: false,
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+              } as import('../../schema/pot').Pot : undefined)}
+              onUpdateSettings={onUpdateSettings}
+              onCopyInviteLink={onCopyInviteLink}
+              onResendInvite={onResendInvite}
+              onImportPot={onImportPot}
+              onShowToast={onShowToast}
+              onLeavePot={onLeavePot}
+              onArchivePot={onArchivePot}
+              onDeletePot={onDeletePot}
+              onSharePot={() => {
+                if (onCopyInviteLink) onCopyInviteLink();
+              }}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Quick Keypad Sheet */}
+      {potType === "expense" && (
+        <QuickKeypadSheet
+          isOpen={keypadOpen}
+          onClose={() => setKeypadOpen(false)}
+          baseCurrency={baseCurrency}
+          members={members}
+          currentUserId={currentUserId}
+          defaultMode={expenses.length > 0 ? 'last' : 'equal'}
+          lastSplit={expenses.length > 0 ? expenses[expenses.length - 1]?.split : undefined}
+          onSave={(data) => {
+            triggerHaptic('light');
+            onQuickAddSave?.(data);
+            setKeypadOpen(false);
+          }}
+        />
       )}
-
-      {/* Tab Pills - Match People & Activity pages */}
-      <div className="px-4 py-3 flex items-center gap-2 border-b border-border bg-background">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{
-              backgroundColor: activeTab === tab ? "var(--ink)" : "var(--card)",
-              color: activeTab === tab ? "var(--bg)" : "var(--ink)",
-            }}
-            className="px-3 py-1.5 rounded-lg text-[13px] transition-colors font-medium flex-shrink-0"
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-      <div className="flex-1 overflow-auto">
-        {activeTab === "Savings" && potType === "savings" && (
-          <SavingsTab
-            members={members}
-            currentUserId={currentUserId}
-            baseCurrency={baseCurrency}
-            contributions={contributions}
-            totalPooled={totalPooled}
-            yieldRate={yieldRate}
-            defiProtocol={defiProtocol}
-            goalAmount={goalAmount}
-            goalDescription={goalDescription}
-            onAddContribution={onAddContribution || (() => {})}
-            onWithdraw={onWithdraw || (() => {})}
-          />
-        )}
-        {activeTab === "Expenses" && potType === "expense" && (
-          <ExpensesTab
-            expenses={expenses}
-            members={members}
-            currentUserId={currentUserId}
-            baseCurrency={baseCurrency}
-            budget={budget}
-            budgetEnabled={budgetEnabled}
-            totalExpenses={totalExpenses}
-            contributions={contributions}
-            potId={potId}
-            pot={pot ?? undefined}
-            potHistory={activeHistory}
-            onAddExpense={() => setKeypadOpen(true)}
-            onExpenseClick={onExpenseClick as any}
-            onSettle={onSettle}
-            onDeleteExpense={onDeleteExpense}
-            onAttestExpense={onAttestExpense}
-            onBatchAttestExpenses={onBatchAttestExpenses}
-            onShowToast={onShowToast}
-            onUpdatePot={onUpdatePot}
-            checkpointConfirmedCount={confirmedCount}
-            checkpointTotalCount={totalCount}
-          />
-        )}
-        {activeTab === "Members" && (
-          <MembersTab
-            members={members}
-            expenses={expenses}
-            currentUserId={currentUserId}
-            baseCurrency={baseCurrency}
-            onAddMember={onAddMember}
-            onRemoveMember={onRemoveMember}
-            onUpdateMember={onUpdateMember}
-            onCopyInviteLink={onCopyInviteLink}
-            onResendInvite={onResendInvite}
-          />
-        )}
-        {activeTab === "Settings" && (
-          <SettingsTab
-            potName={potName}
-            baseCurrency={baseCurrency}
-            hasExpenses={expenses.length > 0}
-            budget={budget}
-            budgetEnabled={budgetEnabled}
-            checkpointEnabled={checkpointEnabled}
-            potType={potType}
-            members={members}
-            potId={potId}
-            pot={pot ? {
-              id: pot.id || potId || '',
-              name: pot.name || potName,
-              type: pot.type || potType,
-              baseCurrency: (pot.baseCurrency || baseCurrency) as 'USD' | 'DOT',
-              members: pot.members || members.map(m => ({ id: m.id, name: m.name, address: m.address || null })),
-              expenses: pot.expenses || expenses.map(e => ({
-                id: e.id,
-                potId: potId || '',
-                description: e.memo,
-                amount: e.amount,
-                paidBy: e.paidBy,
-                createdAt: e.date ? new Date(e.date).getTime() : Date.now(),
-              })),
-              history: pot.history || [],
-              budgetEnabled: pot.budgetEnabled ?? budgetEnabled,
-              budget: pot.budget ?? budget,
-              checkpointEnabled: pot.checkpointEnabled ?? checkpointEnabled ?? true,
-              mode: (pot as any).mode ?? 'casual',
-              confirmationsEnabled: (pot as any).confirmationsEnabled ?? false,
-              archived: pot.archived ?? false,
-              createdAt: pot.createdAt || Date.now(),
-              updatedAt: pot.updatedAt || Date.now(),
-            } as import('../../schema/pot').Pot : (onImportPot ? {
-              id: potId || '',
-              name: potName,
-              type: potType,
-              baseCurrency: baseCurrency as 'USD' | 'DOT',
-              members: members.map(m => ({ id: m.id, name: m.name, address: m.address || null })),
-              expenses: expenses.map(e => ({
-                id: e.id,
-                potId: potId || '',
-                description: e.memo,
-                amount: e.amount,
-                paidBy: e.paidBy,
-                createdAt: e.date ? new Date(e.date).getTime() : Date.now(),
-              })),
-              history: [],
-              budgetEnabled: false,
-              checkpointEnabled: checkpointEnabled ?? true,
-              mode: 'casual',
-              confirmationsEnabled: false,
-              archived: false,
-              createdAt: Date.now(),
-              updatedAt: Date.now(),
-            } as import('../../schema/pot').Pot : undefined)}
-            onUpdateSettings={onUpdateSettings}
-            onCopyInviteLink={onCopyInviteLink}
-            onResendInvite={onResendInvite}
-            onImportPot={onImportPot}
-            onShowToast={onShowToast}
-            onLeavePot={onLeavePot}
-            onArchivePot={onArchivePot}
-            onDeletePot={onDeletePot}
-            onSharePot={() => {
-              if (onCopyInviteLink) onCopyInviteLink();
-            }}
-          />
-        )}
-      </div>
-    </div>
-
-    {/* Quick Keypad Sheet */}
-    {potType === "expense" && (
-      <QuickKeypadSheet
-        isOpen={keypadOpen}
-        onClose={() => setKeypadOpen(false)}
-        baseCurrency={baseCurrency}
-        members={members}
-        currentUserId={currentUserId}
-        defaultMode={expenses.length > 0 ? 'last' : 'equal'}
-        lastSplit={expenses.length > 0 ? expenses[expenses.length - 1]?.split : undefined}
-        onSave={(data) => {
-          triggerHaptic('light');
-          onQuickAddSave?.(data);
-          setKeypadOpen(false);
-        }}
-      />
-    )}
-  </>
+    </>
   );
 }

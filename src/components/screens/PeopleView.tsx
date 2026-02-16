@@ -1,5 +1,6 @@
 import { TrustDots } from "../TrustDots";
 import { usePSAStyle } from "../../utils/usePSAStyle";
+import { Skeleton } from "../Skeleton";
 
 interface Person {
   id: string;
@@ -14,20 +15,40 @@ interface Person {
 
 interface PeopleViewProps {
   people: Person[];
+  isLoading?: boolean;
   onPersonClick: (person: Person) => void;
   onSettle: (personId: string) => void;
 }
 
-export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: PeopleViewProps) {
+export function PeopleView({ people, isLoading, onPersonClick: _onPersonClick, onSettle }: PeopleViewProps) {
   const { isPSA, psaStyles, psaClasses } = usePSAStyle();
-  
+
+  if (isLoading) {
+    return (
+      <div className="p-3 space-y-2">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="card p-4 flex justify-between items-center bg-card rounded-lg">
+            <div className="flex gap-3 items-center w-full">
+              <Skeleton height={40} width={40} className="rounded-full flex-shrink-0" />
+              <div className="space-y-2 w-full">
+                <Skeleton height={20} width="40%" />
+                <Skeleton height={14} width="20%" />
+              </div>
+            </div>
+            <Skeleton height={20} width={80} className="flex-shrink-0" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="p-3 space-y-2">
       {people.map((person) => {
         // Determine variant based on balance
         const isPositive = person.balance >= 0;
         const amountColor = isPositive ? 'var(--money)' : 'var(--foreground)';
-        
+
         return (
           <button
             key={person.id}
@@ -48,22 +69,22 @@ export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: 
                     </span>
                   </div>
                   {/* TrustDots overlay - bottom-right corner */}
-                  <TrustDots 
-                    score={person.trustScore} 
+                  <TrustDots
+                    score={person.trustScore}
                     className="bottom-0 right-0"
                   />
                 </div>
-                
+
                 {/* Name + Payment Preference Pill */}
                 <div className="flex-1 min-w-0">
                   <p className="text-body font-medium truncate">{person.name}</p>
-                  
+
                   {/* Payment Preference Pill */}
                   {person.paymentPreference && (
                     <div className="flex items-center gap-1 mt-1">
-                      <span 
+                      <span
                         className="inline-block px-2 py-0.5 rounded-md text-caption"
-                        style={{ 
+                        style={{
                           backgroundColor: 'var(--muted)',
                           color: 'var(--bg)',
                           opacity: 0.8,
@@ -73,7 +94,7 @@ export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: 
                       </span>
                     </div>
                   )}
-                  
+
                   {/* Pot count (secondary info) */}
                   {person.potCount !== undefined && person.potCount > 0 && (
                     <p className="text-caption text-secondary mt-0.5">
@@ -82,10 +103,10 @@ export function PeopleView({ people, onPersonClick: _onPersonClick, onSettle }: 
                   )}
                 </div>
               </div>
-              
+
               {/* Right: Amount (right-aligned) */}
               <div className="text-right flex-shrink-0">
-                <p 
+                <p
                   className="text-[18px] tabular-nums"
                   style={{ fontWeight: 700, color: amountColor }}
                 >

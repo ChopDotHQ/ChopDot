@@ -8,7 +8,7 @@ import { buildSubscanUrl } from "../../services/chain/utils";
 import { normalizeToPolkadot } from "../../services/chain/address";
 import { getChain } from "../../services/chain";
 import { useAccount } from "../../contexts/AccountContext";
-import type { PotHistory } from "../../App";
+import type { PotHistory } from "../../types/app";
 import { ConfirmModal } from "../ConfirmModal";
 import { formatCurrencyAmount, normalizeCurrency } from "../../utils/currencyFormat";
 import type { TxStatus } from "../../services/chain/adapter";

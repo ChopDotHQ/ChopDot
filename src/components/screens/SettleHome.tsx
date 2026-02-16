@@ -20,6 +20,7 @@ import {
   type DisplayCurrency,
 } from '../../utils/platformFee';
 import { getDotPrice } from '../../services/prices/coingecko';
+import Decimal from 'decimal.js';
 
 interface Settlement {
   id: string;
@@ -74,16 +75,16 @@ export function SettleHome({
   // Preselection logic
   const getPreselectedMethod = (): "cash" | "bank" | "paypal" | "twint" | "dot" => {
     const pref = preferredMethod?.toLowerCase();
-    
+
     if (pref === "bank") return "bank";
     if (pref === "paypal") return "paypal";
     if (pref === "twint") return "twint";
     if (pref === "dot" && walletConnected && POLKADOT_APP_ENABLED) return "dot";
-    
+
     // Fallback order: Bank → PayPal → TWINT → DOT (only if wallet connected and enabled)
     return "bank";
   };
-  
+
   const [selectedMethod, setSelectedMethod] = useState<"cash" | "bank" | "paypal" | "twint" | "dot">(getPreselectedMethod());
   const [bankReference, setBankReference] = useState("");
   const [paypalEmail, setPaypalEmail] = useState("");
@@ -91,18 +92,18 @@ export function SettleHome({
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showBridgeSheet, setShowBridgeSheet] = useState(false);
   // const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
-  
+
   // Fee estimation state
   const [feeEstimate, setFeeEstimate] = useState<number | null>(null);
   const [feeLoading, setFeeLoading] = useState(false);
   const [feeError, setFeeError] = useState(false);
-  
+
   // Fiat equivalent for DOT fees (for display)
   const [dotPriceUsd, setDotPriceUsd] = useState<number | null>(null);
-  
+
   // Settlement loading state
   const [isSettling, setIsSettling] = useState(false);
-  
+
   // Update selection only when the preferred method changes
   // Do NOT change on wallet connect; preserve the user's current tab
   useEffect(() => {
@@ -114,8 +115,8 @@ export function SettleHome({
 
   // Fetch DOT price for fiat equivalent display (for DOT pots OR when DOT method is selected)
   useEffect(() => {
-    const shouldFetchPrice = (isDotPot || selectedMethod === 'dot') && 
-                             import.meta.env.VITE_ENABLE_PRICE_API !== '0';
+    const shouldFetchPrice = (isDotPot || selectedMethod === 'dot') &&
+      import.meta.env.VITE_ENABLE_PRICE_API !== '0';
     if (shouldFetchPrice) {
       getDotPrice('usd')
         .then(price => {
@@ -128,16 +129,21 @@ export function SettleHome({
   }, [isDotPot, selectedMethod]);
 
   // Compute directionally so we don't accidentally net to 0 when both directions exist
+  // We use Decimal for precision math since inputs are strings
+
+
   const amountYouOwe = settlements
     .filter(s => s.direction === "owe")
-    .reduce((sum, s) => sum + s.totalAmount, 0);
+    .reduce((sum, s) => sum.plus(new Decimal(s.totalAmount)), new Decimal(0));
+
   const amountOwedToYou = settlements
     .filter(s => s.direction === "owed")
-    .reduce((sum, s) => sum + s.totalAmount, 0);
-  // Choose the active side: if you owe anything, you are paying; otherwise you are receiving
-  const totalAmount = amountYouOwe > 0 ? amountYouOwe : -amountOwedToYou;
+    .reduce((sum, s) => sum.plus(new Decimal(s.totalAmount)), new Decimal(0));
 
-  // Fee estimator - uses real chain service for DOT payments
+  // Choose the active side: if you owe anything, you are paying; otherwise you are receiving
+  const totalAmountDecimal = amountYouOwe.greaterThan(0) ? amountYouOwe : amountOwedToYou.neg();
+  const totalAmount = totalAmountDecimal.toNumber(); // For legacy compatibility with fees etc
+  // Note: Fees engine still uses number, but that's acceptable for estimation.
   // Defined after totalAmount to avoid "before initialization" error
   const estimateNetworkFee = async (): Promise<number> => {
     // In simulation mode, allow fee estimation without wallet
@@ -147,17 +153,17 @@ export function SettleHome({
     if (isDotMethodSelected && canEstimateFee && recipientAddress && totalAmount > 0) {
       try {
         const chain = await getChain();
-        const fromAddress = isSimulationMode && !account.address0 
+        const fromAddress = isSimulationMode && !account.address0
           ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
           : account.address0!;
-        
+
         // Convert amount to DOT if pot is fiat-based
         let amountDot = Math.abs(totalAmount);
         if (!isDotPot && dotPriceUsd && dotPriceUsd > 0) {
           // Convert fiat amount to DOT using current price
           amountDot = Math.abs(totalAmount) / dotPriceUsd;
         }
-        
+
         const feePlanck = await chain.estimateFee({
           from: fromAddress,
           to: recipientAddress,
@@ -204,10 +210,10 @@ export function SettleHome({
   const isPaying = totalAmount > 0;
   // Get counterparty name from settlements - if multiple, use the first one
   // If settlements array is empty, try to get from the personId context
-  const counterparty = settlements.length > 0 
+  const counterparty = settlements.length > 0
     ? settlements[0]?.name || "Unknown"
     : "Unknown";
-  
+
   // Format amount based on currency
   const formatAmount = (amount: number): string => {
     if (isDotPot) {
@@ -226,28 +232,28 @@ export function SettleHome({
     // Pre-settlement checkpoint - REMOVED
     // Proceed directly to settlement
     await performSettlement();
-    
+
     async function performSettlement() {
-    // For non-DOT methods, show loading state
-    if (selectedMethod !== "dot") {
-      setIsSettling(true);
-      
-      // Simulate settlement processing
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      setIsSettling(false);
-    }
+      // For non-DOT methods, show loading state
+      if (selectedMethod !== "dot") {
+        setIsSettling(true);
 
-    if (selectedMethod === "cash") {
-      setShowConfirmation(true);
-      return;
-    }
+        // Simulate settlement processing
+        await new Promise(resolve => setTimeout(resolve, 800));
 
-    // DOT settlement - use real chain service from Prompt 1
-    // In simulation mode, allow without wallet connection (will use mock address)
-    const canProceedDot = isSimulationMode || (walletConnected && account.address0);
-    if (selectedMethod === "dot" && canProceedDot && recipientAddress) {
-      try {
+        setIsSettling(false);
+      }
+
+      if (selectedMethod === "cash") {
+        setShowConfirmation(true);
+        return;
+      }
+
+      // DOT settlement - use real chain service from Prompt 1
+      // In simulation mode, allow without wallet connection (will use mock address)
+      const canProceedDot = isSimulationMode || (walletConnected && account.address0);
+      if (selectedMethod === "dot" && canProceedDot && recipientAddress) {
+        try {
           // Convert amount to DOT if pot is fiat-based
           let amountDot = Math.abs(totalAmount);
           if (!isDotPot) {
@@ -261,11 +267,11 @@ export function SettleHome({
             // Convert fiat amount to DOT using current price
             amountDot = Math.abs(totalAmount) / dotPriceUsd;
           }
-          
+
           // Balance validation: check amount + fee
           const conservativeFee = feeEstimate ?? 0.01; // Use estimate or conservative fallback
           const required = amountDot + conservativeFee;
-          
+
           if (walletConnected && account.balanceHuman) {
             const walletBalance = parseFloat(account.balanceHuman || '0');
             if (walletBalance < required) {
@@ -276,88 +282,88 @@ export function SettleHome({
               return;
             }
           }
-          
-        setIsSettling(true);
-        
-        const chain = await getChain();
-        
-        // State 1: Signing
-        pushTxToast('signing', {
-          amount: amountDot,
-          currency: 'DOT',
-        });
 
-        // Send real DOT transaction (or simulated in simulation mode)
-        // Use mock address in simulation mode if no wallet connected
-        const fromAddress = isSimulationMode && !account.address0 
-          ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
-          : account.address0!;
-        const result = await chain.sendDot({
-          from: fromAddress,
-          to: recipientAddress,
-          amountDot,
-          onStatus: (status, ctx) => {
-            if (status === 'submitted') {
-              updateTxToast('broadcast', {
-                amount: amountDot,
-                currency: 'DOT',
-              });
-            } else if (status === 'inBlock' && ctx?.txHash) {
-              updateTxToast('inBlock', {
-                amount: amountDot,
-                currency: 'DOT',
-                txHash: ctx.txHash,
-                fee: feeEstimate || 0.0024,
-                feeCurrency: 'DOT',
-              });
-            } else if (status === 'finalized' && ctx?.blockHash) {
-              updateTxToast('finalized', {
-                amount: amountDot,
-                currency: 'DOT',
-                txHash: result.txHash,
-                fee: feeEstimate || 0.0024,
-                feeCurrency: 'DOT',
-              });
-            }
-          },
-        });
+          setIsSettling(true);
 
-        // Refresh balance after successful transaction
-        try {
-          await account.refreshBalance();
-        } catch (refreshError) {
-          console.error('[SettleHome] Balance refresh failed:', refreshError);
-        }
+          const chain = await getChain();
 
-        // Wait a bit for finalization status, then call onConfirm with txHash
-        setTimeout(() => {
+          // State 1: Signing
+          pushTxToast('signing', {
+            amount: amountDot,
+            currency: 'DOT',
+          });
+
+          // Send real DOT transaction (or simulated in simulation mode)
+          // Use mock address in simulation mode if no wallet connected
+          const fromAddress = isSimulationMode && !account.address0
+            ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
+            : account.address0!;
+          const result = await chain.sendDot({
+            from: fromAddress,
+            to: recipientAddress,
+            amountDot,
+            onStatus: (status, ctx) => {
+              if (status === 'submitted') {
+                updateTxToast('broadcast', {
+                  amount: amountDot,
+                  currency: 'DOT',
+                });
+              } else if (status === 'inBlock' && ctx?.txHash) {
+                updateTxToast('inBlock', {
+                  amount: amountDot,
+                  currency: 'DOT',
+                  txHash: ctx.txHash,
+                  fee: feeEstimate || 0.0024,
+                  feeCurrency: 'DOT',
+                });
+              } else if (status === 'finalized' && ctx?.blockHash) {
+                updateTxToast('finalized', {
+                  amount: amountDot,
+                  currency: 'DOT',
+                  txHash: result.txHash,
+                  fee: feeEstimate || 0.0024,
+                  feeCurrency: 'DOT',
+                });
+              }
+            },
+          });
+
+          // Refresh balance after successful transaction
+          try {
+            await account.refreshBalance();
+          } catch (refreshError) {
+            console.error('[SettleHome] Balance refresh failed:', refreshError);
+          }
+
+          // Wait a bit for finalization status, then call onConfirm with txHash
+          setTimeout(() => {
+            setIsSettling(false);
+            onConfirm(selectedMethod, result.txHash);
+          }, 2000);
+
+          return;
+        } catch (error: any) {
+          console.error('[SettleHome] DOT transfer error:', error);
           setIsSettling(false);
-          onConfirm(selectedMethod, result.txHash);
-        }, 2000);
 
-        return;
-      } catch (error: any) {
-        console.error('[SettleHome] DOT transfer error:', error);
-        setIsSettling(false);
-        
-        if (error?.message === 'USER_REJECTED') {
-          onShowToast?.('Transaction cancelled', 'info');
-        } else if (error?.message?.includes('Insufficient')) {
-          onShowToast?.('Insufficient balance for transaction', 'error');
-        } else {
-          onShowToast?.(`Settlement failed: ${error?.message || 'Unknown error'}`, 'error');
+          if (error?.message === 'USER_REJECTED') {
+            onShowToast?.('Transaction cancelled', 'info');
+          } else if (error?.message?.includes('Insufficient')) {
+            onShowToast?.('Insufficient balance for transaction', 'error');
+          } else {
+            onShowToast?.(`Settlement failed: ${error?.message || 'Unknown error'}`, 'error');
+          }
+          return;
         }
-        return;
       }
-    }
 
-    // Non-DOT methods: direct confirmation
-    let reference: string | undefined;
-    if (selectedMethod === "bank") reference = bankReference;
-    if (selectedMethod === "paypal") reference = paypalEmail;
-    if (selectedMethod === "twint") reference = twintPhone;
-    
-    onConfirm(selectedMethod, reference);
+      // Non-DOT methods: direct confirmation
+      let reference: string | undefined;
+      if (selectedMethod === "bank") reference = bankReference;
+      if (selectedMethod === "paypal") reference = paypalEmail;
+      if (selectedMethod === "twint") reference = twintPhone;
+
+      onConfirm(selectedMethod, reference);
     }
   };
 
@@ -382,18 +388,18 @@ export function SettleHome({
   //   ? account.canAfford(amountDotString)
   //   : true;
   const showConnectWalletNotice = isDotFlowActive && account.status !== 'connected';
-  
-  const isValid = 
-    selectedMethod === "cash" || 
+
+  const isValid =
+    selectedMethod === "cash" ||
     // Bank reference is optional
-    selectedMethod === "bank" || 
+    selectedMethod === "bank" ||
     (selectedMethod === "paypal" && paypalEmail.length > 0) ||
-    (selectedMethod === "twint" && twintPhone.length > 0) || 
+    (selectedMethod === "twint" && twintPhone.length > 0) ||
     isDotValid;
 
   // Check if transaction is currently active (disable confirm button)
   const txActive = isTxActive();
-  
+
   // Combined loading state: isSettling (for non-DOT) OR txActive (for DOT)
   const isLoading = isSettling || txActive;
 
@@ -425,11 +431,11 @@ export function SettleHome({
 
   return (
     <div className="flex flex-col h-full pb-[68px]">
-      <TopBar 
-        title="Settle Up" 
+      <TopBar
+        title="Settle Up"
         onBack={onBack}
         rightAction={onHistory ? (
-          <button 
+          <button
             onClick={onHistory}
             className="text-label text-foreground hover:opacity-80 transition-opacity"
           >
@@ -437,7 +443,7 @@ export function SettleHome({
           </button>
         ) : undefined}
       />
-      
+
       <div className="flex-1 overflow-auto p-4 space-y-4">
         {/* Scope Indicator */}
         {scopeLabel && (
@@ -460,9 +466,9 @@ export function SettleHome({
               <p className="text-body" style={{ fontWeight: 500 }}>{counterparty}</p>
             </div>
             <div className="text-right">
-              <p 
+              <p
                 className="tabular-nums"
-                style={{ 
+                style={{
                   fontSize: '28px',
                   fontWeight: 600,
                   lineHeight: 1.2,
@@ -480,7 +486,7 @@ export function SettleHome({
               {settlements[0]?.pots?.map(pot => (
                 <div key={pot.potId} className="flex justify-between text-caption text-secondary">
                   <span>{pot.potName}</span>
-                  <span className="tabular-nums" style={{ fontWeight: 500 }}>{isDotPot ? `${pot.amount.toFixed(6)} DOT` : `$${pot.amount.toFixed(2)}`}</span>
+                  <span className="tabular-nums" style={{ fontWeight: 500 }}>{isDotPot ? `${pot.amount} DOT` : `$${pot.amount}`}</span>
                 </div>
               ))}
             </div>
@@ -496,20 +502,19 @@ export function SettleHome({
         {/* Payment Method Tabs */}
         <div className="space-y-2">
           <label className="text-caption text-secondary">Payment Method</label>
-          
+
           {/* Tab Buttons - 4-5 methods: Cash, Bank, PayPal, TWINT, DOT (conditional) */}
           <div className={`card p-1 grid gap-1 ${POLKADOT_APP_ENABLED && showDotMethod ? 'grid-cols-5' : 'grid-cols-4'}`}>
             <button
               onClick={() => setSelectedMethod("cash")}
-              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${
-                selectedMethod === "cash"
-                  ? 'bg-background shadow-sm'
-                  : 'hover:bg-muted/5'
-              }`}
+              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${selectedMethod === "cash"
+                ? 'bg-background shadow-sm'
+                : 'hover:bg-muted/5'
+                }`}
             >
               <div className="flex flex-col items-center gap-1">
                 <Banknote className="w-5 h-5" style={{ color: selectedMethod === "cash" ? 'var(--foreground)' : 'var(--muted)' }} />
-                <span className="text-caption" style={{ 
+                <span className="text-caption" style={{
                   color: selectedMethod === "cash" ? 'var(--foreground)' : 'var(--muted)',
                   fontWeight: selectedMethod === "cash" ? 500 : 400
                 }}>
@@ -520,15 +525,14 @@ export function SettleHome({
 
             <button
               onClick={() => setSelectedMethod("bank")}
-              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${
-                selectedMethod === "bank"
-                  ? 'bg-background shadow-sm'
-                  : 'hover:bg-muted/5'
-              }`}
+              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${selectedMethod === "bank"
+                ? 'bg-background shadow-sm'
+                : 'hover:bg-muted/5'
+                }`}
             >
               <div className="flex flex-col items-center gap-1">
                 <Building2 className="w-5 h-5" style={{ color: selectedMethod === "bank" ? 'var(--foreground)' : 'var(--muted)' }} />
-                <span className="text-caption" style={{ 
+                <span className="text-caption" style={{
                   color: selectedMethod === "bank" ? 'var(--foreground)' : 'var(--muted)',
                   fontWeight: selectedMethod === "bank" ? 500 : 400
                 }}>
@@ -536,18 +540,17 @@ export function SettleHome({
                 </span>
               </div>
             </button>
-            
+
             <button
               onClick={() => setSelectedMethod("paypal")}
-              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${
-                selectedMethod === "paypal"
-                  ? 'bg-background shadow-sm'
-                  : 'hover:bg-muted/5'
-              }`}
+              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${selectedMethod === "paypal"
+                ? 'bg-background shadow-sm'
+                : 'hover:bg-muted/5'
+                }`}
             >
               <div className="flex flex-col items-center gap-1">
                 <CreditCard className="w-5 h-5" style={{ color: selectedMethod === "paypal" ? 'var(--foreground)' : 'var(--muted)' }} />
-                <span className="text-caption" style={{ 
+                <span className="text-caption" style={{
                   color: selectedMethod === "paypal" ? 'var(--foreground)' : 'var(--muted)',
                   fontWeight: selectedMethod === "paypal" ? 500 : 400
                 }}>
@@ -555,18 +558,17 @@ export function SettleHome({
                 </span>
               </div>
             </button>
-            
+
             <button
               onClick={() => setSelectedMethod("twint")}
-              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${
-                selectedMethod === "twint"
-                  ? 'bg-background shadow-sm'
-                  : 'hover:bg-muted/5'
-              }`}
+              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${selectedMethod === "twint"
+                ? 'bg-background shadow-sm'
+                : 'hover:bg-muted/5'
+                }`}
             >
               <div className="flex flex-col items-center gap-1">
                 <Smartphone className="w-5 h-5" style={{ color: selectedMethod === "twint" ? 'var(--foreground)' : 'var(--muted)' }} />
-                <span className="text-caption" style={{ 
+                <span className="text-caption" style={{
                   color: selectedMethod === "twint" ? 'var(--foreground)' : 'var(--muted)',
                   fontWeight: selectedMethod === "twint" ? 500 : 400
                 }}>
@@ -574,7 +576,7 @@ export function SettleHome({
                 </span>
               </div>
             </button>
-            
+
             {POLKADOT_APP_ENABLED && showDotMethod && (
               <button
                 onClick={() => {
@@ -587,35 +589,34 @@ export function SettleHome({
                   }
                 }}
                 disabled={!isDotMethodEnabled}
-                className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all relative ${
-                  selectedMethod === "dot"
-                    ? 'bg-background shadow-sm'
-                    : isDotMethodEnabled
+                className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all relative ${selectedMethod === "dot"
+                  ? 'bg-background shadow-sm'
+                  : isDotMethodEnabled
                     ? 'hover:bg-muted/5'
                     : 'opacity-60 cursor-not-allowed'
-                }`}
+                  }`}
                 title={!isDotMethodEnabled ? 'Connect wallet to pay with DOT' : undefined}
               >
                 <div className="flex flex-col items-center gap-1">
-                  <Wallet className="w-5 h-5" style={{ 
-                    color: selectedMethod === "dot" 
-                      ? 'var(--foreground)' 
-                      : isDotMethodEnabled 
-                        ? 'var(--muted)' 
+                  <Wallet className="w-5 h-5" style={{
+                    color: selectedMethod === "dot"
+                      ? 'var(--foreground)'
+                      : isDotMethodEnabled
+                        ? 'var(--muted)'
                         : 'var(--muted)'
                   }} />
-                  <span className="text-caption" style={{ 
-                    color: selectedMethod === "dot" 
-                      ? 'var(--foreground)' 
-                      : isDotMethodEnabled 
-                        ? 'var(--muted)' 
+                  <span className="text-caption" style={{
+                    color: selectedMethod === "dot"
+                      ? 'var(--foreground)'
+                      : isDotMethodEnabled
+                        ? 'var(--muted)'
                         : 'var(--muted)',
                     fontWeight: selectedMethod === "dot" ? 500 : 400
                   }}>
                     DOT
                   </span>
                   {!walletConnected && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-[var(--accent)] rounded-full border border-background" 
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-[var(--accent)] rounded-full border border-background"
                       title="Connect wallet to unlock" />
                   )}
                 </div>
@@ -684,7 +685,7 @@ export function SettleHome({
             </div>
           </div>
         )}
-        
+
         {selectedMethod === "paypal" && (
           <div className="card p-4 space-y-3">
             <div>
@@ -730,7 +731,7 @@ export function SettleHome({
             </div>
           </div>
         )}
-        
+
         {selectedMethod === "twint" && (
           <div className="card p-4 space-y-3">
             <div>
@@ -783,12 +784,12 @@ export function SettleHome({
               <div className="w-2 h-2 rounded-full bg-gradient-to-br from-pink-400 to-purple-500" />
               <p className="text-body font-medium">Polkadot Settlement</p>
             </div>
-                    <p className="text-caption text-secondary">
-                      {isSimulationMode || walletConnected
-                        ? `Send ${formatAmount(totalAmount)} on Polkadot. This will create an on-chain transaction${isSimulationMode ? ' (simulated)' : ''}.`
-                        : `Connect your Polkadot wallet to settle on-chain in ${baseCurrency}.`
-                      }
-                    </p>
+            <p className="text-caption text-secondary">
+              {isSimulationMode || walletConnected
+                ? `Send ${formatAmount(totalAmount)} on Polkadot. This will create an on-chain transaction${isSimulationMode ? ' (simulated)' : ''}.`
+                : `Connect your Polkadot wallet to settle on-chain in ${baseCurrency}.`
+              }
+            </p>
 
             {/* From/To details when wallet connected (or simulation mode) and address available */}
             {(isSimulationMode || walletConnected) && recipientAddress && (
@@ -797,17 +798,17 @@ export function SettleHome({
                   <span className="text-muted">From</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-label truncate max-w-[180px]">
-                      {((isSimulationMode && !account.address0) 
-                        ? '15mock00000000000000000000000000000A' 
-                        : (account.address0 || '')).slice(0, 6)}...{((isSimulationMode && !account.address0) 
-                        ? '15mock00000000000000000000000000000A' 
-                        : (account.address0 || '')).slice(-6)}
+                      {((isSimulationMode && !account.address0)
+                        ? '15mock00000000000000000000000000000A'
+                        : (account.address0 || '')).slice(0, 6)}...{((isSimulationMode && !account.address0)
+                          ? '15mock00000000000000000000000000000A'
+                          : (account.address0 || '')).slice(-6)}
                     </span>
                     <button
                       className="text-micro underline opacity-70 hover:opacity-100"
                       onClick={() => {
-                        const addressToCopy = (isSimulationMode && !account.address0) 
-                          ? '15mock00000000000000000000000000000A' 
+                        const addressToCopy = (isSimulationMode && !account.address0)
+                          ? '15mock00000000000000000000000000000A'
                           : (account.address0 || '');
                         navigator.clipboard.writeText(addressToCopy)
                           .then(() => onShowToast?.('Copied sender address', 'info'))
@@ -878,12 +879,12 @@ export function SettleHome({
                     displayCurrency
                   );
                   const suffix = canCollectPlatformFee() ? '' : ' • not charged';
-                  
+
                   // For DOT pots, show DOT + fiat equivalent if available
                   if (currency === 'DOT' && dotPriceUsd && dotPriceUsd > 0) {
                     const fiatEquivalent = fee * dotPriceUsd;
-                  return (
-                    <div className="flex justify-between text-caption">
+                    return (
+                      <div className="flex justify-between text-caption">
                         <span className="text-muted">App fee ({pctStr}%){suffix}</span>
                         <span className="tabular-nums text-muted">
                           {formatFeeWithEquivalent(fee, fiatEquivalent, 'USD')}
@@ -891,7 +892,7 @@ export function SettleHome({
                       </div>
                     );
                   }
-                  
+
                   // For fiat pots or when price unavailable, show in pot currency
                   return (
                     <div className="flex justify-between text-caption">
@@ -924,8 +925,8 @@ export function SettleHome({
                       )}
                       {selectedMethod === 'dot' && (
                         <p className="text-caption text-muted tabular-nums">
-                          + {feeEstimate !== null && !feeError 
-                            ? formatDOT(feeEstimate) 
+                          + {feeEstimate !== null && !feeError
+                            ? formatDOT(feeEstimate)
                             : formatDOT(0.002)} (network fee)
                         </p>
                       )}
@@ -1009,11 +1010,11 @@ export function SettleHome({
             disabled={!isValid || isLoading}
             loading={isLoading}
           >
-            {selectedMethod === "dot" && !isSimulationMode && !walletConnected 
+            {selectedMethod === "dot" && !isSimulationMode && !walletConnected
               ? "Connect Wallet in Header"
               : selectedMethod === "dot" && !recipientAddress
-              ? "Add Wallet Address Required"
-              : `Confirm ${selectedMethod === "cash" ? "Cash" : selectedMethod === "bank" ? "Bank" : selectedMethod === "paypal" ? "PayPal" : selectedMethod === "twint" ? "TWINT" : "DOT"} Settlement`
+                ? "Add Wallet Address Required"
+                : `Confirm ${selectedMethod === "cash" ? "Cash" : selectedMethod === "bank" ? "Bank" : selectedMethod === "paypal" ? "PayPal" : selectedMethod === "twint" ? "TWINT" : "DOT"} Settlement`
             }
           </PrimaryButton>
         </div>
