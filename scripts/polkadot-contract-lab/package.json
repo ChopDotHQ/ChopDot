@@ -1,0 +1,22 @@
+{
+  "name": "polkadot-contract-lab",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Isolated Hardhat lab for experimenting with Polkadot Hub smart contracts",
+  "type": "module",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:testnet": "hardhat ignition deploy ./ignition/modules/Storage.ts --network polkadotHubTestnet",
+    "deploy:mainnet": "hardhat ignition deploy ./ignition/modules/Storage.ts --network polkadotHubMainnet",
+    "rpc:check": "node ./scripts/chain-health.mjs"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@parity/hardhat-polkadot": "^0.1.5",
+    "hardhat": "^2.26.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3",
+    "@types/node": "^22.10.2"
+  }
+}
