@@ -25,7 +25,10 @@
     "db:stop": "echo 'Local Supabase disabled. Use hosted Supabase.'",
     "db:status": "echo 'Local Supabase disabled. Use hosted Supabase.'",
     "db:reset": "supabase db reset",
-    "demo:visual": "node scripts/visual-demo.mjs"
+    "demo:visual": "node scripts/visual-demo.mjs",
+    "blockchain:up": "docker compose -f blockchain/docker-compose.local-chain.yml --profile polkadot up -d",
+    "blockchain:down": "docker compose -f blockchain/docker-compose.local-chain.yml down",
+    "blockchain:local:all": "bash scripts/blockchain/local-suite.sh"
   },
   "dependencies": {
     "@automerge/automerge": "^3.2.0",

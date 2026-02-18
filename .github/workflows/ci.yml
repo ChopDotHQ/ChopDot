@@ -13,6 +13,7 @@ jobs:
     env:
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL || 'https://example.supabase.co' }}
       VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || vars.VITE_SUPABASE_ANON_KEY || 'test-anon-key' }}
+      VITE_ENABLE_UNSETTLED_SEED: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,6 +36,12 @@ jobs:
       - name: Run unit/integration tests
         run: npm test
 
+      - name: Run multi-chain settlement tests
+        run: npx vitest run src/utils/settlements.multichain.test.ts
+
+      - name: Run local blockchain suite
+        run: npm run blockchain:local:all
+
       - name: Coverage gate
         run: npm run test:coverage
 
@@ -43,3 +50,34 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  multi-user-tests:
+    name: Seeded Tests (${{ matrix.user_id }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        user_id: [owner, alice, bob]
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL || 'https://example.supabase.co' }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || vars.VITE_SUPABASE_ANON_KEY || 'test-anon-key' }}
+      VITE_ENABLE_UNSETTLED_SEED: "true"
+      CHOPDOT_TEST_USER_ID: ${{ matrix.user_id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Seeded multi-chain settlement matrix test
+        run: npx vitest run src/utils/settlements.multichain.test.ts
+
+      - name: Full test suite for user context
+        run: npm test

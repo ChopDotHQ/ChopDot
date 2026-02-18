@@ -1,7 +1,7 @@
 export const FIAT_CURRENCY_CODES = ['USD', 'EUR', 'GBP', 'CHF', 'JPY'] as const;
 export type FiatCurrencyCode = (typeof FIAT_CURRENCY_CODES)[number];
 
-export const CRYPTO_CURRENCY_CODES = ['DOT', 'USDC'] as const;
+export const CRYPTO_CURRENCY_CODES = ['DOT', 'USDC', 'ETH', 'SOL', 'MATIC', 'XTZ', 'ARB', 'OP'] as const;
 export type CryptoCurrencyCode = (typeof CRYPTO_CURRENCY_CODES)[number];
 
 export type CurrencyCode = FiatCurrencyCode | CryptoCurrencyCode;

@@ -1,8 +1,10 @@
-import { getDotPrice, getUsdcPrice } from './coingecko';
+import { getCryptoPrice } from './coingecko';
 import { getFiatRate } from './exchangeRateApi';
 import {
   type CurrencyCode,
+  type CryptoCurrencyCode,
   type FiatCurrencyCode,
+  isCryptoCurrencyCode,
   isFiatCurrencyCode,
   toFiatCurrencyParam,
 } from './types';
@@ -21,12 +23,11 @@ const safeRate = (rate: number, source: RateSource): ConversionRate => ({
   timestamp: new Date().toISOString(),
 });
 
-const getDotPriceInFiat = async (currency: FiatCurrencyCode): Promise<number> => {
-  return getDotPrice(toFiatCurrencyParam(currency));
-};
-
-const getUsdcPriceInFiat = async (currency: FiatCurrencyCode): Promise<number> => {
-  return getUsdcPrice(toFiatCurrencyParam(currency));
+const getCryptoPriceInFiat = async (
+  currency: CryptoCurrencyCode,
+  targetFiat: FiatCurrencyCode
+): Promise<number> => {
+  return getCryptoPrice(currency, toFiatCurrencyParam(targetFiat));
 };
 
 export async function getConversionRate(
@@ -40,36 +41,20 @@ export async function getConversionRate(
     return safeRate(rate, 'exchangerate-api');
   }
 
-  if (base === 'DOT' && isFiatCurrencyCode(target)) {
-    const rate = await getDotPriceInFiat(target);
+  if (isCryptoCurrencyCode(base) && isFiatCurrencyCode(target)) {
+    const rate = await getCryptoPriceInFiat(base, target);
     return safeRate(rate, 'coingecko');
   }
 
-  if (base === 'USDC' && isFiatCurrencyCode(target)) {
-    const rate = await getUsdcPriceInFiat(target);
-    return safeRate(rate, 'coingecko');
+  if (isFiatCurrencyCode(base) && isCryptoCurrencyCode(target)) {
+    const cryptoPrice = await getCryptoPriceInFiat(target, base);
+    return safeRate(cryptoPrice > 0 ? 1 / cryptoPrice : 0, 'coingecko');
   }
 
-  if (isFiatCurrencyCode(base) && target === 'DOT') {
-    const dotPrice = await getDotPriceInFiat(base);
-    return safeRate(dotPrice > 0 ? 1 / dotPrice : 0, 'coingecko');
-  }
-
-  if (isFiatCurrencyCode(base) && target === 'USDC') {
-    const usdcPrice = await getUsdcPriceInFiat(base);
-    return safeRate(usdcPrice > 0 ? 1 / usdcPrice : 0, 'coingecko');
-  }
-
-  if (base === 'DOT' && target === 'USDC') {
-    const dotUsd = await getDotPriceInFiat('USD');
-    const usdcUsd = await getUsdcPriceInFiat('USD');
-    return safeRate(usdcUsd > 0 ? dotUsd / usdcUsd : 0, 'coingecko');
-  }
-
-  if (base === 'USDC' && target === 'DOT') {
-    const dotUsd = await getDotPriceInFiat('USD');
-    const usdcUsd = await getUsdcPriceInFiat('USD');
-    return safeRate(dotUsd > 0 ? usdcUsd / dotUsd : 0, 'coingecko');
+  if (isCryptoCurrencyCode(base) && isCryptoCurrencyCode(target)) {
+    const baseUsd = await getCryptoPriceInFiat(base, 'USD');
+    const targetUsd = await getCryptoPriceInFiat(target, 'USD');
+    return safeRate(targetUsd > 0 ? baseUsd / targetUsd : 0, 'coingecko');
   }
 
   return safeRate(0, 'none');

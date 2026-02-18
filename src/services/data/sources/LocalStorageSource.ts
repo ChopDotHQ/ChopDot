@@ -13,6 +13,7 @@ import { migrateAllPotsOnLoad, needsMigration } from '../../../utils/migratePot'
 import { QuotaExceededError, ValidationError, NotFoundError } from '../errors';
 import { PotSchema } from '../../../schema/pot';
 import { ensureDefaultPots } from '../seeds/defaultPots';
+import { ensureUnsettledSettlementSeedPots } from '../seeds/unsettledSettlementPots';
 
 const STORAGE_KEYS = {
   pots: 'chopdot_pots',
@@ -38,6 +39,16 @@ const MAX_SIZES = {
  */
 export class LocalStorageSource {
   private migrated = false;
+  private seedUnsettledEnabled =
+    (import.meta as any)?.env?.VITE_ENABLE_UNSETTLED_SEED === '1' ||
+    (import.meta as any)?.env?.VITE_ENABLE_UNSETTLED_SEED === 'true';
+
+  private applyBaseSeeds(pots: Pot[]): Pot[] {
+    const withDefaults = ensureDefaultPots(pots);
+    return this.seedUnsettledEnabled
+      ? ensureUnsettledSettlementSeedPots(withDefaults)
+      : withDefaults;
+  }
 
   /**
    * Get all pots from localStorage
@@ -74,10 +85,10 @@ export class LocalStorageSource {
           } else {
             this.migrated = true;
             let migrated = migrateAllPotsOnLoad(parsed); // Always migrate to ensure schema compliance
-            
-            // Ensure all default pots exist (adds missing ones without overwriting)
+
+            // Ensure all baseline/seed pots exist (adds missing ones without overwriting)
             const beforeCount = migrated.length;
-            migrated = ensureDefaultPots(migrated);
+            migrated = this.applyBaseSeeds(migrated);
             const addedCount = migrated.length - beforeCount;
             
             // Save updated pots back to localStorage if any were added
@@ -105,7 +116,7 @@ export class LocalStorageSource {
             const parsed = JSON.parse(backupPots);
             if (Array.isArray(parsed)) {
               console.warn('[LocalStorageSource] Restored pots from backup');
-              const migrated = migrateAllPotsOnLoad(parsed);
+              const migrated = this.applyBaseSeeds(migrateAllPotsOnLoad(parsed));
               this.migrated = true;
               
               // Restore to main key
@@ -129,7 +140,7 @@ export class LocalStorageSource {
       // If still empty, seed default
       if (pots.length === 0) {
         this.migrated = true;
-        const defaultPots = ensureDefaultPots([]);
+        const defaultPots = this.applyBaseSeeds([]);
         
         // Save default pots to localStorage for future loads
         try {

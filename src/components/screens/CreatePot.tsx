@@ -2,8 +2,11 @@ import { Receipt, TrendingUp, AlertCircle, CheckCircle } from "lucide-react";
 import { TopBar } from "../TopBar";
 import { MemberChip } from "../MemberChip";
 import { LinkButton } from "../LinkButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { isValidSs58Any, normalizeToPolkadot } from "../../services/chain/address";
+import { CURRENCY_CATALOG } from "../../services/prices/currencyCatalog";
+import { getConversionRate } from "../../services/prices/currencyService";
+import { isCryptoCurrencyCode, isFiatCurrencyCode, type CurrencyCode } from "../../services/prices/types";
 
 interface Member {
   id: string;
@@ -51,6 +54,48 @@ export function CreatePot({
   const [addressError, setAddressError] = useState<string | null>(null);
   const [addressValid, setAddressValid] = useState(false);
   const [allowCashBank, setAllowCashBank] = useState(true);
+  const [rateRows, setRateRows] = useState<Array<{ target: CurrencyCode; rate: number }>>([]);
+  const [ratesLoading, setRatesLoading] = useState(false);
+
+  const baseCode: CurrencyCode = CURRENCY_CATALOG.some((item) => item.code === baseCurrency)
+    ? (baseCurrency as CurrencyCode)
+    : 'USD';
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadRates = async () => {
+      setRatesLoading(true);
+      const targets: CurrencyCode[] = ['USD', 'EUR', 'DOT', 'ETH', 'MATIC'];
+      const filteredTargets = targets.filter((target) => target !== baseCode);
+
+      try {
+        const rows = await Promise.all(
+          filteredTargets.map(async (target) => {
+            const { rate } = await getConversionRate(baseCode, target);
+            return { target, rate };
+          })
+        );
+
+        if (!cancelled) {
+          setRateRows(rows.filter((row) => row.rate > 0));
+        }
+      } catch {
+        if (!cancelled) {
+          setRateRows([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setRatesLoading(false);
+        }
+      }
+    };
+
+    loadRates();
+    return () => {
+      cancelled = true;
+    };
+  }, [baseCode]);
 
   // Validate address on change
   const validateAddress = (addr: string) => {
@@ -183,10 +228,20 @@ export function CreatePot({
                 onChange={(e) => setBaseCurrency(e.target.value)}
                 className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body appearance-none"
               >
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-                <option value="DOT">DOT</option>
+                <optgroup label="Fiat">
+                  {CURRENCY_CATALOG.filter((item) => item.kind === 'fiat').map((item) => (
+                    <option key={item.code} value={item.code}>
+                      {item.code} - {item.label}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Crypto">
+                  {CURRENCY_CATALOG.filter((item) => item.kind === 'crypto').map((item) => (
+                    <option key={item.code} value={item.code}>
+                      {item.code} - {item.label} ({item.layer?.toUpperCase()})
+                    </option>
+                  ))}
+                </optgroup>
               </select>
             </div>
             <div className="flex items-end">
@@ -200,6 +255,25 @@ export function CreatePot({
                 <span className="text-micro">Cash/Bank</span>
               </label>
             </div>
+          </div>
+          <div className="rounded-lg border border-border p-2 bg-card/60">
+            <p className="text-micro text-secondary mb-1">
+              Live rates for <span className="text-foreground font-semibold">{baseCode}</span>
+              {isCryptoCurrencyCode(baseCode) ? ' (crypto)' : isFiatCurrencyCode(baseCode) ? ' (fiat)' : ''}
+            </p>
+            {ratesLoading ? (
+              <p className="text-micro text-secondary">Loading rates...</p>
+            ) : rateRows.length === 0 ? (
+              <p className="text-micro text-secondary">Rates unavailable right now.</p>
+            ) : (
+              <div className="grid grid-cols-1 gap-1">
+                {rateRows.slice(0, 3).map((row) => (
+                  <p key={row.target} className="text-micro text-foreground">
+                    1 {baseCode} = {row.rate.toFixed(row.target === 'DOT' || row.target === 'ETH' || row.target === 'MATIC' ? 6 : 4)} {row.target}
+                  </p>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

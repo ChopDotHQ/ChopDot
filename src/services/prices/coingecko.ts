@@ -20,6 +20,17 @@ const COINGECKO_API_BASE = 'https://api.coingecko.com/api/v3';
 // In-memory cache
 let priceCache: PriceCache | null = null;
 let usdcPriceCache: PriceCache | null = null;
+const genericPriceCache = new Map<string, PriceCache>();
+const COINGECKO_IDS: Record<string, string> = {
+  DOT: 'polkadot',
+  USDC: 'usd-coin',
+  ETH: 'ethereum',
+  SOL: 'solana',
+  MATIC: 'matic-network',
+  XTZ: 'tezos',
+  ARB: 'arbitrum',
+  OP: 'optimism',
+};
 
 /**
  * Fetch DOT price in multiple fiat currencies
@@ -161,6 +172,60 @@ export async function getDotPrice(currency: FiatCurrency = 'usd'): Promise<numbe
   return prices[currency] || 0;
 }
 
+export async function getCryptoPrice(
+  symbol: keyof typeof COINGECKO_IDS,
+  currency: FiatCurrency = 'usd'
+): Promise<number> {
+  if (symbol === 'DOT') return getDotPrice(currency);
+  if (symbol === 'USDC') return getUsdcPrice(currency);
+
+  const cached = genericPriceCache.get(symbol);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION_MS) {
+    return cached.prices[currency] || 0;
+  }
+
+  try {
+    const id = COINGECKO_IDS[symbol];
+    if (!id) {
+      return 0;
+    }
+    const vsCurrencies = ['usd', 'chf', 'eur', 'gbp', 'jpy'].join(',');
+    const url = `${COINGECKO_API_BASE}/simple/price?ids=${id}&vs_currencies=${vsCurrencies}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`CoinGecko API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const tokenData = data[id];
+    if (!tokenData) {
+      throw new Error(`${symbol} price data not found`);
+    }
+
+    const prices: Record<FiatCurrency, number> = {
+      usd: tokenData.usd || 0,
+      chf: tokenData.chf || 0,
+      eur: tokenData.eur || 0,
+      gbp: tokenData.gbp || 0,
+      jpy: tokenData.jpy || 0,
+    };
+
+    genericPriceCache.set(symbol, {
+      prices,
+      timestamp: Date.now(),
+    });
+
+    return prices[currency] || 0;
+  } catch (error) {
+    console.error(`[CoinGecko] Failed to fetch ${symbol} prices:`, error);
+    if (cached) {
+      return cached.prices[currency] || 0;
+    }
+    return 0;
+  }
+}
+
 /**
  * Convert DOT amount to fiat equivalent
  */
@@ -178,4 +243,5 @@ export async function dotToFiat(
 export function clearPriceCache(): void {
   priceCache = null;
   usdcPriceCache = null;
+  genericPriceCache.clear();
 }

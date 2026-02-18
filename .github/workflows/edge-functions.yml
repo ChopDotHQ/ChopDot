@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - 12-23-feat_add_usdc_implementation
+      - '**'
 
 jobs:
   verify-edge-functions:
