@@ -29,6 +29,25 @@ interface Expense {
   attestationTimestamp?: string;
 }
 
+interface SettlementExportItem {
+  id: string;
+  method: "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc";
+  personName: string;
+  amount: number;
+  currency: string;
+  date: string;
+  txHash?: string;
+  potNames?: string[];
+}
+
+function escapeCsvCell(cell: string | number): string {
+  const text = String(cell);
+  if (text.includes(",") || text.includes('"') || text.includes("\n")) {
+    return `"${text.replace(/"/g, '""')}"`;
+  }
+  return text;
+}
+
 /**
  * Export pot expenses to CSV
  * 
@@ -43,6 +62,23 @@ export function exportPotExpensesToCSV(
   members: Member[],
   currentUserId: string = "owner"
 ): void {
+  const csvContent = buildPotExpensesCSVContent(potName, expenses, members, currentUserId);
+
+  // Generate filename
+  const sanitizedPotName = potName.replace(/[^a-zA-Z0-9]/g, '_');
+  const dateStr = new Date().toISOString().split('T')[0];
+  const filename = `${sanitizedPotName}_expenses_${dateStr}.csv`;
+
+  // Trigger download
+  downloadCSV(csvContent, filename);
+}
+
+export function buildPotExpensesCSVContent(
+  _potName: string,
+  expenses: Expense[],
+  members: Member[],
+  currentUserId: string = "owner"
+): string {
   // Helper: Get member name by ID
   const getMemberName = (memberId: string): string => {
     if (memberId === "owner") return "You";
@@ -120,23 +156,10 @@ export function exportPotExpensesToCSV(
   const csvContent = [
     headers.join(","),
     ...rows.map(row => 
-      row.map(cell => {
-        // Escape cells containing commas or quotes
-        if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
-          return `"${cell.replace(/"/g, '""')}"`;
-        }
-        return cell;
-      }).join(",")
+      row.map((cell) => escapeCsvCell(cell)).join(",")
     ),
   ].join("\n");
-
-  // Generate filename
-  const sanitizedPotName = potName.replace(/[^a-zA-Z0-9]/g, '_');
-  const dateStr = new Date().toISOString().split('T')[0];
-  const filename = `${sanitizedPotName}_expenses_${dateStr}.csv`;
-
-  // Trigger download
-  downloadCSV(csvContent, filename);
+  return csvContent;
 }
 
 /**
@@ -182,6 +205,27 @@ export function exportPotsSummaryToCSV(
     baseCurrency: string;
   }>
 ): void {
+  const csvContent = buildPotsSummaryCSVContent(pots);
+
+  // Generate filename
+  const dateStr = new Date().toISOString().split('T')[0];
+  const filename = `chopdot_pots_summary_${dateStr}.csv`;
+
+  // Trigger download
+  downloadCSV(csvContent, filename);
+}
+
+export function buildPotsSummaryCSVContent(
+  pots: Array<{
+    id: string;
+    name: string;
+    type: "expense" | "savings";
+    expenses?: Expense[];
+    members?: Member[];
+    totalPooled?: number;
+    baseCurrency: string;
+  }>
+): string {
   // CSV Headers
   const headers = [
     "Pot Name",
@@ -222,13 +266,56 @@ export function exportPotsSummaryToCSV(
   // Convert to CSV string
   const csvContent = [
     headers.join(","),
-    ...rows.map(row => row.map(cell => String(cell)).join(",")),
+    ...rows.map((row) => row.map((cell) => escapeCsvCell(cell)).join(",")),
   ].join("\n");
+  return csvContent;
+}
 
-  // Generate filename
-  const dateStr = new Date().toISOString().split('T')[0];
-  const filename = `chopdot_pots_summary_${dateStr}.csv`;
+export function buildSettlementsHistoryCSVContent(
+  settlements: SettlementExportItem[],
+): string {
+  const headers = [
+    "Date",
+    "Person",
+    "Method",
+    "Amount",
+    "Currency",
+    "Pots",
+    "Tx Hash",
+  ];
 
-  // Trigger download
+  const methodLabels: Record<SettlementExportItem["method"], string> = {
+    cash: "Cash",
+    bank: "Bank",
+    paypal: "PayPal",
+    twint: "TWINT",
+    dot: "DOT",
+    usdc: "USDC",
+  };
+
+  const rows = [...settlements]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .map((settlement) => [
+      new Date(settlement.date).toISOString(),
+      settlement.personName,
+      methodLabels[settlement.method] ?? settlement.method,
+      settlement.amount.toFixed(6),
+      settlement.currency,
+      settlement.potNames?.join("; ") ?? "",
+      settlement.txHash ?? "",
+    ]);
+
+  return [
+    headers.join(","),
+    ...rows.map((row) => row.map((cell) => escapeCsvCell(cell)).join(",")),
+  ].join("\n");
+}
+
+export function exportSettlementHistoryToCSV(
+  settlements: SettlementExportItem[],
+): void {
+  const csvContent = buildSettlementsHistoryCSVContent(settlements);
+  const dateStr = new Date().toISOString().split("T")[0];
+  const filename = `chopdot_settlement_history_${dateStr}.csv`;
   downloadCSV(csvContent, filename);
 }

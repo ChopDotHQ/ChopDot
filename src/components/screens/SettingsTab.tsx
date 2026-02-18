@@ -232,6 +232,7 @@ export function SettingsTab({
             className="w-full px-3 py-2.5 bg-input-background border border-border/30 rounded-[var(--r-lg)] text-body focus:outline-none focus-ring-pink transition-all appearance-none"
           >
             <option value="USD">USD</option>
+            <option value="USDC">USDC</option>
             <option value="EUR">EUR</option>
             <option value="GBP">GBP</option>
             <option value="DOT">DOT</option>

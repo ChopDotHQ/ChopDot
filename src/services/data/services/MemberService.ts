@@ -20,9 +20,11 @@ import { logTiming } from '../../../utils/logDev';
  */
 export class MemberService {
   private repository: MemberRepository;
+  private cacheInvalidator?: { invalidate: (id?: string) => void };
 
-  constructor(repository: MemberRepository) {
+  constructor(repository: MemberRepository, cacheInvalidator?: { invalidate: (id?: string) => void }) {
     this.repository = repository;
+    this.cacheInvalidator = cacheInvalidator;
   }
 
   /**
@@ -43,6 +45,7 @@ export class MemberService {
       }
 
       const result = await this.repository.create(potId, dto);
+      this.cacheInvalidator?.invalidate(potId);
       logTiming('addMember', performance.now() - start, { potId, memberId: result.id });
       return result;
     } catch (error) {
@@ -64,6 +67,7 @@ export class MemberService {
     const start = performance.now();
     try {
       const result = await this.repository.update(potId, memberId, updates);
+      this.cacheInvalidator?.invalidate(potId);
       logTiming('updateMember', performance.now() - start, { potId, memberId });
       return result;
     } catch (error) {
@@ -83,6 +87,7 @@ export class MemberService {
     const start = performance.now();
     try {
       await this.repository.remove(potId, memberId);
+      this.cacheInvalidator?.invalidate(potId);
       logTiming('removeMember', performance.now() - start, { potId, memberId });
     } catch (error) {
       logTiming('removeMember', performance.now() - start, { potId, memberId, error: error instanceof Error ? error.message : 'unknown' });
@@ -90,4 +95,3 @@ export class MemberService {
     }
   }
 }
-

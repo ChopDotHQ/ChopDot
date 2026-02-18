@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export type SettlementResult = {
   amount: number;
-  method: "cash" | "bank" | "paypal" | "twint" | "dot";
+  method: "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc";
   counterpartyId: string;
   counterpartyName: string;
   scope: "pot" | "person-all" | "expense";

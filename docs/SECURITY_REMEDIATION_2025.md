@@ -8,7 +8,7 @@
 - **docs/AUTHENTICATION_TEST_RESULTS_FINAL.md** – Replaced credentials with placeholders
 
 ### 2. SQL debug script
-- **docs/supabase/sql/DEBUG_SUPABASE_POTS.sql** – Replaced `devpen787@gmail.com` with `YOUR_EMAIL@example.com`
+- **docs/supabase/sql/DEBUG_SUPABASE_POTS.sql** – Replaced a real email with `YOUR_EMAIL@example.com`
 
 ### 3. Private keys in blockchain docs
 - **.knowns/docs/blockchain/integration-smart-contract-testing.md** – Replaced private keys with `$PRIVATE_KEY` env var
