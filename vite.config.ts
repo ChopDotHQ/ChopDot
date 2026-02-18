@@ -11,19 +11,25 @@ function validateEnvPlugin() {
       const env = config.env;
       
       // Critical vars that must be present for build
-      const criticalVars = {
-        VITE_SUPABASE_URL: 'Supabase project URL',
-        VITE_SUPABASE_ANON_KEY: 'Supabase anonymous/public API key',
-      };
+      const criticalVarGroups = [
+        {
+          keys: ['VITE_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_URL'],
+          description: 'Supabase project URL',
+        },
+        {
+          keys: ['VITE_SUPABASE_ANON_KEY', 'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY'],
+          description: 'Supabase anonymous/public API key',
+        },
+      ];
 
       // Runtime-only vars (warn but don't fail build)
       const runtimeVars = {
         VITE_WALLETCONNECT_PROJECT_ID: 'WalletConnect Cloud project ID',
       };
 
-      const missingCritical = Object.entries(criticalVars)
-        .filter(([key]) => !env[key] || env[key].trim() === '')
-        .map(([key, desc]) => `  ❌ ${key} - ${desc}`);
+      const missingCritical = criticalVarGroups
+        .filter(({ keys }) => keys.every((key) => !env[key] || env[key].trim() === ''))
+        .map(({ keys, description }) => `  ❌ ${keys.join(' or ')} - ${description}`);
 
       const missingRuntime = Object.entries(runtimeVars)
         .filter(([key]) => !env[key] || env[key].trim() === '')
@@ -52,6 +58,7 @@ function validateEnvPlugin() {
 
 // https://vite.dev/config/
 export default defineConfig({
+  envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
   plugins: [
     validateEnvPlugin(),
     react(),
