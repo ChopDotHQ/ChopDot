@@ -106,16 +106,26 @@ export const simChain: PolkadotChainService = {
 
   async signAndSendExtrinsic({ onStatus }: SignAndSendArgs) {
     const txHash = fakeHash('0xsim');
+    const emitStatusSafely = (
+      state: 'submitted' | 'inBlock' | 'finalized',
+      ctx?: { txHash?: string; blockHash?: string },
+    ) => {
+      try {
+        onStatus?.(state, ctx);
+      } catch (callbackError) {
+        console.error('[SimChain] onStatus callback error', callbackError);
+      }
+    };
     
-    onStatus?.('submitted', { txHash });
+    emitStatusSafely('submitted', { txHash });
     await delay(250);
 
     const blockHash = fakeBlockHash();
-    onStatus?.('inBlock', { txHash, blockHash });
+    emitStatusSafely('inBlock', { txHash, blockHash });
     await delay(300);
 
     const finalizedBlockHash = fakeBlockHash();
-    onStatus?.('finalized', { txHash, blockHash: finalizedBlockHash });
+    emitStatusSafely('finalized', { txHash, blockHash: finalizedBlockHash });
     
     return { txHash, finalizedBlock: finalizedBlockHash };
   },

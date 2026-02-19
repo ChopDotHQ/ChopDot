@@ -388,6 +388,16 @@ export const polkadotChainService = (() => {
       }
 
       const tx = buildTx({ api, config });
+      const emitStatusSafely = (
+        state: 'submitted' | 'inBlock' | 'finalized',
+        ctx?: { txHash?: string; blockHash?: string },
+      ) => {
+        try {
+          onStatus?.(state, ctx);
+        } catch (callbackError) {
+          console.error('[Chain Service] onStatus callback error', callbackError);
+        }
+      };
 
       if (useWalletConnect && wcSession) {
         const { signAndSendTransaction } = await import('./walletconnect');
@@ -403,11 +413,11 @@ export const polkadotChainService = (() => {
         }
 
         const txHex = tx.toHex();
-        onStatus?.('submitted');
+        emitStatusSafely('submitted');
 
         try {
           const { txHash } = await signAndSendTransaction(from, txHex);
-          onStatus?.('inBlock', { txHash });
+          emitStatusSafely('inBlock', { txHash });
           return { txHash };
         } catch (err: any) {
           if (err?.message === 'USER_REJECTED') {
@@ -420,7 +430,6 @@ export const polkadotChainService = (() => {
       return await new Promise<SendDotResult>((resolve, reject) => {
         let unsub: any;
         let isResolved = false;
-        const statusCallback = onStatus;
 
         const cleanup = () => {
           if (unsub && typeof unsub === 'function') {
@@ -450,16 +459,16 @@ export const polkadotChainService = (() => {
           }
 
           if (status?.isBroadcast) {
-            statusCallback?.('submitted');
+            emitStatusSafely('submitted');
           }
           if (status?.isInBlock && !isResolved) {
             const hash = txHash?.toString?.() || tx.hash.toString();
-            statusCallback?.('inBlock', { txHash: hash, blockHash: status.asInBlock.toString() });
+            emitStatusSafely('inBlock', { txHash: hash, blockHash: status.asInBlock.toString() });
             isResolved = true;
             resolve({ txHash: hash });
           }
           if (status?.isFinalized) {
-            statusCallback?.('finalized', { blockHash: status.asFinalized.toString() });
+            emitStatusSafely('finalized', { blockHash: status.asFinalized.toString() });
             cleanup();
           }
         })
