@@ -18,6 +18,7 @@ export function usePots(pageSize = 10): UsePotsResult {
   const { pots: potService, expenses: expenseService } = useData();
   const { user } = useAuth();
   const summaryUserId = user?.id ?? 'owner';
+  const authScopeKey = `${user?.authMethod ?? 'none'}:${summaryUserId}`;
   const [pots, setPots] = useState<Pot[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
@@ -25,7 +26,6 @@ export function usePots(pageSize = 10): UsePotsResult {
   const [summaries, setSummaries] = useState<Record<string, ExpenseSummary>>({});
   const refreshTriggerRef = useRef(0);
   const isFetchingRef = useRef(false);
-  const didInitRef = useRef(false);
 
   // Initial load
   const loadPots = useCallback(async (isRefresh = false) => {
@@ -96,11 +96,17 @@ export function usePots(pageSize = 10): UsePotsResult {
 
   // Initial fetch
   useEffect(() => {
-    if (didInitRef.current) return;
-    didInitRef.current = true;
+    // Critical: reset and refetch whenever auth scope changes.
+    // Without this, guest/local pot data can persist after sign-in.
+    setPots([]);
+    setSummaries({});
+    setOffset(0);
+    setHasMore(true);
     loadPots(true); // Treat initial load as a refresh (start from 0)
+    // Intentionally keyed by auth scope only.
+    // loadPots depends on offset/pageSize and would cause unnecessary loops here.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // run once on mount; guarded by didInitRef
+  }, [authScopeKey]);
 
   // Listen for global refresh events (e.g. after creating a pot)
   useEffect(() => {

@@ -163,7 +163,8 @@ export const useBusinessActions = ({
       showToast("Pot created successfully!", "success");
     } catch (error) {
       warnDev("Service create failed", error);
-      showToast("Failed to create pot", "error");
+      const message = getErrorMessage(error);
+      showToast(`Failed to create pot: ${message}`, "error");
     }
   }, [
     newPot,
@@ -246,10 +247,10 @@ export const useBusinessActions = ({
         warnDev("[DataLayer] Service addExpense failed", error);
         const message = getErrorMessage(error);
         if (isPotNotFoundError(message)) {
-          showToast("Saved locally (remote pot unavailable)", "info");
+          showToast("Saved locally only. Remote pot unavailable.", "error");
           return;
         }
-        showToast(`Saved locally (service write failed): ${message}`, "info");
+        showToast(`Saved locally only (sync failed): ${message}`, "error");
       }
     })();
 
@@ -329,10 +330,10 @@ export const useBusinessActions = ({
         warnDev("[DataLayer] Service updateExpense failed", error);
         const message = getErrorMessage(error);
         if (isPotNotFoundError(message)) {
-          showToast("Saved locally (remote pot unavailable)", "info");
+          showToast("Saved locally only. Remote pot unavailable.", "error");
           return;
         }
-        showToast(`Saved locally (service write failed): ${message}`, "info");
+        showToast(`Saved locally only (sync failed): ${message}`, "error");
       }
     })();
 
@@ -383,10 +384,10 @@ export const useBusinessActions = ({
         warnDev("[DataLayer] Service removeExpense failed", error);
         const message = getErrorMessage(error);
         if (isPotNotFoundError(message)) {
-          showToast("Saved locally (remote pot unavailable)", "info");
+          showToast("Saved locally only. Remote pot unavailable.", "error");
           return;
         }
-        showToast(`Saved locally (service write failed): ${message}`, "info");
+        showToast(`Saved locally only (sync failed): ${message}`, "error");
       }
     })();
 

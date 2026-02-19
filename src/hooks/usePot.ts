@@ -3,6 +3,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { useData } from '../services/data/DataContext';
 import type { Pot } from '../services/data/types';
 import { warnDev, logDev } from '../utils/logDev';
+import { useAuth } from '../contexts/AuthContext';
 
 const globalRefreshTriggers = new Map<string, number>();
 
@@ -15,6 +16,7 @@ export interface UsePotResult {
 
 export function usePot(potId: string | null | undefined): UsePotResult {
   const { pots: potService } = useData();
+  const { user } = useAuth();
   const [pot, setPot] = useState<Pot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -49,7 +51,7 @@ export function usePot(potId: string | null | undefined): UsePotResult {
         warnDev('[usePot] Failed to load pot', { potId, error });
       }
     }
-  }, [potService, potId]);
+  }, [potService, potId, user?.id, user?.authMethod]);
 
   useEffect(() => {
     if (potId) {
@@ -100,4 +102,3 @@ export function refreshPot(potId: string): void {
     window.dispatchEvent(new CustomEvent('pot-refresh', { detail: { potId } }));
   }
 }
-
