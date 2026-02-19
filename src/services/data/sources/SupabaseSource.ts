@@ -46,6 +46,7 @@ export class SupabaseSource implements DataSource {
   private ensuredMembership = new Set<string>();
   private guestSource = new LocalStorageSource();
   private static readonly AUTH_TOKEN_KEY = 'chopdot_auth_token';
+  private static readonly AUTH_USER_KEY = 'chopdot_auth_user';
   private static readonly GUEST_TOKEN = 'guest_session';
 
   /**
@@ -65,6 +66,22 @@ export class SupabaseSource implements DataSource {
 
   private isGuestSession(): boolean {
     if (typeof window === 'undefined') return false;
+    const parseAuthMethod = (raw: string | null): string | null => {
+      if (!raw) return null;
+      try {
+        const parsed = JSON.parse(raw) as { authMethod?: string; isGuest?: boolean };
+        if (parsed?.isGuest) return 'guest';
+        return parsed?.authMethod || null;
+      } catch {
+        return null;
+      }
+    };
+    const localAuthMethod = parseAuthMethod(window.localStorage.getItem(SupabaseSource.AUTH_USER_KEY));
+    const sessionAuthMethod = parseAuthMethod(window.sessionStorage.getItem(SupabaseSource.AUTH_USER_KEY));
+    const effectiveAuthMethod = localAuthMethod || sessionAuthMethod;
+    if (effectiveAuthMethod === 'guest' || effectiveAuthMethod === 'anonymous') {
+      return true;
+    }
     const localToken = window.localStorage.getItem(SupabaseSource.AUTH_TOKEN_KEY);
     const sessionToken = window.sessionStorage.getItem(SupabaseSource.AUTH_TOKEN_KEY);
     return localToken === SupabaseSource.GUEST_TOKEN || sessionToken === SupabaseSource.GUEST_TOKEN;
@@ -203,19 +220,33 @@ export class SupabaseSource implements DataSource {
 
     if (!existing) {
       await this.ensureUserRecord(actorId);
-      payload.created_by = actorId;
     }
 
-    const { error } = await supabase
-      .from('pots')
-      .upsert(payload, { onConflict: 'id' });
+    const { error } = existing
+      ? await supabase
+          .from('pots')
+          .update(payload)
+          .eq('id', sanitized.id)
+      : await supabase
+          .from('pots')
+          .insert(payload);
 
     if (error) {
+      if (this.isRlsError(error)) {
+        throw new Error(
+          `[SupabaseSource] Failed to save pot ${sanitized.id}: access denied by Supabase RLS. Please sign out and sign back in, then retry. ${this.formatSupabaseError(error)}`,
+        );
+      }
       throw new Error(`[SupabaseSource] Failed to save pot ${sanitized.id}: ${error.message}`);
     }
 
     if (!existing) {
-      await this.ensureOwnerMembership(sanitized.id, actorId);
+      // Best-effort only: DB trigger already inserts owner membership on pot creation.
+      try {
+        await this.ensureOwnerMembership(sanitized.id, actorId);
+      } catch (membershipError) {
+        console.warn('[SupabaseSource] Owner membership sync skipped:', membershipError);
+      }
     }
   }
 
@@ -429,14 +460,15 @@ export class SupabaseSource implements DataSource {
   ): Promise<Record<string, ExpenseSummary>> {
     const supabase = this.ensureReady();
     const resolvedUserId = userId || (await this.requireAuthenticatedUser('read expense summaries'));
-    if (potIds.length === 0) {
+    const uuidPotIds = potIds.filter((id) => this.isUuid(id));
+    if (uuidPotIds.length === 0) {
       return {};
     }
 
     const { data: expenseRows, error } = await supabase
       .from('expenses')
       .select('id, pot_id, amount_minor, paid_by')
-      .in('pot_id', potIds);
+      .in('pot_id', uuidPotIds);
 
     if (error) {
       throw new Error(`[SupabaseSource] Failed to load expense summaries: ${error.message}`);
@@ -484,6 +516,21 @@ export class SupabaseSource implements DataSource {
     }
 
     return totals;
+  }
+
+  private isRlsError(error: { code?: string; message?: string } | null | undefined): boolean {
+    if (!error) return false;
+    return error.code === '42501' || /row-level security|row level security/i.test(error.message ?? '');
+  }
+
+  private formatSupabaseError(error: { code?: string; message?: string; details?: string; hint?: string }): string {
+    const fragments = [
+      error.code ? `code=${error.code}` : null,
+      error.message ? `message="${error.message}"` : null,
+      error.details ? `details="${error.details}"` : null,
+      error.hint ? `hint="${error.hint}"` : null,
+    ].filter(Boolean);
+    return fragments.length > 0 ? `(${fragments.join(', ')})` : '(unknown Supabase error)';
   }
 
   async exportPot(id: string): Promise<Pot> {

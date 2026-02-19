@@ -16,7 +16,9 @@ export interface UsePotsResult {
 
 export function usePots(pageSize = 10): UsePotsResult {
   const { pots: potService, expenses: expenseService } = useData();
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+  const dataSourceType = import.meta.env.VITE_DATA_SOURCE || 'local';
+  const usingSupabase = dataSourceType === 'supabase';
   const summaryUserId = user?.id ?? 'owner';
   const authScopeKey = `${user?.authMethod ?? 'none'}:${summaryUserId}`;
   const [pots, setPots] = useState<Pot[]>([]);
@@ -29,6 +31,20 @@ export function usePots(pageSize = 10): UsePotsResult {
 
   // Initial load
   const loadPots = useCallback(async (isRefresh = false) => {
+    if (usingSupabase && authLoading) {
+      setLoading(true);
+      return;
+    }
+    if (usingSupabase && !user) {
+      if (isRefresh) {
+        setPots([]);
+        setSummaries({});
+        setOffset(0);
+        setHasMore(false);
+      }
+      setLoading(false);
+      return;
+    }
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
     try {
@@ -42,10 +58,13 @@ export function usePots(pageSize = 10): UsePotsResult {
       });
       
       const potIds = newPots.map((pot) => pot.id);
+      const summaryPotIds = usingSupabase
+        ? potIds.filter((id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))
+        : potIds;
       let summaryBatch: Record<string, ExpenseSummary> = {};
-      if (potIds.length > 0) {
+      if (summaryPotIds.length > 0) {
         try {
-          summaryBatch = await expenseService.getExpenseSummaries(potIds, summaryUserId);
+          summaryBatch = await expenseService.getExpenseSummaries(summaryPotIds, summaryUserId);
         } catch (summaryError) {
           console.warn('[usePots] Failed to load expense summaries:', summaryError);
         }
@@ -80,7 +99,7 @@ export function usePots(pageSize = 10): UsePotsResult {
       isFetchingRef.current = false;
       setLoading(false);
     }
-  }, [potService, expenseService, offset, pageSize, summaryUserId]);
+  }, [usingSupabase, authLoading, user, potService, expenseService, offset, pageSize, summaryUserId]);
 
   // Handle load more
   const loadMore = async () => {
