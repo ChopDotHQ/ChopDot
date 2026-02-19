@@ -16,6 +16,69 @@ interface RequestPaymentProps {
   onSendRequest: (personId: string, message: string) => boolean | Promise<boolean> | void;
 }
 
+type DeliveryMethod = "share" | "clipboard" | "in-app";
+
+const formatUsd = (amount: number) => `$${amount.toFixed(2)}`;
+
+const buildPaymentRequestText = (person: PersonBalance, message: string) => {
+  const lines: string[] = [
+    `Payment request from ChopDot`,
+    `For: ${person.name}`,
+    `Amount: ${formatUsd(person.totalAmount)}`,
+  ];
+
+  if (person.breakdown.length > 0) {
+    const breakdown = person.breakdown
+      .map((item) => `${item.potName} (${formatUsd(item.amount)})`)
+      .join(", ");
+    lines.push(`Pots: ${breakdown}`);
+  }
+
+  const trimmed = message.trim();
+  if (trimmed.length > 0) {
+    lines.push(`Message: ${trimmed}`);
+  }
+
+  return lines.join("\n");
+};
+
+const deliverPaymentRequest = async (text: string): Promise<DeliveryMethod> => {
+  const nav = typeof navigator !== "undefined" ? navigator : null;
+  if (!nav) {
+    return "in-app";
+  }
+
+  if (typeof nav.share === "function") {
+    try {
+      await nav.share({
+        title: "ChopDot payment request",
+        text,
+      });
+      return "share";
+    } catch (error) {
+      // User cancelled share intent: surface as non-fatal error.
+      if (
+        error instanceof DOMException &&
+        (error.name === "AbortError" || error.name === "NotAllowedError")
+      ) {
+        throw new Error("Share cancelled. You can try again or use copy fallback.");
+      }
+      // For unsupported runtime quirks, continue to clipboard fallback.
+    }
+  }
+
+  if (nav.clipboard?.writeText) {
+    try {
+      await nav.clipboard.writeText(text);
+      return "clipboard";
+    } catch {
+      // Continue to explicit in-app fallback.
+    }
+  }
+
+  return "in-app";
+};
+
 export function RequestPayment({
   people,
   onBack,
@@ -26,6 +89,7 @@ export function RequestPayment({
   const [sent, setSent] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod | null>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedPerson = people.find(p => p.id === selectedPersonId);
@@ -40,15 +104,24 @@ export function RequestPayment({
 
   const handleSend = async () => {
     if (!selectedPersonId || isSending) return;
+    const personToRequest = people.find((p) => p.id === selectedPersonId);
+    if (!personToRequest) {
+      setSendError("Please select a person to request payment from.");
+      return;
+    }
 
     setIsSending(true);
     setSendError(null);
     try {
+      const delivery = await deliverPaymentRequest(
+        buildPaymentRequestText(personToRequest, message),
+      );
       const result = await Promise.resolve(onSendRequest(selectedPersonId, message));
       if (result === false) {
         setSendError("Request could not be sent. Please try again.");
         return;
       }
+      setDeliveryMethod(delivery);
       setSent(true);
 
       // Auto close after showing success
@@ -81,7 +154,10 @@ export function RequestPayment({
             <div>
               <h2 className="text-section mb-2">Request sent!</h2>
               <p className="text-body text-secondary">
-                {selectedPerson.name} will receive your payment request
+                {deliveryMethod === "share" && `${selectedPerson.name} received a share request`}
+                {deliveryMethod === "clipboard" && "Request copied to clipboard for quick sharing"}
+                {deliveryMethod === "in-app" && "Request saved in ChopDot for follow-up"}
+                {!deliveryMethod && `${selectedPerson.name} will receive your payment request`}
               </p>
             </div>
           </div>
