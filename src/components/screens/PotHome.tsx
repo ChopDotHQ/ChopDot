@@ -140,7 +140,7 @@ export function PotHome({
   goalAmount: goalAmountProp,
   goalDescription: goalDescriptionProp,
   onBack,
-  // onAddExpense,
+  onAddExpense,
   onExpenseClick,
   onAddMember,
   onRemoveMember,
@@ -186,16 +186,12 @@ export function PotHome({
       }
       // DL loading or empty - return null (will use props fallback)
       return null;
-    } else {
-      // Flag is off - use existing behavior (prefer DL if available, otherwise props)
-      if (dlPot) {
-        return dlPot;
-      }
-      if (dlError && potId) {
-        warnDev('[DataLayer] Pot read failed, falling back to UI state', { potId, error: dlError });
-      }
-      return null;
     }
+    // Flag is off - always use props/UI state fallback for display consistency.
+    if (dlError && potId) {
+      warnDev('[DataLayer] Pot read failed, falling back to UI state', { potId, error: dlError });
+    }
+    return null;
   }, [dlPot, dlError, potId, preferDLReads]);
 
   // Determine which data source to use (Data Layer or props fallback)
@@ -823,7 +819,14 @@ export function PotHome({
               potId={potId}
               pot={pot ?? undefined}
               potHistory={activeHistory}
-              onAddExpense={() => setKeypadOpen(true)}
+              onAddExpense={() => {
+                // Prefer routed add-expense flow; fallback to quick keypad if handler is unavailable.
+                if (typeof onAddExpense === "function") {
+                  onAddExpense();
+                  return;
+                }
+                setKeypadOpen(true);
+              }}
               onExpenseClick={onExpenseClick as any}
               onSettle={onSettle}
               onDeleteExpense={onDeleteExpense}
