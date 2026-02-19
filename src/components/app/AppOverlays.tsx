@@ -103,6 +103,7 @@ interface AppOverlaysProps {
   onAddMemberClose: () => void;
   onAddMemberExisting: (contactId: string) => void;
   onInviteNew: (nameOrEmail: string) => void;
+  canInviteByEmail: boolean;
   onAddMemberShowQR: () => void;
   showIPFSAuthOnboarding: boolean;
   walletAddress: string | null;
@@ -152,6 +153,7 @@ export function AppOverlays({
   onAddMemberClose,
   onAddMemberExisting,
   onInviteNew,
+  canInviteByEmail,
   onAddMemberShowQR,
   showIPFSAuthOnboarding,
   walletAddress,
@@ -235,6 +237,7 @@ export function AppOverlays({
           onClose={onAddMemberClose}
           onAddExisting={onAddMemberExisting}
           onInviteNew={onInviteNew}
+          canInviteByEmail={canInviteByEmail}
           onShowQR={onAddMemberShowQR}
           existingContacts={existingContacts}
           currentMembers={currentMembers}

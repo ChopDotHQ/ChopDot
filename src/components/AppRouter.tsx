@@ -151,6 +151,7 @@ export interface AppRouterProps {
         setShowMyQR: (show: boolean) => void;
         setShowScanQR: (show: boolean) => void;
         setShowChoosePot: (show: boolean) => void;
+        setShowAddMember: (show: boolean) => void;
         setShowAddPaymentMethod: (show: boolean) => void;
         setPaymentMethods: (fn: (prev: PaymentMethod[]) => PaymentMethod[]) => void;
         setPreferredMethodId: (id: string) => void;
@@ -159,6 +160,9 @@ export interface AppRouterProps {
         setNewPot: (pot: Partial<Pot>) => void;
         setSelectedCounterpartyId: (id: string | null) => void;
         setSettlements: (settlements: StoredSettlement[]) => void;
+        setNotifications: (
+            updater: (prev: Notification[]) => Notification[],
+        ) => void;
         // Business Logic Actions
         createPot: () => Promise<void>;
         addExpenseToPot: (potId: string, data: any) => void;
@@ -201,7 +205,7 @@ export const AppRouter = ({
         normalizedCurrentPot, youTabInsights, settlements
     },
     userState: {
-        user, notifications, walletConnected
+        user, notifications, walletConnected, isGuest
     },
     uiState: {
         theme, paymentMethods, preferredMethodId,
@@ -211,9 +215,9 @@ export const AppRouter = ({
     actions: {
         setPots, setCurrentPotId, setCurrentExpenseId, setWalletConnected,
         setShowNotifications, setShowWalletSheet, setShowMyQR, setShowScanQR,
-        setShowChoosePot,
+        setShowChoosePot, setShowAddMember,
         setPreferredMethodId, setTheme, setFabQuickAddPotId, setNewPot,
-        setSelectedCounterpartyId,
+        setSelectedCounterpartyId, setNotifications,
         createPot, addExpenseToPot, updateExpense, deleteExpense, attestExpense,
         batchAttestExpenses, addContribution, withdrawFunds, handleLogout,
         handleDeleteAccount, updatePaymentMethodValue, setPreferredMethod,
@@ -382,13 +386,14 @@ export const AppRouter = ({
                     notificationCount={
                         notifications.filter((n) => !n.read).length
                     }
-                    onQuickAddExpense={() => {
-                        if (pots.length === 0) {
+                    onQuickAddExpense={(displayedPots) => {
+                        const potsToUse = displayedPots ?? [];
+                        if (potsToUse.length === 0) {
                             showToast("Create a pot first!", "info");
                             return;
                         }
-                        if (pots.length === 1) {
-                            const pid = pots[0]!.id;
+                        if (potsToUse.length === 1) {
+                            const pid = potsToUse[0]!.id;
                             setCurrentPotId(pid);
                             push({ type: "pot-home", potId: pid });
                         } else {
@@ -718,13 +723,54 @@ export const AppRouter = ({
                         });
                     }}
                     onAddMember={() => {
-                        // PotHome onAddMember
-                        console.warn("Add Member clicked (PotHome)");
+                        setShowAddMember(true);
+                    }}
+                    onUpdateMember={(updatedMember) => {
+                        setPots(
+                            pots.map((p) =>
+                                p.id === pot.id
+                                    ? {
+                                        ...p,
+                                        members: p.members.map((m) =>
+                                            m.id === updatedMember.id
+                                                ? {
+                                                    ...m,
+                                                    name: updatedMember.name,
+                                                    address: updatedMember.address,
+                                                    verified: updatedMember.verified ?? m.verified,
+                                                }
+                                                : m,
+                                        ),
+                                    }
+                                    : p,
+                            ),
+                        );
+                        showToast("Member updated", "success");
                     }}
 
-                    onUpdateSettings={() => {
-                        // ... logic copied from App.tsx ...
-                        // Simplified for this file creation, would need `setPots` logic.
+                    onUpdateSettings={(settings) => {
+                        const normalizedSettings: Partial<Pot> = {};
+
+                        if (typeof settings?.potName === "string") {
+                            normalizedSettings.name = settings.potName;
+                        }
+                        if (typeof settings?.baseCurrency === "string") {
+                            normalizedSettings.baseCurrency = settings.baseCurrency;
+                        }
+                        if (typeof settings?.budgetEnabled === "boolean") {
+                            normalizedSettings.budgetEnabled = settings.budgetEnabled;
+                        }
+                        if ("budget" in (settings || {})) {
+                            normalizedSettings.budget = settings.budget;
+                        }
+
+                        setPots(
+                            pots.map((p) =>
+                                p.id === pot.id
+                                    ? { ...p, ...normalizedSettings }
+                                    : p,
+                            ),
+                        );
                     }}
                     onDeleteExpense={deleteExpense}
                     onAttestExpense={(expenseId, silent) => {
@@ -748,7 +794,28 @@ export const AppRouter = ({
                     }}
                     openQuickAdd={fabQuickAddPotId === pot.id}
                     onClearQuickAdd={() => setFabQuickAddPotId(null)}
-                    onRemoveMember={(id) => console.warn("Remove member not implemented", id)}
+                    onRemoveMember={(id) => {
+                        if (!currentPotId) return;
+                        if (id === "owner") {
+                            showToast("Owner cannot be removed", "info");
+                            return;
+                        }
+                        if (id.startsWith("invite-")) {
+                            showToast("Use invite actions for pending members", "info");
+                            return;
+                        }
+                        setPots(
+                            pots.map((p) =>
+                                p.id === currentPotId
+                                    ? {
+                                        ...p,
+                                        members: p.members.filter((m) => m.id !== id),
+                                    }
+                                    : p,
+                            ),
+                        );
+                        showToast("Member removed", "success");
+                    }}
                     onSettle={() => push({ type: "settle-selection" })}
                 />
             );
@@ -859,7 +926,7 @@ export const AppRouter = ({
             );
 
         case "settle-selection":
-            const settleCurrentUserId = user?.id || 'owner';
+            const settleCurrentUserId = isGuest ? 'owner' : (user?.id || 'owner');
             const potSettlements =
                 normalizedCurrentPot
                     ? calculatePotSettlements(normalizedCurrentPot as any, settleCurrentUserId)
@@ -904,7 +971,7 @@ export const AppRouter = ({
             );
 
         case "settle-home":
-            const shCurrentUserId = user?.id || 'owner';
+            const shCurrentUserId = isGuest ? 'owner' : (user?.id || 'owner');
             const shLabel = currentPot ? currentPot.name : "All pots";
             const shCurrency = currentPot?.baseCurrency || "USD";
             const personIdFromNav = selectedCounterpartyId;
@@ -938,6 +1005,30 @@ export const AppRouter = ({
                 }
             });
 
+            const hasPersonMatch = !!personIdFromNav && reMappedSettlements.some((s) => s.id === personIdFromNav);
+            const targetCounterpartyId = hasPersonMatch ? personIdFromNav : reMappedSettlements[0]?.id;
+            const selectedCounterparty = [...sourceData.youOwe, ...sourceData.owedToYou]
+                .find((p) => p.id === targetCounterpartyId);
+
+            const memberById =
+                normalizedCurrentPot?.members?.find((m) => m.id === targetCounterpartyId) ||
+                currentPot?.members?.find((m) => m.id === targetCounterpartyId);
+            const memberByName = selectedCounterparty?.name
+                ? (normalizedCurrentPot?.members?.find((m) => m.name === selectedCounterparty.name) ||
+                    currentPot?.members?.find((m) => m.name === selectedCounterparty.name))
+                : undefined;
+            const personById = people.find((p) => p.id === targetCounterpartyId);
+            const personByName = selectedCounterparty?.name
+                ? people.find((p) => p.name === selectedCounterparty.name)
+                : undefined;
+            const recipientAddress =
+                selectedCounterparty?.address ||
+                memberById?.address ||
+                memberByName?.address ||
+                personById?.address ||
+                personByName?.address;
+            const preferredMethod = selectedCounterparty?.paymentPreference;
+
 
             return (
                 <SettleHome
@@ -953,8 +1044,8 @@ export const AppRouter = ({
                     scopeLabel={shLabel}
                     potId={currentPotId || undefined}
                     personId={personIdFromNav || undefined}
-                    preferredMethod={undefined} // passed from where?
-                    recipientAddress={undefined} // would need lookup
+                    preferredMethod={preferredMethod}
+                    recipientAddress={recipientAddress}
                     baseCurrency={shCurrency}
                     onShowToast={showToast}
                     pot={
@@ -968,7 +1059,8 @@ export const AppRouter = ({
                         }
                     }}
                     onConfirm={async (method, reference) => {
-                        const settlement = reMappedSettlements.find(s => s.id === personIdFromNav);
+                        const targetSettlementId = personIdFromNav || reMappedSettlements[0]?.id;
+                        const settlement = reMappedSettlements.find(s => s.id === targetSettlementId);
                         if (!settlement) {
                             showToast("Error: Could not find settlement details", "error");
                             return;
@@ -1040,10 +1132,32 @@ export const AppRouter = ({
         case "request-payment":
             return <RequestPayment
                 onBack={back}
-                people={people.map(p => ({ ...p, totalAmount: 0, breakdown: [] }))}
-                onSendRequest={() => {
-                    showToast("Request sent", "success");
-                    back();
+                people={balances.owedToYou.map((person) => ({
+                    ...person,
+                    totalAmount: Number(person.totalAmount),
+                    paymentPreference: person.paymentPreference || "Any method",
+                })) as any}
+                onSendRequest={(personId, message) => {
+                    const person = balances.owedToYou.find((p) => p.id === personId);
+                    if (!person) {
+                        showToast("Could not find person to request", "error");
+                        return;
+                    }
+
+                    const amount = Number(person.totalAmount);
+                    const notification: Notification = {
+                        id: `${Date.now()}-${personId}`,
+                        type: "settlement",
+                        title: "Payment request",
+                        message:
+                            message.trim() ||
+                            `You requested payment of $${amount.toFixed(2)} from ${person.name}`,
+                        timestamp: new Date().toISOString(),
+                        read: false,
+                    };
+
+                    setNotifications((prev) => [notification, ...prev]);
+                    showToast(`Request sent to ${person.name}`, "success");
                 }}
             />;
 
