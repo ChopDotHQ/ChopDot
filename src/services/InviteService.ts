@@ -14,6 +14,38 @@ export interface Invite {
 export class InviteService {
     constructor(private supabase: SupabaseClient | null) { }
 
+    private async resolveCurrentUser(): Promise<{ id: string; email?: string } | null> {
+        if (!this.supabase) return null;
+
+        try {
+            // Session user is local/fast and avoids transient getUser nulls during auth warmup.
+            const { data: { session } } = await this.supabase.auth.getSession();
+            const sessionUser = session?.user;
+            if (sessionUser?.id) {
+                return {
+                    id: sessionUser.id,
+                    email: sessionUser.email ?? undefined,
+                };
+            }
+        } catch (error) {
+            console.warn("[InviteService] getSession failed while resolving user", error);
+        }
+
+        try {
+            const { data: { user } } = await this.supabase.auth.getUser();
+            if (user?.id) {
+                return {
+                    id: user.id,
+                    email: user.email ?? undefined,
+                };
+            }
+        } catch (error) {
+            console.warn("[InviteService] getUser failed while resolving user", error);
+        }
+
+        return null;
+    }
+
     /**
      * Send a new invite to an email address.
      * Checks for existing pending invites to avoid duplicates.
@@ -27,8 +59,13 @@ export class InviteService {
         }
 
         try {
-            const { data: { user } } = await this.supabase.auth.getUser();
-            if (!user) return { success: false, error: "Must be logged in to invite" };
+            const user = await this.resolveCurrentUser();
+            if (!user?.id) {
+                return {
+                    success: false,
+                    error: "Sign-in is still initializing. Please wait a moment and retry.",
+                };
+            }
 
             // 1. Check for existing pending invite
             const { data: existing } = await this.supabase
@@ -78,7 +115,7 @@ export class InviteService {
     async getMyPendingInvites(): Promise<Invite[]> {
         if (!this.supabase) return [];
 
-        const { data: { user } } = await this.supabase.auth.getUser();
+        const user = await this.resolveCurrentUser();
         const email = user?.email?.trim().toLowerCase();
         if (!email) return [];
 
