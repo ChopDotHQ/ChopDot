@@ -1630,7 +1630,6 @@ function AppContent() {
           onAddMemberClose={handleAddMemberClose}
           onAddMemberExisting={handleAddMemberExisting}
           onInviteNew={handleInviteNew}
-          canInviteByEmail={!isGuest}
           onAddMemberShowQR={handleAddMemberShowQR}
           showIPFSAuthOnboarding={showIPFSAuthOnboarding}
           walletAddress={account.address0}

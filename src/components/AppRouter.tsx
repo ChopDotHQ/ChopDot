@@ -386,14 +386,13 @@ export const AppRouter = ({
                     notificationCount={
                         notifications.filter((n) => !n.read).length
                     }
-                    onQuickAddExpense={(displayedPots) => {
-                        const potsToUse = displayedPots ?? [];
-                        if (potsToUse.length === 0) {
+                    onQuickAddExpense={() => {
+                        if (pots.length === 0) {
                             showToast("Create a pot first!", "info");
                             return;
                         }
-                        if (potsToUse.length === 1) {
-                            const pid = potsToUse[0]!.id;
+                        if (pots.length === 1) {
+                            const pid = pots[0]!.id;
                             setCurrentPotId(pid);
                             push({ type: "pot-home", potId: pid });
                         } else {
@@ -1017,16 +1016,10 @@ export const AppRouter = ({
                 ? (normalizedCurrentPot?.members?.find((m) => m.name === selectedCounterparty.name) ||
                     currentPot?.members?.find((m) => m.name === selectedCounterparty.name))
                 : undefined;
-            const personById = people.find((p) => p.id === targetCounterpartyId);
-            const personByName = selectedCounterparty?.name
-                ? people.find((p) => p.name === selectedCounterparty.name)
-                : undefined;
             const recipientAddress =
                 selectedCounterparty?.address ||
                 memberById?.address ||
-                memberByName?.address ||
-                personById?.address ||
-                personByName?.address;
+                memberByName?.address;
             const preferredMethod = selectedCounterparty?.paymentPreference;
 
 
