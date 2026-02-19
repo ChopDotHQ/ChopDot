@@ -65,7 +65,7 @@ function AppContent() {
     isAuthenticated,
     logout,
   } = useAuth();
-  const isGuest = user?.authMethod === 'guest';
+  const isGuest = user?.authMethod === 'guest' || user?.authMethod === 'anonymous';
   const userEmail = (user as any)?.email as string | undefined;
 
   const {
@@ -763,7 +763,15 @@ function AppContent() {
           if (potForFab) {
             setCurrentPotId(potForFab.id);
             setFabQuickAddPotId(potForFab.id);
+            return;
           }
+          if (screen.potId) {
+            // Fallback: keep add-expense reachable even if pots state is briefly stale.
+            setCurrentPotId(screen.potId);
+            push({ type: "add-expense" });
+            return;
+          }
+          showToast("Unable to open add expense right now. Please retry.", "error");
         },
       };
     }
@@ -1310,6 +1318,10 @@ function AppContent() {
       showToast("Select a pot first", "error");
       return;
     }
+    if (isGuest) {
+      showToast("Email invites require login. In guest mode, add members from contacts.", "info");
+      return;
+    }
     if (!email || !email.includes("@")) {
       showToast("Enter a valid email address", "error");
       return;
@@ -1339,7 +1351,7 @@ function AppContent() {
         showToast("Failed to send invite", "error");
       }
     })();
-  }, [currentPotId, inviteService, fetchInvites, showToast]);
+  }, [currentPotId, fetchInvites, inviteService, isGuest, showToast]);
 
   const handleAddMemberShowQR = useCallback(() => {
     setShowAddMember(false);
@@ -1540,9 +1552,9 @@ function AppContent() {
             actions={{
               setPots, setCurrentPotId, setCurrentExpenseId, setWalletConnected,
               setShowNotifications, setShowWalletSheet, setShowMyQR, setShowScanQR,
-              setShowChoosePot, setShowAddPaymentMethod, setPaymentMethods,
+              setShowChoosePot, setShowAddMember, setShowAddPaymentMethod, setPaymentMethods,
               setPreferredMethodId, setTheme, setFabQuickAddPotId, setNewPot,
-              setSelectedCounterpartyId, setSettlements,
+              setSelectedCounterpartyId, setSettlements, setNotifications,
               createPot, addExpenseToPot, updateExpense, deleteExpense, attestExpense,
               batchAttestExpenses, addContribution, withdrawFunds, handleLogout,
               handleDeleteAccount, updatePaymentMethodValue, setPreferredMethod,
@@ -1618,6 +1630,7 @@ function AppContent() {
           onAddMemberClose={handleAddMemberClose}
           onAddMemberExisting={handleAddMemberExisting}
           onInviteNew={handleInviteNew}
+          canInviteByEmail={!isGuest}
           onAddMemberShowQR={handleAddMemberShowQR}
           showIPFSAuthOnboarding={showIPFSAuthOnboarding}
           walletAddress={account.address0}
