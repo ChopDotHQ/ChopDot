@@ -124,56 +124,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          // Don't create separate chunks for Polkadot API - let Vite handle it naturally
-          // Creating chunks causes "Cannot access 'Ad' before initialization" errors
-          // Return undefined to prevent chunking - Vite will bundle inline when dynamically imported
-          if (id.includes('@polkadot/api') || id.includes('@polkadot/types')) {
-            return undefined;
-          }
-          if (id.includes('@polkadot/extension-dapp') || id.includes('@polkadot/react-identicon')) {
-            return 'polkadot-extension';
-          }
-          if (id.includes('@polkadot/util-crypto') || id.includes('@polkadot/util')) {
-            return 'polkadot-utils';
-          }
-          // Split WalletConnect into separate chunks (core vs EVM provider)
-          if (id.includes('@walletconnect/ethereum-provider') || id.includes('universal-provider')) {
-            return 'walletconnect-evm';
-          }
-          if (id.includes('@walletconnect/') || id.includes('walletconnect')) {
-            return 'walletconnect-vendor';
-          }
-          // Data and sync vendors
-          if (id.includes('@supabase/')) {
-            return 'supabase-vendor';
-          }
-          if (id.includes('@automerge/')) {
-            return 'automerge-vendor';
-          }
-          if (id.includes('ipfs-http-client') || id.includes('ipfs-only-hash')) {
-            return 'ipfs-vendor';
-          }
-          if (id.includes('date-fns') || id.includes('decimal.js') || id.includes('zod')) {
-            return 'data-vendor';
-          }
-          // React vendor chunk
-          if (id.includes('react') || id.includes('react-dom')) {
-            return 'react-vendor';
-          }
-          // UI vendor chunk
-          if (id.includes('lucide-react') || id.includes('recharts')) {
-            return 'ui-vendor';
-          }
-          // Radix UI components
-          if (id.includes('@radix-ui/')) {
-            return 'radix-ui';
-          }
-        },
-      },
-    },
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'lucide-react', 'buffer', 'eventemitter3'],
