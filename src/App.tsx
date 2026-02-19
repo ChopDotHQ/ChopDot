@@ -766,9 +766,9 @@ function AppContent() {
             return;
           }
           if (screen.potId) {
-            // Fallback: keep add-expense reachable even if pots state is briefly stale.
+            // Fallback: keep quick-add behavior even if pots state is briefly stale.
             setCurrentPotId(screen.potId);
-            push({ type: "add-expense" });
+            setFabQuickAddPotId(screen.potId);
             return;
           }
           showToast("Unable to open add expense right now. Please retry.", "error");

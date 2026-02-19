@@ -140,7 +140,7 @@ export function PotHome({
   goalAmount: goalAmountProp,
   goalDescription: goalDescriptionProp,
   onBack,
-  onAddExpense,
+  onAddExpense: _onAddExpense,
   onExpenseClick,
   onAddMember,
   onRemoveMember,
@@ -819,14 +819,7 @@ export function PotHome({
               potId={potId}
               pot={pot ?? undefined}
               potHistory={activeHistory}
-              onAddExpense={() => {
-                // Prefer routed add-expense flow; fallback to quick keypad if handler is unavailable.
-                if (typeof onAddExpense === "function") {
-                  onAddExpense();
-                  return;
-                }
-                setKeypadOpen(true);
-              }}
+              onAddExpense={() => setKeypadOpen(true)}
               onExpenseClick={onExpenseClick as any}
               onSettle={onSettle}
               onDeleteExpense={onDeleteExpense}
