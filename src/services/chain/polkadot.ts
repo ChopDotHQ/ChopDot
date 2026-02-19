@@ -433,8 +433,8 @@ export const polkadotChainService = (() => {
           }
         };
 
-        tx.signAndSend(from, (result: any) => {
-          const { status, dispatchError, txHash } = result;
+        tx.signAndSend(from, (statusResult: any) => {
+          const { status, dispatchError, txHash } = statusResult;
 
           if (dispatchError) {
             if (!isResolved) {
@@ -485,6 +485,9 @@ export const polkadotChainService = (() => {
       if (msg === 'USER_REJECTED') throw new Error('User rejected the request');
       if (/InsufficientBalance|balance/i.test(msg)) throw new Error('Insufficient balance');
       if (/ECONNREFUSED|websocket|connect/i.test(msg)) throw new Error('RPC connection failed');
+      if (e instanceof Error && e.message) {
+        throw new Error(e.message);
+      }
       throw new Error(typeof e === 'string' ? e : 'Transaction failed');
     }
   };

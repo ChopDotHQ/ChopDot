@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Send, ArrowLeft, Check } from "lucide-react";
 
 interface PersonBalance {
@@ -13,7 +13,7 @@ interface PersonBalance {
 interface RequestPaymentProps {
   people: PersonBalance[];
   onBack: () => void;
-  onSendRequest: (personId: string, message: string) => void;
+  onSendRequest: (personId: string, message: string) => boolean | Promise<boolean> | void;
 }
 
 export function RequestPayment({
@@ -24,19 +24,46 @@ export function RequestPayment({
   const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedPerson = people.find(p => p.id === selectedPersonId);
 
-  const handleSend = () => {
-    if (!selectedPersonId) return;
-    
-    onSendRequest(selectedPersonId, message);
-    setSent(true);
-    
-    // Auto close after showing success
-    setTimeout(() => {
-      onBack();
-    }, 1500);
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleSend = async () => {
+    if (!selectedPersonId || isSending) return;
+
+    setIsSending(true);
+    setSendError(null);
+    try {
+      const result = await Promise.resolve(onSendRequest(selectedPersonId, message));
+      if (result === false) {
+        setSendError("Request could not be sent. Please try again.");
+        return;
+      }
+      setSent(true);
+
+      // Auto close after showing success
+      closeTimerRef.current = setTimeout(() => {
+        onBack();
+      }, 1500);
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message.trim().length > 0
+          ? error.message
+          : "Request could not be sent. Please try again.";
+      setSendError(message);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   if (sent && selectedPerson) {
@@ -172,6 +199,11 @@ export function RequestPayment({
                 <p className="text-caption text-muted px-1">
                   {message.length}/200 characters
                 </p>
+                {sendError && (
+                  <p className="text-caption px-1" style={{ color: "var(--destructive, #dc2626)" }}>
+                    {sendError}
+                  </p>
+                )}
               </div>
             )}
           </>
@@ -183,15 +215,19 @@ export function RequestPayment({
         <div className="p-4 border-t border-border bg-background">
           <button
             onClick={handleSend}
+            disabled={isSending}
             className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98]"
             style={{ 
               background: 'var(--accent)',
               color: '#fff',
+              opacity: isSending ? 0.7 : 1,
             }}
           >
             <Send className="w-5 h-5" />
             <span className="text-body" style={{ fontWeight: 500 }}>
-              Request ${selectedPerson.totalAmount.toFixed(2)} from {selectedPerson.name}
+              {isSending
+                ? "Sending request..."
+                : `Request $${selectedPerson.totalAmount.toFixed(2)} from ${selectedPerson.name}`}
             </span>
           </button>
         </div>
