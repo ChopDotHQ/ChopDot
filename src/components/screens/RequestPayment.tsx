@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Send, ArrowLeft, Check } from "lucide-react";
+import { deliverText, type DeliveryMode } from "../../utils/delivery";
 
 interface PersonBalance {
   id: string;
@@ -16,7 +17,7 @@ interface RequestPaymentProps {
   onSendRequest: (personId: string, message: string) => boolean | Promise<boolean> | void;
 }
 
-type DeliveryMethod = "share" | "clipboard" | "in-app";
+type DeliveryMethod = DeliveryMode | "in-app";
 
 const formatUsd = (amount: number) => `$${amount.toFixed(2)}`;
 
@@ -40,43 +41,6 @@ const buildPaymentRequestText = (person: PersonBalance, message: string) => {
   }
 
   return lines.join("\n");
-};
-
-const deliverPaymentRequest = async (text: string): Promise<DeliveryMethod> => {
-  const nav = typeof navigator !== "undefined" ? navigator : null;
-  if (!nav) {
-    return "in-app";
-  }
-
-  if (typeof nav.share === "function") {
-    try {
-      await nav.share({
-        title: "ChopDot payment request",
-        text,
-      });
-      return "share";
-    } catch (error) {
-      // User cancelled share intent: surface as non-fatal error.
-      if (
-        error instanceof DOMException &&
-        (error.name === "AbortError" || error.name === "NotAllowedError")
-      ) {
-        throw new Error("Share cancelled. You can try again or use copy fallback.");
-      }
-      // For unsupported runtime quirks, continue to clipboard fallback.
-    }
-  }
-
-  if (nav.clipboard?.writeText) {
-    try {
-      await nav.clipboard.writeText(text);
-      return "clipboard";
-    } catch {
-      // Continue to explicit in-app fallback.
-    }
-  }
-
-  return "in-app";
 };
 
 export function RequestPayment({
@@ -113,9 +77,11 @@ export function RequestPayment({
     setIsSending(true);
     setSendError(null);
     try {
-      const delivery = await deliverPaymentRequest(
-        buildPaymentRequestText(personToRequest, message),
-      );
+      const deliveryMode = await deliverText({
+        title: "ChopDot payment request",
+        text: buildPaymentRequestText(personToRequest, message),
+      });
+      const delivery: DeliveryMethod = deliveryMode === "none" ? "in-app" : deliveryMode;
       const result = await Promise.resolve(onSendRequest(selectedPersonId, message));
       if (result === false) {
         setSendError("Request could not be sent. Please try again.");

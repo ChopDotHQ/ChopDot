@@ -3,6 +3,7 @@ import type { Dispatch, MutableRefObject, SetStateAction } from "react";
 import type { Screen } from "../nav";
 import type { Invite } from "../services/InviteService";
 import { InviteService } from "../services/InviteService";
+import { deliverText } from "../utils/delivery";
 
 type ToastType = "success" | "error" | "info";
 
@@ -67,10 +68,19 @@ export const useInviteFlow = ({
 
       const link = `${window.location.origin}/join?token=${invite.token}`;
       try {
-        await navigator.clipboard?.writeText(link);
-        showToast("Invite link copied", "success");
+        const mode = await deliverText({
+          title: "Join my ChopDot pot",
+          text: `Join my ChopDot pot: ${link}`,
+        });
+        if (mode === "share") {
+          showToast("Invite shared", "success");
+        } else if (mode === "clipboard") {
+          showToast("Invite link copied", "success");
+        } else {
+          showToast(`Invite link: ${link}`, "info");
+        }
       } catch {
-        showToast(`Invite link: ${link}`, "success");
+        showToast(`Invite link: ${link}`, "info");
       }
     },
     [inviteService, showToast],

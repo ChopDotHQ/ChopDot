@@ -2,6 +2,10 @@ import { UserPlus, MoreVertical, UserMinus, Send, Edit, Copy, CheckCircle, Walle
 import { TrustDots } from "../TrustDots";
 import { useState } from "react";
 import { EditMemberModal } from "../EditMemberModal";
+import {
+  normalizeWalletAddress,
+  resolvePaymentPreference,
+} from "../../utils/identityResolver";
 
 interface Member {
   id: string;
@@ -108,7 +112,10 @@ export function MembersTab({
           const balance = getMemberBalance(member.id);
           const isCurrentUser = member.id === currentUserId;
           const displayName = isCurrentUser ? "You" : member.name;
-          const paymentPref = getPaymentPreference(member.id);
+          const normalizedAddress = normalizeWalletAddress(member.address);
+          const paymentPref = isCurrentUser
+            ? undefined
+            : resolvePaymentPreference(normalizedAddress, getPaymentPreference(member.id), "Bank");
           const trustScore = getTrustScore(member.id);
           const isPositive = balance >= 0;
           const amountColor = isPositive ? 'var(--success)' : 'var(--ink)';
@@ -173,7 +180,7 @@ export function MembersTab({
                       </div>
 
                       {/* Payment Preference Pill - Only show for non-DOT pots or when no address */}
-                      {paymentPref && !isDotPot && !member.address && (
+                      {paymentPref && !isDotPot && !normalizedAddress && (
                         <div className="flex items-center gap-1 mt-1">
                           <span
                             className="inline-block px-2 py-0.5 rounded-md text-caption"
@@ -189,7 +196,7 @@ export function MembersTab({
                       )}
 
                       {/* Wallet Address Display - Show readiness or CTA */}
-                      {member.address ? (
+                      {normalizedAddress ? (
                         <div className="flex flex-wrap items-center gap-2 mt-1">
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-[11px] text-green-700 dark:text-green-400">
                             <CheckCircle className="w-3 h-3" />
@@ -197,12 +204,12 @@ export function MembersTab({
                           </span>
                           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
                             <span className="text-micro font-mono text-foreground">
-                              {member.address.slice(0, 8)}...{member.address.slice(-6)}
+                              {normalizedAddress.slice(0, 8)}...{normalizedAddress.slice(-6)}
                             </span>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigator.clipboard.writeText(member.address!);
+                                navigator.clipboard.writeText(normalizedAddress);
                               }}
                               className="p-0.5 hover:bg-muted rounded transition-colors"
                               title="Copy address"

@@ -1,6 +1,10 @@
 import { useCallback } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { Pot } from "../types/app";
+import {
+  normalizeWalletAddress,
+  resolveMemberIdentity,
+} from "../utils/identityResolver";
 
 type SettleMethod = "cash" | "bank" | "paypal" | "twint" | "dot";
 
@@ -60,6 +64,7 @@ export const useSettlementActions = ({
       settlement: SettleHomeSettlement;
     }) => {
       let settledCount = 0;
+      const missingRecipientAddressPots: string[] = [];
 
       for (const breakdownItem of settlement.pots) {
         const targetPot =
@@ -75,9 +80,23 @@ export const useSettlementActions = ({
           continue;
         }
 
+        const recipientIdentity = resolveMemberIdentity({
+          targetId: settlement.id,
+          targetName: settlement.name,
+          sources: targetPot.members,
+          fallbackPreference: "Any method",
+        });
+        const recipientMemberId = recipientIdentity.id || settlement.id;
+        const recipientAddress = recipientIdentity.address;
+
         if (method === "dot") {
-          const recipientMember = targetPot.members.find((m) => m.id === settlement.id);
-          const recipientAddr = recipientMember?.address || "unknown";
+          if (!recipientAddress) {
+            missingRecipientAddressPots.push(targetPot.name);
+            continue;
+          }
+
+          const txRef = reference || "pending";
+          const fromAddress = normalizeWalletAddress(currentUserAddress) || "unknown";
 
           const historyEntry = {
             id: crypto.randomUUID(),
@@ -85,12 +104,12 @@ export const useSettlementActions = ({
             type: "onchain_settlement" as const,
             status: "finalized" as const,
             fromMemberId: currentUserId,
-            toMemberId: settlement.id,
-            fromAddress: currentUserAddress || "unknown",
-            toAddress: recipientAddr,
+            toMemberId: recipientMemberId,
+            fromAddress,
+            toAddress: recipientAddress,
             amountDot: String(amount),
-            txHash: reference || "pending",
-            subscan: `https://polkadot.subscan.io/extrinsic/${reference}`,
+            txHash: txRef,
+            subscan: `https://polkadot.subscan.io/extrinsic/${txRef}`,
           };
 
           setPots((prev) =>
@@ -113,10 +132,18 @@ export const useSettlementActions = ({
           paidBy: currentUserId,
           memo: `Settlement: ${method.toUpperCase()}${reference ? ` (${reference})` : ""}`,
           date: new Date().toISOString(),
-          split: [{ memberId: settlement.id, amount }],
+          split: [{ memberId: recipientMemberId, amount }],
           hasReceipt: false,
         });
         settledCount += 1;
+      }
+
+      if (missingRecipientAddressPots.length > 0) {
+        const uniquePots = [...new Set(missingRecipientAddressPots)];
+        showToast(
+          `Skipped ${uniquePots.length} pot(s): recipient DOT wallet missing`,
+          "info",
+        );
       }
 
       if (settledCount > 0) {
