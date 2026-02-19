@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  test-build:
-    name: Lint, Typecheck, Test, Build
+  fast-checks:
+    name: Fast Checks
     runs-on: ubuntu-latest
     env:
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL || 'https://example.supabase.co' }}
@@ -26,20 +26,5 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run type-check
-
-      - name: Run unit/integration tests
-        run: npm test
-
-      - name: Coverage gate
-        run: npm run test:coverage
-
-      - name: Verify MVP inventory
-        run: npm run verify:mvp
-
-      - name: Build
-        run: npm run build
+      - name: Fast CI Suite
+        run: npm run ci:fast
