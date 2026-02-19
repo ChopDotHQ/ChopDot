@@ -95,4 +95,20 @@ describe("InviteService", () => {
     expect(query.ilike).toHaveBeenCalledWith("invitee_email", "owner@chopdot.io");
     expect(supabase.auth.getUser).not.toHaveBeenCalled();
   });
+
+  it("reuses existing pending invite token instead of returning duplicate error", async () => {
+    const { service, query } = createHarness({
+      sessionUser: { id: "session-user", email: "owner@chopdot.io" },
+      existingInvite: { id: "inv-1", token: "existing-token" },
+    });
+
+    const result = await service.createInvite("pot-1", "alice@example.com");
+
+    expect(result).toEqual({
+      success: true,
+      token: "existing-token",
+      alreadyExists: true,
+    });
+    expect(query.insert).not.toHaveBeenCalled();
+  });
 });

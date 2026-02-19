@@ -50,7 +50,10 @@ export class InviteService {
      * Send a new invite to an email address.
      * Checks for existing pending invites to avoid duplicates.
      */
-    async createInvite(potId: string, email: string): Promise<{ success: boolean; error?: string; token?: string }> {
+    async createInvite(
+        potId: string,
+        email: string,
+    ): Promise<{ success: boolean; error?: string; token?: string; alreadyExists?: boolean }> {
         if (!this.supabase) return { success: false, error: "Supabase not configured" };
 
         const cleanEmail = email.trim().toLowerCase();
@@ -77,13 +80,8 @@ export class InviteService {
                 .maybeSingle();
 
             if (existing) {
-                // Return existing token so they can copy it again if they want
-                // Or we can return error "Invite already exists" but provide the token?
-                // For now, let's keep the error behavior but maybe we should allow re-sending?
-                // The prompt requirements said "check for duplicate invites".
-                // If I return error, the UI shows error.
-                // Let's stick to error for now.
-                return { success: false, error: "Invite already exists for this email" };
+                // Reuse the existing pending invite token so UX can "resend" without erroring.
+                return { success: true, token: existing.token, alreadyExists: true };
             }
 
             // 2. Create new invite
