@@ -29,7 +29,10 @@ export interface User {
 }
 
 function mapSupabaseSessionUser(sessionUser: any): User {
-  const isAnonymous = Boolean(sessionUser?.is_anonymous);
+  const hasAnonymousProvider =
+    sessionUser?.app_metadata?.provider === 'anonymous' ||
+    sessionUser?.identities?.some?.((identity: any) => identity?.provider === 'anonymous');
+  const isAnonymous = Boolean(sessionUser?.is_anonymous || hasAnonymousProvider);
   const email = sessionUser?.email ?? undefined;
   return {
     id: sessionUser.id,
@@ -37,7 +40,7 @@ function mapSupabaseSessionUser(sessionUser: any): User {
     authMethod: isAnonymous ? 'anonymous' : 'email',
     name: email?.split('@')[0] ?? (isAnonymous ? 'Anonymous User' : undefined),
     createdAt: new Date().toISOString(),
-    isGuest: !isAnonymous ? undefined : false,
+    isGuest: isAnonymous ? true : undefined,
   };
 }
 
@@ -412,7 +415,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           authMethod: 'anonymous',
           name: 'Anonymous User',
           createdAt: new Date().toISOString(),
-          isGuest: false,
+          isGuest: true,
         };
 
         setAuthItem(AUTH_USER_KEY, JSON.stringify(anonUser));

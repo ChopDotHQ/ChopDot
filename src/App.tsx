@@ -65,7 +65,10 @@ function AppContent() {
     isAuthenticated,
     logout,
   } = useAuth();
-  const isGuest = user?.authMethod === 'guest' || user?.authMethod === 'anonymous';
+  const isGuest =
+    user?.isGuest === true ||
+    user?.authMethod === 'guest' ||
+    user?.authMethod === 'anonymous';
   const userEmail = (user as any)?.email as string | undefined;
 
   const {
@@ -1631,6 +1634,7 @@ function AppContent() {
           onAddMemberExisting={handleAddMemberExisting}
           onInviteNew={handleInviteNew}
           onAddMemberShowQR={handleAddMemberShowQR}
+          canInviteByEmail={!isGuest}
           showIPFSAuthOnboarding={showIPFSAuthOnboarding}
           walletAddress={account.address0}
           onIPFSContinue={handleIPFSContinue}

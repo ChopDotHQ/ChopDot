@@ -87,11 +87,10 @@ jobs:
           if-no-files-found: ignore
 
   smoke-guest:
-    name: Targeted Smoke (Guest, Informational)
+    name: Targeted Smoke (Guest, Required)
     runs-on: ubuntu-latest
     needs: detect
     if: needs.detect.outputs.guest_changed == 'true'
-    continue-on-error: true
     env:
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL || 'https://example.supabase.co' }}
       VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || vars.VITE_SUPABASE_ANON_KEY || 'test-anon-key' }}
@@ -112,7 +111,7 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
-      - name: Run guest smoke suite (informational)
+      - name: Run guest smoke suite
         run: npm run ci:smoke:targeted
 
       - name: Upload smoke artifacts
