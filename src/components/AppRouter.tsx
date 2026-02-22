@@ -177,6 +177,11 @@ export interface AppRouterProps {
         updatePaymentMethodValue: (id: string, updates: Partial<PaymentMethod>) => void;
         setPreferredMethod: (id: string) => void;
         handleInviteNew: (email: string) => void;
+        handleUpdateMember: (
+            potId: string,
+            member: { id: string; name: string; address?: string; verified?: boolean },
+        ) => void;
+        handleRemoveMember: (potId: string, memberId: string) => void;
         acceptInvite: (token: string) => void;
         declineInvite: (token: string) => void;
         confirmSettlement: (params: {
@@ -221,6 +226,7 @@ export const AppRouter = ({
         createPot, addExpenseToPot, updateExpense, deleteExpense, attestExpense,
         batchAttestExpenses, addContribution, withdrawFunds, handleLogout,
         handleDeleteAccount, updatePaymentMethodValue, setPreferredMethod,
+        handleUpdateMember, handleRemoveMember,
         acceptInvite, declineInvite, confirmSettlement, showToast,
         newPotState, joinProcessingRef, selectedCounterpartyId
     },
@@ -725,26 +731,7 @@ export const AppRouter = ({
                         setShowAddMember(true);
                     }}
                     onUpdateMember={(updatedMember) => {
-                        setPots(
-                            pots.map((p) =>
-                                p.id === pot.id
-                                    ? {
-                                        ...p,
-                                        members: p.members.map((m) =>
-                                            m.id === updatedMember.id
-                                                ? {
-                                                    ...m,
-                                                    name: updatedMember.name,
-                                                    address: updatedMember.address,
-                                                    verified: updatedMember.verified ?? m.verified,
-                                                }
-                                                : m,
-                                        ),
-                                    }
-                                    : p,
-                            ),
-                        );
-                        showToast("Member updated", "success");
+                        handleUpdateMember(pot.id, updatedMember);
                     }}
 
                     onUpdateSettings={(settings) => {
@@ -803,17 +790,7 @@ export const AppRouter = ({
                             showToast("Use invite actions for pending members", "info");
                             return;
                         }
-                        setPots(
-                            pots.map((p) =>
-                                p.id === currentPotId
-                                    ? {
-                                        ...p,
-                                        members: p.members.filter((m) => m.id !== id),
-                                    }
-                                    : p,
-                            ),
-                        );
-                        showToast("Member removed", "success");
+                        handleRemoveMember(currentPotId, id);
                     }}
                     onSettle={() => push({ type: "settle-selection" })}
                 />

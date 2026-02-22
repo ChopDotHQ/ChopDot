@@ -53,6 +53,9 @@ import {
   normalizeHistory
 } from "./utils/normalization";
 
+const UUID_LIKE_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function AppContent() {
   const { DEMO_MODE, POLKADOT_APP_ENABLED } = useFeatureFlags();
   const { pots: potService, expenses: expenseService, members: memberService } = useData();
@@ -1295,6 +1298,11 @@ function AppContent() {
 
     (async () => {
       try {
+        if (usingSupabaseSource && !UUID_LIKE_REGEX.test(currentPotId)) {
+          logDev("[DataLayer] Skipping remote addMember for local-only pot id", { potId: currentPotId });
+          return;
+        }
+
         const createMemberDTO = {
           potId: currentPotId,
           name: person.name,
@@ -1306,14 +1314,90 @@ function AppContent() {
 
         await memberService.addMember(currentPotId, createMemberDTO);
         logDev('[DataLayer] Member added via service', { potId: currentPotId, memberId: person.id });
+        notifyPotRefresh(currentPotId);
       } catch (error) {
         warnDev('[DataLayer] Service addMember failed', error);
-        showToast('Saved locally (service write failed)', 'info');
+        const message = error instanceof Error ? error.message : String(error);
+        showToast(`Saved locally only (sync failed): ${message}`, 'error');
       }
     })();
 
     showToast(`${person.name} added to pot`, "success");
-  }, [currentPotId, memberService, people, showToast]);
+  }, [currentPotId, memberService, notifyPotRefresh, people, showToast, usingSupabaseSource]);
+
+  const handleUpdateMember = useCallback((potId: string, member: { id: string; name: string; address?: string; verified?: boolean }) => {
+    setPots((prev) =>
+      prev.map((pot) =>
+        pot.id === potId
+          ? {
+            ...pot,
+            members: pot.members.map((m) =>
+              m.id === member.id
+                ? {
+                  ...m,
+                  name: member.name,
+                  address: member.address,
+                  verified: member.verified ?? m.verified,
+                }
+                : m,
+            ),
+          }
+          : pot,
+      ),
+    );
+
+    (async () => {
+      try {
+        if (usingSupabaseSource && !UUID_LIKE_REGEX.test(potId)) {
+          logDev("[DataLayer] Skipping remote updateMember for local-only pot id", { potId, memberId: member.id });
+          return;
+        }
+
+        await memberService.updateMember(potId, member.id, {
+          name: member.name,
+          address: member.address ?? null,
+          verified: member.verified,
+        });
+        logDev("[DataLayer] Member updated via service", { potId, memberId: member.id });
+        notifyPotRefresh(potId);
+      } catch (error) {
+        warnDev("[DataLayer] Service updateMember failed", error);
+        const message = error instanceof Error ? error.message : String(error);
+        showToast(`Saved locally only (sync failed): ${message}`, "error");
+      }
+    })();
+
+    showToast("Member updated", "success");
+  }, [memberService, notifyPotRefresh, setPots, showToast, usingSupabaseSource]);
+
+  const handleRemoveMember = useCallback((potId: string, memberId: string) => {
+    setPots((prev) =>
+      prev.map((pot) =>
+        pot.id === potId
+          ? { ...pot, members: pot.members.filter((m) => m.id !== memberId) }
+          : pot,
+      ),
+    );
+
+    (async () => {
+      try {
+        if (usingSupabaseSource && !UUID_LIKE_REGEX.test(potId)) {
+          logDev("[DataLayer] Skipping remote removeMember for local-only pot id", { potId, memberId });
+          return;
+        }
+
+        await memberService.removeMember(potId, memberId);
+        logDev("[DataLayer] Member removed via service", { potId, memberId });
+        notifyPotRefresh(potId);
+      } catch (error) {
+        warnDev("[DataLayer] Service removeMember failed", error);
+        const message = error instanceof Error ? error.message : String(error);
+        showToast(`Saved locally only (sync failed): ${message}`, "error");
+      }
+    })();
+
+    showToast("Member removed", "success");
+  }, [memberService, notifyPotRefresh, setPots, showToast, usingSupabaseSource]);
 
   const handleInviteNew = useCallback((nameOrEmail: string) => {
     const email = nameOrEmail.trim().toLowerCase();
@@ -1561,7 +1645,8 @@ function AppContent() {
               createPot, addExpenseToPot, updateExpense, deleteExpense, attestExpense,
               batchAttestExpenses, addContribution, withdrawFunds, handleLogout,
               handleDeleteAccount, updatePaymentMethodValue, setPreferredMethod,
-              handleInviteNew, acceptInvite, declineInvite, confirmSettlement, showToast,
+              handleInviteNew, handleUpdateMember, handleRemoveMember,
+              acceptInvite, declineInvite, confirmSettlement, showToast,
               newPotState: newPot, joinProcessingRef, selectedCounterpartyId
             }}
             flags={{ DEMO_MODE, POLKADOT_APP_ENABLED }}
