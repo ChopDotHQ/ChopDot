@@ -182,6 +182,7 @@ export interface AppRouterProps {
             member: { id: string; name: string; address?: string; verified?: boolean },
         ) => void;
         handleRemoveMember: (potId: string, memberId: string) => void;
+        handleUpdatePotSettings: (potId: string, settings: any) => void;
         acceptInvite: (token: string) => void;
         declineInvite: (token: string) => void;
         confirmSettlement: (params: {
@@ -227,6 +228,7 @@ export const AppRouter = ({
         batchAttestExpenses, addContribution, withdrawFunds, handleLogout,
         handleDeleteAccount, updatePaymentMethodValue, setPreferredMethod,
         handleUpdateMember, handleRemoveMember,
+        handleUpdatePotSettings,
         acceptInvite, declineInvite, confirmSettlement, showToast,
         newPotState, joinProcessingRef, selectedCounterpartyId
     },
@@ -735,28 +737,7 @@ export const AppRouter = ({
                     }}
 
                     onUpdateSettings={(settings) => {
-                        const normalizedSettings: Partial<Pot> = {};
-
-                        if (typeof settings?.potName === "string") {
-                            normalizedSettings.name = settings.potName;
-                        }
-                        if (typeof settings?.baseCurrency === "string") {
-                            normalizedSettings.baseCurrency = settings.baseCurrency;
-                        }
-                        if (typeof settings?.budgetEnabled === "boolean") {
-                            normalizedSettings.budgetEnabled = settings.budgetEnabled;
-                        }
-                        if ("budget" in (settings || {})) {
-                            normalizedSettings.budget = settings.budget;
-                        }
-
-                        setPots(
-                            pots.map((p) =>
-                                p.id === pot.id
-                                    ? { ...p, ...normalizedSettings }
-                                    : p,
-                            ),
-                        );
+                        handleUpdatePotSettings(pot.id, settings);
                     }}
                     onDeleteExpense={deleteExpense}
                     onAttestExpense={(expenseId, silent) => {

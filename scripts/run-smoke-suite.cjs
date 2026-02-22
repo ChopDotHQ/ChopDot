@@ -69,7 +69,7 @@ async function main() {
 
   const preview = spawn(
     'npm',
-    ['run', 'preview', '--', '--host', '127.0.0.1', '--port', port],
+    ['run', 'preview', '--', '--host', '127.0.0.1', '--port', port, '--strictPort'],
     {
       cwd: ROOT,
       env: process.env,

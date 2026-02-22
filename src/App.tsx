@@ -113,6 +113,7 @@ function AppContent() {
   const [fabQuickAddPotId, setFabQuickAddPotId] = useState<string | null>(null);
   const [showIPFSAuthOnboarding, setShowIPFSAuthOnboarding] = useState(false);
   const [pendingIPFSAction, setPendingIPFSAction] = useState<(() => Promise<void>) | null>(null);
+  const pendingPotSettingsSyncRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   // Initialize InviteService
   const inviteService = useMemo(() => new InviteService(getSupabase()), []);
@@ -129,6 +130,15 @@ function AppContent() {
     window.dispatchEvent(
       new CustomEvent("pot-refresh", { detail: { potId } }),
     );
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      Object.values(pendingPotSettingsSyncRef.current).forEach((timeoutId) => {
+        clearTimeout(timeoutId);
+      });
+      pendingPotSettingsSyncRef.current = {};
+    };
   }, []);
 
   const [walletConnected, setWalletConnected] = useState(false);
@@ -1445,6 +1455,67 @@ function AppContent() {
     setShowMyQR(true);
   }, []);
 
+  const handleUpdatePotSettings = useCallback((potId: string, settings: any) => {
+    const normalizedSettings: Partial<Pot> = {};
+
+    if (typeof settings?.potName === "string") {
+      normalizedSettings.name = settings.potName;
+    }
+    if (typeof settings?.baseCurrency === "string") {
+      normalizedSettings.baseCurrency = settings.baseCurrency;
+    }
+    if (typeof settings?.budgetEnabled === "boolean") {
+      normalizedSettings.budgetEnabled = settings.budgetEnabled;
+    }
+    if ("budget" in (settings || {})) {
+      normalizedSettings.budget = settings.budget;
+    }
+
+    if (Object.keys(normalizedSettings).length === 0) {
+      return;
+    }
+
+    setPots((prev) =>
+      prev.map((pot) => (pot.id === potId ? { ...pot, ...normalizedSettings } : pot)),
+    );
+
+    const existingTimeout = pendingPotSettingsSyncRef.current[potId];
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
+    }
+
+    pendingPotSettingsSyncRef.current[potId] = setTimeout(async () => {
+      try {
+        if (usingSupabaseSource && !UUID_LIKE_REGEX.test(potId)) {
+          logDev("[DataLayer] Skipping remote updatePot settings for local-only pot id", { potId });
+          return;
+        }
+
+        const updateDto: Record<string, unknown> = { ...normalizedSettings };
+        if (typeof updateDto.name === "string") {
+          const trimmed = updateDto.name.trim();
+          if (!trimmed) {
+            return;
+          }
+          updateDto.name = trimmed;
+        }
+
+        await potService.updatePot(potId, updateDto as any);
+        logDev("[DataLayer] Pot settings updated via service", {
+          potId,
+          keys: Object.keys(updateDto),
+        });
+        notifyPotRefresh(potId);
+      } catch (error) {
+        warnDev("[DataLayer] Service updatePot settings failed", error);
+        const message = error instanceof Error ? error.message : String(error);
+        showToast(`Saved locally only (sync failed): ${message}`, "error");
+      } finally {
+        delete pendingPotSettingsSyncRef.current[potId];
+      }
+    }, 500);
+  }, [notifyPotRefresh, potService, setPots, showToast, usingSupabaseSource]);
+
   const handleIPFSContinue = useCallback(async () => {
     setShowIPFSAuthOnboarding(false);
     if (pendingIPFSAction) {
@@ -1646,6 +1717,7 @@ function AppContent() {
               batchAttestExpenses, addContribution, withdrawFunds, handleLogout,
               handleDeleteAccount, updatePaymentMethodValue, setPreferredMethod,
               handleInviteNew, handleUpdateMember, handleRemoveMember,
+              handleUpdatePotSettings,
               acceptInvite, declineInvite, confirmSettlement, showToast,
               newPotState: newPot, joinProcessingRef, selectedCounterpartyId
             }}
