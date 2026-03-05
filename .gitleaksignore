@@ -1,0 +1,6 @@
+SIGNUP_DEBUG.md:generic-api-key:13
+src/docs/AUTH_SYSTEM.md:generic-api-key:295
+src/docs/BACKEND_API.md:generic-api-key:85
+src/docs/BACKEND_API.md:generic-api-key:112
+test-signup.html:jwt:18
+test-supabase-auth.ts:jwt:5
