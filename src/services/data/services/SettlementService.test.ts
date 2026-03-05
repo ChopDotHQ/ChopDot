@@ -40,8 +40,8 @@ describe('SettlementService', () => {
     const result = await service.suggest('pot-1');
 
     expect(result).toEqual([
-      { from: 'owner', to: 'alice', amount: 10 },
-      { from: 'bob', to: 'owner', amount: 5 },
+      { from: 'owner', to: 'alice', amount: '10' },
+      { from: 'bob', to: 'owner', amount: '5' },
     ]);
   });
 
