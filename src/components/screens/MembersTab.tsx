@@ -13,6 +13,7 @@ interface Member {
   role: "Owner" | "Member";
   status: "active" | "pending";
   address?: string;
+  evmAddress?: string;
   verified?: boolean;
 }
 
@@ -30,7 +31,7 @@ interface MembersTabProps {
   baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
   onAddMember: () => void;
   onRemoveMember: (id: string) => void;
-  onUpdateMember?: (member: { id: string; name: string; address?: string; verified?: boolean }) => void;
+  onUpdateMember?: (member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean }) => void;
   onCopyInviteLink?: () => void;
   onResendInvite?: (memberId: string) => void;
   onRevokeInvite?: (memberId: string) => void;
@@ -196,12 +197,21 @@ export function MembersTab({
                       )}
 
                       {/* Wallet Address Display - Show readiness or CTA */}
-                      {normalizedAddress ? (
+                      {normalizedAddress || member.evmAddress ? (
                         <div className="flex flex-wrap items-center gap-2 mt-1">
+                          {normalizedAddress && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-[11px] text-green-700 dark:text-green-400">
                             <CheckCircle className="w-3 h-3" />
                             DOT wallet ready
                           </span>
+                          )}
+                          {member.evmAddress && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 text-[11px] text-blue-700 dark:text-blue-400">
+                              <CheckCircle className="w-3 h-3" />
+                              PVM wallet ready
+                            </span>
+                          )}
+                          {normalizedAddress && (
                           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
                             <span className="text-micro font-mono text-foreground">
                               {normalizedAddress.slice(0, 8)}...{normalizedAddress.slice(-6)}
@@ -223,6 +233,24 @@ export function MembersTab({
                               </div>
                             )}
                           </div>
+                          )}
+                          {member.evmAddress && (
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
+                              <span className="text-micro font-mono text-foreground">
+                                {member.evmAddress.slice(0, 8)}...{member.evmAddress.slice(-6)}
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigator.clipboard.writeText(member.evmAddress || '');
+                                }}
+                                className="p-0.5 hover:bg-muted rounded transition-colors"
+                                title="Copy EVM address"
+                              >
+                                <Copy className="w-3 h-3 text-secondary" />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <button

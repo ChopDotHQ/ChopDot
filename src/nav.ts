@@ -9,6 +9,11 @@ export type SettlementResult = {
   pots?: Array<{ id: string; name: string; amount: number }>;
   ref?: string;
   txHash?: string;
+  closeoutId?: string;
+  closeoutLegIndex?: number;
+  proofTxHash?: string;
+  proofStatus?: "anchored" | "recorded" | "completed";
+  proofContract?: string;
   at: number;
 };
 
@@ -23,6 +28,7 @@ export type Screen =
   | { type: "insights" }
   | { type: "create-pot" }
   | { type: "pot-home"; potId: string }
+  | { type: "closeout-review"; potId: string }
   | { type: "add-expense"; prefilledMemo?: string; prefilledAmount?: number }
   | { type: "edit-expense"; expenseId: string }
   | { type: "expense-detail"; expenseId: string }

@@ -45,6 +45,9 @@ interface SettleHomeProps {
   onShowToast?: (message: string, type?: "success" | "error" | "info") => void; // Optional toast callback
   pot?: Pot; // Pot data for pre-settlement checkpoint
   onUpdatePot?: (updates: { lastCheckpoint?: { hash: string; txHash?: string; at: string; cid?: string } }) => void; // Callback to update pot
+  closeoutId?: string;
+  closeoutLegIndex?: number;
+  closeoutProofStatus?: "anchored" | "recorded" | "completed";
 }
 
 export function SettleHome({
@@ -62,6 +65,9 @@ export function SettleHome({
   onShowToast,
   pot: _pot,
   onUpdatePot: _onUpdatePot,
+  closeoutId,
+  closeoutLegIndex,
+  closeoutProofStatus,
 }: SettleHomeProps) {
   const isDotPot = baseCurrency === 'DOT';
   // Check for simulation mode (allows DOT settlement without wallet)
@@ -224,7 +230,7 @@ export function SettleHome({
 
   const handleConfirm = async () => {
     // For DOT method, wallet must be connected (handled by AccountMenu in header)
-    if (selectedMethod === "dot" && !walletConnected) {
+    if (selectedMethod === "dot" && !isSimulationMode && !walletConnected) {
       // Wallet connection is handled by AccountMenu - user should connect via header
       return;
     }
@@ -373,7 +379,7 @@ export function SettleHome({
   // Show DOT method whenever Polkadot is enabled (regardless of recipient address or wallet connection)
   // This creates FOMO - users see DOT option even without setup, encouraging them to connect wallet and add addresses
   const showDotMethod = POLKADOT_APP_ENABLED;
-  const isDotMethodEnabled = walletConnected && !!recipientAddress; // Actually usable
+  const isDotMethodEnabled = (isSimulationMode || walletConnected) && !!recipientAddress; // Actually usable
   const isDotFlowActive = selectedMethod === 'dot';
   // Calculate DOT amount (convert from fiat if needed)
   const getAmountDot = (): number | null => {
@@ -479,6 +485,23 @@ export function SettleHome({
               </p>
             </div>
           </div>
+
+          {closeoutId && (
+            <div className="rounded-2xl border border-border/40 bg-muted/10 p-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-caption text-secondary">Onchain closeout</p>
+                  <p className="text-label font-medium">{closeoutId}</p>
+                </div>
+                <span className="rounded-full bg-muted/20 px-2 py-1 text-micro font-medium uppercase tracking-wide">
+                  {closeoutProofStatus || "anchored"}
+                </span>
+              </div>
+              <p className="mt-2 text-micro text-secondary">
+                Leg {typeof closeoutLegIndex === "number" ? closeoutLegIndex + 1 : "?"} will attach payment proof after transfer confirmation.
+              </p>
+            </div>
+          )}
 
           {/* Breakdown */}
           {settlements.length > 0 && settlements[0]?.pots && settlements[0]?.pots.length > 1 && (

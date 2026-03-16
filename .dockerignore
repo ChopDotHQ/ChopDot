@@ -1,0 +1,10 @@
+node_modules
+coverage
+dist
+build
+cypress/videos
+cypress/screenshots
+.git
+.DS_Store
+*.log
+src/docker-compose.yml

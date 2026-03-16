@@ -9,6 +9,8 @@
     "test": "hardhat test",
     "deploy:testnet": "hardhat ignition deploy ./ignition/modules/Storage.ts --network polkadotHubTestnet",
     "deploy:mainnet": "hardhat ignition deploy ./ignition/modules/Storage.ts --network polkadotHubMainnet",
+    "deploy:closeout:testnet": "hardhat ignition deploy ./ignition/modules/CloseoutRegistry.ts --network polkadotHubTestnet",
+    "deploy:closeout:mainnet": "hardhat ignition deploy ./ignition/modules/CloseoutRegistry.ts --network polkadotHubMainnet",
     "rpc:check": "node ./scripts/chain-health.mjs"
   },
   "devDependencies": {

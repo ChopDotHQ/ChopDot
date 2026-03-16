@@ -11,7 +11,7 @@ import { QuickKeypadSheet } from "../QuickKeypadSheet";
 import { useAccount } from "../../contexts/AccountContext";
 import { useFeatureFlags } from "../../contexts/FeatureFlagsContext";
 import { computePotHash, type PotCheckpointInput } from "../../services/chain/remark";
-import type { PotHistory } from "../../types/app";
+import type { CloseoutRecord, PotHistory } from "../../types/app";
 import { PrimaryButton } from "../PrimaryButton";
 import { usePot } from "../../hooks/usePot";
 import { warnDev, logDev } from "../../utils/logDev";
@@ -27,6 +27,7 @@ interface Member {
   role: "Owner" | "Member";
   status: "active" | "pending";
   address?: string; // Optional Polkadot wallet address
+  evmAddress?: string;
   verified?: boolean; // Optional verification status
 }
 
@@ -83,7 +84,7 @@ interface PotHomeProps {
   onExpenseClick: (expense: Expense) => void;
   onAddMember: () => void;
   onRemoveMember: (id: string) => void;
-  onUpdateMember?: (member: { id: string; name: string; address?: string; verified?: boolean }) => void;
+  onUpdateMember?: (member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean }) => void;
   onUpdateSettings: (settings: any) => void;
   onSettle: () => void;
   onCopyInviteLink?: () => void;
@@ -117,7 +118,9 @@ interface PotHomeProps {
   onArchivePot?: () => void;
   // Pot history (on-chain settlements)
   potHistory?: PotHistory[];
+  closeouts?: CloseoutRecord[];
   onUpdatePot?: (updates: { history?: PotHistory[]; lastCheckpoint?: any; lastEditAt?: string }) => void;
+  onOpenCloseoutReview?: () => void;
 }
 
 export function PotHome({
@@ -166,7 +169,9 @@ export function PotHome({
   onLeavePot,
   onArchivePot,
   potHistory = [],
+  closeouts = [],
   onUpdatePot,
+  onOpenCloseoutReview,
 }: PotHomeProps) {
   const { isPSA, psaStyles, psaClasses } = usePSAStyle();
   // Task 3: Read pot from Data Layer (if flag enabled) with fallback to props
@@ -207,6 +212,7 @@ export function PotHome({
       role: (m.role === 'Owner' || m.role === 'Member' ? m.role : 'Member') as 'Owner' | 'Member',
       status: (m.status === 'active' || m.status === 'pending' ? m.status : 'active') as 'active' | 'pending',
       address: m.address ?? undefined, // Convert null to undefined
+      evmAddress: (m as any).evmAddress ?? undefined,
       verified: m.verified ?? false,
     }));
   }, [pot?.members, membersProp]);
@@ -819,6 +825,7 @@ export function PotHome({
               potId={potId}
               pot={pot ?? undefined}
               potHistory={activeHistory}
+              closeouts={closeouts}
               onAddExpense={() => setKeypadOpen(true)}
               onExpenseClick={onExpenseClick as any}
               onSettle={onSettle}
@@ -829,6 +836,7 @@ export function PotHome({
               onUpdatePot={onUpdatePot}
               checkpointConfirmedCount={confirmedCount}
               checkpointTotalCount={totalCount}
+              onOpenCloseoutReview={onOpenCloseoutReview}
             />
           )}
           {activeTab === "Members" && (

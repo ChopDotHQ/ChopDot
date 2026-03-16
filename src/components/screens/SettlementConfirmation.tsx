@@ -27,6 +27,16 @@ export function SettlementConfirmation({
     usdc: "USDC Wallet",
   };
 
+  const formatResultAmount = () => {
+    if (result.method === "dot") {
+      return `${result.amount.toFixed(6)} DOT`;
+    }
+    if (result.method === "usdc") {
+      return `${result.amount.toFixed(6)} USDC`;
+    }
+    return `$${result.amount.toFixed(2)}`;
+  };
+
   return (
     <div className="h-full bg-background flex flex-col overflow-hidden">
       <TopBar title="Settlement Complete" onBack={onBack} />
@@ -39,7 +49,7 @@ export function SettlementConfirmation({
 
           <div className="text-center mb-8">
             <h1 className="mb-1 text-screen-title" style={{ fontWeight: 600 }}>
-              Settled {typeof result.amount === 'number' ? `$${result.amount.toFixed(2)}` : String(result.amount)} with {result.counterpartyName}
+              Settled {formatResultAmount()} with {result.counterpartyName}
             </h1>
             <p className="text-secondary text-caption">
               {new Date(result.at).toLocaleDateString("en-US", {
@@ -79,6 +89,29 @@ export function SettlementConfirmation({
                 </a>
               </div>
             )}
+
+            {result.closeoutId && (
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-micro text-secondary">Closeout</span>
+                <span className="font-mono text-label">{result.closeoutId}</span>
+              </div>
+            )}
+
+            {result.proofTxHash && (
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-micro text-secondary">Proof</span>
+                <span className="font-mono text-label truncate max-w-[180px]">
+                  {result.proofTxHash.slice(0, 10)}...{result.proofTxHash.slice(-8)}
+                </span>
+              </div>
+            )}
+
+            {result.closeoutId && (
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-micro text-secondary">Proof status</span>
+                <span className="text-label">{result.proofStatus || "anchored"}</span>
+              </div>
+            )}
           </div>
 
           {/* Pots Affected */}
@@ -92,7 +125,13 @@ export function SettlementConfirmation({
                     className="card rounded-xl p-3 flex items-center justify-between transition-shadow duration-200"
                   >
                     <span className="text-body">{pot.name}</span>
-                    <span className="text-label tabular-nums" style={{ fontWeight: 600 }}>${typeof pot.amount === 'number' ? pot.amount.toFixed(2) : pot.amount}</span>
+                    <span className="text-label tabular-nums" style={{ fontWeight: 600 }}>
+                      {result.method === "dot"
+                        ? `${Number(pot.amount).toFixed(6)} DOT`
+                        : result.method === "usdc"
+                          ? `${Number(pot.amount).toFixed(6)} USDC`
+                          : `$${Number(pot.amount).toFixed(2)}`}
+                    </span>
                   </div>
                 ))}
               </div>

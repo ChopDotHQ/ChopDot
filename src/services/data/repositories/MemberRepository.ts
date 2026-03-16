@@ -64,6 +64,7 @@ export class MemberRepository {
       id: Date.now().toString(), // Temporary ID generation
       name: input.name,
       address: input.address || null,
+      evmAddress: input.evmAddress || null,
       verified: input.verified,
       role: input.role || 'Member',
       status: input.status || 'active',

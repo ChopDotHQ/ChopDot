@@ -15,15 +15,19 @@ interface Settlement {
   date: string;
   txHash?: string;
   potNames?: string[];
+  closeoutId?: string;
+  proofTxHash?: string;
+  proofStatus?: "anchored" | "recorded" | "completed";
 }
 
 interface SettlementHistoryProps {
   settlements: Settlement[];
   onBack: () => void;
   personId?: string;
+  onRetryProof?: (settlementId: string) => void;
 }
 
-export function SettlementHistory({ settlements, onBack, personId }: SettlementHistoryProps) {
+export function SettlementHistory({ settlements, onBack, personId, onRetryProof }: SettlementHistoryProps) {
   // Filter settlements by personId if provided
   const filteredSettlements = useMemo(() => {
     if (!personId) return settlements;
@@ -114,6 +118,36 @@ export function SettlementHistory({ settlements, onBack, personId }: SettlementH
                     >
                       {settlement.txHash.slice(0, 10)}...{settlement.txHash.slice(-8)}
                     </a>
+                  </div>
+                )}
+                {settlement.closeoutId && (
+                  <div className="flex justify-between text-caption text-secondary">
+                    <span>Closeout</span>
+                    <span className="font-mono text-right">{settlement.closeoutId}</span>
+                  </div>
+                )}
+                {settlement.closeoutId && (
+                  <div className="flex justify-between text-caption text-secondary">
+                    <span>Proof status</span>
+                    <span className="text-right">{settlement.proofStatus || "anchored"}</span>
+                  </div>
+                )}
+                {settlement.proofTxHash && (
+                  <div className="flex justify-between text-caption text-secondary">
+                    <span>Proof</span>
+                    <span className="font-mono text-right">
+                      {settlement.proofTxHash.slice(0, 10)}...{settlement.proofTxHash.slice(-8)}
+                    </span>
+                  </div>
+                )}
+                {settlement.closeoutId && !settlement.proofTxHash && onRetryProof && (
+                  <div className="pt-2">
+                    <button
+                      onClick={() => onRetryProof(settlement.id)}
+                      className="text-caption underline text-secondary hover:text-foreground transition-colors"
+                    >
+                      Retry proof recording
+                    </button>
                   </div>
                 )}
               </div>

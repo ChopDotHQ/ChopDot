@@ -38,6 +38,7 @@ import { useInviteFlow } from "./hooks/useInviteFlow";
 import { useBusinessActions } from "./hooks/useBusinessActions";
 import { useSettlementActions } from "./hooks/useSettlementActions";
 import { createPolkadotBuilderPartyPot } from "./data/builder-party";
+import { recordSettlementProof } from "./services/closeout/pvmCloseout";
 import type { PaymentMethod } from "./components/screens/PaymentMethods";
 import type { Notification } from "./components/screens/NotificationCenter";
 
@@ -336,7 +337,20 @@ function AppContent() {
 
     (async () => {
       try {
-        const savedPots = localStorage.getItem("chopdot_pots");
+        let usedSeededPots = false;
+        const seededPots = localStorage.getItem("chopdot_e2e_seed_pots");
+        if (seededPots) {
+          const parsed = JSON.parse(seededPots);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setPots(parsed as Pot[]);
+            localStorage.setItem("chopdot_pots", seededPots);
+            localStorage.setItem("chopdot_pots_backup", seededPots);
+            window.dispatchEvent(new CustomEvent('pots-refresh'));
+            usedSeededPots = true;
+          }
+        }
+
+        const savedPots = !usedSeededPots ? localStorage.getItem("chopdot_pots") : null;
         if (savedPots && savedPots.length < 1000000) {
           const parsed = JSON.parse(savedPots);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -376,7 +390,7 @@ function AppContent() {
           }
         }
 
-        const backupPots = localStorage.getItem("chopdot_pots_backup");
+        const backupPots = !usedSeededPots ? localStorage.getItem("chopdot_pots_backup") : null;
         if (backupPots && backupPots.length < 1000000) {
           try {
             const parsed = JSON.parse(backupPots);
@@ -404,7 +418,7 @@ function AppContent() {
           }
         }
 
-        if (!hasLoadedInitialData) {
+        if (!usedSeededPots && !hasLoadedInitialData) {
           const currentPots = pots.length > 0 ? pots : [
             {
               id: "1", name: "Devconnect Buenos Aires", type: "expense", baseCurrency: "USD",
@@ -435,7 +449,6 @@ function AppContent() {
               }
               window.dispatchEvent(new CustomEvent('pots-refresh'));
             }
-            setHasLoadedInitialData(true);
           } catch (e) {
             console.error('[App] Failed to seed initial pots:', e);
           }
@@ -450,6 +463,15 @@ function AppContent() {
       }
 
       try {
+        const seededSettlements = localStorage.getItem("chopdot_e2e_seed_settlements");
+        if (seededSettlements) {
+          const parsed = JSON.parse(seededSettlements);
+          if (Array.isArray(parsed)) {
+            setSettlements(parsed);
+            localStorage.setItem("chopdot_settlements", seededSettlements);
+          }
+        }
+
         const savedSettlements = localStorage.getItem(
           "chopdot_settlements",
         );
@@ -1046,12 +1068,97 @@ function AppContent() {
   const { confirmSettlement } = useSettlementActions({
     pots,
     setPots,
+    setSettlements,
     addExpenseToPot,
     showToast,
-    back,
     currentUserId: user?.id || "owner",
     currentUserAddress: user?.id || "unknown",
   });
+
+  const retrySettlementProof = useCallback(async (settlementId: string) => {
+    const settlement = settlements.find((entry) => entry.id === settlementId);
+    if (!settlement?.closeoutId || typeof settlement.closeoutLegIndex !== "number" || !settlement.txHash) {
+      showToast("This settlement does not have enough closeout data to retry proof recording.", "error");
+      return;
+    }
+
+    try {
+      const proofResult = await recordSettlementProof({
+        closeoutId: settlement.closeoutId,
+        legIndex: settlement.closeoutLegIndex,
+        settlementTxHash: settlement.txHash,
+      });
+
+      setSettlements((prev) =>
+        prev.map((entry) =>
+          entry.id === settlementId
+            ? {
+              ...entry,
+              proofTxHash: proofResult.proofTxHash,
+              proofStatus: proofResult.proofStatus,
+              proofContract: proofResult.proofContract,
+            }
+            : entry,
+        ),
+      );
+
+      setPots((prev) =>
+        prev.map((pot) => {
+          const touchesSettlement = settlement.potIds?.includes(pot.id);
+          const history = (pot.history || []).map((entry) => {
+            if (entry.type !== "onchain_settlement") return entry;
+            if (entry.txHash !== settlement.txHash || entry.closeoutId !== settlement.closeoutId) return entry;
+            return {
+              ...entry,
+              proofTxHash: proofResult.proofTxHash,
+              proofStatus: proofResult.proofStatus,
+              proofContract: proofResult.proofContract,
+            };
+          });
+          const closeouts = (pot.closeouts || []).map((closeout) => {
+            if (closeout.closeoutId !== settlement.closeoutId) return closeout;
+            const legs = closeout.legs.map((leg) =>
+              leg.index === settlement.closeoutLegIndex
+                ? {
+                  ...leg,
+                  proofTxHash: proofResult.proofTxHash,
+                  settlementTxHash: settlement.txHash,
+                  status: "proven" as const,
+                }
+                : leg,
+            );
+            const settledLegCount = legs.filter((leg) => leg.status !== "pending").length;
+            return {
+              ...closeout,
+              legs,
+              settledLegCount,
+              status:
+                settledLegCount >= closeout.totalLegCount
+                  ? "completed"
+                  : settledLegCount > 0
+                    ? "partially_settled"
+                    : closeout.status,
+            };
+          });
+
+          if (!touchesSettlement && history === pot.history && closeouts === pot.closeouts) {
+            return pot;
+          }
+
+          return {
+            ...pot,
+            history,
+            closeouts,
+          };
+        }),
+      );
+
+      showToast("Settlement proof recorded onchain.", "success");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Proof recording failed";
+      showToast(message, "error");
+    }
+  }, [setPots, settlements, setSettlements, showToast]);
 
   useEffect(() => {
     if (!usingSupabaseSource || authLoading || !isAuthenticated) {
@@ -1335,7 +1442,7 @@ function AppContent() {
     showToast(`${person.name} added to pot`, "success");
   }, [currentPotId, memberService, notifyPotRefresh, people, showToast, usingSupabaseSource]);
 
-  const handleUpdateMember = useCallback((potId: string, member: { id: string; name: string; address?: string; verified?: boolean }) => {
+  const handleUpdateMember = useCallback((potId: string, member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean }) => {
     setPots((prev) =>
       prev.map((pot) =>
         pot.id === potId
@@ -1347,6 +1454,7 @@ function AppContent() {
                   ...m,
                   name: member.name,
                   address: member.address,
+                  evmAddress: member.evmAddress,
                   verified: member.verified ?? m.verified,
                 }
                 : m,
@@ -1366,6 +1474,7 @@ function AppContent() {
         await memberService.updateMember(potId, member.id, {
           name: member.name,
           address: member.address ?? null,
+          evmAddress: member.evmAddress ?? null,
           verified: member.verified,
         });
         logDev("[DataLayer] Member updated via service", { potId, memberId: member.id });
@@ -1548,6 +1657,7 @@ function AppContent() {
       (screenType === "add-expense" ||
         screenType === "edit-expense" ||
         screenType === "expense-detail" ||
+        screenType === "closeout-review" ||
         screenType === "add-contribution" ||
         screenType === "withdraw-funds" ||
         screenType === "pot-home") &&
@@ -1622,6 +1732,7 @@ function AppContent() {
       "insights",
       "create-pot",
       "pot-home",
+      "closeout-review",
       "add-expense",
       "edit-expense",
       "expense-detail",
@@ -1718,6 +1829,7 @@ function AppContent() {
               handleDeleteAccount, updatePaymentMethodValue, setPreferredMethod,
               handleInviteNew, handleUpdateMember, handleRemoveMember,
               handleUpdatePotSettings,
+              retrySettlementProof,
               acceptInvite, declineInvite, confirmSettlement, showToast,
               newPotState: newPot, joinProcessingRef, selectedCounterpartyId
             }}

@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      VITE_DATA_SOURCE: local
+      VITE_SUPABASE_STRICT: "false"
+      VITE_AUTO_GUEST_AUTH: "1"
+      VITE_E2E_GUEST_USER_ID: "owner"
+      VITE_E2E_GUEST_USER_NAME: "You"
+      VITE_ENABLE_PVM_CLOSEOUT: "1"
+      VITE_SIMULATE_PVM_CLOSEOUT: "1"
+      VITE_SIMULATE_CHAIN: "1"
+      __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: app
+    command: ["sh", "-lc", "VITE_DATA_SOURCE=local VITE_SUPABASE_STRICT=false VITE_AUTO_GUEST_AUTH=1 VITE_E2E_GUEST_USER_ID=owner VITE_E2E_GUEST_USER_NAME=You VITE_ENABLE_PVM_CLOSEOUT=1 VITE_SIMULATE_PVM_CLOSEOUT=1 VITE_SIMULATE_CHAIN=1 npx vite --host 0.0.0.0 --port 4173"]
+    expose:
+      - "4173"
+
+  e2e:
+    image: cypress/included:15.1.0
+    working_dir: /e2e
+    depends_on:
+      - app
+    environment:
+      CYPRESS_baseUrl: http://app:4173
+      CYPRESS_VITE_AUTO_GUEST_AUTH: "1"
+    volumes:
+      - .:/e2e
+    command: ["cypress", "run", "--spec", "cypress/e2e/closeout_pvm.cy.ts"]

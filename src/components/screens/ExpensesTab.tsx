@@ -8,10 +8,15 @@ import { buildSubscanUrl } from "../../services/chain/utils";
 import { normalizeToPolkadot } from "../../services/chain/address";
 import { getChain } from "../../services/chain";
 import { useAccount } from "../../contexts/AccountContext";
-import type { PotHistory } from "../../types/app";
+import type { CloseoutRecord, PotHistory } from "../../types/app";
 import { ConfirmModal } from "../ConfirmModal";
 import { formatCurrencyAmount, normalizeCurrency } from "../../utils/currencyFormat";
 import type { TxStatus } from "../../services/chain/adapter";
+import {
+  canCreatePvmCloseout,
+  findLatestCloseout,
+  isPvmCloseoutEnabled,
+} from "../../services/closeout/pvmCloseout";
 
 interface Member {
   id: string;
@@ -77,6 +82,8 @@ interface ExpensesTabProps {
   onUpdatePot?: (updates: { history?: PotHistory[]; lastCheckpoint?: any; lastEditAt?: string }) => void; // Callback to update pot history
   checkpointConfirmedCount?: number;
   checkpointTotalCount?: number;
+  closeouts?: CloseoutRecord[];
+  onOpenCloseoutReview?: () => void;
 }
 
 export function ExpensesTab({ 
@@ -102,6 +109,8 @@ export function ExpensesTab({
   onUpdatePot,
   checkpointConfirmedCount: _checkpointConfirmedCount,
   checkpointTotalCount: _checkpointTotalCount,
+  closeouts = [],
+  onOpenCloseoutReview,
 }: ExpensesTabProps) {
   const [showPendingOnly, setShowPendingOnly] = useState(false);
   const [showActivity, setShowActivity] = useState(false);
@@ -122,6 +131,7 @@ export function ExpensesTab({
   const account = useAccount();
   
   const normalizedBaseCurrency = normalizeCurrency(baseCurrency);
+  const pvmCloseoutEnabled = isPvmCloseoutEnabled();
   // Check if this is a DOT or USDC pot
   const isDotPot = normalizedBaseCurrency === "DOT";
   const isUsdcPot = normalizedBaseCurrency === "USDC";
@@ -144,6 +154,10 @@ export function ExpensesTab({
           entry.type === 'onchain_settlement'
       ),
     [potHistory]
+  );
+  const latestCloseout = useMemo(
+    () => findLatestCloseout({ closeouts }),
+    [closeouts],
   );
   
   // Convert to schema format for deterministic calculation
@@ -254,6 +268,10 @@ export function ExpensesTab({
     balances.some(b => Math.abs(b.balance) > settleThreshold) ||
     settlementSuggestions.length > 0
   );
+  const canOpenCloseoutReview =
+    pvmCloseoutEnabled &&
+    Boolean(_pot) &&
+    canCreatePvmCloseout(_pot as Pot);
   
   // Filter expenses (when showing pending only, exclude self-paid expenses)
   const displayedExpenses = showPendingOnly 
@@ -603,7 +621,19 @@ export function ExpensesTab({
             {/* Settlement Suggestions */}
             {settlementSuggestions.length > 0 && (
               <div className="pt-3 border-t border-border/50">
-                <p className="text-caption text-secondary mb-2">Suggested settlements</p>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <p className="text-caption text-secondary">Suggested settlements</p>
+                  {canOpenCloseoutReview && (
+                    <button
+                      onClick={onOpenCloseoutReview}
+                      className="rounded-full border border-border/50 px-2.5 py-1 text-micro font-medium transition-colors hover:bg-muted/20"
+                    >
+                      {latestCloseout?.status === "active" || latestCloseout?.status === "partially_settled"
+                        ? "View closeout"
+                        : "Closeout onchain"}
+                    </button>
+                  )}
+                </div>
                 <div className="space-y-1.5">
                   {settlementSuggestions.map((suggestion, idx) => {
                     const fromMember = members.find(m => m.id === suggestion.from);
@@ -688,6 +718,24 @@ export function ExpensesTab({
                     : "These are minimal transfers to settle all balances. Use \"Settle Up\" to initiate settlements."
                   }
                 </p>
+                {latestCloseout && (
+                  <div className="mt-3 rounded-2xl border border-border/40 bg-muted/10 p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-caption text-secondary">Latest closeout</p>
+                        <p className="text-label font-medium">
+                          {latestCloseout.closeoutId || latestCloseout.id}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-muted/20 px-2 py-1 text-micro font-medium uppercase tracking-wide">
+                        {latestCloseout.status.replace(/_/g, " ")}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-micro text-secondary">
+                      {latestCloseout.settledLegCount}/{latestCloseout.totalLegCount} legs settled
+                    </p>
+                  </div>
+                )}
               </div>
             )}
             
@@ -733,6 +781,11 @@ export function ExpensesTab({
                               return formatCurrencyAmount(parseFloat(entry.amountDot || '0'), 'DOT');
                             })()}
                           </span>
+                          {entry.closeoutId && (
+                            <span className="rounded-full bg-muted/20 px-1.5 py-0.5 text-micro font-medium">
+                              {entry.proofStatus || "anchored"}
+                            </span>
+                          )}
                           {entry.status === 'finalized' && (
                             <a
                               href={entry.subscan}

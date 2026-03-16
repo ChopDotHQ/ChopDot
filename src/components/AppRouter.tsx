@@ -1,5 +1,6 @@
 import { lazy } from "react";
-import { Screen } from "../nav";
+import type { Dispatch, SetStateAction } from "react";
+import { Screen, SettlementResult } from "../nav";
 import {
     Pot,
     ActivityItem,
@@ -13,6 +14,10 @@ import {
 } from "../utils/normalization";
 import { PaymentMethod } from "./screens/PaymentMethods";
 import { Notification } from "./screens/NotificationCenter";
+import {
+    findCloseoutLegForMembers,
+    findLatestCloseout,
+} from "../services/closeout/pvmCloseout";
 
 // Lazy imports
 const Settings = lazy(() =>
@@ -44,6 +49,9 @@ const SettlementHistory = lazy(() =>
 );
 const SettlementConfirmation = lazy(() =>
     import("./screens/SettlementConfirmation").then((module) => ({ default: module.SettlementConfirmation }))
+);
+const CloseoutReview = lazy(() =>
+    import("./screens/CloseoutReview").then((module) => ({ default: module.CloseoutReview }))
 );
 const InsightsScreen = lazy(() =>
     import("./screens/InsightsScreen").then((module) => ({ default: module.InsightsScreen }))
@@ -142,7 +150,7 @@ export interface AppRouterProps {
         fabQuickAddPotId: string | null;
     };
     actions: {
-        setPots: (pots: Pot[]) => void;
+        setPots: Dispatch<SetStateAction<Pot[]>>;
         setCurrentPotId: (id: string | null) => void;
         setCurrentExpenseId: (id: string | null) => void;
         setWalletConnected: (connected: boolean) => void;
@@ -159,7 +167,7 @@ export interface AppRouterProps {
         setFabQuickAddPotId: (id: string | null) => void;
         setNewPot: (pot: Partial<Pot>) => void;
         setSelectedCounterpartyId: (id: string | null) => void;
-        setSettlements: (settlements: StoredSettlement[]) => void;
+        setSettlements: Dispatch<SetStateAction<StoredSettlement[]>>;
         setNotifications: (
             updater: (prev: Notification[]) => Notification[],
         ) => void;
@@ -179,17 +187,22 @@ export interface AppRouterProps {
         handleInviteNew: (email: string) => void;
         handleUpdateMember: (
             potId: string,
-            member: { id: string; name: string; address?: string; verified?: boolean },
+            member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean },
         ) => void;
         handleRemoveMember: (potId: string, memberId: string) => void;
         handleUpdatePotSettings: (potId: string, settings: any) => void;
+        retrySettlementProof: (settlementId: string) => Promise<void>;
         acceptInvite: (token: string) => void;
         declineInvite: (token: string) => void;
         confirmSettlement: (params: {
             method: "cash" | "bank" | "paypal" | "twint" | "dot";
             reference?: string;
             settlement: SettleHomeSettlement;
-        }) => Promise<void>;
+            closeoutContext?: {
+                closeoutId: string;
+                legIndex: number;
+            };
+        }) => Promise<SettlementResult | null>;
         showToast: (msg: string, type?: "success" | "error" | "info") => void;
         // State wrappers
         newPotState: Partial<Pot>;
@@ -228,7 +241,7 @@ export const AppRouter = ({
         batchAttestExpenses, addContribution, withdrawFunds, handleLogout,
         handleDeleteAccount, updatePaymentMethodValue, setPreferredMethod,
         handleUpdateMember, handleRemoveMember,
-        handleUpdatePotSettings,
+        handleUpdatePotSettings, retrySettlementProof,
         acceptInvite, declineInvite, confirmSettlement, showToast,
         newPotState, joinProcessingRef, selectedCounterpartyId
     },
@@ -774,6 +787,35 @@ export const AppRouter = ({
                         handleRemoveMember(currentPotId, id);
                     }}
                     onSettle={() => push({ type: "settle-selection" })}
+                    closeouts={pot.closeouts}
+                    onOpenCloseoutReview={() => push({ type: "closeout-review", potId: pot.id })}
+                />
+            );
+
+        case "closeout-review":
+            if (!pot) return null;
+            return (
+                <CloseoutReview
+                    pot={pot as any}
+                    currentUserId={isGuest ? "owner" : (user?.id || "owner")}
+                    onBack={back}
+                    onAnchored={(closeout) => {
+                        setPots((prev) =>
+                            prev.map((candidate) =>
+                                candidate.id === pot.id
+                                    ? {
+                                        ...candidate,
+                                        closeouts: [
+                                            closeout,
+                                            ...(candidate.closeouts || []).filter((entry) => entry.id !== closeout.id),
+                                        ],
+                                    }
+                                    : candidate,
+                            ),
+                        );
+                    }}
+                    onContinueToSettlement={() => replace({ type: "settle-selection" })}
+                    onShowToast={showToast}
                 />
             );
 
@@ -979,6 +1021,11 @@ export const AppRouter = ({
                 memberById?.address ||
                 memberByName?.address;
             const preferredMethod = selectedCounterparty?.paymentPreference;
+            const latestCloseout = currentPot ? findLatestCloseout(currentPot as any) : undefined;
+            const matchingCloseoutLeg =
+                latestCloseout && targetCounterpartyId
+                    ? findCloseoutLegForMembers(latestCloseout, shCurrentUserId, targetCounterpartyId)
+                    : undefined;
 
 
             return (
@@ -1016,15 +1063,36 @@ export const AppRouter = ({
                             showToast("Error: Could not find settlement details", "error");
                             return;
                         }
-                        await confirmSettlement({
+                        const result = await confirmSettlement({
                             method,
                             reference,
                             settlement,
+                            closeoutContext:
+                                latestCloseout?.closeoutId && matchingCloseoutLeg
+                                    ? {
+                                        closeoutId: latestCloseout.closeoutId,
+                                        legIndex: matchingCloseoutLeg.index,
+                                    }
+                                    : undefined,
                         });
+                        if (result) {
+                            push({ type: "settlement-confirmation", result });
+                        }
                     }}
                     onHistory={() => {
                         push({ type: "settlement-history" });
                     }}
+                    closeoutId={matchingCloseoutLeg ? latestCloseout?.closeoutId : undefined}
+                    closeoutLegIndex={matchingCloseoutLeg?.index}
+                    closeoutProofStatus={
+                        matchingCloseoutLeg?.proofTxHash
+                            ? "completed"
+                            : matchingCloseoutLeg?.settlementTxHash
+                                ? "recorded"
+                                : matchingCloseoutLeg
+                                    ? "anchored"
+                                    : undefined
+                    }
                 />
             );
 
@@ -1042,16 +1110,26 @@ export const AppRouter = ({
                         txHash: s.txHash,
                         potNames: s.potIds?.map((pid) => pots.find((p) => p.id === pid)?.name || pid),
                         personId: s.personId,
+                        closeoutId: s.closeoutId,
+                        proofTxHash: s.proofTxHash,
+                        proofStatus: s.proofStatus,
                     })) as any}
+                    onRetryProof={retrySettlementProof}
                 />
             );
 
         case "settlement-confirmation":
             return <SettlementConfirmation
                 onBack={back}
-                result={null as any}
+                result={screen.result}
                 onViewHistory={() => push({ type: "settlement-history" })}
-                onDone={() => reset({ type: "pots-home" })}
+                onDone={() => {
+                    if (currentPotId) {
+                        reset({ type: "pot-home", potId: currentPotId });
+                        return;
+                    }
+                    reset({ type: "pots-home" });
+                }}
             />;
 
 

@@ -8,7 +8,7 @@
  * - Email/password
  */
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react';
 import { useAccount } from './AccountContext';
 import { getSupabase, getSupabaseConfig } from '../utils/supabase-client';
 import { upsertProfile } from '../repos/profiles';
@@ -96,6 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const account = useAccount();
   const dataSource = import.meta.env.VITE_DATA_SOURCE || 'local';
   const allowLocalGuestFallback = dataSource !== 'supabase';
+  const autoGuestAttemptedRef = useRef(false);
 
   // Initial session check and subscription to Supabase auth changes
   useEffect(() => {
@@ -426,9 +427,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Local fallback guest session (non-Supabase mode)
       const guestUser: User = {
-        id: `guest_${Date.now()}`,
+        id: import.meta.env.VITE_E2E_GUEST_USER_ID || `guest_${Date.now()}`,
         authMethod: 'guest',
-        name: 'Guest User',
+        name: import.meta.env.VITE_E2E_GUEST_USER_NAME || 'Guest User',
         createdAt: new Date().toISOString(),
         isGuest: true,
       };
@@ -447,6 +448,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = async () => {
     await checkAuth();
   };
+
+  useEffect(() => {
+    if (import.meta.env.VITE_AUTO_GUEST_AUTH !== '1') {
+      return;
+    }
+
+    if (isLoading || user || autoGuestAttemptedRef.current) {
+      return;
+    }
+
+    autoGuestAttemptedRef.current = true;
+
+    void loginAsGuest().catch((error) => {
+      autoGuestAttemptedRef.current = false;
+      console.error('[AuthContext] Auto guest login failed:', error);
+    });
+  }, [isLoading, user]);
 
   // Auto-login when a linked wallet is detected
   useEffect(() => {

@@ -16,7 +16,14 @@ Cypress.Commands.add('ensureGuestSession', () => {
 
   cy.get('body', { timeout: 30000 }).then(($body) => {
     const bodyText = $body.text();
-    if (bodyText.match(/^Pots$|^People$|^Activity$|^You$/m)) {
+    const isAuthenticatedShell =
+      /totals across all pots/i.test(bodyText) ||
+      /your pots/i.test(bodyText) ||
+      /connect wallet/i.test(bodyText) ||
+      /create/i.test(bodyText) ||
+      /^Pots$|^People$|^Activity$|^You$/m.test(bodyText);
+
+    if (isAuthenticatedShell) {
       return;
     }
 
@@ -24,19 +31,17 @@ Cypress.Commands.add('ensureGuestSession', () => {
       cy.contains(/continue as guest/i, { timeout: 30000 }).click({ force: true });
       return;
     }
-
-    // Retry once from a clean state if the initial render is transient.
-    cy.clearCookies();
-    cy.visit('/', {
-      onBeforeLoad(win) {
-        win.localStorage.clear();
-        win.sessionStorage.clear();
-      },
-    });
-    cy.contains(/continue as guest/i, { timeout: 30000 }).click({ force: true });
   });
 
-  cy.contains(/^Pots$|^People$|^Activity$|^You$/i, { timeout: 30000 }).should('be.visible');
+  cy.get('body', { timeout: 30000 }).should(($body) => {
+    const text = $body.text();
+    expect(
+      /totals across all pots/i.test(text) ||
+      /your pots/i.test(text) ||
+      /connect wallet/i.test(text) ||
+      /^Pots$|^People$|^Activity$|^You$/m.test(text),
+    ).to.equal(true);
+  });
 });
 
 Cypress.Commands.add('loginAsGuest', () => {
