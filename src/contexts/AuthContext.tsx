@@ -16,7 +16,9 @@ import { getAuthPersistence } from '../utils/authPersistence';
 import { setErrorTrackingUser } from '../utils/errorTracking';
 import { loginWithEmailAction, signUpWithEmailAction } from './authActions';
 
-export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'ethereum' | 'email' | 'guest' | 'anonymous';
+export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'ethereum' | 'google' | 'facebook' | 'apple' | 'email' | 'guest' | 'anonymous';
+
+export type OAuthProvider = 'google' | 'facebook' | 'apple';
 
 export interface User {
   id: string;
@@ -36,14 +38,20 @@ function mapSupabaseSessionUser(sessionUser: any): User {
 
   const isWeb3 = sessionUser?.app_metadata?.provider === 'web3';
   const walletAddress = sessionUser?.user_metadata?.wallet_address ?? undefined;
+  const oauthProvider = sessionUser?.app_metadata?.provider as string | undefined;
+  const isOAuth = oauthProvider === 'google' || oauthProvider === 'facebook' || oauthProvider === 'apple';
 
   const email = sessionUser?.email ?? undefined;
 
   let authMethod: AuthMethod = 'email';
   if (isAnonymous) authMethod = 'anonymous';
   else if (isWeb3) authMethod = 'ethereum';
+  else if (isOAuth) authMethod = oauthProvider as AuthMethod;
+
+  const oauthName = sessionUser?.user_metadata?.full_name ?? sessionUser?.user_metadata?.name ?? undefined;
 
   const name =
+    oauthName ??
     email?.split('@')[0] ??
     (walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : undefined) ??
     (isAnonymous ? 'Anonymous User' : undefined);
@@ -65,6 +73,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (method: AuthMethod, credentials: LoginCredentials) => Promise<void>;
   loginWithEthereum: () => Promise<void>;
+  loginWithOAuth: (provider: OAuthProvider) => Promise<void>;
   signUp: (email: string, password: string, username?: string) => Promise<void>;
   loginAsGuest: () => Promise<void>;
   logout: () => Promise<void>;
@@ -508,6 +517,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithOAuth = async (provider: OAuthProvider) => {
+    const supabase = getSupabase();
+    if (!supabase) {
+      throw new Error('Supabase is not configured for OAuth');
+    }
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      console.error(`OAuth login failed (${provider}):`, error);
+      throw error;
+    }
+  };
+
   const refreshUser = async () => {
     await checkAuth();
   };
@@ -603,6 +631,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         login,
         loginWithEthereum,
+        loginWithOAuth,
         signUp,
         loginAsGuest,
         logout,

@@ -2,31 +2,45 @@ import { ReactNode } from 'react';
 import { WalletPanel, WalletOption, WalletOptionProps } from '../SignInComponents';
 import type { PanelTheme, PanelMode, WalletOptionTheme } from '../SignInThemes';
 
+type OptionGroup = 'social' | 'email' | 'wallet';
+
+interface GroupedWalletOptionProps extends WalletOptionProps {
+    group?: OptionGroup;
+}
+
 export interface WalletLoginPanelProps {
-    // Appearance
     panelTheme: PanelTheme;
     panelMode: PanelMode;
     useGlassmorphism: boolean;
-
-    // Data
-    walletOptions: WalletOptionProps[];
-
-    // Guest Option
+    walletOptions: GroupedWalletOptionProps[];
     onGuestLogin: () => void;
     guestTheme: Partial<WalletOptionTheme>;
     loading: boolean;
-
-    // Persistence
     keepSignedIn: boolean;
     onKeepSignedInChange: (checked: boolean) => void;
-
-    // Slots
     headerContent?: ReactNode;
     errorAlert?: ReactNode;
     footerContent?: ReactNode;
     mobileToggle?: ReactNode;
     signatureWaitingBanner?: ReactNode;
 }
+
+const GroupDivider = ({ label, panelMode, useGlassmorphism }: { label: string; panelMode: PanelMode; useGlassmorphism: boolean }) => {
+    const textClass = useGlassmorphism
+        ? (panelMode === 'dark' ? 'text-white/40' : 'text-black/30')
+        : (panelMode === 'dark' ? 'text-white/30' : 'text-muted-foreground/50');
+    const lineClass = useGlassmorphism
+        ? (panelMode === 'dark' ? 'border-white/10' : 'border-black/10')
+        : 'border-border/40';
+
+    return (
+        <div className="flex items-center gap-3 py-1">
+            <div className={`flex-1 border-t ${lineClass}`} />
+            <span className={`text-xs font-medium uppercase tracking-wider ${textClass}`}>{label}</span>
+            <div className={`flex-1 border-t ${lineClass}`} />
+        </div>
+    );
+};
 
 export const WalletLoginPanel = ({
     panelTheme,
@@ -44,6 +58,20 @@ export const WalletLoginPanel = ({
     mobileToggle,
     signatureWaitingBanner,
 }: WalletLoginPanelProps) => {
+    const socialOptions = walletOptions.filter((o) => o.group === 'social');
+    const emailOptions = walletOptions.filter((o) => o.group === 'email');
+    const walletOnlyOptions = walletOptions.filter((o) => o.group === 'wallet');
+    const ungrouped = walletOptions.filter((o) => !o.group);
+
+    const renderOptions = (options: GroupedWalletOptionProps[]) =>
+        options.map((option, index) => (
+            <WalletOption
+                key={option.title + index}
+                {...option}
+                disabled={loading || option.disabled}
+            />
+        ));
+
     return (
         <div className="flex-1 flex items-center justify-center px-4 py-12">
             <div className="w-full max-w-sm space-y-6">
@@ -53,14 +81,23 @@ export const WalletLoginPanel = ({
 
                 <WalletPanel theme={panelTheme} useGlassmorphism={useGlassmorphism} mode={panelMode}>
                     <div className="space-y-3">
-                        {walletOptions.map((option, index) => (
-                            <div key={option.title + index} className="space-y-3">
-                                <WalletOption
-                                    {...option}
-                                    disabled={loading || option.disabled}
-                                />
-                            </div>
-                        ))}
+                        {socialOptions.length > 0 && renderOptions(socialOptions)}
+
+                        {emailOptions.length > 0 && (
+                            <>
+                                <GroupDivider label="or" panelMode={panelMode} useGlassmorphism={useGlassmorphism} />
+                                {renderOptions(emailOptions)}
+                            </>
+                        )}
+
+                        {walletOnlyOptions.length > 0 && (
+                            <>
+                                <GroupDivider label="or connect a wallet" panelMode={panelMode} useGlassmorphism={useGlassmorphism} />
+                                {renderOptions(walletOnlyOptions)}
+                            </>
+                        )}
+
+                        {ungrouped.length > 0 && renderOptions(ungrouped)}
                     </div>
 
                     <WalletOption

@@ -8,7 +8,7 @@
 
 import { useRef, useEffect } from 'react';
 import { AlertCircle, Loader2, X } from 'lucide-react';
-import { useAuth, AuthMethod } from '../../contexts/AuthContext';
+import { useAuth, type AuthMethod, type OAuthProvider } from '../../contexts/AuthContext';
 import { useAccount } from '../../contexts/AccountContext';
 import {
   signPolkadotMessage,
@@ -64,7 +64,8 @@ interface LoginScreenProps {
   onLoginSuccess?: () => void;
 }
 
-type WalletIntegrationKind = 'official-extension' | 'browser-extension' | 'walletconnect' | 'email';
+type WalletIntegrationKind = 'official-extension' | 'browser-extension' | 'walletconnect' | 'email' | 'oauth';
+type OptionGroup = 'social' | 'email' | 'wallet';
 
 interface WalletOptionConfig {
   id: string;
@@ -78,6 +79,7 @@ interface WalletOptionConfig {
   handler: (e?: React.MouseEvent) => void;
   showsLoadingIndicator?: boolean;
   themeOverride?: Partial<WalletOptionTheme>;
+  group: OptionGroup;
 }
 
 const POLKADOT_JS_LOGO = '/assets/Logos/Polkadot Js Logo.png';
@@ -95,7 +97,7 @@ const trackEvent = (name: string, payload?: Record<string, unknown>) => {
 };
 
 export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
-  const { login, loginWithEthereum, loginAsGuest } = useAuth();
+  const { login, loginWithEthereum, loginWithOAuth, loginAsGuest } = useAuth();
   const account = useAccount(); // Get AccountContext to auto-connect wallet
 
 
@@ -236,6 +238,20 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       setError(friendlyError);
       triggerHaptic('error');
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOAuthLogin = async (provider: OAuthProvider) => {
+    try {
+      setLoading(true);
+      setError(null);
+      triggerHaptic('light');
+      await loginWithOAuth(provider);
+    } catch (err: any) {
+      console.error(`${provider} login failed:`, err);
+      setError(err.message || `Failed to sign in with ${provider}`);
+      triggerHaptic('error');
       setLoading(false);
     }
   };
@@ -566,6 +582,38 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     }
 
     const walletOptionConfigs: WalletOptionConfig[] = [
+      // --- Social logins (fastest path for most users) ---
+      {
+        id: 'google',
+        title: 'Continue with Google',
+        subtitle: '',
+        icon: { src: '', alt: 'Google' },
+        integrationKind: 'oauth',
+        handler: () => handleOAuthLogin('google'),
+        showsLoadingIndicator: true,
+        group: 'social',
+      },
+      {
+        id: 'apple',
+        title: 'Continue with Apple',
+        subtitle: '',
+        icon: { src: '', alt: 'Apple' },
+        integrationKind: 'oauth',
+        handler: () => handleOAuthLogin('apple'),
+        showsLoadingIndicator: true,
+        group: 'social',
+      },
+      {
+        id: 'facebook',
+        title: 'Continue with Facebook',
+        subtitle: '',
+        icon: { src: '', alt: 'Facebook' },
+        integrationKind: 'oauth',
+        handler: () => handleOAuthLogin('facebook'),
+        showsLoadingIndicator: true,
+        group: 'social',
+      },
+      // --- Email ---
       {
         id: 'email',
         title: 'Email & password',
@@ -581,27 +629,24 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           openEmailLoginDrawer('desktop-option');
         },
         themeOverride: emailOptionTheme,
+        group: 'email',
       },
+      // --- Wallet connections (crypto-native users) ---
       {
         id: 'polkadot',
         title: 'Polkadot.js',
         subtitle: 'Browser extension',
-        icon: {
-          src: POLKADOT_JS_LOGO,
-          alt: 'Polkadot.js logo',
-        },
+        icon: { src: POLKADOT_JS_LOGO, alt: 'Polkadot.js logo' },
         integrationKind: 'official-extension',
         handler: () => handleWalletLogin('polkadot'),
         showsLoadingIndicator: true,
+        group: 'wallet',
       },
       {
         id: 'subwallet',
         title: 'SubWallet',
         subtitle: 'Browser extension',
-        icon: {
-          src: SUBWALLET_LOGO,
-          alt: 'SubWallet logo',
-        },
+        icon: { src: SUBWALLET_LOGO, alt: 'SubWallet logo' },
         integrationKind: 'browser-extension',
         handler: () =>
           loginWithExtension({
@@ -610,15 +655,13 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
             notFoundMessage: 'SubWallet extension not found. Please install SubWallet browser extension.',
           }),
         showsLoadingIndicator: true,
+        group: 'wallet',
       },
       {
         id: 'talisman',
         title: 'Talisman',
         subtitle: 'Browser extension',
-        icon: {
-          src: TALISMAN_LOGO,
-          alt: 'Talisman logo',
-        },
+        icon: { src: TALISMAN_LOGO, alt: 'Talisman logo' },
         integrationKind: 'browser-extension',
         handler: () =>
           loginWithExtension({
@@ -627,29 +670,26 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
             notFoundMessage: 'Talisman extension not found. Please install Talisman browser extension.',
           }),
         showsLoadingIndicator: true,
+        group: 'wallet',
       },
       {
         id: 'ethereum',
         title: 'Ethereum Wallet',
         subtitle: 'MetaMask & browser wallets',
-        icon: {
-          src: '',
-          alt: 'Ethereum wallet',
-        },
+        icon: { src: '', alt: 'Ethereum wallet' },
         integrationKind: 'browser-extension',
         handler: handleEthereumLogin,
         showsLoadingIndicator: true,
+        group: 'wallet',
       },
       {
         id: 'walletconnect',
         title: 'WalletConnect',
         subtitle: 'Scan with mobile wallets',
-        icon: {
-          src: WALLETCONNECT_LOGO,
-          alt: 'WalletConnect logo',
-        },
+        icon: { src: WALLETCONNECT_LOGO, alt: 'WalletConnect logo' },
         integrationKind: 'walletconnect',
         handler: () => startWalletConnectSession({ openQrModal: true }),
+        group: 'wallet',
       },
     ];
 
@@ -750,6 +790,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       useMarkForIcon: option.id === 'email',
       panelMode,
       useGlassmorphism,
+      group: option.group as OptionGroup,
     }));
 
     const headerContent = (
