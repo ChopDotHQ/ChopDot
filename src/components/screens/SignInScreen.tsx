@@ -64,9 +64,6 @@ interface LoginScreenProps {
   onLoginSuccess?: () => void;
 }
 
-// LoginViewOverride removed
-
-
 type WalletIntegrationKind = 'official-extension' | 'browser-extension' | 'walletconnect' | 'email';
 
 interface WalletOptionConfig {
@@ -88,9 +85,6 @@ const WALLETCONNECT_LOGO = '/assets/Logos/Wallet Connect Logo.png';
 const SUBWALLET_LOGO = '/assets/Logos/Subwallet Logo.png';
 const TALISMAN_LOGO = '/assets/Logos/Talisman Wallet Logo.png';
 const EMAIL_LOGIN_LOGO = '/assets/Logos/choptdot_whitebackground.png';
-// SignInThemes import removed isFlagEnabled, assuming unused here or handled in hook.
-// isFlagEnabled was previously defined here.
-// LoginViewOverride appears unused now.
 
 const trackEvent = (name: string, payload?: Record<string, unknown>) => {
   try {
@@ -101,7 +95,7 @@ const trackEvent = (name: string, payload?: Record<string, unknown>) => {
 };
 
 export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
-  const { login, loginAsGuest } = useAuth();
+  const { login, loginWithEthereum, loginAsGuest } = useAuth();
   const account = useAccount(); // Get AccountContext to auto-connect wallet
 
 
@@ -220,6 +214,32 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     }
   }, [isMobileWalletFlow, device.os]);
 
+  const handleEthereumLogin = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      triggerHaptic('light');
+
+      await loginWithEthereum();
+      triggerHaptic('medium');
+      onLoginSuccess?.();
+    } catch (err: any) {
+      console.error('Ethereum login failed:', err);
+      let friendlyError = 'Failed to connect Ethereum wallet';
+      if (err.message?.includes('MetaMask is not installed') || err.message?.includes('window.ethereum')) {
+        friendlyError = 'No Ethereum wallet found. Please install MetaMask or another browser wallet.';
+      } else if (err.message?.includes('User rejected') || err.message?.includes('user rejected')) {
+        friendlyError = 'Sign-in cancelled. You rejected the request in your wallet.';
+      } else if (err.message) {
+        friendlyError = err.message;
+      }
+      setError(friendlyError);
+      triggerHaptic('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleWalletLogin = async (method: AuthMethod) => {
     try {
       setLoading(true);
@@ -280,93 +300,23 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         }
 
         case 'rainbow': {
-          // Use WalletConnect Modal v2 if enabled, otherwise use legacy flow
-          console.log('[LoginScreen] Rainbow case - enableWcModal:', enableWcModal, 'wcModalEnabled:', wcModalEnabled, 'isDev:', isDev);
-          if (enableWcModal) {
-            // Use the new WC Modal v2 (wallet grid/search/QR)
-            console.log('[LoginScreen] Using WC Modal v2 for desktop WalletConnect');
-            // Import WalletConnect modal service dynamically
-            const walletConnectModule = await import('../../services/chain/walletconnect');
-            const { connectViaWalletConnectModal } = walletConnectModule;
+          const walletConnectModule = await import('../../services/chain/walletconnect');
+          const { connectViaWalletConnectModal } = walletConnectModule;
 
-            // Open WalletConnect Modal v2
-            const { address: wcAddress } = await connectViaWalletConnectModal();
+          const { address: wcAddress } = await connectViaWalletConnectModal();
+          await account.syncWalletConnectSession();
 
-            // Sync AccountContext with the WalletConnect session
-            await account.syncWalletConnectSession();
+          const { createWalletConnectSigner } = walletConnectModule;
+          const { stringToHex } = await import('@polkadot/util');
+          const signer = createWalletConnectSigner(wcAddress);
+          const message = await getWalletAuthMessage(wcAddress);
+          const { signature: sig } = await signer.signRaw({
+            address: wcAddress,
+            data: stringToHex(message),
+          });
 
-            // Sign message via WalletConnect (modal session)
-            const signerModule = await import('../../services/chain/walletconnect').catch((err) => {
-              console.error('[LoginScreen] WC signer import failed (modal session):', err);
-              throw new Error('WalletConnect is unavailable right now. Please retry.');
-            });
-            const utilModule = await import('@polkadot/util').catch((err) => {
-              console.error('[LoginScreen] util import failed (modal session):', err);
-              throw new Error('WalletConnect is unavailable right now. Please retry.');
-            });
-            const { createWalletConnectSigner } = signerModule;
-            const { stringToHex } = utilModule;
-            const signer = createWalletConnectSigner(wcAddress);
-            const message = await getWalletAuthMessage(wcAddress);
-            const { signature: sig } = await signer.signRaw({
-              address: wcAddress,
-              data: stringToHex(message),
-            });
-
-            address = wcAddress;
-            signature = sig;
-            break;
-          }
-
-          // Legacy WalletConnect flow (QR code only)
-          // Use WalletConnect - this will show a modal with available wallets
-          // User can select SubWallet, Talisman, MetaMask, Rainbow, etc.
-          // The AccountContext handles the WalletConnect connection and QR code display
-          await account.connectWalletConnect();
-
-          // Wait for connection to complete (user selects wallet and connects)
-          // Poll for connection status (max 60 seconds)
-          let attempts = 0;
-          const maxAttempts = 60;
-          let connectedAddress: string | undefined;
-          let connectedSignature: string | undefined;
-
-          while (attempts < maxAttempts) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            if (account.status === 'connected' && account.address0) {
-              connectedAddress = account.address0;
-
-              // Sign message via WalletConnect (guarded import)
-              const signerModule = await import('../../services/chain/walletconnect').catch((err) => {
-                console.error('[LoginScreen] WC signer import failed (legacy WC loop):', err);
-                throw new Error('WalletConnect is unavailable right now. Please retry.');
-              });
-              const utilModule = await import('@polkadot/util').catch((err) => {
-                console.error('[LoginScreen] util import failed (legacy WC loop):', err);
-                throw new Error('WalletConnect is unavailable right now. Please retry.');
-              });
-              const { createWalletConnectSigner } = signerModule;
-              const { stringToHex } = utilModule;
-              const signer = createWalletConnectSigner(connectedAddress);
-              const message = await getWalletAuthMessage(connectedAddress);
-              const { signature: sig } = await signer.signRaw({
-                address: connectedAddress,
-                data: stringToHex(message),
-              });
-              connectedSignature = sig;
-              break;
-            }
-
-            attempts++;
-          }
-
-          if (!connectedAddress || !connectedSignature) {
-            throw new Error('WalletConnect connection timed out. Please select your wallet and try again.');
-          }
-
-          address = connectedAddress;
-          signature = connectedSignature;
+          address = wcAddress;
+          signature = sig;
           break;
         }
 
@@ -417,62 +367,26 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       triggerHaptic('light');
       setLoading(true);
       setError(null);
-      setIsWaitingForSignature(false); // Will be set to true after connection
+      setIsWaitingForSignature(false);
 
-      console.log('[LoginScreen] Opening WalletConnect Modal v2...');
-
-      // Import WalletConnect modal service dynamically
       const walletConnectModule = await import('../../services/chain/walletconnect');
-      const { connectViaWalletConnectModal } = walletConnectModule;
+      const { connectViaWalletConnectModal, createWalletConnectSigner } = walletConnectModule;
+      const { stringToHex } = await import('@polkadot/util');
 
-      // Open WalletConnect Modal v2 - shows wallet grid/search/QR
-      // This opens the polished modal with wallet grid/search/QR like ether.fi
       const { address } = await connectViaWalletConnectModal();
-
-      console.log('[LoginScreen] ✅ WalletConnect connection via modal! Address:', address);
-
-      // Set waiting for signature state - keep user in wallet app
       setIsWaitingForSignature(true);
-
-      // Sync AccountContext with the WalletConnect session
-      // The session is already established by connectViaWalletConnectModal
-      // We need to update AccountContext so the app shows "Connected" status after login
       await account.syncWalletConnectSession();
-      console.log('[LoginScreen] AccountContext synced with WalletConnect session');
 
-      // Sign message via WalletConnect (modal session, guarded import)
-      const signerModule = await import('../../services/chain/walletconnect').catch((err) => {
-        console.error('[LoginScreen] WC signer import failed (modal session):', err);
-        throw new Error('WalletConnect is unavailable right now. Please retry.');
-      });
-      const utilModule = await import('@polkadot/util').catch((err) => {
-        console.error('[LoginScreen] util import failed (modal session):', err);
-        throw new Error('WalletConnect is unavailable right now. Please retry.');
-      });
-      const { createWalletConnectSigner } = signerModule;
-      const { stringToHex } = utilModule;
-      const signer = createWalletConnectSigner(address);
-      const message = await getWalletAuthMessage(address);
-
-      console.log('[LoginScreen] Requesting signature from WalletConnect...');
-      console.log('[LoginScreen] 💡 Stay in your wallet app until you approve the signature');
-
-      // Small delay to ensure wallet app is ready for signature request
       await new Promise((resolve) => setTimeout(resolve, 400));
 
-      // Request signature - this should trigger the wallet app to show the prompt
-      // Keep isWaitingForSignature true until signature is received
+      const signer = createWalletConnectSigner(address);
+      const message = await getWalletAuthMessage(address);
       const { signature } = await signer.signRaw({
         address,
         data: stringToHex(message),
       });
 
-      console.log('[LoginScreen] Signature received, logging in...');
-
-      // Clear waiting state before login (login might redirect)
       setIsWaitingForSignature(false);
-
-      // Login with signature
       await login('rainbow', {
         type: 'wallet',
         address,
@@ -482,18 +396,15 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
 
       triggerHaptic('medium');
       onLoginSuccess?.();
-
     } catch (err: any) {
-      console.error('[LoginScreen] WalletConnect modal flow failed:', err);
-
-      // Handle user rejection gracefully
-      if (err?.message?.includes('User rejected') ||
+      const isUserCancel = err?.message?.includes('User rejected') ||
         err?.message?.includes('cancelled') ||
-        err?.message?.includes('Rejected')) {
-        setError(null); // Don't show error for user cancellation
+        err?.message?.includes('Rejected');
+      if (isUserCancel) {
+        setError(null);
         triggerHaptic('light');
       } else {
-        setError(err.message || 'Failed to connect with WalletConnect modal');
+        setError(err.message || 'Failed to connect with WalletConnect');
         triggerHaptic('error');
       }
     } finally {
@@ -521,9 +432,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       setLoading(false);
     }
   };
-
-
-
 
 
 
@@ -588,20 +496,11 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     }
   };
 
-  /* 
-   * WalletConnect Session Handler
-   * Delegates to useWalletAuth hook
-   */
   const startWalletConnectSession = async ({
     openQrModal = true,
   }: {
     openQrModal?: boolean;
   } = {}): Promise<string | null> => {
-    // Delegate to hook
-    // Note: handleWalletConnectModal is passed here because it depends on UI state/modal logic potentially?
-    // Actually handleWalletConnectModal is defined below. 
-    // We should pass a wrapper or move handleWalletConnectModal to hook if it has no UI deps.
-    // For now, pass it as a callback.
     return startWalletConnectSessionHook(
       handleWalletConnectModal,
       openQrModal
@@ -620,13 +519,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       </div>
     );
   };
-
-  // Email login form JSX - rendered directly (not via function call) to prevent keyboard dismissal
-  // This fixes the Safari keyboard issue where typing one letter dismisses the keyboard
-  // Key fix: Render JSX directly ({emailLoginForm}) instead of calling a function ({renderEmailLoginForm()})
-  // React reconciles inputs by their stable IDs, maintaining focus even when JSX is recreated
-  /* Style variables moved to EmailLoginPanel */
-
 
   const emailLoginForm = (
     <EmailLoginPanel
@@ -701,7 +593,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         integrationKind: 'official-extension',
         handler: () => handleWalletLogin('polkadot'),
         showsLoadingIndicator: true,
-        // No themeOverride - uses the same base theme as other wallets
       },
       {
         id: 'subwallet',
@@ -735,6 +626,18 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
             walletDisplayName: 'Talisman',
             notFoundMessage: 'Talisman extension not found. Please install Talisman browser extension.',
           }),
+        showsLoadingIndicator: true,
+      },
+      {
+        id: 'ethereum',
+        title: 'Ethereum Wallet',
+        subtitle: 'MetaMask & browser wallets',
+        icon: {
+          src: '',
+          alt: 'Ethereum wallet',
+        },
+        integrationKind: 'browser-extension',
+        handler: handleEthereumLogin,
         showsLoadingIndicator: true,
       },
       {
@@ -845,7 +748,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       loading: option.showsLoadingIndicator && loading,
       theme: option.themeOverride,
       useMarkForIcon: option.id === 'email',
-      // Pass other required props for WalletOption that might be missing from Config
       panelMode,
       useGlassmorphism,
     }));

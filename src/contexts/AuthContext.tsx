@@ -16,7 +16,7 @@ import { getAuthPersistence } from '../utils/authPersistence';
 import { setErrorTrackingUser } from '../utils/errorTracking';
 import { loginWithEmailAction, signUpWithEmailAction } from './authActions';
 
-export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'email' | 'guest' | 'anonymous';
+export type AuthMethod = 'polkadot' | 'metamask' | 'rainbow' | 'ethereum' | 'email' | 'guest' | 'anonymous';
 
 export interface User {
   id: string;
@@ -33,12 +33,27 @@ function mapSupabaseSessionUser(sessionUser: any): User {
     sessionUser?.app_metadata?.provider === 'anonymous' ||
     sessionUser?.identities?.some?.((identity: any) => identity?.provider === 'anonymous');
   const isAnonymous = Boolean(sessionUser?.is_anonymous || hasAnonymousProvider);
+
+  const isWeb3 = sessionUser?.app_metadata?.provider === 'web3';
+  const walletAddress = sessionUser?.user_metadata?.wallet_address ?? undefined;
+
   const email = sessionUser?.email ?? undefined;
+
+  let authMethod: AuthMethod = 'email';
+  if (isAnonymous) authMethod = 'anonymous';
+  else if (isWeb3) authMethod = 'ethereum';
+
+  const name =
+    email?.split('@')[0] ??
+    (walletAddress ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` : undefined) ??
+    (isAnonymous ? 'Anonymous User' : undefined);
+
   return {
     id: sessionUser.id,
     email,
-    authMethod: isAnonymous ? 'anonymous' : 'email',
-    name: email?.split('@')[0] ?? (isAnonymous ? 'Anonymous User' : undefined),
+    walletAddress,
+    authMethod,
+    name,
     createdAt: new Date().toISOString(),
     isGuest: isAnonymous ? true : undefined,
   };
@@ -49,6 +64,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (method: AuthMethod, credentials: LoginCredentials) => Promise<void>;
+  loginWithEthereum: () => Promise<void>;
   signUp: (email: string, password: string, username?: string) => Promise<void>;
   loginAsGuest: () => Promise<void>;
   logout: () => Promise<void>;
@@ -444,6 +460,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const loginWithEthereum = async () => {
+    try {
+      setIsLoading(true);
+      const supabase = getSupabase();
+      if (!supabase) {
+        throw new Error('Supabase is not configured for Web3 auth');
+      }
+
+      const { data, error } = await (supabase.auth as any).signInWithWeb3({
+        chain: 'ethereum',
+        statement: 'Sign in to ChopDot with your Ethereum wallet',
+      });
+
+      if (error) throw error;
+
+      const session = data?.session;
+      if (!session?.user) {
+        throw new Error('Ethereum sign-in failed: no session returned');
+      }
+
+      const userData: User = {
+        id: session.user.id,
+        walletAddress: session.user.user_metadata?.wallet_address,
+        authMethod: 'ethereum',
+        name: (() => {
+          const addr = session.user.user_metadata?.wallet_address;
+          return addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : 'Ethereum User';
+        })(),
+        createdAt: new Date().toISOString(),
+      };
+
+      setAuthItem(AUTH_USER_KEY, JSON.stringify(userData));
+      setAuthItem(AUTH_TOKEN_KEY, session.access_token);
+      setUser(userData);
+
+      try {
+        await upsertProfile(supabase, session.user.id, null, userData.walletAddress);
+      } catch (e) {
+        console.warn('[auth.loginWithEthereum] profile upsert failed:', (e as Error).message);
+      }
+    } catch (error) {
+      console.error('Ethereum login failed:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const refreshUser = async () => {
     await checkAuth();
   };
@@ -470,7 +534,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
 
           // Request nonce
-          const nonceRes = await fetch(`${supabaseUrl}/functions/v1/wallet-auth/nonce`, {
+          const nonceRes = await fetch(`${supabaseUrl}/functions/v1/wallet-auth/request-nonce`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -538,6 +602,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         isAuthenticated: !!user,
         login,
+        loginWithEthereum,
         signUp,
         loginAsGuest,
         logout,

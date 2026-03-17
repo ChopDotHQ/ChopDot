@@ -4,7 +4,6 @@ import { createClient } from "npm:@supabase/supabase-js@2.48.0";
 import { blake2b } from "npm:@noble/hashes@1.3.3/blake2b";
 import { signatureVerify, cryptoWaitReady } from "npm:@polkadot/util-crypto";
 import { stringToU8a } from "npm:@polkadot/util";
-import { verifyMessage as verifyEvmMessage } from "npm:ethers@6.11.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,7 +11,7 @@ const corsHeaders = {
 };
 
 type RequestNoncePayload = { address: string };
-type VerifyPayload = { address: string; signature: unknown; chain: "polkadot" | "evm" };
+type VerifyPayload = { address: string; signature: unknown; chain: "polkadot" };
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -22,11 +21,10 @@ const supabaseAdmin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-const base64Encode = (bytes: Uint8Array): string => {
-  return btoa(String.fromCharCode(...bytes));
-};
+const base64Encode = (bytes: Uint8Array): string =>
+  btoa(String.fromCharCode(...bytes));
 
-const randomString = (length = 32) => {
+const randomString = (length = 64) => {
   const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   const randomBytes = crypto.getRandomValues(new Uint8Array(length));
   return Array.from(randomBytes, (byte) => chars[byte % chars.length]).join("");
@@ -36,8 +34,7 @@ const deriveWalletEmail = (address: string) => {
   const addr = address.toLowerCase().trim();
   const hashBytes = blake2b(addr, { dkLen: 32 });
   const firstNine = hashBytes.slice(0, 9);
-  const base64Encoded = base64Encode(firstNine);
-  const sanitized = base64Encoded
+  const sanitized = base64Encode(firstNine)
     .replace(/[+/=]/g, (c) => (c === "+" ? "p" : c === "/" ? "s" : "e"))
     .replace(/[^a-zA-Z0-9]/g, "")
     .slice(0, 10) || "wallet";
@@ -52,6 +49,8 @@ const json = (data: unknown, status = 200) =>
     status,
     headers: { "Content-Type": "application/json", ...corsHeaders },
   });
+
+// --- POST /request-nonce ---
 
 async function handleRequestNonce(body: RequestNoncePayload) {
   const address = body.address?.trim();
@@ -68,404 +67,147 @@ async function handleRequestNonce(body: RequestNoncePayload) {
   return json({ nonce, expires_at: expiresAt });
 }
 
-async function verifyPolkadotSignature(address: string, message: string, signature: string) {
-  await cryptoWaitReady();
-  const messageBytes = stringToU8a(message);
-  const result = signatureVerify(messageBytes, signature, address);
-  return result.isValid;
-}
+// --- POST /verify (Polkadot only — EVM uses native Supabase Web3 auth) ---
 
-async function verifyEvmSignature(address: string, message: string, signature: string) {
-  try {
-    const recovered = verifyEvmMessage(message, signature);
-    return recovered.toLowerCase() === address.toLowerCase();
-  } catch {
-    return false;
+async function handleVerify(body: VerifyPayload) {
+  // Parse signature
+  const signature = typeof body.signature === "string"
+    ? body.signature.trim()
+    : typeof body.signature === "object" && body.signature && "signature" in body.signature
+      ? String((body.signature as { signature: string }).signature).trim()
+      : null;
+
+  if (!signature) return json({ error: "invalid signature format" }, 400);
+
+  const address = typeof body.address === "string" ? body.address.trim() : "";
+  if (!address || !body.chain) return json({ error: "address and chain required" }, 400);
+
+  if (body.chain !== "polkadot") {
+    return json({ error: "Only Polkadot chain supported here. Use native Supabase Web3 auth for Ethereum." }, 400);
   }
-}
 
-async function fetchUserIdByWallet(address: string, chain: "polkadot" | "evm"): Promise<string | null> {
+  // --- Nonce validation ---
+  const { data: nonceRow, error: nonceError } = await supabaseAdmin
+    .from("auth_nonces")
+    .select("*")
+    .eq("address", address)
+    .maybeSingle();
+
+  if (nonceError) return json({ error: "nonce lookup failed" }, 500);
+  if (!nonceRow) return json({ error: "nonce not found — request one first" }, 400);
+  if (new Date(nonceRow.expires_at).getTime() < Date.now()) {
+    await supabaseAdmin.from("auth_nonces").delete().eq("address", address);
+    return json({ error: "nonce expired" }, 400);
+  }
+
+  // --- Polkadot signature verification ---
+  const message = buildMessage(nonceRow.nonce);
+  let valid = false;
   try {
-    const normalizedAddress = chain === "evm"
-      ? address.toLowerCase().trim()
-      : address.trim();
-    const { data, error } = await supabaseAdmin
-      .from("wallet_links")
-      .select("user_id")
-      .eq("chain", chain)
-      .eq("address", normalizedAddress)
-      .maybeSingle();
-
-    if (error) {
-      console.warn("[wallet-auth] wallet_links lookup failed:", error.message);
-      return null;
-    }
-
-    return data?.user_id ?? null;
+    await cryptoWaitReady();
+    const result = signatureVerify(stringToU8a(message), signature, address);
+    valid = result.isValid;
   } catch (err) {
-    console.warn("[wallet-auth] wallet_links lookup exception:", err);
-    return null;
+    return json({
+      error: "signature verification failed",
+      details: err instanceof Error ? err.message : String(err),
+    }, 500);
   }
-}
 
-async function fetchUserIdByEmail(email: string): Promise<string | null> {
-  try {
-    const { data, error } = await supabaseAdmin
+  if (!valid) return json({ error: "invalid signature" }, 401);
+  await supabaseAdmin.from("auth_nonces").delete().eq("address", address);
+
+  // --- Find or create Supabase user ---
+  const normalizedAddress = address.trim();
+  const email = deriveWalletEmail(address);
+  const password = randomString(64);
+
+  const { data: link } = await supabaseAdmin
+    .from("wallet_links")
+    .select("user_id")
+    .eq("chain", "polkadot")
+    .eq("address", normalizedAddress)
+    .maybeSingle();
+
+  let userId = link?.user_id ?? null;
+
+  if (!userId) {
+    const { data: existingUser } = await supabaseAdmin
       .schema("auth")
       .from("users")
       .select("id")
       .eq("email", email)
       .maybeSingle();
-
-    if (!error && data?.id) {
-      return data.id;
-    }
-
-    if (error) {
-      console.warn("[wallet-auth] auth.users lookup failed:", error.message);
-    }
-
-    let page = 1;
-    const perPage = 1000;
-
-    while (true) {
-      const { data, error } = await supabaseAdmin.auth.admin.listUsers({
-        page,
-        perPage,
-      });
-
-      if (error) {
-        console.error("[wallet-auth] listUsers failed:", error);
-        return null;
-      }
-
-      const users = data?.users ?? [];
-      if (!users || users.length === 0) {
-        break;
-      }
-
-      const foundUser = users.find((user) => user.email === email);
-      if (foundUser) {
-        return foundUser.id;
-      }
-
-      if (users.length < perPage) {
-        break;
-      }
-
-      page++;
-    }
-
-    return null;
-  } catch (err) {
-    console.error("[wallet-auth] fetchUserIdByEmail exception:", err);
-    return null;
-  }
-}
-
-async function ensureUser(
-  address: string,
-  chain: "polkadot" | "evm",
-  email: string,
-  password: string,
-) {
-  let userId = await fetchUserIdByWallet(address, chain);
-
-  if (!userId) {
-    userId = await fetchUserIdByEmail(email);
+    userId = existingUser?.id ?? null;
   }
 
   if (!userId) {
-    console.log("[wallet-auth] Creating new user:", { email, address, chain });
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { wallet_address: address, auth_method: chain },
+      user_metadata: { wallet_address: address, auth_method: "polkadot" },
     });
 
     if (error) {
       if (error.message?.includes("already registered") || error.code === "email_exists") {
-        console.log("[wallet-auth] User already exists, fetching:", email);
-        userId = await fetchUserIdByEmail(email);
-        if (!userId) {
-          console.error("[wallet-auth] User exists but couldn't fetch:", error);
-          throw new Error("User exists but couldn't be retrieved");
-        }
+        const { data: found } = await supabaseAdmin
+          .schema("auth")
+          .from("users")
+          .select("id")
+          .eq("email", email)
+          .maybeSingle();
+        userId = found?.id ?? null;
+        if (!userId) return json({ error: "User exists but could not be retrieved" }, 500);
       } else {
-        console.error("[wallet-auth] createUser error:", error);
-        throw error;
+        return json({ error: "Failed to create user", details: error.message }, 500);
       }
     } else {
       userId = data?.user?.id ?? null;
     }
   }
 
-  if (!userId) {
-    throw new Error("Failed to create or fetch user");
-  }
+  if (!userId) return json({ error: "Failed to resolve user" }, 500);
 
-  console.log("[wallet-auth] Updating user password and metadata:", userId);
+  // Rotate password + update metadata
   const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
     password,
-    user_metadata: { wallet_address: address, auth_method: chain },
+    user_metadata: { wallet_address: address, auth_method: "polkadot" },
   });
-  if (updateError) {
-    console.error("[wallet-auth] updateUser error:", updateError);
-    throw updateError;
-  }
+  if (updateError) return json({ error: "Failed to update user", details: updateError.message }, 500);
 
-  const { error: profileError } = await supabaseAdmin
-    .from("profiles")
-    .upsert({ id: userId }, { onConflict: "id" });
-  if (profileError) {
-    console.warn("[wallet-auth] profile upsert warning:", profileError.message);
-  }
-
-  const walletProvider = chain === "polkadot" ? "Polkadot" : "EVM";
-  const normalizedAddress = chain === "evm"
-    ? address.toLowerCase().trim()
-    : address.trim();
-
-  const { data: links } = await supabaseAdmin
-    .from("wallet_links")
-    .select("id, address")
-    .eq("user_id", userId)
-    .eq("chain", chain);
-
-  const matchingLink = links?.find((link) =>
-    link.address.toLowerCase() === normalizedAddress.toLowerCase()
+  // Ensure profile + wallet link rows exist
+  await supabaseAdmin.from("profiles").upsert({ id: userId }, { onConflict: "id" });
+  await supabaseAdmin.from("wallet_links").upsert(
+    {
+      user_id: userId,
+      chain: "polkadot",
+      address: normalizedAddress,
+      provider: "Polkadot",
+      verified_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id,chain,address" },
   );
 
-  if (matchingLink) {
-    const { error: linkUpdateError } = await supabaseAdmin
-      .from("wallet_links")
-      .update({
-        address: normalizedAddress,
-        provider: walletProvider,
-        verified_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", matchingLink.id);
+  // --- Sign in and return session tokens ---
+  const { data: sessionData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-    if (linkUpdateError) {
-      console.warn("[wallet-auth] wallet_links update warning:", linkUpdateError.message);
-    } else {
-      console.log("[wallet-auth] Wallet link updated:", {
-        userId,
-        chain,
-        address: normalizedAddress,
-        provider: walletProvider,
-      });
-    }
-  } else {
-    const { error: insertError } = await supabaseAdmin
-      .from("wallet_links")
-      .insert({
-        user_id: userId,
-        chain,
-        address: normalizedAddress,
-        provider: walletProvider,
-        verified_at: new Date().toISOString(),
-      });
-
-    if (insertError) {
-      if (
-        insertError.message?.includes("duplicate key") ||
-        insertError.message?.includes("unique constraint")
-      ) {
-        console.log("[wallet-auth] Wallet link already exists (duplicate key):", {
-          userId,
-          chain,
-          address: normalizedAddress,
-        });
-        const { data: allLinks } = await supabaseAdmin
-          .from("wallet_links")
-          .select("id, address")
-          .eq("user_id", userId)
-          .eq("chain", chain);
-
-        const existing = allLinks?.find((link) =>
-          link.address.toLowerCase() === normalizedAddress.toLowerCase()
-        );
-        if (existing) {
-          await supabaseAdmin
-            .from("wallet_links")
-            .update({
-              verified_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", existing.id);
-        }
-      } else {
-        console.warn("[wallet-auth] wallet_links insert warning:", insertError.message);
-      }
-    } else {
-      console.log("[wallet-auth] Wallet linked to user:", {
-        userId,
-        chain,
-        address: normalizedAddress,
-        provider: walletProvider,
-      });
-    }
+  if (signInError || !sessionData.session) {
+    return json({ error: "Failed to create session", details: signInError?.message ?? "no session" }, 500);
   }
 
-  return userId;
+  return json({
+    access_token: sessionData.session.access_token,
+    refresh_token: sessionData.session.refresh_token,
+    user_id: userId,
+    email,
+  });
 }
 
-async function handleVerify(body: VerifyPayload) {
-  try {
-    let signature: string;
-    if (typeof body.signature === "string") {
-      signature = body.signature.trim();
-    } else if (body.signature && typeof body.signature === "object" && "signature" in body.signature) {
-      signature = String((body.signature as { signature: string }).signature).trim();
-    } else {
-      console.error("[wallet-auth] Invalid signature format:", {
-        signature: body.signature,
-        signatureType: typeof body.signature,
-      });
-      return json({ error: "invalid signature format" }, 400);
-    }
-
-    const address = typeof body.address === "string"
-      ? body.address.trim()
-      : String(body.address || "").trim();
-    const chain = body.chain;
-    console.log("[wallet-auth] verify request:", {
-      address,
-      signatureLength: signature?.length,
-      chain,
-      signatureType: typeof signature,
-    });
-
-    if (!address || !signature || !chain) {
-      console.error("[wallet-auth] Missing required fields:", {
-        hasAddress: !!address,
-        hasSignature: !!signature,
-        hasChain: !!chain,
-      });
-      return json({ error: "address, signature, and chain required" }, 400);
-    }
-
-    const { data: nonceRow, error: nonceError } = await supabaseAdmin
-      .from("auth_nonces")
-      .select("*")
-      .eq("address", address)
-      .maybeSingle();
-
-    if (nonceError) {
-      console.error("[wallet-auth] Nonce lookup error:", nonceError);
-      return json({ error: "nonce lookup failed" }, 500);
-    }
-
-    if (!nonceRow) {
-      console.error("[wallet-auth] Nonce not found for address:", address);
-      return json({ error: "nonce not found" }, 400);
-    }
-
-    if (new Date(nonceRow.expires_at).getTime() < Date.now()) {
-      console.error("[wallet-auth] Nonce expired:", {
-        expiresAt: nonceRow.expires_at,
-        now: new Date().toISOString(),
-      });
-      await supabaseAdmin.from("auth_nonces").delete().eq("address", address);
-      return json({ error: "nonce expired" }, 400);
-    }
-
-    const message = buildMessage(nonceRow.nonce);
-    console.log("[wallet-auth] Verifying signature:", {
-      chain,
-      messageLength: message.length,
-      signatureLength: signature.length,
-    });
-
-    let valid = false;
-    if (chain === "polkadot") {
-      try {
-        valid = await verifyPolkadotSignature(address, message, signature);
-        console.log("[wallet-auth] Polkadot signature verification result:", valid);
-      } catch (verifyError) {
-        console.error("[wallet-auth] Polkadot signature verification error:", verifyError);
-        return json(
-          {
-            error: "signature verification failed",
-            details: verifyError instanceof Error ? verifyError.message : String(verifyError),
-          },
-          500,
-        );
-      }
-    } else {
-      try {
-        valid = await verifyEvmSignature(address, message, signature);
-        console.log("[wallet-auth] EVM signature verification result:", valid);
-      } catch (verifyError) {
-        console.error("[wallet-auth] EVM signature verification error:", verifyError);
-        return json(
-          {
-            error: "signature verification failed",
-            details: verifyError instanceof Error ? verifyError.message : String(verifyError),
-          },
-          500,
-        );
-      }
-    }
-
-    if (!valid) {
-      console.error("[wallet-auth] Signature invalid");
-      return json({ error: "invalid signature" }, 401);
-    }
-
-    await supabaseAdmin.from("auth_nonces").delete().eq("address", address);
-    console.log("[wallet-auth] Nonce consumed");
-
-    const email = deriveWalletEmail(address);
-    const password = randomString(64);
-    console.log("[wallet-auth] Creating/updating user:", { email, address, chain });
-
-    let userId: string;
-    try {
-      userId = await ensureUser(address, chain, email, password);
-      console.log("[wallet-auth] User ensured:", userId);
-    } catch (userError) {
-      console.error("[wallet-auth] ensureUser failed:", userError);
-      return json(
-        { error: "failed to create user", details: userError instanceof Error ? userError.message : String(userError) },
-        500,
-      );
-    }
-
-    console.log("[wallet-auth] Signing in with password to get tokens");
-    const { data: sessionData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (signInError) {
-      console.error("[wallet-auth] signInWithPassword failed:", signInError);
-      return json({ error: "failed to create session", details: signInError.message }, 500);
-    }
-
-    if (!sessionData.session) {
-      console.error("[wallet-auth] No session returned from signInWithPassword");
-      return json({ error: "failed to create session", details: "No session data returned" }, 500);
-    }
-
-    console.log("[wallet-auth] Login successful:", { userId, email });
-    return json({
-      access_token: sessionData.session.access_token,
-      refresh_token: sessionData.session.refresh_token,
-      user_id: userId,
-      email,
-    });
-  } catch (error) {
-    console.error("[wallet-auth] handleVerify unhandled error:", error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : undefined;
-    console.error("[wallet-auth] error stack:", errorStack);
-    return json({ error: "internal error", details: errorMessage }, 500);
-  }
-}
+// --- Router ---
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -488,9 +230,6 @@ serve(async (req) => {
     return json({ error: "not found" }, 404);
   } catch (error) {
     console.error("[wallet-auth] unhandled error:", error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : undefined;
-    console.error("[wallet-auth] error stack:", errorStack);
-    return json({ error: "internal error", details: errorMessage }, 500);
+    return json({ error: "internal error", details: error instanceof Error ? error.message : String(error) }, 500);
   }
 });

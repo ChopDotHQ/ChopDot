@@ -295,8 +295,8 @@ export function AccountProvider({ children }: AccountProviderProps) {
                 if (prev.address === address && prev.status === 'connected') {
                   return {
                     ...prev,
-                    balance: fetchedBalanceHuman,
-                    balancePlanck: fetchedBalance,
+                    balanceHuman: fetchedBalanceHuman,
+                    balanceFree: fetchedBalance,
                   };
                 }
                 return prev;

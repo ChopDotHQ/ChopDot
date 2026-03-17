@@ -47,23 +47,6 @@ export const WalletLoginPanel = ({
     return (
         <div className="flex-1 flex items-center justify-center px-4 py-12">
             <div className="w-full max-w-sm space-y-6">
-                {/* Note: The Header (Logo/Text) is passed in or rendered by parent currently. 
-            To keep this purely "Panel", we assume the parent renders the header ABOVE this component 
-            OR we should include it here. 
-            
-            Looking at SignInScreen, the Logo is indeed strictly coupled to the Panel state.
-            For now, let's keep the Logo in the parent to minimize change, 
-            OR we can accept a `header` prop.
-        */}
-
-                {/* We will accept children or a header prop if we want to move the logo here later.
-            For now, `SignInScreen` renders the logo *before* rendering the panel content?
-            No, `renderPanelLayout` puts the logo inside the wrapper div, then the `WalletPanel`.
-            
-            So this component should return the `WalletPanel` and the surrounding div structure?
-            Yes, to replace `renderPanelLayout` content effectively.
-        */}
-
                 {headerContent}
 
                 {signatureWaitingBanner}
@@ -74,9 +57,6 @@ export const WalletLoginPanel = ({
                             <div key={option.title + index} className="space-y-3">
                                 <WalletOption
                                     {...option}
-                                    // Ensure loading prop is respected if the option supports it
-                                    // The parent is responsible for passing the correct 'loading' state per option
-                                    // or we can override it here if we want global loading to disable all
                                     disabled={loading || option.disabled}
                                 />
                             </div>
