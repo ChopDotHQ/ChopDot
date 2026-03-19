@@ -84,9 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const supabase = getSupabase();
       if (supabase) {
         const { data } = await supabase.auth.getSession();
-        setAuthItem(AUTH_TOKEN_KEY, data.session?.access_token ?? `mock_jwt_token_${Date.now()}`);
-      } else {
-        setAuthItem(AUTH_TOKEN_KEY, `mock_jwt_token_${Date.now()}`);
+        if (data.session?.access_token) {
+          setAuthItem(AUTH_TOKEN_KEY, data.session.access_token);
+        } else {
+          console.warn('[auth.login] no session token — authenticated features may be limited');
+        }
       }
       setUser(userData);
     } catch (error) {

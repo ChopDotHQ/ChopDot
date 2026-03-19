@@ -15,7 +15,7 @@
     "smoke:five-flows": "node scripts/smoke-five-flows.cjs",
     "smoke:guest-invite-guard": "node scripts/smoke-guest-invite-guard.cjs",
     "smoke:run-suite": "node scripts/run-smoke-suite.cjs --suite all",
-    "ci:fast": "npm run lint && npm run type-check && npx vitest run && npm run build && (test -f scripts/audit-components-and-structure.mjs && node scripts/audit-components-and-structure.mjs || echo 'audit-components-and-structure.mjs not present; skipping audit step')",
+    "ci:fast": "npm audit --audit-level=high && npm run lint && npm run type-check && npx vitest run && npm run build && (test -f scripts/audit-components-and-structure.mjs && node scripts/audit-components-and-structure.mjs || echo 'audit-components-and-structure.mjs not present; skipping audit step')",
     "ci:smoke:targeted": "node scripts/ci-smoke-targeted.cjs",
     "ci:release": "npm run ci:fast && npm run smoke:run-suite",
     "type-check": "tsc --noEmit",

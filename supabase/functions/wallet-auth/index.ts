@@ -5,10 +5,21 @@ import { blake2b } from "npm:@noble/hashes@1.3.3/blake2b";
 import { signatureVerify, cryptoWaitReady } from "npm:@polkadot/util-crypto";
 import { stringToU8a } from "npm:@polkadot/util";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+const ALLOWED_ORIGINS = [
+  "https://chopdot.app",
+  "https://www.chopdot.app",
+  Deno.env.get("ALLOWED_ORIGIN") ?? "",
+].filter(Boolean);
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get("Origin") ?? "";
+  const allowed = ALLOWED_ORIGINS.includes(origin) || origin.endsWith(".vercel.app");
+  return {
+    "Access-Control-Allow-Origin": allowed ? origin : ALLOWED_ORIGINS[0] ?? "",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Vary": "Origin",
+  };
+}
 
 type RequestNoncePayload = { address: string };
 type VerifyPayload = { address: string; signature: unknown; chain: "polkadot" };
@@ -44,10 +55,11 @@ const deriveWalletEmail = (address: string) => {
 const buildMessage = (nonce: string) =>
   `Sign this message to login to ChopDot.\nNonce: ${nonce}`;
 
+let _corsHeaders: Record<string, string> = {};
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {
     status,
-    headers: { "Content-Type": "application/json", ...corsHeaders },
+    headers: { "Content-Type": "application/json", ..._corsHeaders },
   });
 
 // --- POST /request-nonce ---
@@ -108,10 +120,8 @@ async function handleVerify(body: VerifyPayload) {
     const result = signatureVerify(stringToU8a(message), signature, address);
     valid = result.isValid;
   } catch (err) {
-    return json({
-      error: "signature verification failed",
-      details: err instanceof Error ? err.message : String(err),
-    }, 500);
+    console.error("[wallet-auth] sig verify error:", err);
+    return json({ error: "signature verification failed" }, 500);
   }
 
   if (!valid) return json({ error: "invalid signature" }, 401);
@@ -160,7 +170,8 @@ async function handleVerify(body: VerifyPayload) {
         userId = found?.id ?? null;
         if (!userId) return json({ error: "User exists but could not be retrieved" }, 500);
       } else {
-        return json({ error: "Failed to create user", details: error.message }, 500);
+        console.error("[wallet-auth] create user error:", error.message);
+        return json({ error: "Failed to create user" }, 500);
       }
     } else {
       userId = data?.user?.id ?? null;
@@ -174,7 +185,10 @@ async function handleVerify(body: VerifyPayload) {
     password,
     user_metadata: { wallet_address: address, auth_method: "polkadot" },
   });
-  if (updateError) return json({ error: "Failed to update user", details: updateError.message }, 500);
+  if (updateError) {
+    console.error("[wallet-auth] update user error:", updateError.message);
+    return json({ error: "Failed to update user" }, 500);
+  }
 
   // Ensure profile + wallet link rows exist
   await supabaseAdmin.from("profiles").upsert({ id: userId }, { onConflict: "id" });
@@ -196,7 +210,8 @@ async function handleVerify(body: VerifyPayload) {
   });
 
   if (signInError || !sessionData.session) {
-    return json({ error: "Failed to create session", details: signInError?.message ?? "no session" }, 500);
+    console.error("[wallet-auth] session error:", signInError?.message ?? "no session");
+    return json({ error: "Failed to create session" }, 500);
   }
 
   return json({
@@ -210,9 +225,11 @@ async function handleVerify(body: VerifyPayload) {
 // --- Router ---
 
 serve(async (req) => {
+  _corsHeaders = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
     return new Response("ok", {
-      headers: { ...corsHeaders, "Access-Control-Allow-Methods": "POST, OPTIONS" },
+      headers: { ..._corsHeaders, "Access-Control-Allow-Methods": "POST, OPTIONS" },
     });
   }
 
@@ -230,6 +247,6 @@ serve(async (req) => {
     return json({ error: "not found" }, 404);
   } catch (error) {
     console.error("[wallet-auth] unhandled error:", error);
-    return json({ error: "internal error", details: error instanceof Error ? error.message : String(error) }, 500);
+    return json({ error: "internal error" }, 500);
   }
 });

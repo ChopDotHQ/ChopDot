@@ -51,6 +51,13 @@ function validateEnvPlugin() {
         console.warn('\nThese are only needed at runtime. WalletConnect features may not work until set.\n');
       }
 
+      if (config.command === 'build' && env.VITE_SIMULATE_CHAIN === '1') {
+        throw new Error(
+          '🚨 VITE_SIMULATE_CHAIN=1 is not allowed in production builds. ' +
+          'Remove or set to "0" before deploying.'
+        );
+      }
+
       console.log('✅ All critical environment variables validated');
     },
   };
