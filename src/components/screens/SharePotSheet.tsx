@@ -12,6 +12,7 @@ import { PrimaryButton } from '../PrimaryButton';
 import { SecondaryButton } from '../SecondaryButton';
 import { sharePot } from '../../services/sharing/potShare';
 import { triggerHaptic } from '../../utils/haptics';
+import { copyWithToast } from '../../utils/clipboard';
 import { useAccount } from '../../contexts/AccountContext';
 import type { Pot } from '../../schema/pot';
 
@@ -89,15 +90,10 @@ export function SharePotSheet({
   };
 
   const copyToClipboard = async (text: string, type: 'link' | 'cid') => {
-    try {
-      await navigator.clipboard.writeText(text);
+    const ok = await copyWithToast(text, 'Copied to clipboard', (msg) => onShowToast?.(msg, 'success'));
+    if (ok) {
       setCopied(type);
-      triggerHaptic('light');
-      onShowToast?.('Copied to clipboard', 'success');
       setTimeout(() => setCopied(null), 2000);
-    } catch (error) {
-      console.error('[SharePotSheet] Failed to copy:', error);
-      onShowToast?.('Failed to copy', 'error');
     }
   };
 

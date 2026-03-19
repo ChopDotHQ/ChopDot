@@ -1,4 +1,6 @@
 import { UserPlus, MoreVertical, UserMinus, Send, Edit, Copy, CheckCircle, Wallet } from "lucide-react";
+import { toast } from "sonner";
+import { copyWithToast } from "../../utils/clipboard";
 import { TrustDots } from "../TrustDots";
 import { useState } from "react";
 import { EditMemberModal } from "../EditMemberModal";
@@ -207,9 +209,9 @@ export function MembersTab({
                               {normalizedAddress.slice(0, 8)}...{normalizedAddress.slice(-6)}
                             </span>
                             <button
-                              onClick={(e) => {
+                              onClick={async (e) => {
                                 e.stopPropagation();
-                                navigator.clipboard.writeText(normalizedAddress);
+                                await copyWithToast(normalizedAddress, 'Address copied', (msg) => toast.success(msg));
                               }}
                               className="p-0.5 hover:bg-muted rounded transition-colors"
                               title="Copy address"

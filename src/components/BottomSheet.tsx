@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { usePSAStyle } from "../utils/usePSAStyle";
 
 interface BottomSheetProps {
@@ -11,6 +11,19 @@ interface BottomSheetProps {
 
 export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetProps) {
   const { isPSA, psaStyles, psaClasses } = usePSAStyle();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isOpen, onClose]);
   
   if (!isOpen) return null;
 

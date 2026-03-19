@@ -1,5 +1,7 @@
 import { Receipt, TrendingUp, AlertCircle, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
 import { TopBar } from "../TopBar";
+import { copyWithToast } from "../../utils/clipboard";
 import { MemberChip } from "../MemberChip";
 import { LinkButton } from "../LinkButton";
 import { useState } from "react";
@@ -108,8 +110,8 @@ export function CreatePot({
     setMembers(members.filter(m => m.id !== id));
   };
 
-  const copyInviteLink = () => {
-    navigator.clipboard.writeText("https://chopdot.app/inv/abc123");
+  const copyInviteLink = async () => {
+    await copyWithToast("https://chopdot.app/inv/abc123", 'Invite link copied', (msg) => toast.success(msg));
   };
 
   const isValid = potName.trim() !== "";

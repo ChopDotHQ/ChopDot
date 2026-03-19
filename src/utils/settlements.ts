@@ -329,7 +329,8 @@ export function calculatePotSettlements(
         },
       ],
       trustScore: 95,
-      paymentPreference: undefined,
+      paymentPreference: member.address ? 'DOT' : undefined,
+      address: member.address,
     };
 
     if (balance.lessThan(0)) {

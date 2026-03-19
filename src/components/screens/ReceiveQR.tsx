@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import QRCodeLib from 'qrcode';
 import { triggerHaptic } from "../../utils/haptics";
 import { toast } from "sonner";
+import { copyWithToast } from "../../utils/clipboard";
 
 interface ReceiveQRProps {
   onClose: () => void;
@@ -27,15 +28,10 @@ export function ReceiveQR({ onClose, walletAddress }: ReceiveQRProps) {
   }, [walletAddress]);
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(walletAddress);
+    const ok = await copyWithToast(walletAddress, 'Address copied', (msg) => toast.success(msg));
+    if (ok) {
       setCopied(true);
-      triggerHaptic('success');
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-      toast.error('Failed to copy address');
-      triggerHaptic('error');
     }
   };
 

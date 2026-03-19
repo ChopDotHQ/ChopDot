@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { Copy, CheckCircle, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import { copyWithToast } from '../utils/clipboard';
 import { isValidSs58Any, normalizeToPolkadot } from '../services/chain/address';
 import type { Member } from '../schema/pot';
 
@@ -67,9 +69,9 @@ export function EditMemberModal({ isOpen, member, onClose, onSave }: EditMemberM
     onClose();
   };
 
-  const handleCopyAddress = () => {
+  const handleCopyAddress = async () => {
     if (member?.address) {
-      navigator.clipboard.writeText(member.address);
+      await copyWithToast(member.address, 'Address copied', (msg) => toast.success(msg));
     }
   };
 

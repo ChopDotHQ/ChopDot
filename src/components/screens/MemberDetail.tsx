@@ -4,7 +4,9 @@ import { SecondaryButton } from "../SecondaryButton";
 import { TrustIndicator } from "../TrustIndicator";
 import { User, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { BottomSheet } from "../BottomSheet";
+import { copyWithToast } from "../../utils/clipboard";
 
 interface SharedPot {
   id: string;
@@ -208,12 +210,13 @@ export function MemberDetail({
 
             <div className="space-y-2 pt-2">
               <SecondaryButton 
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    getFullPaymentDetails(paymentPreference.kind, paymentPreference.maskedDetails)
-                  );
-                  setShowPaymentDetails(false);
-                  onCopyPaymentDetails?.();
+                onClick={async () => {
+                  const text = getFullPaymentDetails(paymentPreference.kind, paymentPreference.maskedDetails);
+                  const ok = await copyWithToast(text, 'Payment details copied', (msg) => toast.success(msg));
+                  if (ok) {
+                    setShowPaymentDetails(false);
+                    onCopyPaymentDetails?.();
+                  }
                 }} 
                 fullWidth
               >

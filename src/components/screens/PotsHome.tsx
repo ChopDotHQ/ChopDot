@@ -52,7 +52,7 @@ interface PotsHomeProps {
   onWalletClick?: () => void;
   walletConnected?: boolean;
   notificationCount?: number;
-  onQuickAddExpense?: () => void;
+  onQuickAddExpense?: (displayedPots: { id: string }[]) => void;
   onQuickSettle?: () => void;
   onQuickScan?: () => void;
   onQuickRequest?: () => void;
@@ -315,7 +315,7 @@ export function PotsHome({
           <div className="grid grid-cols-4 gap-2">
             {/* Add Expense - Primary Action */}
             <button
-              onClick={onQuickAddExpense}
+              onClick={() => onQuickAddExpense?.(pots)}
               className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 ${isPSA ? '' : ''}`}
               style={isPSA ? psaStyles.pinkAccentButton : {
                 background: 'var(--accent)',

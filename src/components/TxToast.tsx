@@ -17,8 +17,10 @@
 
 import { useEffect, useState } from 'react';
 import { Loader2, Upload, CheckCircle, BadgeCheck, AlertTriangle, ChevronDown, ChevronUp, Copy } from 'lucide-react';
+import { toast } from 'sonner';
 import { useTxToasts } from '../hooks/useTxToasts';
 import { triggerHaptic } from '../utils/haptics';
+import { copyWithToast } from '../utils/clipboard';
 
 export function TxToast() {
   const { current, clear } = useTxToasts();
@@ -82,12 +84,13 @@ export function TxToast() {
 
   const config = stateConfig[state];
 
-  const handleCopyHash = () => {
+  const handleCopyHash = async () => {
     if (meta?.txHash) {
-      navigator.clipboard.writeText(meta.txHash);
-      setCopied(true);
-      triggerHaptic('light');
-      setTimeout(() => setCopied(false), 2000);
+      const ok = await copyWithToast(meta.txHash, 'Transaction hash copied', (msg) => toast.success(msg));
+      if (ok) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
     }
   };
 

@@ -127,4 +127,5 @@ export interface Person {
     trustScore: number;
     paymentPreference: string;
     potCount: number;
+    address?: string;
 }
