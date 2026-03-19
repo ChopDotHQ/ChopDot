@@ -1,6 +1,6 @@
 # ChopDot
 
-> Status: **Production Ready** 🚀  
+> Status: **Production-Grade Core Flows** 🚀  
 > Version: **1.4.0**  
 > Data Layer: **v0.9.0-data-layer-stable**
 
@@ -128,6 +128,7 @@ For safe public demos, you can enable a restricted mode that disables wallet con
 
 ## Documentation
 
+- **Structure & Audit:** [`src/FILE_STRUCTURE.md`](src/FILE_STRUCTURE.md) - File layout, component catalog, deterministic audit (for agents: see Audit & Documentation section)
 - **Specification:** [`spec.md`](spec.md) - Complete app specification and changelog
 - **Supabase Integration:** [`docs/supabase/INTEGRATION_WRAPUP.md`](docs/supabase/INTEGRATION_WRAPUP.md) - CRUD rollout summary & verification
 - **Supabase Docs Index:** [`docs/supabase/DOCUMENTATION_INDEX.md`](docs/supabase/DOCUMENTATION_INDEX.md) - Navigation for all Supabase guides & SQL
@@ -152,7 +153,7 @@ For safe public demos, you can enable a restricted mode that disables wallet con
 
 ### Embedded Wallet Rail (`VITE_ENABLE_EMBEDDED_WALLET`)
 - **Default:** `0` (embedded wallet context stays disabled)
-- **Set to `1`:** Enables the placeholder `EvmAccountProvider` so MetaMask Embedded can drop in later without touching App wiring.
+- **Set to `1`:** Enables the experimental `EvmAccountProvider` rail so MetaMask Embedded can drop in later without touching App wiring.
 
 ### Polkadot Balance UI (`VITE_ENABLE_POLKADOT_BALANCE_UI`)
 - **Default:** `0` (legacy `WalletBanner` rendering remains)

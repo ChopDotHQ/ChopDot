@@ -7,6 +7,7 @@
 
 ## 📋 Table of Contents
 
+0. [Component Catalog](#component-catalog) – **When to use which component**
 1. [File Naming](#file-naming)
 2. [Component Naming](#component-naming)
 3. [Variable & Function Naming](#variable--function-naming)
@@ -14,6 +15,17 @@
 5. [CSS Class Naming](#css-class-naming)
 5. [Common Patterns](#common-patterns)
 6. [Decision Tree](#decision-tree)
+
+---
+
+## Component Catalog
+
+**Before creating or modifying a component**, check the [Component Catalog](../docs/COMPONENT_CATALOG.md). It documents:
+
+- What each component does and when it's used
+- Entry points (how the user gets there)
+- Related components (don't confuse with)
+- The critical distinction between **QuickKeypadSheet** (add expense) and **AddExpense** (edit expense)
 
 ---
 
