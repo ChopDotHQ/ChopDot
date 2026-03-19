@@ -25,9 +25,39 @@ npm run ci:fast          # lint + type-check + test + build + audit
 - Supabase: auth (OAuth PKCE, Web3 wallet-auth edge fn, email/password), Postgres, edge functions
 - Edge functions: `wallet-auth` (Polkadot + EVM signature verify), `accept-invite`, `decline-invite`
 - Polkadot.js extensions + WalletConnect (dual-chain: `polkadot` + `eip155` namespaces)
-- Entry: `src/App.tsx` -> `SignInScreen` -> `AuthContext` -> `WalletLoginPanel`
+- Entry: `src/App.tsx` → `AuthContext` → `AppContent` → `AppLayout` + `AppRouter`
 - Chain service: `src/services/chain/*` (adapter, polkadot, walletconnect, config)
 - ESLint: `eslint.config.js` ignores TS files; use `npm run lint` which passes CLI flags
+
+### Key Directories (post-modularity refactor)
+
+```
+src/
+├── hooks/                      # App-level hooks (useAppActions, useOverlayState, usePotState, useDerivedData, …)
+├── contexts/                   # AuthContext (thin orchestrator), AccountContext, FeatureFlagsContext
+├── types/                      # Shared types (auth.ts, app.ts)
+├── utils/                      # Pure utilities (auth-mapping.ts, clipboard.ts, haptics.ts, …)
+├── services/
+│   ├── auth/                   # Auth modules: session-manager, wallet-login, oauth-login, guest-login
+│   ├── chain/                  # Chain adapter, polkadot, walletconnect, config
+│   └── data/
+│       ├── sources/            # SupabaseSource (facade → SupabasePotSource, SupabaseExpenseSource)
+│       ├── services/           # PotService, ExpenseService, MemberService, SettlementService
+│       └── repositories/       # PotRepository, ExpenseRepository, etc.
+├── routing/
+│   └── screen-props/           # AppRouter prop factories: tab-screens, pot-screens, settle-screens, misc-screens, types
+├── components/
+│   ├── app/                    # AppLayout (shell + overlays)
+│   ├── auth/                   # Sign-in UI: ChopDotMark, WalletOption, DevToggles, EmailLoginDrawer, WalletConnectQROverlay
+│   │   ├── hooks/              # useLoginState, useWalletAuth, useThemeHandler, useEmailAuth, useSignInHandlers
+│   │   └── panels/            # WalletLoginPanel, EmailLoginPanel, SignupPanel
+│   ├── expenses/               # HeroDashboard, ActivityHistory
+│   ├── settle/                 # SettlementSummaryCard, PaymentMethodSelector, CashConfirmation, SettleFooter
+│   ├── screens/                # Thin orchestrators: PotHome, ExpensesTab, SettleHome, SignInScreen, YouTab, …
+│   ├── wallet/                 # ConnectedAccountMenu, ExtensionSelectorModal, WalletConnectQRModal
+│   ├── you/                    # ProfileCard, GeneralSettings, NotificationSettings, SecuritySettings, AdvancedSettings
+│   └── modals/                 # AcceptInviteModal, ConfirmModal, etc.
+```
 
 ## Coding Conventions
 

@@ -1,13 +1,30 @@
-import type { FormEvent } from 'react';
+import type { FormEvent, InputHTMLAttributes } from 'react';
 import { ChopDotMark, WalletPanel } from '../SignInComponents';
 import { AuthFooter } from '../AuthFooter';
 import type { PanelMode, LoginVariant } from '../../auth/hooks/useThemeHandler';
 import {
-
     defaultPanelTheme,
     frostedPanelThemes,
     polkadotSecondAgePanelThemes,
 } from '../../auth/SignInThemes';
+
+interface SignupInputProps extends InputHTMLAttributes<HTMLInputElement> {
+    label: string;
+    panelMode: PanelMode;
+    inputClasses: string;
+}
+
+const SignupInput = ({ label, panelMode, inputClasses, className, ...props }: SignupInputProps) => (
+    <div className="space-y-2">
+        <label htmlFor={props.id} className={`text-sm font-semibold ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
+            {label}
+        </label>
+        <input
+            {...props}
+            className={`w-full rounded-xl border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 ${inputClasses} ${className || ''}`}
+        />
+    </div>
+);
 
 interface SignupPanelProps {
     // State
@@ -61,6 +78,11 @@ export const SignupPanel = ({
             ? 'bg-white/10 border-white/20 text-white placeholder:text-white/60'
             : 'bg-white border-black/10 text-[#0f0f11] placeholder:text-secondary/70';
 
+    const handleBackToLogin = (e: React.MouseEvent) => {
+        e.preventDefault(); // Prevent potential form submission if button type is ambiguous
+        onBackToLogin();
+    };
+
     return (
         <div className="flex-1 flex items-center justify-center px-4 py-12">
             <div className="w-full max-w-sm space-y-6">
@@ -84,74 +106,59 @@ export const SignupPanel = ({
                                 We&apos;ll send a confirmation link so you can verify your email.
                             </p>
                         </div>
-                        <div className="space-y-2">
-                            <label htmlFor="signup-email" className={`text-sm font-semibold ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
-                                Email
-                            </label>
-                            <input
-                                id="signup-email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                className={`w-full rounded-xl border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 ${inputClasses}`}
-                                value={signupForm.email}
-                                onChange={(event) =>
-                                    setSignupForm((prev) => ({ ...prev, email: event.target.value }))
-                                }
-                                disabled={loading}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="signup-password" className={`text-sm font-semibold ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
-                                Password
-                            </label>
-                            <input
-                                id="signup-password"
-                                type="password"
-                                autoComplete="new-password"
-                                required
-                                className={`w-full rounded-xl border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 ${inputClasses}`}
-                                value={signupForm.password}
-                                onChange={(event) =>
-                                    setSignupForm((prev) => ({ ...prev, password: event.target.value }))
-                                }
-                                disabled={loading}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="signup-confirm-password" className={`text-sm font-semibold ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
-                                Confirm Password
-                            </label>
-                            <input
-                                id="signup-confirm-password"
-                                type="password"
-                                autoComplete="new-password"
-                                required
-                                className={`w-full rounded-xl border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 ${inputClasses}`}
-                                value={signupForm.confirmPassword}
-                                onChange={(event) =>
-                                    setSignupForm((prev) => ({ ...prev, confirmPassword: event.target.value }))
-                                }
-                                disabled={loading}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="signup-username" className={`text-sm font-semibold ${panelMode === 'dark' ? 'text-white/70' : 'text-secondary/80'}`}>
-                                Username (optional)
-                            </label>
-                            <input
-                                id="signup-username"
-                                type="text"
-                                autoComplete="username"
-                                className={`w-full rounded-xl border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 ${inputClasses}`}
-                                value={signupForm.username}
-                                onChange={(event) =>
-                                    setSignupForm((prev) => ({ ...prev, username: event.target.value }))
-                                }
-                                disabled={loading}
-                            />
-                        </div>
-                        <label className="flex items-center gap-2 text-xs text-muted/80">
+
+                        <SignupInput
+                            id="signup-email"
+                            label="Email"
+                            type="email"
+                            autoComplete="email"
+                            required
+                            value={signupForm.email}
+                            onChange={(e) => setSignupForm(prev => ({ ...prev, email: e.target.value }))}
+                            disabled={loading}
+                            panelMode={panelMode}
+                            inputClasses={inputClasses}
+                        />
+
+                        <SignupInput
+                            id="signup-password"
+                            label="Password"
+                            type="password"
+                            autoComplete="new-password"
+                            required
+                            value={signupForm.password}
+                            onChange={(e) => setSignupForm(prev => ({ ...prev, password: e.target.value }))}
+                            disabled={loading}
+                            panelMode={panelMode}
+                            inputClasses={inputClasses}
+                        />
+
+                        <SignupInput
+                            id="signup-confirm-password"
+                            label="Confirm Password"
+                            type="password"
+                            autoComplete="new-password"
+                            required
+                            value={signupForm.confirmPassword}
+                            onChange={(e) => setSignupForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                            disabled={loading}
+                            panelMode={panelMode}
+                            inputClasses={inputClasses}
+                        />
+
+                        <SignupInput
+                            id="signup-username"
+                            label="Username (optional)"
+                            type="text"
+                            autoComplete="username"
+                            value={signupForm.username}
+                            onChange={(e) => setSignupForm(prev => ({ ...prev, username: e.target.value }))}
+                            disabled={loading}
+                            panelMode={panelMode}
+                            inputClasses={inputClasses}
+                        />
+
+                        <label className="flex items-center gap-2 text-xs text-muted/80 cursor-pointer">
                             <input
                                 type="checkbox"
                                 checked={signupForm.acceptTerms}
@@ -162,9 +169,10 @@ export const SignupPanel = ({
                                 className="h-4 w-4 rounded border-gray-300 text-[var(--accent)] focus:ring-[var(--accent)]"
                             />
                             <span className={panelMode === 'dark' ? 'text-white/80' : 'text-secondary/80'}>
-                                I agree to the <a href="/terms" target="_blank" rel="noreferrer" className={`underline ${panelMode === 'dark' ? 'text-white' : 'text-foreground'}`}>Terms of Service</a> and <a href="/privacy" target="_blank" rel="noreferrer" className={`underline ${panelMode === 'dark' ? 'text-white' : 'text-foreground'}`}>Privacy Policy</a>
+                                I agree to the <a href="/terms" target="_blank" rel="noreferrer" className={`underline hover:text-[var(--accent)] transition-colors ${panelMode === 'dark' ? 'text-white' : 'text-foreground'}`}>Terms of Service</a> and <a href="/privacy" target="_blank" rel="noreferrer" className={`underline hover:text-[var(--accent)] transition-colors ${panelMode === 'dark' ? 'text-white' : 'text-foreground'}`}>Privacy Policy</a>
                             </span>
                         </label>
+
                         {signupFeedback.message && (
                             <div
                                 className={`rounded-xl border px-3 py-2 text-sm ${signupFeedback.status === 'error'
@@ -175,20 +183,24 @@ export const SignupPanel = ({
                                 {signupFeedback.message}
                             </div>
                         )}
-                        <button
-                            type="submit"
-                            className="w-full rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted/10 disabled:opacity-60"
-                            disabled={loading}
-                        >
-                            {loading ? 'Creating account…' : 'Create account'}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onBackToLogin}
-                            className="w-full rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-muted/10"
-                        >
-                            Back to login
-                        </button>
+
+                        <div className="pt-2 space-y-3">
+                            <button
+                                type="submit"
+                                className="w-full rounded-xl bg-[var(--accent)] border border-transparent px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
+                                disabled={loading}
+                            >
+                                {loading ? 'Creating account…' : 'Create account'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleBackToLogin}
+                                className="w-full rounded-xl border border-white/10 px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-white/5 disabled:opacity-60"
+                                style={{ color: panelMode === 'dark' ? 'white' : 'inherit' }}
+                            >
+                                Back to login
+                            </button>
+                        </div>
                     </form>
                 </WalletPanel>
                 <AuthFooter panelMode={panelMode} loginVariant={loginVariant} />

@@ -9,7 +9,7 @@ function validateEnvPlugin() {
     name: 'validate-env',
     configResolved(config: any) {
       const env = config.env;
-      
+
       // Critical vars that must be present for build
       const criticalVarGroups = [
         {
@@ -124,6 +124,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        sandbox: path.resolve(__dirname, 'sandbox.html'),
+      }
+    }
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'lucide-react', 'buffer', 'eventemitter3'],

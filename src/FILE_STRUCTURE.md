@@ -1,7 +1,7 @@
 # ChopDot File Structure Guide
 
-**Last Updated:** October 15, 2025  
-**Purpose:** Navigate the codebase with confidence
+**Last Updated:** February 2026  
+**Purpose:** Navigate the codebase with confidence. See [docs/COMPONENT_CATALOG.md](docs/COMPONENT_CATALOG.md) for component diagrams, entry points, and flow details.
 
 ---
 
@@ -32,16 +32,16 @@ chopdot/
 components/
 ├── BottomTabBar.tsx           # Main tab navigation (Pots | People | Activity | You)
 ├── BottomSheet.tsx            # Modal bottom sheet component
+├── QuickKeypadSheet.tsx      # Add expense modal ("Quick add") – used when adding from within a pot
 ├── InputField.tsx             # Labeled input with error states
 ├── SelectField.tsx            # Labeled select with error states
 ├── PrimaryButton.tsx          # App-specific primary button (uses design tokens)
 ├── SecondaryButton.tsx        # App-specific secondary button
-├── Toast.tsx                  # Toast notification component
+├── Toast.tsx                  # Toast notification component (orphan – app uses sonner.tsx)
 ├── TxToast.tsx                # Transaction-specific toast
 ├── TopBar.tsx                 # Screen header bar
 ├── SwipeableScreen.tsx        # Swipe-to-go-back wrapper
 ├── SwipeableExpenseRow.tsx    # Swipeable list item with actions
-├── BatchConfirmSheet.tsx      # Batch expense confirmation modal
 ├── WalletConnectionSheet.tsx  # Wallet connection modal
 ├── YouSheet.tsx               # "You" tab action sheet
 ├── EmptyState.tsx             # Empty state illustrations
@@ -54,10 +54,33 @@ components/
 ├── Stepper.tsx                # Multi-step form stepper
 ├── TrustDots.tsx              # Trust score visualization
 ├── TrustIndicator.tsx         # Trust score indicator
+├── SettlementConfirmModal.tsx # On-chain settlement confirmation (ExpensesTab)
+├── EditMemberModal.tsx        # Edit member (MembersTab)
 └── WalletBanner.tsx           # Wallet connection banner
 ```
 
-#### `/components/screens/` - Full Screen Views (28 files)
+#### `/components/modals/`
+```
+modals/
+└── AcceptInviteModal.tsx      # Accept/decline pot invite (URL ?token)
+```
+
+*Note: EditMemberModal lives at `components/EditMemberModal.tsx` (root), not in modals/.*
+
+#### `/components/auth/` - Auth UI
+```
+auth/
+├── AuthFooter.tsx             # Auth screen footer
+├── SignInComponents.tsx       # Shared login components (ChopDotMark, etc.)
+├── SignInThemes.ts            # Auth theme variants
+├── panels/
+│   ├── EmailLoginPanel.tsx   # Email/password form
+│   ├── WalletLoginPanel.tsx   # Wallet options grid
+│   └── SignupPanel.tsx       # Sign-up form
+└── hooks/                    # useLoginState, useWalletAuth, useEmailAuth, useThemeHandler
+```
+
+#### `/components/screens/` - Full Screen Views
 ```
 screens/
 ├── ActivityHome.tsx           # Activity feed tab
@@ -66,15 +89,15 @@ screens/
 ├── YouTab.tsx                 # You tab (profile, settings, insights)
 ├── PotHome.tsx                # Single pot detail screen
 ├── ExpenseDetail.tsx          # Single expense detail screen
-├── AddExpense.tsx             # Add/edit expense form
+├── AddExpense.tsx             # Edit expense form (full screen) – used when editing existing expense
 ├── CreatePot.tsx              # Create new pot form
 ├── SettleHome.tsx             # Settlement flow main screen
 ├── SettleSelection.tsx        # Choose person to settle with
 ├── SettlementHistory.tsx      # Past settlements list
 ├── SettlementConfirmation.tsx # Settlement success screen
-├── CheckpointStatusScreen.tsx # Expense checkpoint status
 ├── InsightsScreen.tsx         # Spending insights & analytics
-├── LoginScreen.tsx            # Authentication screen
+├── AuthScreen.tsx             # Auth wrapper (when unauthenticated)
+├── SignInScreen.tsx           # Login UI (email, wallet)
 ├── Settings.tsx               # App settings
 ├── PaymentMethods.tsx         # Payment methods management
 ├── AddPaymentMethod.tsx       # Add payment method form
@@ -88,7 +111,18 @@ screens/
 ├── RequestPayment.tsx         # Payment request screen
 ├── AddContribution.tsx        # Add to savings pot
 ├── WithdrawFunds.tsx          # Withdraw from savings pot
-└── [Legacy tabs - unused]     # ExpensesTab, MembersTab, SavingsTab, etc.
+├── ExpensesTab.tsx            # Expenses list (inside PotHome)
+├── MembersTab.tsx             # Members list (inside PotHome)
+├── SavingsTab.tsx             # Savings list (inside PotHome, savings pots)
+├── SettingsTab.tsx            # Pot settings (inside PotHome)
+├── SharePotSheet.tsx          # Share pot modal
+├── ReceiveQR.tsx              # Your QR for receiving
+├── ImportPot.tsx              # Import pot from backup (URL ?cid=)
+├── CrustStorage.tsx           # IPFS storage (via YouTab/Settings)
+├── CrustAuthSetup.tsx         # IPFS auth setup
+├── SignUpScreen.tsx           # Sign-up form (via SignInScreen)
+├── ResetPasswordScreen.tsx    # Password reset (standalone /reset-password)
+└── ConnectWalletScreen.tsx    # Wallet connection (orphan – unused)
 ```
 
 #### `/components/ui/` - ShadCN Components (40 files)
@@ -99,7 +133,7 @@ ui/
 ├── select.tsx                 # Base select component
 ├── dialog.tsx                 # Dialog/modal component
 ├── sheet.tsx                  # Bottom sheet component
-├── toast.tsx                  # Toast component
+├── sonner.tsx                 # Toast component (wraps sonner; AppOverlays uses Toaster)
 ├── accordion.tsx              # Accordion component
 ├── alert.tsx                  # Alert component
 ├── avatar.tsx                 # Avatar component
@@ -141,28 +175,41 @@ figma/
 
 ---
 
-### `/contexts/` - React Context Providers (2 files)
+### `/contexts/` - React Context Providers
 
 ```
 contexts/
 ├── AuthContext.tsx            # Authentication state management
-└── FeatureFlagsContext.tsx    # Feature flags system
+├── FeatureFlagsContext.tsx    # Feature flags system
+├── AccountContext.tsx         # Wallet connection (Polkadot/WalletConnect)
+├── AccountContextLuno.tsx     # Luno-specific account provider (re-exports AccountContext)
+├── EvmAccountContext.tsx      # EVM chain account provider
+├── authActions.ts             # Auth action helpers
+└── [DataContext in services/data]  # Data layer reads (optional)
 ```
 
-**Purpose:** Global state management for auth and feature toggles
+**Purpose:** Global state for auth, feature flags, and wallet connection
 
 ---
 
-### `/hooks/` - Custom React Hooks (1 file)
+### `/hooks/` - Custom React Hooks
 
 ```
 hooks/
+├── useBusinessActions.ts      # Pot/expense/settlement mutations
+├── useInviteFlow.ts           # Invite accept/decline, URL token handling
+├── useSettlementActions.ts   # Settlement confirmation logic
+├── useUrlSync.ts              # URL ↔ screen sync (tabs, ?cid)
+├── usePots.ts                 # Pots data loading
+├── usePot.ts                  # Single pot data (Data Layer)
+├── usePotSync.ts              # Pot sync logic
+├── useClientDevice.ts         # Device detection (mobile/desktop)
 └── useTxToasts.ts             # Transaction toast notifications
 ```
 
 ---
 
-### `/utils/` - Helper Functions (9 files)
+### `/utils/` - Helper Functions
 
 ```
 utils/
@@ -174,7 +221,8 @@ utils/
 ├── web3auth.ts                # Web3 authentication
 ├── usePullToRefresh.ts        # Pull-to-refresh hook
 ├── export.ts                  # Data export utilities
-└── flags.ts                   # Feature flags helpers
+├── flags.ts                   # Feature flags helpers
+└── [30+ more – currencyFormat, normalization, supabase-client, etc.]
 ```
 
 ---
@@ -315,6 +363,12 @@ dist/
 
 ## 🔍 Finding Things
 
+### "Where is the component catalog?"
+→ [docs/COMPONENT_CATALOG.md](docs/COMPONENT_CATALOG.md) – What each component does, where it's used, entry points
+
+### "Where is the audit documentation?"
+→ [Audit & Documentation](#-audit--documentation-for-agents) section below – Methodology, findings, how to run
+
 ### "Where is the design system?"
 → `/styles/globals.css` + `/DESIGN_TOKENS.md`
 
@@ -322,7 +376,7 @@ dist/
 → `/components/screens/`
 
 ### "Where is the navigation logic?"
-→ `App.tsx` (main switch statement) + `nav.ts` (hook)
+→ `App.tsx` + `components/AppRouter.tsx` + `nav.ts` (useNav hook)
 
 ### "Where is state management?"
 → `App.tsx` (main app state) + `/contexts/` (global contexts)
@@ -331,13 +385,41 @@ dist/
 → `/docs/BACKEND_API.md`
 
 ### "Where is authentication?"
-→ `/contexts/AuthContext.tsx` + `/components/screens/LoginScreen.tsx`
+→ `/contexts/AuthContext.tsx` + `/components/screens/AuthScreen.tsx` + `SignInScreen.tsx`
 
 ### "Where are settlements calculated?"
 → `/utils/settlements.ts`
 
 ### "Where is the database schema?"
 → `/database/init/01-schema.sql`
+
+---
+
+## 📋 Audit & Documentation (for agents)
+
+This project keeps FILE_STRUCTURE, COMPONENT_CATALOG, and the codebase in sync via a deterministic audit. Use this map when onboarding or verifying structure.
+
+| Document | Purpose |
+|----------|---------|
+| [docs/COMPONENT_CATALOG.md](docs/COMPONENT_CATALOG.md) | Component diagrams, flows, entry points, confusion pairs |
+| [docs/AUDIT_METHODOLOGY_99.md](docs/AUDIT_METHODOLOGY_99.md) | How the audit works, what’s scripted vs human, limitations |
+| [artifacts/AUDIT_FINDINGS_DOCUMENTED.md](../artifacts/AUDIT_FINDINGS_DOCUMENTED.md) | Findings snapshot (orphans, undocumented, router gaps) – no remediation |
+| [artifacts/AUDIT_COMPONENTS_STRUCTURE.md](../artifacts/AUDIT_COMPONENTS_STRUCTURE.md) | Latest audit report (regenerated by script) |
+| [artifacts/MANUAL_TEST_CHECKLIST.md](../artifacts/MANUAL_TEST_CHECKLIST.md) | Manual flow verification checklist (click-through testing) |
+
+**Run the audit:**
+```bash
+node scripts/audit-components-and-structure.mjs
+```
+
+**Reference order for agents:**
+1. FILE_STRUCTURE (this doc) → where things live
+2. COMPONENT_CATALOG → what components do and how they connect
+3. AUDIT_METHODOLOGY_99 → how we verify structure
+4. AUDIT_FINDINGS_DOCUMENTED → known issues (proven vs human-needed)
+5. AUDIT_COMPONENTS_STRUCTURE → latest run output
+
+The audit runs in CI after build. Orphans, undocumented files, and router gaps are deterministic; human intervention is marked in the findings doc.
 
 ---
 

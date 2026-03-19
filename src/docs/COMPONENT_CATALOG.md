@@ -1,6 +1,6 @@
 # ChopDot Component Catalog
 
-**Last Updated:** February 2026  
+**Last Updated:** March 2026  
 **Purpose:** Single source of truth for what each component does, where it lives, how it's used, and when to use it. Prevents confusion between similar components.
 
 ---
@@ -204,6 +204,58 @@ flowchart TB
     ActivityHome[ActivityHome] --> SFS
     PeopleHome[PeopleHome] --> SFS
 ```
+
+---
+
+## Modularity Refactor: New Modules (March 2026)
+
+New hooks, components, and service modules extracted during the modularity refactoring. Restructured files are now thin orchestrators/barrels.
+
+### New Hooks
+
+| Module | Purpose | Used By |
+|--------|---------|---------|
+| `useOverlayHandlers.ts` | Encapsulates overlay callback handlers (wallet, notifications, QR, payment methods, invites, IPFS) extracted from App.tsx | App.tsx |
+| `useOverlayProps.ts` (`buildOverlayProps`) | Assembles the AppOverlays props object from overlay state + handlers | App.tsx |
+| `useEnsureUserProfile.ts` | Ensures user profile exists in public.users table after auth | AuthContext |
+| `usePotDataMerge.ts` | Merges local + Supabase pot data (extracted from PotHome) | PotHome |
+| `usePotSummary.ts` | Computes summary stats for a pot (extracted from PotHome) | PotHome |
+| `useCheckpointState.ts` | Manages pot checkpoint state (extracted from PotHome) | PotHome |
+| `useSignInHandlers.ts` | Auth handler functions (OAuth, wallet, guest, extension) extracted from SignInScreen | SignInScreen |
+
+### New Components (Auth)
+
+| Component | Purpose | Used By |
+|-----------|---------|---------|
+| **ChopDotMark.tsx** | ChopDot logo/mark SVG (extracted from SignInComponents) | SignInComponents |
+| **WalletOption.tsx** | WalletLogo, WalletPanel, WalletOption components (extracted from SignInComponents) | SignInComponents |
+| **MobileWalletConnectPanel.tsx** | Mobile WalletConnect UI panel (extracted from SignInComponents) | SignInComponents |
+| **DevToggles.tsx** | ViewModeToggle, LoginVariantToggle, WalletConnectModalToggle (extracted from SignInComponents) | SignInComponents |
+| **wallet-options.ts** | Static wallet option configuration data | WalletOption, SignInComponents |
+
+### New Data / Service Modules
+
+| Module | Purpose | Used By |
+|--------|---------|---------|
+| `session-manager.ts` | Auth session management (storage, init, check) | AuthContext |
+| `wallet-login.ts` | Wallet-specific login logic (Polkadot, Rainbow, EVM) | AuthContext |
+| `oauth-login.ts` | OAuth redirect logic | AuthContext |
+| `guest-login.ts` | Guest session login | AuthContext |
+| `types/auth.ts` | Shared auth types (AuthMethod, OAuthProvider, User, LoginCredentials) | Auth services, SignInScreen |
+| `auth-mapping.ts` | `mapSupabaseSessionUser` utility | AuthContext |
+| `screen-props/types.ts` | AppRouterProps interface (shared between AppRouter and screen renderers) | AppRouter, tab/pot/settle/misc screens |
+| `screen-props/tab-screens.tsx` | Render functions for tab root screens | AppRouter |
+| `screen-props/pot-screens.tsx` | Render functions for pot-related screens | AppRouter |
+| `screen-props/settle-screens.tsx` | Render functions for settlement screens | AppRouter |
+| `screen-props/misc-screens.tsx` | Render functions for all other screens | AppRouter |
+
+### Restructured Files (thin orchestrators / barrels)
+
+| File | Purpose | Notes |
+|------|---------|-------|
+| **SignInComponents.tsx** | Barrel file re-exporting from ChopDotMark, WalletOption, MobileWalletConnectPanel, DevToggles | ~4 individual component files |
+| **AppRouter.tsx** | Thin dispatcher using a lookup map | ~37 lines |
+| **AuthContext.tsx** | Thin orchestrator delegating to auth services | ~254 lines; uses session-manager, wallet-login, oauth-login, guest-login |
 
 ---
 
