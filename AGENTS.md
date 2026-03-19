@@ -1,42 +1,69 @@
-<!-- KNOWNS GUIDELINES START -->
-# Knowns Project
+# ChopDot
 
-This project uses **Knowns** for task and documentation management with built-in Claude Code skills.
+Expense splitting and group financial management with Polkadot blockchain settlement.
 
-## Available Skills
-
-Use `/knowns.<skill>` to invoke workflows:
-
-| Skill | Description |
-|-------|-------------|
-| `/knowns.init` | Initialize session - read docs, understand context |
-| `/knowns.task <id>` | Full task workflow - research, plan, implement |
-| `/knowns.task.brainstorm` | Explore solutions before implementation |
-| `/knowns.task.reopen` | Reopen completed task, add requirements |
-| `/knowns.task.extract` | Extract patterns from task to docs |
-| `/knowns.doc` | Work with documentation - view, create, update |
-| `/knowns.commit` | Commit with proper format |
-| `/knowns.research` | Research codebase before coding |
-
-## Getting Started
+## Quick Commands
 
 ```bash
-# Start a new session
-/knowns.init
-
-# Work on a task
-/knowns.task <task-id>
-
-# Quick commands
-knowns task list --plain
-knowns doc list --plain
-knowns search "query" --plain
+npm run dev              # Supabase start + Vite dev server (localhost:5173)
+npm run build            # tsc --noEmit + vite build
+npx tsc --noEmit         # type-check only
+npx vitest run           # unit tests
+npx playwright test      # E2E smoke tests
+npm run ci:fast          # lint + type-check + test + build + audit
 ```
 
-## Key Principles
+## Setup
 
-1. **Read docs first** - Understand before implementing
-2. **Plan before coding** - Wait for approval
-3. **Track time** - Always use timer
-4. **Ask when blocked** - Don't guess
-<!-- KNOWNS GUIDELINES END -->
+1. Copy `.env.example` to `.env`, fill in `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_WALLETCONNECT_PROJECT_ID`
+2. `npm install && npm run dev`
+3. `vite.config.ts` validates required env vars at build time — build will fail with clear messages if missing
+
+## Architecture
+
+- React SPA (Vite + TypeScript strict), deployed on Vercel
+- Supabase: auth (OAuth PKCE, Web3 wallet-auth edge fn, email/password), Postgres, edge functions
+- Edge functions: `wallet-auth` (Polkadot + EVM signature verify), `accept-invite`, `decline-invite`
+- Polkadot.js extensions + WalletConnect (dual-chain: `polkadot` + `eip155` namespaces)
+- Entry: `src/App.tsx` -> `SignInScreen` -> `AuthContext` -> `WalletLoginPanel`
+- Chain service: `src/services/chain/*` (adapter, polkadot, walletconnect, config)
+- ESLint: `eslint.config.js` ignores TS files; use `npm run lint` which passes CLI flags
+
+## Coding Conventions
+
+- Functional components with hooks; no class components
+- kebab-case files, PascalCase components/types, camelCase variables/functions
+- No `any` — explicit types for all inputs/outputs (`tsconfig.json` has `strict: true`)
+- Guard clauses and early returns over nested conditionals
+- Single quotes for strings; arrow functions for callbacks; 2-space indent
+- Prefix intentionally unused destructured vars with `_` (e.g. `_setFoo`)
+
+## Before Modifying UI
+
+- Check `src/docs/COMPONENT_CATALOG.md` for component purpose, entry points, and related components
+- Check `src/FILE_STRUCTURE.md` for directory layout (note: may be stale post-refactor)
+
+## Product Roadmap (priority order)
+
+1. Batch settlement (one signature, many payouts — Utility.batchAll)
+2. Fee abstraction (pay tx fees in stablecoins via AssetTxPayment)
+3. In-app swaps (AssetConversion pallet for "swap to cover fees")
+4. XCM cross-chain settlement (ParaSpell SDK, dry-run + fee estimate)
+5. People Chain identity display (verified names next to addresses)
+6. Auth hardening (SIWE-style domain binding, passkeys)
+7. VC-based verified membership (OID4VP + KILT — only with clear market need)
+
+## Planned Instrumentation
+
+When building new features, add tracking hooks for:
+- Wallet connect success rate (extension vs WalletConnect, by chain type)
+- First on-chain settlement completion rate
+- Median time-to-settle (tap to finalized)
+- Batch failure rate and primary failure reasons
+- % of failed txs due to insufficient fee balance
+
+## Verification (run after every change)
+
+1. `npx tsc --noEmit` — 0 errors
+2. `npm run build` — succeeds
+3. `npx playwright test` — smoke tests pass
