@@ -137,10 +137,12 @@ export interface Pot {
     name: string;
     type: "expense" | "savings";
     baseCurrency: string;
+    mode?: "casual" | "auditable";
     members: Member[];
     expenses: Expense[];
     budget?: number;
     budgetEnabled?: boolean;
+    confirmationsEnabled?: boolean;
     contributions?: Contribution[];
     totalPooled?: number;
     yieldRate?: number;
@@ -153,6 +155,7 @@ export interface Pot {
     history?: PotHistory[];
     closeouts?: CloseoutRecord[];
     createdAt?: string;
+    lastEditAt?: string;
 }
 
 export interface Settlement {

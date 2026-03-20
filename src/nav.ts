@@ -17,6 +17,21 @@ export type SettlementResult = {
   at: number;
 };
 
+export type ProofDetailRecord = {
+  counterpartyName: string;
+  amount: number;
+  currency: string;
+  method: SettlementResult["method"];
+  at: number;
+  txHash?: string;
+  closeoutId?: string;
+  closeoutLegIndex?: number;
+  proofTxHash?: string;
+  proofStatus?: "anchored" | "recorded" | "completed";
+  proofContract?: string;
+  potNames?: string[];
+};
+
 export type Screen =
   | { type: "activity-home" }
   | { type: "pots-home" }
@@ -39,6 +54,7 @@ export type Screen =
   | { type: "settle-dot" }
   | { type: "settlement-history"; personId?: string }
   | { type: "settlement-confirmation"; result: SettlementResult }
+  | { type: "proof-detail"; record: ProofDetailRecord }
   | { type: "member-detail"; memberId: string }
   | { type: "add-contribution" }
   | { type: "withdraw-funds" }

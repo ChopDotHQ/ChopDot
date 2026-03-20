@@ -8,6 +8,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAccount } from '../contexts/AccountContext';
+import { useEvmAccount } from '../contexts/EvmAccountContext';
 import { Wallet, Copy, ExternalLink, ChevronDown, CheckCircle, QrCode } from 'lucide-react';
 import Identicon from '@polkadot/react-identicon';
 import QRCode from 'qrcode';
@@ -31,6 +32,7 @@ function AutoCloseQR({ onClose }: { onClose: () => void }) {
 
 export function AccountMenu() {
   const account = useAccount();
+  const proofWallet = useEvmAccount();
   const isMobile = useIsMobile();
   const [showMenu, setShowMenu] = useState(false);
   const [showExtensionSelector, setShowExtensionSelector] = useState(false);
@@ -59,6 +61,12 @@ export function AccountMenu() {
       active = false;
     };
   }, [showMenu, account.status]);
+
+  useEffect(() => {
+    if (showMenu) {
+      void proofWallet.refresh();
+    }
+  }, [showMenu, proofWallet]);
 
   // Reset connecting state and close modals when account status changes
   useEffect(() => {
@@ -381,6 +389,38 @@ export function AccountMenu() {
                     <span className="opacity-60">Balance:</span>
                     <span className="font-semibold">{formatBalance(account.balanceHuman)} DOT</span>
                   </div>
+                  <div className="mt-3 grid gap-2">
+                    <div className="rounded-lg border p-2" style={{ borderColor: 'var(--border)' }}>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="opacity-60">Payment rail</span>
+                        <span className="font-semibold text-[var(--success)]">Connected</span>
+                      </div>
+                      <div className="mt-1 text-[11px] font-mono opacity-70">
+                        {account.address0?.slice(0, 8)}...{account.address0?.slice(-6)}
+                      </div>
+                    </div>
+                    <div className="rounded-lg border p-2" style={{ borderColor: 'var(--border)' }}>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="opacity-60">Proof rail</span>
+                        <span className="font-semibold" style={{ color: proofWallet.address ? 'var(--success)' : 'var(--muted)' }}>
+                          {proofWallet.address ? 'Detected' : 'Not detected'}
+                        </span>
+                      </div>
+                      <div className="mt-1 text-[11px] opacity-70">
+                        {proofWallet.address
+                          ? `${proofWallet.address.slice(0, 8)}...${proofWallet.address.slice(-6)}`
+                          : 'Connect a 0x wallet for Polkadot Hub proof writes.'}
+                      </div>
+                      {!proofWallet.address && proofWallet.isAvailable && (
+                        <button
+                          onClick={() => void proofWallet.connect()}
+                          className="mt-2 text-[11px] underline opacity-80 hover:opacity-100"
+                        >
+                          Connect proof wallet
+                        </button>
+                      )}
+                    </div>
+                  </div>
                   {/* dev: show active RPC */}
                   {import.meta.env.DEV && currentRpc && (
                     <div 
@@ -482,6 +522,36 @@ export function AccountMenu() {
                 RPC: {currentRpc}
               </div>
             )}
+            <div className="px-3 pt-3 space-y-2">
+              <div className="rounded-lg border p-2 text-xs" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex items-center justify-between">
+                  <span className="opacity-60">Payment rail</span>
+                  <span className="font-semibold">Not connected</span>
+                </div>
+                <div className="mt-1 opacity-70">Connect a Polkadot wallet to send DOT settlements.</div>
+              </div>
+              <div className="rounded-lg border p-2 text-xs" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex items-center justify-between">
+                  <span className="opacity-60">Proof rail</span>
+                  <span className="font-semibold" style={{ color: proofWallet.address ? 'var(--success)' : 'var(--muted)' }}>
+                    {proofWallet.address ? 'Detected' : 'Not detected'}
+                  </span>
+                </div>
+                <div className="mt-1 opacity-70">
+                  {proofWallet.address
+                    ? `${proofWallet.address.slice(0, 8)}...${proofWallet.address.slice(-6)} is ready for Polkadot Hub proof.`
+                    : 'A connected 0x wallet will be used for closeout proof writes.'}
+                </div>
+                {!proofWallet.address && proofWallet.isAvailable && (
+                  <button
+                    onClick={() => void proofWallet.connect()}
+                    className="mt-2 underline opacity-80 hover:opacity-100"
+                  >
+                    Connect proof wallet
+                  </button>
+                )}
+              </div>
+            </div>
             <div className="p-2">
               {isMobile ? (
                 // Mobile: Show mobile wallet options that start WalletConnect and open deep link

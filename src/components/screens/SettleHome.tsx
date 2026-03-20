@@ -6,8 +6,10 @@ import { useState, useEffect } from "react";
 import { pushTxToast, updateTxToast, isTxActive } from "../../hooks/useTxToasts";
 import { useFeatureFlags } from "../../contexts/FeatureFlagsContext";
 import { useAccount } from "../../contexts/AccountContext";
+import { useEvmAccount } from "../../contexts/EvmAccountContext";
 import { triggerHaptic } from "../../utils/haptics";
 import { HyperbridgeBridgeSheet } from "../HyperbridgeBridgeSheet";
+import { HackathonReadinessCard } from "../hackathon/HackathonReadinessCard";
 import type { Pot } from "../../schema/pot";
 import { getChain } from "../../services/chain";
 import {
@@ -21,6 +23,7 @@ import {
 } from '../../utils/platformFee';
 import { getDotPrice } from '../../services/prices/coingecko';
 import Decimal from 'decimal.js';
+import { getPvmCloseoutRuntimeSummary } from "../../services/closeout/pvmCloseout";
 
 interface Settlement {
   id: string;
@@ -72,10 +75,13 @@ export function SettleHome({
   const isDotPot = baseCurrency === 'DOT';
   // Check for simulation mode (allows DOT settlement without wallet)
   const isSimulationMode = import.meta.env.VITE_SIMULATE_CHAIN === '1';
+  const pvmRuntimeSummary = getPvmCloseoutRuntimeSummary();
+  const showHackathonReadiness = import.meta.env.VITE_HACKATHON_DEMO_MODE === '1';
   // Read feature flags
   const { POLKADOT_APP_ENABLED } = useFeatureFlags();
   // Use Account context for wallet connection status
   const account = useAccount();
+  const proofWallet = useEvmAccount();
   const walletConnected = account.status === 'connected';
 
   // Preselection logic
@@ -389,11 +395,27 @@ export function SettleHome({
     return null;
   };
   const amountDot = getAmountDot();
+  const requiredDotForPayment = amountDot ? amountDot + (feeEstimate ?? 0.01) : null;
+  const currentWalletBalance = walletConnected && account.balanceHuman ? parseFloat(account.balanceHuman || '0') : null;
+  const hasInsufficientDotBalance =
+    selectedMethod === "dot" &&
+    walletConnected &&
+    requiredDotForPayment !== null &&
+    currentWalletBalance !== null &&
+    currentWalletBalance < requiredDotForPayment;
   // const amountDotString = amountDot ? amountDot.toFixed(6) : null;
   // const canAffordDotPayment = amountDotString && walletConnected
   //   ? account.canAfford(amountDotString)
   //   : true;
   const showConnectWalletNotice = isDotFlowActive && account.status !== 'connected';
+  const hasProofRail = Boolean(closeoutId);
+  const proofStateLabel = closeoutProofStatus === "completed"
+    ? "Proof recorded"
+    : closeoutProofStatus === "recorded"
+      ? "Proof recorded"
+      : closeoutProofStatus === "anchored"
+        ? "Proof pending payment"
+        : "No proof linked";
 
   const isValid =
     selectedMethod === "cash" ||
@@ -408,6 +430,44 @@ export function SettleHome({
 
   // Combined loading state: isSettling (for non-DOT) OR txActive (for DOT)
   const isLoading = isSettling || txActive;
+  const hackathonItems = showHackathonReadiness ? [
+    {
+      id: 'rail',
+      label: 'Settlement rail',
+      status: (pvmRuntimeSummary.settlementSimulation ? 'warn' : 'pass') as "warn" | "pass",
+      detail: pvmRuntimeSummary.settlementSimulation
+        ? 'DOT transfers are simulated in this session.'
+        : `Settlement targets ${pvmRuntimeSummary.chainName}.`,
+    },
+    {
+      id: 'wallet',
+      label: 'Wallet state',
+      status: (hasInsufficientDotBalance ? 'warn' : (walletConnected || isSimulationMode) ? 'pass' : 'warn') as "warn" | "pass",
+      detail: walletConnected
+        ? `Connected ${account.walletName || 'wallet'} ${account.address0 ? `(${account.address0.slice(0, 6)}...${account.address0.slice(-6)})` : ''}.`
+        : isSimulationMode
+          ? 'Simulation bypass is active for wallet requirements.'
+          : 'Connect a funded Polkadot wallet before the live demo.',
+    },
+    {
+      id: 'recipient',
+      label: 'Recipient address',
+      status: (recipientAddress ? 'pass' : 'fail') as "pass" | "fail",
+      detail: recipientAddress
+        ? `${recipientAddress.slice(0, 10)}...${recipientAddress.slice(-8)}`
+        : 'This member needs an SS58 address before DOT settlement can work.',
+    },
+    {
+      id: 'proof',
+      label: 'Proof rail',
+      status: (closeoutId ? (proofWallet.address ? 'pass' : 'warn') : 'warn') as "warn" | "pass",
+      detail: closeoutId
+        ? proofWallet.address
+          ? `Closeout ${closeoutId} is linked and proof wallet ${proofWallet.address.slice(0, 6)}...${proofWallet.address.slice(-4)} is ready.`
+          : `Closeout ${closeoutId} is linked, but a 0x proof wallet still needs to connect.`
+        : 'No closeout leg is attached to this settlement yet.',
+    },
+  ] : [];
 
   if (showConfirmation) {
     return (
@@ -501,6 +561,14 @@ export function SettleHome({
                 Leg {typeof closeoutLegIndex === "number" ? closeoutLegIndex + 1 : "?"} will attach payment proof after transfer confirmation.
               </p>
             </div>
+          )}
+
+          {showHackathonReadiness && (
+            <HackathonReadinessCard
+              title="Demo readiness"
+              subtitle="This is the live judge checkpoint before you confirm payment."
+              items={hackathonItems}
+            />
           )}
 
           {/* Breakdown */}
@@ -809,10 +877,36 @@ export function SettleHome({
             </div>
             <p className="text-caption text-secondary">
               {isSimulationMode || walletConnected
-                ? `Send ${formatAmount(totalAmount)} on Polkadot. This will create an on-chain transaction${isSimulationMode ? ' (simulated)' : ''}.`
-                : `Connect your Polkadot wallet to settle on-chain in ${baseCurrency}.`
+                ? `Send ${formatAmount(totalAmount)} on Polkadot. ChopDot will then attach that payment to the closeout proof${isSimulationMode ? ' (simulated)' : ''}.`
+                : `Connect your Polkadot wallet to send the payment rail in ${baseCurrency}.`
               }
             </p>
+
+            {hasProofRail && (
+              <div className="rounded-2xl border border-border/40 bg-muted/10 p-3 space-y-2">
+                <p className="text-label font-medium">Two-step onchain flow</p>
+                <div className="space-y-1 text-caption text-secondary">
+                  <p>1. Payment rail: send DOT to the member&apos;s Polkadot wallet.</p>
+                  <p>2. Proof rail: attach that payment to closeout <span className="font-mono">{closeoutId}</span> on Polkadot Hub.</p>
+                </div>
+                <div className="flex items-center justify-between text-micro uppercase tracking-wide">
+                  <span className="rounded-full bg-[var(--success)]/10 px-2 py-1 text-[var(--success)]">
+                    Payment {walletConnected || isSimulationMode ? "ready" : "needs wallet"}
+                  </span>
+                  <span className="rounded-full bg-muted/30 px-2 py-1 text-secondary">
+                    {proofStateLabel}
+                  </span>
+                </div>
+                {!proofWallet.address && proofWallet.isAvailable && (
+                  <button
+                    onClick={() => void proofWallet.connect()}
+                    className="text-caption underline text-secondary hover:text-foreground transition-colors"
+                  >
+                    Connect proof wallet
+                  </button>
+                )}
+              </div>
+            )}
 
             {/* From/To details when wallet connected (or simulation mode) and address available */}
             {(isSimulationMode || walletConnected) && recipientAddress && (
@@ -995,8 +1089,27 @@ export function SettleHome({
               <div className="pt-3 border-t border-border/50">
                 <div className="p-2 bg-yellow-500/10 dark:bg-yellow-500/20 rounded-lg border border-yellow-500/30">
                   <p className="text-micro text-yellow-700 dark:text-yellow-300">
-                    ⚠️ No wallet address on file for {counterparty}. Please add their wallet address in the Members tab to settle via DOT.
+                    ⚠️ No payment wallet is on file for {counterparty}. Add their Polkadot wallet in Members before sending DOT.
                   </p>
+                </div>
+              </div>
+            )}
+
+            {walletConnected && hasInsufficientDotBalance && (
+              <div className="pt-3 border-t border-border/50">
+                <div className="rounded-2xl border border-[var(--accent)]/20 bg-[var(--accent)]/5 p-3 space-y-3">
+                  <div>
+                    <p className="text-label font-medium">Need DOT before you settle?</p>
+                    <p className="text-caption text-secondary mt-1">
+                      This wallet has {formatDOT(currentWalletBalance || 0)} but the payment needs about {formatDOT(requiredDotForPayment || 0)} including fees.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowBridgeSheet(true)}
+                    className="text-caption underline text-secondary hover:text-foreground transition-colors"
+                  >
+                    Open bridge funding path
+                  </button>
                 </div>
               </div>
             )}
@@ -1036,8 +1149,10 @@ export function SettleHome({
             {selectedMethod === "dot" && !isSimulationMode && !walletConnected
               ? "Connect Wallet in Header"
               : selectedMethod === "dot" && !recipientAddress
-                ? "Add Wallet Address Required"
-                : `Confirm ${selectedMethod === "cash" ? "Cash" : selectedMethod === "bank" ? "Bank" : selectedMethod === "paypal" ? "PayPal" : selectedMethod === "twint" ? "TWINT" : "DOT"} Settlement`
+                ? "Add Payment Wallet Required"
+                : selectedMethod === "dot" && hasProofRail
+                  ? "Send DOT And Attach Proof"
+                  : `Confirm ${selectedMethod === "cash" ? "Cash" : selectedMethod === "bank" ? "Bank" : selectedMethod === "paypal" ? "PayPal" : selectedMethod === "twint" ? "TWINT" : "DOT"} Settlement`
             }
           </PrimaryButton>
         </div>

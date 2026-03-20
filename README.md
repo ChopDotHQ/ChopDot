@@ -151,8 +151,9 @@ For safe public demos, you can enable a restricted mode that disables wallet con
 - **Set to `1`:** Switches the root provider to `AccountContextLuno` (currently an alias, future LunoKit home).
 
 ### Embedded Wallet Rail (`VITE_ENABLE_EMBEDDED_WALLET`)
-- **Default:** `0` (embedded wallet context stays disabled)
-- **Set to `1`:** Enables the placeholder `EvmAccountProvider` so MetaMask Embedded can drop in later without touching App wiring.
+- **Default:** `0`
+- **Current behavior:** The shared `EvmAccountProvider` now powers the proof-wallet rail for injected 0x wallets (for example MetaMask) used in Polkadot Hub closeout/proof flows.
+- **Set to `1`:** Keeps the same proof-wallet rail active and reserves room for future embedded-wallet sessions without changing app wiring.
 
 ### Polkadot Balance UI (`VITE_ENABLE_POLKADOT_BALANCE_UI`)
 - **Default:** `0` (legacy `WalletBanner` rendering remains)

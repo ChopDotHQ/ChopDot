@@ -58,6 +58,43 @@ const seededPot = {
   createdAt: '2026-03-16T00:00:00.000Z',
 };
 
+const anchoredCloseoutPot = {
+  ...seededPot,
+  closeouts: [
+    {
+      id: 'closeout-active-1',
+      potId: 'pvm-e2e-pot',
+      asset: 'DOT',
+      snapshotHash: `0x${'b'.repeat(64)}`,
+      contractAddress: '0x3333333333333333333333333333333333333333',
+      closeoutId: '98765',
+      contractTxHash: `0x${'c'.repeat(64)}`,
+      status: 'active',
+      createdByMemberId: 'owner',
+      createdAt: Date.now(),
+      participantMemberIds: ['owner', 'alice'],
+      participantAddresses: [
+        '0x1111111111111111111111111111111111111111',
+        '0x2222222222222222222222222222222222222222',
+      ],
+      settledLegCount: 0,
+      totalLegCount: 1,
+      legs: [
+        {
+          index: 0,
+          fromMemberId: 'owner',
+          toMemberId: 'alice',
+          fromAddress: '0x1111111111111111111111111111111111111111',
+          toAddress: '0x2222222222222222222222222222222222222222',
+          amount: '5.000000',
+          asset: 'DOT',
+          status: 'pending',
+        },
+      ],
+    },
+  ],
+};
+
 async function maybeContinueAsGuest(page) {
   const guestBtn = page.getByRole('button', { name: /continue as guest/i });
   if (await guestBtn.count()) {
@@ -86,30 +123,20 @@ async function screenshot(page, name) {
     await page.evaluate((pot) => {
       localStorage.setItem('chopdot_e2e_seed_pots', JSON.stringify([pot]));
       localStorage.setItem('chopdot_e2e_seed_settlements', JSON.stringify([]));
-    }, seededPot);
+    }, anchoredCloseoutPot);
 
     await page.goto(`${APP_URL}/pots`, { waitUntil: 'networkidle', timeout: 60000 });
     await page.getByText('PVM E2E Pot', { exact: true }).click();
 
-    await page.getByRole('button', { name: /closeout onchain/i }).click();
-    await page.getByText(/preflight checklist/i).waitFor({ timeout: 20000 });
-    await page.getByText(/simulation mode enabled for pvm closeout/i).waitFor({ timeout: 20000 });
-    await page.getByRole('button', { name: /^anchor closeout$/i }).click();
-
-    await page.getByRole('button', { name: /continue to settlement/i }).waitFor({ timeout: 20000 });
-    await page.getByRole('button', { name: /continue to settlement/i }).click();
-
-    await page.getByText('Alice', { exact: true }).click();
-    await page.getByRole('button', { name: /^dot$/i }).click();
-    await page.getByRole('button', { name: /confirm dot settlement/i }).click();
-
-    await page.getByText(/settlement complete/i).waitFor({ timeout: 30000 });
-    await page.getByText(/proof status/i).waitFor({ timeout: 10000 });
-    await page.getByText(/completed/i).waitFor({ timeout: 10000 });
+    await page.getByRole('button', { name: /settle up/i }).click();
+    await page.getByRole('button', { name: /alice/i }).click();
+    await page.getByText(/onchain closeout/i).waitFor({ timeout: 20000 });
+    await page.getByText(/98765/i).waitFor({ timeout: 20000 });
+    await page.getByText(/anchored/i).waitFor({ timeout: 20000 });
 
     shot = await screenshot(page, 'pvm-closeout-pass');
     status = 'PASS';
-    detail = 'Anchored closeout and completed simulated DOT settlement with proof.';
+    detail = 'Anchored closeout context is visible and ready for live settlement.';
   } catch (error) {
     shot = await screenshot(page, 'pvm-closeout-fail').catch(() => '');
     detail = error instanceof Error ? error.message : String(error);

@@ -202,13 +202,13 @@ export function MembersTab({
                           {normalizedAddress && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-[11px] text-green-700 dark:text-green-400">
                             <CheckCircle className="w-3 h-3" />
-                            DOT wallet ready
+                            Payment rail ready
                           </span>
                           )}
                           {member.evmAddress && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 text-[11px] text-blue-700 dark:text-blue-400">
                               <CheckCircle className="w-3 h-3" />
-                              PVM wallet ready
+                              Proof rail ready
                             </span>
                           )}
                           {normalizedAddress && (
@@ -245,7 +245,7 @@ export function MembersTab({
                                   navigator.clipboard.writeText(member.evmAddress || '');
                                 }}
                                 className="p-0.5 hover:bg-muted rounded transition-colors"
-                                title="Copy EVM address"
+                                title="Copy proof wallet"
                               >
                                 <Copy className="w-3 h-3 text-secondary" />
                               </button>
@@ -261,7 +261,19 @@ export function MembersTab({
                           className="inline-flex items-center gap-1.5 mt-1 px-2 py-1 rounded-lg bg-[var(--accent)]/10 text-[11px] text-[var(--accent)] hover:bg-[var(--accent)]/15 transition-colors"
                         >
                           <Wallet className="w-3 h-3" />
-                          Add DOT wallet
+                          Add wallet setup
+                        </button>
+                      )}
+                      {(normalizedAddress || member.evmAddress) && (!normalizedAddress || !member.evmAddress) && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingMember(member);
+                          }}
+                          className="inline-flex items-center gap-1.5 mt-2 px-2 py-1 rounded-lg bg-muted/30 text-[11px] text-secondary hover:bg-muted/40 transition-colors"
+                        >
+                          <Wallet className="w-3 h-3" />
+                          Complete wallet setup
                         </button>
                       )}
 

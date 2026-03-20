@@ -16,8 +16,10 @@ interface Settlement {
   txHash?: string;
   potNames?: string[];
   closeoutId?: string;
+  closeoutLegIndex?: number;
   proofTxHash?: string;
   proofStatus?: "anchored" | "recorded" | "completed";
+  proofContract?: string;
 }
 
 interface SettlementHistoryProps {
@@ -25,9 +27,10 @@ interface SettlementHistoryProps {
   onBack: () => void;
   personId?: string;
   onRetryProof?: (settlementId: string) => void;
+  onOpenProof?: (settlementId: string) => void;
 }
 
-export function SettlementHistory({ settlements, onBack, personId, onRetryProof }: SettlementHistoryProps) {
+export function SettlementHistory({ settlements, onBack, personId, onRetryProof, onOpenProof }: SettlementHistoryProps) {
   // Filter settlements by personId if provided
   const filteredSettlements = useMemo(() => {
     if (!personId) return settlements;
@@ -63,6 +66,16 @@ export function SettlementHistory({ settlements, onBack, personId, onRetryProof 
       hour: "numeric",
       minute: "2-digit",
     });
+  };
+
+  const getProofStatusTone = (status?: Settlement["proofStatus"]) => {
+    if (status === "completed") {
+      return "bg-green-500/10 text-green-700 dark:text-green-400";
+    }
+    if (status === "recorded") {
+      return "bg-blue-500/10 text-blue-700 dark:text-blue-400";
+    }
+    return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-300";
   };
 
   return (
@@ -122,19 +135,21 @@ export function SettlementHistory({ settlements, onBack, personId, onRetryProof 
                 )}
                 {settlement.closeoutId && (
                   <div className="flex justify-between text-caption text-secondary">
-                    <span>Closeout</span>
+                    <span>Closeout proof</span>
                     <span className="font-mono text-right">{settlement.closeoutId}</span>
                   </div>
                 )}
                 {settlement.closeoutId && (
                   <div className="flex justify-between text-caption text-secondary">
-                    <span>Proof status</span>
-                    <span className="text-right">{settlement.proofStatus || "anchored"}</span>
+                    <span>Proof rail status</span>
+                    <span className={`rounded-full px-2 py-0.5 text-right text-[11px] ${getProofStatusTone(settlement.proofStatus)}`}>
+                      {settlement.proofStatus || "anchored"}
+                    </span>
                   </div>
                 )}
                 {settlement.proofTxHash && (
                   <div className="flex justify-between text-caption text-secondary">
-                    <span>Proof</span>
+                    <span>Proof tx</span>
                     <span className="font-mono text-right">
                       {settlement.proofTxHash.slice(0, 10)}...{settlement.proofTxHash.slice(-8)}
                     </span>
@@ -146,7 +161,17 @@ export function SettlementHistory({ settlements, onBack, personId, onRetryProof 
                       onClick={() => onRetryProof(settlement.id)}
                       className="text-caption underline text-secondary hover:text-foreground transition-colors"
                     >
-                      Retry proof recording
+                      Retry proof rail recording
+                    </button>
+                  </div>
+                )}
+                {settlement.closeoutId && onOpenProof && (
+                  <div className="pt-1">
+                    <button
+                      onClick={() => onOpenProof(settlement.id)}
+                      className="text-caption underline text-secondary hover:text-foreground transition-colors"
+                    >
+                      View proof details
                     </button>
                   </div>
                 )}

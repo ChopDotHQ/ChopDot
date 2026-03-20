@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import { Screen, SettlementResult } from "../nav";
+import { Screen, SettlementResult, ProofDetailRecord } from "../nav";
 import {
     Pot,
     ActivityItem,
@@ -49,6 +49,9 @@ const SettlementHistory = lazy(() =>
 );
 const SettlementConfirmation = lazy(() =>
     import("./screens/SettlementConfirmation").then((module) => ({ default: module.SettlementConfirmation }))
+);
+const ProofDetail = lazy(() =>
+    import("./screens/ProofDetail").then((module) => ({ default: module.ProofDetail }))
 );
 const CloseoutReview = lazy(() =>
     import("./screens/CloseoutReview").then((module) => ({ default: module.CloseoutReview }))
@@ -192,6 +195,8 @@ export interface AppRouterProps {
         handleRemoveMember: (potId: string, memberId: string) => void;
         handleUpdatePotSettings: (potId: string, settings: any) => void;
         retrySettlementProof: (settlementId: string) => Promise<void>;
+        shareCloseoutReceipt: (record: ProofDetailRecord) => Promise<void>;
+        copyCloseoutReceipt: (record: ProofDetailRecord) => Promise<void>;
         acceptInvite: (token: string) => void;
         declineInvite: (token: string) => void;
         confirmSettlement: (params: {
@@ -242,6 +247,7 @@ export const AppRouter = ({
         handleDeleteAccount, updatePaymentMethodValue, setPreferredMethod,
         handleUpdateMember, handleRemoveMember,
         handleUpdatePotSettings, retrySettlementProof,
+        shareCloseoutReceipt, copyCloseoutReceipt,
         acceptInvite, declineInvite, confirmSettlement, showToast,
         newPotState, joinProcessingRef, selectedCounterpartyId
     },
@@ -1111,10 +1117,33 @@ export const AppRouter = ({
                         potNames: s.potIds?.map((pid) => pots.find((p) => p.id === pid)?.name || pid),
                         personId: s.personId,
                         closeoutId: s.closeoutId,
+                        closeoutLegIndex: s.closeoutLegIndex,
                         proofTxHash: s.proofTxHash,
                         proofStatus: s.proofStatus,
+                        proofContract: s.proofContract,
                     })) as any}
                     onRetryProof={retrySettlementProof}
+                    onOpenProof={(settlementId) => {
+                        const settlement = settlements.find((entry) => entry.id === settlementId);
+                        if (!settlement) return;
+                        push({
+                            type: "proof-detail",
+                            record: {
+                                counterpartyName: people.find((p) => p.id === settlement.personId)?.name || settlement.personId,
+                                amount: Number(settlement.amount),
+                                currency: settlement.currency,
+                                method: settlement.method,
+                                at: new Date(settlement.date).getTime(),
+                                txHash: settlement.txHash,
+                                closeoutId: settlement.closeoutId,
+                                closeoutLegIndex: settlement.closeoutLegIndex,
+                                proofTxHash: settlement.proofTxHash,
+                                proofStatus: settlement.proofStatus,
+                                proofContract: settlement.proofContract,
+                                potNames: settlement.potIds?.map((pid) => pots.find((p) => p.id === pid)?.name || pid),
+                            },
+                        });
+                    }}
                 />
             );
 
@@ -1122,6 +1151,23 @@ export const AppRouter = ({
             return <SettlementConfirmation
                 onBack={back}
                 result={screen.result}
+                onViewProof={() => push({
+                    type: "proof-detail",
+                    record: {
+                        counterpartyName: screen.result.counterpartyName,
+                        amount: screen.result.amount,
+                        currency: screen.result.method === "dot" ? "DOT" : screen.result.method === "usdc" ? "USDC" : "USD",
+                        method: screen.result.method,
+                        at: screen.result.at,
+                        txHash: screen.result.txHash,
+                        closeoutId: screen.result.closeoutId,
+                        closeoutLegIndex: screen.result.closeoutLegIndex,
+                        proofTxHash: screen.result.proofTxHash,
+                        proofStatus: screen.result.proofStatus,
+                        proofContract: screen.result.proofContract,
+                        potNames: screen.result.pots?.map((pot) => pot.name),
+                    },
+                })}
                 onViewHistory={() => push({ type: "settlement-history" })}
                 onDone={() => {
                     if (currentPotId) {
@@ -1131,6 +1177,16 @@ export const AppRouter = ({
                     reset({ type: "pots-home" });
                 }}
             />;
+
+        case "proof-detail":
+            return (
+                <ProofDetail
+                    record={screen.record as ProofDetailRecord}
+                    onBack={back}
+                    onShareReceipt={() => void shareCloseoutReceipt(screen.record as ProofDetailRecord)}
+                    onCopyReceipt={() => void copyCloseoutReceipt(screen.record as ProofDetailRecord)}
+                />
+            );
 
 
         case "add-contribution":

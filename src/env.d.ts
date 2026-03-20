@@ -7,6 +7,9 @@ interface ImportMetaEnv {
   readonly VITE_ENABLE_POLKADOT_BALANCE_UI?: string;
   readonly VITE_ENABLE_LOGIN_PANEL_UI?: string;
   readonly VITE_ENABLE_PVM_CLOSEOUT?: string;
+  readonly VITE_HACKATHON_DEMO_MODE?: string;
+  readonly VITE_HACKATHON_DEMO_RESET?: string;
+  readonly VITE_HACKATHON_DEMO_MOCK_BALANCE?: string;
   readonly VITE_PVM_CLOSEOUT_CONTRACT_ADDRESS?: string;
   readonly VITE_PVM_CLOSEOUT_EXPLORER_BASE_URL?: string;
   readonly VITE_PVM_CLOSEOUT_CHAIN_ID?: string;
@@ -14,6 +17,7 @@ interface ImportMetaEnv {
   readonly VITE_PVM_CLOSEOUT_RPC_URL?: string;
   readonly VITE_PVM_CLOSEOUT_BLOCK_EXPLORER_URL?: string;
   readonly VITE_SIMULATE_PVM_CLOSEOUT?: string;
+  readonly VITE_SIMULATE_CHAIN?: string;
 }
 
 interface ImportMeta {

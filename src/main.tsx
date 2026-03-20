@@ -68,6 +68,7 @@ const isFlagEnabled = (value?: string) =>
 
 const enableLunoKit = isFlagEnabled(import.meta.env.VITE_ENABLE_LUNOKIT);
 const enableEmbeddedWallet = isFlagEnabled(import.meta.env.VITE_ENABLE_EMBEDDED_WALLET);
+const enableProofWalletContext = true;
 
 const PolkadotProviderComponent = enableLunoKit ? AccountProviderLuno : AccountProvider;
 
@@ -75,7 +76,7 @@ const renderWithProviders = (content: ReactNode) => (
   <StrictMode>
     <ErrorBoundary>
       <PolkadotProviderComponent>
-        <EvmAccountProvider enabled={enableEmbeddedWallet}>
+        <EvmAccountProvider enabled={enableEmbeddedWallet || enableProofWalletContext}>
           <DataProvider>
             {content}
           </DataProvider>

@@ -61,7 +61,7 @@ describe("pvmCloseout", () => {
     (globalThis as any).window = {};
   });
 
-  it("identifies closeout-ready pots when all participant EVM addresses exist", () => {
+  it("identifies closeout-ready pots when all participant proof wallets exist", () => {
     expect(canCreatePvmCloseout(basePot)).toBe(true);
   });
 
@@ -84,7 +84,7 @@ describe("pvmCloseout", () => {
     expect(draft.snapshotHash).toMatch(/^0x[a-f0-9]{64}$/);
   });
 
-  it("reports readiness blockers for missing EVM address and disabled flag", async () => {
+  it("reports readiness blockers for missing proof wallet and disabled flag", async () => {
     vi.stubEnv("VITE_ENABLE_PVM_CLOSEOUT", "0");
     const pot = {
       ...basePot,
@@ -96,7 +96,7 @@ describe("pvmCloseout", () => {
     const readiness = await getCloseoutReadiness(pot);
 
     expect(readiness.find((item) => item.id === "feature_flag")?.status).toBe("fail");
-    expect(readiness.find((item) => item.id === "member_evm_addresses")?.status).toBe("fail");
+    expect(readiness.find((item) => item.id === "proof_wallets")?.status).toBe("fail");
   });
 
   it("uses simulation mode for readiness, anchor, and proof recording", async () => {

@@ -6,6 +6,12 @@ import type {
 } from "../../types/app";
 import { stableStringify } from "../../utils/stableStringify";
 import { computeBalances, suggestSettlements } from "../settlement/calc";
+import {
+  getInjectedEvmAccount,
+  getInjectedEvmChainId,
+  getInjectedEvmProvider,
+  type InjectedEip1193Provider,
+} from "../evm/injectedWallet";
 
 type CreateCloseoutDraftArgs = {
   pot: Pot;
@@ -35,7 +41,7 @@ export type CloseoutReadinessItem = {
     | "supported_asset"
     | "contract_address"
     | "settlement_legs"
-    | "member_evm_addresses"
+    | "proof_wallets"
     | "wallet_provider"
     | "wallet_network";
   label: string;
@@ -51,10 +57,6 @@ type SimulatedReceipt = {
       args: Record<string, unknown>;
     }>;
   }>;
-};
-
-type Eip1193Provider = {
-  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
 };
 
 const FALLBACK_CONTRACT_ADDRESS = "0x00000000000000000000000000000000C10Se017";
@@ -157,24 +159,12 @@ function getCloseoutExplorerBaseUrl(): string {
   );
 }
 
-function getInjectedEthereum(): Eip1193Provider {
-  const provider =
-    typeof window !== "undefined"
-      ? (window.ethereum as Eip1193Provider | undefined)
-      : undefined;
+function getInjectedEthereum(): InjectedEip1193Provider {
+  const provider = getInjectedEvmProvider();
   if (!provider) {
     throw new Error("MetaMask or another EVM wallet is required for onchain closeout.");
   }
   return provider;
-}
-
-async function getCurrentEthereumChainId(provider: Eip1193Provider): Promise<string | null> {
-  try {
-    const chainId = await provider.request({ method: "eth_chainId" });
-    return typeof chainId === "string" ? chainId : null;
-  } catch {
-    return null;
-  }
 }
 
 function createSimulatedReceipt(
@@ -266,7 +256,7 @@ function toEvmAddress(value: string): string {
   if (/^0x[a-fA-F0-9]{40}$/.test(value)) {
     return value;
   }
-  throw new Error(`Closeout participants need EVM addresses for contract writes: ${value}`);
+  throw new Error(`Closeout participants need a proof wallet (0x address) for contract writes: ${value}`);
 }
 
 function toBytes32Hash(value: string): string {
@@ -282,6 +272,21 @@ export function isPvmCloseoutEnabled(): boolean {
 
 export function getPvmCloseoutExplorerBaseUrl(): string {
   return getCloseoutExplorerBaseUrl();
+}
+
+export function getPvmCloseoutRuntimeSummary() {
+  return {
+    enabled: isPvmCloseoutEnabled(),
+    contractAddress: getContractAddress(),
+    usingFallbackContractAddress: !import.meta.env.VITE_PVM_CLOSEOUT_CONTRACT_ADDRESS,
+    chainId: getChainHexId(),
+    chainName: getChainName(),
+    closeoutSimulation: shouldSimulatePvmCloseout(),
+    settlementSimulation: import.meta.env.VITE_SIMULATE_CHAIN === "1",
+    explorerBaseUrl: getCloseoutExplorerBaseUrl(),
+    paymentRailLabel: "Polkadot DOT payment",
+    proofRailLabel: "Polkadot Hub contract proof",
+  };
 }
 
 export function canCreatePvmCloseout(pot: Pot): boolean {
@@ -348,67 +353,72 @@ export async function getCloseoutReadiness(pot: Pot): Promise<CloseoutReadinessI
         : "No non-zero settlement legs were found for this pot.",
     },
     {
-      id: "member_evm_addresses",
-      label: "Member EVM addresses",
+      id: "proof_wallets",
+      label: "Proof wallets configured",
       status: missingMemberIds.length === 0 ? "pass" : "fail",
       detail:
         missingMemberIds.length === 0
-          ? "Every settlement participant has a 0x address."
-          : `Missing EVM address for member id${missingMemberIds.length === 1 ? "" : "s"}: ${[...new Set(missingMemberIds)].join(", ")}`,
+          ? "Every settlement participant has a 0x wallet for Polkadot Hub contract proof."
+          : `Missing proof wallet for member id${missingMemberIds.length === 1 ? "" : "s"}: ${[...new Set(missingMemberIds)].join(", ")}`,
     },
   ];
   if (shouldSimulatePvmCloseout()) {
     items.push({
       id: "wallet_provider",
-      label: "Injected EVM wallet",
+      label: "Proof wallet provider",
       status: "pass",
-      detail: "Simulation mode enabled for PVM closeout.",
+      detail: "Simulation mode enabled for Polkadot Hub contract proof.",
     });
     items.push({
       id: "wallet_network",
-      label: "Wallet network",
+      label: "Proof wallet network",
       status: "pass",
       detail: `Simulation mode targeting ${getChainName()} (${getChainHexId()}).`,
     });
     return items;
   }
 
-  const provider = typeof window !== "undefined"
-    ? (window.ethereum as Eip1193Provider | undefined)
-    : undefined;
+  const provider = getInjectedEvmProvider();
   if (!provider) {
     items.push({
       id: "wallet_provider",
-      label: "Injected EVM wallet",
+      label: "Proof wallet provider",
       status: "fail",
-      detail: "MetaMask or another injected EVM wallet is not available in this browser.",
+      detail: "MetaMask or another injected 0x wallet is not available for Polkadot Hub contract proof.",
     });
     items.push({
       id: "wallet_network",
-      label: "Wallet network",
+      label: "Proof wallet network",
       status: "warn",
-      detail: `Target chain is ${getChainName()} (${getChainHexId()}). Connect a wallet to verify network.`,
+      detail: `Target proof chain is ${getChainName()} (${getChainHexId()}). Connect a 0x wallet to verify network.`,
     });
     return items;
   }
 
   items.push({
     id: "wallet_provider",
-    label: "Injected EVM wallet",
+    label: "Proof wallet provider",
     status: "pass",
-    detail: "Detected browser wallet provider.",
+    detail: "Detected browser 0x wallet for Polkadot Hub contract writes.",
   });
 
-  const currentChainId = await getCurrentEthereumChainId(provider);
+  const activeAccount = await getInjectedEvmAccount(provider);
+  const currentChainId = await getInjectedEvmChainId(provider);
   const targetChainId = getChainHexId().toLowerCase();
+  if (activeAccount) {
+    items[items.length - 1] = {
+      ...items[items.length - 1]!,
+      detail: `Detected proof wallet ${activeAccount.slice(0, 6)}...${activeAccount.slice(-4)}.`,
+    };
+  }
   items.push({
     id: "wallet_network",
-    label: "Wallet network",
+    label: "Proof wallet network",
     status: currentChainId?.toLowerCase() === targetChainId ? "pass" : "warn",
     detail:
       currentChainId?.toLowerCase() === targetChainId
-        ? `${getChainName()} selected`
-        : `Wallet is on ${currentChainId || "unknown"}; target is ${targetChainId}. The app will prompt a switch during anchor/proof.`,
+        ? `${getChainName()} selected for proof writes`
+        : `Proof wallet is on ${currentChainId || "unknown"}; target is ${targetChainId}. The app will prompt a switch during anchor/proof.`,
   });
 
   return items;
@@ -449,7 +459,7 @@ export async function createCloseoutDraft({
     const toMember = pot.members.find((member) => member.id === suggestion.to);
 
     if (!fromMember?.evmAddress || !toMember?.evmAddress) {
-      throw new Error("All participants need EVM wallet addresses before anchoring a closeout.");
+      throw new Error("All participants need a proof wallet (0x address) before anchoring a closeout.");
     }
 
     return {

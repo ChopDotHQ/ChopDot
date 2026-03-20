@@ -1,14 +1,16 @@
-import { Check } from "lucide-react";
+import { Check, ExternalLink } from "lucide-react";
 import { SettlementResult } from "../../nav";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
 import { TopBar } from "../TopBar";
 import { buildSubscanUrl } from "../../services/chain/utils";
+import { getPvmCloseoutExplorerBaseUrl } from "../../services/closeout/pvmCloseout";
 
 interface SettlementConfirmationProps {
   result: SettlementResult;
   onBack?: () => void;
   onViewHistory: () => void;
+  onViewProof?: () => void;
   onDone: () => void;
 }
 
@@ -16,8 +18,10 @@ export function SettlementConfirmation({
   result,
   onBack,
   onViewHistory,
+  onViewProof,
   onDone,
 }: SettlementConfirmationProps) {
+  const proofExplorerBaseUrl = getPvmCloseoutExplorerBaseUrl();
   const methodLabels: Record<SettlementResult["method"], string> = {
     cash: "Cash",
     bank: "Bank Transfer",
@@ -60,6 +64,11 @@ export function SettlementConfirmation({
                 minute: "2-digit",
               })}
             </p>
+            {result.closeoutId && (
+              <p className="mt-2 text-caption text-secondary">
+                Payment rail completed. ChopDot {result.proofTxHash ? "also recorded the proof rail on Polkadot Hub." : "still needs to finish the proof rail on Polkadot Hub."}
+              </p>
+            )}
           </div>
 
           {/* Method & Reference */}
@@ -92,23 +101,34 @@ export function SettlementConfirmation({
 
             {result.closeoutId && (
               <div className="flex items-center justify-between mt-3">
-                <span className="text-micro text-secondary">Closeout</span>
+                <span className="text-micro text-secondary">Closeout proof</span>
                 <span className="font-mono text-label">{result.closeoutId}</span>
               </div>
             )}
 
             {result.proofTxHash && (
               <div className="flex items-center justify-between mt-3">
-                <span className="text-micro text-secondary">Proof</span>
-                <span className="font-mono text-label truncate max-w-[180px]">
-                  {result.proofTxHash.slice(0, 10)}...{result.proofTxHash.slice(-8)}
-                </span>
+                <span className="text-micro text-secondary">Proof tx</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-label truncate max-w-[180px]">
+                    {result.proofTxHash.slice(0, 10)}...{result.proofTxHash.slice(-8)}
+                  </span>
+                  {proofExplorerBaseUrl ? (
+                    <a
+                      href={`${proofExplorerBaseUrl}${result.proofTxHash}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  ) : null}
+                </div>
               </div>
             )}
 
             {result.closeoutId && (
               <div className="flex items-center justify-between mt-3">
-                <span className="text-micro text-secondary">Proof status</span>
+                <span className="text-micro text-secondary">Proof rail status</span>
                 <span className="text-label">{result.proofStatus || "anchored"}</span>
               </div>
             )}
@@ -142,6 +162,9 @@ export function SettlementConfirmation({
 
       {/* Action Buttons - Fixed at bottom with safe area */}
       <div className="p-4 pb-24 space-y-3 border-t border-border bg-card">
+        {result.closeoutId && onViewProof ? (
+          <SecondaryButton onClick={onViewProof}>View proof details</SecondaryButton>
+        ) : null}
         <SecondaryButton onClick={onViewHistory}>View history</SecondaryButton>
         <PrimaryButton onClick={onDone}>Done</PrimaryButton>
       </div>

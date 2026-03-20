@@ -38,9 +38,16 @@ import { useInviteFlow } from "./hooks/useInviteFlow";
 import { useBusinessActions } from "./hooks/useBusinessActions";
 import { useSettlementActions } from "./hooks/useSettlementActions";
 import { createPolkadotBuilderPartyPot } from "./data/builder-party";
+import {
+  getHackathonDemoSeed,
+  isHackathonDemoMode,
+  shouldResetHackathonDemoData,
+} from "./data/hackathonDemo";
 import { recordSettlementProof } from "./services/closeout/pvmCloseout";
+import { buildCloseoutReceiptText } from "./utils/closeoutReceipt";
 import type { PaymentMethod } from "./components/screens/PaymentMethods";
 import type { Notification } from "./components/screens/NotificationCenter";
+import type { ProofDetailRecord } from "./nav";
 
 import {
   Pot,
@@ -338,6 +345,33 @@ function AppContent() {
     (async () => {
       try {
         let usedSeededPots = false;
+        const hackathonDemoMode = isHackathonDemoMode();
+        const shouldResetHackathonSeed = shouldResetHackathonDemoData();
+        const existingHackathonVersion = localStorage.getItem("chopdot_hackathon_seed_version");
+
+        if (
+          hackathonDemoMode &&
+          !localStorage.getItem("chopdot_e2e_seed_pots") &&
+          (shouldResetHackathonSeed || !existingHackathonVersion)
+        ) {
+          const demoSeed = getHackathonDemoSeed();
+          const demoPotsJson = JSON.stringify(demoSeed.pots);
+          const demoSettlementsJson = JSON.stringify(demoSeed.settlements);
+
+          localStorage.setItem("chopdot_pots", demoPotsJson);
+          localStorage.setItem("chopdot_pots_backup", demoPotsJson);
+          localStorage.setItem("chopdot_settlements", demoSettlementsJson);
+          localStorage.setItem("mock_balance", demoSeed.mockBalancePlanck);
+          localStorage.setItem("chopdot_hackathon_seed_version", demoSeed.version);
+
+          setPots(demoSeed.pots);
+          setSettlements(demoSeed.settlements);
+          usedSeededPots = true;
+          setHasLoadedInitialData(true);
+          window.dispatchEvent(new CustomEvent('pots-refresh'));
+          return;
+        }
+
         const seededPots = localStorage.getItem("chopdot_e2e_seed_pots");
         if (seededPots) {
           const parsed = JSON.parse(seededPots);
@@ -513,7 +547,7 @@ function AppContent() {
 
       setHasLoadedInitialData(true);
     })();
-  }, [authLoading, hasLoadedInitialData, isGuest, pots, user]); // Load local pots for guests or non-supabase
+  }, [authLoading, hasLoadedInitialData, isGuest, pots, user]);
 
   useEffect(() => {
     if (!hasLoadedInitialData) return;
@@ -1159,6 +1193,38 @@ function AppContent() {
       showToast(message, "error");
     }
   }, [setPots, settlements, setSettlements, showToast]);
+
+  const shareCloseoutReceipt = useCallback(async (record: ProofDetailRecord) => {
+    try {
+      const nav = typeof navigator !== "undefined" ? navigator : null;
+      if (!nav?.share) {
+        showToast("Share is not available on this device. Use copy instead.", "info");
+        return;
+      }
+
+      await nav.share({
+        title: "ChopDot Closeout Receipt",
+        text: buildCloseoutReceiptText(record),
+      });
+      showToast("Closeout receipt shared.", "success");
+    } catch (error: any) {
+      showToast(error?.message || "Failed to share closeout receipt.", "error");
+    }
+  }, [showToast]);
+
+  const copyCloseoutReceipt = useCallback(async (record: ProofDetailRecord) => {
+    try {
+      const nav = typeof navigator !== "undefined" ? navigator : null;
+      if (!nav?.clipboard?.writeText) {
+        showToast("Copy is not available on this device.", "error");
+        return;
+      }
+      await nav.clipboard.writeText(buildCloseoutReceiptText(record));
+      showToast("Closeout receipt copied.", "success");
+    } catch (error: any) {
+      showToast(error?.message || "Failed to copy closeout receipt.", "error");
+    }
+  }, [showToast]);
 
   useEffect(() => {
     if (!usingSupabaseSource || authLoading || !isAuthenticated) {
@@ -1830,6 +1896,8 @@ function AppContent() {
               handleInviteNew, handleUpdateMember, handleRemoveMember,
               handleUpdatePotSettings,
               retrySettlementProof,
+              shareCloseoutReceipt,
+              copyCloseoutReceipt,
               acceptInvite, declineInvite, confirmSettlement, showToast,
               newPotState: newPot, joinProcessingRef, selectedCounterpartyId
             }}

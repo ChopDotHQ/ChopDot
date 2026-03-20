@@ -4,6 +4,7 @@ import { SwipeableExpenseRow } from "../SwipeableExpenseRow";
 import { computeBalances, suggestSettlements, getMemberBalance } from "../../services/settlement/calc";
 import type { Pot, Expense as PotExpense } from "../../schema/pot";
 import { SettlementConfirmModal } from "../SettlementConfirmModal";
+import { HackathonReadinessCard } from "../hackathon/HackathonReadinessCard";
 import { buildSubscanUrl } from "../../services/chain/utils";
 import { normalizeToPolkadot } from "../../services/chain/address";
 import { getChain } from "../../services/chain";
@@ -15,6 +16,7 @@ import type { TxStatus } from "../../services/chain/adapter";
 import {
   canCreatePvmCloseout,
   findLatestCloseout,
+  getPvmCloseoutRuntimeSummary,
   isPvmCloseoutEnabled,
 } from "../../services/closeout/pvmCloseout";
 
@@ -159,6 +161,49 @@ export function ExpensesTab({
     () => findLatestCloseout({ closeouts }),
     [closeouts],
   );
+  const pvmRuntimeSummary = useMemo(() => getPvmCloseoutRuntimeSummary(), []);
+  const showHackathonReadiness = import.meta.env.VITE_HACKATHON_DEMO_MODE === "1" && isCryptoPot;
+  const hackathonReadinessItems = useMemo(() => {
+    if (!showHackathonReadiness) return [];
+
+    const closeoutReady = Boolean(_pot) && canCreatePvmCloseout(_pot as Pot);
+    return [
+      {
+        id: "mode",
+        label: "Demo rail",
+        status: (pvmRuntimeSummary.closeoutSimulation || pvmRuntimeSummary.settlementSimulation ? "warn" : "pass") as "warn" | "pass",
+        detail: pvmRuntimeSummary.closeoutSimulation || pvmRuntimeSummary.settlementSimulation
+          ? "Simulation mode is active. Good for rehearsal, not for live judging."
+          : `Live contract mode on ${pvmRuntimeSummary.chainName}.`,
+      },
+      {
+        id: "contract",
+        label: "Contract target",
+        status: (pvmRuntimeSummary.usingFallbackContractAddress ? "warn" : "pass") as "warn" | "pass",
+        detail: pvmRuntimeSummary.usingFallbackContractAddress
+          ? "Using fallback contract placeholder. Set the deployed registry address before judging."
+          : pvmRuntimeSummary.contractAddress,
+      },
+      {
+        id: "flow",
+        label: "Closeout flow",
+        status: latestCloseout ? "pass" as const : closeoutReady ? "pass" as const : "warn" as const,
+        detail: latestCloseout
+          ? `Closeout ${latestCloseout.closeoutId || latestCloseout.id} is ${latestCloseout.status.replace(/_/g, " ")}.`
+          : closeoutReady
+            ? "This pot is ready to anchor and continue to settlement."
+            : "Settle balances or fix member addresses before judging this pot.",
+      },
+      {
+        id: "demo-story",
+        label: "Judge story",
+        status: "pass" as const,
+        detail: latestCloseout
+          ? "Use Settle Up to show proof attachment or open the proof recovery pot."
+          : "Use Closeout onchain, then Continue to settlement, then finish in history.",
+      },
+    ];
+  }, [showHackathonReadiness, _pot, latestCloseout, pvmRuntimeSummary, isCryptoPot]);
   
   // Convert to schema format for deterministic calculation
   // Preserves custom splits if provided, otherwise computeBalances() will use equal split
@@ -519,6 +564,15 @@ export function ExpensesTab({
 
   return (
     <div className="space-y-3">
+      {showHackathonReadiness && (
+        <div className="mx-3 mt-3">
+          <HackathonReadinessCard
+            title="Hackathon Demo"
+            subtitle="This card tells you whether this pot is ready for the judge walkthrough."
+            items={hackathonReadinessItems}
+          />
+        </div>
+      )}
       {/* Consolidated Hero Dashboard */}
       {expenses.length > 0 && (
         <div className="mx-3 mt-3">
