@@ -13,6 +13,7 @@ describe('ExpenseService', () => {
   const potRepository = {
     get: vi.fn(),
     update: vi.fn(),
+    invalidate: vi.fn(),
   };
 
   const service = new ExpenseService(repository as any, potRepository as any);

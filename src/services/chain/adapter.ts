@@ -40,6 +40,7 @@ export interface PolkadotChainService {
 
   // balances
   getFreeBalance: (address: string) => Promise<string>; // planck string
+  getUsdcBalance: (address: string, assetId?: number) => Promise<string>; // raw asset units (6 decimals)
   estimateFee: (args: EstimateFeeArgs) => Promise<string>; // planck string
 
   // utils

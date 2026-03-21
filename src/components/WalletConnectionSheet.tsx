@@ -7,6 +7,8 @@
 
 import { Wallet, Copy, Check, X, ChevronRight, LogOut } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { copyWithToast } from "../utils/clipboard";
 import { triggerHaptic } from "../utils/haptics";
 
 interface WalletProvider {
@@ -46,14 +48,13 @@ export function WalletConnectionSheet({
 }: WalletConnectionSheetProps) {
   const [copiedAddress, setCopiedAddress] = useState(false);
 
-  const handleCopyAddress = () => {
+  const handleCopyAddress = async () => {
     if (!connectedWallet) return;
-    
-    navigator.clipboard.writeText(connectedWallet.address);
-    setCopiedAddress(true);
-    triggerHaptic('light');
-    
-    setTimeout(() => setCopiedAddress(false), 2000);
+    const ok = await copyWithToast(connectedWallet.address, 'Address copied', (msg) => toast.success(msg));
+    if (ok) {
+      setCopiedAddress(true);
+      setTimeout(() => setCopiedAddress(false), 2000);
+    }
   };
 
   const shortenAddress = (address: string) => {

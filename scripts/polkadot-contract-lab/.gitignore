@@ -1,0 +1,8 @@
+node_modules/
+artifacts/
+artifacts-pvm/
+cache/
+cache-pvm/
+ignition/deployments/
+coverage/
+.env

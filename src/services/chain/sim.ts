@@ -79,6 +79,14 @@ export const simChain: PolkadotChainService = {
     return '1000000000000'; // 100 DOT in planck (10 decimals)
   },
 
+  async getUsdcBalance(_address: string) {
+    if (typeof window !== 'undefined') {
+      const ls = window.localStorage.getItem('mock_usdc_balance');
+      if (ls) return ls;
+    }
+    return '1000000'; // 1 USDC with 6 decimals
+  },
+
   async estimateFee(_args: EstimateFeeArgs) {
     // Small fixed fee (0.01 DOT) for UI display: 0.01 * 10^10 planck
     return '100000000'; // 0.01 DOT in planck
@@ -106,16 +114,26 @@ export const simChain: PolkadotChainService = {
 
   async signAndSendExtrinsic({ onStatus }: SignAndSendArgs) {
     const txHash = fakeHash('0xsim');
+    const emitStatusSafely = (
+      state: 'submitted' | 'inBlock' | 'finalized',
+      ctx?: { txHash?: string; blockHash?: string },
+    ) => {
+      try {
+        onStatus?.(state, ctx);
+      } catch (callbackError) {
+        console.error('[SimChain] onStatus callback error', callbackError);
+      }
+    };
     
-    onStatus?.('submitted', { txHash });
+    emitStatusSafely('submitted', { txHash });
     await delay(250);
 
     const blockHash = fakeBlockHash();
-    onStatus?.('inBlock', { txHash, blockHash });
+    emitStatusSafely('inBlock', { txHash, blockHash });
     await delay(300);
 
     const finalizedBlockHash = fakeBlockHash();
-    onStatus?.('finalized', { txHash, blockHash: finalizedBlockHash });
+    emitStatusSafely('finalized', { txHash, blockHash: finalizedBlockHash });
     
     return { txHash, finalizedBlock: finalizedBlockHash };
   },

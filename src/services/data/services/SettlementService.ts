@@ -36,16 +36,16 @@ export class SettlementService {
    */
   async suggest(potId: string): Promise<SettlementSuggestion[]> {
     const pot = await this.potRepository.get(potId);
-    
+
     // Use existing calculation logic
     // calculatePotSettlements returns CalculatedSettlements with youOwe/owedToYou arrays
     // Type assertion: repository Pot is compatible with calculatePotSettlements Pot
     // (members may have optional role/status in schema, but runtime values match)
     const settlements = calculatePotSettlements(pot as any, 'owner');
-    
+
     // Convert to SettlementSuggestion format
     const suggestions: SettlementSuggestion[] = [];
-    
+
     // Process "you owe" settlements (current user owes others)
     settlements.youOwe.forEach(person => {
       person.breakdown.forEach(breakdown => {
@@ -56,13 +56,13 @@ export class SettlementService {
             suggestions.push({
               from: 'owner', // Current user owes
               to: member.id,
-              amount: breakdown.amount,
+              amount: String(breakdown.amount),
             });
           }
         }
       });
     });
-    
+
     // Process "owed to you" settlements (others owe current user)
     settlements.owedToYou.forEach(person => {
       person.breakdown.forEach(breakdown => {
@@ -73,13 +73,13 @@ export class SettlementService {
             suggestions.push({
               from: member.id, // Member owes current user
               to: 'owner',
-              amount: breakdown.amount,
+              amount: String(breakdown.amount),
             });
           }
         }
       });
     });
-    
+
     return suggestions;
   }
 
@@ -95,13 +95,12 @@ export class SettlementService {
    */
   async recordOnchainSettlement(potId: string, entry: OnchainSettlementHistory): Promise<void> {
     const pot = await this.potRepository.get(potId);
-    
+
     // Add entry to pot history
     const updatedHistory = [...(pot.history || []), entry];
-    
+
     await this.potRepository.update(potId, {
       history: updatedHistory,
     });
   }
 }
-

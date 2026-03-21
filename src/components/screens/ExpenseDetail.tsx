@@ -8,6 +8,8 @@ import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
 import { Skeleton } from "../Skeleton";
 import { formatCurrencyAmount, normalizeCurrency } from "../../utils/currencyFormat";
+import { copyWithToast } from "../../utils/clipboard";
+import { toast } from "sonner";
 
 interface Member {
   id: string;
@@ -92,6 +94,7 @@ export function ExpenseDetail({
   const safeMembers = members ?? [];
   const normalizedBaseCurrency = normalizeCurrency(baseCurrency);
   const isDotPot = normalizedBaseCurrency === 'DOT';
+  const isSimulationMode = import.meta.env.VITE_SIMULATE_CHAIN === '1';
   // For DOT pots, always use baseCurrency; for others, use expense.currency if available
   const displayCurrency = isDotPot ? normalizedBaseCurrency : (expense.currency || normalizedBaseCurrency);
   const formatAmount = (amt: number) => formatCurrencyAmount(amt, displayCurrency);
@@ -108,7 +111,7 @@ export function ExpenseDetail({
   const handleAttest = async () => {
     setIsAttesting(true);
     // If wallet connected and expense was paid by someone else → on-chain attestation
-    if (walletConnected && expense.paidBy !== currentUserId) {
+    if (isSimulationMode && walletConnected && expense.paidBy !== currentUserId) {
       // State 1: Signing
       pushTxToast('signing', {
         amount: expense.amount,
@@ -173,6 +176,15 @@ export function ExpenseDetail({
   const _handleAnchorNow = async () => {
     if (!walletConnected) {
       onConnectWallet?.();
+      return;
+    }
+
+    if (!isSimulationMode) {
+      pushTxToast('error', {
+        amount: expense.amount,
+        currency: displayCurrency,
+        errorMessage: 'On-chain anchoring is not enabled in this environment.',
+      });
       return;
     }
 
@@ -249,9 +261,13 @@ export function ExpenseDetail({
 
   const handleShareReceipt = () => {};
 
-  const handleCopyReceiptLink = () => {
-    navigator.clipboard.writeText(`https://chopdot.app/receipt/${expense.id}`);
-    onCopyReceiptLink?.();
+  const handleCopyReceiptLink = async () => {
+    const ok = await copyWithToast(
+      `https://chopdot.app/receipt/${expense.id}`,
+      'Receipt link copied',
+      (msg) => toast.success(msg)
+    );
+    if (ok) onCopyReceiptLink?.();
   };
 
   return (

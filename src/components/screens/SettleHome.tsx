@@ -1,1121 +1,952 @@
-import { TopBar } from "../TopBar";
-import { PrimaryButton } from "../PrimaryButton";
-import { WalletBanner } from "../WalletBanner";
-import { Banknote, Building2, Wallet, CheckCircle2, CreditCard, Smartphone, Loader2 } from "lucide-react";
-import { useState, useEffect } from "react";
-import { pushTxToast, updateTxToast, isTxActive } from "../../hooks/useTxToasts";
-import { useFeatureFlags } from "../../contexts/FeatureFlagsContext";
-import { useAccount } from "../../contexts/AccountContext";
-import { triggerHaptic } from "../../utils/haptics";
-import { HyperbridgeBridgeSheet } from "../HyperbridgeBridgeSheet";
-import type { Pot } from "../../schema/pot";
-import { getChain } from "../../services/chain";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import Decimal from 'decimal.js';
+import { Info, ShieldCheck } from 'lucide-react';
+import { TopBar } from '../TopBar';
+import { WalletBanner } from '../WalletBanner';
+import { HyperbridgeBridgeSheet } from '../HyperbridgeBridgeSheet';
+import { PrimaryButton } from '../PrimaryButton';
+import { SecondaryButton } from '../SecondaryButton';
+import { clearTxToast, isTxActive } from '../../hooks/useTxToasts';
+import { useFeatureFlags } from '../../contexts/FeatureFlagsContext';
+import { useAccount } from '../../contexts/AccountContext';
+import { useDotPrice } from '../../hooks/useDotPrice';
+import { useFeeEstimate } from '../../hooks/useFeeEstimate';
+import { useSettlementTx } from '../../hooks/useSettlementTx';
+import { settlementAmountInDot } from '../../utils/fiatToDot';
+import { normalizeToPolkadot } from '../../services/chain/address';
+import { BankForm } from '../settlement/BankForm';
+import { PayPalForm } from '../settlement/PayPalForm';
+import { TWINTForm } from '../settlement/TWINTForm';
+import { DotSettlementPanel } from '../settlement/DotSettlementPanel';
+import type { PaymentMethod, SettleHomeProps, SettlementMode } from '../settle/settle-home-types';
+import { SettlementSummaryCard } from '../settle/settlement-summary-card';
+import { PaymentMethodSelector } from '../settle/payment-method-selector';
+import { CashConfirmationScreen } from '../settle/cash-confirmation-screen';
+import { SettleFooter } from '../settle/settle-footer';
 import {
-  computeDisplayPlatformFee,
-  shouldShowPlatformFee,
-  canCollectPlatformFee,
-  formatDOT,
-  formatFiat,
-  formatFeeWithEquivalent,
-  type DisplayCurrency,
-} from '../../utils/platformFee';
-import { getDotPrice } from '../../services/prices/coingecko';
+  getUserFacingCloseoutStatusLabel,
+  getUserFacingLegStatusLabel,
+  getTrackedLegUiState,
+  isPvmCloseoutContractConfigured,
+} from '../../services/closeout/pvmCloseout';
 
-interface Settlement {
-  id: string;
-  name: string;
-  totalAmount: number;
-  direction: "owe" | "owed";
-  pots: Array<{ potId: string; potName: string; amount: number }>;
-}
+const TECHNICAL_PROOF_LABELS: Record<'anchored' | 'recorded' | 'completed', string> = {
+  anchored: 'Settlement package started',
+  recorded: 'Payment recorded',
+  completed: 'Payment confirmed',
+};
 
-interface SettleHomeProps {
-  settlements: Settlement[];
-  onBack: () => void;
-  onConfirm: (method: "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc", reference?: string) => void;
-  onHistory?: () => void;
-  scope?: "pot" | "global";
-  scopeLabel?: string;
-  potId?: string;
-  personId?: string;
-  preferredMethod?: string;
-  recipientAddress?: string; // Optional recipient wallet address for DOT settlements
-  baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
-  onShowToast?: (message: string, type?: "success" | "error" | "info") => void; // Optional toast callback
-  pot?: Pot; // Pot data for pre-settlement checkpoint
-  onUpdatePot?: (updates: { lastCheckpoint?: { hash: string; txHash?: string; at: string; cid?: string } }) => void; // Callback to update pot
-}
+type SettlementProgressStep =
+  | 'wallet-approval'
+  | 'sending-payment'
+  | 'recording-confirmation';
 
 export function SettleHome({
   settlements,
   onBack,
   onConfirm,
   onHistory,
-  scope = "global",
+  onOpenTrackedConfirmation,
+  scope = 'global',
   scopeLabel,
-  potId: _potId,
-  personId: _personId,
   preferredMethod,
   recipientAddress,
-  baseCurrency = "USD", // Default to USD if not provided
+  baseCurrency = 'USD',
   onShowToast,
-  pot: _pot,
-  onUpdatePot: _onUpdatePot,
+  closeoutId,
+  closeoutLegIndex,
+  closeoutProofStatus,
+  onStartSmartSettlement,
+  trackedCloseout,
+  currentUserId,
+  pot,
 }: SettleHomeProps) {
   const isDotPot = baseCurrency === 'DOT';
   const isUsdcPot = baseCurrency === 'USDC';
-  // Check for simulation mode (allows DOT settlement without wallet)
+  const assetSymbol: 'DOT' | 'USDC' = isUsdcPot ? 'USDC' : 'DOT';
+  const defaultCryptoMethod: PaymentMethod = isUsdcPot ? 'usdc' : 'dot';
   const isSimulationMode = import.meta.env.VITE_SIMULATE_CHAIN === '1';
-  // Read feature flags
   const { POLKADOT_APP_ENABLED } = useFeatureFlags();
-  // Use Account context for wallet connection status
   const account = useAccount();
   const walletConnected = account.status === 'connected';
 
-  // Preselection logic
-  const getPreselectedMethod = (): "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc" => {
+  const sumByDirection = (dir: 'owe' | 'owed'): Decimal =>
+    settlements
+      .filter((settlement) => settlement.direction === dir)
+      .reduce((sum, settlement) => sum.plus(new Decimal(settlement.totalAmount)), new Decimal(0));
+  const amountYouOwe = sumByDirection('owe');
+  const amountOwedToYou = sumByDirection('owed');
+  const totalAmount = (amountYouOwe.greaterThan(0) ? amountYouOwe : amountOwedToYou.neg()).toNumber();
+  const isPaying = totalAmount > 0;
+  const counterparty = settlements.length > 0 ? settlements[0]!.name : 'Unknown';
+  const potMemberCount = Array.isArray((pot as { members?: unknown[] } | undefined)?.members)
+    ? ((pot as { members?: unknown[] }).members?.length || 0)
+    : 0;
+
+  const getPreselectedMethod = (): PaymentMethod => {
+    if (!isPaying) return 'bank';
     const pref = preferredMethod?.toLowerCase();
-    
-    if (pref === "bank") return "bank";
-    if (pref === "paypal") return "paypal";
-    if (pref === "twint") return "twint";
-    if (pref === "usdc" && walletConnected && POLKADOT_APP_ENABLED) return "usdc";
-    if (pref === "dot" && walletConnected && POLKADOT_APP_ENABLED) return "dot";
-    
-    // Fallback order: Bank → PayPal → TWINT → DOT (only if wallet connected and enabled)
-    return "bank";
+    if (pref === 'bank') return 'bank';
+    if (pref === 'paypal') return 'paypal';
+    if (pref === 'twint') return 'twint';
+    if (pref === 'usdc' && POLKADOT_APP_ENABLED && !!recipientAddress) return 'usdc';
+    if (pref === 'dot' && POLKADOT_APP_ENABLED && !!recipientAddress) return 'dot';
+    return 'bank';
   };
-  
-  const [selectedMethod, setSelectedMethod] = useState<"cash" | "bank" | "paypal" | "twint" | "dot" | "usdc">(getPreselectedMethod());
-  const [bankReference, setBankReference] = useState("");
-  const [paypalEmail, setPaypalEmail] = useState("");
-  const [twintPhone, setTwintPhone] = useState("");
+
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>(getPreselectedMethod());
+  const [settlementMode, setSettlementMode] = useState<SettlementMode>(trackedCloseout ? 'smart' : 'normal');
+  const [bankReference, setBankReference] = useState('');
+  const [paypalEmail, setPaypalEmail] = useState('');
+  const [twintPhone, setTwintPhone] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showBridgeSheet, setShowBridgeSheet] = useState(false);
-  // const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
-  
-  // Fee estimation state
-  const [feeEstimate, setFeeEstimate] = useState<number | null>(null);
-  const [feeLoading, setFeeLoading] = useState(false);
-  const [feeError, setFeeError] = useState(false);
-  
-  // Fiat equivalent for DOT fees (for display)
-  const [dotPriceUsd, setDotPriceUsd] = useState<number | null>(null);
-  
-  // Settlement loading state
   const [isSettling, setIsSettling] = useState(false);
-  
-  // Update selection only when the preferred method changes
-  // Do NOT change on wallet connect; preserve the user's current tab
+  const [startingSmartSettlement, setStartingSmartSettlement] = useState(false);
+  const [finalityConfirmed, setFinalityConfirmed] = useState(false);
+  const [localTrackedCloseout, setLocalTrackedCloseout] = useState(trackedCloseout ?? null);
+  const [settlementProgressStep, setSettlementProgressStep] = useState<SettlementProgressStep | null>(null);
+
   useEffect(() => {
-    setSelectedMethod((current) => {
-      // If user already chose a method, keep it unless we have no selection
-      return current ?? getPreselectedMethod();
-    });
-  }, [preferredMethod]);
+    setLocalTrackedCloseout(trackedCloseout ?? null);
+    if (trackedCloseout) {
+      setSettlementMode('smart');
+    }
+  }, [trackedCloseout]);
 
-  // Fetch DOT price for fiat equivalent display (for DOT pots OR when DOT method is selected)
   useEffect(() => {
-    const shouldFetchPrice = (isDotPot || selectedMethod === 'dot' || selectedMethod === 'usdc') &&
-                             import.meta.env.VITE_ENABLE_PRICE_API !== '0';
-    if (shouldFetchPrice) {
-      getDotPrice('usd')
-        .then(price => {
-          setDotPriceUsd(price);
-        })
-        .catch(() => {
-          // Keep dotPriceUsd as null if fetch fails
-        });
-    }
-  }, [isDotPot, selectedMethod]);
-
-  // Compute directionally so we don't accidentally net to 0 when both directions exist
-  const amountYouOwe = settlements
-    .filter(s => s.direction === "owe")
-    .reduce((sum, s) => sum + s.totalAmount, 0);
-  const amountOwedToYou = settlements
-    .filter(s => s.direction === "owed")
-    .reduce((sum, s) => sum + s.totalAmount, 0);
-  // Choose the active side: if you owe anything, you are paying; otherwise you are receiving
-  const totalAmount = amountYouOwe > 0 ? amountYouOwe : -amountOwedToYou;
-
-  // Fee estimator - uses real chain service for on-chain payments
-  // Defined after totalAmount to avoid "before initialization" error
-  const estimateNetworkFee = async (): Promise<number> => {
-    // In simulation mode, allow fee estimation without wallet
-    const canEstimateFee = isSimulationMode || (walletConnected && account.address0);
-    const isOnchainMethodSelected = selectedMethod === 'dot' || selectedMethod === 'usdc';
-    if (isOnchainMethodSelected && canEstimateFee && recipientAddress && totalAmount > 0) {
-      try {
-        if (selectedMethod === 'usdc') {
-          return 0.0025;
-        }
-        const chain = await getChain();
-        const fromAddress = isSimulationMode && !account.address0 
-          ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
-          : account.address0!;
-        
-        // Convert amount to DOT if pot is fiat-based
-        let amountDot = Math.abs(totalAmount);
-        if (!isDotPot && dotPriceUsd && dotPriceUsd > 0) {
-          // Convert fiat amount to DOT using current price
-          amountDot = Math.abs(totalAmount) / dotPriceUsd;
-        }
-        
-        const feePlanck = await chain.estimateFee({
-          from: fromAddress,
-          to: recipientAddress,
-          amountDot,
-        });
-        const config = chain.getConfig();
-        // Convert planck to DOT (10 decimals)
-        const feeDot = parseFloat(feePlanck) / Math.pow(10, config.decimals);
-        return feeDot;
-      } catch (error) {
-        console.error('[SettleHome] Fee estimation error:', error);
-        // Fallback to conservative estimate
-        return 0.0025;
-      }
-    }
-    // Stub for non-onchain method or when not connected
-    await new Promise(resolve => setTimeout(resolve, 800));
-    return 0.0015 + Math.random() * 0.002;
-  };
-
-  // Estimate network fee for on-chain methods
-  useEffect(() => {
-    if ((selectedMethod === 'dot' || selectedMethod === 'usdc') && recipientAddress && totalAmount > 0) {
-      setFeeLoading(true);
-      setFeeError(false);
-      estimateNetworkFee()
-        .then(fee => {
-          setFeeEstimate(fee);
-          setFeeLoading(false);
-        })
-        .catch(error => {
-          console.error('[SettleHome] Fee estimation failed:', error);
-          setFeeError(true);
-          setFeeLoading(false);
-          setFeeEstimate(null);
-        });
-    } else {
-      setFeeEstimate(null);
-      setFeeLoading(false);
-      setFeeError(false);
-    }
-  }, [selectedMethod, recipientAddress, totalAmount, walletConnected, account.address0, isDotPot, dotPriceUsd]);
-
-  const isPaying = totalAmount > 0;
-  // Get counterparty name from settlements - if multiple, use the first one
-  // If settlements array is empty, try to get from the personId context
-  const counterparty = settlements.length > 0 
-    ? settlements[0]?.name || "Unknown"
-    : "Unknown";
-  
-  // Format amount based on currency
-  const formatAmount = (amount: number): string => {
-    if (isDotPot) {
-      return `${Math.abs(amount).toFixed(6)} DOT`;
-    }
-    if (isUsdcPot) {
-      return `${Math.abs(amount).toFixed(6)} USDC`;
-    }
-    return `$${Math.abs(amount).toFixed(2)}`;
-  };
-
-  const handleConfirm = async () => {
-    // For on-chain methods, wallet must be connected (handled by AccountMenu in header)
-    if ((selectedMethod === "dot" || selectedMethod === "usdc") && !walletConnected) {
-      // Wallet connection is handled by AccountMenu - user should connect via header
+    if (settlementMode === 'smart') {
+      setSelectedMethod(defaultCryptoMethod);
       return;
     }
 
-    // Pre-settlement checkpoint - REMOVED
-    // Proceed directly to settlement
-    await performSettlement();
-    
-    async function performSettlement() {
-    // For non-onchain methods, show loading state
-    if (selectedMethod !== "dot" && selectedMethod !== "usdc") {
+    setSelectedMethod((current) => {
+      if (current === 'dot' || current === 'usdc') {
+        return getPreselectedMethod();
+      }
+      return current;
+    });
+  }, [defaultCryptoMethod, settlementMode]);
+
+  const activeMethod = settlementMode === 'smart' ? defaultCryptoMethod : selectedMethod;
+  const isCryptoFlowActive = activeMethod === 'dot' || activeMethod === 'usdc';
+  const activeAsset = activeMethod === 'usdc' ? 'USDC' : 'DOT';
+
+  const matchingCloseoutLeg = useMemo(() => {
+    if (!localTrackedCloseout) return undefined;
+    if (typeof closeoutLegIndex === 'number') {
+      return localTrackedCloseout.legs.find((leg) => leg.index === closeoutLegIndex);
+    }
+    return localTrackedCloseout.legs.find((leg) => {
+      if (isPaying) {
+        return leg.fromMemberId === currentUserId;
+      }
+      return leg.toMemberId === currentUserId;
+    });
+  }, [closeoutLegIndex, currentUserId, isPaying, localTrackedCloseout]);
+
+  const smartSettlementStarted = Boolean(
+    localTrackedCloseout &&
+    localTrackedCloseout.status !== 'draft' &&
+    localTrackedCloseout.status !== 'cancelled'
+  );
+  const currentMemberAddress = useMemo(() => {
+    const members = Array.isArray((pot as { members?: Array<{ id: string; address?: string }> } | undefined)?.members)
+      ? ((pot as { members?: Array<{ id: string; address?: string }> }).members || [])
+      : [];
+    const rawAddress = members.find((member) => member.id === currentUserId)?.address;
+    if (!rawAddress) return null;
+    try {
+      return normalizeToPolkadot(rawAddress);
+    } catch {
+      return rawAddress;
+    }
+  }, [currentUserId, pot?.members]);
+  const connectedSenderAddress = useMemo(() => {
+    if (!account.address0) return null;
+    try {
+      return normalizeToPolkadot(account.address0);
+    } catch {
+      return account.address0;
+    }
+  }, [account.address0]);
+  const effectiveRecipientAddress = useMemo(() => {
+    if (!recipientAddress) return undefined;
+    try {
+      return normalizeToPolkadot(recipientAddress);
+    } catch {
+      return recipientAddress;
+    }
+  }, [recipientAddress]);
+  const smartSettlementConfigured = isPvmCloseoutContractConfigured() || isSimulationMode;
+  const trackedLegUiState = getTrackedLegUiState(matchingCloseoutLeg);
+  const smartLegRecorded =
+    trackedLegUiState === 'payment_sent' || trackedLegUiState === 'proof_recorded';
+  const smartLegComplete = trackedLegUiState === 'completed';
+  const waitingForOtherPayer = settlementMode === 'smart' && !isPaying;
+  const hasPayerWalletMismatch = Boolean(
+    settlementMode === 'smart' &&
+    isPaying &&
+    walletConnected &&
+    currentMemberAddress &&
+    connectedSenderAddress &&
+    currentMemberAddress !== connectedSenderAddress
+  );
+  const hasRecipientWalletConflict = Boolean(
+    settlementMode === 'smart' &&
+    isPaying &&
+    walletConnected &&
+    connectedSenderAddress &&
+    effectiveRecipientAddress &&
+    connectedSenderAddress === effectiveRecipientAddress
+  );
+  const showWalletSwitchBlocker = hasPayerWalletMismatch || hasRecipientWalletConflict;
+
+  const formatAmount = (amount: number): string => {
+    const abs = Math.abs(amount);
+    if (isDotPot) return `${abs.toFixed(6)} DOT`;
+    if (isUsdcPot) return `${abs.toFixed(6)} USDC`;
+    if (activeMethod === 'usdc') return `${abs.toFixed(6)} USDC`;
+    return `$${abs.toFixed(2)}`;
+  };
+
+  const { dotPrice: dotPriceUsd } = useDotPrice({ enabled: isDotPot || activeMethod === 'dot' });
+  const { feeEstimate, feeLoading, feeError } = useFeeEstimate({
+    fromAddress: connectedSenderAddress,
+    toAddress: effectiveRecipientAddress ?? null,
+    totalAmount,
+    asset: activeAsset,
+    baseCurrency,
+    dotPriceUsd,
+    enabled: isCryptoFlowActive,
+    isSimulationMode,
+  });
+  const { sendSettlementTx } = useSettlementTx({ account, onShowToast });
+
+  const cryptoAmount = activeMethod === 'dot'
+    ? settlementAmountInDot(totalAmount, isDotPot, dotPriceUsd)
+    : Math.abs(totalAmount);
+  const showConnectWalletNotice = isCryptoFlowActive && !isSimulationMode && !walletConnected;
+  const isCryptoValid = isCryptoFlowActive && (isSimulationMode || walletConnected) && !!effectiveRecipientAddress;
+  const isValid = settlementMode === 'smart'
+    ? isCryptoValid && !hasPayerWalletMismatch && !hasRecipientWalletConflict
+    : !isCryptoFlowActive || isCryptoValid;
+  const isLoading = isSettling || isTxActive() || startingSmartSettlement;
+
+  const smartFlowTitle = (() => {
+    if (!smartSettlementStarted) return 'Step 1: Start smart settlement';
+    if (smartLegComplete) return 'Payment confirmed';
+    if (smartLegRecorded) return 'Payment sent';
+    if (waitingForOtherPayer) return `Waiting for ${counterparty} to pay`;
+    return `Step 2: Pay ${counterparty}`;
+  })();
+
+  const smartFlowDescription = (() => {
+    if (!smartSettlementStarted) {
+      return 'Finalize the tab first. Then ChopDot will guide the payment and record the tracked confirmation automatically.';
+    }
+    if (smartLegComplete) {
+      return 'This payment has been confirmed for the current smart settlement.';
+    }
+    if (smartLegRecorded) {
+      return 'This payment was already sent. ChopDot will keep the tracked state here while proof confirmation catches up.';
+    }
+    if (waitingForOtherPayer) {
+      return 'Tracked settlement has started for this tab. The payer still needs to complete this payment.';
+    }
+    return 'Approve the wallet payment below. ChopDot will attach the tracked confirmation for this tab automatically.';
+  })();
+
+  const normalFlowTitle = isPaying
+    ? `You need to pay ${counterparty}`
+    : `Choose how you want to collect from ${counterparty}`;
+  const normalFlowDescription = isPaying
+    ? 'Choose the normal payment method you want to use for this payment.'
+    : 'Pick the simple offchain path, or switch to tracked payment if you want onchain confirmation.';
+
+  const normalModeDescription = isPaying
+    ? 'Offchain: cash, bank, PayPal, TWINT'
+    : 'Offchain: collect manually and mark it done';
+  const smartModeDescription = isPaying
+    ? 'Onchain: DOT or USDC with payment proof'
+    : 'Onchain: start tracked settlement and wait for payment confirmation';
+  const normalModeLabel = isPaying ? 'Pay normally' : 'Collect normally';
+  const smartModeLabel = isPaying ? 'Smart settle' : 'Track payment';
+
+  const handleConfirm = useCallback(async () => {
+    if (settlementMode === 'smart' && !smartSettlementStarted) {
+      return;
+    }
+
+    if (isCryptoFlowActive && !isSimulationMode && !walletConnected) return;
+
+    if (!isCryptoFlowActive) {
       setIsSettling(true);
-      
-      // Simulate settlement processing
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
+      await new Promise((resolve) => setTimeout(resolve, 800));
       setIsSettling(false);
     }
 
-    if (selectedMethod === "cash") {
+    if (activeMethod === 'cash') {
       setShowConfirmation(true);
       return;
     }
 
-    // On-chain settlement - use real chain service
-    // In simulation mode, allow without wallet connection (will use mock address)
-    const canProceedOnchain = isSimulationMode || (walletConnected && account.address0);
-    if ((selectedMethod === "dot" || selectedMethod === "usdc") && canProceedOnchain && recipientAddress) {
+    if (isCryptoFlowActive && (isSimulationMode || (walletConnected && connectedSenderAddress)) && effectiveRecipientAddress) {
       try {
-          // Convert amount to DOT only when DOT method is selected for non-DOT pot.
-          let amountDot = Math.abs(totalAmount);
-          if (selectedMethod === "dot" && !isDotPot) {
-            if (!dotPriceUsd || dotPriceUsd <= 0) {
-              onShowToast?.(
-                'Unable to convert amount to DOT. Please try again.',
-                'error'
-              );
-              return;
-            }
-            // Convert fiat amount to DOT using current price
-            amountDot = Math.abs(totalAmount) / dotPriceUsd;
-          }
-          
-          // Balance validation: check amount + fee
-          const conservativeFee = feeEstimate ?? 0.01; // Use estimate or conservative fallback
-          const required = (selectedMethod === "dot" ? amountDot : 0) + conservativeFee;
-          
-          if (walletConnected && account.balanceHuman) {
-            const walletBalance = parseFloat(account.balanceHuman || '0');
-            if (walletBalance < required) {
-              onShowToast?.(
-                `Insufficient balance: need ~${formatDOT(required)} (${formatDOT(amountDot)} + ${formatDOT(conservativeFee)} fee)`,
-                'error'
-              );
-              return;
-            }
-          }
-          
         setIsSettling(true);
-        
-        const chain = await getChain();
-        
-        // State 1: Signing
-        pushTxToast('signing', {
-          amount: selectedMethod === "dot" ? amountDot : Math.abs(totalAmount),
-          currency: selectedMethod === "dot" ? 'DOT' : 'USDC',
+        setSettlementProgressStep('wallet-approval');
+        const { txHash } = await sendSettlementTx({
+          fromAddress: connectedSenderAddress || '',
+          toAddress: effectiveRecipientAddress,
+          totalAmount,
+          asset: activeMethod === 'usdc' ? 'USDC' : 'DOT',
+          baseCurrency,
+          dotPriceUsd,
+          feeEstimate,
+          isSimulationMode,
         });
-
-        // Send real on-chain transaction (or simulated in simulation mode)
-        // Use mock address in simulation mode if no wallet connected
-        const fromAddress = isSimulationMode && !account.address0 
-          ? '15mock00000000000000000000000000000A' // Mock sender address for simulation
-          : account.address0!;
-        const result = selectedMethod === "dot"
-          ? await chain.sendDot({
-              from: fromAddress,
-              to: recipientAddress,
-              amountDot,
-              onStatus: (status, ctx) => {
-                if (status === 'submitted') {
-                  updateTxToast('broadcast', {
-                    amount: amountDot,
-                    currency: 'DOT',
-                  });
-                } else if (status === 'inBlock' && ctx?.txHash) {
-                  updateTxToast('inBlock', {
-                    amount: amountDot,
-                    currency: 'DOT',
-                    txHash: ctx.txHash,
-                    fee: feeEstimate || 0.0024,
-                    feeCurrency: 'DOT',
-                  });
-                } else if (status === 'finalized' && ctx?.blockHash) {
-                  updateTxToast('finalized', {
-                    amount: amountDot,
-                    currency: 'DOT',
-                    txHash: result.txHash,
-                    fee: feeEstimate || 0.0024,
-                    feeCurrency: 'DOT',
-                  });
-                }
-              },
-            })
-          : await chain.sendUsdc({
-              from: fromAddress,
-              to: recipientAddress,
-              amountUsdc: Math.abs(totalAmount),
-              onStatus: (status, ctx) => {
-                if (status === 'submitted') {
-                  updateTxToast('broadcast', {
-                    amount: Math.abs(totalAmount),
-                    currency: 'USDC',
-                  });
-                } else if (status === 'inBlock' && ctx?.txHash) {
-                  updateTxToast('inBlock', {
-                    amount: Math.abs(totalAmount),
-                    currency: 'USDC',
-                    txHash: ctx.txHash,
-                    fee: feeEstimate || 0.0024,
-                    feeCurrency: 'DOT',
-                  });
-                } else if (status === 'finalized' && ctx?.blockHash) {
-                  updateTxToast('finalized', {
-                    amount: Math.abs(totalAmount),
-                    currency: 'USDC',
-                    txHash: result.txHash,
-                    fee: feeEstimate || 0.0024,
-                    feeCurrency: 'DOT',
-                  });
-                }
-              },
-            });
-
-        // Refresh balance after successful transaction
-        try {
-          await account.refreshBalance();
-        } catch (refreshError) {
-          console.error('[SettleHome] Balance refresh failed:', refreshError);
-        }
-
-        // Wait a bit for finalization status, then call onConfirm with txHash
-        setTimeout(() => {
-          setIsSettling(false);
-          onConfirm(selectedMethod, result.txHash);
-        }, 2000);
-
-        return;
-      } catch (error: any) {
-        console.error('[SettleHome] on-chain transfer error:', error);
+        setSettlementProgressStep('recording-confirmation');
+        await onConfirm(activeMethod, txHash);
         setIsSettling(false);
-        
-        if (error?.message === 'USER_REJECTED') {
+        setSettlementProgressStep(null);
+        return;
+      } catch (err: unknown) {
+        clearTxToast();
+        setIsSettling(false);
+        setSettlementProgressStep(null);
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        if (message === 'USER_REJECTED') {
           onShowToast?.('Transaction cancelled', 'info');
-        } else if (error?.message?.includes('Insufficient')) {
-          onShowToast?.('Insufficient balance for transaction', 'error');
-        } else {
-          onShowToast?.(`Settlement failed: ${error?.message || 'Unknown error'}`, 'error');
+        } else if (message !== 'INSUFFICIENT_BALANCE' && message !== 'DOT_PRICE_UNAVAILABLE') {
+          onShowToast?.(`Settlement failed: ${message}`, 'error');
         }
         return;
       }
     }
 
-    // Non-onchain methods: direct confirmation
     let reference: string | undefined;
-    if (selectedMethod === "bank") reference = bankReference;
-    if (selectedMethod === "paypal") reference = paypalEmail;
-    if (selectedMethod === "twint") reference = twintPhone;
-    
-    onConfirm(selectedMethod, reference);
+    if (activeMethod === 'bank') reference = bankReference;
+    if (activeMethod === 'paypal') reference = paypalEmail;
+    if (activeMethod === 'twint') reference = twintPhone;
+    onConfirm(activeMethod, reference);
+  }, [
+    activeMethod,
+    bankReference,
+    baseCurrency,
+    connectedSenderAddress,
+    dotPriceUsd,
+    effectiveRecipientAddress,
+    feeEstimate,
+    isCryptoFlowActive,
+    isSimulationMode,
+    onConfirm,
+    onShowToast,
+    paypalEmail,
+    sendSettlementTx,
+    settlementMode,
+    smartSettlementStarted,
+    totalAmount,
+    twintPhone,
+    walletConnected,
+  ]);
+
+  const handleStartSmartSettlement = useCallback(async () => {
+    if (!onStartSmartSettlement) return;
+    if (!finalityConfirmed) {
+      onShowToast?.('Confirm that the tab is ready before starting smart settlement.', 'info');
+      return;
     }
-  };
 
-  // Check if on-chain settlement is valid (requires wallet connected AND recipient address)
-  // In simulation mode, bypass wallet requirement
-  const isOnchainMethod = selectedMethod === "dot" || selectedMethod === "usdc";
-  const isDotValid = isOnchainMethod && (isSimulationMode || walletConnected) && !!recipientAddress;
-  // Show on-chain methods whenever Polkadot is enabled (regardless of recipient address or wallet connection)
-  // This creates FOMO - users see DOT option even without setup, encouraging them to connect wallet and add addresses
-  const showDotMethod = POLKADOT_APP_ENABLED;
-  const showUsdcMethod = POLKADOT_APP_ENABLED && isUsdcPot;
-  const isDotMethodEnabled = walletConnected && !!recipientAddress; // Actually usable
-  const isDotFlowActive = selectedMethod === 'dot';
-  const isUsdcFlowActive = selectedMethod === 'usdc';
-  const isOnchainFlowActive = isDotFlowActive || isUsdcFlowActive;
-  // Calculate DOT amount (convert from fiat if needed)
-  const getAmountDot = (): number | null => {
-    if (totalAmount <= 0) return null;
-    if (isDotPot) return Math.abs(totalAmount);
-    if (dotPriceUsd && dotPriceUsd > 0) return Math.abs(totalAmount) / dotPriceUsd;
-    return null;
-  };
-  const amountDot = getAmountDot();
-  // const amountDotString = amountDot ? amountDot.toFixed(6) : null;
-  // const canAffordDotPayment = amountDotString && walletConnected
-  //   ? account.canAfford(amountDotString)
-  //   : true;
-  const showConnectWalletNotice = isOnchainFlowActive && account.status !== 'connected';
-  
-  const isValid = 
-    selectedMethod === "cash" || 
-    // Bank reference is optional
-    selectedMethod === "bank" || 
-    (selectedMethod === "paypal" && paypalEmail.length > 0) ||
-    (selectedMethod === "twint" && twintPhone.length > 0) || 
-    isDotValid;
+    try {
+      setStartingSmartSettlement(true);
+      const closeout = await onStartSmartSettlement();
+      if (closeout) {
+        setLocalTrackedCloseout(closeout);
+        onShowToast?.(`Smart settlement started. Next: pay ${counterparty} below.`, 'success');
+      }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to start smart settlement';
+      onShowToast?.(message, 'error');
+    } finally {
+      setStartingSmartSettlement(false);
+    }
+  }, [finalityConfirmed, onShowToast, onStartSmartSettlement]);
 
-  // Check if transaction is currently active (disable confirm button)
-  const txActive = isTxActive();
-  
-  // Combined loading state: isSettling (for non-DOT) OR txActive (for DOT)
-  const isLoading = isSettling || txActive;
+  const technicalStatusLabel = closeoutProofStatus
+    ? TECHNICAL_PROOF_LABELS[closeoutProofStatus]
+    : matchingCloseoutLeg?.status
+      ? getUserFacingLegStatusLabel(matchingCloseoutLeg, currentUserId || 'owner')
+      : undefined;
+
+  const showFinalityReview = settlementMode === 'smart' && !smartSettlementStarted;
+  const showNormalPaymentOptions = settlementMode === 'normal';
+  const showSmartPaymentPanel =
+    settlementMode === 'smart' &&
+    smartSettlementStarted &&
+    isPaying &&
+    matchingCloseoutLeg?.status === 'pending';
+  const showRecordedPaymentState =
+    settlementMode === 'smart' &&
+    smartSettlementStarted &&
+    isPaying &&
+    smartLegRecorded &&
+    !smartLegComplete;
+  const showFooter = (showNormalPaymentOptions || showSmartPaymentPanel) && !waitingForOtherPayer;
+  const showModeChooser = !smartSettlementStarted;
+  const canUseManualFallback = smartSettlementStarted && !isPaying;
+  const settlementProgressCopy = (() => {
+    if (!settlementProgressStep) return null;
+    if (settlementProgressStep === 'wallet-approval') {
+      return {
+        title: 'Waiting for wallet approval',
+        body: 'Approve the request in your connected wallet. After that, ChopDot will send the transfer and move to tracked confirmation.',
+      };
+    }
+    if (settlementProgressStep === 'sending-payment') {
+      return {
+        title: 'Sending payment',
+        body: 'The payment is being broadcast to the network now.',
+      };
+    }
+    return {
+      title: 'Recording tracked confirmation',
+      body: 'The payment was sent. ChopDot is now attaching the confirmation to the smart settlement package.',
+    };
+  })();
+  const smartProgressSteps = settlementMode === 'smart'
+    ? [
+      {
+        id: 'start',
+        label: 'Start smart settlement',
+        state: !smartSettlementStarted ? 'current' as const : 'done' as const,
+      },
+      {
+        id: 'approval',
+        label: 'Wait for wallet approval',
+        state: startingSmartSettlement || settlementProgressStep === 'wallet-approval'
+          ? 'current' as const
+          : smartSettlementStarted && (smartLegRecorded || smartLegComplete || settlementProgressStep === 'recording-confirmation')
+            ? 'done' as const
+            : 'upcoming' as const,
+      },
+      {
+        id: 'payment',
+        label: 'Payment sent',
+        state: smartLegRecorded || smartLegComplete
+          ? 'done' as const
+          : settlementProgressStep === 'sending-payment'
+            ? 'current' as const
+            : 'upcoming' as const,
+      },
+      {
+        id: 'proof',
+        label: 'Record proof',
+        state: smartLegComplete
+          ? 'done' as const
+          : settlementProgressStep === 'recording-confirmation'
+            ? 'current' as const
+            : 'upcoming' as const,
+      },
+      {
+        id: 'confirmed',
+        label: 'Payment confirmed',
+        state: smartLegComplete ? 'done' as const : 'upcoming' as const,
+      },
+    ]
+    : [];
+
+  useEffect(() => {
+    if (settlementMode !== 'smart' || !smartSettlementStarted || !isPaying) {
+      return;
+    }
+    if (!smartLegRecorded && !smartLegComplete) {
+      return;
+    }
+    clearTxToast();
+    setIsSettling(false);
+    setSettlementProgressStep(null);
+  }, [isPaying, settlementMode, smartLegComplete, smartLegRecorded, smartSettlementStarted]);
 
   if (showConfirmation) {
     return (
-      <div className="flex flex-col h-full pb-[68px]">
-        <TopBar title="Confirm Cash Settlement" onBack={() => setShowConfirmation(false)} />
-        <div className="flex-1 overflow-auto p-4 space-y-4">
-          <div className="p-4 card text-center space-y-2">
-            <CheckCircle2 className="w-12 h-12 mx-auto" style={{ color: 'var(--success)' }} />
-            <p className="text-body">Mark this cash settlement as complete?</p>
-            <p className="text-caption text-secondary">
-              This will record that you {isPaying ? 'paid' : 'received'} {formatAmount(totalAmount)} in cash
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <PrimaryButton fullWidth onClick={() => onConfirm("cash")}>
-              Confirm Cash Settlement
-            </PrimaryButton>
-            <PrimaryButton fullWidth onClick={() => setShowConfirmation(false)}>
-              Cancel
-            </PrimaryButton>
-          </div>
-        </div>
-      </div>
+      <CashConfirmationScreen
+        isPaying={isPaying}
+        formattedAmount={formatAmount(totalAmount)}
+        onConfirm={() => onConfirm('cash')}
+        onCancel={() => setShowConfirmation(false)}
+      />
     );
   }
 
   return (
     <div className="flex flex-col h-full pb-[68px]">
-      <TopBar 
-        title="Settle Up" 
+      <TopBar
+        title="Settle Up"
         onBack={onBack}
         rightAction={onHistory ? (
-          <button 
-            onClick={onHistory}
-            className="text-label text-foreground hover:opacity-80 transition-opacity"
-          >
+          <button onClick={onHistory} className="text-label text-foreground hover:opacity-80 transition-opacity">
             History
           </button>
         ) : undefined}
       />
-      
+
       <div className="flex-1 overflow-auto p-4 space-y-4">
-        {/* Scope Indicator */}
         {scopeLabel && (
           <div className="flex items-center gap-2 px-3 py-2 bg-muted/10 rounded-lg">
             <span className="text-caption text-secondary">
-              {scope === "pot" ? "📍 Settling:" : "🌐 Across:"}
+              {scope === 'pot' ? 'Settling:' : 'Across:'}
             </span>
-            <span className="text-caption" style={{ fontWeight: 500 }}>
-              {scopeLabel}
-            </span>
+            <span className="text-caption" style={{ fontWeight: 500 }}>{scopeLabel}</span>
           </div>
         )}
-        {/* Settlement Summary Card */}
+
+        <SettlementSummaryCard
+          settlements={settlements}
+          totalAmount={totalAmount}
+          isPaying={isPaying}
+          counterparty={counterparty}
+          assetSymbol={isDotPot ? 'DOT' : isUsdcPot ? 'USDC' : 'USD'}
+          formatAmount={formatAmount}
+        />
+
         <div className="card p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-caption text-secondary">
-                {isPaying ? 'You owe' : 'You are owed'}
-              </p>
-              <p className="text-body" style={{ fontWeight: 500 }}>{counterparty}</p>
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 rounded-full bg-muted/15 p-2">
+              {settlementMode === 'smart' ? (
+                <ShieldCheck className="w-4 h-4 text-foreground" />
+              ) : (
+                <Info className="w-4 h-4 text-foreground" />
+              )}
             </div>
-            <div className="text-right">
-              <p 
-                className="tabular-nums"
-                style={{ 
-                  fontSize: '28px',
-                  fontWeight: 600,
-                  lineHeight: 1.2,
-                  color: isPaying ? 'var(--foreground)' : 'var(--money)'
-                }}
-              >
-                {formatAmount(totalAmount)}
+            <div className="space-y-1">
+              <p className="text-body font-medium">{settlementMode === 'smart' ? smartFlowTitle : normalFlowTitle}</p>
+              <p className="text-caption text-secondary">
+                {settlementMode === 'smart'
+                  ? smartFlowDescription
+                  : normalFlowDescription}
               </p>
+              {canUseManualFallback && settlementMode === 'smart' && (
+                <button
+                  type="button"
+                  onClick={() => setSettlementMode('normal')}
+                  className="pt-1 text-caption text-foreground underline underline-offset-4 hover:opacity-80 transition-opacity"
+                >
+                  Collect manually instead
+                </button>
+              )}
+              {canUseManualFallback && settlementMode === 'normal' && (
+                <button
+                  type="button"
+                  onClick={() => setSettlementMode('smart')}
+                  className="pt-1 text-caption text-foreground underline underline-offset-4 hover:opacity-80 transition-opacity"
+                >
+                  Back to tracked status
+                </button>
+              )}
             </div>
           </div>
+        </div>
 
-          {/* Breakdown */}
-          {settlements.length > 0 && settlements[0]?.pots && settlements[0]?.pots.length > 1 && (
-            <div className="pt-2 border-t border-border/50 space-y-1">
-              {settlements[0]?.pots?.map(pot => (
-                <div key={pot.potId} className="flex justify-between text-caption text-secondary">
-                  <span>{pot.potName}</span>
-                  <span className="tabular-nums" style={{ fontWeight: 500 }}>
-                    {isDotPot ? `${pot.amount.toFixed(6)} DOT` : isUsdcPot ? `${pot.amount.toFixed(6)} USDC` : `$${pot.amount.toFixed(2)}`}
+        {showModeChooser && (
+          <div className="space-y-3">
+            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">
+              Choose how to settle
+            </label>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {(['normal', 'smart'] as SettlementMode[]).map((mode) => {
+                const active = settlementMode === mode;
+                return (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setSettlementMode(mode)}
+                    className={`card p-4 rounded-2xl text-left transition-all duration-200 ${
+                      active ? 'border border-foreground/40 shadow-[var(--shadow-card)]' : 'border border-border/60 hover:border-foreground/20'
+                    }`}
+                  >
+                    <p className="text-body font-medium">{mode === 'normal' ? normalModeLabel : smartModeLabel}</p>
+                    <p className="mt-1 text-caption text-secondary">
+                      {mode === 'normal' ? normalModeDescription : smartModeDescription}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {settlementMode === 'smart' && localTrackedCloseout && (
+          <div className="card p-4 space-y-2">
+            <p className="text-body font-medium">{getUserFacingCloseoutStatusLabel(localTrackedCloseout)}</p>
+            {smartSettlementStarted && isPaying && !smartLegComplete && (
+              <p className="text-caption text-secondary">
+                {smartLegRecorded
+                  ? 'Payment detected. ChopDot is keeping the tracked state aligned for this leg.'
+                  : 'Step 1 complete. Pay the highlighted leg below to finish this tab.'}
+              </p>
+            )}
+            <p className="text-caption text-secondary">
+              {localTrackedCloseout.settledLegCount} of {localTrackedCloseout.totalLegCount} payment
+              {localTrackedCloseout.totalLegCount === 1 ? '' : 's'} confirmed so far.
+            </p>
+          </div>
+        )}
+
+        {settlementMode === 'smart' && isPaying && (
+          <div className="card p-4 space-y-3">
+            <p className="text-body font-medium">Tracked payment progress</p>
+            <div className="space-y-2">
+              {smartProgressSteps.map((step) => (
+                <div key={step.id} className="flex items-center justify-between gap-3">
+                  <span className="text-caption text-secondary">{step.label}</span>
+                  <span
+                    className={`text-caption ${
+                      step.state === 'done'
+                        ? 'text-foreground'
+                        : step.state === 'current'
+                          ? 'text-foreground'
+                          : 'text-secondary'
+                    }`}
+                    style={{ fontWeight: step.state === 'upcoming' ? 400 : 600 }}
+                  >
+                    {step.state === 'done' ? 'Done' : step.state === 'current' ? 'In progress' : 'Up next'}
                   </span>
                 </div>
               ))}
             </div>
-          )}
-        </div>
-
-        {/* Wallet Banner for on-chain methods - Only show when wallet is connected to display balance */}
-        {(selectedMethod === "dot" || selectedMethod === "usdc") && walletConnected && (
-          <WalletBanner />
+          </div>
         )}
 
-
-        {/* Payment Method Tabs */}
-        <div className="space-y-2">
-          <label className="text-caption text-secondary">Payment Method</label>
-          
-          {/* Tab Buttons */}
-          <div className={`card p-1 grid gap-1 ${showUsdcMethod ? 'grid-cols-6' : POLKADOT_APP_ENABLED && showDotMethod ? 'grid-cols-5' : 'grid-cols-4'}`}>
-            <button
-              onClick={() => setSelectedMethod("cash")}
-              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${
-                selectedMethod === "cash"
-                  ? 'bg-background shadow-sm'
-                  : 'hover:bg-muted/5'
-              }`}
-            >
-              <div className="flex flex-col items-center gap-1">
-                <Banknote className="w-5 h-5" style={{ color: selectedMethod === "cash" ? 'var(--foreground)' : 'var(--muted)' }} />
-                <span className="text-caption" style={{ 
-                  color: selectedMethod === "cash" ? 'var(--foreground)' : 'var(--muted)',
-                  fontWeight: selectedMethod === "cash" ? 500 : 400
-                }}>
-                  Cash
-                </span>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setSelectedMethod("bank")}
-              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${
-                selectedMethod === "bank"
-                  ? 'bg-background shadow-sm'
-                  : 'hover:bg-muted/5'
-              }`}
-            >
-              <div className="flex flex-col items-center gap-1">
-                <Building2 className="w-5 h-5" style={{ color: selectedMethod === "bank" ? 'var(--foreground)' : 'var(--muted)' }} />
-                <span className="text-caption" style={{ 
-                  color: selectedMethod === "bank" ? 'var(--foreground)' : 'var(--muted)',
-                  fontWeight: selectedMethod === "bank" ? 500 : 400
-                }}>
-                  Bank
-                </span>
-              </div>
-            </button>
-            
-            <button
-              onClick={() => setSelectedMethod("paypal")}
-              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${
-                selectedMethod === "paypal"
-                  ? 'bg-background shadow-sm'
-                  : 'hover:bg-muted/5'
-              }`}
-            >
-              <div className="flex flex-col items-center gap-1">
-                <CreditCard className="w-5 h-5" style={{ color: selectedMethod === "paypal" ? 'var(--foreground)' : 'var(--muted)' }} />
-                <span className="text-caption" style={{ 
-                  color: selectedMethod === "paypal" ? 'var(--foreground)' : 'var(--muted)',
-                  fontWeight: selectedMethod === "paypal" ? 500 : 400
-                }}>
-                  PayPal
-                </span>
-              </div>
-            </button>
-            
-            <button
-              onClick={() => setSelectedMethod("twint")}
-              className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all ${
-                selectedMethod === "twint"
-                  ? 'bg-background shadow-sm'
-                  : 'hover:bg-muted/5'
-              }`}
-            >
-              <div className="flex flex-col items-center gap-1">
-                <Smartphone className="w-5 h-5" style={{ color: selectedMethod === "twint" ? 'var(--foreground)' : 'var(--muted)' }} />
-                <span className="text-caption" style={{ 
-                  color: selectedMethod === "twint" ? 'var(--foreground)' : 'var(--muted)',
-                  fontWeight: selectedMethod === "twint" ? 500 : 400
-                }}>
-                  TWINT
-                </span>
-              </div>
-            </button>
-            
-            {POLKADOT_APP_ENABLED && showDotMethod && (
-              <button
-                onClick={() => {
-                  if (isDotMethodEnabled) {
-                    setSelectedMethod("dot");
-                  } else {
-                    // Show wallet connection prompt
-                    triggerHaptic('light');
-                    onShowToast?.('Connect your wallet to pay with DOT', 'info');
-                  }
-                }}
-                disabled={!isDotMethodEnabled}
-                className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all relative ${
-                  selectedMethod === "dot"
-                    ? 'bg-background shadow-sm'
-                    : isDotMethodEnabled
-                    ? 'hover:bg-muted/5'
-                    : 'opacity-60 cursor-not-allowed'
-                }`}
-                title={!isDotMethodEnabled ? 'Connect wallet to pay with DOT' : undefined}
-              >
-                <div className="flex flex-col items-center gap-1">
-                  <Wallet className="w-5 h-5" style={{ 
-                    color: selectedMethod === "dot" 
-                      ? 'var(--foreground)' 
-                      : isDotMethodEnabled 
-                        ? 'var(--muted)' 
-                        : 'var(--muted)'
-                  }} />
-                  <span className="text-caption" style={{ 
-                    color: selectedMethod === "dot" 
-                      ? 'var(--foreground)' 
-                      : isDotMethodEnabled 
-                        ? 'var(--muted)' 
-                        : 'var(--muted)',
-                    fontWeight: selectedMethod === "dot" ? 500 : 400
-                  }}>
-                    DOT
-                  </span>
-                  {!walletConnected && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-[var(--accent)] rounded-full border border-background" 
-                      title="Connect wallet to unlock" />
-                  )}
-                </div>
-              </button>
-            )}
-            {showUsdcMethod && (
-              <button
-                onClick={() => {
-                  if (isDotMethodEnabled) {
-                    setSelectedMethod("usdc");
-                  } else {
-                    triggerHaptic('light');
-                    onShowToast?.('Connect your wallet to pay with USDC', 'info');
-                  }
-                }}
-                disabled={!isDotMethodEnabled}
-                className={`px-2 py-2.5 rounded-[var(--r-lg)] transition-all relative ${
-                  selectedMethod === "usdc"
-                    ? 'bg-background shadow-sm'
-                    : isDotMethodEnabled
-                    ? 'hover:bg-muted/5'
-                    : 'opacity-60 cursor-not-allowed'
-                }`}
-                title={!isDotMethodEnabled ? 'Connect wallet to pay with USDC' : undefined}
-              >
-                <div className="flex flex-col items-center gap-1">
-                  <Wallet className="w-5 h-5" style={{ color: selectedMethod === "usdc" ? 'var(--foreground)' : 'var(--muted)' }} />
-                  <span className="text-caption" style={{ color: selectedMethod === "usdc" ? 'var(--foreground)' : 'var(--muted)', fontWeight: selectedMethod === "usdc" ? 500 : 400 }}>
-                    USDC
-                  </span>
-                  {!walletConnected && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-[var(--accent)] rounded-full border border-background" title="Connect wallet to unlock" />
-                  )}
-                </div>
-              </button>
-            )}
+        {settlementMode === 'smart' && settlementProgressCopy && (
+          <div className="card p-4 space-y-2 border border-foreground/10 bg-muted/10">
+            <p className="text-body font-medium">{settlementProgressCopy.title}</p>
+            <p className="text-caption text-secondary">{settlementProgressCopy.body}</p>
           </div>
-          {/* Show FOMO message when wallet not connected (DOT button is visible) */}
-          {(showDotMethod || showUsdcMethod) && !walletConnected && (
-            <div className="mt-2 p-2 rounded-lg bg-[var(--accent)]/10 border border-[var(--accent)]/20">
-              <p className="text-caption" style={{ color: 'var(--accent)' }}>
-                💡 Connect your wallet to unlock on-chain settlement (DOT/USDC)
+        )}
+
+        {settlementMode === 'smart' && showFinalityReview && (
+          <div className="card p-4 space-y-4">
+            <div className="space-y-1">
+              <p className="text-body font-medium">Smart settlement</p>
+              <p className="text-caption text-secondary">
+                Start the tracked version of settlement for this tab. Once it starts, ChopDot will guide the payment and record the confirmation.
               </p>
             </div>
-          )}
-          {/* Show message when wallet connected but no recipient address */}
-          {(showDotMethod || showUsdcMethod) && walletConnected && !isDotMethodEnabled && (
-            <p className="text-caption text-secondary mt-2">
-              Add a wallet address for this person in Members to complete on-chain settlement.
-            </p>
-          )}
-        </div>
 
-        {/* Method Details */}
-        {selectedMethod === "cash" && (
-          <div className="card p-4">
-            <p className="text-caption text-secondary">
-              Mark this payment as cash. No additional details needed.
-            </p>
-          </div>
-        )}
-
-        {selectedMethod === "bank" && (
-          <div className="card p-4 space-y-3">
-            <div>
-              <label className="text-caption text-secondary block mb-1.5">
-                Payment Reference (Optional)
-              </label>
-              <input
-                type="text"
-                value={bankReference}
-                onChange={(e) => setBankReference(e.target.value)}
-                placeholder="e.g., Invoice #123"
-                className="w-full px-3 py-2 input-field text-body"
-              />
-            </div>
-            <p className="text-caption text-secondary">
-              Bank transfer. Add a reference to help track this payment.
-            </p>
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={async () => {
-                  const amountStr = `$${Math.abs(totalAmount).toFixed(2)}`;
-                  const details = `Bank transfer details\nAmount: ${amountStr}\nReference: ${bankReference || '(none)'}\nCounterparty: ${counterparty}`;
-                  try {
-                    await navigator.clipboard.writeText(details);
-                    onShowToast?.('Bank details copied', 'success');
-                  } catch (error) {
-                    console.warn('[SettleHome] Failed to copy to clipboard:', error);
-                    onShowToast?.('Failed to copy', 'error');
-                  }
-                }}
-                className="px-3 py-2 rounded-lg bg-muted/20 text-caption hover:bg-muted/30 transition"
-              >
-                Copy bank details
-              </button>
-            </div>
-          </div>
-        )}
-        
-        {selectedMethod === "paypal" && (
-          <div className="card p-4 space-y-3">
-            <div>
-              <label className="text-caption text-secondary block mb-1.5">
-                PayPal Email
-              </label>
-              <input
-                type="email"
-                value={paypalEmail}
-                onChange={(e) => setPaypalEmail(e.target.value)}
-                placeholder="recipient@example.com"
-                className="w-full px-3 py-2 input-field text-body"
-              />
-            </div>
-            <p className="text-caption text-secondary">
-              Send payment via PayPal to the recipient's email address.
-            </p>
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={async () => {
-                  const amountStr = `$${Math.abs(totalAmount).toFixed(2)}`;
-                  const text = `Pay ${amountStr} to ${counterparty} via PayPal (${paypalEmail || 'email'})`;
-                  try {
-                    await navigator.clipboard.writeText(text);
-                    onShowToast?.('PayPal details copied', 'success');
-                  } catch (error) {
-                    console.warn('[SettleHome] Failed to copy to clipboard:', error);
-                    onShowToast?.('Failed to copy', 'error');
-                  }
-                }}
-                className="px-3 py-2 rounded-lg bg-muted/20 text-caption hover:bg-muted/30 transition"
-              >
-                Copy email + amount
-              </button>
-              {paypalEmail && (
-                <a
-                  href={`mailto:${encodeURIComponent(paypalEmail)}?subject=${encodeURIComponent('Payment via PayPal')}&body=${encodeURIComponent('Amount: $' + Math.abs(totalAmount).toFixed(2))}`}
-                  className="px-3 py-2 rounded-lg bg-background border border-border text-caption hover:bg-muted/10 transition"
-                >
-                  Open mail
-                </a>
+            <div className="rounded-2xl bg-muted/10 p-4 space-y-2">
+              {!smartSettlementConfigured && (
+                <p className="text-caption text-secondary">
+                  Smart settlement is not configured yet for this app build. Add the deployed closeout contract address before continuing.
+                </p>
               )}
-            </div>
-          </div>
-        )}
-        
-        {selectedMethod === "twint" && (
-          <div className="card p-4 space-y-3">
-            <div>
-              <label className="text-caption text-secondary block mb-1.5">
-                TWINT Phone Number
+              <p className="text-caption text-secondary">
+                {potMemberCount > 2
+                  ? 'This tab has multiple participants. Make sure everyone is done adding expenses before you continue.'
+                  : 'Make sure the balances are final before you continue.'}
+              </p>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={finalityConfirmed}
+                  onChange={(event) => setFinalityConfirmed(event.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-border bg-background"
+                />
+                <span className="text-caption text-secondary">
+                  {potMemberCount > 2
+                    ? 'I confirm this tab is ready to settle. If something changes later, the tab will need to be reopened and rebalanced.'
+                    : 'I confirm the balances are final and ready for smart settlement.'}
+                </span>
               </label>
-              <input
-                type="tel"
-                value={twintPhone}
-                onChange={(e) => setTwintPhone(e.target.value)}
-                placeholder="+41 79 123 45 67"
-                className="w-full px-3 py-2 input-field text-body"
-              />
             </div>
-            <p className="text-caption text-secondary">
-              Send payment via TWINT to the recipient's mobile number.
-            </p>
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={async () => {
-                  const amountStr = `$${Math.abs(totalAmount).toFixed(2)}`;
-                  const text = `TWINT payment: ${amountStr} to ${twintPhone || 'phone'} (${counterparty})`;
-                  try {
-                    await navigator.clipboard.writeText(text);
-                    onShowToast?.('TWINT details copied', 'success');
-                  } catch (error) {
-                    console.warn('[SettleHome] Failed to copy to clipboard:', error);
-                    onShowToast?.('Failed to copy', 'error');
-                  }
-                }}
-                className="px-3 py-2 rounded-lg bg-muted/20 text-caption hover:bg-muted/30 transition"
-              >
-                Copy phone + amount
-              </button>
-              {twintPhone && (
-                <a
-                  href={`sms:${encodeURIComponent(twintPhone)}?&body=${encodeURIComponent('Amount: $' + Math.abs(totalAmount).toFixed(2))}`}
-                  className="px-3 py-2 rounded-lg bg-background border border-border text-caption hover:bg-muted/10 transition"
-                >
-                  Open SMS
-                </a>
-              )}
-            </div>
-          </div>
-        )}
 
-        {POLKADOT_APP_ENABLED && isOnchainFlowActive && (
-          <div className="card p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-gradient-to-br from-pink-400 to-purple-500" />
-              <p className="text-body font-medium">Polkadot Settlement</p>
-            </div>
-                    <p className="text-caption text-secondary">
-                      {isSimulationMode || walletConnected
-                        ? `Send ${formatAmount(totalAmount)} on Polkadot${isUsdcFlowActive ? ' Asset Hub (USDC)' : ''}. This will create an on-chain transaction${isSimulationMode ? ' (simulated)' : ''}.`
-                        : `Connect your Polkadot wallet to settle on-chain in ${baseCurrency}.`
-                      }
-                    </p>
-
-            {/* From/To details when wallet connected (or simulation mode) and address available */}
-            {(isSimulationMode || walletConnected) && recipientAddress && (
-              <div className="pt-3 grid gap-2 text-caption">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-muted">From</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-label truncate max-w-[180px]">
-                      {((isSimulationMode && !account.address0) 
-                        ? '15mock00000000000000000000000000000A' 
-                        : (account.address0 || '')).slice(0, 6)}...{((isSimulationMode && !account.address0) 
-                        ? '15mock00000000000000000000000000000A' 
-                        : (account.address0 || '')).slice(-6)}
-                    </span>
-                    <button
-                      className="text-micro underline opacity-70 hover:opacity-100"
-                      onClick={() => {
-                        const addressToCopy = (isSimulationMode && !account.address0) 
-                          ? '15mock00000000000000000000000000000A' 
-                          : (account.address0 || '');
-                        navigator.clipboard.writeText(addressToCopy)
-                          .then(() => onShowToast?.('Copied sender address', 'info'))
-                          .catch((error) => {
-                            console.warn('[SettleHome] Failed to copy address:', error);
-                            onShowToast?.('Failed to copy address', 'error');
-                          });
-                      }}
-                    >
-                      Copy
-                    </button>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-muted">To</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-label truncate max-w-[180px]">
-                      {recipientAddress.slice(0, 6)}...{recipientAddress.slice(-6)}
-                    </span>
-                    <button
-                      className="text-micro underline opacity-70 hover:opacity-100"
-                      onClick={() => {
-                        navigator.clipboard.writeText(recipientAddress)
-                          .then(() => onShowToast?.('Copied recipient address', 'info'))
-                          .catch((error) => {
-                            console.warn('[SettleHome] Failed to copy address:', error);
-                            onShowToast?.('Failed to copy address', 'error');
-                          });
-                      }}
-                    >
-                      Copy
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Fee & Total Section - Only visible when wallet connected */}
-            {walletConnected && (
-              <div className="pt-3 space-y-3">
-                {/* Loading State */}
-                {feeLoading && (
-                  <div className="flex items-center gap-2 text-caption text-muted">
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    <span>Estimating…</span>
-                  </div>
-                )}
-
-                {/* Network Fee Row - Always show for DOT transactions */}
-                {isOnchainFlowActive && (
-                  <div className="flex justify-between text-caption">
-                    <span className="text-muted">Network fee (est.):</span>
-                    {feeLoading ? (
-                      <span className="tabular-nums text-muted">Calculating...</span>
-                    ) : feeEstimate !== null && !feeError ? (
-                      <span className="tabular-nums text-muted">{formatDOT(feeEstimate)}</span>
-                    ) : (
-                      <span className="tabular-nums text-muted">~{formatDOT(0.002)}</span>
-                    )}
-                  </div>
-                )}
-
-                {/* Platform Fee Row (display-only) */}
-                {shouldShowPlatformFee() && !feeLoading && (() => {
-                  const displayCurrency = baseCurrency as DisplayCurrency;
-                  const { pctStr, fee, currency } = computeDisplayPlatformFee(
-                    totalAmount,
-                    displayCurrency
-                  );
-                  const suffix = canCollectPlatformFee() ? '' : ' • not charged';
-                  
-                  // For DOT pots, show DOT + fiat equivalent if available
-                  if (currency === 'DOT' && dotPriceUsd && dotPriceUsd > 0) {
-                    const fiatEquivalent = fee * dotPriceUsd;
-                  return (
-                    <div className="flex justify-between text-caption">
-                        <span className="text-muted">App fee ({pctStr}%){suffix}</span>
-                        <span className="tabular-nums text-muted">
-                          {formatFeeWithEquivalent(fee, fiatEquivalent, 'USD')}
-                        </span>
-                      </div>
-                    );
-                  }
-                  
-                  // For fiat pots or when price unavailable, show in pot currency
-                  return (
-                    <div className="flex justify-between text-caption">
-                      <span className="text-muted">App fee ({pctStr}%){suffix}</span>
-                      <span className="tabular-nums text-muted">{formatFiat(fee, currency)}</span>
-                    </div>
-                  );
-                })()}
-
-                {/* Divider */}
-                {!feeLoading && (
-                  <div className="border-t border-border/50" />
-                )}
-
-                {/* Total Row - Always show when not loading */}
-                {!feeLoading && (
-                  <div className="flex justify-between items-start">
-                    <span className="text-body font-medium">Total you'll send:</span>
-                    <div className="text-right">
-                      {isDotFlowActive && !isDotPot && dotPriceUsd && dotPriceUsd > 0 && amountDot ? (
-                        // Show both fiat and DOT amounts for fiat pots when DOT method selected
-                        <>
-                          <p className="text-body font-medium tabular-nums">{formatAmount(totalAmount)}</p>
-                          <p className="text-caption text-muted tabular-nums">
-                            ≈ {formatDOT(amountDot)} DOT
-                          </p>
-                        </>
-                      ) : (
-                        <p className="text-body font-medium tabular-nums">{formatAmount(totalAmount)}</p>
-                      )}
-                      {isOnchainFlowActive && (
-                        <p className="text-caption text-muted tabular-nums">
-                          + {feeEstimate !== null && !feeError 
-                            ? formatDOT(feeEstimate) 
-                            : formatDOT(0.002)} (network fee)
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <button
-              onClick={() => setShowBridgeSheet(true)}
-              className="text-caption underline text-secondary hover:text-foreground transition-colors"
+            <PrimaryButton
+              fullWidth
+              onClick={() => void handleStartSmartSettlement()}
+              disabled={!finalityConfirmed || startingSmartSettlement || !smartSettlementConfigured}
+              loading={startingSmartSettlement}
             >
-              Need funds? Open Hyperbridge
-            </button>
-
-            {/* On-chain method info - Show when selected but wallet not connected */}
-            {isOnchainFlowActive && !walletConnected && (
-              <div className="pt-3 border-t border-border/50">
-                <div className="card p-4 space-y-3 bg-[var(--accent)]/5 border border-[var(--accent)]/20">
-                  <div className="flex items-start gap-3">
-                    <Wallet className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: 'var(--accent)' }} />
-                    <div className="flex-1 space-y-2">
-                      <p className="text-body" style={{ fontWeight: 500 }}>
-                        Connect your wallet to pay with DOT
-                      </p>
-                      <p className="text-caption text-secondary">
-                        Pay directly on the Polkadot blockchain — instant, secure, and transparent. Connect your wallet to get started.
-                      </p>
-                      <button
-                        onClick={() => {
-                          triggerHaptic('medium');
-                          // Trigger wallet connection flow
-                          account.connectExtension().catch((error: any) => {
-                            console.error('[SettleHome] Failed to connect wallet:', error);
-                          });
-                        }}
-                        className="mt-2 px-4 py-2 rounded-lg bg-[var(--accent)] text-white text-body font-medium hover:opacity-90 transition-opacity active:scale-[0.98]"
-                      >
-                        Connect Wallet
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Warning: No recipient address */}
-            {walletConnected && !recipientAddress && isOnchainFlowActive && (
-              <div className="pt-3 border-t border-border/50">
-                <div className="p-2 bg-yellow-500/10 dark:bg-yellow-500/20 rounded-lg border border-yellow-500/30">
-                  <p className="text-micro text-yellow-700 dark:text-yellow-300">
-                    ⚠️ No wallet address on file for {counterparty}. Please add their wallet address in the Members tab to settle on-chain.
-                  </p>
-                </div>
-              </div>
+              Start smart settlement
+            </PrimaryButton>
+            {startingSmartSettlement && (
+              <p className="text-caption text-secondary">
+                Step 1 of 2: waiting for wallet approval and creating the settlement package. This can take a few seconds after you approve in your connected wallet.
+              </p>
             )}
           </div>
         )}
-      </div>
 
-      {/* Bottom CTA */}
-      <div className="p-4 bg-background border-t border-border">
-        {isOnchainFlowActive && (
+        {settlementMode === 'smart' && walletConnected && showSmartPaymentPanel && <WalletBanner />}
+
+        {showNormalPaymentOptions && (
           <>
-            {showConnectWalletNotice && (
-              <div className="mb-3 p-3 rounded-lg border bg-muted/10 space-y-2" style={{ borderColor: 'var(--border)' }}>
-                <p className="text-label" style={{ fontWeight: 500 }}>You'll need DOT on Polkadot to settle.</p>
-                <PrimaryButton
-                  fullWidth
-                  onClick={() => {
-                    void account.connectExtension().catch((error: any) => {
-                      const message = error?.message || 'Failed to connect wallet';
-                      onShowToast?.(message, 'error');
-                    });
-                  }}
-                >
-                  Connect wallet
-                </PrimaryButton>
+            <PaymentMethodSelector
+              selectedMethod={selectedMethod}
+              onSelectMethod={setSelectedMethod}
+              polkadotEnabled={false}
+              showCryptoMethod={false}
+              isCryptoMethodEnabled={false}
+              walletConnected={walletConnected}
+              cryptoLabel={assetSymbol}
+              onShowToast={onShowToast}
+            />
+
+            {selectedMethod === 'cash' && (
+              <div className="card p-4">
+                <p className="text-caption text-secondary">
+                  {isPaying
+                    ? 'Mark this payment as cash. No additional details needed.'
+                    : 'Mark this payment as collected in cash. No additional details needed.'}
+                </p>
               </div>
+            )}
+
+            {selectedMethod === 'bank' && onShowToast && (
+              <BankForm
+                bankReference={bankReference}
+                onBankReferenceChange={setBankReference}
+                totalAmount={totalAmount}
+                counterparty={counterparty}
+                onShowToast={onShowToast}
+              />
+            )}
+
+            {selectedMethod === 'paypal' && onShowToast && (
+              <PayPalForm
+                paypalEmail={paypalEmail}
+                onPaypalEmailChange={setPaypalEmail}
+                totalAmount={totalAmount}
+                counterparty={counterparty}
+                onShowToast={onShowToast}
+              />
+            )}
+
+            {selectedMethod === 'twint' && onShowToast && (
+              <TWINTForm
+                twintPhone={twintPhone}
+                onTwintPhoneChange={setTwintPhone}
+                totalAmount={totalAmount}
+                counterparty={counterparty}
+                onShowToast={onShowToast}
+              />
             )}
           </>
         )}
-        <div title={isOnchainFlowActive && !recipientAddress ? "No wallet address on file for this member" : undefined}>
-          <PrimaryButton
-            fullWidth
-            onClick={handleConfirm}
-            disabled={!isValid || isLoading}
-            loading={isLoading}
-          >
-            {isOnchainFlowActive && !isSimulationMode && !walletConnected
-              ? "Connect Wallet in Header"
-              : isOnchainFlowActive && !recipientAddress
-              ? "Add Wallet Address Required"
-              : `Confirm ${selectedMethod === "cash" ? "Cash" : selectedMethod === "bank" ? "Bank" : selectedMethod === "paypal" ? "PayPal" : selectedMethod === "twint" ? "TWINT" : selectedMethod === "usdc" ? "USDC" : "DOT"} Settlement`
-            }
-          </PrimaryButton>
-        </div>
+
+        {POLKADOT_APP_ENABLED && showSmartPaymentPanel && onShowToast && (
+          <>
+            {showWalletSwitchBlocker && (
+              <div className="card p-4 space-y-2 border border-yellow-500/30 bg-yellow-500/10">
+                <p className="text-body font-medium">Switch to your paying wallet</p>
+                <p className="text-caption text-secondary">
+                  {hasRecipientWalletConflict
+                    ? 'The connected wallet matches the recipient for this payment. Switch Talisman to the wallet that owes the payment before continuing.'
+                    : `You are signed in as the payer for this leg, but the connected wallet does not match your saved payout wallet. Switch Talisman to ${currentMemberAddress?.slice(0, 6)}...${currentMemberAddress?.slice(-6)} before continuing.`}
+                </p>
+                <div className="pt-2 space-y-1 text-caption text-secondary">
+                  {currentMemberAddress && (
+                    <div className="flex items-center justify-between gap-3">
+                      <span>Expected payer</span>
+                      <span className="font-mono text-right">
+                        {currentMemberAddress.slice(0, 6)}...{currentMemberAddress.slice(-6)}
+                      </span>
+                    </div>
+                  )}
+                  {connectedSenderAddress && (
+                    <div className="flex items-center justify-between gap-3">
+                      <span>Connected wallet</span>
+                      <span className="font-mono text-right">
+                        {connectedSenderAddress.slice(0, 6)}...{connectedSenderAddress.slice(-6)}
+                      </span>
+                    </div>
+                  )}
+                  {effectiveRecipientAddress && (
+                    <div className="flex items-center justify-between gap-3">
+                      <span>Recipient</span>
+                      <span className="font-mono text-right">
+                        {effectiveRecipientAddress.slice(0, 6)}...{effectiveRecipientAddress.slice(-6)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {!showWalletSwitchBlocker && (
+              <DotSettlementPanel
+                isSimulationMode={isSimulationMode}
+                walletConnected={walletConnected}
+                recipientAddress={effectiveRecipientAddress}
+                senderAddress={connectedSenderAddress}
+                isCryptoFlowActive={true}
+                assetSymbol={assetSymbol}
+                assetName={assetSymbol}
+                baseCurrency={baseCurrency}
+                totalAmount={totalAmount}
+                cryptoAmount={cryptoAmount}
+                formatAmount={formatAmount}
+                dotPriceUsd={dotPriceUsd}
+                feeEstimate={feeEstimate}
+                feeLoading={feeLoading}
+                feeError={feeError}
+                counterparty={counterparty}
+                isDotPot={isDotPot}
+                connectExtension={account.connectExtension}
+                onShowToast={onShowToast}
+              />
+            )}
+          </>
+        )}
+
+        {showRecordedPaymentState && (
+          <div className="card p-4 space-y-2 border border-foreground/10 bg-muted/10">
+            <p className="text-body font-medium">Payment already recorded</p>
+            <p className="text-caption text-secondary">
+              ChopDot detected the payment for this smart-settlement leg. Retrying proof from here will not resend funds.
+            </p>
+            {matchingCloseoutLeg?.settlementTxHash && (
+              <div className="flex items-center justify-between gap-3 pt-1 text-caption text-secondary">
+                <span>Recorded payment</span>
+                <span className="font-mono text-right">
+                  {matchingCloseoutLeg.settlementTxHash.slice(0, 10)}...{matchingCloseoutLeg.settlementTxHash.slice(-8)}
+                </span>
+              </div>
+            )}
+            <div className="pt-2 flex flex-col gap-3">
+              {onOpenTrackedConfirmation && (
+                <PrimaryButton
+                  fullWidth
+                  onClick={onOpenTrackedConfirmation}
+                >
+                  Open confirmation
+                </PrimaryButton>
+              )}
+              <SecondaryButton
+                fullWidth
+                onClick={() => void handleConfirm()}
+                disabled={isLoading}
+                loading={isLoading}
+              >
+                Retry proof recording
+              </SecondaryButton>
+              {onHistory && (
+                <button
+                  type="button"
+                  onClick={onHistory}
+                  className="text-caption text-foreground underline underline-offset-4 hover:opacity-80 transition-opacity"
+                >
+                  View recorded payment
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {settlementMode === 'smart' && (
+          <details className="card p-4 group">
+            <summary className="cursor-pointer list-none flex items-center justify-between">
+              <span className="text-body font-medium">Technical details</span>
+              <span className="text-caption text-secondary group-open:hidden">Show</span>
+              <span className="text-caption text-secondary hidden group-open:inline">Hide</span>
+            </summary>
+            <div className="mt-4 space-y-2 text-caption text-secondary">
+              <div className="flex items-center justify-between gap-3">
+                <span>Network</span>
+                <span className="text-right">Polkadot Asset Hub / Polkadot Hub</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span>Wallet</span>
+                <span className="text-right">{account.walletSource || 'Browser wallet'}</span>
+              </div>
+              {(closeoutId || localTrackedCloseout?.closeoutId) && (
+                <div className="flex items-center justify-between gap-3">
+                  <span>Settlement package</span>
+                  <span className="font-mono text-right">{closeoutId || localTrackedCloseout?.closeoutId}</span>
+                </div>
+              )}
+              {typeof closeoutLegIndex === 'number' && (
+                <div className="flex items-center justify-between gap-3">
+                  <span>Leg</span>
+                  <span className="text-right">{closeoutLegIndex + 1}</span>
+                </div>
+              )}
+              {technicalStatusLabel && (
+                <div className="flex items-center justify-between gap-3">
+                  <span>Tracked confirmation</span>
+                  <span className="text-right">{technicalStatusLabel}</span>
+                </div>
+              )}
+              {matchingCloseoutLeg?.settlementTxHash && (
+                <div className="flex items-center justify-between gap-3">
+                  <span>Payment tx</span>
+                  <span className="font-mono text-right">
+                    {matchingCloseoutLeg.settlementTxHash.slice(0, 10)}...{matchingCloseoutLeg.settlementTxHash.slice(-8)}
+                  </span>
+                </div>
+              )}
+              {matchingCloseoutLeg?.proofTxHash && (
+                <div className="flex items-center justify-between gap-3">
+                  <span>Proof tx</span>
+                  <span className="font-mono text-right">
+                    {matchingCloseoutLeg.proofTxHash.slice(0, 10)}...{matchingCloseoutLeg.proofTxHash.slice(-8)}
+                  </span>
+                </div>
+              )}
+            </div>
+          </details>
+        )}
       </div>
 
-      {/* Embedded Hyperbridge Bridge Sheet */}
+      {showFooter && (
+        <SettleFooter
+          selectedMethod={activeMethod}
+          isSimulationMode={isSimulationMode}
+          walletConnected={walletConnected}
+          recipientAddress={effectiveRecipientAddress}
+          showConnectWalletNotice={showConnectWalletNotice}
+          isValid={isValid}
+          isLoading={isLoading}
+          onConfirm={handleConfirm}
+          connectExtension={account.connectExtension}
+          onShowToast={onShowToast}
+          buttonLabelOverride={
+            settlementMode === 'smart'
+                ? (!walletConnected && !isSimulationMode
+                  ? 'Connect wallet to continue'
+                : (hasPayerWalletMismatch || hasRecipientWalletConflict)
+                  ? 'Switch to your wallet to continue'
+                  : !effectiveRecipientAddress
+                    ? `${assetSymbol} wallet required`
+                  : `Pay with ${assetSymbol}`)
+              : !isPaying
+                ? selectedMethod === 'cash'
+                  ? 'Mark cash collected'
+                  : selectedMethod === 'bank'
+                    ? 'Mark bank transfer collected'
+                    : selectedMethod === 'paypal'
+                      ? 'Mark PayPal collected'
+                      : selectedMethod === 'twint'
+                        ? 'Mark TWINT collected'
+                        : 'Mark collected'
+                : undefined
+          }
+          connectPromptTitle={
+            settlementMode === 'smart'
+              ? `You’ll need a Polkadot wallet to pay with ${assetSymbol}.`
+              : undefined
+          }
+          connectPromptBody={
+            settlementMode === 'smart'
+              ? 'Connect your wallet, approve the payment, and ChopDot will attach tracked confirmation for this tab.'
+              : undefined
+          }
+        />
+      )}
+
       <HyperbridgeBridgeSheet
         isOpen={showBridgeSheet}
         onClose={() => setShowBridgeSheet(false)}
-        onBridgeComplete={async () => {
-          // Refresh balance after bridging completes
-          try {
-            await account.refreshBalance();
-            onShowToast?.('Bridge completed! Balance refreshed.', 'success');
-          } catch (refreshError) {
-            console.error('[SettleHome] Balance refresh failed after bridge:', refreshError);
-            onShowToast?.('Bridge completed! Please refresh balance manually.', 'info');
-          }
-        }}
         dest="Polkadot"
-        asset={isUsdcFlowActive ? "USDC" : "DOT"}
+        asset={assetSymbol}
       />
     </div>
   );

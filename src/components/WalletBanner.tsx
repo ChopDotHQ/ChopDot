@@ -94,6 +94,8 @@ export function WalletBanner() {
   // Only show banner when wallet is connected - show balance prominently
   if (account.status === 'connected' && account.balanceHuman) {
     const balance = parseFloat(account.balanceHuman);
+    const usdcBalance = account.balanceUsdcHuman ? parseFloat(account.balanceUsdcHuman) : 0;
+    const hasUsdcBalance = usdcBalance > 0;
 
     if (enablePolkadotBalanceUI) {
       const networkLabel = account.network === 'asset-hub' || account.network === 'polkadot'
@@ -108,6 +110,16 @@ export function WalletBanner() {
           showSuccess={showSuccess}
           onGetMore={handleGetDot}
           onRefresh={handleRefresh}
+          footer={
+            hasUsdcBalance ? (
+              <div className="rounded-[var(--r-lg)] bg-muted/30 px-3 py-2">
+                <p className="text-[10px] uppercase tracking-[0.16em] text-secondary">USDC</p>
+                <p className="mt-1 text-sm font-semibold tabular-nums">
+                  {usdcBalance.toFixed(usdcBalance >= 1 ? 2 : 6)} USDC
+                </p>
+              </div>
+            ) : undefined
+          }
         />
       );
     }
@@ -172,6 +184,12 @@ export function WalletBanner() {
             )}
           </button>
         </div>
+        {hasUsdcBalance && (
+          <div className="mt-3 rounded-lg border border-border bg-muted/20 px-3 py-2">
+            <p className="text-[10px] uppercase tracking-wide text-secondary">USDC</p>
+            <p className="mt-1 text-sm font-semibold tabular-nums">{usdcBalance.toFixed(usdcBalance >= 1 ? 2 : 6)} USDC</p>
+          </div>
+        )}
       </div>
     );
   }

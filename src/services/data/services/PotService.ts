@@ -103,6 +103,10 @@ export class PotService {
     return this.repository.update(id, updates);
   }
 
+  async updatePotSettings(id: string, updates: UpdatePotDTO): Promise<Pot> {
+    return this.repository.updateSettings(id, updates);
+  }
+
   /**
    * Delete a pot
    * 

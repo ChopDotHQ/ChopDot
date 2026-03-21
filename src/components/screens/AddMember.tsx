@@ -21,6 +21,7 @@ interface AddMemberProps {
   onShowQR: () => void;
   existingContacts: Contact[];
   currentMembers: string[]; // IDs of people already in the pot
+  canInviteByEmail?: boolean;
 }
 
 export function AddMember({
@@ -30,6 +31,7 @@ export function AddMember({
   onShowQR,
   existingContacts,
   currentMembers,
+  canInviteByEmail = true,
 }: AddMemberProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [inviteInput, setInviteInput] = useState("");
@@ -46,6 +48,7 @@ export function AddMember({
   );
 
   const handleInvite = () => {
+    if (!canInviteByEmail) return;
     if (!inviteInput.trim()) return;
     onInviteNew(inviteInput);
     onClose();
@@ -79,7 +82,7 @@ export function AddMember({
             view === "invite"
               ? "bg-foreground text-background"
               : "bg-muted/10 text-muted"
-          }`}
+          } ${!canInviteByEmail ? "opacity-60" : ""}`}
         >
           <div className="flex items-center justify-center gap-2">
             <UserPlus className="w-4 h-4" />
@@ -200,6 +203,13 @@ export function AddMember({
           <>
             {/* Invite New Person */}
             <div className="space-y-3">
+              {!canInviteByEmail && (
+                <div className="p-3 rounded-lg border border-border bg-muted/10">
+                  <p className="text-[12px] text-secondary">
+                    Email invites are disabled in guest mode. Use QR sharing or add from contacts.
+                  </p>
+                </div>
+              )}
               {/* Email/Name Input */}
               <div>
                 <label className="block text-[13px] text-muted mb-2">
@@ -213,6 +223,7 @@ export function AddMember({
                     onChange={(e) => setInviteInput(e.target.value)}
                     placeholder="alice@example.com or Alice Smith"
                     className="w-full pl-10 pr-4 py-3 bg-card rounded-lg border border-border text-[15px] placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/20"
+                    disabled={!canInviteByEmail}
                     autoFocus
                   />
                 </div>
@@ -222,7 +233,7 @@ export function AddMember({
               </div>
 
               {/* Send Invite Button */}
-              <PrimaryButton onClick={handleInvite} fullWidth>
+              <PrimaryButton onClick={handleInvite} fullWidth disabled={!canInviteByEmail}>
                 Send Invite
               </PrimaryButton>
 

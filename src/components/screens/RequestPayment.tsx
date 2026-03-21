@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Send, ArrowLeft, Check } from "lucide-react";
+import { deliverText, type DeliveryMode } from "../../utils/delivery";
 
 interface PersonBalance {
   id: string;
@@ -13,8 +14,34 @@ interface PersonBalance {
 interface RequestPaymentProps {
   people: PersonBalance[];
   onBack: () => void;
-  onSendRequest: (personId: string, message: string) => void;
+  onSendRequest: (personId: string, message: string) => boolean | Promise<boolean> | void;
 }
+
+type DeliveryMethod = DeliveryMode | "in-app";
+
+const formatUsd = (amount: number) => `$${amount.toFixed(2)}`;
+
+const buildPaymentRequestText = (person: PersonBalance, message: string) => {
+  const lines: string[] = [
+    `Payment request from ChopDot`,
+    `For: ${person.name}`,
+    `Amount: ${formatUsd(person.totalAmount)}`,
+  ];
+
+  if (person.breakdown.length > 0) {
+    const breakdown = person.breakdown
+      .map((item) => `${item.potName} (${formatUsd(item.amount)})`)
+      .join(", ");
+    lines.push(`Pots: ${breakdown}`);
+  }
+
+  const trimmed = message.trim();
+  if (trimmed.length > 0) {
+    lines.push(`Message: ${trimmed}`);
+  }
+
+  return lines.join("\n");
+};
 
 export function RequestPayment({
   people,
@@ -24,19 +51,58 @@ export function RequestPayment({
   const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod | null>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedPerson = people.find(p => p.id === selectedPersonId);
 
-  const handleSend = () => {
-    if (!selectedPersonId) return;
-    
-    onSendRequest(selectedPersonId, message);
-    setSent(true);
-    
-    // Auto close after showing success
-    setTimeout(() => {
-      onBack();
-    }, 1500);
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleSend = async () => {
+    if (!selectedPersonId || isSending) return;
+    const personToRequest = people.find((p) => p.id === selectedPersonId);
+    if (!personToRequest) {
+      setSendError("Please select a person to request payment from.");
+      return;
+    }
+
+    setIsSending(true);
+    setSendError(null);
+    try {
+      const deliveryMode = await deliverText({
+        title: "ChopDot payment request",
+        text: buildPaymentRequestText(personToRequest, message),
+      });
+      const delivery: DeliveryMethod = deliveryMode === "none" ? "in-app" : deliveryMode;
+      const result = await Promise.resolve(onSendRequest(selectedPersonId, message));
+      if (result === false) {
+        setSendError("Request could not be sent. Please try again.");
+        return;
+      }
+      setDeliveryMethod(delivery);
+      setSent(true);
+
+      // Auto close after showing success
+      closeTimerRef.current = setTimeout(() => {
+        onBack();
+      }, 1500);
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message.trim().length > 0
+          ? error.message
+          : "Request could not be sent. Please try again.";
+      setSendError(message);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   if (sent && selectedPerson) {
@@ -54,7 +120,10 @@ export function RequestPayment({
             <div>
               <h2 className="text-section mb-2">Request sent!</h2>
               <p className="text-body text-secondary">
-                {selectedPerson.name} will receive your payment request
+                {deliveryMethod === "share" && `${selectedPerson.name} received a share request`}
+                {deliveryMethod === "clipboard" && "Request copied to clipboard for quick sharing"}
+                {deliveryMethod === "in-app" && "Request saved in ChopDot for follow-up"}
+                {!deliveryMethod && `${selectedPerson.name} will receive your payment request`}
               </p>
             </div>
           </div>
@@ -172,6 +241,11 @@ export function RequestPayment({
                 <p className="text-caption text-muted px-1">
                   {message.length}/200 characters
                 </p>
+                {sendError && (
+                  <p className="text-caption px-1" style={{ color: "var(--destructive, #dc2626)" }}>
+                    {sendError}
+                  </p>
+                )}
               </div>
             )}
           </>
@@ -183,15 +257,19 @@ export function RequestPayment({
         <div className="p-4 border-t border-border bg-background">
           <button
             onClick={handleSend}
+            disabled={isSending}
             className="w-full py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98]"
             style={{ 
               background: 'var(--accent)',
               color: '#fff',
+              opacity: isSending ? 0.7 : 1,
             }}
           >
             <Send className="w-5 h-5" />
             <span className="text-body" style={{ fontWeight: 500 }}>
-              Request ${selectedPerson.totalAmount.toFixed(2)} from {selectedPerson.name}
+              {isSending
+                ? "Sending request..."
+                : `Request $${selectedPerson.totalAmount.toFixed(2)} from ${selectedPerson.name}`}
             </span>
           </button>
         </div>

@@ -85,6 +85,15 @@ const renderWithProviders = (content: ReactNode) => (
   </StrictMode>
 );
 
+async function ensureCryptoReady() {
+  try {
+    const { cryptoWaitReady } = await import('@polkadot/util-crypto');
+    await cryptoWaitReady();
+  } catch (error) {
+    console.warn('[main] Failed to initialize Polkadot crypto utilities:', error);
+  }
+}
+
 // Polyfill Buffer for deps that expect it in the browser
 if (!(window as any).Buffer) {
   import('buffer').then(({ Buffer }) => {
@@ -92,23 +101,29 @@ if (!(window as any).Buffer) {
   })
 }
 
-// Throwaway path-level page: /chain-test (dev only)
-if (import.meta.env.DEV && window.location.pathname === '/chain-test') {
-  (async () => {
+async function bootstrapApp() {
+  await ensureCryptoReady();
+
+  // Throwaway path-level page: /chain-test (dev only)
+  if (import.meta.env.DEV && window.location.pathname === '/chain-test') {
     const { ChainTestPage } = await import('./chain/chain-test-page');
     createRoot(rootEl).render(
       renderWithProviders(<ChainTestPage />),
-    )
-  })()
-} else if (window.location.pathname === '/reset-password') {
-  (async () => {
+    );
+    return;
+  }
+
+  if (window.location.pathname === '/reset-password') {
     const { default: ResetPasswordScreen } = await import('./components/screens/ResetPasswordScreen');
     createRoot(rootEl).render(
       renderWithProviders(<ResetPasswordScreen />),
-    )
-  })()
-  } else {
+    );
+    return;
+  }
+
   createRoot(rootEl).render(
     renderWithProviders(<App />),
-)
+  );
 }
+
+void bootstrapApp();

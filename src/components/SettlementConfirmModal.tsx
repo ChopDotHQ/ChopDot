@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { Copy, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { copyWithToast } from '../utils/clipboard';
 // Lazy import to avoid bundling Polkadot API eagerly
 const getPolkadotChainService = async () => {
   const module = await import('../services/chain/polkadot');
@@ -68,7 +70,7 @@ export function SettlementConfirmModal({
   }, [isOpen, fromAddress, toAddress, amountDot, showFeeEstimate]);
 
   const handleCopyAddress = (address: string) => {
-    navigator.clipboard.writeText(address);
+    copyWithToast(address, 'Address copied', (msg) => toast.success(msg));
   };
 
   const totalAmount = amountValue + (estimatedFee ? parseFloat(estimatedFee) : 0);

@@ -3,6 +3,7 @@ import { PrimaryButton } from "../PrimaryButton";
 import { Download, CheckCircle } from "lucide-react";
 import { useMemo } from "react";
 import { buildSubscanUrl } from "../../services/chain/utils";
+import { getPvmCloseoutExplorerBaseUrl } from "../../services/closeout/pvmCloseout";
 import { EmptyState } from "../EmptyState";
 import { exportSettlementHistoryToCSV } from "../../utils/export";
 
@@ -15,15 +16,22 @@ interface Settlement {
   date: string;
   txHash?: string;
   potNames?: string[];
+  closeoutId?: string;
+  proofTxHash?: string;
+  proofStatus?: "anchored" | "recorded" | "completed";
+  personId?: string;
 }
 
 interface SettlementHistoryProps {
   settlements: Settlement[];
   onBack: () => void;
   personId?: string;
+  onRetryProof?: (settlementId: string) => void;
 }
 
-export function SettlementHistory({ settlements, onBack, personId }: SettlementHistoryProps) {
+export function SettlementHistory({ settlements, onBack, personId, onRetryProof }: SettlementHistoryProps) {
+  const proofExplorerBaseUrl = getPvmCloseoutExplorerBaseUrl();
+
   // Filter settlements by personId if provided
   const filteredSettlements = useMemo(() => {
     if (!personId) return settlements;
@@ -61,6 +69,13 @@ export function SettlementHistory({ settlements, onBack, personId }: SettlementH
     });
   };
 
+  const getTrackedStatus = (settlement: Settlement): string | null => {
+    if (!settlement.closeoutId) return null;
+    if (settlement.proofStatus === 'completed') return 'Payment confirmed';
+    if (settlement.proofStatus === 'recorded') return 'Payment sent';
+    return 'Smart settlement started';
+  };
+
   return (
     <div className="flex flex-col h-full">
       <TopBar 
@@ -88,8 +103,15 @@ export function SettlementHistory({ settlements, onBack, personId }: SettlementH
                 </div>
                 <div className="text-right">
                   <p className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>
-                    {settlement.currency === 'DOT' ? `${settlement.amount.toFixed(6)} DOT` : `$${settlement.amount.toFixed(2)}`}
+                    {settlement.currency === 'DOT'
+                      ? `${settlement.amount.toFixed(6)} DOT`
+                      : settlement.currency === 'USDC'
+                        ? `${settlement.amount.toFixed(6)} USDC`
+                        : `$${settlement.amount.toFixed(2)}`}
                   </p>
+                  {getTrackedStatus(settlement) && (
+                    <p className="text-micro text-secondary mt-0.5">{getTrackedStatus(settlement)}</p>
+                  )}
                 </div>
               </div>
               <div className="pt-2 border-t border-border space-y-0.5">
@@ -103,17 +125,59 @@ export function SettlementHistory({ settlements, onBack, personId }: SettlementH
                     <span className="text-right">{settlement.potNames.join(", ")}</span>
                   </div>
                 )}
-                {settlement.txHash && (
-                  <div className="flex justify-between text-caption text-secondary">
-                    <span>Tx</span>
-                    <a
-                      className="text-micro underline font-mono text-secondary"
-                      href={buildSubscanUrl(settlement.txHash)}
-                      target="_blank"
-                      rel="noreferrer"
+                {(settlement.txHash || settlement.closeoutId || settlement.proofTxHash) && (
+                  <details className="pt-2">
+                    <summary className="cursor-pointer text-caption text-secondary">Technical details</summary>
+                    <div className="mt-2 space-y-1.5">
+                      {settlement.txHash && (
+                        <div className="flex justify-between text-caption text-secondary">
+                          <span>Payment tx (Asset Hub)</span>
+                          <a
+                            className="text-micro underline font-mono text-secondary"
+                            href={buildSubscanUrl(settlement.txHash)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {settlement.txHash.slice(0, 10)}...{settlement.txHash.slice(-8)}
+                          </a>
+                        </div>
+                      )}
+                      {settlement.closeoutId && (
+                        <div className="flex justify-between text-caption text-secondary">
+                          <span>Settlement package</span>
+                          <span className="font-mono text-right">{settlement.closeoutId}</span>
+                        </div>
+                      )}
+                      {settlement.closeoutId && (
+                        <div className="flex justify-between text-caption text-secondary">
+                          <span>Proof status</span>
+                          <span className="text-right">{settlement.proofStatus || "anchored"}</span>
+                        </div>
+                      )}
+                      {settlement.proofTxHash && (
+                        <div className="flex justify-between text-caption text-secondary">
+                          <span>Proof tx (Polkadot Hub)</span>
+                          <a
+                            className="text-micro underline font-mono text-secondary"
+                            href={`${proofExplorerBaseUrl}${settlement.proofTxHash}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {settlement.proofTxHash.slice(0, 10)}...{settlement.proofTxHash.slice(-8)}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </details>
+                )}
+                {settlement.closeoutId && !settlement.proofTxHash && onRetryProof && (
+                  <div className="pt-2">
+                    <button
+                      onClick={() => onRetryProof(settlement.id)}
+                      className="text-caption underline text-secondary hover:text-foreground transition-colors"
                     >
-                      {settlement.txHash.slice(0, 10)}...{settlement.txHash.slice(-8)}
-                    </a>
+                      Retry proof recording
+                    </button>
                   </div>
                 )}
               </div>

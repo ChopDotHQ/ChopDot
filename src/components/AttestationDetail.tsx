@@ -11,8 +11,9 @@
 
 import { useState } from "react";
 import { X, CheckCircle, Clock, Copy } from "lucide-react";
+import { toast } from "sonner";
 import { SecondaryButton } from "./SecondaryButton";
-import { triggerHaptic } from "../utils/haptics";
+import { copyWithToast } from "../utils/clipboard";
 
 interface AttestationDetailProps {
   anchored: boolean;
@@ -35,12 +36,13 @@ export function AttestationDetail({
 }: AttestationDetailProps) {
   const [copied, setCopied] = useState(false);
 
-  const handleCopyHash = () => {
+  const handleCopyHash = async () => {
     if (txHash) {
-      navigator.clipboard.writeText(txHash);
-      setCopied(true);
-      triggerHaptic("light");
-      setTimeout(() => setCopied(false), 2000);
+      const ok = await copyWithToast(txHash, 'Transaction hash copied', (msg) => toast.success(msg));
+      if (ok) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
     }
   };
 

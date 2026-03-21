@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { simChain } from './sim';
 import { runActionWithRecovery } from '../../utils/actionRecovery';
 
@@ -79,6 +79,27 @@ describe('simChain payout flows', () => {
 
     expect(result.txHash).toMatch(/^0xsim/);
     expect(statuses).toEqual(['submitted', 'inBlock', 'finalized']);
+  });
+
+  it('does not fail transfer when onStatus callback throws', async () => {
+    window.localStorage.setItem('mock_balance', '90000000000'); // 9 DOT
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const result = await simChain.sendDot({
+      from: 'addr1',
+      to: 'addr2',
+      amountDot: 1,
+      onStatus: () => {
+        throw new Error('status-callback-failure');
+      },
+    });
+
+    expect(result.txHash).toMatch(/^0xsim/);
+    expect(errorSpy).toHaveBeenCalledWith(
+      '[SimChain] onStatus callback error',
+      expect.any(Error),
+    );
+    errorSpy.mockRestore();
   });
 
   it('fails USDC transfer with insufficient funds', async () => {

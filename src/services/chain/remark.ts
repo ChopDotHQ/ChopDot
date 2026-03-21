@@ -1,6 +1,6 @@
 import { blake2AsHex } from '@polkadot/util-crypto';
 import { getChain } from './index';
-import type { PotHistory } from '../../App';
+import type { PotHistory } from '../../types/app';
 import { stableStringify } from '../../utils/stableStringify';
 
 type PotCheckpointMember = {
