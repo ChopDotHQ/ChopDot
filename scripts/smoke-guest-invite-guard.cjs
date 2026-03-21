@@ -9,6 +9,7 @@ const runDir = path.join(ROOT, 'output', 'playwright', `smoke-guest-invite-guard
 const reportPath = path.join(ROOT, 'artifacts', 'SMOKE_GUEST_INVITE_GUARD.md');
 
 fs.mkdirSync(runDir, { recursive: true });
+fs.mkdirSync(path.dirname(reportPath), { recursive: true });
 
 async function ensureSignedIn(page) {
   const guestBtn = page.getByRole('button', { name: /continue as guest/i });

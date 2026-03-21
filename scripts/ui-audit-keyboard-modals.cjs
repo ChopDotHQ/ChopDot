@@ -84,11 +84,8 @@ async function activeInsideAnyOverlay(page) {
 async function walkTab(page, steps, reverse = false) {
   const rows = [];
   for (let i = 0; i < steps; i += 1) {
-    // eslint-disable-next-line no-await-in-loop
     await page.keyboard.press(reverse ? 'Shift+Tab' : 'Tab');
-    // eslint-disable-next-line no-await-in-loop
     const active = await currentActive(page);
-    // eslint-disable-next-line no-await-in-loop
     const inside = await activeInsideAnyOverlay(page);
     rows.push({
       step: i + 1,

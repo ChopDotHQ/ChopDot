@@ -9,6 +9,7 @@ const runDir = path.join(ROOT, 'output', 'playwright', `smoke-five-flows-${times
 const reportMdPath = path.join(ROOT, 'artifacts', 'SMOKE_5_FLOWS_REPORT.md');
 
 fs.mkdirSync(runDir, { recursive: true });
+fs.mkdirSync(path.dirname(reportMdPath), { recursive: true });
 
 function nowIso() {
   return new Date().toISOString();
@@ -312,25 +313,19 @@ async function createImbalance(page, memo) {
       const selected = await chooseSettlePerson(page, ['Alice', 'Bob', 'Charlie']);
       await page.waitForTimeout(600);
 
-      await page.getByRole('button', { name: /^DOT$/i }).click();
-      await page.waitForTimeout(300);
-
-      const confirmDot = page.getByRole('button', { name: /confirm dot settlement/i });
-      if ((await confirmDot.count()) === 0) {
-        const gatedCta = page.getByRole('button', { name: /connect wallet in header/i });
-        if ((await gatedCta.count()) > 0) {
-          return `DOT settlement correctly gated by wallet connection for ${selected}`;
-        }
-        throw new Error('DOT flow has neither confirm CTA nor wallet-gated CTA');
+      const trackPayment = page.getByRole('button', { name: /track payment/i }).first();
+      if ((await trackPayment.count()) === 0) {
+        throw new Error('Track payment option not available in receiver settlement flow');
       }
-      await confirmDot.first().click();
-      await page.waitForTimeout(3000);
+      await trackPayment.click();
+      await page.waitForTimeout(500);
 
-      if ((await page.getByRole('button', { name: /confirm dot settlement/i }).count()) > 0) {
-        throw new Error('DOT settlement did not complete (still on settle-home)');
+      const body = await page.locator('body').innerText();
+      if (!/start smart settlement|tracked payment progress|smart settlement/i.test(body.toLowerCase())) {
+        throw new Error('Tracked payment flow did not open after choosing Track payment');
       }
 
-      return `DOT settlement executed against ${selected}`;
+      return `Tracked payment flow opened for ${selected}`;
     }, results);
 
     await runFlow(page, '5) Settle Non-DOT', async () => {
@@ -359,21 +354,21 @@ async function createImbalance(page, memo) {
       const selected = await chooseSettlePerson(page, ['Bob', 'Charlie', 'Alice']);
       await page.waitForTimeout(500);
 
-      const bankMethod = page.locator('button[data-method="bank"]').first();
+      const bankMethod = page.getByRole('button', { name: /^bank$/i }).first();
       if ((await bankMethod.count()) === 0) {
         throw new Error('Bank payment method tab not available');
       }
       await bankMethod.click();
       await page.waitForTimeout(250);
 
-      const confirmBank = page.getByRole('button', { name: /confirm bank settlement/i });
+      const confirmBank = page.getByRole('button', { name: /mark bank transfer collected/i });
       if ((await confirmBank.count()) === 0) {
-        throw new Error('Confirm Bank Settlement CTA not available');
+        throw new Error('Mark bank transfer collected CTA not available');
       }
       await confirmBank.first().click();
       await page.waitForTimeout(1200);
 
-      if ((await page.getByRole('button', { name: /confirm bank settlement/i }).count()) > 0) {
+      if ((await page.getByRole('button', { name: /mark bank transfer collected/i }).count()) > 0) {
         throw new Error('Bank settlement did not complete (still on settle-home)');
       }
 

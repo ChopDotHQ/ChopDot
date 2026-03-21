@@ -128,7 +128,6 @@ async function main() {
     await page.goto(APP_URL, { waitUntil: 'networkidle', timeout: 20000 });
 
     for (let i = 0; i < 5; i += 1) {
-      // eslint-disable-next-line no-await-in-loop
       const steps = await runJourney(page);
       out.journeys.push({ run: i + 1, steps });
     }

@@ -86,7 +86,6 @@ async function main() {
   const results = [];
   for (const b of BROWSERS) {
     try {
-      // eslint-disable-next-line no-await-in-loop
       const r = await auditBrowser(b);
       results.push(r);
     } catch (error) {

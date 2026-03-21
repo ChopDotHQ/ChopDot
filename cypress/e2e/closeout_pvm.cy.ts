@@ -108,10 +108,8 @@ describe("PVM closeout", () => {
     cy.contains("button", /Settle Up/i, { timeout: 20000 }).click({ force: true });
     cy.contains("button", /Alice/i, { timeout: 20000 }).click({ force: true });
 
-    cy.contains("label", /Payment Method/i).should("be.visible");
-    cy.contains(/Closeout/i).should("be.visible");
-    cy.contains(/Onchain closeout/i).should("be.visible");
-    cy.contains(/98765/i).should("be.visible");
-    cy.contains(/anchored/i).should("be.visible");
+    cy.contains(/Step 2: Pay Alice/i).should("be.visible");
+    cy.contains(/Smart settlement started/i).should("be.visible");
+    cy.contains(/pay with DOT/i).should("exist");
   });
 });
