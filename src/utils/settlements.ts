@@ -1,4 +1,4 @@
-import type { PotHistory } from '../App';
+import type { PotHistory } from '../types/app';
 import Decimal from 'decimal.js';
 
 Decimal.set({ precision: 28, rounding: Decimal.ROUND_HALF_UP });
@@ -48,6 +48,7 @@ interface Pot {
   expenses: Expense[];
   // Optional on-chain history for DOT settlements (when available)
   history?: PotHistory[];
+  archived?: boolean; // Added archived
 }
 
 export interface Person {
@@ -57,12 +58,13 @@ export interface Person {
   trustScore: number;
   paymentPreference?: string;
   potCount: number;
+  address?: string; // Add address support
 }
 
 export interface SettlementBreakdown {
   potName: string;
   amount: number;
-  currency?: string; // Currency for this breakdown item (e.g., "DOT", "USD")
+  currency?: string;
 }
 
 export interface PersonSettlement {
@@ -72,14 +74,25 @@ export interface PersonSettlement {
   breakdown: SettlementBreakdown[];
   trustScore: number;
   paymentPreference?: string;
-  address?: string; // Optional Polkadot wallet address (from any pot member)
+  address?: string;
 }
 
 export interface CalculatedSettlements {
   youOwe: PersonSettlement[];
   owedToYou: PersonSettlement[];
-  byPerson: Map<string, number>; // personId -> net amount (positive = they owe you, negative = you owe them)
+  byPerson: Map<string, string>; // Changed from number
 }
+
+// Helper for strict precision
+const toPrecision = (val: Decimal, currency: string = 'USD'): string => {
+  // DOT/Plancks: 10 decimals
+  if (currency === 'DOT') return val.toFixed(10);
+  // Default/Fiat: 2 decimals, but maybe we want more for internal precision?
+  // UI expects 2 usually. let's Stick to 2 for Fiat to avoid 33.33333 on screen.
+  // But wait, 33.3333 is better than 33.33 for settling.
+  // Let's use 2 for Fiat standard.
+  return val.toFixed(2);
+};
 
 const toDecimal = (value: unknown, fallback: string = '0') => {
   if (value instanceof Decimal) {
@@ -106,154 +119,108 @@ export function calculateSettlements(
   people: Person[],
   currentUserId: string = "owner"
 ): CalculatedSettlements {
-  // Map to store person -> pot -> balance
-  const personPotBalances = new Map<string, Map<string, Decimal>>();
-
-  // Process each pot's expenses
-  for (const pot of pots) {
-    for (const expense of pot.expenses) {
-      // Find how much each person owes for this expense
-      for (const split of expense.split) {
-        const personId = split.memberId;
-        const amountOwed = toDecimal(split.amount);
-
-        // Initialize maps if needed
-        if (!personPotBalances.has(personId)) {
-          personPotBalances.set(personId, new Map());
-        }
-        const potBalances = personPotBalances.get(personId)!;
-        const existingBalance = potBalances.get(pot.id) ?? new Decimal(0);
-
-        // If this person paid, they are owed money
-        // If they didn't pay, they owe money
-        if (personId === expense.paidBy) {
-          // They paid, so they're owed the difference
-          const expenseAmount = toDecimal(expense.amount);
-          const othersOweThem = expenseAmount.minus(amountOwed);
-          potBalances.set(pot.id, existingBalance.plus(othersOweThem));
-        } else {
-          // They owe their share to the payer
-          potBalances.set(pot.id, existingBalance.minus(amountOwed));
-        }
-      }
-    }
-  }
-
-  // Now aggregate by person (from current user's perspective)
-  const byPerson = new Map<string, number>();
-  const personBreakdowns = new Map<string, SettlementBreakdown[]>();
-
-  for (const [personId, potBalances] of personPotBalances.entries()) {
-    if (personId === currentUserId) continue; // Skip self
-
-    let totalBalance = new Decimal(0);
-    const breakdown: SettlementBreakdown[] = [];
-
-    for (const [potId, balance] of potBalances.entries()) {
-      const pot = pots.find((p) => p.id === potId);
-      // Currency-aware negligible threshold: DOT uses micro precision
-      const threshold = pot?.baseCurrency === 'DOT'
-        ? new Decimal('0.000001')
-        : new Decimal('0.01');
-      if (balance.abs().lessThan(threshold)) continue; // Skip negligible amounts
-
-      if (!pot) continue;
-
-      // From current user's perspective:
-      // Positive balance = person owes current user
-      // Negative balance = current user owes person
-      const currentUserBalance =
-        personPotBalances.get(currentUserId)?.get(potId) ?? new Decimal(0);
-      let netBalance = currentUserBalance.minus(balance);
-
-      // Apply on-chain DOT settlements for this pot to move balances toward zero
-      if (pot.history && pot.history.length > 0) {
-        const relevant = pot.history.filter(
-          (h): h is Extract<PotHistory, { type: 'onchain_settlement' }> =>
-            h.type === 'onchain_settlement' && h.status !== 'failed'
-        );
-        for (const h of relevant) {
-          const amt = toDecimal(h.amountDot ?? '0');
-          if (!amt.isFinite() || amt.lte(0)) continue;
-          if (h.fromMemberId === currentUserId && h.toMemberId === personId) {
-            // You paid them → you owe less → net increases toward zero
-            netBalance = netBalance.plus(amt);
-          } else if (h.fromMemberId === personId && h.toMemberId === currentUserId) {
-            // They paid you → they owe less → net decreases toward zero
-            netBalance = netBalance.minus(amt);
-          }
-        }
-      }
-
-      const netThreshold = pot.baseCurrency === 'DOT'
-        ? new Decimal('0.000001')
-        : new Decimal('0.01');
-      if (netBalance.abs().greaterThanOrEqualTo(netThreshold)) {
-        breakdown.push({
-          potName: pot.name,
-          amount: netBalance.abs().toNumber(),
-          currency: pot.baseCurrency,
-        });
-        totalBalance = totalBalance.plus(netBalance);
-      }
-    }
-
-    if (breakdown.length > 0) {
-      byPerson.set(personId, totalBalance.toNumber());
-      personBreakdowns.set(personId, breakdown);
-    }
-  }
-
-  // Build youOwe and owedToYou arrays
   const youOwe: PersonSettlement[] = [];
   const owedToYou: PersonSettlement[] = [];
+  const byPerson = new Map<string, string>(); // decimal string
 
-  for (const [personId, totalBalance] of byPerson.entries()) {
-    // Find person info
-    const person = people.find((p) => p.id === personId);
-    if (!person) continue;
+  // We will aggregate amounts by person
+  // Map<personId, { settlement: PersonSettlement, total: Decimal }>
+  const youOweMap = new Map<string, { settlement: PersonSettlement, total: Decimal }>();
+  const owedToYouMap = new Map<string, { settlement: PersonSettlement, total: Decimal }>();
 
-    const breakdown = personBreakdowns.get(personId) || [];
+  // Helper to merge breakdown
+  const mergeBreakdown = (
+    existing: SettlementBreakdown[],
+    newItems: SettlementBreakdown[]
+  ) => {
+    return [...existing, ...newItems];
+  };
 
-    // Find member address from any pot (prioritize pots with larger balances)
-    let memberAddress: string | undefined;
-    const breakdownWithAmounts = breakdown.map(b => {
-      const pot = pots.find(p => p.name === b.potName);
-      return { pot, amount: b.amount };
-    }).sort((a, b) => b.amount - a.amount); // Sort by amount descending
-    
-    for (const { pot } of breakdownWithAmounts) {
-      if (pot) {
-        const member = pot.members.find(m => m.id === personId);
-        if (member?.address) {
-          memberAddress = member.address;
-          break; // Use first address found (from pot with largest balance)
-        }
+  for (const pot of pots) {
+    if (pot.archived) continue;
+
+    // Use the robust bilateral logic from calculatePotSettlements
+    const potSettlements = calculatePotSettlements(pot, currentUserId);
+
+    // Process "You Owe" from this pot
+    for (const p of potSettlements.youOwe) {
+      if (!youOweMap.has(p.id)) {
+        youOweMap.set(p.id, {
+          settlement: { ...p, totalAmount: 0, breakdown: [] },
+          total: new Decimal(0)
+        });
       }
+      const entry = youOweMap.get(p.id)!;
+      entry.total = entry.total.plus(p.totalAmount);
+      entry.settlement.breakdown = mergeBreakdown(entry.settlement.breakdown, p.breakdown);
     }
 
-    const settlement: PersonSettlement = {
+    // Process "Owed To You" from this pot
+    for (const p of potSettlements.owedToYou) {
+      if (!owedToYouMap.has(p.id)) {
+        owedToYouMap.set(p.id, {
+          settlement: { ...p, totalAmount: 0, breakdown: [] },
+          total: new Decimal(0)
+        });
+      }
+      const entry = owedToYouMap.get(p.id)!;
+      entry.total = entry.total.plus(p.totalAmount);
+      entry.settlement.breakdown = mergeBreakdown(entry.settlement.breakdown, p.breakdown);
+    }
+  }
+
+  // Combine and net off balances across all pots
+  const allPersonIds = new Set([...youOweMap.keys(), ...owedToYouMap.keys()]);
+
+  for (const personId of allPersonIds) {
+    const oweEntry = youOweMap.get(personId);
+    const owedEntry = owedToYouMap.get(personId);
+
+    const oweAmount = oweEntry ? oweEntry.total : new Decimal(0);
+    const owedAmount = owedEntry ? owedEntry.total : new Decimal(0);
+
+    // Net balance: Positive = they owe me. Negative = I owe them.
+    const net = owedAmount.minus(oweAmount);
+
+    // Skip if negligible
+    if (net.abs().lessThan(0.01)) continue;
+
+    // Determine person info
+    const person = people.find(p => p.id === personId);
+    // Use data from temporary settlements if person lookup fails (shouldn't happen if people list is complete)
+    const stub = oweEntry?.settlement || owedEntry?.settlement;
+
+    // Collect all breakdowns
+    const allBreakdowns = [
+      ...(oweEntry ? oweEntry.settlement.breakdown : []),
+      ...(owedEntry ? owedEntry.settlement.breakdown : [])
+    ];
+
+    const baseSettlement: PersonSettlement = {
       id: personId,
-      name: person.name,
-      totalAmount: Math.abs(totalBalance),
-      breakdown,
-      trustScore: person.trustScore,
-      paymentPreference: person.paymentPreference,
-      address: memberAddress,
+      name: person?.name || stub?.name || "Unknown",
+      totalAmount: net.abs().toNumber(),
+      breakdown: allBreakdowns,
+      trustScore: person?.trustScore || stub?.trustScore || 95,
+      paymentPreference: person?.paymentPreference || stub?.paymentPreference,
+      address: person?.address || stub?.address,
     };
 
-    if (totalBalance < 0) {
-      // Negative = you owe them
-      youOwe.push(settlement);
-    } else if (totalBalance > 0) {
-      // Positive = they owe you
-      owedToYou.push(settlement);
+    byPerson.set(personId, toPrecision(net, "USD")); // Simplified storage
+
+    if (net.isNegative()) {
+      youOwe.push(baseSettlement);
+    } else {
+      owedToYou.push(baseSettlement);
     }
   }
 
   // Sort by amount (descending)
-  youOwe.sort((a, b) => b.totalAmount - a.totalAmount);
-  owedToYou.sort((a, b) => b.totalAmount - a.totalAmount);
+  const sortSettlements = (a: PersonSettlement, b: PersonSettlement) => {
+    return b.totalAmount - a.totalAmount;
+  };
+  youOwe.sort(sortSettlements);
+  owedToYou.sort(sortSettlements);
 
   return {
     youOwe,
@@ -275,7 +242,7 @@ export function calculatePotSettlements(
   // Build settlements using the same logic as ExpensesTab
   const youOwe: PersonSettlement[] = [];
   const owedToYou: PersonSettlement[] = [];
-  const byPerson = new Map<string, number>();
+  const byPerson = new Map<string, string>();
 
   // Calculate balance for each member (excluding current user)
   for (const member of pot.members) {
@@ -285,6 +252,15 @@ export function calculatePotSettlements(
     const theirShareOfMyExpenses = pot.expenses
       .filter(e => e.paidBy === currentUserId)
       .reduce((sum, e) => {
+        // Handle implicit equal split
+        if (!e.split || e.split.length === 0) {
+          const amount = toDecimal(e.amount);
+          const memberCount = pot.members.length;
+          if (memberCount > 0) {
+            return sum.plus(amount.div(memberCount));
+          }
+          return sum;
+        }
         const share = e.split.find(s => s.memberId === member.id);
         return sum.plus(toDecimal(share?.amount ?? 0));
       }, new Decimal(0));
@@ -293,6 +269,15 @@ export function calculatePotSettlements(
     const myShareOfTheirExpenses = pot.expenses
       .filter(e => e.paidBy === member.id)
       .reduce((sum, e) => {
+        // Handle implicit equal split
+        if (!e.split || e.split.length === 0) {
+          const amount = toDecimal(e.amount);
+          const memberCount = pot.members.length;
+          if (memberCount > 0) {
+            return sum.plus(amount.div(memberCount));
+          }
+          return sum;
+        }
         const share = e.split.find(s => s.memberId === currentUserId);
         return sum.plus(toDecimal(share?.amount ?? 0));
       }, new Decimal(0));
@@ -326,7 +311,11 @@ export function calculatePotSettlements(
       : new Decimal('0.01');
     if (balance.abs().lessThan(threshold)) continue; // Skip negligible amounts
 
-    byPerson.set(member.id, balance.toNumber());
+    // Determine dominant currency
+    const primaryCurrency = pot.baseCurrency;
+
+    // Convert balance to Decimal for storage
+    byPerson.set(member.id, toPrecision(balance, pot.baseCurrency));
 
     const settlement: PersonSettlement = {
       id: member.id,
@@ -336,24 +325,28 @@ export function calculatePotSettlements(
         {
           potName: pot.name,
           amount: balance.abs().toNumber(),
+          currency: primaryCurrency,
         },
       ],
-      trustScore: 95, // Default trust score
-      paymentPreference: undefined,
+      trustScore: 95,
+      paymentPreference: member.address ? 'DOT' : undefined,
+      address: member.address,
     };
 
     if (balance.lessThan(0)) {
-      // Negative = you owe them
       youOwe.push(settlement);
     } else if (balance.greaterThan(0)) {
-      // Positive = they owe you
       owedToYou.push(settlement);
     }
   }
 
   // Sort by amount (descending)
-  youOwe.sort((a, b) => b.totalAmount - a.totalAmount);
-  owedToYou.sort((a, b) => b.totalAmount - a.totalAmount);
+  const sortSettlements = (a: PersonSettlement, b: PersonSettlement) => {
+    return b.totalAmount - a.totalAmount;
+  };
+
+  youOwe.sort(sortSettlements);
+  owedToYou.sort(sortSettlements);
 
   return {
     youOwe,

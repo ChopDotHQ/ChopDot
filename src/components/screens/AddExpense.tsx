@@ -41,7 +41,7 @@ interface AddExpenseProps {
     split: { memberId: string; amount: number }[];
     hasReceipt: boolean;
     receiptUrl?: string;
-  }) => void;
+  }) => void | Promise<void>;
   onBack: () => void;
   onChangePot?: () => void;
 }
@@ -203,7 +203,7 @@ export function AddExpense({
       
               // Call onSave - this should trigger navigation
               // Always use baseCurrency for consistency (especially for DOT pots)
-              onSave({
+              await Promise.resolve(onSave({
                 amount: Number(parseFloat(amount).toFixed(decimals)),
                 currency: baseCurrency, // Use baseCurrency instead of selected currency for consistency
                 paidBy,
@@ -212,7 +212,7 @@ export function AddExpense({
                 split,
                 hasReceipt,
                 receiptUrl,
-              });
+              }));
       
       // Reset saving state after a short delay to ensure navigation happens
       // If navigation doesn't happen, this prevents the UI from being stuck

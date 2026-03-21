@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { usePSAStyle } from "../utils/usePSAStyle";
 
 interface BottomSheetProps {
@@ -7,17 +7,31 @@ interface BottomSheetProps {
   onClose: () => void;
   title: string;
   children: ReactNode;
+  maxWidth?: string;
 }
 
-export function BottomSheet({ isOpen, onClose, title, children }: BottomSheetProps) {
+export function BottomSheet({ isOpen, onClose, title, children, maxWidth = '560px' }: BottomSheetProps) {
   const { isPSA, psaStyles, psaClasses } = usePSAStyle();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isOpen, onClose]);
   
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex flex-col justify-center md:justify-center" style={{ zIndex: 100 }}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="w-full max-w-[420px] md:max-w-[560px] mx-auto px-4">
+      <div className="mx-auto w-full px-4" style={{ maxWidth }}>
       <div
           className={isPSA ? `relative w-full ${psaClasses.panel} rounded-2xl flex flex-col mx-auto overflow-hidden` : "relative w-full bg-card rounded-2xl shadow-[var(--shadow-card)] flex flex-col mx-auto overflow-hidden"}
           style={isPSA ? { ...psaStyles.panel, maxHeight: '85vh' } : { maxHeight: '85vh' }}

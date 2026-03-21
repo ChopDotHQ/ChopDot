@@ -58,3 +58,20 @@ expo-app/.expo/
 expo-app
 expo-app/
 /expo-app
+
+# Generated test output
+output/
+playwright-report/
+test-results/
+test-results.xml
+
+# Deployment
+.vercel/
+
+# Agent / AI metadata
+.claude/
+.knowns/
+antigravity-awesome-skills/
+
+# Generated reports (regenerate with scripts/)
+artifacts/

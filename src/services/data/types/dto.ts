@@ -77,6 +77,7 @@ export type CreateMemberDTO = z.infer<typeof CreateMemberDTOSchema>;
 export const UpdateMemberDTOSchema = MemberSchema.partial().pick({
   name: true,
   address: true,
+  evmAddress: true,
   verified: true,
   status: true,
 });
@@ -87,7 +88,7 @@ export type UpdateMemberDTO = z.infer<typeof UpdateMemberDTOSchema>;
 export interface SettlementSuggestion {
   from: string; // memberId who owes
   to: string;   // memberId who is owed
-  amount: number;
+  amount: string;
 }
 
 // On-chain Settlement History Entry

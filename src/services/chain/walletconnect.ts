@@ -1,6 +1,6 @@
 /**
- * WalletConnect service for Polkadot/Substrate chains
- * Supports mobile wallets like Nova Wallet
+ * WalletConnect service for Polkadot/Substrate and EVM chains
+ * Supports mobile wallets like Nova Wallet, MetaMask, Rainbow, Trust, etc.
  */
 
 import type SignClientType from '@walletconnect/sign-client';
@@ -12,7 +12,6 @@ const loadSignClient = async () =>
 const loadWalletConnectModal = async () =>
   (await import('@walletconnect/modal')).WalletConnectModal;
 
-// WalletConnect Project ID from environment variable (optional - checked lazily)
 const getWalletConnectProjectId = (): string => {
   const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
   if (!projectId) {
@@ -25,15 +24,15 @@ const getWalletConnectProjectId = (): string => {
   return projectId;
 };
 
-// Polkadot chain IDs for WalletConnect
-// Format: namespace:chainId (genesis hash in hex)
-// Nova Wallet uses the genesis hash format
+// Polkadot chain IDs
 const POLKADOT_RELAY_CHAIN_ID = 'polkadot:91b171bb158e2d3848fa23a9f1c25182';
-// Note: Asset Hub might need a different format or might not be supported
-const POLKADOT_ASSET_HUB_CHAIN_ID = 'polkadot:91b171bb158e2d3848fa23a9f1c25182'; // Try same as relay for now
-
-// Default to Relay Chain
+const POLKADOT_ASSET_HUB_CHAIN_ID = 'polkadot:91b171bb158e2d3848fa23a9f1c25182';
 const POLKADOT_CHAIN_ID = POLKADOT_RELAY_CHAIN_ID;
+
+// EVM chain IDs (eip155 namespace)
+const EVM_MAINNET_CHAIN_ID = 'eip155:1';
+
+export type ConnectedChain = 'polkadot' | 'evm';
 
 let signClient: SignClientType | null = null;
 let session: SessionTypes.Struct | null = null;
@@ -57,26 +56,21 @@ export async function initWalletConnect(): Promise<SignClientType> {
     // All transactions MUST require user approval in Nova Wallet
   });
 
-  // Initialize WalletConnect Modal
-  // Configure for Polkadot/Substrate chains
   if (!walletConnectModal) {
     try {
       const WalletConnectModal = await loadWalletConnectModal();
       walletConnectModal = new WalletConnectModal({
         projectId: getWalletConnectProjectId(),
-        chains: [POLKADOT_RELAY_CHAIN_ID, POLKADOT_ASSET_HUB_CHAIN_ID],
-        // Prioritize Polkadot-native wallets at the top
-        // Wallet IDs from WalletConnect Explorer API: https://explorer-api.walletconnect.com/
-        // These wallets will appear first in the modal, then other wallets that support Polkadot
+        chains: [POLKADOT_RELAY_CHAIN_ID, POLKADOT_ASSET_HUB_CHAIN_ID, EVM_MAINNET_CHAIN_ID],
         enableExplorer: true,
         explorerRecommendedWalletIds: [
           '43fd1a0aeb90df53ade012cca36692a46d265f0b99b7561e645af42d752edb92', // Nova Wallet
           '9ce87712b99b3eb57396cc8621db8900ac983c712236f48fb70ad28760be3f6a', // SubWallet
           'e0c2e199712878ed272e2c170b585baa0ff0eb50b07521ca586ebf7aeeffc598', // Talisman
+          'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
+          '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // Rainbow
+          '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
         ],
-        // Exclude Rainbow from explorer (doesn't support Polkadot)
-        // Users can still connect via QR code if they want to use Rainbow
-        explorerExcludedWalletIds: ['rainbow', 'rainbowkit'],
       });
     } catch (error) {
       console.warn('[WalletConnect] Modal initialization failed, will use QR code flow:', error);
@@ -99,17 +93,20 @@ export async function initWalletConnect(): Promise<SignClientType> {
   return signClient;
 }
 
+export interface WalletConnectResult {
+  address: string;
+  accounts: string[];
+  chain: ConnectedChain;
+}
+
 /**
- * Connect via WalletConnect - opens modal with wallet selection
- * For Polkadot/Substrate, WalletConnect shows available wallets in the modal
- * The modal will display browser extensions (SubWallet, Talisman) and QR code for mobile wallets
+ * Connect via WalletConnect - opens modal with wallet selection.
+ * Requests both Polkadot and EVM namespaces so the modal shows all supported wallets.
+ * Returns the connected chain type so callers can route to the correct signing flow.
  */
-export async function connectViaWalletConnectModal(): Promise<{ address: string; accounts: string[] }> {
+export async function connectViaWalletConnectModal(): Promise<WalletConnectResult> {
   const client = await initWalletConnect();
-  
-  // Request connection - this will trigger WalletConnect's UI
-  // For Polkadot chains, this typically shows a QR code that mobile wallets can scan
-  // Browser extensions (SubWallet, Talisman) can connect directly
+
   const { uri, approval } = await client.connect({
     optionalNamespaces: {
       polkadot: {
@@ -121,6 +118,11 @@ export async function connectViaWalletConnectModal(): Promise<{ address: string;
         chains: [POLKADOT_RELAY_CHAIN_ID, POLKADOT_ASSET_HUB_CHAIN_ID],
         events: ['chainChanged', 'accountsChanged'],
       },
+      eip155: {
+        methods: ['personal_sign', 'eth_sendTransaction', 'eth_signTypedData'],
+        chains: [EVM_MAINNET_CHAIN_ID],
+        events: ['chainChanged', 'accountsChanged'],
+      },
     },
   });
 
@@ -128,51 +130,59 @@ export async function connectViaWalletConnectModal(): Promise<{ address: string;
     throw new Error('Failed to generate WalletConnect URI');
   }
 
-  // Open WalletConnect modal - pass the URI so wallets can connect
-  // The modal will show desktop wallets immediately
-  // Mobile wallets tab may show loading, but users can use "Scan with your wallet" tab for QR code
   if (walletConnectModal) {
     await walletConnectModal.openModal({
-      uri, // Pass the URI so wallets know what connection to use
-      chains: [POLKADOT_RELAY_CHAIN_ID, POLKADOT_ASSET_HUB_CHAIN_ID],
+      uri,
+      chains: [POLKADOT_RELAY_CHAIN_ID, POLKADOT_ASSET_HUB_CHAIN_ID, EVM_MAINNET_CHAIN_ID],
     });
   }
 
-  // Wait for connection approval
   const onConnect = approval()
     .then((sessionData: SessionTypes.Struct) => {
-      const activeSession = sessionData;
-      session = activeSession;
-      
-      // Close modal
+      session = sessionData;
+
       if (walletConnectModal) {
         walletConnectModal.closeModal();
       }
-      
-      // Extract addresses from accounts (format: "polkadot:91b171bb158e2d3848fa23a9f1c25182:15XyKf7G...")
-      const accounts = activeSession.namespaces.polkadot?.accounts || [];
-      const addresses = accounts
+
+      // Try Polkadot accounts first (primary chain for ChopDot)
+      const polkadotAccounts = sessionData.namespaces.polkadot?.accounts || [];
+      const polkadotAddresses = polkadotAccounts
         .map((acc) => {
           const parts = acc.split(':');
-          if (parts.length >= 3) {
-            return parts.slice(2).join(':');
-          }
-          return parts[2] || '';
+          return parts.length >= 3 ? parts.slice(2).join(':') : '';
         })
-        .filter((addr): addr is string => !!addr && addr.length > 0);
-      
-      if (addresses.length === 0) {
-        console.error('[WalletConnect] No valid addresses found in session');
-        throw new Error('No accounts found in session');
+        .filter((addr): addr is string => addr.length > 0);
+
+      if (polkadotAddresses.length > 0) {
+        return {
+          address: polkadotAddresses[0]!,
+          accounts: polkadotAddresses,
+          chain: 'polkadot' as ConnectedChain,
+        };
       }
 
-      return {
-        address: addresses[0]!, // Non-null assertion: addresses.length > 0 checked above
-        accounts: addresses,
-      };
+      // Fall back to EVM accounts (e.g. MetaMask, Rainbow, Trust)
+      const evmAccounts = sessionData.namespaces.eip155?.accounts || [];
+      const evmAddresses = evmAccounts
+        .map((acc) => {
+          // format: "eip155:1:0xABC..."
+          const parts = acc.split(':');
+          return parts.length >= 3 ? parts.slice(2).join(':') : '';
+        })
+        .filter((addr): addr is string => addr.length > 0);
+
+      if (evmAddresses.length > 0) {
+        return {
+          address: evmAddresses[0]!,
+          accounts: evmAddresses,
+          chain: 'evm' as ConnectedChain,
+        };
+      }
+
+      throw new Error('No accounts found in WalletConnect session');
     })
     .catch((error: unknown) => {
-      // Close modal on error
       if (walletConnectModal) {
         walletConnectModal.closeModal();
       }
@@ -183,10 +193,34 @@ export async function connectViaWalletConnectModal(): Promise<{ address: string;
   return onConnect;
 }
 
-export async function connectNovaWallet(): Promise<{ uri: string; onConnect: Promise<{ address: string; accounts: string[] }> }> {
+/**
+ * Sign a message using EVM personal_sign via WalletConnect.
+ */
+export async function signEvmMessage(
+  address: string,
+  message: string
+): Promise<string> {
+  if (!signClient || !session) {
+    throw new Error('WalletConnect session not found');
+  }
+
+  const hexMessage = `0x${Array.from(new TextEncoder().encode(message)).map(b => b.toString(16).padStart(2, '0')).join('')}`;
+
+  const signature = await signClient.request<string>({
+    topic: session.topic,
+    chainId: EVM_MAINNET_CHAIN_ID,
+    request: {
+      method: 'personal_sign',
+      params: [hexMessage, address],
+    },
+  });
+
+  return signature;
+}
+
+export async function connectNovaWallet(): Promise<{ uri: string; onConnect: Promise<WalletConnectResult> }> {
   const client = await initWalletConnect();
-  
-  // Request connection
+
   const { uri, approval } = await client.connect({
     optionalNamespaces: {
       polkadot: {
@@ -198,6 +232,11 @@ export async function connectNovaWallet(): Promise<{ uri: string; onConnect: Pro
         chains: [POLKADOT_RELAY_CHAIN_ID, POLKADOT_ASSET_HUB_CHAIN_ID],
         events: ['chainChanged', 'accountsChanged'],
       },
+      eip155: {
+        methods: ['personal_sign', 'eth_sendTransaction', 'eth_signTypedData'],
+        chains: [EVM_MAINNET_CHAIN_ID],
+        events: ['chainChanged', 'accountsChanged'],
+      },
     },
   });
 
@@ -205,46 +244,43 @@ export async function connectNovaWallet(): Promise<{ uri: string; onConnect: Pro
     throw new Error('Failed to generate WalletConnect URI');
   }
 
-  // Return URI for QR code and promise that resolves when connected
   const onConnect = approval()
     .then((sessionData: SessionTypes.Struct) => {
-      const activeSession = sessionData;
-      session = activeSession;
-      
-      console.log('[WalletConnect] Session data received:', {
-        namespaces: Object.keys(activeSession.namespaces),
-        polkadotAccounts: activeSession.namespaces.polkadot?.accounts?.length || 0,
-        ethereumAccounts: activeSession.namespaces.eip155?.accounts?.length || 0,
-      });
-      
-      // Extract addresses from Polkadot accounts (format: "polkadot:91b171bb158e2d3848fa23a9f1c25182:15XyKf7G...")
-      const polkadotAccounts = activeSession.namespaces.polkadot?.accounts || [];
-      const addresses = polkadotAccounts
+      session = sessionData;
+
+      const polkadotAccounts = sessionData.namespaces.polkadot?.accounts || [];
+      const polkadotAddresses = polkadotAccounts
         .map((acc) => {
           const parts = acc.split(':');
-          if (parts.length >= 3) {
-            return parts.slice(2).join(':');
-          }
-          return parts[2] || '';
+          return parts.length >= 3 ? parts.slice(2).join(':') : '';
         })
-        .filter((addr): addr is string => !!addr && addr.length > 0);
-      
-      // Check if MetaMask or other EVM wallet connected (only Ethereum accounts)
-      const ethereumAccounts = activeSession.namespaces.eip155?.accounts || [];
-      if (addresses.length === 0 && ethereumAccounts.length > 0) {
-        console.warn('[WalletConnect] EVM wallet connected but no Polkadot accounts. MetaMask mobile does not support Polkadot directly.');
-        throw new Error('MetaMask mobile does not support Polkadot chains. Please use Nova Wallet, SubWallet, or Talisman for Polkadot connections.');
-      }
-      
-      if (addresses.length === 0) {
-        console.error('[WalletConnect] No valid Polkadot addresses found in session');
-        throw new Error('No Polkadot accounts found. Please use a Polkadot-compatible wallet like Nova Wallet, SubWallet, or Talisman.');
+        .filter((addr): addr is string => addr.length > 0);
+
+      if (polkadotAddresses.length > 0) {
+        return {
+          address: polkadotAddresses[0]!,
+          accounts: polkadotAddresses,
+          chain: 'polkadot' as ConnectedChain,
+        };
       }
 
-      return {
-        address: addresses[0]!, // Non-null assertion: addresses.length > 0 checked above
-        accounts: addresses,
-      };
+      const evmAccounts = sessionData.namespaces.eip155?.accounts || [];
+      const evmAddresses = evmAccounts
+        .map((acc) => {
+          const parts = acc.split(':');
+          return parts.length >= 3 ? parts.slice(2).join(':') : '';
+        })
+        .filter((addr): addr is string => addr.length > 0);
+
+      if (evmAddresses.length > 0) {
+        return {
+          address: evmAddresses[0]!,
+          accounts: evmAddresses,
+          chain: 'evm' as ConnectedChain,
+        };
+      }
+
+      throw new Error('No accounts found in WalletConnect session');
     })
     .catch((error: unknown) => {
       console.error('[WalletConnect] Connection failed:', error);

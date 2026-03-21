@@ -17,6 +17,7 @@ import { isValidSs58Any } from '../services/chain/address';
 export const MemberSchema = z.object({
   id: z.string().min(1, 'Member ID is required'),
   address: z.string().nullable().optional(),
+  evmAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'EVM address must be a valid 0x address').nullable().optional(),
   name: z.string().min(1, 'Member name is required'),
   verified: z.boolean().optional(),
   role: z.string().optional(), // 'Owner' | 'Member'
@@ -87,11 +88,21 @@ const OnchainSettlementHistorySchema = PotHistoryBaseSchema.extend({
   toMemberId: z.string(),
   fromAddress: z.string(), // SS58-0
   toAddress: z.string(), // SS58-0
-  amountDot: z.string(), // e.g. "0.017"
+  amountDot: z.string().optional(), // e.g. "0.017"
+  amountUsdc: z.string().optional(),
+  assetId: z.number().optional(),
   txHash: z.string(), // always present for settlements
   subscan: z.string().optional(),
   note: z.string().optional(),
-});
+  closeoutId: z.string().optional(),
+  closeoutLegIndex: z.number().int().nonnegative().optional(),
+  proofTxHash: z.string().optional(),
+  proofStatus: z.enum(['anchored', 'recorded', 'completed']).optional(),
+  proofContract: z.string().optional(),
+}).refine(
+  (data) => Boolean(data.amountDot || data.amountUsdc),
+  { message: 'Settlement history requires amountDot or amountUsdc' },
+);
 
 const RemarkCheckpointHistorySchema = PotHistoryBaseSchema.extend({
   type: z.literal('remark_checkpoint'),
@@ -128,6 +139,38 @@ const ContributionSchema = z.object({
   txHash: z.string().optional(),
 }).passthrough();
 
+const CloseoutLegSchema = z.object({
+  index: z.number().int().nonnegative(),
+  fromMemberId: z.string(),
+  toMemberId: z.string(),
+  fromAddress: z.string(),
+  toAddress: z.string(),
+  amount: z.string(),
+  asset: z.enum(['DOT', 'USDC']),
+  settlementTxHash: z.string().optional(),
+  proofTxHash: z.string().optional(),
+  status: z.enum(['pending', 'paid', 'proven', 'acknowledged']),
+});
+
+const CloseoutRecordSchema = z.object({
+  id: z.string(),
+  potId: z.string(),
+  asset: z.enum(['DOT', 'USDC']),
+  snapshotHash: z.string(),
+  metadataHash: z.string().optional(),
+  contractAddress: z.string().optional(),
+  closeoutId: z.string().optional(),
+  contractTxHash: z.string().optional(),
+  status: z.enum(['draft', 'anchored', 'active', 'partially_settled', 'completed', 'cancelled']),
+  createdByMemberId: z.string(),
+  createdAt: z.number().int().nonnegative(),
+  participantMemberIds: z.array(z.string()).default([]),
+  participantAddresses: z.array(z.string()).default([]),
+  settledLegCount: z.number().int().nonnegative(),
+  totalLegCount: z.number().int().nonnegative(),
+  legs: z.array(CloseoutLegSchema).default([]),
+});
+
 // Pot mode: casual (no confirmations) vs auditable (with confirmations)
 export const PotModeSchema = z.enum(['casual', 'auditable']).default('casual');
 export type PotMode = z.infer<typeof PotModeSchema>;
@@ -159,6 +202,7 @@ export const PotSchema = z.object({
   members: z.array(MemberSchema).min(1, 'Pot must have at least one member'),
   expenses: z.array(ExpenseSchema).default([]),
   history: z.array(PotHistorySchema).optional().default([]),
+  closeouts: z.array(CloseoutRecordSchema).optional(),
   budget: z.number().nullable().optional(),
   budgetEnabled: z.boolean().optional().default(false),
   checkpointEnabled: z.boolean().optional().default(true),

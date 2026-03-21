@@ -3,6 +3,8 @@ import Identicon from '@polkadot/react-identicon';
 import { encodeAddress } from '@polkadot/util-crypto';
 import { polkadotConfig, explorer } from '../utils/polkadot-config';
 import { Copy, Check, ExternalLink } from 'lucide-react';
+import { toast } from 'sonner';
+import { copyWithToast } from '../utils/clipboard';
 
 interface AddressDisplayProps {
   address: string;
@@ -33,12 +35,8 @@ export const AddressDisplay = ({ address, className }: AddressDisplayProps) => {
   }, [copied]);
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(ss58);
-      setCopied(true);
-    } catch {
-      // no-op: clipboard may be unavailable, silently ignore
-    }
+    const ok = await copyWithToast(ss58, 'Address copied', (msg) => toast.success(msg));
+    if (ok) setCopied(true);
   };
 
   return (

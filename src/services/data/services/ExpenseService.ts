@@ -76,6 +76,7 @@ export class ExpenseService {
         ...dto,
         currency: dto.currency || pot.baseCurrency,
       });
+      this.potRepository.invalidate(potId);
       logTiming('addExpense', performance.now() - start, { potId, expenseId: result.id });
       return result;
     } catch (error) {
@@ -129,6 +130,7 @@ export class ExpenseService {
 
       // Update expense
       const result = await this.repository.update(potId, expenseId, dto);
+      this.potRepository.invalidate(potId);
       logTiming('updateExpense', performance.now() - start, { potId, expenseId });
       return result;
     } catch (error) {
@@ -166,6 +168,7 @@ export class ExpenseService {
     const start = performance.now();
     try {
       await this.repository.remove(potId, expenseId);
+      this.potRepository.invalidate(potId);
       logTiming('removeExpense', performance.now() - start, { potId, expenseId });
     } catch (error) {
       logTiming('removeExpense', performance.now() - start, { potId, expenseId, error: error instanceof Error ? error.message : 'unknown' });

@@ -10,6 +10,7 @@ import { warnDev } from "../../utils/logDev";
 import { shouldPreferDLReads } from "../../utils/dlReadsFlag";
 import { usePSAStyle } from "../../utils/usePSAStyle";
 import type { Pot as DataLayerPot } from "../../services/data/types";
+import { Skeleton } from "../Skeleton";
 
 interface Pot {
   id: string;
@@ -51,17 +52,17 @@ interface PotsHomeProps {
   onWalletClick?: () => void;
   walletConnected?: boolean;
   notificationCount?: number;
-  onQuickAddExpense?: () => void;
+  onQuickAddExpense?: (displayedPots: { id: string }[]) => void;
   onQuickSettle?: () => void;
   onQuickScan?: () => void;
   onQuickRequest?: () => void;
 }
 
-export function PotsHome({ 
-  pots: potsProp = [], 
+export function PotsHome({
+  pots: potsProp = [],
   youOwe = [],
   owedToYou = [],
-  onCreatePot, 
+  onCreatePot,
   onPotClick,
   pendingInvites = [],
   onAcceptInvite,
@@ -80,14 +81,14 @@ export function PotsHome({
   const [searchQuery, setSearchQuery] = useState("");
   const [showSortSheet, setShowSortSheet] = useState(false);
   const [sortBy, setSortBy] = useState<string>("recent");
-  
+
   // Task 3: Read pots from Data Layer (if flag enabled) with fallback
   const preferDLReads = shouldPreferDLReads();
   // Use paginated hook
   const { pots: dlPots, loading: potsLoading, hasMore, loadMore, summaries } = usePots(10); // Page size 10
   const { user } = useAuth();
   const summaryUserId = user?.id ?? 'owner';
-  
+
   // Transform Data Layer pots to potSummaries format
   const transformPotToSummary = useMemo(() => {
     return (pot: DataLayerPot, summary?: { totalExpenses: number; myExpenses: number; myShare: number }): Pot => {
@@ -126,7 +127,7 @@ export function PotsHome({
       };
     };
   }, [summaryUserId]);
-  
+
   // Task 3: Determine which pots to use (Data Layer or fallback based on flag)
   const pots = useMemo(() => {
     // If flag is on, prefer DL reads; otherwise prefer props (current behavior)
@@ -161,7 +162,7 @@ export function PotsHome({
       return potsProp;
     }
   }, [dlPots, potsProp, transformPotToSummary, preferDLReads, summaries]);
-  
+
 
   const sortOptions: SortOption[] = [
     { id: "recent", label: "Recent activity" },
@@ -175,17 +176,17 @@ export function PotsHome({
   const youOweTotal = youOwe.reduce((sum, p) => sum + p.totalAmount, 0);
   const owedToYouTotal = owedToYou.reduce((sum, p) => sum + p.totalAmount, 0);
   const netTotal = owedToYouTotal - youOweTotal;
-  
+
   // Local currency formatter; keep lightweight and consistent across dashboard
   const formatCurrency = (amount: number, withSign: boolean = false): string => {
     const absoluteAmount = Math.abs(amount);
     const sign = withSign ? (amount > 0 ? '+' : amount < 0 ? '-' : '') : '';
     return `${sign}$${absoluteAmount.toFixed(2)}`;
   };
-  
+
   // Filter and sort pots
   const filteredPots = useMemo(() => {
-    let filtered = pots.filter(pot => 
+    let filtered = pots.filter(pot =>
       pot.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -213,7 +214,7 @@ export function PotsHome({
   }, [pots, searchQuery, sortBy]);
 
   return (
-    <div 
+    <div
       className={`flex flex-col h-full pb-[68px] ${isPSA ? '' : 'bg-background'}`}
       style={isPSA ? psaStyles.background : undefined}
     >
@@ -225,7 +226,7 @@ export function PotsHome({
         <div className="flex items-center gap-2">
           {/* Account Menu - unified wallet connection */}
           <AccountMenu />
-          
+
           {/* Notification bell */}
           {onNotificationClick && (
             <button
@@ -246,18 +247,18 @@ export function PotsHome({
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="p-4 space-y-3">
-          
+
           {/* Wallet Balance Banner - Shows when connected */}
           <WalletBanner />
 
           {/* Balance Summary with Privacy Toggle */}
-          <div 
+          <div
             className={isPSA ? `${psaClasses.card} p-4 transition-shadow duration-200` : 'card p-4 transition-shadow duration-200'}
             style={isPSA ? psaStyles.card : undefined}
           >
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-section" style={{ fontWeight: 500 }}>Totals across all pots</h3>
-              <button 
+              <button
                 onClick={() => setBalancesVisible(!balancesVisible)}
                 className="p-1 hover:bg-muted/30 rounded-lg transition-colors"
               >
@@ -271,11 +272,11 @@ export function PotsHome({
             <div className="grid grid-cols-3 gap-3">
               <div>
                 <p className="text-micro text-secondary mb-1">You owe</p>
-                <p 
+                <p
                   className="text-[22px] tabular-nums"
-                  style={{ 
-                    fontWeight: 700, 
-                    color: balancesVisible && youOweTotal > 0 ? 'var(--ink)' : 'var(--ink)' 
+                  style={{
+                    fontWeight: 700,
+                    color: balancesVisible && youOweTotal > 0 ? 'var(--ink)' : 'var(--ink)'
                   }}
                 >
                   {balancesVisible ? formatCurrency(youOweTotal) : "•••"}
@@ -283,11 +284,11 @@ export function PotsHome({
               </div>
               <div>
                 <p className="text-micro text-secondary mb-1">Owed to you</p>
-                <p 
+                <p
                   className="text-[22px] tabular-nums"
-                  style={{ 
-                    fontWeight: 700, 
-                    color: balancesVisible && owedToYouTotal > 0 ? 'var(--success)' : 'var(--ink)' 
+                  style={{
+                    fontWeight: 700,
+                    color: balancesVisible && owedToYouTotal > 0 ? 'var(--success)' : 'var(--ink)'
                   }}
                 >
                   {balancesVisible ? formatCurrency(owedToYouTotal) : "•••"}
@@ -295,13 +296,13 @@ export function PotsHome({
               </div>
               <div>
                 <p className="text-micro text-secondary mb-1">Net</p>
-                <p 
+                <p
                   className="text-[24px] tabular-nums"
-                  style={{ 
-                    fontWeight: 700, 
-                    color: balancesVisible 
-                      ? (netTotal >= 0 ? 'var(--money)' : 'var(--ink)') 
-                      : 'var(--ink)' 
+                  style={{
+                    fontWeight: 700,
+                    color: balancesVisible
+                      ? (netTotal >= 0 ? 'var(--money)' : 'var(--ink)')
+                      : 'var(--ink)'
                   }}
                 >
                   {balancesVisible ? formatCurrency(netTotal, true) : "•••"}
@@ -314,16 +315,16 @@ export function PotsHome({
           <div className="grid grid-cols-4 gap-2">
             {/* Add Expense - Primary Action */}
             <button
-              onClick={onQuickAddExpense}
+              onClick={() => onQuickAddExpense?.(pots)}
               className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 ${isPSA ? '' : ''}`}
-              style={isPSA ? psaStyles.pinkAccentButton : { 
+              style={isPSA ? psaStyles.pinkAccentButton : {
                 background: 'var(--accent)',
                 boxShadow: '0 2px 8px rgba(230, 0, 122, 0.25)'
               }}
               onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.pinkAccentButtonHover) : undefined}
               onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.pinkAccentButton) : undefined}
             >
-              <div 
+              <div
                 className="w-10 h-10 rounded-full flex items-center justify-center"
                 style={{ background: isPSA ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.2)' }}
               >
@@ -340,7 +341,7 @@ export function PotsHome({
               onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
               onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
             >
-              <div 
+              <div
                 className="w-10 h-10 rounded-full flex items-center justify-center"
                 style={{ background: 'rgba(142, 142, 147, 0.1)' }}
               >
@@ -357,7 +358,7 @@ export function PotsHome({
               onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
               onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
             >
-              <div 
+              <div
                 className="w-10 h-10 rounded-full flex items-center justify-center"
                 style={{ background: 'rgba(142, 142, 147, 0.1)' }}
               >
@@ -374,7 +375,7 @@ export function PotsHome({
               onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
               onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
             >
-              <div 
+              <div
                 className="w-10 h-10 rounded-full flex items-center justify-center"
                 style={{ background: 'rgba(142, 142, 147, 0.1)' }}
               >
@@ -387,8 +388,8 @@ export function PotsHome({
           {pendingInvites.length > 0 && (
             <div className="space-y-2">
               {pendingInvites.map((invite) => (
-                <div 
-                  key={invite.id} 
+                <div
+                  key={invite.id}
                   className={isPSA ? `${psaClasses.card} p-3 flex items-center justify-between gap-3` : 'card p-3 flex items-center justify-between gap-3'}
                   style={isPSA ? psaStyles.card : undefined}
                 >
@@ -457,7 +458,19 @@ export function PotsHome({
               </div>
             </div>
             <div className="space-y-2">
-              {filteredPots.length === 0 && !potsLoading ? (
+              {potsLoading && filteredPots.length === 0 ? (
+                <div className="space-y-3 pt-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="p-4 card space-y-3">
+                      <div className="flex justify-between">
+                        <Skeleton height={20} width="60%" />
+                        <Skeleton height={20} width="20%" />
+                      </div>
+                      <Skeleton height={14} width="40%" />
+                    </div>
+                  ))}
+                </div>
+              ) : filteredPots.length === 0 ? (
                 <div className="pt-8">
                   <EmptyState
                     icon={Receipt}
@@ -472,35 +485,35 @@ export function PotsHome({
               ) : (
                 <>
                   {filteredPots.map((pot) => {
-                    const budgetPercentage = pot.budgetEnabled && pot.budget 
-                      ? Math.min((pot.totalExpenses / pot.budget) * 100, 100) 
+                    const budgetPercentage = pot.budgetEnabled && pot.budget
+                      ? Math.min((pot.totalExpenses / pot.budget) * 100, 100)
                       : 0;
-                    const isOverBudget = pot.budgetEnabled && pot.budget 
-                      ? pot.totalExpenses > pot.budget 
+                    const isOverBudget = pot.budgetEnabled && pot.budget
+                      ? pot.totalExpenses > pot.budget
                       : false;
-                    
+
                     return (
-	                      <button
-	                        key={pot.id}
-	                        onClick={() => onPotClick?.(pot.id)}
-	                        className={isPSA ? `w-full p-4 ${psaClasses.card} text-left transition-all duration-200` : 'w-full p-4 card text-left card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200'}
-	                        style={isPSA ? psaStyles.card : undefined}
-	                        onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
-	                        onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
-	                      >
-	                        <div className="flex items-start justify-between gap-2 mb-2">
-	                          <div className="flex items-center gap-2 flex-1 min-w-0">
-	                            {pot.type === "savings" && (
-	                              <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--success)' }} />
-	                            )}
-	                            <p className="text-body flex-1 truncate" style={{ fontWeight: 500 }}>{pot.name}</p>
-	                          </div>
-	                          {pot.type === "savings" && pot.yieldRate && (
-	                            <span className="px-2 py-0.5 rounded text-caption whitespace-nowrap flex-shrink-0 tabular-nums" style={{ background: 'rgba(25, 195, 125, 0.15)', color: 'var(--success)' }}>
-	                              {pot.yieldRate.toFixed(1)}% APY
-	                            </span>
-	                          )}
-	                        </div>
+                      <button
+                        key={pot.id}
+                        onClick={() => onPotClick?.(pot.id)}
+                        className={isPSA ? `w-full p-4 ${psaClasses.card} text-left transition-all duration-200` : 'w-full p-4 card text-left card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200'}
+                        style={isPSA ? psaStyles.card : undefined}
+                        onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
+                        onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            {pot.type === "savings" && (
+                              <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--success)' }} />
+                            )}
+                            <p className="text-body flex-1 truncate" style={{ fontWeight: 500 }}>{pot.name}</p>
+                          </div>
+                          {pot.type === "savings" && pot.yieldRate && (
+                            <span className="px-2 py-0.5 rounded text-caption whitespace-nowrap flex-shrink-0 tabular-nums" style={{ background: 'rgba(25, 195, 125, 0.15)', color: 'var(--success)' }}>
+                              {pot.yieldRate.toFixed(1)}% APY
+                            </span>
+                          )}
+                        </div>
                         {balancesVisible && (
                           <div className="flex items-center justify-between">
                             {pot.type === "savings" ? (
@@ -528,19 +541,19 @@ export function PotsHome({
                                 </div>
                                 <div className="text-right">
                                   <p className="text-micro text-secondary mb-0.5">Your balance</p>
-                                  <p 
-                                    className="text-[24px] tabular-nums" 
-                                    style={{ 
+                                  <p
+                                    className="text-[24px] tabular-nums"
+                                    style={{
                                       fontWeight: 700,
-                                      color: Math.abs(pot.net) < 0.01 
-                                        ? 'var(--muted)' 
-                                        : pot.net >= 0 
-                                          ? 'var(--money)' 
+                                      color: Math.abs(pot.net) < 0.01
+                                        ? 'var(--muted)'
+                                        : pot.net >= 0
+                                          ? 'var(--money)'
                                           : 'var(--ink)'
                                     }}
                                   >
-                                    {Math.abs(pot.net) < 0.01 
-                                      ? '$0.00' 
+                                    {Math.abs(pot.net) < 0.01
+                                      ? '$0.00'
                                       : `${pot.net >= 0 ? '+' : '-'}$${Math.abs(pot.net).toFixed(2)}`
                                     }
                                   </p>
@@ -562,9 +575,8 @@ export function PotsHome({
                             </div>
                             <div className="h-1 bg-muted rounded-full overflow-hidden">
                               <div
-                                className={`h-full transition-all duration-300 ${
-                                  isOverBudget ? "bg-destructive" : "bg-primary"
-                                }`}
+                                className={`h-full transition-all duration-300 ${isOverBudget ? "bg-destructive" : "bg-primary"
+                                  }`}
                                 style={{ width: `${budgetPercentage}%` }}
                               />
                             </div>
@@ -589,7 +601,7 @@ export function PotsHome({
                       </button>
                     );
                   })}
-                  
+
                   {/* Load More Button */}
                   {hasMore && preferDLReads && (
                     <div className="pt-2 text-center">

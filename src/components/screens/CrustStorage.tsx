@@ -5,6 +5,8 @@ import { SecondaryButton } from "../SecondaryButton";
 import { Card } from "../ui/card";
 import { Upload, Wallet, Copy, ExternalLink, CheckCircle, AlertCircle, Loader2, X, Settings } from "lucide-react";
 import { triggerHaptic } from "../../utils/haptics";
+import { toast } from "sonner";
+import { copyWithToast } from "../../utils/clipboard";
 import { uploadToIPFS } from "../../services/storage/ipfsWithOnboarding";
 import { getIPFSGatewayUrl } from "../../services/storage/ipfs";
 import { useAccount } from "../../contexts/AccountContext";
@@ -302,8 +304,7 @@ export function CrustStorage({ onAuthSetup }: CrustStorageProps = {}) {
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    triggerHaptic("light");
+    copyWithToast(text, 'Copied', (msg) => toast.success(msg));
   };
 
   const formatFileSize = (bytes: number) => {

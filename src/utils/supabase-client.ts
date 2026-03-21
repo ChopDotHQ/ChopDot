@@ -31,8 +31,11 @@ export const getSupabase = (): SupabaseClient | null => {
         ? window.localStorage
         : undefined;
 
+  console.log('[supabase] Creating client:', { url, persistence });
+
   cached = createClient(url, anon, {
     auth: {
+      flowType: 'pkce',
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: false,

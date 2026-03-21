@@ -1,5 +1,6 @@
 import { ChevronRight, Bell, Activity, AlertCircle, ChevronDown, ChevronUp, Check, DollarSign, TrendingUp, UserPlus, Eye, EyeOff, X, RefreshCw, ListFilter } from "lucide-react";
 import { useState, useMemo } from "react";
+import Decimal from "decimal.js";
 import { SettleSheet } from "../SettleSheet";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { usePullToRefresh } from "../../utils/usePullToRefresh";
@@ -14,7 +15,7 @@ interface ActivityItem {
   timestamp: string;
   title: string;
   subtitle?: string;
-  amount?: number;
+  amount?: string;
   currency?: string;
   avatarName?: string;
 }
@@ -54,7 +55,7 @@ interface ActivityHomeProps {
   notificationCount?: number;
 }
 
-export function ActivityHome({ 
+export function ActivityHome({
   totalOwed,
   totalOwing,
   activities,
@@ -117,10 +118,10 @@ export function ActivityHome({
         filtered.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
         break;
       case "amount-high":
-        filtered.sort((a, b) => (b.amount || 0) - (a.amount || 0));
+        filtered.sort((a, b) => new Decimal(b.amount || '0').minus(new Decimal(a.amount || '0')).toNumber());
         break;
       case "amount-low":
-        filtered.sort((a, b) => (a.amount || 0) - (b.amount || 0));
+        filtered.sort((a, b) => new Decimal(a.amount || '0').minus(new Decimal(b.amount || '0')).toNumber());
         break;
       case "type":
         filtered.sort((a, b) => a.type.localeCompare(b.type));
@@ -150,7 +151,7 @@ export function ActivityHome({
   };
 
   return (
-    <div 
+    <div
       className={`flex flex-col h-full pb-[68px] ${isPSA ? '' : 'bg-background'}`}
       style={isPSA ? psaStyles.background : undefined}
     >
@@ -168,7 +169,7 @@ export function ActivityHome({
           )}
           {/* Account Menu - unified wallet connection */}
           <AccountMenu />
-          
+
           {/* Notification bell */}
           <button
             onClick={() => {
@@ -189,36 +190,35 @@ export function ActivityHome({
 
       {/* Pull-to-refresh indicator */}
       {pullDistance > 0 && (
-        <div 
+        <div
           className="flex justify-center items-center transition-all duration-200"
-          style={{ 
+          style={{
             height: `${pullDistance}px`,
             opacity: Math.min(pullDistance / 80, 1),
           }}
         >
-          <RefreshCw 
-            className={`w-5 h-5 text-secondary transition-transform duration-200 ${
-              shouldTrigger ? 'rotate-180' : ''
-            }`}
+          <RefreshCw
+            className={`w-5 h-5 text-secondary transition-transform duration-200 ${shouldTrigger ? 'rotate-180' : ''
+              }`}
             style={{ transform: `rotate(${pullDistance * 2}deg)` }}
           />
         </div>
       )}
 
       {/* Main Content */}
-      <div 
+      <div
         ref={scrollContainerRef}
         className="flex-1 overflow-auto"
       >
         <div className="p-4 space-y-3">
           {/* Balance Overview Card */}
-          <div 
+          <div
             className={isPSA ? `${psaClasses.card} p-4 transition-shadow duration-200` : 'card p-4 transition-shadow duration-200'}
             style={isPSA ? psaStyles.card : undefined}
           >
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-section" style={{ fontWeight: 500 }}>Your balance</h3>
-              <button 
+              <button
                 onClick={() => setBalancesVisible(!balancesVisible)}
                 className="p-1 hover:bg-muted/30 rounded-lg transition-colors"
               >
@@ -232,9 +232,9 @@ export function ActivityHome({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <p className="text-micro text-secondary mb-1">You owe</p>
-                <p 
+                <p
                   className="text-[22px] tabular-nums"
-                  style={{ 
+                  style={{
                     fontWeight: 700,
                     color: balancesVisible && totalOwing > 0 ? 'var(--ink)' : 'var(--ink)'
                   }}
@@ -244,9 +244,9 @@ export function ActivityHome({
               </div>
               <div>
                 <p className="text-micro text-secondary mb-1">Owed to you</p>
-                <p 
-                  className="text-[22px] tabular-nums" 
-                  style={{ 
+                <p
+                  className="text-[22px] tabular-nums"
+                  style={{
                     fontWeight: 700,
                     color: balancesVisible && totalOwed > 0 ? 'var(--money)' : 'var(--ink)'
                   }}
@@ -259,7 +259,7 @@ export function ActivityHome({
 
           {/* Pending Attestations Banner - REMOVED */}
           {false && hasPendingAttestations && showBanner && (
-            <div 
+            <div
               className={isPSA ? `${psaClasses.card} p-4 transition-shadow duration-200` : 'card p-4 bg-muted/10 transition-shadow duration-200'}
               style={isPSA ? psaStyles.card : undefined}
             >
@@ -368,11 +368,10 @@ export function ActivityHome({
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3 py-1.5 rounded-full text-caption whitespace-nowrap transition-all ${
-                  filter === f
+                className={`px-3 py-1.5 rounded-full text-caption whitespace-nowrap transition-all ${filter === f
                     ? "bg-primary text-primary-foreground"
                     : "bg-secondary text-secondary-foreground hover:bg-muted/20"
-                }`}
+                  }`}
               >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
               </button>
@@ -401,7 +400,7 @@ export function ActivityHome({
                   onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
                 >
                   <div className="flex items-start gap-3">
-                    <div 
+                    <div
                       className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                       style={{
                         backgroundColor:
@@ -436,7 +435,7 @@ export function ActivityHome({
                     </div>
                     {activity.amount && (
                       <span className="text-body tabular-nums flex-shrink-0">
-                        ${activity.amount.toFixed(2)}
+                        {activity.currency === 'DOT' ? `${new Decimal(activity.amount).toFixed(4)} DOT` : `$${new Decimal(activity.amount).toFixed(2)}`}
                       </span>
                     )}
                   </div>
@@ -460,8 +459,8 @@ export function ActivityHome({
             onSettleClick?.(topPersonToSettle.id, method);
             setShowSettleSheet(false);
           }}
-          onReviewPending={() => {}}
-          onViewHistory={() => {}}
+          onReviewPending={() => { }}
+          onViewHistory={() => { }}
         />
       )}
 

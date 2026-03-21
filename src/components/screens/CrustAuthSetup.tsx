@@ -12,6 +12,7 @@ import { SecondaryButton } from '../SecondaryButton';
 import { Loader2, CheckCircle, Copy, AlertCircle, ExternalLink, ArrowLeft } from 'lucide-react';
 import { triggerHaptic } from '../../utils/haptics';
 import { toast } from 'sonner';
+import { copyWithToast } from '../../utils/clipboard';
 
 interface CrustAuthSetupProps {
   onBack?: () => void;
@@ -51,32 +52,20 @@ export function CrustAuthSetup({ onBack }: CrustAuthSetupProps = {}) {
 
   const handleCopy = async () => {
     if (!token) return;
-
-    try {
-      await navigator.clipboard.writeText(token);
+    const ok = await copyWithToast(token, 'Token copied', (msg) => toast.success(msg));
+    if (ok) {
       setCopied(true);
-      triggerHaptic('success');
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('[CrustAuthSetup] Failed to copy:', err);
-      toast.error('Failed to copy token');
-      triggerHaptic('error');
     }
   };
 
   const handleCopyEnvLine = async () => {
     if (!token) return;
-
     const envLine = `CRUST_W3AUTH_TOKEN=${token}`;
-    try {
-      await navigator.clipboard.writeText(envLine);
+    const ok = await copyWithToast(envLine, 'Env line copied', (msg) => toast.success(msg));
+    if (ok) {
       setCopied(true);
-      triggerHaptic('success');
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('[CrustAuthSetup] Failed to copy:', err);
-      toast.error('Failed to copy env line');
-      triggerHaptic('error');
     }
   };
 

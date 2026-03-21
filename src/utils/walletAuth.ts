@@ -7,6 +7,9 @@
  * - Rainbow (EVM via WalletConnect)
  */
 
+import { getSupabaseConfig } from './supabase-client';
+import type { Eip1193Provider } from '../services/wallet/capabilities';
+
 export interface WalletConnection {
   address: string;
   provider: string;
@@ -95,16 +98,20 @@ export async function connectMetaMask(): Promise<WalletConnection> {
     }
     
     // Request account access
-    const accounts = await window.ethereum.request({
+    const accounts = (await window.ethereum.request({
       method: 'eth_requestAccounts',
-    });
+    })) as string[];
     
     if (accounts.length === 0) {
       throw new Error('No accounts found in MetaMask');
     }
+    const firstAccount = accounts[0];
+    if (!firstAccount) {
+      throw new Error('No accounts found in MetaMask');
+    }
     
     return {
-      address: accounts[0],
+      address: firstAccount,
       provider: 'metamask',
     };
   } catch (error) {
@@ -123,10 +130,10 @@ export async function signMetaMaskMessage(address: string, message: string): Pro
     }
     
     // Sign the message
-    const signature = await window.ethereum.request({
+    const signature = (await window.ethereum.request({
       method: 'personal_sign',
       params: [message, address],
-    });
+    })) as string;
     
     return signature;
   } catch (error) {
@@ -276,11 +283,32 @@ export async function requestWalletNonce(address: string): Promise<string> {
   return data.nonce as string;
 }
 
+export const getWalletAuthDomain = (): string => {
+  if (typeof window !== 'undefined' && window.location?.host) {
+    return window.location.host;
+  }
+  return 'chopdot.app';
+};
+
 /**
  * Build the exact message expected by the wallet-auth edge function
  */
-export const buildWalletAuthMessage = (nonce: string) =>
-  `Sign this message to login to ChopDot.\nNonce: ${nonce}`;
+export const buildWalletAuthMessage = (
+  nonce: string,
+  options?: {
+    domain?: string;
+    chain?: 'polkadot' | 'evm';
+  },
+) => {
+  const domain = options?.domain || getWalletAuthDomain();
+  const chain = options?.chain || 'polkadot';
+  return [
+    'Sign this message to login to ChopDot.',
+    `Domain: ${domain}`,
+    `Chain: ${chain}`,
+    `Nonce: ${nonce}`,
+  ].join('\n');
+};
 
 /**
  * Verify wallet signature (backend implementation)
@@ -320,7 +348,6 @@ export async function verifyWalletSignature(
 // Type declarations for window.ethereum
 declare global {
   interface Window {
-    ethereum?: any;
+    ethereum?: Eip1193Provider;
   }
 }
-import { getSupabaseConfig } from './supabase-client';

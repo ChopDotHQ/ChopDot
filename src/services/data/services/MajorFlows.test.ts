@@ -158,7 +158,7 @@ describe('Major MVP service flows', () => {
 
     const suggestions = await settlements.suggest(potId);
     expect(suggestions.every((s) => s.to === 'owner')).toBe(true);
-    expect(suggestions.reduce((sum, s) => sum + s.amount, 0)).toBe(45);
+    expect(suggestions.reduce((sum, s) => sum + Number(s.amount), 0)).toBe(45);
 
     await settlements.recordOnchainSettlement(potId, {
       id: 'usdc-1',

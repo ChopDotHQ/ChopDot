@@ -49,6 +49,23 @@ supabase functions list
 # Should show wallet-auth in the list
 ```
 
+**Locked message format:**
+The frontend and edge function must agree on the exact signed message shape:
+
+```text
+Sign this message to login to ChopDot.
+Domain: <origin host>
+Chain: <chain id>
+Nonce: <nonce>
+```
+
+For the current release:
+
+- `Domain` must match the request origin host
+- `Chain` must match the wallet login flow (`polkadot` or `eip155:1`)
+- nonces are one-time, short-lived, and request-throttled
+- release frontend and edge function together so the message format does not drift
+
 ## Step 3: Rotate Existing Wallet Passwords
 
 ⚠️ **Important:** Run this script **locally** (not committed to repo) to rotate passwords for existing wallet users. This invalidates old address-as-password logins.
@@ -99,6 +116,7 @@ grep VITE_SUPABASE .env.local
    - Extension popup appears
    - Select account → Approve
    - Nonce is requested from `/wallet-auth/request-nonce`
+   - The signed message includes `Domain`, `Chain`, and `Nonce`
    - Signature prompt appears
    - After signing, `/wallet-auth/verify` is called
    - Session tokens are returned
@@ -193,6 +211,18 @@ After successful rollout:
 
 - [ ] Monitor Edge Function logs for errors
 - [ ] Track login success rates
-- [ ] Consider adding rate limiting to nonce requests
+- [ ] Confirm allowed production/staging origins are set correctly
+- [ ] Confirm nonce expiry and request cooldown are working in logs
 - [ ] Set up alerts for failed authentication attempts
 - [ ] Document user-facing changes (if any)
+
+## Coordinated Release Order
+
+For Smart settle releases, deploy in this order:
+
+1. Deploy `wallet-auth`
+2. Redeploy the closeout contract
+3. Update `VITE_PVM_CLOSEOUT_CONTRACT_ADDRESS`
+4. Deploy the frontend
+5. Run wallet-auth smoke tests on localhost plus staging/production origins
+6. Run one manual Smart settle end-to-end flow against the new contract

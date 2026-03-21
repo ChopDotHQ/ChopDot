@@ -1,7 +1,13 @@
 import { UserPlus, MoreVertical, UserMinus, Send, Edit, Copy, CheckCircle, Wallet } from "lucide-react";
+import { toast } from "sonner";
+import { copyWithToast } from "../../utils/clipboard";
 import { TrustDots } from "../TrustDots";
 import { useState } from "react";
 import { EditMemberModal } from "../EditMemberModal";
+import {
+  normalizeWalletAddress,
+  resolvePaymentPreference,
+} from "../../utils/identityResolver";
 
 interface Member {
   id: string;
@@ -9,6 +15,7 @@ interface Member {
   role: "Owner" | "Member";
   status: "active" | "pending";
   address?: string;
+  evmAddress?: string;
   verified?: boolean;
 }
 
@@ -26,21 +33,23 @@ interface MembersTabProps {
   baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
   onAddMember: () => void;
   onRemoveMember: (id: string) => void;
-  onUpdateMember?: (member: { id: string; name: string; address?: string; verified?: boolean }) => void;
+  onUpdateMember?: (member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean }) => void;
   onCopyInviteLink?: () => void;
   onResendInvite?: (memberId: string) => void;
+  onRevokeInvite?: (memberId: string) => void;
 }
 
-export function MembersTab({ 
-  members, 
+export function MembersTab({
+  members,
   expenses = [],
   currentUserId = "owner",
   baseCurrency = "USD",
-  onAddMember, 
+  onAddMember,
   onRemoveMember,
   onUpdateMember,
   onCopyInviteLink: _onCopyInviteLink,
   onResendInvite,
+  onRevokeInvite,
 }: MembersTabProps) {
   const isDotPot = baseCurrency === 'DOT';
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -65,7 +74,7 @@ export function MembersTab({
           theirShareOfMyExpenses += memberSplit.amount;
         }
       }
-      
+
       // If they paid, find your share
       if (expense.paidBy === memberId) {
         const yourSplit = expense.split.find(s => s.memberId === currentUserId);
@@ -84,7 +93,7 @@ export function MembersTab({
   const getPaymentPreference = (memberId: string): string | undefined => {
     // You don't have a payment preference shown
     if (memberId === currentUserId) return undefined;
-    
+
     // Mock data for other members
     const preferences: Record<string, string> = {
       alice: "Bank",
@@ -106,11 +115,19 @@ export function MembersTab({
           const balance = getMemberBalance(member.id);
           const isCurrentUser = member.id === currentUserId;
           const displayName = isCurrentUser ? "You" : member.name;
-          const paymentPref = getPaymentPreference(member.id);
+          const normalizedAddress = normalizeWalletAddress(member.address);
+          const paymentPref = isCurrentUser
+            ? undefined
+            : resolvePaymentPreference(normalizedAddress, getPaymentPreference(member.id), "Bank");
           const trustScore = getTrustScore(member.id);
           const isPositive = balance >= 0;
           const amountColor = isPositive ? 'var(--success)' : 'var(--ink)';
           const showMenu = openMenuId === member.id;
+          const canEditMember = Boolean(onUpdateMember);
+          const canResendInvite = member.status === "pending" && Boolean(onResendInvite);
+          const canRevokeInvite = member.status === "pending" && Boolean(onRevokeInvite);
+          const canRemoveMember = member.role !== "Owner";
+          const canShowMenu = canEditMember || canResendInvite || canRevokeInvite || canRemoveMember;
 
           return (
             <div key={member.id} className="relative">
@@ -120,16 +137,16 @@ export function MembersTab({
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     {/* Avatar with TrustDots badge */}
                     <div className="relative flex-shrink-0">
-                      <div 
+                      <div
                         className="w-10 h-10 rounded-full flex items-center justify-center"
-                        style={{ 
+                        style={{
                           background: isCurrentUser ? 'var(--accent-pink-soft)' : 'var(--muted)',
                           opacity: 0.2,
                         }}
                       >
-                        <span 
+                        <span
                           className="text-body"
-                          style={{ 
+                          style={{
                             fontWeight: 500,
                             color: 'var(--foreground)',
                             opacity: 1,
@@ -140,27 +157,27 @@ export function MembersTab({
                       </div>
                       {/* TrustDots overlay - bottom-right corner */}
                       {!isCurrentUser && (
-                        <TrustDots 
-                          score={trustScore} 
+                        <TrustDots
+                          score={trustScore}
                           className="bottom-0 right-0"
                         />
                       )}
                     </div>
-                    
+
                     {/* Name + Role + Payment Preference */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <p 
+                        <p
                           className="text-body truncate"
                           style={{ fontWeight: 500 }}
                         >
                           {displayName}
                         </p>
-                        
+
                         {/* Role Badge */}
-                        <span 
+                        <span
                           className="inline-block px-1.5 py-0.5 rounded text-micro"
-                          style={{ 
+                          style={{
                             backgroundColor: member.role === "Owner" ? 'var(--accent-pink-soft)' : 'var(--muted)',
                             color: member.role === "Owner" ? 'var(--accent)' : 'var(--foreground)',
                             opacity: 0.8,
@@ -169,13 +186,13 @@ export function MembersTab({
                           {member.role}
                         </span>
                       </div>
-                      
+
                       {/* Payment Preference Pill - Only show for non-DOT pots or when no address */}
-                      {paymentPref && !isDotPot && !member.address && (
+                      {paymentPref && !isDotPot && !normalizedAddress && (
                         <div className="flex items-center gap-1 mt-1">
-                          <span 
+                          <span
                             className="inline-block px-2 py-0.5 rounded-md text-caption"
-                            style={{ 
+                            style={{
                               backgroundColor: 'var(--muted)',
                               color: 'var(--bg)',
                               opacity: 0.8,
@@ -185,35 +202,62 @@ export function MembersTab({
                           </span>
                         </div>
                       )}
-                      
+
                       {/* Wallet Address Display - Show readiness or CTA */}
-                      {member.address ? (
+                      {normalizedAddress || member.evmAddress ? (
                         <div className="flex flex-wrap items-center gap-2 mt-1">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-[11px] text-green-700 dark:text-green-400">
-                            <CheckCircle className="w-3 h-3" />
-                            DOT wallet ready
-                          </span>
-                          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
-                            <span className="text-micro font-mono text-foreground">
-                              {member.address.slice(0, 8)}...{member.address.slice(-6)}
+                          {normalizedAddress && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-[11px] text-green-700 dark:text-green-400">
+                              <CheckCircle className="w-3 h-3" />
+                              DOT wallet ready
                             </span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigator.clipboard.writeText(member.address!);
-                              }}
-                              className="p-0.5 hover:bg-muted rounded transition-colors"
-                              title="Copy address"
-                            >
-                              <Copy className="w-3 h-3 text-secondary" />
-                            </button>
-                            {member.verified && (
-                              <div className="flex items-center gap-0.5 px-1 py-0.5 bg-green-500/20 rounded text-micro text-green-600 dark:text-green-400">
-                                <CheckCircle className="w-2.5 h-2.5" />
-                                <span>Verified</span>
-                              </div>
-                            )}
-                          </div>
+                          )}
+                          {member.evmAddress && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 text-[11px] text-blue-700 dark:text-blue-400">
+                              <CheckCircle className="w-3 h-3" />
+                              PVM wallet ready
+                            </span>
+                          )}
+                          {normalizedAddress && (
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
+                              <span className="text-micro font-mono text-foreground">
+                                {normalizedAddress.slice(0, 8)}...{normalizedAddress.slice(-6)}
+                              </span>
+                              <button
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  await copyWithToast(normalizedAddress, 'Address copied', (msg) => toast.success(msg));
+                                }}
+                                className="p-0.5 hover:bg-muted rounded transition-colors"
+                                title="Copy address"
+                              >
+                                <Copy className="w-3 h-3 text-secondary" />
+                              </button>
+                              {member.verified && (
+                                <div className="flex items-center gap-0.5 px-1 py-0.5 bg-green-500/20 rounded text-micro text-green-600 dark:text-green-400">
+                                  <CheckCircle className="w-2.5 h-2.5" />
+                                  <span>Verified</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          {member.evmAddress && (
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
+                              <span className="text-micro font-mono text-foreground">
+                                {member.evmAddress.slice(0, 8)}...{member.evmAddress.slice(-6)}
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  void navigator.clipboard.writeText(member.evmAddress || '');
+                                }}
+                                className="p-0.5 hover:bg-muted rounded transition-colors"
+                                title="Copy EVM address"
+                              >
+                                <Copy className="w-3 h-3 text-secondary" />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <button
@@ -227,8 +271,8 @@ export function MembersTab({
                           Add DOT wallet
                         </button>
                       )}
-                      
-                      
+
+
                       {/* Status for pending members */}
                       {member.status === "pending" && (
                         <p className="text-caption text-secondary mt-0.5">
@@ -237,7 +281,7 @@ export function MembersTab({
                       )}
                     </div>
                   </div>
-                  
+
                   {/* Right: Balance or Menu Button */}
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {/* Balance (if not current user and there are expenses) */}
@@ -248,15 +292,15 @@ export function MembersTab({
                           const settleThreshold = isDotPot ? 0.000001 : 0.01;
                           const isSettled = Math.abs(balance) < settleThreshold;
                           const decimals = isDotPot ? 6 : 2;
-                          const balanceDisplay = isSettled 
-                            ? "Settled" 
+                          const balanceDisplay = isSettled
+                            ? "Settled"
                             : `${isPositive ? '+' : ''}${isDotPot ? `${Math.abs(balance).toFixed(decimals)} DOT` : `$${Math.abs(balance).toFixed(decimals)}`}`;
-                          
+
                           return (
                             <>
-                              <p 
+                              <p
                                 className="text-[18px] tabular-nums"
-                                style={{ 
+                                style={{
                                   fontWeight: 700,
                                   color: isSettled ? 'var(--muted)' : amountColor,
                                 }}
@@ -273,9 +317,9 @@ export function MembersTab({
                         })()}
                       </div>
                     )}
-                    
+
                     {/* Menu Button (for non-owners) */}
-                    {member.role !== "Owner" && (
+                    {canShowMenu && (
                       <button
                         onClick={() => setOpenMenuId(showMenu ? null : member.id)}
                         className="p-1.5 hover:bg-muted/30 rounded-lg transition-colors"
@@ -291,17 +335,17 @@ export function MembersTab({
               {showMenu && (
                 <>
                   {/* Backdrop */}
-                  <div 
+                  <div
                     className="fixed inset-0 z-40"
                     onClick={() => setOpenMenuId(null)}
                   />
-                  
+
                   {/* Menu */}
-                  <div 
+                  <div
                     className="absolute right-0 top-full mt-1 w-48 card p-1 z-50"
                     style={{ boxShadow: 'var(--shadow-fab)' }}
                   >
-                    {onUpdateMember && (
+                    {canEditMember && (
                       <button
                         onClick={() => {
                           setEditingMember(member);
@@ -313,11 +357,11 @@ export function MembersTab({
                         <span className="text-body">Edit member</span>
                       </button>
                     )}
-                    
-                    {member.status === "pending" && onResendInvite && (
+
+                    {canResendInvite && (
                       <button
                         onClick={() => {
-                          onResendInvite(member.id);
+                          onResendInvite?.(member.id);
                           setOpenMenuId(null);
                         }}
                         className="w-full px-3 py-2 text-left rounded-lg hover:bg-muted/30 transition-colors flex items-center gap-2"
@@ -326,19 +370,35 @@ export function MembersTab({
                         <span className="text-body">Resend invite</span>
                       </button>
                     )}
-                    
-                    <button
-                      onClick={() => {
-                        onRemoveMember(member.id);
-                        setOpenMenuId(null);
-                      }}
-                      className="w-full px-3 py-2 text-left rounded-lg hover:bg-destructive/10 transition-colors flex items-center gap-2"
-                    >
-                      <UserMinus className="w-4 h-4" style={{ color: 'var(--danger)' }} />
-                      <span className="text-body" style={{ color: 'var(--danger)' }}>
-                        Remove member
-                      </span>
-                    </button>
+
+                    {canRevokeInvite && (
+                      <button
+                        onClick={() => {
+                          onRevokeInvite?.(member.id);
+                          setOpenMenuId(null);
+                        }}
+                        className="w-full px-3 py-2 text-left rounded-lg hover:bg-muted/30 transition-colors flex items-center gap-2"
+                      >
+                        {/* Reusing UserMinus icon but maybe a differen style? */}
+                        <UserMinus className="w-4 h-4 text-secondary" />
+                        <span className="text-body">Revoke invite</span>
+                      </button>
+                    )}
+
+                    {canRemoveMember && (
+                      <button
+                        onClick={() => {
+                          onRemoveMember(member.id);
+                          setOpenMenuId(null);
+                        }}
+                        className="w-full px-3 py-2 text-left rounded-lg hover:bg-destructive/10 transition-colors flex items-center gap-2"
+                      >
+                        <UserMinus className="w-4 h-4" style={{ color: 'var(--danger)' }} />
+                        <span className="text-body" style={{ color: 'var(--danger)' }}>
+                          Remove member
+                        </span>
+                      </button>
+                    )}
                   </div>
                 </>
               )}
@@ -346,7 +406,7 @@ export function MembersTab({
           );
         })}
       </div>
-      
+
       {/* Add Member Button */}
       <button
         onClick={onAddMember}

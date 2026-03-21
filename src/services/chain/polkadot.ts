@@ -275,6 +275,17 @@ const toPlanckString = (amountDot: number, decimals: number): string => {
   return asBigInt.toString();
 };
 
+const formatUnits = (value: string, decimals: number): string => {
+  if (!value) return '0';
+  const s = value.replace(/^0+(?=\d)/, '');
+  if (s.length <= decimals) {
+    return `0.${'0'.repeat(decimals - s.length)}${s}`.replace(/\.?0+$/, '');
+  }
+  const intPart = s.slice(0, s.length - decimals);
+  const frac = s.slice(s.length - decimals).replace(/0+$/, '');
+  return frac ? `${intPart}.${frac}` : intPart;
+};
+
 export const polkadotChainService = (() => {
   const setChain = (chain: 'relay' | 'assethub') => {
     const resolved = resolveChainKey(chain);
@@ -318,6 +329,29 @@ export const polkadotChainService = (() => {
       return balance;
     } catch (error) {
       console.error('[Chain] getFreeBalance error:', error);
+      throw error;
+    }
+  };
+
+  const getUsdcBalance = async (address: string, assetId = DEFAULT_USDC_ASSET_ID): Promise<string> => {
+    try {
+      const api = await getApi(120000);
+      await api.isReady;
+      const normalized = normalizeToPolkadot(address);
+      const assetAccount = await api.query.assets.account(assetId, normalized);
+      if (!assetAccount || assetAccount.isNone) {
+        return '0';
+      }
+      const human = assetAccount.toHuman?.();
+      const json = assetAccount.toJSON?.() as { balance?: string | number } | undefined;
+      const balance =
+        json?.balance?.toString?.() ||
+        (typeof human?.balance === 'string' ? human.balance.replace(/,/g, '') : undefined) ||
+        assetAccount.toPrimitive?.()?.balance?.toString?.() ||
+        '0';
+      return balance;
+    } catch (error) {
+      console.error('[Chain] getUsdcBalance error:', error);
       throw error;
     }
   };
@@ -388,6 +422,16 @@ export const polkadotChainService = (() => {
       }
 
       const tx = buildTx({ api, config });
+      const emitStatusSafely = (
+        state: 'submitted' | 'inBlock' | 'finalized',
+        ctx?: { txHash?: string; blockHash?: string },
+      ) => {
+        try {
+          onStatus?.(state, ctx);
+        } catch (callbackError) {
+          console.error('[Chain Service] onStatus callback error', callbackError);
+        }
+      };
 
       if (useWalletConnect && wcSession) {
         const { signAndSendTransaction } = await import('./walletconnect');
@@ -403,11 +447,11 @@ export const polkadotChainService = (() => {
         }
 
         const txHex = tx.toHex();
-        onStatus?.('submitted');
+        emitStatusSafely('submitted');
 
         try {
           const { txHash } = await signAndSendTransaction(from, txHex);
-          onStatus?.('inBlock', { txHash });
+          emitStatusSafely('inBlock', { txHash });
           return { txHash };
         } catch (err: any) {
           if (err?.message === 'USER_REJECTED') {
@@ -420,7 +464,6 @@ export const polkadotChainService = (() => {
       return await new Promise<SendDotResult>((resolve, reject) => {
         let unsub: any;
         let isResolved = false;
-        const statusCallback = onStatus;
 
         const cleanup = () => {
           if (unsub && typeof unsub === 'function') {
@@ -433,8 +476,8 @@ export const polkadotChainService = (() => {
           }
         };
 
-        tx.signAndSend(from, (result: any) => {
-          const { status, dispatchError, txHash } = result;
+        tx.signAndSend(from, (statusResult: any) => {
+          const { status, dispatchError, txHash } = statusResult;
 
           if (dispatchError) {
             if (!isResolved) {
@@ -450,16 +493,16 @@ export const polkadotChainService = (() => {
           }
 
           if (status?.isBroadcast) {
-            statusCallback?.('submitted');
+            emitStatusSafely('submitted');
           }
           if (status?.isInBlock && !isResolved) {
             const hash = txHash?.toString?.() || tx.hash.toString();
-            statusCallback?.('inBlock', { txHash: hash, blockHash: status.asInBlock.toString() });
+            emitStatusSafely('inBlock', { txHash: hash, blockHash: status.asInBlock.toString() });
             isResolved = true;
             resolve({ txHash: hash });
           }
           if (status?.isFinalized) {
-            statusCallback?.('finalized', { blockHash: status.asFinalized.toString() });
+            emitStatusSafely('finalized', { blockHash: status.asFinalized.toString() });
             cleanup();
           }
         })
@@ -485,6 +528,9 @@ export const polkadotChainService = (() => {
       if (msg === 'USER_REJECTED') throw new Error('User rejected the request');
       if (/InsufficientBalance|balance/i.test(msg)) throw new Error('Insufficient balance');
       if (/ECONNREFUSED|websocket|connect/i.test(msg)) throw new Error('RPC connection failed');
+      if (e instanceof Error && e.message) {
+        throw new Error(e.message);
+      }
       throw new Error(typeof e === 'string' ? e : 'Transaction failed');
     }
   };
@@ -555,6 +601,7 @@ export const polkadotChainService = (() => {
     getConfig,
     getCurrentRpc,
     getFreeBalance,
+    getUsdcBalance,
     isValidPolkadotAddress,
     isValidSs58,
     normalizeToPolkadot,
@@ -564,6 +611,7 @@ export const polkadotChainService = (() => {
     signAndSendExtrinsic,
     buildSubscanUrl,
     toPlanckString: (amountDot: number) => toPlanckString(amountDot, getConfig().decimals),
+    formatUsdcUnits: (value: string) => formatUnits(value, USDC_DECIMALS),
   };
 })();
 

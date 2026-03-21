@@ -19,6 +19,7 @@ export interface DataSource {
   getPot(id: string): Promise<Pot | null>;
   savePots(pots: Pot[]): Promise<void>;
   savePot(pot: Pot): Promise<void>;
+  updatePotSettings?(id: string, updates: UpdatePotDTO): Promise<Pot>;
   deletePot(id: string): Promise<void>;
   exportPot(id: string): Promise<Pot>;
   importPot(pot: Pot): Promise<Pot>;
@@ -191,6 +192,17 @@ export class PotRepository {
     this.listCache = null; 
 
     return { ...updated }; // Return copy
+  }
+
+  async updateSettings(id: string, updates: UpdatePotDTO): Promise<Pot> {
+    if (this.source.updatePotSettings) {
+      const updated = await this.source.updatePotSettings(id, updates);
+      this.invalidate(id);
+      this.listCache = null;
+      return { ...updated };
+    }
+
+    return this.update(id, updates);
   }
 
   /**

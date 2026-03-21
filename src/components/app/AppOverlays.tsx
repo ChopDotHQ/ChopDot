@@ -104,6 +104,7 @@ interface AppOverlaysProps {
   onAddMemberExisting: (contactId: string) => void;
   onInviteNew: (nameOrEmail: string) => void;
   onAddMemberShowQR: () => void;
+  canInviteByEmail?: boolean;
   showIPFSAuthOnboarding: boolean;
   walletAddress: string | null;
   onIPFSContinue: () => Promise<void>;
@@ -153,6 +154,7 @@ export function AppOverlays({
   onAddMemberExisting,
   onInviteNew,
   onAddMemberShowQR,
+  canInviteByEmail = true,
   showIPFSAuthOnboarding,
   walletAddress,
   onIPFSContinue,
@@ -238,6 +240,7 @@ export function AppOverlays({
           onShowQR={onAddMemberShowQR}
           existingContacts={existingContacts}
           currentMembers={currentMembers}
+          canInviteByEmail={canInviteByEmail}
         />
       )}
 

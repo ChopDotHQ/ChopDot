@@ -1,29 +1,39 @@
 import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { Copy, CheckCircle, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import { copyWithToast } from '../utils/clipboard';
 import { isValidSs58Any, normalizeToPolkadot } from '../services/chain/address';
 import type { Member } from '../schema/pot';
+
+const EVM_ADDRESS_RE = /^0x[a-fA-F0-9]{40}$/;
 
 interface EditMemberModalProps {
   isOpen: boolean;
   member: Member | null;
   onClose: () => void;
-  onSave: (member: { id: string; name: string; address?: string; verified?: boolean }) => void;
+  onSave: (member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean }) => void;
 }
 
 export function EditMemberModal({ isOpen, member, onClose, onSave }: EditMemberModalProps) {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
+  const [evmAddress, setEvmAddress] = useState('');
   const [addressError, setAddressError] = useState<string | null>(null);
   const [addressValid, setAddressValid] = useState(false);
+  const [evmAddressError, setEvmAddressError] = useState<string | null>(null);
+  const [evmAddressValid, setEvmAddressValid] = useState(false);
 
   // Initialize form when member changes
   useEffect(() => {
     if (member) {
       setName(member.name);
       setAddress(member.address || '');
+      setEvmAddress(member.evmAddress || '');
       setAddressError(null);
       setAddressValid(false);
+      setEvmAddressError(null);
+      setEvmAddressValid(false);
     }
   }, [member]);
 
@@ -44,6 +54,22 @@ export function EditMemberModal({ isOpen, member, onClose, onSave }: EditMemberM
     }
   }, [address]);
 
+  useEffect(() => {
+    if (!evmAddress.trim()) {
+      setEvmAddressError(null);
+      setEvmAddressValid(false);
+      return;
+    }
+
+    if (EVM_ADDRESS_RE.test(evmAddress.trim())) {
+      setEvmAddressError(null);
+      setEvmAddressValid(true);
+    } else {
+      setEvmAddressError('Invalid EVM address (expected 0x...)');
+      setEvmAddressValid(false);
+    }
+  }, [evmAddress]);
+
   const handleSave = () => {
     if (!member) return;
     
@@ -61,15 +87,16 @@ export function EditMemberModal({ isOpen, member, onClose, onSave }: EditMemberM
       id: member.id,
       name: name.trim(),
       address: normalizedAddress,
+      evmAddress: evmAddress.trim() && evmAddressValid ? evmAddress.trim() : undefined,
       verified: member.verified ?? false, // Preserve verified status
     });
     
     onClose();
   };
 
-  const handleCopyAddress = () => {
+  const handleCopyAddress = async () => {
     if (member?.address) {
-      navigator.clipboard.writeText(member.address);
+      await copyWithToast(member.address, 'Address copied', (msg) => toast.success(msg));
     }
   };
 
@@ -90,6 +117,35 @@ export function EditMemberModal({ isOpen, member, onClose, onSave }: EditMemberM
             placeholder="Enter member name"
             className="w-full px-3 py-2 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-sm"
           />
+        </div>
+
+        <div>
+          <label className="text-xs text-muted-foreground mb-1 block">
+            EVM Address for PVM closeout (optional)
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              value={evmAddress}
+              onChange={(e) => setEvmAddress(e.target.value)}
+              placeholder="Enter 0x... address for contract closeout"
+              className={`w-full px-3 py-2 bg-input-background border rounded-lg focus:outline-none focus-ring-pink text-sm font-mono ${
+                evmAddressError ? 'border-destructive' : evmAddressValid ? 'border-green-500' : 'border-border'
+              }`}
+            />
+          </div>
+          {evmAddressError && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-destructive">
+              <AlertCircle className="w-3 h-3" />
+              <span>{evmAddressError}</span>
+            </div>
+          )}
+          {evmAddressValid && !evmAddressError && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-green-600 dark:text-green-400">
+              <CheckCircle className="w-3 h-3" />
+              <span>Ready for Polkadot Hub PVM contract writes.</span>
+            </div>
+          )}
         </div>
 
         {/* Wallet Address Field */}
@@ -164,9 +220,9 @@ export function EditMemberModal({ isOpen, member, onClose, onSave }: EditMemberM
           </button>
           <button
             onClick={handleSave}
-            disabled={!name.trim() || (address.trim() !== '' && !addressValid)}
+            disabled={!name.trim() || (address.trim() !== '' && !addressValid) || (evmAddress.trim() !== '' && !evmAddressValid)}
             className={`flex-1 px-4 py-2 rounded-lg text-sm transition-colors ${
-              name.trim() && (!address.trim() || addressValid)
+              name.trim() && (!address.trim() || addressValid) && (!evmAddress.trim() || evmAddressValid)
                 ? 'bg-accent text-white hover:opacity-90'
                 : 'bg-muted/30 text-muted-foreground cursor-not-allowed'
             }`}
@@ -178,4 +234,3 @@ export function EditMemberModal({ isOpen, member, onClose, onSave }: EditMemberM
     </BottomSheet>
   );
 }
-

@@ -2,7 +2,7 @@
 
 **Last Updated:** January 15, 2025  
 **Version:** 1.4.0  
-**Status:** Production Ready 🚀  
+**Status:** Production-Grade Core Flows 🚀  
 **UX/UI Rating:** 8.5/10 (All phases complete)  
 **Data Layer:** Stable (v0.9.0-data-layer-stable)
 
@@ -440,8 +440,8 @@ src/
 - None currently
 
 ### Medium Priority
-- [ ] Backend API not connected (using localStorage only)
-- [ ] Real Polkadot transactions not implemented (UI only)
+- [ ] Backend API (HttpSource/PostgreSQL) not connected; runtime uses localStorage or Supabase sources
+- [ ] Polkadot transaction reliability matrix incomplete across wallet/device combinations
 - [ ] **Multi-user sync not implemented** - When users share a pot via IPFS link, each person gets a snapshot copy. Changes made by one user don't sync to others automatically. See `TECHNICAL_SYNC_ANALYSIS.md` for detailed analysis and potential solutions.
 - [ ] No push notifications
 
@@ -455,7 +455,7 @@ src/
 
 ### P0 - Critical Launch Blockers
 1. **Backend API Connection** - Connect to PostgreSQL, real data persistence
-2. **Real Polkadot Integration** - Actual DOT transfers, tx signing
+2. **Polkadot Flow Hardening** - Expand wallet/device validation matrix, retries, and failure-state recovery
 3. **Push Notifications** - Attestation requests, settlement reminders
 4. **User Authentication** - Real accounts, session management
 
