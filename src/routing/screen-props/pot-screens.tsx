@@ -24,6 +24,11 @@ const ExpenseDetail = lazy(() =>
         default: module.ExpenseDetail,
     }))
 );
+const CloseoutReview = lazy(() =>
+    import("../../components/screens/CloseoutReview").then((module) => ({
+        default: module.CloseoutReview,
+    }))
+);
 
 export function renderPotHome(ctx: RouterContext) {
     const {
@@ -38,13 +43,20 @@ export function renderPotHome(ctx: RouterContext) {
             setCurrentExpenseId,
             setShowAddMember,
             setFabQuickAddPotId,
+            copyInviteLink,
+            resendInviteForPot,
+            revokeInviteForPot,
             handleUpdateMember,
             handleUpdatePotSettings,
+            handleDeletePot,
+            handleArchivePot,
+            handleLeavePot,
             deleteExpense,
             attestExpense,
             batchAttestExpenses,
             addExpenseToPot,
             handleRemoveMember,
+            persistPotPartial,
             showToast,
         },
     } = ctx;
@@ -114,6 +126,17 @@ export function renderPotHome(ctx: RouterContext) {
             onUpdateSettings={(settings) => {
                 handleUpdatePotSettings(pot.id, settings);
             }}
+            onCopyInviteLink={() => {
+                void copyInviteLink(pot.id);
+            }}
+            onResendInvite={(memberId) => {
+                if (!memberId.startsWith("invite-")) return;
+                void resendInviteForPot(pot.id, memberId.replace("invite-", ""));
+            }}
+            onRevokeInvite={(memberId) => {
+                if (!memberId.startsWith("invite-")) return;
+                void revokeInviteForPot(pot.id, memberId.replace("invite-", ""));
+            }}
             onDeleteExpense={deleteExpense}
             onAttestExpense={(expenseId, silent) => {
                 attestExpense(expenseId);
@@ -148,6 +171,80 @@ export function renderPotHome(ctx: RouterContext) {
                 handleRemoveMember(ctx.data.currentPotId, id);
             }}
             onSettle={() => push({ type: "settle-selection" })}
+            onDeletePot={() => {
+                void handleDeletePot(pot.id);
+            }}
+            onArchivePot={() => {
+                void handleArchivePot(pot.id);
+            }}
+            onLeavePot={() => {
+                void handleLeavePot(pot.id);
+            }}
+            closeouts={pot.closeouts}
+            onReopenTrackedSettlement={() => {
+                const latestCloseout = [...(pot.closeouts || [])]
+                    .filter((entry) => entry.status !== 'cancelled' && entry.status !== 'draft')
+                    .sort((left, right) => right.createdAt - left.createdAt)[0];
+
+                if (!latestCloseout) {
+                    showToast('No smart settlement is active for this tab.', 'info');
+                    return;
+                }
+
+                const hasStartedPayments = latestCloseout.legs.some(
+                    (leg) => Boolean(leg.settlementTxHash || leg.proofTxHash || leg.status !== 'pending')
+                );
+
+                if (hasStartedPayments) {
+                    showToast('This tab already has tracked payments. Rebalancing is locked.', 'info');
+                    return;
+                }
+
+                const nextCloseouts = (pot.closeouts || []).map((entry) =>
+                    entry.id === latestCloseout.id
+                        ? { ...entry, status: 'cancelled' as const }
+                        : entry
+                );
+
+                void persistPotPartial(pot.id, {
+                    closeouts: nextCloseouts,
+                    lastEditAt: new Date().toISOString(),
+                } as any);
+                showToast('Smart settlement reopened. You can change expenses again.', 'success');
+            }}
+        />
+    );
+}
+
+export function renderCloseoutReview(ctx: RouterContext) {
+    const {
+        screen,
+        nav: { back, push },
+        data: { currentPot: pot },
+        userState: { user, isGuest },
+        actions: { persistPotPartial, showToast },
+    } = ctx;
+
+    if (!screen || screen.type !== 'closeout-review') return null;
+    if (!pot) return null;
+
+    return (
+        <CloseoutReview
+            pot={pot as any}
+            currentUserId={isGuest ? 'owner' : (user?.id || 'owner')}
+            onBack={back}
+            onAnchored={(closeout) => {
+                const nextCloseouts = [
+                    closeout,
+                    ...(pot.closeouts || []).filter((entry) => entry.id !== closeout.id),
+                ];
+                void persistPotPartial(pot.id, {
+                    closeouts: nextCloseouts,
+                    lastEditAt: new Date().toISOString(),
+                } as any);
+            }}
+            onContinueToSettlement={() => push({ type: 'settle-selection' })}
+            onShowToast={showToast}
         />
     );
 }
@@ -157,13 +254,17 @@ export function renderAddExpense(ctx: RouterContext) {
         screen,
         nav: { back },
         data: { currentPot: pot },
+        userState: { user },
         actions: { addExpenseToPot },
     } = ctx;
 
     if (!screen || screen.type !== "add-expense") return null;
     if (!pot) return null;
 
-    const addExpenseMembers = normalizeMembers(pot.members);
+    const addExpenseMembers = normalizeMembers(pot.members).map((member) => ({
+        ...member,
+        name: member.id === user?.id ? 'You' : member.name,
+    }));
     return (
         <AddExpense
             potName={pot.name}
@@ -180,6 +281,7 @@ export function renderEditExpense(ctx: RouterContext) {
         screen,
         nav: { back },
         data: { currentPot: pot },
+        userState: { user },
         actions: { updateExpense },
     } = ctx;
 
@@ -187,7 +289,10 @@ export function renderEditExpense(ctx: RouterContext) {
     if (!pot) return null;
     if (!("expenseId" in screen)) return null;
 
-    const editExpenseMembers = normalizeMembers(pot.members);
+    const editExpenseMembers = normalizeMembers(pot.members).map((member) => ({
+        ...member,
+        name: member.id === user?.id ? 'You' : member.name,
+    }));
     const editExpenses = normalizeExpenses(pot.expenses, pot.baseCurrency);
     const editingExpense = editExpenses.find(
         (e) => e.id === (screen as { expenseId: string }).expenseId
@@ -253,7 +358,10 @@ export function renderExpenseDetail(ctx: RouterContext) {
     if (!pot) return null;
     if (!("expenseId" in screen)) return null;
 
-    const detailMembers = normalizeMembers(pot.members);
+    const detailMembers = normalizeMembers(pot.members).map((member) => ({
+        ...member,
+        name: member.id === user?.id ? 'You' : member.name,
+    }));
     const detailExpenses = normalizeExpenses(
         pot.expenses,
         pot.baseCurrency

@@ -8,6 +8,15 @@ import { mapExpenseRow, normalizeExpenseId } from './expense-row-mapper';
 import { fromMinorAmount, toMinorAmount } from '../utils/amounts';
 import type { LocalStorageSource } from './LocalStorageSource';
 
+const isExpenseSplitsTableMissing = (error: { code?: string; message?: string } | null | undefined): boolean => {
+  if (!error) return false;
+  return (
+    error.code === 'PGRST205' ||
+    error.message?.includes("Could not find the table 'public.expense_splits'") === true ||
+    error.message?.includes('expense_splits') === true
+  );
+};
+
 export class SupabaseExpenseSource {
   constructor(
     private client: SupabaseClient,
@@ -58,7 +67,10 @@ export class SupabaseExpenseSource {
       }
     }
 
-    const splitsByExpenseId = await this.fetchExpenseSplits(rows.map((row) => row.id));
+    const splitsByExpenseId = await this.fetchExpenseSplits(
+      rows.map((row) => row.id),
+      new Map(rows.map((row) => [row.id, row.currency_code ?? 'USD'])),
+    );
     return rows.map((row) => mapExpenseRow(row, splitsByExpenseId.get(row.id)));
   }
 
@@ -86,7 +98,10 @@ export class SupabaseExpenseSource {
       return null;
     }
 
-    const splitMap = await this.fetchExpenseSplits([expenseId]);
+    const splitMap = await this.fetchExpenseSplits(
+      [expenseId],
+      new Map([[expenseId, (data as SupabaseExpenseRow).currency_code ?? 'USD']]),
+    );
     return mapExpenseRow(data as SupabaseExpenseRow, splitMap.get(expenseId));
   }
 
@@ -114,17 +129,19 @@ export class SupabaseExpenseSource {
     const legacyId = (normalized as { legacyId?: string; legacy_id?: string }).legacyId
       ?? (normalized as { legacy_id?: string }).legacy_id;
     const resolvedPaidBy = normalized.paidBy === 'owner' ? userId : (normalized.paidBy || userId);
+    const paidByForRow = isUuid(resolvedPaidBy) ? resolvedPaidBy : userId;
     const payload = {
       id: normalized.id,
       pot_id: potId,
       creator_id: creatorId,
-      paid_by: resolvedPaidBy,
-      amount_minor: toMinorAmount(expense.amount),
+      paid_by: paidByForRow,
+      amount_minor: toMinorAmount(expense.amount, expense.currency ?? 'USD'),
       currency_code: expense.currency ?? 'USD',
       description: expense.memo ?? (expense as any).description ?? '',
       expense_date: expense.date ? new Date(expense.date).toISOString() : null,
       legacy_id: legacyId ?? null,
       metadata: stripUndefined({
+        paidBy: normalized.paidBy,
         split: expense.split ?? [],
         attestations: expense.attestations ?? [],
         hasReceipt: expense.hasReceipt ?? false,
@@ -142,23 +159,31 @@ export class SupabaseExpenseSource {
       throw new Error(`[SupabaseSource] Failed to save expense ${expense.id}: ${error.message}`);
     }
 
-    await this.client
+    const { error: deleteSplitError } = await this.client
       .from('expense_splits')
       .delete()
-      .eq('expense_id', expense.id);
+      .eq('expense_id', normalized.id);
+
+    if (deleteSplitError && !isExpenseSplitsTableMissing(deleteSplitError)) {
+      throw new Error(`[SupabaseSource] Failed to clear expense splits: ${deleteSplitError.message}`);
+    }
 
     const splits = (expense.split ?? []).filter((split) => split.amount > 0);
     if (splits.length > 0) {
-      const splitRows = splits.map((split) => ({
-        expense_id: expense.id,
-        member_id: split.memberId === 'owner' ? userId : split.memberId,
-        amount_minor: toMinorAmount(split.amount),
-      }));
-      const { error: splitError } = await this.client
-        .from('expense_splits')
-        .insert(splitRows);
-      if (splitError) {
-        throw new Error(`[SupabaseSource] Failed to save expense splits: ${splitError.message}`);
+      const splitRows = splits
+        .map((split) => ({
+          expense_id: normalized.id,
+          member_id: split.memberId === 'owner' ? userId : split.memberId,
+          amount_minor: toMinorAmount(split.amount, expense.currency ?? 'USD'),
+        }))
+        .filter((split) => isUuid(split.member_id));
+      if (splitRows.length > 0) {
+        const { error: splitError } = await this.client
+          .from('expense_splits')
+          .insert(splitRows);
+        if (splitError && !isExpenseSplitsTableMissing(splitError)) {
+          throw new Error(`[SupabaseSource] Failed to save expense splits: ${splitError.message}`);
+        }
       }
     }
   }
@@ -191,7 +216,7 @@ export class SupabaseExpenseSource {
 
     const { data: expenseRows, error } = await this.client
       .from('expenses')
-      .select('id, pot_id, amount_minor, paid_by')
+      .select('id, pot_id, amount_minor, paid_by, currency_code, metadata')
       .in('pot_id', uuidPotIds);
 
     if (error) {
@@ -200,10 +225,14 @@ export class SupabaseExpenseSource {
 
     const totals: Record<string, ExpenseSummary> = {};
     const expenseIdToPotId = new Map<string, string>();
-    for (const row of (expenseRows ?? []) as Array<{ id: string; pot_id: string; amount_minor: number | string; paid_by: string | null }>) {
+    const expenseIdToCurrency = new Map<string, string>();
+    for (const row of (expenseRows ?? []) as Array<{ id: string; pot_id: string; amount_minor: number | string; paid_by: string | null; currency_code?: string | null; metadata?: Record<string, unknown> | null }>) {
       const potId = row.pot_id;
-      const amount = fromMinorAmount(row.amount_minor);
+      const currency = row.currency_code ?? 'USD';
+      const amount = fromMinorAmount(row.amount_minor, currency);
+      const metadataPaidBy = typeof row.metadata?.paidBy === 'string' ? row.metadata.paidBy : null;
       expenseIdToPotId.set(row.id, potId);
+      expenseIdToCurrency.set(row.id, currency);
       if (!totals[potId]) {
         totals[potId] = {
           potId,
@@ -213,7 +242,7 @@ export class SupabaseExpenseSource {
         };
       }
       totals[potId].totalExpenses += amount;
-      if (row.paid_by === resolvedUserId) {
+      if ((metadataPaidBy ?? row.paid_by) === resolvedUserId) {
         totals[potId].myExpenses += amount;
       }
     }
@@ -229,20 +258,38 @@ export class SupabaseExpenseSource {
       .in('expense_id', expenseIds)
       .eq('member_id', resolvedUserId);
 
-    if (splitError) {
+    if (splitError && !isExpenseSplitsTableMissing(splitError)) {
       throw new Error(`[SupabaseSource] Failed to load expense splits summary: ${splitError.message}`);
+    }
+
+    if (splitError && isExpenseSplitsTableMissing(splitError)) {
+      for (const row of (expenseRows ?? []) as Array<{ id: string; pot_id: string; amount_minor: number | string; paid_by: string | null; currency_code?: string | null; metadata?: Record<string, unknown> | null }>) {
+        const splitFromMetadata = Array.isArray(row.metadata?.split)
+          ? (row.metadata?.split as Array<{ memberId: string; amount: number }>)
+          : [];
+        const share = splitFromMetadata.find((item) => item.memberId === resolvedUserId);
+        if (!share) continue;
+        const potId = row.pot_id;
+        if (!totals[potId]) continue;
+        totals[potId].myShare += share.amount;
+      }
+      return totals;
     }
 
     for (const split of (splitRows ?? []) as SupabaseExpenseSplitRow[]) {
       const potId = expenseIdToPotId.get(split.expense_id);
       if (!potId || !totals[potId]) continue;
-      totals[potId].myShare += fromMinorAmount(split.amount_minor);
+      const currency = expenseIdToCurrency.get(split.expense_id) ?? 'USD';
+      totals[potId].myShare += fromMinorAmount(split.amount_minor, currency);
     }
 
     return totals;
   }
 
-  private async fetchExpenseSplits(expenseIds: string[]): Promise<Map<string, Expense['split']>> {
+  private async fetchExpenseSplits(
+    expenseIds: string[],
+    currenciesByExpenseId: Map<string, string> = new Map(),
+  ): Promise<Map<string, Expense['split']>> {
     const result = new Map<string, Expense['split']>();
     if (expenseIds.length === 0) {
       return result;
@@ -253,8 +300,12 @@ export class SupabaseExpenseSource {
       .select('expense_id, member_id, amount_minor')
       .in('expense_id', expenseIds);
 
-    if (error) {
+    if (error && !isExpenseSplitsTableMissing(error)) {
       console.warn('[SupabaseSource] Failed to fetch expense splits', error.message);
+      return result;
+    }
+
+    if (error && isExpenseSplitsTableMissing(error)) {
       return result;
     }
 
@@ -263,7 +314,7 @@ export class SupabaseExpenseSource {
       const list = result.get(row.expense_id) ?? [];
       list.push({
         memberId: row.member_id,
-        amount: fromMinorAmount(row.amount_minor),
+        amount: fromMinorAmount(row.amount_minor, currenciesByExpenseId.get(row.expense_id) ?? 'USD'),
       });
       result.set(row.expense_id, list);
     }

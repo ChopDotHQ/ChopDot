@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import Decimal from 'decimal.js';
 import { calculateSettlements } from '../utils/settlements';
-import type { Pot, Settlement, Person, ActivityItem } from '../types/app';
+import type { Pot, Settlement, Person, ActivityItem, PotHistory } from '../types/app';
 
 type PendingExpense = {
   id: string;
@@ -46,12 +46,13 @@ export const useDerivedData = ({
   userId,
   currentPot,
 }: UseDerivedDataParams) => {
+  const currentUserId = userId || 'owner';
   const people: Person[] = useMemo(() => {
     const peopleMap = new Map<string, Person>();
 
     pots.forEach((pot) => {
       pot.members.forEach((member) => {
-        if (member.id !== 'owner' && !peopleMap.has(member.id)) {
+        if (member.id !== currentUserId && !peopleMap.has(member.id)) {
           peopleMap.set(member.id, {
             id: member.id,
             name: member.name,
@@ -61,7 +62,7 @@ export const useDerivedData = ({
             potCount: 0,
           });
         }
-        if (member.id !== 'owner') {
+        if (member.id !== currentUserId) {
           const existing = peopleMap.get(member.id);
           if (existing && member.address) {
             existing.paymentPreference = 'DOT';
@@ -72,17 +73,17 @@ export const useDerivedData = ({
     });
 
     return Array.from(peopleMap.values());
-  }, [pots]);
+  }, [currentUserId, pots]);
 
   const balances = useMemo(() => {
     const start = performance.now();
-    const result = calculateSettlements(pots, people, 'owner');
+    const result = calculateSettlements(pots, people, currentUserId);
     const time = performance.now() - start;
     if (time > 10) {
       console.warn(`⏱️ [Performance] balances calculation: ${time.toFixed(2)}ms`);
     }
     return result;
-  }, [pots, people]);
+  }, [currentUserId, pots, people]);
 
   const pendingExpenses: PendingExpense[] = useMemo(() => {
     const start = performance.now();
@@ -90,7 +91,7 @@ export const useDerivedData = ({
 
     pots.forEach((pot) => {
       pot.expenses.forEach((expense) => {
-        if (!expense.attestations.includes('owner') && expense.paidBy !== 'owner') {
+        if (!expense.attestations.includes(currentUserId) && expense.paidBy !== currentUserId) {
           pending.push({
             id: expense.id,
             memo: expense.memo,
@@ -108,7 +109,7 @@ export const useDerivedData = ({
       console.warn(`⏱️ [Performance] pendingExpenses calculation: ${time.toFixed(2)}ms`);
     }
     return pending;
-  }, [pots]);
+  }, [currentUserId, pots]);
 
   const activities: ActivityItem[] = useMemo(() => {
     const start = performance.now();
@@ -141,7 +142,7 @@ export const useDerivedData = ({
           type: 'expense',
           timestamp: expense.date,
           title: expense.memo,
-          subtitle: `${pot.name} • Paid by ${expense.paidBy === 'owner' ? 'You' : expense.paidBy}`,
+          subtitle: `${pot.name} • Paid by ${expense.paidBy === currentUserId ? 'You' : expense.paidBy}`,
           amount: String(expense.amount),
         });
 
@@ -151,7 +152,7 @@ export const useDerivedData = ({
             new Date(expense.date).getTime() + (index + 1) * 2 * 60 * 60 * 1000,
           ).toISOString();
           const attesterName =
-            attesterId === 'owner'
+            attesterId === currentUserId
               ? 'You'
               : pot.members.find((m) => m.id === attesterId)?.name || attesterId;
 
@@ -163,6 +164,29 @@ export const useDerivedData = ({
             subtitle: `${expense.memo} • ${pot.name}`,
             amount: undefined,
           });
+        });
+      });
+    });
+
+    pots.forEach((pot) => {
+      (pot.history || []).forEach((h: PotHistory) => {
+        if (h.type !== 'onchain_settlement') return;
+        const fromName =
+          pot.members.find((m) => m.id === h.fromMemberId)?.name || h.fromMemberId;
+        const toName = pot.members.find((m) => m.id === h.toMemberId)?.name || h.toMemberId;
+        const amountStr = h.amountDot
+          ? `${h.amountDot} DOT`
+          : h.amountUsdc
+            ? `${h.amountUsdc} USDC`
+            : '';
+        const title = amountStr ? `On-chain settlement ${amountStr}` : 'On-chain settlement';
+        items.push({
+          id: `history-${pot.id}-${h.id}`,
+          type: 'settlement',
+          timestamp: new Date(h.when).toISOString(),
+          title,
+          subtitle: `${pot.name} • ${fromName} → ${toName}`,
+          amount: h.amountDot || h.amountUsdc,
         });
       });
     });
@@ -191,13 +215,12 @@ export const useDerivedData = ({
       console.warn(`⏱️ [Performance] activities calculation: ${time.toFixed(2)}ms (${items.length} items)`);
     }
     return sorted;
-  }, [pots, settlements]);
+  }, [currentUserId, pots, settlements]);
 
   const totalOwed = balances.owedToYou.reduce((sum, p) => sum + Number(p.totalAmount), 0);
   const totalOwing = balances.youOwe.reduce((sum, p) => sum + Number(p.totalAmount), 0);
 
   const { expensesConfirmed, expensesNeedingConfirmation, monthlySpending } = useMemo(() => {
-    const currentUserId = userId || 'owner';
     const allExpenses = pots.flatMap((p) => p.expenses);
 
     const confirmed = allExpenses.filter((e) => e.attestations.includes(currentUserId)).length;

@@ -13,6 +13,9 @@ interface SettleFooterProps {
   onConfirm: () => void;
   connectExtension: (selectedAddress?: string) => Promise<void>;
   onShowToast?: ShowToast;
+  buttonLabelOverride?: string;
+  connectPromptTitle?: string;
+  connectPromptBody?: string;
 }
 
 export const SettleFooter = ({
@@ -26,20 +29,29 @@ export const SettleFooter = ({
   onConfirm,
   connectExtension,
   onShowToast,
+  buttonLabelOverride,
+  connectPromptTitle,
+  connectPromptBody,
 }: SettleFooterProps) => {
-  const isDotFlow = selectedMethod === 'dot';
+  const isCryptoFlow = selectedMethod === 'dot' || selectedMethod === 'usdc';
 
   const buttonLabel = (() => {
-    if (isDotFlow && !isSimulationMode && !walletConnected) return 'Connect Wallet in Header';
-    if (isDotFlow && !recipientAddress) return 'Add Wallet Address Required';
+    if (buttonLabelOverride) return buttonLabelOverride;
+    if (isCryptoFlow && !isSimulationMode && !walletConnected) return 'Connect Wallet in Header';
+    if (isCryptoFlow && !recipientAddress) return 'Add Wallet Address Required';
     return `Confirm ${PAYMENT_METHOD_LABELS[selectedMethod]} Settlement`;
   })();
 
   return (
     <div className="p-4 bg-background border-t border-border">
-      {isDotFlow && showConnectWalletNotice && (
+      {isCryptoFlow && showConnectWalletNotice && (
         <div className="mb-3 p-3 rounded-lg border bg-muted/10 space-y-2" style={{ borderColor: 'var(--border)' }}>
-          <p className="text-label" style={{ fontWeight: 500 }}>You&apos;ll need DOT on Polkadot to settle.</p>
+          <p className="text-label" style={{ fontWeight: 500 }}>
+            {connectPromptTitle || 'You’ll need a Polkadot wallet to continue.'}
+          </p>
+          {connectPromptBody && (
+            <p className="text-caption text-secondary">{connectPromptBody}</p>
+          )}
           <PrimaryButton
             fullWidth
             onClick={() => {
@@ -53,7 +65,7 @@ export const SettleFooter = ({
           </PrimaryButton>
         </div>
       )}
-      <div title={isDotFlow && !recipientAddress ? 'No wallet address on file for this member' : undefined}>
+      <div title={isCryptoFlow && !recipientAddress ? 'No wallet address on file for this member' : undefined}>
         <PrimaryButton
           fullWidth
           onClick={onConfirm}

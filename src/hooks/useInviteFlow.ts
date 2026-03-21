@@ -30,6 +30,8 @@ type UseInviteFlowResult = {
   showInviteModal: boolean;
   joinProcessingRef: MutableRefObject<boolean>;
   copyInviteLink: (potId: string) => Promise<void>;
+  resendInviteLink: (potId: string, inviteId: string) => Promise<void>;
+  revokeInvite: (potId: string, inviteId: string) => Promise<void>;
   fetchInvites: (potId: string) => Promise<void>;
   refreshPendingInvites: () => Promise<void>;
   acceptInvite: (token: string) => Promise<void>;
@@ -58,7 +60,7 @@ export const useInviteFlow = ({
 
   const copyInviteLink = useCallback(
     async (potId: string) => {
-      const invites = await inviteService.getPotInvites(potId);
+      const invites = (await inviteService.getPotInvites(potId)) as PotInvite[];
       const invite = invites[0];
 
       if (!invite?.token) {
@@ -91,6 +93,48 @@ export const useInviteFlow = ({
     setPendingInvites(invites);
   }, [inviteService]);
 
+  const resendInviteLink = useCallback(
+    async (potId: string, inviteId: string) => {
+      let invites: PotInvite[] = invitesByPot[potId] ?? [];
+      if (invites.length === 0) {
+        invites = (await inviteService.getPotInvites(potId)) as PotInvite[];
+        setInvitesByPot((prev) => ({ ...prev, [potId]: invites }));
+      }
+
+      const invite = invites.find((entry) => entry.id === inviteId);
+      if (!invite?.token) {
+        showToast('Invite not found', 'error');
+        return;
+      }
+
+      const link = `${window.location.origin}/join?token=${invite.token}`;
+      try {
+        const mode = await deliverText({
+          title: 'Join my ChopDot pot',
+          text: `Join my ChopDot pot: ${link}`,
+        });
+        if (mode === 'share') {
+          showToast('Invite shared', 'success');
+        } else if (mode === 'clipboard') {
+          showToast('Invite link copied', 'success');
+        } else {
+          showToast(`Invite link: ${link}`, 'info');
+        }
+      } catch {
+        showToast(`Invite link: ${link}`, 'info');
+      }
+    },
+    [inviteService, invitesByPot, showToast],
+  );
+
+  const fetchInvites = useCallback(
+    async (potId: string) => {
+      const invites = (await inviteService.getPotInvites(potId)) as PotInvite[];
+      setInvitesByPot((prev) => ({ ...prev, [potId]: invites }));
+    },
+    [inviteService],
+  );
+
   useEffect(() => {
     if (authLoading) {
       return;
@@ -105,19 +149,25 @@ export const useInviteFlow = ({
     window.history.replaceState({}, "", cleaned.toString());
   }, []);
 
-  const fetchInvites = useCallback(
-    async (potId: string) => {
-      const invites = await inviteService.getPotInvites(potId);
-      setInvitesByPot((prev) => ({ ...prev, [potId]: invites }));
-    },
-    [inviteService],
-  );
-
   useEffect(() => {
     if (currentPotId) {
       fetchInvites(currentPotId);
     }
   }, [currentPotId, fetchInvites]);
+
+  const revokeInvite = useCallback(
+    async (potId: string, inviteId: string) => {
+      const result = await inviteService.revokeInvite(inviteId);
+      if (!result.success) {
+        showToast(result.error || 'Failed to revoke invite', 'error');
+        return;
+      }
+
+      await fetchInvites(potId);
+      showToast('Invite revoked', 'success');
+    },
+    [fetchInvites, inviteService, showToast],
+  );
 
   const acceptInvite = useCallback(
     async (token: string) => {
@@ -204,6 +254,8 @@ export const useInviteFlow = ({
     showInviteModal,
     joinProcessingRef,
     copyInviteLink,
+    resendInviteLink,
+    revokeInvite,
     fetchInvites,
     refreshPendingInvites,
     acceptInvite,

@@ -8,11 +8,13 @@
  * - Auto-reconnect on page load
  */
 
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import { normalizeToPolkadot } from '../services/chain/address';
 import { getChain } from '../services/chain';
 import { getSupabase } from '../utils/supabase-client';
 import { linkWalletToUser, findVerifiedWalletLink } from '../repos/walletLinks';
+import { getWalletCapabilities, normalizeWalletSource, type WalletCapabilities } from '../services/wallet/capabilities';
+import type { Injected, InjectedWindow } from '@polkadot/extension-inject/types';
 // Dynamic imports for WalletConnect to avoid "require is not defined" error
 // These are loaded only when needed, not at module initialization
 
@@ -28,14 +30,18 @@ export interface AccountState {
   network: AccountNetwork;
   balanceFree: string | null; // planck string
   balanceHuman: string | null; // DOT string (10 decimals)
+  balanceUsdc: string | null; // raw assets balance
+  balanceUsdcHuman: string | null; // USDC string (6 decimals)
   walletName?: string; // e.g., "Polkadot.js", "Nova Wallet", "SubWallet"
+  walletSource?: string | null;
   error?: string | null;
   linkedUserId?: string | null; // Set when wallet is linked to an existing account (but user not logged in)
 }
 
 interface AccountContextType extends AccountState {
+  capabilities: WalletCapabilities;
   connect: (wallet: any) => Promise<void>;
-  connectExtension: (selectedAddress?: string) => Promise<void>;
+  connectExtension: (selectedAddress?: string, isAutoReconnect?: boolean, preferredSource?: string) => Promise<void>;
   connectWalletConnect: () => Promise<string>; // Returns URI for QR code
   syncWalletConnectSession: () => Promise<void>; // Sync with existing WalletConnect session
   disconnect: () => void;
@@ -48,6 +54,7 @@ interface AccountContextType extends AccountState {
 const AccountContext = createContext<AccountContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'account.connector';
+const WALLET_SOURCE_STORAGE_KEY = 'account.walletSource';
 const BALANCE_POLL_INTERVAL = 25000; // 25 seconds
 const FEE_BUFFER_DOT = '0.005'; // 0.005 DOT buffer for fees
 
@@ -105,6 +112,15 @@ const fmtPlanckToDot = (planck: string): string => {
   return frac ? `${intPart}.${frac}` : intPart;
 };
 
+const fmtUnits = (value: string, decimals: number): string => {
+  if (!value) return '0';
+  const s = value.replace(/^0+(?=\d)/, '');
+  if (s.length <= decimals) return `0.${'0'.repeat(decimals - s.length)}${s}`.replace(/\.?0+$/, '');
+  const intPart = s.slice(0, s.length - decimals);
+  const frac = s.slice(s.length - decimals).replace(/0+$/, '');
+  return frac ? `${intPart}.${frac}` : intPart;
+};
+
 // Helper to convert DOT to planck
 const dotToPlanck = (dot: string): string => {
   const [intPart, fracPartRaw = ''] = dot.split('.');
@@ -126,7 +142,10 @@ export function AccountProvider({ children }: AccountProviderProps) {
     network: 'unknown',
     balanceFree: null,
     balanceHuman: null,
+    balanceUsdc: null,
+    balanceUsdcHuman: null,
     walletName: undefined,
+    walletSource: null,
     error: null,
     linkedUserId: null,
   });
@@ -200,14 +219,25 @@ export function AccountProvider({ children }: AccountProviderProps) {
       }
       
       const balanceHuman = fmtPlanckToDot(balancePlanck);
+      let balanceUsdc = '0';
+      let balanceUsdcHuman = '0';
+      try {
+        const chainService = await getChain();
+        balanceUsdc = await chainService.getUsdcBalance(state.address);
+        balanceUsdcHuman = fmtUnits(balanceUsdc, 6);
+      } catch (usdcError) {
+        console.warn('[Account] USDC balance refresh skipped:', usdcError);
+      }
       const network = detectNetwork();
 
-      console.log('[Account] Balance refreshed:', { balanceHuman, network, attempts });
+      console.log('[Account] Balance refreshed:', { balanceHuman, balanceUsdcHuman, network, attempts });
 
       setState(prev => ({
         ...prev,
         balanceFree: balancePlanck,
         balanceHuman,
+        balanceUsdc,
+        balanceUsdcHuman,
         network,
       }));
     } catch (error: any) {
@@ -219,19 +249,50 @@ export function AccountProvider({ children }: AccountProviderProps) {
   }, [state.address, state.status, detectNetwork]);
 
   // Connect via browser extension
-  const connectExtension = useCallback(async (selectedAddress?: string, isAutoReconnect: boolean = false) => {
+  const connectExtension = useCallback(async (selectedAddress?: string, isAutoReconnect: boolean = false, preferredSource?: string) => {
     setState(prev => ({ ...prev, status: 'connecting', error: null }));
 
     try {
-      const { web3Enable, web3Accounts } = await import('@polkadot/extension-dapp');
-      
-      // Request permission
-      const extensions = await web3Enable('ChopDot');
-      if (extensions.length === 0) {
-        throw new Error('No wallet extension found. Install SubWallet, Talisman, or Polkadot.js.');
+      const normalizedPreferredSource = normalizeWalletSource(preferredSource);
+      let enabledExtension: Pick<Injected, 'accounts'> | null = null;
+      let accounts: Array<{ address: string; meta?: { source?: string; name?: string } }> = [];
+
+      if (normalizedPreferredSource && typeof window !== 'undefined' && 'injectedWeb3' in (window as unknown as InjectedWindow)) {
+        const injectedWindow = window as unknown as InjectedWindow;
+        const selectedProvider = injectedWindow.injectedWeb3?.[normalizedPreferredSource];
+        if (selectedProvider) {
+          enabledExtension = selectedProvider.connect
+            ? await selectedProvider.connect('ChopDot')
+            : selectedProvider.enable
+              ? await selectedProvider.enable('ChopDot')
+              : null;
+
+          accounts = enabledExtension
+            ? (await enabledExtension.accounts.get()).map((account) => ({
+                address: account.address,
+                meta: {
+                  source: normalizedPreferredSource,
+                  name: account.name,
+                },
+              }))
+            : [];
+        }
       }
 
-      const accounts = await web3Accounts();
+      if (!enabledExtension) {
+        const { web3Enable, web3Accounts } = await import('@polkadot/extension-dapp');
+
+        // Request permission
+        const extensions = await web3Enable('ChopDot');
+        if (extensions.length === 0) {
+          throw new Error('No wallet extension found. Install SubWallet, Talisman, or Polkadot.js.');
+        }
+
+        accounts = await web3Accounts({
+          extensions: normalizedPreferredSource ? [normalizedPreferredSource] : undefined,
+        });
+      }
+
       if (accounts.length === 0) {
         throw new Error('No accounts found in your wallet.');
       }
@@ -249,6 +310,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
 
       const address = account.address;
       const address0 = normalizeToPolkadot(address);
+      const walletSource = normalizeWalletSource(account.meta?.source);
       
       // Map wallet name
       const walletNameMap: Record<string, string> = {
@@ -261,22 +323,56 @@ export function AccountProvider({ children }: AccountProviderProps) {
         'polkagate-extension': 'PolkaGate',
         'metamask': 'MetaMask',
       };
-      const walletName = walletNameMap[account.meta?.source?.toLowerCase() || ''] || account.meta?.source || extensions[0]?.name || 'Extension';
+      const walletName =
+        walletNameMap[account.meta?.source?.toLowerCase() || ''] ||
+        account.meta?.source ||
+        normalizedPreferredSource ||
+        'Extension';
 
-      // Get initial balance (non-blocking - fetch in background)
-      // Don't wait for balance during login - it will be fetched via polling
-      // Skip balance fetch for auto-reconnect to prevent console spam on login screen
-      const chainService = await getChain();
-      chainService.setChain('assethub'); // Default to Asset Hub
-      let balancePlanck = '0';
-      let balanceHuman = '0';
-      
+      const network = detectNetwork();
+      const balancePlanck = '0';
+      const balanceHuman = '0';
+      const balanceUsdc = '0';
+      const balanceUsdcHuman = '0';
+
+      // Save connector preference before background work begins.
+      localStorage.setItem(STORAGE_KEY, 'extension');
+      if (walletSource) {
+        localStorage.setItem(WALLET_SOURCE_STORAGE_KEY, walletSource);
+      } else {
+        localStorage.removeItem(WALLET_SOURCE_STORAGE_KEY);
+      }
+
+      if (!isAutoReconnect) {
+        setHasExplicitlyLoggedIn(true);
+      }
+
+      // Mark the wallet connected immediately. Balance and chain initialization
+      // happen in the background so a slow RPC does not block extension login.
+      setState({
+        status: 'connected',
+        connector: 'extension',
+        address,
+        address0,
+        network,
+        balanceFree: balancePlanck,
+        balanceHuman,
+        balanceUsdc,
+        balanceUsdcHuman,
+        walletName,
+        walletSource,
+        error: null,
+        linkedUserId: null,
+      });
+
       // Fetch balance in background (don't block connection)
       // This allows login to complete immediately even if RPC is slow
       // Skip if auto-reconnect to prevent WebSocket attempts on login screen
       if (!isAutoReconnect) {
         (async () => {
         try {
+          const chainService = await getChain();
+          chainService.setChain('assethub'); // Default to Asset Hub
           let attempts = 0;
           const maxAttempts = 2;
           
@@ -289,6 +385,14 @@ export function AccountProvider({ children }: AccountProviderProps) {
               
               const fetchedBalance = await Promise.race([balancePromise, timeoutPromise]);
               const fetchedBalanceHuman = fmtPlanckToDot(fetchedBalance);
+              let fetchedUsdcBalance = '0';
+              let fetchedUsdcHuman = '0';
+              try {
+                fetchedUsdcBalance = await chainService.getUsdcBalance(address);
+                fetchedUsdcHuman = fmtUnits(fetchedUsdcBalance, 6);
+              } catch (usdcError) {
+                console.warn('[Account] Initial USDC balance fetch failed, keeping zero:', usdcError);
+              }
               
               // Update state if still connected to same address
               setState((prev) => {
@@ -297,6 +401,8 @@ export function AccountProvider({ children }: AccountProviderProps) {
                     ...prev,
                     balanceHuman: fetchedBalanceHuman,
                     balanceFree: fetchedBalance,
+                    balanceUsdc: fetchedUsdcBalance,
+                    balanceUsdcHuman: fetchedUsdcHuman,
                   };
                 }
                 return prev;
@@ -317,29 +423,6 @@ export function AccountProvider({ children }: AccountProviderProps) {
         }
       })();
       }
-      
-      const network = detectNetwork();
-
-      // Save connector preference
-      localStorage.setItem(STORAGE_KEY, 'extension');
-      
-      // Mark as explicitly logged in (not auto-reconnect)
-      if (!isAutoReconnect) {
-        setHasExplicitlyLoggedIn(true);
-      }
-
-      setState({
-        status: 'connected',
-        connector: 'extension',
-        address,
-        address0,
-        network,
-        balanceFree: balancePlanck,
-        balanceHuman,
-        walletName,
-        error: null,
-        linkedUserId: null,
-      });
 
       // Link wallet to user if authenticated OR detect linked account (non-blocking)
       if (!isAutoReconnect) {
@@ -386,7 +469,10 @@ export function AccountProvider({ children }: AccountProviderProps) {
             network,
             balanceFree: null, // Will be updated when balance check completes
             balanceHuman: null,
+            balanceUsdc: null,
+            balanceUsdcHuman: null,
             walletName: 'WalletConnect',
+            walletSource: 'walletconnect',
             error: null,
           });
           
@@ -396,16 +482,34 @@ export function AccountProvider({ children }: AccountProviderProps) {
           chainService.getFreeBalance(address)
             .then(balancePlanck => {
               const balanceHuman = fmtPlanckToDot(balancePlanck);
-              setState(prev => {
-                if (prev.status === 'connected' && prev.address0 === address0) {
-                  return {
-                    ...prev,
-                    balanceFree: balancePlanck,
-                    balanceHuman,
-                  };
-                }
-                return prev;
-              });
+              chainService.getUsdcBalance(address)
+                .then((balanceUsdc: string) => {
+                  const balanceUsdcHuman = fmtUnits(balanceUsdc, 6);
+                  setState(prev => {
+                    if (prev.status === 'connected' && prev.address0 === address0) {
+                      return {
+                        ...prev,
+                        balanceFree: balancePlanck,
+                        balanceHuman,
+                        balanceUsdc,
+                        balanceUsdcHuman,
+                      };
+                    }
+                    return prev;
+                  });
+                })
+                .catch(() => {
+                  setState(prev => {
+                    if (prev.status === 'connected' && prev.address0 === address0) {
+                      return {
+                        ...prev,
+                        balanceFree: balancePlanck,
+                        balanceHuman,
+                      };
+                    }
+                    return prev;
+                  });
+                });
             })
             .catch((error) => {
               console.warn('[Account] Balance check failed (non-blocking):', error?.message || error);
@@ -440,6 +544,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
 
           // Save connector preference
           localStorage.setItem(STORAGE_KEY, 'walletconnect');
+          localStorage.setItem(WALLET_SOURCE_STORAGE_KEY, 'walletconnect');
           
           // Mark as explicitly logged in (not auto-reconnect)
           setHasExplicitlyLoggedIn(true);
@@ -455,7 +560,10 @@ export function AccountProvider({ children }: AccountProviderProps) {
             network,
             balanceFree: null, // Will be updated when balance check completes
             balanceHuman: null,
+            balanceUsdc: null,
+            balanceUsdcHuman: null,
             walletName,
+            walletSource: 'walletconnect',
             error: null,
           });
 
@@ -466,17 +574,34 @@ export function AccountProvider({ children }: AccountProviderProps) {
           chainService.getFreeBalance(address)
             .then(balancePlanck => {
               const balanceHuman = fmtPlanckToDot(balancePlanck);
-              // Update state with balance (if still connected)
-              setState(prev => {
-                if (prev.status === 'connected' && prev.address0 === address0) {
-                  return {
-                    ...prev,
-                    balanceFree: balancePlanck,
-                    balanceHuman,
-                  };
-                }
-                return prev;
-              });
+              chainService.getUsdcBalance(address)
+                .then((balanceUsdc: string) => {
+                  const balanceUsdcHuman = fmtUnits(balanceUsdc, 6);
+                  setState(prev => {
+                    if (prev.status === 'connected' && prev.address0 === address0) {
+                      return {
+                        ...prev,
+                        balanceFree: balancePlanck,
+                        balanceHuman,
+                        balanceUsdc,
+                        balanceUsdcHuman,
+                      };
+                    }
+                    return prev;
+                  });
+                })
+                .catch(() => {
+                  setState(prev => {
+                    if (prev.status === 'connected' && prev.address0 === address0) {
+                      return {
+                        ...prev,
+                        balanceFree: balancePlanck,
+                        balanceHuman,
+                      };
+                    }
+                    return prev;
+                  });
+                });
             })
             .catch((error) => {
               // Log but don't block - user can still login
@@ -521,6 +646,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
     }
     
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(WALLET_SOURCE_STORAGE_KEY);
     
     // Reset explicit login flag
     setHasExplicitlyLoggedIn(false);
@@ -533,7 +659,10 @@ export function AccountProvider({ children }: AccountProviderProps) {
       network: 'unknown',
       balanceFree: null,
       balanceHuman: null,
+      balanceUsdc: null,
+      balanceUsdcHuman: null,
       walletName: undefined,
+      walletSource: null,
       error: null,
     });
   }, [state.connector]);
@@ -594,7 +723,10 @@ export function AccountProvider({ children }: AccountProviderProps) {
                   network: detectNetwork(),
                   balanceFree: null,
                   balanceHuman: null,
+                  balanceUsdc: null,
+                  balanceUsdcHuman: null,
                   walletName: 'WalletConnect',
+                  walletSource: 'walletconnect',
                   error: null,
                 });
                 console.log('[Account] Auto-reconnected to WalletConnect session:', address.slice(0, 10) + '...');
@@ -632,6 +764,16 @@ export function AccountProvider({ children }: AccountProviderProps) {
     return () => clearInterval(interval);
   }, [state.status, hasExplicitlyLoggedIn, refreshBalance]);
 
+  const capabilities = useMemo(
+    () =>
+      getWalletCapabilities({
+        connector: state.connector,
+        status: state.status,
+        walletSource: state.walletSource,
+      }),
+    [state.connector, state.status, state.walletSource],
+  );
+
   // Trigger wallet authentication for a linked wallet
   const triggerWalletAuth = useCallback(async () => {
     if (state.status !== 'connected' || !state.address) {
@@ -652,6 +794,7 @@ export function AccountProvider({ children }: AccountProviderProps) {
 
   const value: AccountContextType = {
     ...state,
+    capabilities,
     connect: async (wallet: any) => {
       if (wallet.id === 'nova') {
         await connectWalletConnect();

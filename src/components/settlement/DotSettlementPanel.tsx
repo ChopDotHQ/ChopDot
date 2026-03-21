@@ -17,10 +17,12 @@ interface DotSettlementPanelProps {
   walletConnected: boolean;
   recipientAddress: string | undefined;
   senderAddress: string | null;
-  isDotFlowActive: boolean;
+  isCryptoFlowActive: boolean;
+  assetSymbol: 'DOT' | 'USDC';
+  assetName: string;
   baseCurrency: string;
   totalAmount: number;
-  amountDot: number | null;
+  cryptoAmount: number | null;
   formatAmount: (amount: number) => string;
   dotPriceUsd: number | null;
   feeEstimate: number | null;
@@ -37,10 +39,12 @@ export const DotSettlementPanel = memo(function DotSettlementPanel({
   walletConnected,
   recipientAddress,
   senderAddress,
-  isDotFlowActive,
+  isCryptoFlowActive,
+  assetSymbol,
+  assetName,
   baseCurrency,
   totalAmount,
-  amountDot,
+  cryptoAmount,
   formatAmount,
   dotPriceUsd,
   feeEstimate,
@@ -63,12 +67,12 @@ export const DotSettlementPanel = memo(function DotSettlementPanel({
     <div className="card p-4 space-y-3">
       <div className="flex items-center gap-2">
         <div className="w-2 h-2 rounded-full bg-gradient-to-br from-pink-400 to-purple-500" />
-        <p className="text-body font-medium">Polkadot Settlement</p>
+        <p className="text-body font-medium">{assetName} smart settlement</p>
       </div>
       <p className="text-caption text-secondary">
         {isSimulationMode || walletConnected
-          ? `Send ${formatAmount(totalAmount)} on Polkadot. This will create an on-chain transaction${isSimulationMode ? ' (simulated)' : ''}.`
-          : `Connect your Polkadot wallet to settle on-chain in ${baseCurrency}.`}
+          ? `Send ${formatAmount(totalAmount)} on Polkadot. ChopDot will keep a tracked confirmation for this smart settlement${isSimulationMode ? ' (simulated)' : ''}.`
+          : `Connect your Polkadot wallet to continue smart settlement in ${baseCurrency}.`}
       </p>
 
       {(isSimulationMode || walletConnected) && recipientAddress && (
@@ -155,11 +159,11 @@ export const DotSettlementPanel = memo(function DotSettlementPanel({
             <div className="flex justify-between items-start">
               <span className="text-body font-medium">Total you'll send:</span>
               <div className="text-right">
-                {isDotFlowActive && !_isDotPot && dotPriceUsd && dotPriceUsd > 0 && amountDot ? (
+                {isCryptoFlowActive && !_isDotPot && dotPriceUsd && dotPriceUsd > 0 && cryptoAmount ? (
                   <>
                     <p className="text-body font-medium tabular-nums">{formatAmount(totalAmount)}</p>
                     <p className="text-caption text-muted tabular-nums">
-                      ≈ {formatDOT(amountDot)} DOT
+                      ≈ {assetSymbol === 'DOT' ? formatDOT(cryptoAmount) : `${cryptoAmount.toFixed(6)} ${assetSymbol}`}
                     </p>
                   </>
                 ) : (
@@ -176,17 +180,17 @@ export const DotSettlementPanel = memo(function DotSettlementPanel({
         </div>
       )}
 
-      {isDotFlowActive && !isSimulationMode && !walletConnected && (
+      {isCryptoFlowActive && !isSimulationMode && !walletConnected && (
         <div className="pt-3 border-t border-border/50">
           <div className="card p-4 space-y-3 bg-[var(--accent)]/5 border border-[var(--accent)]/20">
             <div className="flex items-start gap-3">
               <Wallet className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color: 'var(--accent)' }} />
               <div className="flex-1 space-y-2">
                 <p className="text-body" style={{ fontWeight: 500 }}>
-                  Connect your wallet to pay with DOT
+                  Connect your wallet to pay with {assetSymbol}
                 </p>
                 <p className="text-caption text-secondary">
-                  Pay directly on the Polkadot blockchain — instant, secure, and transparent. Connect your wallet to get started.
+                  Pay directly on Polkadot and ChopDot will attach tracked confirmation for this tab. Connect your wallet to get started.
                 </p>
                 <button
                   onClick={() => {
@@ -205,11 +209,11 @@ export const DotSettlementPanel = memo(function DotSettlementPanel({
         </div>
       )}
 
-      {walletConnected && !recipientAddress && isDotFlowActive && (
+      {walletConnected && !recipientAddress && isCryptoFlowActive && (
         <div className="pt-3 border-t border-border/50">
           <div className="p-2 bg-yellow-500/10 dark:bg-yellow-500/20 rounded-lg border border-yellow-500/30">
             <p className="text-micro text-yellow-700 dark:text-yellow-300">
-              ⚠️ No wallet address on file for {counterparty}. Please add their wallet address in the Members tab to settle via DOT.
+              No wallet address on file for {counterparty}. Please add their wallet address in the Members tab to settle via {assetSymbol}.
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import type { DataSource, ListOptions } from '../repositories/PotRepository';
 import type { ExpenseListOptions } from '../repositories/ExpenseRepository';
 import type { Expense, ExpenseSummary, Pot } from '../types';
+import type { UpdatePotDTO } from '../types/dto';
 import { PotSchema } from '../../../schema/pot';
 import { getSupabase } from '../../../utils/supabase-client';
 import { LocalStorageSource } from './LocalStorageSource';
@@ -44,12 +45,47 @@ export class SupabaseSource implements DataSource {
 
   async getPots(options?: ListOptions): Promise<Pot[]> {
     this.ensureReady();
-    return this.potSource!.getPots(options);
+    const pots = await this.potSource!.getPots(options);
+
+    if (pots.length === 0) {
+      return pots;
+    }
+
+    const hydratedPots = await Promise.all(
+      pots.map(async (pot) => {
+        try {
+          const expenses = await this.expenseSource!.listExpenses(pot.id);
+          return {
+            ...pot,
+            expenses,
+          };
+        } catch (error) {
+          console.warn('[SupabaseSource] Falling back to metadata-backed list pot expenses:', error);
+          return pot;
+        }
+      }),
+    );
+
+    return hydratedPots;
   }
 
   async getPot(id: string): Promise<Pot | null> {
     this.ensureReady();
-    return this.potSource!.getPot(id);
+    const pot = await this.potSource!.getPot(id);
+    if (!pot) {
+      return null;
+    }
+
+    try {
+      const expenses = await this.expenseSource!.listExpenses(id);
+      return {
+        ...pot,
+        expenses,
+      };
+    } catch (error) {
+      console.warn('[SupabaseSource] Falling back to metadata-backed pot expenses:', error);
+      return pot;
+    }
   }
 
   async savePots(pots: Pot[]): Promise<void> {
@@ -62,6 +98,11 @@ export class SupabaseSource implements DataSource {
     return this.potSource!.savePot(pot);
   }
 
+  async updatePotSettings(id: string, updates: UpdatePotDTO): Promise<Pot> {
+    this.ensureReady();
+    return this.potSource!.updatePotSettings(id, updates);
+  }
+
   async deletePot(id: string): Promise<void> {
     this.ensureReady();
     return this.potSource!.deletePot(id);
@@ -69,7 +110,17 @@ export class SupabaseSource implements DataSource {
 
   async exportPot(id: string): Promise<Pot> {
     this.ensureReady();
-    return this.potSource!.exportPot(id);
+    const pot = await this.potSource!.exportPot(id);
+    try {
+      const expenses = await this.expenseSource!.listExpenses(id);
+      return {
+        ...pot,
+        expenses,
+      };
+    } catch (error) {
+      console.warn('[SupabaseSource] Export falling back to metadata-backed pot expenses:', error);
+      return pot;
+    }
   }
 
   async deleteMemberRow(potId: string, memberId: string): Promise<void> {

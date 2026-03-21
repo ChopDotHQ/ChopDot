@@ -24,6 +24,14 @@ function formatBalance(balance: string | null): string {
   return num.toFixed(6);
 }
 
+function formatUsdcBalance(balance: string | null): string {
+  if (!balance) return '0';
+  const num = parseFloat(balance);
+  if (num >= 1000) return num.toFixed(2);
+  if (num >= 1) return num.toFixed(2);
+  return num.toFixed(6);
+}
+
 function getNetworkLabel(network: string): string {
   switch (network) {
     case 'asset-hub':
@@ -44,6 +52,8 @@ export function ConnectedAccountMenu({
   onDisconnect,
 }: ConnectedAccountMenuProps) {
   const displayAddress = account.address0 || account.address || '';
+  const usdcBalance = formatUsdcBalance(account.balanceUsdcHuman ?? null);
+  const hasUsdcBalance = parseFloat(account.balanceUsdcHuman || '0') > 0;
 
   return (
     <div className="relative">
@@ -58,7 +68,7 @@ export function ConnectedAccountMenu({
             {account.address0?.slice(0, 6)}...{account.address0?.slice(-4)}
           </div>
           <div className="text-[10px] opacity-60">
-            {formatBalance(account.balanceHuman)} DOT
+            {formatBalance(account.balanceHuman)} DOT{hasUsdcBalance ? ` · ${usdcBalance} USDC` : ''}
           </div>
         </div>
         <ChevronDown className="w-4 h-4 opacity-60" />
@@ -90,6 +100,12 @@ export function ConnectedAccountMenu({
                 <span className="opacity-60">Balance:</span>
                 <span className="font-semibold">{formatBalance(account.balanceHuman)} DOT</span>
               </div>
+              {hasUsdcBalance && (
+                <div className="flex items-center justify-between text-xs mt-1">
+                  <span className="opacity-60">USDC:</span>
+                  <span className="font-semibold">{usdcBalance} USDC</span>
+                </div>
+              )}
               {import.meta.env.DEV && currentRpc && (
                 <div
                   data-testid="dev-active-rpc"

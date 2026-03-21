@@ -5,10 +5,16 @@ export type SettlementResult = {
   method: "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc";
   counterpartyId: string;
   counterpartyName: string;
+  direction?: "owe" | "owed";
   scope: "pot" | "person-all" | "expense";
   pots?: Array<{ id: string; name: string; amount: number }>;
   ref?: string;
   txHash?: string;
+  closeoutId?: string;
+  closeoutLegIndex?: number;
+  proofTxHash?: string;
+  proofStatus?: "anchored" | "recorded" | "completed";
+  proofContract?: string;
   at: number;
 };
 
@@ -27,6 +33,7 @@ export type Screen =
   | { type: "edit-expense"; expenseId: string }
   | { type: "expense-detail"; expenseId: string }
   | { type: "settle-selection" }
+  | { type: "closeout-review"; potId: string }
   | { type: "settle-home"; personId?: string }
   | { type: "settle-cash" }
   | { type: "settle-bank" }

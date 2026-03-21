@@ -8,6 +8,7 @@ import { getOptionalUserId } from './supabase-auth-helper';
 import { isUuid, isRlsError, formatSupabaseError } from './supabase-utils';
 import { mapPotRow, buildPotMetadata, POT_COLUMNS } from './pot-row-mapper';
 import type { LocalStorageSource } from './LocalStorageSource';
+import { UpdatePotDTOSchema, type UpdatePotDTO } from '../types/dto';
 
 export class SupabasePotSource {
   private ensuredUsers = new Set<string>();
@@ -145,6 +146,91 @@ export class SupabasePotSource {
     }
   }
 
+  async updatePotSettings(id: string, updates: UpdatePotDTO): Promise<Pot> {
+    const userId = await getOptionalUserId(this.client, 'modify pots');
+    if (!userId) {
+      throw new ValidationError('Pot settings update requires the authenticated Supabase source');
+    }
+
+    const existing = await this.findPotRow(id);
+    if (!existing) {
+      throw new ValidationError(`Pot with id "${id}" not found`);
+    }
+
+    const validation = UpdatePotDTOSchema.safeParse(updates);
+    if (!validation.success) {
+      throw new ValidationError('Invalid pot settings', validation.error.issues);
+    }
+
+    const sanitized = validation.data;
+    const nextName = typeof sanitized.name === 'string' ? sanitized.name.trim() : undefined;
+    const nextLastEditAt = new Date().toISOString();
+    const existingMetadata = (existing.metadata ?? {}) as Record<string, unknown>;
+    const metadata: Record<string, unknown> = {
+      ...existingMetadata,
+      ...(nextName ? { name: nextName } : {}),
+      ...(sanitized.baseCurrency ? { baseCurrency: sanitized.baseCurrency } : {}),
+      ...('budgetEnabled' in sanitized ? { budgetEnabled: sanitized.budgetEnabled ?? false } : {}),
+      ...('budget' in sanitized ? { budget: sanitized.budget ?? null } : {}),
+      ...('checkpointEnabled' in sanitized ? { checkpointEnabled: sanitized.checkpointEnabled ?? true } : {}),
+      ...('archived' in sanitized ? { archived: sanitized.archived ?? false } : {}),
+      ...('goalAmount' in sanitized ? { goalAmount: sanitized.goalAmount ?? null } : {}),
+      ...('goalDescription' in sanitized ? { goalDescription: sanitized.goalDescription ?? null } : {}),
+      lastEditAt: nextLastEditAt,
+    };
+
+    const payload: Record<string, unknown> = {
+      metadata,
+      last_edit_at: nextLastEditAt,
+    };
+
+    if (nextName) {
+      payload.name = nextName;
+    }
+    if (sanitized.baseCurrency) {
+      payload.base_currency = sanitized.baseCurrency;
+    }
+    if ('budgetEnabled' in sanitized) {
+      payload.budget_enabled = sanitized.budgetEnabled ?? false;
+    }
+    if ('budget' in sanitized) {
+      payload.budget = sanitized.budget ?? null;
+    }
+    if ('checkpointEnabled' in sanitized) {
+      payload.checkpoint_enabled = sanitized.checkpointEnabled ?? true;
+    }
+    if ('goalAmount' in sanitized) {
+      payload.goal_amount = sanitized.goalAmount ?? null;
+    }
+    if ('goalDescription' in sanitized) {
+      payload.goal_description = sanitized.goalDescription ?? null;
+    }
+    if ('archived' in sanitized) {
+      payload.archived_at = sanitized.archived ? (existing.archived_at ?? nextLastEditAt) : null;
+    }
+
+    const { error } = await this.client
+      .from('pots')
+      .update(payload)
+      .eq('id', id);
+
+    if (error) {
+      if (isRlsError(error)) {
+        throw new Error(
+          `[SupabaseSource] Failed to update pot settings ${id}: access denied by Supabase RLS. Please sign out and sign back in, then retry. ${formatSupabaseError(error)}`,
+        );
+      }
+      throw new Error(`[SupabaseSource] Failed to update pot settings ${id}: ${error.message}`);
+    }
+
+    const updated = await this.getPot(id);
+    if (!updated) {
+      throw new ValidationError(`Pot with id "${id}" not found after update`);
+    }
+
+    return updated;
+  }
+
   async deletePot(id: string): Promise<void> {
     const userId = await getOptionalUserId(this.client, 'delete pot');
     if (!userId) {
@@ -251,6 +337,23 @@ export class SupabasePotSource {
     }
 
     return (data as Pick<SupabasePotRow, 'id' | 'created_by' | 'archived_at'>) ?? null;
+  }
+
+  private async findPotRow(id: string): Promise<SupabasePotRow | null> {
+    const { data, error } = await this.client
+      .from('pots')
+      .select(POT_COLUMNS.join(','))
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null;
+      }
+      throw new Error(`[SupabaseSource] Failed to inspect pot ${id}: ${error.message}`);
+    }
+
+    return (data as unknown as SupabasePotRow | null) ?? null;
   }
 
   private async ensureOwnerMembership(potId: string, userId: string): Promise<void> {

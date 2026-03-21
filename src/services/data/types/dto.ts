@@ -77,6 +77,7 @@ export type CreateMemberDTO = z.infer<typeof CreateMemberDTOSchema>;
 export const UpdateMemberDTOSchema = MemberSchema.partial().pick({
   name: true,
   address: true,
+  evmAddress: true,
   verified: true,
   status: true,
 });

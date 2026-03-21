@@ -1,9 +1,11 @@
+import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import type { Screen } from '../../nav';
 import type {
   Pot,
   ActivityItem,
   Person,
   Settlement as StoredSettlement,
+  CloseoutRecord,
 } from '../../types/app';
 import type { CalculatedSettlements } from '../../utils/settlements';
 import type { PaymentMethod } from '../../components/screens/PaymentMethods';
@@ -73,7 +75,7 @@ export interface AppRouterProps {
     fabQuickAddPotId: string | null;
   };
   actions: {
-    setPots: (pots: Pot[]) => void;
+    setPots: Dispatch<SetStateAction<Pot[]>>;
     setCurrentPotId: (id: string | null) => void;
     setCurrentExpenseId: (id: string | null) => void;
     setWalletConnected: (connected: boolean) => void;
@@ -90,7 +92,7 @@ export interface AppRouterProps {
     setFabQuickAddPotId: (id: string | null) => void;
     setNewPot: (pot: Partial<Pot>) => void;
     setSelectedCounterpartyId: (id: string | null) => void;
-    setSettlements: (settlements: StoredSettlement[]) => void;
+    setSettlements: Dispatch<SetStateAction<StoredSettlement[]>>;
     setNotifications: (updater: (prev: Notification[]) => Notification[]) => void;
     createPot: () => Promise<void>;
     addExpenseToPot: (potId: string, data: any) => void;
@@ -105,22 +107,33 @@ export interface AppRouterProps {
     updatePaymentMethodValue: (id: string, updates: Partial<PaymentMethod>) => void;
     setPreferredMethod: (id: string) => void;
     handleInviteNew: (email: string) => void;
+    copyInviteLink: (potId: string) => Promise<void>;
+    resendInviteForPot: (potId: string, inviteId: string) => Promise<void>;
+    revokeInviteForPot: (potId: string, inviteId: string) => Promise<void>;
     handleUpdateMember: (
       potId: string,
-      member: { id: string; name: string; address?: string; verified?: boolean },
+      member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean },
     ) => void;
     handleRemoveMember: (potId: string, memberId: string) => void;
     handleUpdatePotSettings: (potId: string, settings: any) => void;
+    handleDeletePot: (potId: string) => Promise<void>;
+    handleArchivePot: (potId: string) => Promise<void>;
+    handleLeavePot: (potId: string) => Promise<void>;
+    persistPotPartial: (potId: string, updates: Partial<Pot> & { closeouts?: CloseoutRecord[] }) => Promise<void>;
     acceptInvite: (token: string) => void;
     declineInvite: (token: string) => void;
     confirmSettlement: (params: {
-      method: 'cash' | 'bank' | 'paypal' | 'twint' | 'dot';
+      method: 'cash' | 'bank' | 'paypal' | 'twint' | 'dot' | 'usdc';
       reference?: string;
       settlement: SettleHomeSettlement;
-    }) => Promise<void>;
+      closeoutContext?: {
+        closeoutId: string;
+        legIndex: number;
+      };
+    }) => Promise<import('../../nav').SettlementResult | null>;
     showToast: (msg: string, type?: 'success' | 'error' | 'info') => void;
     newPotState: Partial<Pot>;
-    joinProcessingRef: React.MutableRefObject<boolean>;
+    joinProcessingRef: MutableRefObject<boolean>;
     selectedCounterpartyId: string | null;
   };
   flags: {

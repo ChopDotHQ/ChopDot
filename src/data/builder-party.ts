@@ -1,4 +1,4 @@
-import type { Expense, Member, Pot } from "../types/app";
+import type { Expense, Member, Pot, PotHistory } from "../types/app";
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -124,6 +124,22 @@ const createBuilderPartyExpenses = (now = Date.now()): Expense[] =>
     attestations: [...expense.attestations],
   }));
 
+const demoMicroOnchainSettlement = (now: number): PotHistory => ({
+  id: "demo-onchain-micro",
+  type: "onchain_settlement",
+  fromMemberId: "bob",
+  toMemberId: "owner",
+  fromAddress: builderPartyMembersTemplate[2]!.address!,
+  toAddress: builderPartyMembersTemplate[0]!.address!,
+  amountDot: "0.001000",
+  txHash:
+    "0x0000000000000000000000000000000000000000000000000000000000000001",
+  subscan:
+    "https://polkadot.subscan.io/extrinsic/0x0000000000000000000000000000000000000000000000000000000000000001",
+  status: "finalized",
+  when: now,
+});
+
 export const createPolkadotBuilderPartyPot = (now = Date.now()): Pot => ({
   id: "4",
   name: "Polkadot Builder Party",
@@ -131,6 +147,7 @@ export const createPolkadotBuilderPartyPot = (now = Date.now()): Pot => ({
   baseCurrency: "DOT",
   members: createBuilderPartyMembers(),
   expenses: createBuilderPartyExpenses(now),
+  history: [demoMicroOnchainSettlement(now)],
   budget: 6,
   budgetEnabled: true,
   checkpointEnabled: false,

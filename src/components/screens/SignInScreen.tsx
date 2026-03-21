@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, ChevronRight, Loader2, Wallet } from 'lucide-react';
 import { useAccount } from '../../contexts/AccountContext';
 import { triggerHaptic } from '../../utils/haptics';
 import { ChopDotMark } from '../auth/ChopDotMark';
@@ -9,6 +9,7 @@ import { ViewModeToggle, LoginVariantToggle, WalletConnectModalToggle } from '..
 import { WalletLoginPanel } from '../auth/panels/WalletLoginPanel';
 import { SignupPanel } from '../auth/panels/SignupPanel';
 import { AuthFooter } from '../auth/AuthFooter';
+import { BottomSheet } from '../BottomSheet';
 import { useLoginState } from '../auth/hooks/useLoginState';
 import { useWalletAuth } from '../auth/hooks/useWalletAuth';
 import { useThemeHandler } from '../auth/hooks/useThemeHandler';
@@ -85,6 +86,10 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     handleGuestLogin,
     handleWalletLogin,
     loginWithExtension,
+    pendingExtensionAccounts,
+    pendingExtensionWalletName,
+    completeExtensionLogin,
+    cancelExtensionAccountSelection,
     handleWalletConnectModal,
   } = useSignInHandlers({ setLoading, setError, onLoginSuccess, getWalletAuthMessage });
 
@@ -278,6 +283,51 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
           onClose={() => { setShowWalletConnectQR(false); setWalletConnectQRCode(null); }}
         />
       )}
+
+      <BottomSheet
+        isOpen={pendingExtensionAccounts.length > 0}
+        onClose={cancelExtensionAccountSelection}
+        title="Choose account"
+        maxWidth="520px"
+      >
+        <div className="mx-auto w-full max-w-md space-y-4">
+          <div className="space-y-1">
+            <h3 className="text-lg font-semibold">Select an account</h3>
+            <p className="text-sm text-secondary">
+              {pendingExtensionWalletName
+                ? `Choose which ${pendingExtensionWalletName} account to sign in with.`
+                : 'Choose which account to sign in with.'}
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {pendingExtensionAccounts.map((accountOption) => (
+              <button
+                key={accountOption.address}
+                type="button"
+                onClick={() => void completeExtensionLogin(accountOption)}
+                disabled={loading}
+                className="w-full rounded-2xl border border-border bg-background px-4 py-4 text-left transition-all duration-150 hover:bg-muted/40 active:scale-[0.99] disabled:opacity-50"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="rounded-2xl bg-muted/60 p-3">
+                    <Wallet className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-base font-medium truncate">
+                      {accountOption.name || 'Unnamed account'}
+                    </div>
+                    <p className="mt-1 font-mono text-sm text-secondary">
+                      {accountOption.address.slice(0, 12)}...{accountOption.address.slice(-10)}
+                    </p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-secondary" />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </BottomSheet>
     </div>
   );
 }

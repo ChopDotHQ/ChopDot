@@ -189,6 +189,7 @@ export function CreatePot({
                 <option value="EUR">EUR</option>
                 <option value="GBP">GBP</option>
                 <option value="DOT">DOT</option>
+                <option value="USDC">USDC</option>
               </select>
             </div>
             <div className="flex items-end">

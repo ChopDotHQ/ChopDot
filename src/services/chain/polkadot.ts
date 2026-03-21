@@ -275,6 +275,17 @@ const toPlanckString = (amountDot: number, decimals: number): string => {
   return asBigInt.toString();
 };
 
+const formatUnits = (value: string, decimals: number): string => {
+  if (!value) return '0';
+  const s = value.replace(/^0+(?=\d)/, '');
+  if (s.length <= decimals) {
+    return `0.${'0'.repeat(decimals - s.length)}${s}`.replace(/\.?0+$/, '');
+  }
+  const intPart = s.slice(0, s.length - decimals);
+  const frac = s.slice(s.length - decimals).replace(/0+$/, '');
+  return frac ? `${intPart}.${frac}` : intPart;
+};
+
 export const polkadotChainService = (() => {
   const setChain = (chain: 'relay' | 'assethub') => {
     const resolved = resolveChainKey(chain);
@@ -318,6 +329,29 @@ export const polkadotChainService = (() => {
       return balance;
     } catch (error) {
       console.error('[Chain] getFreeBalance error:', error);
+      throw error;
+    }
+  };
+
+  const getUsdcBalance = async (address: string, assetId = DEFAULT_USDC_ASSET_ID): Promise<string> => {
+    try {
+      const api = await getApi(120000);
+      await api.isReady;
+      const normalized = normalizeToPolkadot(address);
+      const assetAccount = await api.query.assets.account(assetId, normalized);
+      if (!assetAccount || assetAccount.isNone) {
+        return '0';
+      }
+      const human = assetAccount.toHuman?.();
+      const json = assetAccount.toJSON?.() as { balance?: string | number } | undefined;
+      const balance =
+        json?.balance?.toString?.() ||
+        (typeof human?.balance === 'string' ? human.balance.replace(/,/g, '') : undefined) ||
+        assetAccount.toPrimitive?.()?.balance?.toString?.() ||
+        '0';
+      return balance;
+    } catch (error) {
+      console.error('[Chain] getUsdcBalance error:', error);
       throw error;
     }
   };
@@ -567,6 +601,7 @@ export const polkadotChainService = (() => {
     getConfig,
     getCurrentRpc,
     getFreeBalance,
+    getUsdcBalance,
     isValidPolkadotAddress,
     isValidSs58,
     normalizeToPolkadot,
@@ -576,6 +611,7 @@ export const polkadotChainService = (() => {
     signAndSendExtrinsic,
     buildSubscanUrl,
     toPlanckString: (amountDot: number) => toPlanckString(amountDot, getConfig().decimals),
+    formatUsdcUnits: (value: string) => formatUnits(value, USDC_DECIMALS),
   };
 })();
 

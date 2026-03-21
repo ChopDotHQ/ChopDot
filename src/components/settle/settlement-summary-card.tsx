@@ -5,7 +5,7 @@ interface SettlementSummaryCardProps {
   totalAmount: number;
   isPaying: boolean;
   counterparty: string;
-  isDotPot: boolean;
+  assetSymbol: string;
   formatAmount: (amount: number) => string;
 }
 
@@ -14,7 +14,7 @@ export const SettlementSummaryCard = ({
   totalAmount,
   isPaying,
   counterparty,
-  isDotPot,
+  assetSymbol,
   formatAmount,
 }: SettlementSummaryCardProps) => {
   const pots = settlements[0]?.pots;
@@ -24,7 +24,7 @@ export const SettlementSummaryCard = ({
     <div className="card p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-caption text-secondary">{isPaying ? 'You owe' : 'You are owed'}</p>
+          <p className="text-caption text-secondary">{isPaying ? 'Paying' : 'Collecting from'}</p>
           <p className="text-body" style={{ fontWeight: 500 }}>{counterparty}</p>
         </div>
         <div className="text-right">
@@ -47,7 +47,7 @@ export const SettlementSummaryCard = ({
             <div key={pot.potId} className="flex justify-between text-caption text-secondary">
               <span>{pot.potName}</span>
               <span className="tabular-nums" style={{ fontWeight: 500 }}>
-                {isDotPot ? `${pot.amount} DOT` : `$${pot.amount}`}
+                {assetSymbol === 'USD' ? `$${pot.amount}` : `${pot.amount} ${assetSymbol}`}
               </span>
             </div>
           ))}

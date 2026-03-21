@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { useAccount } from './AccountContext';
-import { getSupabase, getSupabaseConfig } from '../utils/supabase-client';
+import { getSupabase } from '../utils/supabase-client';
 import { setErrorTrackingUser } from '../utils/errorTracking';
 import { loginWithEmailAction, signUpWithEmailAction } from './authActions';
 import { upsertProfile } from '../repos/profiles';
@@ -12,6 +12,7 @@ import {
 import { loginWithWallet, loginWithEthereumWeb3 } from '../services/auth/wallet-login';
 import { loginWithOAuthRedirect } from '../services/auth/oauth-login';
 import { loginAsGuestAction } from '../services/auth/guest-login';
+import { buildWalletAuthMessage, requestWalletNonce } from '../utils/walletAuth';
 import type { User, AuthMethod, OAuthProvider, LoginCredentials } from '../types/auth';
 
 export type { User, AuthMethod, OAuthProvider, LoginCredentials };
@@ -201,26 +202,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const walletAddress = account.address;
         if (!walletAddress) return;
 
-        const { url: supabaseUrl, anonKey } = getSupabaseConfig();
-        if (!supabaseUrl || !anonKey) return;
+        if (!getSupabase()) return;
 
-        const nonceRes = await fetch(`${supabaseUrl}/functions/v1/wallet-auth/request-nonce`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'apikey': anonKey, 'Authorization': `Bearer ${anonKey}` },
-          body: JSON.stringify({ address: walletAddress }),
-        });
-        if (!nonceRes.ok) throw new Error('Failed to request nonce');
-
-        const { nonce } = await nonceRes.json();
-        const message = `Sign this message to login to ChopDot.\nNonce: ${nonce}`;
+        const nonce = await requestWalletNonce(walletAddress);
+        const message = buildWalletAuthMessage(nonce, { chain: 'polkadot' });
 
         let signature: string;
         if (account.connector === 'extension') {
           const { web3FromAddress } = await import('@polkadot/extension-dapp');
+          const { stringToHex } = await import('@polkadot/util');
           const injector = await web3FromAddress(walletAddress);
           const signRaw = injector?.signer?.signRaw;
           if (!signRaw) throw new Error('Wallet does not support signing');
-          const result = await signRaw({ address: walletAddress, data: message, type: 'bytes' });
+          const result = await signRaw({ address: walletAddress, data: stringToHex(message), type: 'bytes' });
           signature = result.signature;
         } else if (account.connector === 'walletconnect') {
           const walletConnectModule = await import('../services/chain/walletconnect');

@@ -1,10 +1,16 @@
 import { TrendingUp, TrendingDown, Plus, ArrowRight, Wallet, ExternalLink, Copy } from 'lucide-react';
 import type { Suggestion } from '../../services/settlement/calc';
-import type { PotHistory } from '../../types/app';
+import type { CloseoutRecord, PotHistory } from '../../types/app';
 import { normalizeToPolkadot } from '../../services/chain/address';
 import { formatCurrencyAmount } from '../../utils/currencyFormat';
 import { copyWithToast } from '../../utils/clipboard';
 import type { SettlementModalState } from '../../hooks/useSettleConfirm';
+import {
+  canReopenTrackedCloseout,
+  countConfirmedCloseoutLegs,
+  countOutstandingCloseoutLegs,
+  getUserFacingCloseoutStatusLabel,
+} from '../../services/closeout/pvmCloseout';
 
 interface Member {
   id: string;
@@ -32,6 +38,7 @@ interface HeroDashboardProps {
   balances: BalanceEntry[];
   settlementSuggestions: Suggestion[];
   settlementHistory: OnchainSettlement[];
+  trackedCloseout?: CloseoutRecord | null;
   members: Member[];
   currentUserId: string;
   isCryptoPot: boolean;
@@ -41,6 +48,9 @@ interface HeroDashboardProps {
   formatPotAmount: (value: number, withSign?: boolean) => string;
   onAddExpense: () => void;
   onSettle: () => void;
+  onReopenTrackedSettlement?: () => void;
+  canAddExpense?: boolean;
+  addExpenseDisabledReason?: string;
   onOpenSettlementModal: (modal: SettlementModalState) => void;
   onShowToast?: (message: string, type?: 'success' | 'info' | 'error') => void;
   accountStatus: string;
@@ -59,6 +69,7 @@ export function HeroDashboard({
   balances,
   settlementSuggestions,
   settlementHistory,
+  trackedCloseout,
   members,
   currentUserId,
   isCryptoPot,
@@ -68,6 +79,9 @@ export function HeroDashboard({
   formatPotAmount,
   onAddExpense,
   onSettle,
+  onReopenTrackedSettlement,
+  canAddExpense = true,
+  addExpenseDisabledReason,
   onOpenSettlementModal,
   onShowToast,
   accountStatus,
@@ -145,13 +159,15 @@ export function HeroDashboard({
           <div className="space-y-1.5">
             {balances
               .sort((a, b) => b.balance - a.balance)
-              .map(({ member, balance }) => (
+              .map(({ member, balance }) => {
+                const displayName = getDisplayMemberName(member, currentUserId);
+                return (
                 <div key={member.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(0, 0, 0, 0.08)' }}>
-                      <span className="text-caption text-foreground">{member.name[0]}</span>
+                      <span className="text-caption text-foreground">{displayName[0]}</span>
                     </div>
-                    <span className="text-label" style={{ fontWeight: 500 }}>{member.name}</span>
+                    <span className="text-label" style={{ fontWeight: 500 }}>{displayName}</span>
                   </div>
                   <div className="text-right">
                     <span className="text-label tabular-nums" style={{ fontWeight: 500, color: balance > 0 ? 'var(--success)' : 'var(--ink)' }}>
@@ -162,22 +178,25 @@ export function HeroDashboard({
                     </p>
                   </div>
                 </div>
-              ))}
+                );
+              })}
           </div>
         )}
 
-        <SettlementSuggestionsList
-          suggestions={settlementSuggestions}
-          members={members}
-          currentUserId={currentUserId}
-          isCryptoPot={isCryptoPot}
-          isUsdcPot={isUsdcPot}
-          isSending={isSending}
-          formatPotAmount={formatPotAmount}
-          onOpenSettlementModal={onOpenSettlementModal}
-          accountStatus={accountStatus}
-          accountAddress0={accountAddress0}
-        />
+        {!trackedCloseout && (
+          <SettlementSuggestionsList
+            suggestions={settlementSuggestions}
+            members={members}
+            currentUserId={currentUserId}
+            isCryptoPot={isCryptoPot}
+            isUsdcPot={isUsdcPot}
+            isSending={isSending}
+            formatPotAmount={formatPotAmount}
+            onOpenSettlementModal={onOpenSettlementModal}
+            accountStatus={accountStatus}
+            accountAddress0={accountAddress0}
+          />
+        )}
 
         {isCryptoPot && settlementHistory.length > 0 && (
           <RecentSettlements
@@ -187,11 +206,46 @@ export function HeroDashboard({
           />
         )}
 
+        {trackedCloseout && (
+          <div className="rounded-2xl border border-border/40 bg-muted/10 p-3 space-y-3">
+            <div className="space-y-1">
+              <p className="text-label font-medium">{getUserFacingCloseoutStatusLabel(trackedCloseout)}</p>
+              <p className="text-caption text-secondary">
+                {countOutstandingCloseoutLegs(trackedCloseout) > 0
+                  ? `${countConfirmedCloseoutLegs(trackedCloseout)} of ${trackedCloseout.totalLegCount} payments confirmed.`
+                  : 'All tracked payments are confirmed for this tab.'}
+              </p>
+            </div>
+            <div className="space-y-2 text-micro text-secondary">
+              <p>
+                {countOutstandingCloseoutLegs(trackedCloseout) > 0
+                  ? `Waiting on ${countOutstandingCloseoutLegs(trackedCloseout)} payment${countOutstandingCloseoutLegs(trackedCloseout) === 1 ? '' : 's'}.`
+                  : 'No further action needed.'}
+              </p>
+              {onReopenTrackedSettlement && canReopenTrackedCloseout(trackedCloseout) && (
+                <button
+                  onClick={onReopenTrackedSettlement}
+                  className="text-caption underline text-secondary hover:text-foreground transition-colors"
+                >
+                  Reopen tab to change expenses
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-2 pt-2 items-center">
           <button
             onClick={onAddExpense}
+            disabled={!canAddExpense}
+            title={!canAddExpense ? addExpenseDisabledReason : undefined}
             className="flex-1 py-3 rounded-[var(--r-lg)] transition-all active:scale-[0.98]"
-            style={{ background: 'var(--accent)', color: '#fff', fontWeight: 600 }}
+            style={{
+              background: canAddExpense ? 'var(--accent)' : 'var(--muted)',
+              color: canAddExpense ? '#fff' : 'var(--secondary)',
+              fontWeight: 600,
+              opacity: canAddExpense ? 1 : 0.7,
+            }}
           >
             <div className="flex items-center justify-center gap-1.5">
               <Plus className="w-4 h-4" />
@@ -228,6 +282,13 @@ interface SettlementSuggestionsListProps {
   accountAddress0: string | null;
 }
 
+function getDisplayMemberName(member: Member, currentUserId: string): string {
+  if (member.id === currentUserId) {
+    return 'You';
+  }
+  return member.name?.trim() || 'Member';
+}
+
 function SettlementSuggestionsList(props: SettlementSuggestionsListProps) {
   const { suggestions, members, currentUserId, isCryptoPot, isUsdcPot,
     isSending, formatPotAmount, onOpenSettlementModal, accountStatus, accountAddress0 } = props;
@@ -241,6 +302,8 @@ function SettlementSuggestionsList(props: SettlementSuggestionsListProps) {
           const fromMember = members.find(m => m.id === suggestion.from);
           const toMember = members.find(m => m.id === suggestion.to);
           if (!fromMember || !toMember) return null;
+          const fromDisplayName = getDisplayMemberName(fromMember, currentUserId);
+          const toDisplayName = getDisplayMemberName(toMember, currentUserId);
 
           const hasRecipientAddress = !!toMember.address;
           const fromMemberAddress = fromMember.address;
@@ -262,18 +325,18 @@ function SettlementSuggestionsList(props: SettlementSuggestionsListProps) {
               className={`flex items-center justify-between p-3 card rounded-lg card-hover-lift transition-shadow duration-200 ${
                 !hasRecipientAddress ? 'opacity-60' : ''
               }`}
-              title={!hasRecipientAddress ? `No wallet address on file for ${toMember.name}` : undefined}
+              title={!hasRecipientAddress ? `No wallet address on file for ${toDisplayName}` : undefined}
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <span className="text-label truncate" style={{ fontWeight: 500 }}>
-                  {fromMember.name}
+                  {fromDisplayName}
                 </span>
                 <ArrowRight className="w-3 h-3 text-secondary flex-shrink-0" />
                 <span className="text-label truncate" style={{ fontWeight: 500 }}>
-                  {toMember.name}
+                  {toDisplayName}
                 </span>
                 {!hasRecipientAddress && (
-                  <span className="text-micro text-secondary" title="No wallet address on file for this member">
+                  <span className="text-micro text-secondary" title={`No wallet address on file for ${toDisplayName}`}>
                     (no address)
                   </span>
                 )}
@@ -290,8 +353,8 @@ function SettlementSuggestionsList(props: SettlementSuggestionsListProps) {
                         toMemberId: toMember.id,
                         fromAddress: normalizeToPolkadot(fromMemberAddress!),
                         toAddress: normalizeToPolkadot(toMember.address!),
-                        fromName: fromMember.name,
-                        toName: toMember.name,
+                        fromName: fromDisplayName,
+                        toName: toDisplayName,
                         ...(isUsdcPot
                           ? { amountUsdc: suggestion.amount }
                           : { amountDot: suggestion.amount }
@@ -395,4 +458,3 @@ function RecentSettlements({
     </div>
   );
 }
-

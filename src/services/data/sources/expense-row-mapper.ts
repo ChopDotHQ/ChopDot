@@ -9,16 +9,19 @@ export function mapExpenseRow(row: SupabaseExpenseRow, splitsOverride?: Expense[
     ?? (metadata.description as string | undefined)
     ?? row.description
     ?? '';
+  const paidByFromMetadata = typeof metadata.paidBy === 'string' ? metadata.paidBy : undefined;
   const splitFromMetadata = Array.isArray(metadata.split)
     ? (metadata.split as Array<{ memberId: string; amount: number }>)
     : [];
+  const amountFromRow = fromMinorAmount(row.amount_minor, row.currency_code);
+  const splitTotal = splitFromMetadata.reduce((sum, item) => sum + Number(item.amount ?? 0), 0);
 
   return {
     id: row.id,
     potId: row.pot_id,
-    amount: fromMinorAmount(row.amount_minor),
+    amount: amountFromRow > 0 ? amountFromRow : splitTotal,
     currency: row.currency_code ?? 'USD',
-    paidBy: row.paid_by ?? row.creator_id,
+    paidBy: paidByFromMetadata ?? row.paid_by ?? row.creator_id,
     memo,
     date: row.expense_date ?? row.created_at ?? new Date().toISOString(),
     split: splitsOverride ?? splitFromMetadata,

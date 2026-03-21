@@ -6,6 +6,7 @@ import { formatDOT } from '../utils/platformFee';
 import type { TxStatus } from '../services/chain/adapter';
 
 type ShowToast = (message: string, type?: 'success' | 'error' | 'info') => void;
+type CryptoAsset = 'DOT' | 'USDC';
 
 interface AccountSnapshot {
   address0: string | null;
@@ -14,19 +15,21 @@ interface AccountSnapshot {
   refreshBalance: () => Promise<void>;
 }
 
-export interface DotSettlementParams {
+export interface SettlementTxParams {
   fromAddress: string;
   toAddress: string;
   totalAmount: number;
-  isDotPot: boolean;
+  asset: CryptoAsset;
+  baseCurrency: string;
   dotPriceUsd: number | null;
   feeEstimate: number | null;
   isSimulationMode?: boolean;
 }
 
-export interface DotSettlementResult {
+export interface SettlementTxResult {
   txHash: string | undefined;
-  amountDot: number;
+  amount: number;
+  amountDot?: number;
 }
 
 interface UseSettlementTxParams {
@@ -35,23 +38,21 @@ interface UseSettlementTxParams {
 }
 
 interface UseSettlementTxResult {
-  sendDotSettlement: (params: DotSettlementParams) => Promise<DotSettlementResult>;
+  sendSettlementTx: (params: SettlementTxParams) => Promise<SettlementTxResult>;
+  sendDotSettlement: (params: Omit<SettlementTxParams, 'asset' | 'baseCurrency'> & { isDotPot: boolean }) => Promise<SettlementTxResult>;
 }
 
 const SIMULATION_MOCK_ADDRESS = '15mock00000000000000000000000000000A';
 
-/**
- * Encapsulates the DOT settlement transaction flow:
- * fiat-to-DOT conversion, balance validation, chain.sendDot, tx toasts, balance refresh.
- */
 export function useSettlementTx({ account, onShowToast }: UseSettlementTxParams): UseSettlementTxResult {
-  const sendDotSettlement = useCallback(
-    async (params: DotSettlementParams): Promise<DotSettlementResult> => {
+  const sendSettlementTx = useCallback(
+    async (params: SettlementTxParams): Promise<SettlementTxResult> => {
       const {
         fromAddress: requestedFrom,
         toAddress,
         totalAmount,
-        isDotPot,
+        asset,
+        baseCurrency,
         dotPriceUsd,
         feeEstimate,
         isSimulationMode = false,
@@ -60,27 +61,27 @@ export function useSettlementTx({ account, onShowToast }: UseSettlementTxParams)
       const fromAddress =
         isSimulationMode && !requestedFrom ? SIMULATION_MOCK_ADDRESS : requestedFrom;
 
-      // Convert amount
-      let amountDot = Math.abs(totalAmount);
-      if (!isDotPot) {
+      let amount = Math.abs(totalAmount);
+      if (asset === 'DOT' && baseCurrency !== 'DOT') {
         const converted = fiatToDot(totalAmount, dotPriceUsd);
         if (converted === null) {
           onShowToast?.('Unable to convert amount to DOT. Please try again.', 'error');
           throw new Error('DOT_PRICE_UNAVAILABLE');
         }
-        amountDot = converted;
+        amount = converted;
       }
 
-      // Balance validation
       const conservativeFee = feeEstimate ?? 0.01;
-      const required = amountDot + conservativeFee;
+      const requiredDot = asset === 'DOT' ? amount + conservativeFee : conservativeFee;
 
       if (account.status === 'connected' && account.balanceHuman) {
         const walletBalance = parseFloat(account.balanceHuman || '0');
-        if (walletBalance < required) {
+        if (walletBalance < requiredDot) {
           onShowToast?.(
-            `Insufficient balance: need ~${formatDOT(required)} (${formatDOT(amountDot)} + ${formatDOT(conservativeFee)} fee)`,
-            'error'
+            asset === 'DOT'
+              ? `Insufficient balance: need ~${formatDOT(requiredDot)} (${formatDOT(amount)} + ${formatDOT(conservativeFee)} fee)`
+              : `Insufficient DOT balance for fees: need ~${formatDOT(conservativeFee)}`,
+            'error',
           );
           throw new Error('INSUFFICIENT_BALANCE');
         }
@@ -88,37 +89,46 @@ export function useSettlementTx({ account, onShowToast }: UseSettlementTxParams)
 
       const chain = await getChain();
 
-      pushTxToast('signing', { amount: amountDot, currency: 'DOT' });
+      pushTxToast('signing', { amount, currency: asset });
 
       let statusTxHash: string | undefined;
-      const result = await chain.sendDot({
-        from: fromAddress,
-        to: toAddress,
-        amountDot,
-        onStatus: (status: TxStatus, ctx?: { txHash?: string; blockHash?: string }) => {
-          if (ctx?.txHash) statusTxHash = ctx.txHash;
+      const onStatus = (status: TxStatus, ctx?: { txHash?: string; blockHash?: string }) => {
+        if (ctx?.txHash) statusTxHash = ctx.txHash;
 
-          if (status === 'submitted') {
-            updateTxToast('broadcast', { amount: amountDot, currency: 'DOT' });
-          } else if (status === 'inBlock' && ctx?.txHash) {
-            updateTxToast('inBlock', {
-              amount: amountDot,
-              currency: 'DOT',
-              txHash: ctx.txHash,
-              fee: feeEstimate || 0.0024,
-              feeCurrency: 'DOT',
-            });
-          } else if (status === 'finalized' && ctx?.blockHash) {
-            updateTxToast('finalized', {
-              amount: amountDot,
-              currency: 'DOT',
-              txHash: ctx.txHash || statusTxHash,
-              fee: feeEstimate || 0.0024,
-              feeCurrency: 'DOT',
-            });
-          }
-        },
-      });
+        if (status === 'submitted') {
+          updateTxToast('broadcast', { amount, currency: asset });
+        } else if (status === 'inBlock' && ctx?.txHash) {
+          updateTxToast('inBlock', {
+            amount,
+            currency: asset,
+            txHash: ctx.txHash,
+            fee: feeEstimate || 0.0024,
+            feeCurrency: 'DOT',
+          });
+        } else if (status === 'finalized') {
+          updateTxToast('finalized', {
+            amount,
+            currency: asset,
+            txHash: ctx?.txHash || statusTxHash,
+            fee: feeEstimate || 0.0024,
+            feeCurrency: 'DOT',
+          });
+        }
+      };
+
+      const result = asset === 'DOT'
+        ? await chain.sendDot({
+          from: fromAddress,
+          to: toAddress,
+          amountDot: amount,
+          onStatus,
+        })
+        : await chain.sendUsdc({
+          from: fromAddress,
+          to: toAddress,
+          amountUsdc: amount,
+          onStatus,
+        });
 
       const txHash = result.txHash || statusTxHash;
 
@@ -128,10 +138,20 @@ export function useSettlementTx({ account, onShowToast }: UseSettlementTxParams)
         // Non-critical -- balance will refresh on next poll
       }
 
-      return { txHash, amountDot };
+      return { txHash, amount, amountDot: asset === 'DOT' ? amount : undefined };
     },
-    [account, onShowToast]
+    [account, onShowToast],
   );
 
-  return useMemo(() => ({ sendDotSettlement }), [sendDotSettlement]);
+  const sendDotSettlement = useCallback(
+    (params: Omit<SettlementTxParams, 'asset' | 'baseCurrency'> & { isDotPot: boolean }) =>
+      sendSettlementTx({
+        ...params,
+        asset: 'DOT',
+        baseCurrency: params.isDotPot ? 'DOT' : 'USD',
+      }),
+    [sendSettlementTx],
+  );
+
+  return useMemo(() => ({ sendSettlementTx, sendDotSettlement }), [sendDotSettlement, sendSettlementTx]);
 }

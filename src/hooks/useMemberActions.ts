@@ -80,7 +80,7 @@ export const useMemberActions = ({
   );
 
   const updateMember = useCallback(
-    (potId: string, member: { id: string; name: string; address?: string; verified?: boolean }) => {
+    (potId: string, member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean }) => {
       setPots((prev) =>
         prev.map((pot) =>
           pot.id === potId
@@ -92,6 +92,7 @@ export const useMemberActions = ({
                         ...m,
                         name: member.name,
                         address: member.address,
+                        evmAddress: member.evmAddress,
                         verified: member.verified ?? m.verified,
                       }
                     : m,
@@ -111,6 +112,7 @@ export const useMemberActions = ({
           await memberService.updateMember(potId, member.id, {
             name: member.name,
             address: member.address ?? null,
+            evmAddress: member.evmAddress ?? null,
             verified: member.verified,
           });
           logDev('[DataLayer] Member updated via service', { potId, memberId: member.id });

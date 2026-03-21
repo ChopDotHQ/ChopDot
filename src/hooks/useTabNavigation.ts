@@ -13,7 +13,7 @@ export function useTabNavigation({ screen, stack, reset }: UseTabNavigationParam
   const getActiveTab = useCallback((): Tab => {
     if (screen?.type === 'activity-home') return 'activity';
     if (screen?.type === 'settlements-home' || screen?.type === 'people-home') return 'people';
-    if (screen?.type === 'settle-selection' || screen?.type === 'settle-home') return 'activity';
+    if (screen?.type === 'settle-selection' || screen?.type === 'settle-home' || screen?.type === 'closeout-review') return 'activity';
     if (screen?.type === 'you-tab') return 'you';
     return 'pots';
   }, [screen?.type]);
@@ -44,7 +44,7 @@ export function useTabNavigation({ screen, stack, reset }: UseTabNavigationParam
   const shouldShowTabBar = useCallback((): boolean => {
     const tabBarScreens = [
       'activity-home', 'pots-home', 'settlements-home', 'people-home',
-      'you-tab', 'pot-home', 'expense-detail', 'settle-selection', 'settle-home',
+      'you-tab', 'pot-home', 'expense-detail', 'settle-selection', 'settle-home', 'closeout-review',
     ];
     return screen ? tabBarScreens.includes(screen.type) : false;
   }, [screen]);

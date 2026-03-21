@@ -4,7 +4,7 @@ import { SwipeableExpenseRow } from '../SwipeableExpenseRow';
 import type { Pot } from '../../schema/pot';
 import { SettlementConfirmModal } from '../SettlementConfirmModal';
 import { useAccount } from '../../contexts/AccountContext';
-import type { PotHistory } from '../../types/app';
+import type { CloseoutRecord, PotHistory } from '../../types/app';
 import { formatCurrencyAmount } from '../../utils/currencyFormat';
 import { usePotBalances } from '../../hooks/usePotBalances';
 import { useExpenseGroups } from '../../hooks/useExpenseGroups';
@@ -56,6 +56,10 @@ interface ExpensesTabProps {
   onAddExpense: () => void;
   onExpenseClick: (expense: Expense) => void;
   onSettle: () => void;
+  trackedCloseout?: CloseoutRecord | null;
+  onReopenTrackedSettlement?: () => void;
+  canAddExpense?: boolean;
+  addExpenseDisabledReason?: string;
   onDeleteExpense?: (expenseId: string) => void;
   onAttestExpense?: (expenseId: string, silent?: boolean) => void;
   onBatchAttestExpenses?: (expenseIds: string[]) => void;
@@ -79,6 +83,10 @@ export function ExpensesTab({
   onAddExpense,
   onExpenseClick,
   onSettle,
+  trackedCloseout,
+  onReopenTrackedSettlement,
+  canAddExpense = true,
+  addExpenseDisabledReason,
   onDeleteExpense,
   onShowToast,
   onUpdatePot,
@@ -164,6 +172,7 @@ export function ExpensesTab({
           netBalance={netBalance}
           totalExpenses={totalExpenses}
           totalOutstanding={totalOutstanding}
+          trackedCloseout={trackedCloseout}
           budgetEnabled={budgetEnabled}
           budget={budget}
           budgetPercentage={budgetPercentage}
@@ -181,6 +190,9 @@ export function ExpensesTab({
           formatPotAmount={formatPotAmount}
           onAddExpense={onAddExpense}
           onSettle={onSettle}
+          onReopenTrackedSettlement={onReopenTrackedSettlement}
+          canAddExpense={canAddExpense}
+          addExpenseDisabledReason={addExpenseDisabledReason}
           onOpenSettlementModal={setSettlementModal}
           onShowToast={onShowToast}
           accountStatus={account.status}

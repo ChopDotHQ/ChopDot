@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { TopBar } from '../TopBar';
 import { ExpensesTab } from './ExpensesTab';
 import { SavingsTab } from './SavingsTab';
@@ -10,13 +10,17 @@ import { triggerHaptic } from '../../utils/haptics';
 import { QuickKeypadSheet } from '../QuickKeypadSheet';
 import { useAccount } from '../../contexts/AccountContext';
 import { useFeatureFlags } from '../../contexts/FeatureFlagsContext';
-import type { PotHistory } from '../../types/app';
+import type { CloseoutRecord, PotHistory } from '../../types/app';
 import { useData } from '../../services/data/DataContext';
 import { usePSAStyle } from '../../utils/usePSAStyle';
 import { usePotDataMerge } from '../../hooks/usePotDataMerge';
 import { usePotSummary } from '../../hooks/usePotSummary';
 import { useCheckpointState } from '../../hooks/useCheckpointState';
 import type { Pot } from '../../schema/pot';
+import {
+  canReopenTrackedCloseout,
+  findLatestTrackedCloseout,
+} from '../../services/closeout/pvmCloseout';
 
 interface PotHomeProps {
   potId?: string;
@@ -24,7 +28,7 @@ interface PotHomeProps {
   potName: string;
   baseCurrency: string;
   currentUserId: string;
-  members: Array<{ id: string; name: string; role: 'Owner' | 'Member'; status: 'active' | 'pending'; address?: string; verified?: boolean }>;
+  members: Array<{ id: string; name: string; role: 'Owner' | 'Member'; status: 'active' | 'pending'; address?: string; evmAddress?: string; verified?: boolean }>;
   expenses: Array<{ id: string; amount: number; currency: string; paidBy: string; memo: string; date: string; split: { memberId: string; amount: number }[]; attestations: string[]; hasReceipt: boolean; receiptUrl?: string }>;
   budget?: number;
   budgetEnabled?: boolean;
@@ -42,7 +46,7 @@ interface PotHomeProps {
   onExpenseClick: (expense: any) => void;
   onAddMember: () => void;
   onRemoveMember: (id: string) => void;
-  onUpdateMember?: (member: { id: string; name: string; address?: string; verified?: boolean }) => void;
+  onUpdateMember?: (member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean }) => void;
   onUpdateSettings: (settings: any) => void;
   onSettle: () => void;
   onCopyInviteLink?: () => void;
@@ -63,7 +67,9 @@ interface PotHomeProps {
   onLeavePot?: () => void;
   onArchivePot?: () => void;
   potHistory?: PotHistory[];
+  closeouts?: CloseoutRecord[];
   onUpdatePot?: (updates: { history?: PotHistory[]; lastCheckpoint?: any; lastEditAt?: string }) => void;
+  onReopenTrackedSettlement?: () => void;
 }
 
 export function PotHome(props: PotHomeProps) {
@@ -95,7 +101,9 @@ export function PotHome(props: PotHomeProps) {
     onLeavePot,
     onArchivePot,
     potHistory: potHistoryProp = [],
+    closeouts = [],
     onUpdatePot,
+    onReopenTrackedSettlement,
     checkpointConfirmations,
   } = props;
 
@@ -156,6 +164,15 @@ export function PotHome(props: PotHomeProps) {
   const tabs = potType === 'savings' ? ['Savings', 'Members', 'Settings'] : ['Expenses', 'Members', 'Settings'];
   const [activeTab, setActiveTab] = useState<string>(tabs[0] ?? 'Expenses');
   const [keypadOpen, setKeypadOpen] = useState(false);
+  const latestCloseout = useMemo(() => findLatestTrackedCloseout({ closeouts }), [closeouts]);
+  const smartSettlementStarted =
+    latestCloseout &&
+    latestCloseout.status !== 'cancelled' &&
+    latestCloseout.status !== 'draft';
+  const canAddExpense = !smartSettlementStarted;
+  const addExpenseDisabledReason = smartSettlementStarted
+    ? 'This tab has already started smart settlement. Reopen it to change expenses.'
+    : undefined;
 
   useEffect(() => {
     if (!openQuickAdd) return;
@@ -182,10 +199,11 @@ export function PotHome(props: PotHomeProps) {
         id: pot.id || potId || '',
         name: pot.name || potName,
         type: pot.type || potType,
-        baseCurrency: (pot.baseCurrency || baseCurrency) as 'USD' | 'DOT',
-        members: pot.members || members.map(m => ({ id: m.id, name: m.name, address: m.address || null })),
+        baseCurrency: (pot.baseCurrency || baseCurrency) as Pot['baseCurrency'],
+        members: pot.members || members.map(m => ({ id: m.id, name: m.name, address: m.address || null, evmAddress: m.evmAddress || null })),
         expenses: pot.expenses || expenses.map(e => ({ id: e.id, potId: potId || '', description: e.memo, amount: e.amount, paidBy: e.paidBy, createdAt: e.date ? new Date(e.date).getTime() : Date.now() })),
         history: pot.history || [],
+        closeouts: pot.closeouts || [],
         budgetEnabled: pot.budgetEnabled ?? budgetEnabled,
         budget: pot.budget ?? budget,
         checkpointEnabled: pot.checkpointEnabled ?? checkpointEnabled ?? true,
@@ -201,10 +219,11 @@ export function PotHome(props: PotHomeProps) {
       id: potId || '',
       name: potName,
       type: potType,
-      baseCurrency: baseCurrency as 'USD' | 'DOT',
-      members: members.map(m => ({ id: m.id, name: m.name, address: m.address || null })),
+      baseCurrency: baseCurrency as Pot['baseCurrency'],
+      members: members.map(m => ({ id: m.id, name: m.name, address: m.address || null, evmAddress: m.evmAddress || null })),
       expenses: expenses.map(e => ({ id: e.id, potId: potId || '', description: e.memo, amount: e.amount, paidBy: e.paidBy, createdAt: e.date ? new Date(e.date).getTime() : Date.now() })),
       history: [],
+      closeouts: [],
       budgetEnabled: false,
       checkpointEnabled: checkpointEnabled ?? true,
       mode: 'casual',
@@ -286,9 +305,23 @@ export function PotHome(props: PotHomeProps) {
               potId={potId}
               pot={pot ?? undefined}
               potHistory={checkpoint.activeHistory}
-              onAddExpense={() => setKeypadOpen(true)}
+              onAddExpense={() => {
+                if (!canAddExpense) {
+                  onShowToast?.(addExpenseDisabledReason || 'Smart settlement has already started.', 'info');
+                  return;
+                }
+                setKeypadOpen(true);
+              }}
               onExpenseClick={onExpenseClick}
               onSettle={onSettle}
+              trackedCloseout={latestCloseout}
+              onReopenTrackedSettlement={
+                onReopenTrackedSettlement && latestCloseout && canReopenTrackedCloseout(latestCloseout)
+                  ? onReopenTrackedSettlement
+                  : undefined
+              }
+              canAddExpense={canAddExpense}
+              addExpenseDisabledReason={addExpenseDisabledReason}
               onDeleteExpense={onDeleteExpense}
               onAttestExpense={onAttestExpense}
               onBatchAttestExpenses={onBatchAttestExpenses}

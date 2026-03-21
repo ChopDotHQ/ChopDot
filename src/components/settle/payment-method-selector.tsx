@@ -42,9 +42,10 @@ interface PaymentMethodSelectorProps {
   selectedMethod: PaymentMethod;
   onSelectMethod: (method: PaymentMethod) => void;
   polkadotEnabled: boolean;
-  showDotMethod: boolean;
-  isDotMethodEnabled: boolean;
+  showCryptoMethod: boolean;
+  isCryptoMethodEnabled: boolean;
   walletConnected: boolean;
+  cryptoLabel: 'DOT' | 'USDC';
   onShowToast?: ShowToast;
 }
 
@@ -52,9 +53,10 @@ export const PaymentMethodSelector = ({
   selectedMethod,
   onSelectMethod,
   polkadotEnabled,
-  showDotMethod,
-  isDotMethodEnabled,
+  showCryptoMethod,
+  isCryptoMethodEnabled,
   walletConnected,
+  cryptoLabel,
   onShowToast,
 }: PaymentMethodSelectorProps) => (
   <div className="space-y-3">
@@ -63,28 +65,28 @@ export const PaymentMethodSelector = ({
     </label>
     <div
       className={`grid gap-2 p-1.5 bg-muted/5 rounded-3xl border border-border/50 ${
-        polkadotEnabled && showDotMethod ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'
+        polkadotEnabled && showCryptoMethod ? 'grid-cols-3 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'
       }`}
     >
       <PaymentMethodButton method="cash" selected={selectedMethod === 'cash'} onClick={() => onSelectMethod('cash')} icon={Banknote} label="Cash" />
       <PaymentMethodButton method="bank" selected={selectedMethod === 'bank'} onClick={() => onSelectMethod('bank')} icon={Building2} label="Bank" />
       <PaymentMethodButton method="paypal" selected={selectedMethod === 'paypal'} onClick={() => onSelectMethod('paypal')} icon={CreditCard} label="PayPal" />
       <PaymentMethodButton method="twint" selected={selectedMethod === 'twint'} onClick={() => onSelectMethod('twint')} icon={Smartphone} label="TWINT" />
-      {polkadotEnabled && showDotMethod && (
+      {polkadotEnabled && showCryptoMethod && (
         <PaymentMethodButton
-          method="dot"
-          selected={selectedMethod === 'dot'}
+          method={cryptoLabel === 'USDC' ? 'usdc' : 'dot'}
+          selected={selectedMethod === (cryptoLabel === 'USDC' ? 'usdc' : 'dot')}
           onClick={() => {
-            if (isDotMethodEnabled) {
-              onSelectMethod('dot');
+            if (isCryptoMethodEnabled) {
+              onSelectMethod(cryptoLabel === 'USDC' ? 'usdc' : 'dot');
             } else {
               triggerHaptic('light');
-              onShowToast?.('Add a DOT wallet address for this member first', 'info');
+              onShowToast?.(`Add a ${cryptoLabel} wallet address for this member first`, 'info');
             }
           }}
-          disabled={!isDotMethodEnabled}
+          disabled={!isCryptoMethodEnabled}
           icon={Wallet}
-          label="DOT"
+          label={cryptoLabel}
           badge={!walletConnected ? (
             <span className="absolute top-2 right-2 w-2 h-2 bg-[var(--accent)] rounded-full animate-pulse" />
           ) : undefined}
@@ -92,19 +94,19 @@ export const PaymentMethodSelector = ({
       )}
     </div>
 
-    {showDotMethod && !walletConnected && (
+    {showCryptoMethod && !walletConnected && (
       <div className="mt-2 p-3 rounded-xl bg-[var(--accent)]/5 border border-[var(--accent)]/10 flex gap-3 items-center">
         <div className="p-2 rounded-full bg-[var(--accent)]/10 text-[var(--accent)]">
           <Wallet className="w-4 h-4" />
         </div>
         <p className="text-xs font-medium text-[var(--accent)]">
-          Connect wallet to pay with DOT — fast, secure, & on-chain
+          Connect wallet to pay with {cryptoLabel} on-chain
         </p>
       </div>
     )}
-    {showDotMethod && walletConnected && !isDotMethodEnabled && (
+    {showCryptoMethod && walletConnected && !isCryptoMethodEnabled && (
       <p className="text-caption text-secondary mt-2 text-center">
-        Add a wallet address for this person in Members to complete DOT settlement.
+        Add a wallet address for this person in Members to complete {cryptoLabel} settlement.
       </p>
     )}
   </div>

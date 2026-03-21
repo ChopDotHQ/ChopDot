@@ -1,7 +1,7 @@
-import type { HardhatUserConfig } from "hardhat/config";
-import { vars } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-import "@parity/hardhat-polkadot";
+import type { HardhatUserConfig } from 'hardhat/config.js';
+import { vars } from 'hardhat/config.js';
+import '@nomicfoundation/hardhat-toolbox';
+import '@parity/hardhat-polkadot';
 
 const rawPrivateKey = vars.has("PRIVATE_KEY") ? vars.get("PRIVATE_KEY") : "";
 const normalizedPrivateKey = rawPrivateKey
@@ -14,12 +14,11 @@ const accounts = normalizedPrivateKey ? [normalizedPrivateKey] : [];
 const config: HardhatUserConfig = {
   solidity: "0.8.28",
   resolc: {
+    version: '0.3.0',
     compilerSource: "npm",
   },
   networks: {
-    hardhat: {
-      polkavm: true,
-    },
+    hardhat: {},
     polkadotHubTestnet: {
       chainId: 420420417,
       url: "https://services.polkadothub-rpc.com/testnet",

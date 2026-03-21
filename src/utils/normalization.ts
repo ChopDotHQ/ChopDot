@@ -8,23 +8,34 @@ export const normalizeMembers = (members: any[]): Member[] =>
         role: m.role === "Owner" ? "Owner" : "Member",
         status: m.status === "pending" ? "pending" : "active",
         address: m.address ?? undefined,
+        evmAddress: m.evmAddress ?? undefined,
         verified: m.verified,
     }));
 
 export const normalizeExpenses = (expenses: any[], fallbackCurrency: string): Expense[] =>
-    (expenses || []).map((e) => ({
+    (expenses || []).map((e) => {
+        const rawSplit = Array.isArray(e.split) ? e.split : [];
+        const splitTotal = rawSplit.reduce(
+            (sum: number, split: { amount?: number }) => sum + Number(split.amount ?? 0),
+            0,
+        );
+        const normalizedAmount = Number(e.amount ?? 0);
+        const amount = normalizedAmount > 0 ? normalizedAmount : splitTotal;
+
+        return {
         id: e.id,
-        amount: Number(e.amount ?? 0),
+        amount,
         currency: e.currency ?? fallbackCurrency ?? "USD",
         paidBy: e.paidBy ?? "owner",
         memo: e.memo ?? e.description ?? "",
         date: e.date ?? new Date().toISOString(),
-        split: Array.isArray(e.split) ? e.split : [],
+        split: rawSplit,
         attestations: Array.isArray(e.attestations) ? e.attestations : [],
         hasReceipt: Boolean(e.hasReceipt),
         attestationTxHash: e.attestationTxHash,
         attestationTimestamp: e.attestationTimestamp,
-    }));
+        };
+    });
 
 export const normalizeConfirmations = (
     confirmations?: Map<string, unknown> | Record<string, unknown>,
@@ -65,12 +76,19 @@ export const normalizeHistory = (history: any[]): PotHistory[] =>
                     toMemberId: h.toMemberId,
                     fromAddress: h.fromAddress,
                     toAddress: h.toAddress,
-                    amountDot: h.amountDot ?? "0",
+                    amountDot: h.amountDot,
+                    amountUsdc: h.amountUsdc,
+                    assetId: h.assetId,
                     txHash: h.txHash ?? "",
                     block: h.block,
                     status,
                     subscan: h.subscan ?? "",
                     note: h.note,
+                    closeoutId: h.closeoutId,
+                    closeoutLegIndex: h.closeoutLegIndex,
+                    proofTxHash: h.proofTxHash,
+                    proofStatus: h.proofStatus,
+                    proofContract: h.proofContract,
                 };
             }
             if (h.type === "remark_checkpoint") {

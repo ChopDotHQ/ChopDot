@@ -35,6 +35,7 @@ export function buildPotMetadata(pot: Pot, lastEditAt: string): Record<string, u
     baseCurrency: pot.baseCurrency,
     members: pot.members ?? [],
     history: pot.history ?? [],
+    closeouts: pot.closeouts ?? [],
     budget: pot.budget ?? null,
     budgetEnabled: pot.budgetEnabled ?? false,
     checkpointEnabled: pot.checkpointEnabled ?? true,
@@ -98,6 +99,7 @@ export function mapPotRow(
         ...(member as any),
         id,
         name,
+        evmAddress: typeof member.evmAddress === 'string' ? member.evmAddress : undefined,
       };
     });
 
@@ -130,6 +132,29 @@ export function mapPotRow(
     }
     return entry as any;
   }) as unknown as Pot['history'];
+
+  const rawCloseouts = Array.isArray(metadata.closeouts) ? (metadata.closeouts as Array<Record<string, unknown>>) : [];
+  const closeoutsFromMetadata: Pot['closeouts'] = rawCloseouts.map((closeout) => {
+    const participantMemberIds = Array.isArray(closeout.participantMemberIds)
+      ? (closeout.participantMemberIds as string[]).map((id) => mapMemberId(id))
+      : [];
+    const legs = Array.isArray(closeout.legs)
+      ? (closeout.legs as Array<Record<string, unknown>>).map((leg) => ({
+        ...(leg as any),
+        fromMemberId: typeof leg.fromMemberId === 'string' ? mapMemberId(leg.fromMemberId) : leg.fromMemberId,
+        toMemberId: typeof leg.toMemberId === 'string' ? mapMemberId(leg.toMemberId) : leg.toMemberId,
+      }))
+      : [];
+    return {
+      ...(closeout as any),
+      createdByMemberId:
+        typeof closeout.createdByMemberId === 'string'
+          ? mapMemberId(closeout.createdByMemberId)
+          : closeout.createdByMemberId,
+      participantMemberIds,
+      legs,
+    };
+  }) as unknown as Pot['closeouts'];
 
   const currentCheckpoint = (() => {
     const checkpoint = metadata.currentCheckpoint as Record<string, unknown> | undefined;
@@ -197,6 +222,7 @@ export function mapPotRow(
     members: mergedMembers.length > 0 ? mergedMembers : [{ ...DEFAULT_MEMBER }],
     expenses,
     history: historyFromMetadata,
+    closeouts: closeoutsFromMetadata,
     budget: (row.budget ?? metadata.budget ?? null) as Pot['budget'],
     budgetEnabled: (row.budget_enabled ?? metadata.budgetEnabled ?? false) as Pot['budgetEnabled'],
     checkpointEnabled: (row.checkpoint_enabled ?? metadata.checkpointEnabled ?? true) as Pot['checkpointEnabled'],

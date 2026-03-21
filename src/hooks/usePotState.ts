@@ -12,6 +12,7 @@ import {
   normalizeExpenses,
   normalizeHistory,
 } from '../utils/normalization';
+import { mergeTrackedPotRecovery } from '../services/closeout/trackedRecovery';
 
 type AccountLike = {
   status: string;
@@ -68,6 +69,7 @@ export const usePotState = ({
 
   const notifyPotRefresh = useCallback((potId: string) => {
     window.dispatchEvent(new CustomEvent('pot-refresh', { detail: { potId } }));
+    window.dispatchEvent(new CustomEvent('pots-refresh'));
   }, []);
 
   const dataSourceType = import.meta.env.VITE_DATA_SOURCE || 'local';
@@ -92,6 +94,34 @@ export const usePotState = ({
 
     (async () => {
       try {
+        const seededPots = localStorage.getItem('chopdot_e2e_seed_pots');
+        const seededSettlements = localStorage.getItem('chopdot_e2e_seed_settlements');
+        if (seededPots) {
+          try {
+            const parsedSeedPots = JSON.parse(seededPots);
+            if (Array.isArray(parsedSeedPots)) {
+              localStorage.setItem('chopdot_pots', JSON.stringify(parsedSeedPots));
+              localStorage.setItem('chopdot_pots_backup', JSON.stringify(parsedSeedPots));
+              setPots(parsedSeedPots as Pot[]);
+              if (seededSettlements) {
+                const parsedSeedSettlements = JSON.parse(seededSettlements);
+                if (Array.isArray(parsedSeedSettlements)) {
+                  localStorage.setItem('chopdot_settlements', JSON.stringify(parsedSeedSettlements));
+                  setSettlements(parsedSeedSettlements as Settlement[]);
+                }
+              } else {
+                localStorage.removeItem('chopdot_settlements');
+                setSettlements([]);
+              }
+              setHasLoadedInitialData(true);
+              window.dispatchEvent(new CustomEvent('pots-refresh'));
+              return;
+            }
+          } catch (seedError) {
+            console.error('[App] Failed to load E2E seed data:', seedError);
+          }
+        }
+
         const savedPots = localStorage.getItem('chopdot_pots');
         if (savedPots && savedPots.length < 1000000) {
           const parsed = JSON.parse(savedPots);
@@ -373,13 +403,13 @@ export const usePotState = ({
   const fallbackRemotePot = useMemo(
     () =>
       usingSupabaseSource && currentPotId
-        ? remotePots.find((p) => p.id === currentPotId) || null
+        ? mergeTrackedPotRecovery(remotePots.find((p) => p.id === currentPotId) || null) || null
         : null,
     [usingSupabaseSource, currentPotId, remotePots],
   );
 
   const currentPot = usingSupabaseSource
-    ? ((remoteCurrentPot ?? fallbackRemotePot) as Pot | null | undefined)
+    ? (mergeTrackedPotRecovery((remoteCurrentPot ?? fallbackRemotePot) as Pot | null | undefined) as Pot | null | undefined)
     : (pots.find((p) => p.id === currentPotId) as Pot | undefined);
 
   const lastPotRef = useRef<Pot | null>(null);
@@ -408,7 +438,7 @@ export const usePotState = ({
     const serialized = JSON.stringify(remotePots);
     if (remoteSyncSnapshot.current === serialized) return;
     remoteSyncSnapshot.current = serialized;
-    setPots(remotePots as unknown as Pot[]);
+    setPots(remotePots.map((pot) => mergeTrackedPotRecovery(pot) ?? pot) as unknown as Pot[]);
   }, [remotePots, usingSupabaseSource, authLoading, isAuthenticated]);
 
   // --- Toast when pot not found ---

@@ -21,7 +21,7 @@ const VALID_SCREEN_TYPES = [
   'activity-home', 'pots-home', 'settlements-home', 'people-home', 'you-tab',
   'settings', 'crust-storage', 'crust-auth-setup', 'payment-methods', 'insights',
   'create-pot', 'pot-home', 'add-expense', 'edit-expense', 'expense-detail',
-  'settle-selection', 'settle-home', 'settlement-history', 'settlement-confirmation',
+  'closeout-review', 'settle-selection', 'settle-home', 'settlement-history', 'settlement-confirmation',
   'member-detail', 'add-contribution', 'withdraw-funds', 'checkpoint-status',
   'request-payment', 'receive-qr', 'import-pot',
 ];
@@ -46,6 +46,13 @@ export function useScreenValidation({
     if (currentPotLoading) return;
 
     const { type: screenType } = screen;
+    const routePotId = typeof screen.potId === 'string' ? screen.potId : null;
+
+    // Pot-scoped routes can render one frame before currentPotId catches up to
+    // the route. Treat that as an in-flight navigation, not an invalid screen.
+    if (routePotId && currentPotId !== routePotId) {
+      return;
+    }
 
     if (POT_REQUIRED_SCREENS.includes(screenType) && !currentPot) {
       reset({ type: 'pots-home' });

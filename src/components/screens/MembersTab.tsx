@@ -15,6 +15,7 @@ interface Member {
   role: "Owner" | "Member";
   status: "active" | "pending";
   address?: string;
+  evmAddress?: string;
   verified?: boolean;
 }
 
@@ -32,7 +33,7 @@ interface MembersTabProps {
   baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
   onAddMember: () => void;
   onRemoveMember: (id: string) => void;
-  onUpdateMember?: (member: { id: string; name: string; address?: string; verified?: boolean }) => void;
+  onUpdateMember?: (member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean }) => void;
   onCopyInviteLink?: () => void;
   onResendInvite?: (memberId: string) => void;
   onRevokeInvite?: (memberId: string) => void;
@@ -122,6 +123,11 @@ export function MembersTab({
           const isPositive = balance >= 0;
           const amountColor = isPositive ? 'var(--success)' : 'var(--ink)';
           const showMenu = openMenuId === member.id;
+          const canEditMember = Boolean(onUpdateMember);
+          const canResendInvite = member.status === "pending" && Boolean(onResendInvite);
+          const canRevokeInvite = member.status === "pending" && Boolean(onRevokeInvite);
+          const canRemoveMember = member.role !== "Owner";
+          const canShowMenu = canEditMember || canResendInvite || canRevokeInvite || canRemoveMember;
 
           return (
             <div key={member.id} className="relative">
@@ -198,33 +204,60 @@ export function MembersTab({
                       )}
 
                       {/* Wallet Address Display - Show readiness or CTA */}
-                      {normalizedAddress ? (
+                      {normalizedAddress || member.evmAddress ? (
                         <div className="flex flex-wrap items-center gap-2 mt-1">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-[11px] text-green-700 dark:text-green-400">
-                            <CheckCircle className="w-3 h-3" />
-                            DOT wallet ready
-                          </span>
-                          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
-                            <span className="text-micro font-mono text-foreground">
-                              {normalizedAddress.slice(0, 8)}...{normalizedAddress.slice(-6)}
+                          {normalizedAddress && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-[11px] text-green-700 dark:text-green-400">
+                              <CheckCircle className="w-3 h-3" />
+                              DOT wallet ready
                             </span>
-                            <button
-                              onClick={async (e) => {
-                                e.stopPropagation();
-                                await copyWithToast(normalizedAddress, 'Address copied', (msg) => toast.success(msg));
-                              }}
-                              className="p-0.5 hover:bg-muted rounded transition-colors"
-                              title="Copy address"
-                            >
-                              <Copy className="w-3 h-3 text-secondary" />
-                            </button>
-                            {member.verified && (
-                              <div className="flex items-center gap-0.5 px-1 py-0.5 bg-green-500/20 rounded text-micro text-green-600 dark:text-green-400">
-                                <CheckCircle className="w-2.5 h-2.5" />
-                                <span>Verified</span>
-                              </div>
-                            )}
-                          </div>
+                          )}
+                          {member.evmAddress && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 text-[11px] text-blue-700 dark:text-blue-400">
+                              <CheckCircle className="w-3 h-3" />
+                              PVM wallet ready
+                            </span>
+                          )}
+                          {normalizedAddress && (
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
+                              <span className="text-micro font-mono text-foreground">
+                                {normalizedAddress.slice(0, 8)}...{normalizedAddress.slice(-6)}
+                              </span>
+                              <button
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  await copyWithToast(normalizedAddress, 'Address copied', (msg) => toast.success(msg));
+                                }}
+                                className="p-0.5 hover:bg-muted rounded transition-colors"
+                                title="Copy address"
+                              >
+                                <Copy className="w-3 h-3 text-secondary" />
+                              </button>
+                              {member.verified && (
+                                <div className="flex items-center gap-0.5 px-1 py-0.5 bg-green-500/20 rounded text-micro text-green-600 dark:text-green-400">
+                                  <CheckCircle className="w-2.5 h-2.5" />
+                                  <span>Verified</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          {member.evmAddress && (
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
+                              <span className="text-micro font-mono text-foreground">
+                                {member.evmAddress.slice(0, 8)}...{member.evmAddress.slice(-6)}
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  void navigator.clipboard.writeText(member.evmAddress || '');
+                                }}
+                                className="p-0.5 hover:bg-muted rounded transition-colors"
+                                title="Copy EVM address"
+                              >
+                                <Copy className="w-3 h-3 text-secondary" />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <button
@@ -286,7 +319,7 @@ export function MembersTab({
                     )}
 
                     {/* Menu Button (for non-owners) */}
-                    {member.role !== "Owner" && (
+                    {canShowMenu && (
                       <button
                         onClick={() => setOpenMenuId(showMenu ? null : member.id)}
                         className="p-1.5 hover:bg-muted/30 rounded-lg transition-colors"
@@ -312,7 +345,7 @@ export function MembersTab({
                     className="absolute right-0 top-full mt-1 w-48 card p-1 z-50"
                     style={{ boxShadow: 'var(--shadow-fab)' }}
                   >
-                    {onUpdateMember && (
+                    {canEditMember && (
                       <button
                         onClick={() => {
                           setEditingMember(member);
@@ -325,10 +358,10 @@ export function MembersTab({
                       </button>
                     )}
 
-                    {member.status === "pending" && onResendInvite && (
+                    {canResendInvite && (
                       <button
                         onClick={() => {
-                          onResendInvite(member.id);
+                          onResendInvite?.(member.id);
                           setOpenMenuId(null);
                         }}
                         className="w-full px-3 py-2 text-left rounded-lg hover:bg-muted/30 transition-colors flex items-center gap-2"
@@ -338,10 +371,10 @@ export function MembersTab({
                       </button>
                     )}
 
-                    {member.status === "pending" && onRevokeInvite && (
+                    {canRevokeInvite && (
                       <button
                         onClick={() => {
-                          onRevokeInvite(member.id);
+                          onRevokeInvite?.(member.id);
                           setOpenMenuId(null);
                         }}
                         className="w-full px-3 py-2 text-left rounded-lg hover:bg-muted/30 transition-colors flex items-center gap-2"
@@ -352,18 +385,20 @@ export function MembersTab({
                       </button>
                     )}
 
-                    <button
-                      onClick={() => {
-                        onRemoveMember(member.id);
-                        setOpenMenuId(null);
-                      }}
-                      className="w-full px-3 py-2 text-left rounded-lg hover:bg-destructive/10 transition-colors flex items-center gap-2"
-                    >
-                      <UserMinus className="w-4 h-4" style={{ color: 'var(--danger)' }} />
-                      <span className="text-body" style={{ color: 'var(--danger)' }}>
-                        Remove member
-                      </span>
-                    </button>
+                    {canRemoveMember && (
+                      <button
+                        onClick={() => {
+                          onRemoveMember(member.id);
+                          setOpenMenuId(null);
+                        }}
+                        className="w-full px-3 py-2 text-left rounded-lg hover:bg-destructive/10 transition-colors flex items-center gap-2"
+                      >
+                        <UserMinus className="w-4 h-4" style={{ color: 'var(--danger)' }} />
+                        <span className="text-body" style={{ color: 'var(--danger)' }}>
+                          Remove member
+                        </span>
+                      </button>
+                    )}
                   </div>
                 </>
               )}

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuth, type AuthMethod, type OAuthProvider } from '../../../contexts/AuthContext';
 import { useAccount } from '../../../contexts/AccountContext';
 import { signPolkadotMessage } from '../../../utils/walletAuth';
@@ -11,6 +11,12 @@ interface UseSignInHandlersProps {
   getWalletAuthMessage: (addr: string) => Promise<string>;
 }
 
+interface PendingExtensionAccount {
+  address: string;
+  name?: string;
+  source?: string;
+}
+
 export function useSignInHandlers({
   setLoading,
   setError,
@@ -19,6 +25,8 @@ export function useSignInHandlers({
 }: UseSignInHandlersProps) {
   const { login, loginWithOAuth: loginWithOAuthAction, loginAsGuest: loginAsGuestAction } = useAuth();
   const account = useAccount();
+  const [pendingExtensionAccounts, setPendingExtensionAccounts] = useState<PendingExtensionAccount[]>([]);
+  const [pendingExtensionWalletName, setPendingExtensionWalletName] = useState<string | null>(null);
 
   const handleOAuthLogin = useCallback(async (provider: OAuthProvider) => {
     try {
@@ -142,7 +150,7 @@ export function useSignInHandlers({
     sources: string[];
     walletDisplayName: string;
     notFoundMessage: string;
-  }) => {
+    }) => {
     try {
       triggerHaptic('light');
       setLoading(true);
@@ -151,15 +159,30 @@ export function useSignInHandlers({
       const { web3Enable, web3Accounts } = await import('@polkadot/extension-dapp');
       await web3Enable('ChopDot');
       const accounts = await web3Accounts();
-      const matchedAccount = accounts.find((acc) => {
+      const matchedAccounts = accounts.filter((acc) => {
         const metaSource = (acc.meta.source || '').toLowerCase();
         return sources.some((source) => metaSource === source || metaSource === source.replace('-js', ''));
       });
+      if (matchedAccounts.length === 0) throw new Error(notFoundMessage);
+
+      if (matchedAccounts.length > 1) {
+        setPendingExtensionAccounts(
+          matchedAccounts.map((matchedAccount) => ({
+            address: matchedAccount.address,
+            name: matchedAccount.meta.name,
+            source: matchedAccount.meta.source,
+          })),
+        );
+        setPendingExtensionWalletName(walletDisplayName);
+        return;
+      }
+
+      const matchedAccount = matchedAccounts[0];
       if (!matchedAccount) throw new Error(notFoundMessage);
 
       const address = matchedAccount.address;
       try {
-        await account.connectExtension(address);
+        await account.connectExtension(address, false, matchedAccount.meta.source);
       } catch (connectionError) {
         console.warn(`[Login] ${walletDisplayName} auto-connect issue (continuing anyway):`, connectionError);
       }
@@ -179,6 +202,44 @@ export function useSignInHandlers({
       setLoading(false);
     }
   }, [login, account, getWalletAuthMessage, setLoading, setError, onLoginSuccess]);
+
+  const completeExtensionLogin = useCallback(async (selectedAccount: PendingExtensionAccount) => {
+    try {
+      triggerHaptic('light');
+      setLoading(true);
+      setError(null);
+
+      try {
+        await account.connectExtension(selectedAccount.address, false, selectedAccount.source);
+      } catch (connectionError) {
+        console.warn(
+          `[Login] ${pendingExtensionWalletName || 'extension'} account connect issue (continuing anyway):`,
+          connectionError,
+        );
+      }
+
+      const message = await getWalletAuthMessage(selectedAccount.address);
+      const signature = await signPolkadotMessage(selectedAccount.address, message);
+      await login('polkadot', { type: 'wallet', address: selectedAccount.address, signature, chain: 'polkadot' });
+      triggerHaptic('medium');
+      setPendingExtensionAccounts([]);
+      setPendingExtensionWalletName(null);
+      onLoginSuccess?.();
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(`Failed to connect ${pendingExtensionWalletName || 'wallet'}`);
+      console.error('[Login] Extension account login failed:', error);
+      setError(error.message || 'Failed to connect wallet');
+      triggerHaptic('error');
+    } finally {
+      setLoading(false);
+    }
+  }, [account, getWalletAuthMessage, login, onLoginSuccess, pendingExtensionWalletName, setError, setLoading]);
+
+  const cancelExtensionAccountSelection = useCallback(() => {
+    setPendingExtensionAccounts([]);
+    setPendingExtensionWalletName(null);
+    setLoading(false);
+  }, [setLoading]);
 
   const handleWalletConnectModal = useCallback(async () => {
     try {
@@ -226,6 +287,10 @@ export function useSignInHandlers({
     handleGuestLogin,
     handleWalletLogin,
     loginWithExtension,
+    pendingExtensionAccounts,
+    pendingExtensionWalletName,
+    completeExtensionLogin,
+    cancelExtensionAccountSelection,
     handleWalletConnectModal,
   };
 }

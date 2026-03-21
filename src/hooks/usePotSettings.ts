@@ -8,6 +8,7 @@ const UUID_LIKE_REGEX =
 
 type PotServiceLike = {
   updatePot: (id: string, updates: Record<string, unknown>) => Promise<unknown>;
+  updatePotSettings?: (id: string, updates: Record<string, unknown>) => Promise<unknown>;
 };
 
 type UsePotSettingsParams = {
@@ -82,7 +83,11 @@ export const usePotSettings = ({
             updateDto.name = trimmed;
           }
 
-          await potService.updatePot(potId, updateDto);
+          if (potService.updatePotSettings) {
+            await potService.updatePotSettings(potId, updateDto);
+          } else {
+            await potService.updatePot(potId, updateDto);
+          }
           logDev('[DataLayer] Pot settings updated via service', {
             potId,
             keys: Object.keys(updateDto),

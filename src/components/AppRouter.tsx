@@ -2,7 +2,7 @@ export type { AppRouterProps } from '../routing/screen-props/types';
 import type { AppRouterProps } from '../routing/screen-props/types';
 
 import { renderActivityHome, renderPotsHome, renderPeopleHome, renderYouTab } from '../routing/screen-props/tab-screens';
-import { renderPotHome, renderAddExpense, renderEditExpense, renderExpenseDetail } from '../routing/screen-props/pot-screens';
+import { renderPotHome, renderAddExpense, renderEditExpense, renderExpenseDetail, renderCloseoutReview } from '../routing/screen-props/pot-screens';
 import { renderSettleSelection, renderSettleHome, renderSettlementHistory, renderSettlementConfirmation } from '../routing/screen-props/settle-screens';
 import {
     renderSettings, renderPaymentMethods, renderInsights, renderMemberDetail,
@@ -20,6 +20,7 @@ const screenRenderers: Record<string, (ctx: AppRouterProps) => React.ReactElemen
     "add-expense": renderAddExpense,
     "edit-expense": renderEditExpense,
     "expense-detail": renderExpenseDetail,
+    "closeout-review": renderCloseoutReview,
     "settle-selection": renderSettleSelection,
     "settle-home": renderSettleHome,
     "settlement-history": renderSettlementHistory,

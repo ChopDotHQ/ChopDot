@@ -11,9 +11,29 @@ const ALLOWED_ORIGINS = [
   Deno.env.get("ALLOWED_ORIGIN") ?? "",
 ].filter(Boolean);
 
+const NONCE_TTL_MS = 2 * 60 * 1000;
+const NONCE_REQUEST_COOLDOWN_MS = 30 * 1000;
+
+function isAllowedOrigin(origin: string): boolean {
+  return ALLOWED_ORIGINS.includes(origin) ||
+    origin.endsWith(".vercel.app") ||
+    origin.startsWith("http://localhost:") ||
+    origin.startsWith("http://127.0.0.1:") ||
+    origin.startsWith("https://localhost:");
+}
+
+function getOriginHost(origin: string): string {
+  if (!origin) return DEFAULT_DOMAIN;
+  try {
+    return new URL(origin).host || DEFAULT_DOMAIN;
+  } catch {
+    return DEFAULT_DOMAIN;
+  }
+}
+
 function getCorsHeaders(req: Request) {
   const origin = req.headers.get("Origin") ?? "";
-  const allowed = ALLOWED_ORIGINS.includes(origin) || origin.endsWith(".vercel.app");
+  const allowed = isAllowedOrigin(origin);
   return {
     "Access-Control-Allow-Origin": allowed ? origin : ALLOWED_ORIGINS[0] ?? "",
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -52,8 +72,13 @@ const deriveWalletEmail = (address: string) => {
   return `wallet.user.${sanitized}@${DEFAULT_DOMAIN}`.toLowerCase();
 };
 
-const buildMessage = (nonce: string) =>
-  `Sign this message to login to ChopDot.\nNonce: ${nonce}`;
+const buildMessage = (nonce: string, domain: string, chain: "polkadot") =>
+  [
+    "Sign this message to login to ChopDot.",
+    `Domain: ${domain}`,
+    `Chain: ${chain}`,
+    `Nonce: ${nonce}`,
+  ].join("\n");
 
 let _corsHeaders: Record<string, string> = {};
 const json = (data: unknown, status = 200) =>
@@ -64,12 +89,30 @@ const json = (data: unknown, status = 200) =>
 
 // --- POST /request-nonce ---
 
-async function handleRequestNonce(body: RequestNoncePayload) {
+async function handleRequestNonce(req: Request, body: RequestNoncePayload) {
   const address = body.address?.trim();
   if (!address) return json({ error: "address required" }, 400);
+  const origin = req.headers.get("Origin") ?? "";
+  if (!isAllowedOrigin(origin)) {
+    return json({ error: "origin not allowed" }, 403);
+  }
+
+  const { data: existingNonce, error: lookupError } = await supabaseAdmin
+    .from("auth_nonces")
+    .select("created_at,expires_at")
+    .eq("address", address)
+    .maybeSingle();
+
+  if (lookupError) return json({ error: lookupError.message }, 500);
+  if (
+    existingNonce?.created_at &&
+    Date.now() - new Date(existingNonce.created_at).getTime() < NONCE_REQUEST_COOLDOWN_MS
+  ) {
+    return json({ error: "nonce requested too recently" }, 429);
+  }
 
   const nonce = crypto.randomUUID();
-  const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+  const expiresAt = new Date(Date.now() + NONCE_TTL_MS).toISOString();
 
   const { error } = await supabaseAdmin
     .from("auth_nonces")
@@ -81,7 +124,7 @@ async function handleRequestNonce(body: RequestNoncePayload) {
 
 // --- POST /verify (Polkadot only — EVM uses native Supabase Web3 auth) ---
 
-async function handleVerify(body: VerifyPayload) {
+async function handleVerify(req: Request, body: VerifyPayload) {
   // Parse signature
   const signature = typeof body.signature === "string"
     ? body.signature.trim()
@@ -93,6 +136,10 @@ async function handleVerify(body: VerifyPayload) {
 
   const address = typeof body.address === "string" ? body.address.trim() : "";
   if (!address || !body.chain) return json({ error: "address and chain required" }, 400);
+  const origin = req.headers.get("Origin") ?? "";
+  if (!isAllowedOrigin(origin)) {
+    return json({ error: "origin not allowed" }, 403);
+  }
 
   if (body.chain !== "polkadot") {
     return json({ error: "Only Polkadot chain supported here. Use native Supabase Web3 auth for Ethereum." }, 400);
@@ -113,7 +160,7 @@ async function handleVerify(body: VerifyPayload) {
   }
 
   // --- Polkadot signature verification ---
-  const message = buildMessage(nonceRow.nonce);
+  const message = buildMessage(nonceRow.nonce, getOriginHost(origin), body.chain);
   let valid = false;
   try {
     await cryptoWaitReady();
@@ -239,10 +286,10 @@ serve(async (req) => {
   try {
     const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
     if (pathname.endsWith("/request-nonce")) {
-      return await handleRequestNonce(body as RequestNoncePayload);
+      return await handleRequestNonce(req, body as RequestNoncePayload);
     }
     if (pathname.endsWith("/verify")) {
-      return await handleVerify(body as VerifyPayload);
+      return await handleVerify(req, body as VerifyPayload);
     }
     return json({ error: "not found" }, 404);
   } catch (error) {

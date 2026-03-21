@@ -9,7 +9,7 @@ interface PotDataMergeProps {
   potType: 'expense' | 'savings';
   potName: string;
   baseCurrency: string;
-  members: Array<{ id: string; name: string; role: string; status: string; address?: string; verified?: boolean }>;
+  members: Array<{ id: string; name: string; role: string; status: string; address?: string; evmAddress?: string; verified?: boolean }>;
   expenses: Array<{ id: string; amount: number; currency?: string; paidBy: string; memo?: string; date?: string; split?: Array<{ memberId: string; amount: number }>; attestations?: string[]; hasReceipt?: boolean; receiptUrl?: string }>;
   budget?: number;
   budgetEnabled?: boolean;
@@ -27,6 +27,7 @@ export interface NormalizedMember {
   role: 'Owner' | 'Member';
   status: 'active' | 'pending';
   address?: string;
+  evmAddress?: string;
   verified?: boolean;
 }
 
@@ -73,6 +74,7 @@ export function usePotDataMerge(props: PotDataMergeProps) {
       role: (m.role === 'Owner' || m.role === 'Member' ? m.role : 'Member') as 'Owner' | 'Member',
       status: (m.status === 'active' || m.status === 'pending' ? m.status : 'active') as 'active' | 'pending',
       address: m.address ?? undefined,
+      evmAddress: (m as any).evmAddress ?? undefined,
       verified: m.verified ?? false,
     }));
   }, [pot?.members, props.members]);

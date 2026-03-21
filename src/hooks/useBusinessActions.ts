@@ -51,6 +51,8 @@ type UseBusinessActionsParams = {
   setNewPot: Dispatch<SetStateAction<Partial<Pot>>>;
   potService: {
     createPot: (input: any) => Promise<any>;
+    updatePot: (id: string, updates: Record<string, unknown>) => Promise<any>;
+    deletePot: (id: string) => Promise<void>;
   };
   usingSupabaseSource: boolean;
   pots: Pot[];
@@ -178,7 +180,7 @@ export const useBusinessActions = ({
     showToast,
   ]);
 
-  const addExpenseToPot = useCallback((potId: string, data: ExpenseInput) => {
+  const addExpenseToPot = useCallback(async (potId: string, data: ExpenseInput) => {
     if (!potId) return;
 
     const expense: Expense = {
@@ -221,13 +223,10 @@ export const useBusinessActions = ({
       }),
     );
 
-    (async () => {
-      try {
-        if (!shouldAttemptRemotePotWrite(potId, usingSupabaseSource)) {
-          logDev("[DataLayer] Skipping remote addExpense for local-only pot id", { potId });
-          return;
-        }
-
+    try {
+      if (!shouldAttemptRemotePotWrite(potId, usingSupabaseSource)) {
+        logDev("[DataLayer] Skipping remote addExpense for local-only pot id", { potId });
+      } else {
         const createExpenseDTO = {
           potId,
           amount: expense.amount,
@@ -243,22 +242,24 @@ export const useBusinessActions = ({
         await expenseService.addExpense(potId, createExpenseDTO);
         logDev("[DataLayer] Expense added via service", { potId, expenseId: expense.id });
         notifyPotRefresh(potId);
-      } catch (error) {
-        warnDev("[DataLayer] Service addExpense failed", error);
-        const message = getErrorMessage(error);
-        if (isPotNotFoundError(message)) {
-          showToast("Saved locally only. Remote pot unavailable.", "error");
-          return;
-        }
-        showToast(`Saved locally only (sync failed): ${message}`, "error");
       }
-    })();
 
-    replace({ type: "pot-home", potId });
-    showToast("Expense added successfully!", "success");
+      replace({ type: "pot-home", potId });
+      showToast("Expense added successfully!", "success");
+    } catch (error) {
+      warnDev("[DataLayer] Service addExpense failed", error);
+      const message = getErrorMessage(error);
+      if (isPotNotFoundError(message)) {
+        replace({ type: "pot-home", potId });
+        showToast("Saved locally only. Remote pot unavailable.", "error");
+        return;
+      }
+      replace({ type: "pot-home", potId });
+      showToast(`Saved locally only (sync failed): ${message}`, "error");
+    }
   }, [expenseService, notifyPotRefresh, pots, replace, setPots, showToast, usingSupabaseSource]);
 
-  const updateExpense = useCallback((data: ExpenseInput) => {
+  const updateExpense = useCallback(async (data: ExpenseInput) => {
     if (!currentPotId || !currentExpenseId) return;
 
     setPots(
@@ -302,16 +303,13 @@ export const useBusinessActions = ({
       }),
     );
 
-    (async () => {
-      try {
-        if (!shouldAttemptRemotePotWrite(currentPotId, usingSupabaseSource)) {
-          logDev("[DataLayer] Skipping remote updateExpense for local-only pot id", {
-            potId: currentPotId,
-            expenseId: currentExpenseId,
-          });
-          return;
-        }
-
+    try {
+      if (!shouldAttemptRemotePotWrite(currentPotId, usingSupabaseSource)) {
+        logDev("[DataLayer] Skipping remote updateExpense for local-only pot id", {
+          potId: currentPotId,
+          expenseId: currentExpenseId,
+        });
+      } else {
         const updateExpenseDTO = {
           amount: data.amount,
           currency: data.currency,
@@ -326,19 +324,20 @@ export const useBusinessActions = ({
         await expenseService.updateExpense(currentPotId, currentExpenseId, updateExpenseDTO);
         logDev("[DataLayer] Expense updated via service", { potId: currentPotId, expenseId: currentExpenseId });
         notifyPotRefresh(currentPotId);
-      } catch (error) {
-        warnDev("[DataLayer] Service updateExpense failed", error);
-        const message = getErrorMessage(error);
-        if (isPotNotFoundError(message)) {
-          showToast("Saved locally only. Remote pot unavailable.", "error");
-          return;
-        }
-        showToast(`Saved locally only (sync failed): ${message}`, "error");
       }
-    })();
 
-    replace({ type: "pot-home", potId: currentPotId });
-    showToast("Expense updated!", "success");
+      replace({ type: "pot-home", potId: currentPotId });
+      showToast("Expense updated!", "success");
+    } catch (error) {
+      warnDev("[DataLayer] Service updateExpense failed", error);
+      const message = getErrorMessage(error);
+      replace({ type: "pot-home", potId: currentPotId });
+      if (isPotNotFoundError(message)) {
+        showToast("Saved locally only. Remote pot unavailable.", "error");
+        return;
+      }
+      showToast(`Saved locally only (sync failed): ${message}`, "error");
+    }
   }, [
     currentExpenseId,
     currentPotId,
@@ -521,6 +520,80 @@ export const useBusinessActions = ({
     }
   }, [logout, showToast]);
 
+  const archivePot = useCallback(async (potId: string) => {
+    const archiveTimestamp = new Date().toISOString();
+
+    setPots((prev) =>
+      prev.map((pot) =>
+        pot.id === potId
+          ? {
+              ...pot,
+              archived: true,
+              lastEditAt: archiveTimestamp,
+            }
+          : pot,
+      ),
+    );
+
+    setCurrentPotId((current) => (current === potId ? null : current));
+    replace({ type: "pots-home" });
+
+    try {
+      if (!shouldAttemptRemotePotWrite(potId, usingSupabaseSource)) {
+        logDev("[DataLayer] Skipping remote archivePot for local-only pot id", { potId });
+      } else {
+        await potService.updatePot(potId, {
+          archived: true,
+          lastEditAt: archiveTimestamp,
+        });
+        logDev("[DataLayer] Pot archived via service", { potId });
+        notifyPotRefresh(potId);
+      }
+      showToast("Pot archived", "success");
+    } catch (error) {
+      warnDev("[DataLayer] Service archivePot failed", error);
+      const message = getErrorMessage(error);
+      showToast(`Archived locally only (sync failed): ${message}`, "error");
+    }
+  }, [
+    notifyPotRefresh,
+    potService,
+    replace,
+    setCurrentPotId,
+    setPots,
+    showToast,
+    usingSupabaseSource,
+  ]);
+
+  const deletePot = useCallback(async (potId: string) => {
+    setPots((prev) => prev.filter((pot) => pot.id !== potId));
+    setCurrentPotId((current) => (current === potId ? null : current));
+    replace({ type: "pots-home" });
+
+    try {
+      if (!shouldAttemptRemotePotWrite(potId, usingSupabaseSource)) {
+        logDev("[DataLayer] Skipping remote deletePot for local-only pot id", { potId });
+      } else {
+        await potService.deletePot(potId);
+        logDev("[DataLayer] Pot deleted via service", { potId });
+        notifyPotRefresh(potId);
+      }
+      showToast("Pot deleted", "success");
+    } catch (error) {
+      warnDev("[DataLayer] Service deletePot failed", error);
+      const message = getErrorMessage(error);
+      showToast(`Deleted locally only (sync failed): ${message}`, "error");
+    }
+  }, [
+    notifyPotRefresh,
+    potService,
+    replace,
+    setCurrentPotId,
+    setPots,
+    showToast,
+    usingSupabaseSource,
+  ]);
+
   const updatePaymentMethodValue = useCallback((
     id: string,
     updates: Partial<PaymentMethod>,
@@ -636,6 +709,8 @@ export const useBusinessActions = ({
     batchAttestExpenses,
     handleLogout,
     handleDeleteAccount,
+    archivePot,
+    deletePot,
     updatePaymentMethodValue,
     setPreferredMethod,
     addContribution,

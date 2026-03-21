@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { CheckCircle } from 'lucide-react';
+import { BottomSheet } from '../BottomSheet';
 import { walletConnectLinks } from '../../config/wallet-connect-links';
 
 interface WalletConnectQRModalProps {
@@ -86,57 +87,44 @@ export function WalletConnectQRModal({
 
   return (
     <>
-      <div
-        className="fixed inset-0 z-40"
-        onClick={() => {
-          if (accountStatus !== 'connecting') onClose();
-        }}
-      />
-      <div
-        className="absolute right-0 top-full mt-2 w-[22rem] rounded-lg border bg-card shadow-lg z-50"
-        style={{ borderColor: 'var(--border)' }}
-      >
-        <div className="p-3 border-b" style={{ borderColor: 'var(--border)' }}>
-          <div className="text-sm font-semibold">Connect via WalletConnect</div>
-          <div className="text-[11px] opacity-70 mt-1">
+      <BottomSheet isOpen onClose={onClose} title="Connect via WalletConnect">
+        <div className="space-y-4">
+          <p className="text-sm text-secondary">
             {accountStatus === 'connecting'
-              ? 'Scan with Nova, SubWallet, or Talisman'
+              ? 'Scan with Nova, SubWallet, or Talisman.'
               : isConnected
-              ? 'Connected! Closing...'
+              ? 'Connected. Closing...'
               : accountError
               ? `Connection failed: ${accountError}`
               : 'Waiting for connection...'}
-          </div>
-        </div>
-        <div className="p-3">
+          </p>
           {accountError && (
-            <div className="mb-3 p-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+            <div className="card p-4 border border-red-200/70 dark:border-red-800">
               <div className="flex items-center gap-2 text-red-700 dark:text-red-300">
-                <span className="text-xs">{accountError}</span>
+                <span className="text-sm">{accountError}</span>
               </div>
             </div>
           )}
           {qrCode && (
-            <div className="flex justify-center mb-3 p-2 bg-white rounded-lg">
-              <img src={qrCode} alt="WalletConnect QR Code" className="w-56 h-56" />
+            <div className="card p-4">
+              <div className="rounded-2xl bg-white p-4 shadow-sm">
+                <img src={qrCode} alt="WalletConnect QR Code" className="mx-auto h-56 w-56 sm:h-64 sm:w-64" />
+              </div>
+              <p className="mt-3 text-center text-sm text-secondary">
+                Open your wallet, scan the code, and approve the connection.
+              </p>
             </div>
           )}
           {isConnected && (
-            <div className="mb-3 p-2 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+            <div className="card p-4 border border-green-200/70 dark:border-green-800">
               <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
                 <CheckCircle className="w-4 h-4" />
-                <span className="text-xs font-medium">Successfully connected!</span>
+                <span className="text-sm font-medium">Successfully connected.</span>
               </div>
             </div>
           )}
-          <button
-            className="w-full px-3 py-2 rounded-lg bg-accent text-white hover:opacity-90 transition-opacity disabled:opacity-50"
-            onClick={onClose}
-          >
-            {isConnected ? 'Close' : 'Cancel'}
-          </button>
         </div>
-      </div>
+      </BottomSheet>
       {isConnected && <AutoCloseQR onClose={onClose} />}
     </>
   );
