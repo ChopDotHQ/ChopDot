@@ -12,6 +12,18 @@ The product story stays consistent:
 
 **Strategy (ICP, roadmap narrative, competitors):** see [`docs/CHOPDOT_2030_STRATEGIC_PLAN.md`](docs/CHOPDOT_2030_STRATEGIC_PLAN.md) (search the repo for `CHOPDOT_2030_STRATEGIC_PLAN`).
 
+## AgentOps
+
+This repo has an active `AgentOps` workflow.
+
+- orientation: [`AGENTS.md`](AGENTS.md)
+- integration details: [`docs/AGENTOPS_INTEGRATION.md`](docs/AGENTOPS_INTEGRATION.md)
+- latest operator brief: [`docs/AGENTOPS_OPERATOR_BRIEF.md`](docs/AGENTOPS_OPERATOR_BRIEF.md)
+- latest task queue: [`docs/AGENTOPS_TASK_QUEUE.md`](docs/AGENTOPS_TASK_QUEUE.md)
+- real execution surface: `.knowns/tasks/`
+
+If you are a new thread or operator, start with `AGENTS.md` and work from synced `.knowns` tasks instead of treating generated artifacts as standalone truth.
+
 For the current release, ChopDot keeps everyday expense coordination offchain and adds an onchain closeout layer on Polkadot Hub:
 
 - final closeout snapshots are anchored onchain
@@ -342,3 +354,18 @@ The strongest claims we make are:
 
 The Docker and Cypress judge paths are simulated and are documented as such.
 They are retained as part of the project’s earlier hackathon history, not as the main proof path for the current release.
+
+## AgentOps
+
+ChopDot is wired into the shared `AgentOps` layer in `/Users/devinsonpena/Documents/AutoBots/agentops`.
+
+The current daily operator artifacts are:
+
+- `/Users/devinsonpena/ChopDot/artifacts/qa/chopdot_daily_brief.json`
+- `/Users/devinsonpena/ChopDot/docs/AGENTOPS_OPERATOR_BRIEF.md`
+- `/Users/devinsonpena/ChopDot/artifacts/qa/chopdot_operator_task_queue.json`
+- `/Users/devinsonpena/ChopDot/docs/AGENTOPS_TASK_QUEUE.md`
+
+Shared integration details live in:
+
+- `/Users/devinsonpena/ChopDot/docs/AGENTOPS_INTEGRATION.md`
