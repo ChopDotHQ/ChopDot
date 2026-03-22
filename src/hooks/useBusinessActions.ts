@@ -406,98 +406,6 @@ export const useBusinessActions = ({
     usingSupabaseSource,
   ]);
 
-  const attestExpense = useCallback((expenseId: string) => {
-    if (!currentPotId) return;
-
-    const pot = pots.find((p) => p.id === currentPotId);
-    const expense = pot?.expenses.find((e) => e.id === expenseId);
-
-    if (expense?.paidBy === "owner") {
-      showToast("You can't confirm your own expense", "error");
-      return;
-    }
-
-    const attestations = expense?.attestations ?? [];
-    const isConfirmed = Array.isArray(attestations) && (
-      (typeof attestations[0] === "string" && attestations.includes("owner")) ||
-      (typeof attestations[0] === "object" && attestations.some((a: any) => a.memberId === "owner"))
-    );
-
-    if (isConfirmed) {
-      showToast("You already confirmed this expense", "info");
-      return;
-    }
-
-    setPots(
-      pots.map((p) =>
-        p.id === currentPotId
-          ? {
-            ...p,
-            expenses: p.expenses.map((e) =>
-              e.id === expenseId
-                ? {
-                  ...e,
-                  attestations: [
-                    ...(Array.isArray(attestations) ? attestations : []),
-                    "owner",
-                  ],
-                }
-                : e,
-            ),
-          }
-          : p,
-      ),
-    );
-
-    showToast("✓ Expense confirmed", "success");
-    triggerHaptic("light");
-  }, [currentPotId, pots, setPots, showToast]);
-
-  const batchAttestExpenses = useCallback((expenseIds: string[]) => {
-    if (!currentPotId) return;
-
-    const pot = pots.find((p) => p.id === currentPotId);
-    if (!pot) return;
-
-    const validExpenseIds = expenseIds.filter((expenseId) => {
-      const expense = pot.expenses.find((e) => e.id === expenseId);
-      return (
-        expense &&
-        expense.paidBy !== "owner" &&
-        !expense.attestations.includes("owner")
-      );
-    });
-
-    if (validExpenseIds.length === 0) {
-      showToast("No expenses to confirm", "info");
-      return;
-    }
-
-    setPots(
-      pots.map((p) =>
-        p.id === currentPotId
-          ? {
-            ...p,
-            expenses: p.expenses.map((e) =>
-              validExpenseIds.includes(e.id)
-                ? {
-                  ...e,
-                  attestations: [...e.attestations, "owner"],
-                }
-                : e,
-            ),
-          }
-          : p,
-      ),
-    );
-
-    showToast(
-      `✓ ${validExpenseIds.length} expense${validExpenseIds.length > 1 ? "s" : ""} confirmed`,
-      "success",
-    );
-    triggerHaptic("light");
-  }, [currentPotId, pots, setPots, showToast]);
-
   const handleLogout = useCallback(async () => {
     try {
       triggerHaptic("medium");
@@ -705,8 +613,6 @@ export const useBusinessActions = ({
     addExpenseToPot,
     updateExpense,
     deleteExpense,
-    attestExpense,
-    batchAttestExpenses,
     handleLogout,
     handleDeleteAccount,
     archivePot,

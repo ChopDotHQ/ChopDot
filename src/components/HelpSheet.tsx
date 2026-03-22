@@ -24,7 +24,7 @@ interface FAQItem {
 const FAQ_ITEMS: FAQItem[] = [
   {
     question: "What is ChopDot?",
-    answer: "ChopDot helps you split expenses with friends and save money together. All expenses are confirmed by group members for transparency, and you can settle up using cash, bank transfer, or DOT tokens.",
+    answer: "ChopDot helps you split expenses with friends and save money together. You can track shared costs clearly, keep balances accurate, and settle up using cash, bank transfer, or DOT tokens.",
   },
   {
     question: "What are pots?",
@@ -32,11 +32,7 @@ const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: "How do I add an expense?",
-    answer: "Tap the orange + button at the bottom of the screen. Select the pot, enter the amount and description, choose who paid, and how to split it. The expense will show up for everyone in the pot to confirm.",
-  },
-  {
-    question: "What are attestations?",
-    answer: "When someone adds an expense, other pot members should confirm (attest) that it happened. This builds trust and prevents disputes. You'll see pending expenses in your Activity tab - just tap to confirm.",
+    answer: "Tap the orange + button at the bottom of the screen. Select the pot, enter the amount and description, choose who paid, and how to split it. The balances update right away for everyone in the pot.",
   },
   {
     question: "What are checkpoints?",
@@ -44,7 +40,7 @@ const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: "How do I settle up?",
-    answer: "Open a pot and tap 'Settle Up'. Choose the checkpoint option if needed, then select who you're settling with. You can pay via cash (just mark it as paid), bank transfer, or DOT wallet for on-chain settlement.",
+    answer: "Open a pot and tap 'Settle Up'. Choose the checkpoint option if needed, then select who you're settling with. You can pay via cash, bank transfer, or DOT wallet for on-chain settlement.",
   },
   {
     question: "What is DOT?",

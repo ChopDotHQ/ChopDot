@@ -25,7 +25,7 @@ interface Contribution {
 
 export interface ActivityEvent {
   id: string;
-  type: 'expense_added' | 'expense_edited' | 'expense_deleted' | 'attestation' | 'member_joined' | 'contribution' | 'withdrawal';
+  type: 'expense_added' | 'expense_edited' | 'expense_deleted' | 'member_joined' | 'contribution' | 'withdrawal';
   timestamp: string;
   description: string;
   actor: string;
@@ -67,20 +67,6 @@ export function useActivityFeed({
           currency: expense.currency || baseCurrency,
           expenseMemo: expense.memo,
         },
-      });
-
-      expense.attestations.forEach((memberId, index) => {
-        const attestor = members.find((m) => m.id === (typeof memberId === 'string' ? memberId : memberId.memberId));
-        const attestationDate = new Date(
-          new Date(expense.date).getTime() + (index + 1) * 60000
-        ).toISOString();
-        events.push({
-          id: `attestation-${expense.id}-${typeof memberId === 'string' ? memberId : memberId.memberId}`,
-          type: 'attestation',
-          timestamp: attestationDate,
-          description: `${attestor?.name === 'You' ? 'You' : attestor?.name} confirmed "${expense.memo}"`,
-          actor: attestor?.name || 'Unknown',
-        });
       });
     });
 

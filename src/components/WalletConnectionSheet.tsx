@@ -152,7 +152,7 @@ export function WalletConnectionSheet({
               {/* Info */}
               <div className="card p-3" style={{ background: 'var(--accent-pink-soft)' }}>
                 <p className="text-caption text-secondary">
-                  <span style={{ color: 'var(--accent)', fontWeight: 500 }}>✓ Connected</span> - You can now settle on-chain and attest expenses using Polkadot.
+                  <span style={{ color: 'var(--accent)', fontWeight: 500 }}>✓ Connected</span> - You can now settle on-chain using Polkadot.
                 </p>
               </div>
 
@@ -200,7 +200,7 @@ export function WalletConnectionSheet({
               {/* Not Connected - Show Available Wallets */}
               <div className="card p-3" style={{ background: 'var(--accent-pink-soft)' }}>
                 <p className="text-caption text-secondary">
-                  Connect your Polkadot wallet to settle on-chain and attest expenses using blockchain verification.
+                  Connect your Polkadot wallet to settle on-chain with blockchain verification.
                 </p>
               </div>
 

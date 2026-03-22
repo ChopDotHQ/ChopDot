@@ -94,10 +94,7 @@ export function buildPotExpensesCSVContent(
     "Currency",
     "Paid By",
     "Your Split",
-    "Confirmed",
     "Receipt",
-    "Attestation Status",
-    "On-chain Hash",
   ];
 
   // Generate CSV rows
@@ -116,27 +113,8 @@ export function buildPotExpensesCSVContent(
       const userSplit = expense.split.find(s => s.memberId === currentUserId);
       const yourSplit = userSplit ? userSplit.amount.toFixed(2) : "0.00";
 
-      // Confirmed status
-      const totalMembers = members.length;
-      const confirmedCount = expense.attestations.length;
-      const confirmedStatus = expense.paidBy === currentUserId
-        ? `${confirmedCount}/${totalMembers - 1}`
-        : expense.attestations.includes(currentUserId)
-        ? "✓ Yes"
-        : "Pending";
-
       // Receipt status
       const receiptStatus = expense.hasReceipt ? "✓ Yes" : "No";
-
-      // Attestation status
-      const attestationStatus = expense.attestationTxHash
-        ? "On-chain"
-        : "Off-chain";
-
-      // On-chain hash (truncated if present)
-      const onChainHash = expense.attestationTxHash
-        ? `${expense.attestationTxHash.slice(0, 10)}...${expense.attestationTxHash.slice(-8)}`
-        : "";
 
       return [
         formattedDate,
@@ -145,10 +123,7 @@ export function buildPotExpensesCSVContent(
         expense.currency,
         getMemberName(expense.paidBy),
         yourSplit,
-        confirmedStatus,
         receiptStatus,
-        attestationStatus,
-        onChainHash,
       ];
     });
 

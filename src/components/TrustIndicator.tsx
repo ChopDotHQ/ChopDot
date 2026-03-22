@@ -52,8 +52,8 @@ export function TrustIndicator({ score, size = "md", showExplanation = true }: T
         <TooltipContent>
           <p className="text-[11px]">
             {showExplanation 
-              ? `Trust Score ${clampedScore}/10 — based on payment history, attests, receipts, and peer endorsements.`
-              : "Built from on-time attests and completed settlements."
+              ? `Trust Score ${clampedScore}/10 — based on payment history, receipts, and completed settlements.`
+              : "Built from completed settlements and recent payment history."
             }
           </p>
         </TooltipContent>

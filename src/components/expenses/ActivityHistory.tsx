@@ -1,4 +1,4 @@
-import { Receipt, TrendingUp, TrendingDown, CheckCircle, ChevronDown, ChevronUp, History } from 'lucide-react';
+import { Receipt, TrendingUp, TrendingDown, ChevronDown, ChevronUp, History } from 'lucide-react';
 import { useState } from 'react';
 import type { ActivityEvent } from '../../hooks/useActivityFeed';
 import { formatRelativeTime } from '../../utils/formatRelativeTime';
@@ -75,8 +75,7 @@ function ActivityRow({
   event: ActivityEvent;
   normalizedBaseCurrency: string;
 }) {
-  const bgColour = event.type === 'attestation' ? 'rgba(25, 195, 125, 0.1)'
-    : event.type === 'contribution' ? 'rgba(86, 243, 154, 0.1)'
+  const bgColour = event.type === 'contribution' ? 'rgba(86, 243, 154, 0.1)'
     : event.type === 'withdrawal' ? 'rgba(255, 149, 0, 0.1)'
     : 'rgba(230, 0, 122, 0.1)';
 
@@ -86,7 +85,6 @@ function ActivityRow({
         className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
         style={{ background: bgColour }}
       >
-        {event.type === 'attestation' && <CheckCircle className="w-3 h-3" style={{ color: 'var(--success)' }} />}
         {event.type === 'expense_added' && <Receipt className="w-3 h-3" style={{ color: 'var(--accent-pink)' }} />}
         {event.type === 'contribution' && <TrendingUp className="w-3 h-3" style={{ color: 'var(--success)' }} />}
         {event.type === 'withdrawal' && <TrendingDown className="w-3 h-3" style={{ color: 'var(--ink)' }} />}

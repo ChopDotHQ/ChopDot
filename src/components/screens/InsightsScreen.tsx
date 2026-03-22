@@ -7,8 +7,6 @@ interface InsightsScreenProps {
   activePots: number;
   totalSettled: number;
   monthlyData: { month: string; amount: number }[];
-  confirmationRate: number;
-  expensesConfirmed: number;
   settlementsCompleted: number;
   activeGroups: number;
 }
@@ -16,11 +14,9 @@ interface InsightsScreenProps {
 export function InsightsScreen({
   onBack,
   monthlySpending,
-  activePots: _activePots,
+  activePots,
   totalSettled,
   monthlyData,
-  confirmationRate,
-  expensesConfirmed,
   settlementsCompleted,
   activeGroups,
 }: InsightsScreenProps) {
@@ -121,21 +117,21 @@ export function InsightsScreen({
           </div>
         </div>
 
-        {/* Reliability Metrics */}
+        {/* Activity Metrics */}
         <div className="card p-4">
-          <h3 className="text-label mb-3" style={{ fontWeight: 600 }}>Reliability</h3>
+          <h3 className="text-label mb-3" style={{ fontWeight: 600 }}>Activity</h3>
           <div className="grid grid-cols-3 gap-3">
             <div className="text-center">
-              <div className="text-xl tabular-nums mb-1" style={{ fontWeight: 700 }}>{confirmationRate}%</div>
-              <div className="text-micro text-secondary">Confirm rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-xl tabular-nums mb-1" style={{ fontWeight: 700 }}>{expensesConfirmed}</div>
-              <div className="text-micro text-secondary">Confirmed</div>
-            </div>
-            <div className="text-center">
               <div className="text-xl tabular-nums mb-1" style={{ fontWeight: 700 }}>{settlementsCompleted}</div>
-              <div className="text-micro text-secondary">Settled</div>
+              <div className="text-micro text-secondary">Settlements</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xl tabular-nums mb-1" style={{ fontWeight: 700 }}>{activePots}</div>
+              <div className="text-micro text-secondary">Open pots</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xl tabular-nums mb-1" style={{ fontWeight: 700 }}>{activeGroups}</div>
+              <div className="text-micro text-secondary">People</div>
             </div>
           </div>
         </div>

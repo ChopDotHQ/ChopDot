@@ -102,8 +102,6 @@ export function renderInsights(ctx: RouterContext) {
             activePots={pots.filter(p => !p.archived).length}
             totalSettled={settlements.reduce((sum, s) => sum + parseFloat(s.amount), 0)}
             monthlyData={insightsMonthlyData}
-            confirmationRate={youTabInsights.expensesNeedingConfirmation + youTabInsights.expensesConfirmed === 0 ? 0 : Math.round((youTabInsights.expensesConfirmed / (youTabInsights.expensesNeedingConfirmation + youTabInsights.expensesConfirmed)) * 100)}
-            expensesConfirmed={youTabInsights.expensesConfirmed}
             settlementsCompleted={settlements.length}
             activeGroups={pots.length}
         />

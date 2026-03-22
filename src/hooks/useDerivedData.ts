@@ -86,30 +86,9 @@ export const useDerivedData = ({
   }, [currentUserId, pots, people]);
 
   const pendingExpenses: PendingExpense[] = useMemo(() => {
-    const start = performance.now();
-    const pending: PendingExpense[] = [];
-
-    pots.forEach((pot) => {
-      pot.expenses.forEach((expense) => {
-        if (!expense.attestations.includes(currentUserId) && expense.paidBy !== currentUserId) {
-          pending.push({
-            id: expense.id,
-            memo: expense.memo,
-            amount: expense.amount,
-            currency: expense.currency ?? pot.baseCurrency ?? 'USD',
-            paidBy: expense.paidBy,
-            potName: pot.name,
-          });
-        }
-      });
-    });
-
-    const time = performance.now() - start;
-    if (time > 10) {
-      console.warn(`⏱️ [Performance] pendingExpenses calculation: ${time.toFixed(2)}ms`);
-    }
-    return pending;
-  }, [currentUserId, pots]);
+    void currentUserId;
+    return [];
+  }, [currentUserId]);
 
   const activities: ActivityItem[] = useMemo(() => {
     const start = performance.now();
@@ -144,26 +123,6 @@ export const useDerivedData = ({
           title: expense.memo,
           subtitle: `${pot.name} • Paid by ${expense.paidBy === currentUserId ? 'You' : expense.paidBy}`,
           amount: String(expense.amount),
-        });
-
-        expense.attestations.forEach((attesterId, index) => {
-          const attestationId = `${expense.id}-attestation-${attesterId}`;
-          const attestationTime = new Date(
-            new Date(expense.date).getTime() + (index + 1) * 2 * 60 * 60 * 1000,
-          ).toISOString();
-          const attesterName =
-            attesterId === currentUserId
-              ? 'You'
-              : pot.members.find((m) => m.id === attesterId)?.name || attesterId;
-
-          items.push({
-            id: attestationId,
-            type: 'attestation',
-            timestamp: attestationTime,
-            title: `${attesterName} confirmed expense`,
-            subtitle: `${expense.memo} • ${pot.name}`,
-            amount: undefined,
-          });
         });
       });
     });
@@ -223,11 +182,6 @@ export const useDerivedData = ({
   const { expensesConfirmed, expensesNeedingConfirmation, monthlySpending } = useMemo(() => {
     const allExpenses = pots.flatMap((p) => p.expenses);
 
-    const confirmed = allExpenses.filter((e) => e.attestations.includes(currentUserId)).length;
-    const needingConfirmation = allExpenses.filter(
-      (e) => !e.attestations.includes(currentUserId) && e.paidBy !== currentUserId,
-    ).length;
-
     const currentMonthExpenses = allExpenses.filter((e) => {
       const d = new Date(e.date);
       const now = new Date();
@@ -239,11 +193,11 @@ export const useDerivedData = ({
       .reduce((sum, e) => sum + e.amount, 0);
 
     return {
-      expensesConfirmed: confirmed,
-      expensesNeedingConfirmation: needingConfirmation,
+      expensesConfirmed: 0,
+      expensesNeedingConfirmation: 0,
       monthlySpending: spending,
     };
-  }, [pots, userId]);
+  }, [pots]);
 
   const youTabInsights: YouTabInsights = useMemo(() => {
     const confirmationRate =

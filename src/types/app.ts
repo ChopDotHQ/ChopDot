@@ -179,7 +179,7 @@ export interface Settlement {
 
 export interface ActivityItem {
     id: string;
-    type: "expense" | "settlement" | "attestation" | "member" | "pot_created";
+    type: "expense" | "settlement" | "member" | "pot_created";
     timestamp: string;
     title: string;
     subtitle: string;

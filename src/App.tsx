@@ -209,7 +209,7 @@ function AppContent() {
               setPreferredMethodId, setTheme, setFabQuickAddPotId: overlay.setFabQuickAddPotId, setNewPot,
               setSelectedCounterpartyId, setSettlements: potState.setSettlements, setNotifications: potState.setNotifications,
               createPot: actions.createPot, addExpenseToPot: actions.addExpenseToPot, updateExpense: actions.updateExpense,
-              deleteExpense: actions.deleteExpense, attestExpense: actions.attestExpense, batchAttestExpenses: actions.batchAttestExpenses,
+              deleteExpense: actions.deleteExpense,
               addContribution: actions.addContribution, withdrawFunds: actions.withdrawFunds,
               handleLogout: actions.handleLogout, handleDeleteAccount: actions.handleDeleteAccount,
               updatePaymentMethodValue: actions.updatePaymentMethodValue, setPreferredMethod: actions.setPreferredMethod,

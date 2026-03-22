@@ -1,5 +1,5 @@
-import { Receipt, CheckCircle } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { Receipt } from 'lucide-react';
+import { useMemo } from 'react';
 import { SwipeableExpenseRow } from '../SwipeableExpenseRow';
 import type { Pot } from '../../schema/pot';
 import { SettlementConfirmModal } from '../SettlementConfirmModal';
@@ -61,9 +61,6 @@ interface ExpensesTabProps {
   canAddExpense?: boolean;
   addExpenseDisabledReason?: string;
   onDeleteExpense?: (expenseId: string) => void;
-  onAttestExpense?: (expenseId: string, silent?: boolean) => void;
-  onBatchAttestExpenses?: (expenseIds: string[]) => void;
-  onReviewPending?: () => void;
   onShowToast?: (message: string, type?: 'success' | 'info' | 'error') => void;
   onUpdatePot?: (updates: { history?: PotHistory[]; lastCheckpoint?: unknown; lastEditAt?: string }) => void;
   checkpointConfirmedCount?: number;
@@ -91,7 +88,6 @@ export function ExpensesTab({
   onShowToast,
   onUpdatePot,
 }: ExpensesTabProps) {
-  const [showPendingOnly, setShowPendingOnly] = useState(false);
   const account = useAccount();
 
   const {
@@ -141,22 +137,7 @@ export function ExpensesTab({
   const formatPotAmount = (value: number, withSign: boolean = false) =>
     formatCurrencyAmount(value, normalizedBaseCurrency, { withSign });
 
-  const hasConfirmed = (expense: Expense, userId: string): boolean => {
-    const atts = expense.attestations ?? [];
-    if (Array.isArray(atts) && atts.length > 0) {
-      if (typeof atts[0] === 'string') {
-        return (atts as string[]).includes(userId);
-      }
-      return (atts as Array<{ memberId: string; confirmedAt: string }>).some(a => a.memberId === userId);
-    }
-    return false;
-  };
-
-  const displayedExpenses = showPendingOnly
-    ? expenses.filter(e => e.paidBy !== currentUserId && !hasConfirmed(e, currentUserId))
-    : expenses;
-
-  const groupedExpenses = useExpenseGroups(displayedExpenses);
+  const groupedExpenses = useExpenseGroups(expenses);
 
   const sortedActivity = useActivityFeed({
     expenses,
@@ -209,7 +190,6 @@ export function ExpensesTab({
 
       <ExpensesList
         expenses={expenses}
-        displayedExpenses={displayedExpenses}
         groupedExpenses={groupedExpenses}
         members={members}
         currentUserId={currentUserId}
@@ -218,7 +198,6 @@ export function ExpensesTab({
         onAddExpense={onAddExpense}
         onExpenseClick={onExpenseClick}
         onDeleteExpense={onDeleteExpense}
-        onSetShowPendingOnly={setShowPendingOnly}
       />
 
       {settlementModal && (
@@ -241,7 +220,6 @@ export function ExpensesTab({
 
 function ExpensesList({
   expenses,
-  displayedExpenses,
   groupedExpenses,
   members,
   currentUserId,
@@ -250,10 +228,8 @@ function ExpensesList({
   onAddExpense,
   onExpenseClick,
   onDeleteExpense,
-  onSetShowPendingOnly,
 }: {
   expenses: { id: string; amount: number }[];
-  displayedExpenses: { id: string }[];
   groupedExpenses: Record<string, Array<{
     id: string;
     amount: number;
@@ -273,7 +249,6 @@ function ExpensesList({
   onAddExpense: () => void;
   onExpenseClick: (expense: { id: string; amount: number; currency: string; paidBy: string; memo: string; date: string; split: { memberId: string; amount: number }[]; attestations: string[] | Array<{ memberId: string; confirmedAt: string }>; hasReceipt: boolean; receiptUrl?: string }) => void;
   onDeleteExpense?: (expenseId: string) => void;
-  onSetShowPendingOnly: (val: boolean) => void;
 }) {
   if (expenses.length === 0) {
     return (
@@ -290,28 +265,6 @@ function ExpensesList({
             <p className="text-caption mt-1 text-secondary">Add the first expense to get started</p>
           </div>
         </button>
-      </div>
-    );
-  }
-
-  if (displayedExpenses.length === 0) {
-    return (
-      <div className="mx-3">
-        <div className="flex flex-col items-center justify-center gap-3 p-8 card transition-shadow duration-200">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(25, 195, 125, 0.1)' }}>
-            <CheckCircle className="w-6 h-6" style={{ color: 'var(--success)' }} />
-          </div>
-          <div className="text-center">
-            <p className="text-body text-foreground">All caught up!</p>
-            <p className="text-caption mt-1 text-secondary">No pending expenses to review</p>
-          </div>
-          <button
-            onClick={() => onSetShowPendingOnly(false)}
-            className="mt-2 text-micro underline"
-          >
-            Show all expenses
-          </button>
-        </div>
       </div>
     );
   }

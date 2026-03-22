@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Trash2, Check, Receipt } from 'lucide-react';
+import { Trash2, Receipt } from 'lucide-react';
 import { triggerHaptic } from '../utils/haptics';
 
 interface Member {
@@ -27,8 +27,6 @@ interface SwipeableExpenseRowProps {
   baseCurrency?: string; // Add baseCurrency to determine decimal precision
   onClick: () => void;
   onDelete?: () => void;
-  onAttest?: () => void;
-  showApproveButton?: boolean;
 }
 
 export function SwipeableExpenseRow({
@@ -38,8 +36,6 @@ export function SwipeableExpenseRow({
   baseCurrency = 'USD',
   onClick,
   onDelete,
-  onAttest,
-  showApproveButton = false,
 }: SwipeableExpenseRowProps) {
   // Use 6 decimals for DOT, 2 for other currencies
   const decimals = baseCurrency === 'DOT' ? 6 : 2;
@@ -58,12 +54,8 @@ export function SwipeableExpenseRow({
   const yourShare = expense.split.find(s => s.memberId === currentUserId)?.amount || 0;
   const youPaid = expense.paidBy === currentUserId ? expense.amount : 0;
   const yourNetBalance = youPaid - yourShare; // Positive = you're owed, Negative = you owe
-  // Only need attestation if: (1) you didn't pay, AND (2) you haven't confirmed yet
-  const needsAttestation = expense.paidBy !== currentUserId && !expense.attestations.includes(currentUserId);
-
   const SWIPE_THRESHOLD = 80;
   const MAX_SWIPE_LEFT = -100;
-  const MAX_SWIPE_RIGHT = 100;
 
   // Detect input modality (touch vs mouse/trackpad)
   useEffect(() => {
@@ -103,13 +95,7 @@ export function SwipeableExpenseRow({
       let offset = diff * 0.6;
       
       // Clamp the offset
-      if (needsAttestation && onAttest) {
-        // Allow swipe right for attestation
-        offset = Math.min(Math.max(offset, MAX_SWIPE_LEFT), MAX_SWIPE_RIGHT);
-      } else {
-        // Only allow swipe left for delete
-        offset = Math.min(Math.max(offset, MAX_SWIPE_LEFT), 0);
-      }
+      offset = Math.min(Math.max(offset, MAX_SWIPE_LEFT), 0);
       
       setSwipeOffset(offset);
 
@@ -131,15 +117,6 @@ export function SwipeableExpenseRow({
         setTimeout(() => {
           onDelete();
         }, 200);
-      } else if (swipeOffset >= SWIPE_THRESHOLD && needsAttestation && onAttest) {
-        // Attest action
-        triggerHaptic('success');
-        setActionTriggered(true);
-        setTimeout(() => {
-          onAttest();
-          setSwipeOffset(0);
-          setActionTriggered(false);
-        }, 200);
       } else {
         // Reset
         setSwipeOffset(0);
@@ -157,10 +134,9 @@ export function SwipeableExpenseRow({
       container.removeEventListener('touchend', handleTouchEnd);
       container.removeEventListener('touchcancel', handleTouchEnd);
     };
-  }, [isSwiping, swipeOffset, needsAttestation, onDelete, onAttest, isTouch]);
+  }, [isSwiping, swipeOffset, onDelete, isTouch]);
 
   const deleteOpacity = Math.min(Math.abs(swipeOffset) / SWIPE_THRESHOLD, 1);
-  const attestOpacity = Math.min(swipeOffset / SWIPE_THRESHOLD, 1);
 
   return (
     <div 
@@ -185,20 +161,6 @@ export function SwipeableExpenseRow({
         </div>
       )}
 
-      {/* Right action (Confirm/Attest) - swipe visual on touch */}
-      {needsAttestation && onAttest && (
-        <div 
-          className="absolute inset-y-0 left-0 flex items-center justify-start px-4 rounded-lg"
-          style={{
-            background: 'var(--accent-pink)',
-            opacity: attestOpacity,
-            pointerEvents: 'none',
-          }}
-        >
-          <Check className="w-5 h-5 text-white" />
-        </div>
-      )}
-
       {/* Main content */}
       <div
         className="w-full p-3 text-left transition-all duration-200 active:scale-[0.98] relative z-10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent/20"
@@ -208,7 +170,7 @@ export function SwipeableExpenseRow({
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            if (!showApproveButton) onClick();
+            onClick();
           }
         }}
         style={{
@@ -219,20 +181,16 @@ export function SwipeableExpenseRow({
       >
         <div 
           className="flex items-start justify-between gap-2"
-          onClick={showApproveButton ? undefined : onClick}
+          onClick={onClick}
         >
           <div 
             className="flex-1 min-w-0"
-            onClick={showApproveButton ? onClick : undefined}
           >
             {/* Amount + Receipt indicator inline */}
             <div className="flex items-center gap-1.5 mb-0.5">
-              {/* Status dot - pink if approved by you, gray if pending */}
               <div 
                 className="w-1.5 h-1.5 rounded-full flex-shrink-0" 
-                style={{ 
-                  background: needsAttestation ? 'var(--muted)' : 'var(--accent-pink)' 
-                }} 
+                style={{ background: 'var(--accent-pink)' }}
               />
               <p className="text-sm tabular-nums">
                 {expense.currency} {expense.amount.toFixed(decimals)}
@@ -275,16 +233,6 @@ export function SwipeableExpenseRow({
                 className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                 style={{ opacity: isFocused ? 1 : undefined }}
               >
-                {needsAttestation && onAttest && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onAttest(); }}
-                    className="px-2 py-1 rounded-lg text-xs text-white hover:opacity-90"
-                    style={{ background: 'var(--accent-pink)' }}
-                    aria-label="Approve"
-                  >
-                    <Check className="w-3.5 h-3.5" />
-                  </button>
-                )}
                 {onDelete && (
                   <button
                     onClick={(e) => { e.stopPropagation(); onDelete(); }}

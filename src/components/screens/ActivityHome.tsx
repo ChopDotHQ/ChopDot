@@ -1,4 +1,4 @@
-import { ChevronRight, Bell, Activity, AlertCircle, ChevronDown, ChevronUp, Check, DollarSign, TrendingUp, UserPlus, Eye, EyeOff, X, RefreshCw, ListFilter } from "lucide-react";
+import { ChevronRight, Bell, Activity, DollarSign, TrendingUp, UserPlus, Eye, EyeOff, RefreshCw, ListFilter } from "lucide-react";
 import { useState, useMemo } from "react";
 import Decimal from "decimal.js";
 import { SettleSheet } from "../SettleSheet";
@@ -11,7 +11,7 @@ import { usePSAStyle } from "../../utils/usePSAStyle";
 
 interface ActivityItem {
   id: string;
-  type: "expense" | "settlement" | "attestation" | "member" | "pot_created";
+  type: "expense" | "settlement" | "member" | "pot_created";
   timestamp: string;
   title: string;
   subtitle?: string;
@@ -26,13 +26,6 @@ interface ActivityHomeProps {
   totalOwed: number;
   totalOwing: number;
   activities: ActivityItem[];
-  pendingExpenses: Array<{
-    id: string;
-    memo: string;
-    amount: number;
-    paidBy: string;
-    potName: string;
-  }>;
   topPersonToSettle?: {
     id: string;
     name: string;
@@ -44,13 +37,11 @@ interface ActivityHomeProps {
       amount: number;
     }>;
   };
-  hasPendingAttestations: boolean;
   onActivityClick: (activity: ActivityItem) => void;
   onNotificationClick: () => void;
   onWalletClick: () => void;
   walletConnected?: boolean;
   onSettleClick?: (personId: string, method: "Bank" | "PayPal" | "DOT" | "Cash") => void;
-  onConfirmExpense?: (expenseId: string) => void;
   onRefresh?: () => Promise<void>;
   notificationCount?: number;
 }
@@ -59,22 +50,17 @@ export function ActivityHome({
   totalOwed,
   totalOwing,
   activities,
-  pendingExpenses,
   topPersonToSettle,
-  hasPendingAttestations,
   onActivityClick,
   onNotificationClick,
   onSettleClick,
-  onConfirmExpense,
   onRefresh,
   notificationCount = 0,
 }: ActivityHomeProps) {
   const { isPSA, psaStyles, psaClasses } = usePSAStyle();
-  const [filter, setFilter] = useState<"all" | "expenses" | "settlements" | "attestations">("all");
-  const [attestationsExpanded, setAttestationsExpanded] = useState(false);
+  const [filter, setFilter] = useState<"all" | "expenses" | "settlements">("all");
   const [showSettleSheet, setShowSettleSheet] = useState(false);
   const [balancesVisible, setBalancesVisible] = useState(true);
-  const [showBanner, setShowBanner] = useState(true);
   const [showSortSheet, setShowSortSheet] = useState(false);
   const [sortBy, setSortBy] = useState<string>("date-recent");
 
@@ -108,7 +94,6 @@ export function ActivityHome({
       if (filter === "all") return true;
       if (filter === "expenses") return activity.type === "expense";
       if (filter === "settlements") return activity.type === "settlement";
-      if (filter === "attestations") return activity.type === "attestation";
       return true;
     });
 
@@ -141,8 +126,6 @@ export function ActivityHome({
         return <DollarSign className="w-4 h-4 text-background" />;
       case "settlement":
         return <TrendingUp className="w-4 h-4 text-white" />;
-      case "attestation":
-        return <Check className="w-4 h-4 text-white" />;
       case "member":
         return <UserPlus className="w-4 h-4 text-foreground" />;
       case "pot_created":
@@ -161,12 +144,6 @@ export function ActivityHome({
       >
         <h1 className="text-screen-title">Activity</h1>
         <div className="flex items-center gap-2">
-          {/* Pending confirmations badge */}
-          {hasPendingAttestations && (
-            <div className="px-2 py-1 rounded-md text-micro" style={{ background: 'var(--accent-pink-soft)', color: 'var(--accent)' }}>
-              {pendingExpenses.length} pending
-            </div>
-          )}
           {/* Account Menu - unified wallet connection */}
           <AccountMenu />
 
@@ -257,67 +234,6 @@ export function ActivityHome({
             </div>
           </div>
 
-          {/* Pending Attestations Banner - REMOVED */}
-          {false && hasPendingAttestations && showBanner && (
-            <div
-              className={isPSA ? `${psaClasses.card} p-4 transition-shadow duration-200` : 'card p-4 bg-muted/10 transition-shadow duration-200'}
-              style={isPSA ? psaStyles.card : undefined}
-            >
-              <div className="flex items-start gap-3">
-                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--foreground)' }} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-body mb-1">
-                    {pendingExpenses.length} expense{pendingExpenses.length > 1 ? 's' : ''} need confirmation
-                  </p>
-                  <button
-                    onClick={() => setAttestationsExpanded(!attestationsExpanded)}
-                    className="text-caption flex items-center gap-1"
-                    style={{ color: 'var(--accent)' }}
-                  >
-                    {attestationsExpanded ? "Hide" : "Review"}
-                    {attestationsExpanded ? (
-                      <ChevronUp className="w-3 h-3" />
-                    ) : (
-                      <ChevronDown className="w-3 h-3" />
-                    )}
-                  </button>
-                </div>
-                <button
-                  onClick={() => setShowBanner(false)}
-                  className="p-1 hover:bg-muted/30 rounded transition-colors"
-                >
-                  <X className="w-3.5 h-3.5 text-secondary" />
-                </button>
-              </div>
-
-              {/* Expanded pending expenses */}
-              {attestationsExpanded && (
-                <div className="mt-3 space-y-2 border-t border-border pt-3">
-                  {pendingExpenses.map((expense) => (
-                    <div key={expense.id} className="flex items-center justify-between p-2 bg-card rounded-lg">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-body truncate">{expense.memo}</p>
-                        <p className="text-caption text-secondary">
-                          {expense.potName} • {expense.paidBy}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 ml-3">
-                        <span className="text-body tabular-nums">${expense.amount.toFixed(2)}</span>
-                        <button
-                          onClick={() => onConfirmExpense?.(expense.id)}
-                          className="px-2 py-1 text-caption rounded-lg transition-colors"
-                          style={{ background: 'var(--accent-pink-soft)', color: 'var(--accent)' }}
-                        >
-                          Confirm
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Top Person to Settle (if available) */}
           {topPersonToSettle && (
             <button
@@ -364,7 +280,7 @@ export function ActivityHome({
 
           {/* Filter Pills */}
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {(["all", "expenses", "settlements", "attestations"] as const).map((f) => (
+            {(["all", "expenses", "settlements"] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -408,9 +324,7 @@ export function ActivityHome({
                             ? "var(--foreground)"
                             : activity.type === "settlement"
                               ? "var(--money)"
-                              : activity.type === "attestation"
-                                ? "var(--accent)"
-                                : activity.type === "pot_created"
+                              : activity.type === "pot_created"
                                   ? "var(--primary)"
                                   : "var(--secondary)",
                       }}
@@ -459,7 +373,6 @@ export function ActivityHome({
             onSettleClick?.(topPersonToSettle.id, method);
             setShowSettleSheet(false);
           }}
-          onReviewPending={() => { }}
           onViewHistory={() => { }}
         />
       )}

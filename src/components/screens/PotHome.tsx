@@ -53,8 +53,6 @@ interface PotHomeProps {
   onResendInvite?: (memberId: string) => void;
   onRevokeInvite?: (memberId: string) => void;
   onDeleteExpense?: (expenseId: string) => void;
-  onAttestExpense?: (expenseId: string, silent?: boolean) => void;
-  onBatchAttestExpenses?: (expenseIds: string[]) => void;
   onShowToast?: (message: string, type?: 'success' | 'info' | 'error') => void;
   onAddContribution?: () => void;
   onWithdraw?: () => void;
@@ -88,8 +86,6 @@ export function PotHome(props: PotHomeProps) {
     onResendInvite,
     onRevokeInvite,
     onDeleteExpense,
-    onAttestExpense,
-    onBatchAttestExpenses,
     onShowToast,
     onAddContribution,
     onWithdraw,
@@ -323,8 +319,6 @@ export function PotHome(props: PotHomeProps) {
               canAddExpense={canAddExpense}
               addExpenseDisabledReason={addExpenseDisabledReason}
               onDeleteExpense={onDeleteExpense}
-              onAttestExpense={onAttestExpense}
-              onBatchAttestExpenses={onBatchAttestExpenses}
               onShowToast={onShowToast}
               onUpdatePot={onUpdatePot}
               checkpointConfirmedCount={summary.confirmedCount}

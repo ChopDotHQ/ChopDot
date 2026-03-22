@@ -14,7 +14,6 @@ export function renderActivityHome(ctx: RouterContext): React.ReactElement | nul
             pots,
             totalOwed,
             totalOwing,
-            pendingExpenses,
             activities,
         },
         userState: { walletConnected, notifications },
@@ -33,9 +32,7 @@ export function renderActivityHome(ctx: RouterContext): React.ReactElement | nul
             totalOwed={totalOwed}
             totalOwing={totalOwing}
             activities={activities}
-            pendingExpenses={pendingExpenses}
             topPersonToSettle={undefined}
-            hasPendingAttestations={pendingExpenses.length > 0}
             onActivityClick={(activity) => {
                 if (activity.type === 'expense') {
                     const pot = pots.find((p) =>
@@ -48,17 +45,6 @@ export function renderActivityHome(ctx: RouterContext): React.ReactElement | nul
                             type: 'expense-detail',
                             expenseId: activity.id,
                         });
-                    }
-                } else if (activity.type === 'attestation') {
-                    const expenseId =
-                        activity.id.split('-attestation-')[0];
-                    const pot = pots.find((p) =>
-                        p.expenses.some((e) => e.id === expenseId),
-                    );
-                    if (pot) {
-                        setCurrentPotId(pot.id);
-                        setCurrentExpenseId(expenseId!);
-                        push({ type: 'expense-detail', expenseId: expenseId! });
                     }
                 } else if (activity.type === 'pot_created') {
                     const potId = activity.id.replace('pot-created-', '');

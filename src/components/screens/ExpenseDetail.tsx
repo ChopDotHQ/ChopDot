@@ -1,9 +1,8 @@
 import { TopBar } from "../TopBar";
 import { BottomSheet } from "../BottomSheet";
 import { ReceiptViewer } from "../ReceiptViewer";
-import { Receipt, Check } from "lucide-react";
+import { Receipt } from "lucide-react";
 import { useState } from "react";
-import { pushTxToast, updateTxToast } from "../../hooks/useTxToasts";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
 import { Skeleton } from "../Skeleton";
@@ -25,10 +24,8 @@ interface Expense {
   date: string;
   split: { memberId: string; amount: number }[];
   attestations: string[];
-  hasReceipt: boolean;
-  receiptUrl?: string;
-  attestationTxHash?: string;
-  attestationTimestamp?: string;
+    hasReceipt: boolean;
+    receiptUrl?: string;
 }
 
 interface ExpenseDetailProps {
@@ -36,33 +33,23 @@ interface ExpenseDetailProps {
   members?: Member[];
   currentUserId: string;
   baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
-  walletConnected?: boolean;
   onBack: () => void;
   isLoading?: boolean;
-  onAttest: () => void;
   onEdit: () => void;
   onDelete: () => void;
-  onSettle?: () => void;
   onCopyReceiptLink?: () => void;
-  onUpdateExpense?: (updates: Partial<Expense>) => void;
-  onConnectWallet?: () => void;
 }
 
 export function ExpenseDetail({
   expense,
   members,
-  currentUserId,
+  currentUserId: _currentUserId,
   baseCurrency = 'USD',
-  walletConnected = false,
   onBack,
   isLoading = false,
-  onAttest,
   onEdit,
   onDelete,
-  onSettle: _onSettle,
   onCopyReceiptLink,
-  onUpdateExpense,
-  onConnectWallet,
 }: ExpenseDetailProps) {
   if (isLoading) {
     return (
@@ -94,164 +81,12 @@ export function ExpenseDetail({
   const safeMembers = members ?? [];
   const normalizedBaseCurrency = normalizeCurrency(baseCurrency);
   const isDotPot = normalizedBaseCurrency === 'DOT';
-  const isSimulationMode = import.meta.env.VITE_SIMULATE_CHAIN === '1';
   // For DOT pots, always use baseCurrency; for others, use expense.currency if available
   const displayCurrency = isDotPot ? normalizedBaseCurrency : (expense.currency || normalizedBaseCurrency);
   const formatAmount = (amt: number) => formatCurrencyAmount(amt, displayCurrency);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showReceiptViewer, setShowReceiptViewer] = useState(false);
-  const [showAttestationDetail, setShowAttestationDetail] = useState(false);
-  void showAttestationDetail;
-  const [isAttesting, setIsAttesting] = useState(false);
   const paidByMember = safeMembers.find(m => m.id === expense.paidBy);
-  const hasAttested = expense.attestations.includes(currentUserId);
-  const allAttested = expense.attestations.length === safeMembers.length;
-
-  // Handle attestation with on-chain flow if wallet connected
-  const handleAttest = async () => {
-    setIsAttesting(true);
-    // If wallet connected and expense was paid by someone else → on-chain attestation
-    if (isSimulationMode && walletConnected && expense.paidBy !== currentUserId) {
-      // State 1: Signing
-      pushTxToast('signing', {
-        amount: expense.amount,
-        currency: displayCurrency, // Use displayCurrency for consistency
-      });
-
-      // Simulate signing delay (400ms)
-      await new Promise(resolve => setTimeout(resolve, 400));
-
-      // State 2: Broadcasting
-      updateTxToast('broadcast', {
-        amount: expense.amount,
-        currency: displayCurrency, // Use displayCurrency for consistency
-      });
-
-      // Simulate broadcast delay (600ms)
-      await new Promise(resolve => setTimeout(resolve, 600));
-
-      // Generate mock tx hash
-      const mockTxHash = `0x${Math.random().toString(16).substr(2, 64)}`;
-      
-      // State 3: In block
-      updateTxToast('inBlock', {
-        amount: expense.amount,
-        currency: displayCurrency, // Use displayCurrency for consistency
-        txHash: mockTxHash,
-        fee: 0.0018,
-        feeCurrency: 'DOT',
-      });
-
-      // Simulate in-block delay (1000ms)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // State 4: Finalized (auto-dismiss after 1.5s)
-      const mockBlockNumber = Math.floor(Math.random() * 1000000) + 18000000;
-      updateTxToast('finalized', {
-        amount: expense.amount,
-        currency: displayCurrency, // Use displayCurrency for consistency
-        txHash: mockTxHash,
-        fee: 0.0018,
-        feeCurrency: 'DOT',
-        blockNumber: mockBlockNumber,
-      });
-
-      // Wait for auto-dismiss, then call onAttest
-      setTimeout(() => {
-        onAttest();
-        setIsAttesting(false);
-      }, 1500);
-
-      return;
-    }
-
-    // Off-chain attestation (wallet not connected or you paid)
-    // Simulate a brief delay for off-chain attestation
-    await new Promise(resolve => setTimeout(resolve, 600));
-    onAttest();
-    setIsAttesting(false);
-  };
-
-  // Handle anchoring expense to blockchain
-  const _handleAnchorNow = async () => {
-    if (!walletConnected) {
-      onConnectWallet?.();
-      return;
-    }
-
-    if (!isSimulationMode) {
-      pushTxToast('error', {
-        amount: expense.amount,
-        currency: displayCurrency,
-        errorMessage: 'On-chain anchoring is not enabled in this environment.',
-      });
-      return;
-    }
-
-    // Close attestation detail overlay
-    setShowAttestationDetail(false);
-
-    // Build expense hash (mock - in production would use actual crypto library)
-    // const expenseHash = `0x${Math.random().toString(16).substr(2, 64)}`;
-
-    // State 1: Signing
-    pushTxToast('signing', {
-      amount: expense.amount,
-      currency: displayCurrency, // Use displayCurrency for consistency
-    });
-
-    // Simulate signing delay (400ms)
-    await new Promise(resolve => setTimeout(resolve, 400));
-
-    // State 2: Broadcasting
-    updateTxToast('broadcast', {
-      amount: expense.amount,
-      currency: displayCurrency, // Use displayCurrency for consistency
-    });
-
-    // Simulate broadcast delay (600ms)
-    await new Promise(resolve => setTimeout(resolve, 600));
-
-    // Generate mock tx hash
-    const mockTxHash = `0x${Math.random().toString(16).substr(2, 64)}`;
-    
-    // State 3: In block
-    updateTxToast('inBlock', {
-      amount: expense.amount,
-      currency: displayCurrency, // Use displayCurrency for consistency
-      txHash: mockTxHash,
-      fee: 0.0018,
-      feeCurrency: 'DOT',
-    });
-
-    // Simulate in-block delay (1000ms)
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // State 4: Finalized (auto-dismiss after 1.5s)
-    const mockBlockNumber = Math.floor(Math.random() * 1000000) + 18000000;
-    updateTxToast('finalized', {
-      amount: expense.amount,
-      currency: displayCurrency, // Use displayCurrency for consistency
-      txHash: mockTxHash,
-      fee: 0.0018,
-      feeCurrency: 'DOT',
-      blockNumber: mockBlockNumber,
-    });
-
-    // Wait for auto-dismiss, then update expense with attestation data
-    setTimeout(() => {
-      onUpdateExpense?.({
-        attestationTxHash: mockTxHash,
-        attestationTimestamp: new Date().toISOString(),
-      });
-      
-      // Reopen attestation detail in anchored state
-      setTimeout(() => {
-        setShowAttestationDetail(true);
-      }, 200);
-    }, 1500);
-  };
-  void _handleAnchorNow;
 
   const handleDelete = () => {
     setShowDeleteConfirm(false);
@@ -328,22 +163,16 @@ export function ExpenseDetail({
             </button>
           )}
 
-          {/* Split Breakdown - Checkboxes style */}
+          {/* Split breakdown */}
           <div className="space-y-1.5">
             <p className="text-micro text-secondary">Split breakdown</p>
             {expense.split.map(({ memberId, amount }) => {
               const member = members?.find(m => m.id === memberId);
-              const isAttested = expense.attestations.includes(memberId);
               return (
                 <div
                   key={memberId}
                   className="flex items-center gap-2 p-3 card rounded-lg card-hover-lift transition-shadow duration-200"
                 >
-                  <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
-                    isAttested ? "bg-primary border-primary" : "border-border"
-                  }`}>
-                    {isAttested && <Check className="w-2.5 h-2.5 text-primary-foreground" />}
-                  </div>
                   <span className="flex-1 text-label">{member?.name}</span>
                   <span className="text-label tabular-nums" style={{ fontWeight: 600 }}>
                     {formatAmount(amount)}
@@ -351,29 +180,11 @@ export function ExpenseDetail({
                 </div>
               );
             })}
-            <p className="text-micro text-secondary px-1.5 pt-0.5">
-              {expense.attestations.length}/{members?.length || 0} confirmed
-            </p>
           </div>
         </div>
 
         {/* Compact Footer */}
         <div className="p-3 border-t border-border space-y-2">
-          {!hasAttested && (
-            <PrimaryButton
-              onClick={handleAttest}
-              disabled={isAttesting}
-              loading={isAttesting}
-              fullWidth
-            >
-              Confirm
-            </PrimaryButton>
-          )}
-          {allAttested && (
-            <div className="p-3 card text-center transition-shadow duration-200">
-              <p className="text-micro text-secondary">All confirmed ✓</p>
-            </div>
-          )}
           <div className="flex gap-2">
             <SecondaryButton
               onClick={onEdit}

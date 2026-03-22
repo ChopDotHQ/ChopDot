@@ -98,8 +98,6 @@ export interface AppRouterProps {
     addExpenseToPot: (potId: string, data: any) => void;
     updateExpense: (data: any) => void;
     deleteExpense: (expenseId?: string, options?: { navigateBack?: boolean }) => void;
-    attestExpense: (expenseId: string) => void;
-    batchAttestExpenses: (expenseIds: string[]) => void;
     addContribution: (amount: number, method: 'wallet' | 'bank') => void;
     withdrawFunds: (amount: number) => void;
     handleLogout: () => void;

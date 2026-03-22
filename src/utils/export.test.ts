@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildPotExpensesCSVContent, buildPotsSummaryCSVContent, buildSettlementsHistoryCSVContent } from './export';
 
 describe('buildPotExpensesCSVContent', () => {
-  it('builds expense rows with owner split and status', () => {
+  it('builds expense rows with owner split and receipt status', () => {
     const csv = buildPotExpensesCSVContent(
       'Trip',
       [
@@ -22,9 +22,9 @@ describe('buildPotExpensesCSVContent', () => {
       'owner',
     );
 
-    expect(csv).toContain('Date,Memo,Amount,Currency,Paid By,Your Split,Confirmed,Receipt');
+    expect(csv).toContain('Date,Memo,Amount,Currency,Paid By,Your Split,Receipt');
     expect(csv).toContain('Lunch,30.00,USD,You,10.00');
-    expect(csv).toContain('Yes');
+    expect(csv).toContain('✓ Yes');
   });
 });
 

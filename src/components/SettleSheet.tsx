@@ -1,4 +1,4 @@
-import { X, Check, Clock } from "lucide-react";
+import { X, Check } from "lucide-react";
 import { useState } from "react";
 import { motion } from "motion/react";
 
@@ -8,10 +8,8 @@ interface SettleSheetProps {
   amount: number;
   preferredMethod?: "Bank" | "PayPal" | "DOT" | "Cash";
   pots: { id: string; name: string; amount: number }[];
-  hasPendingAttestations?: boolean;
   onClose: () => void;
   onConfirm: (method: "Bank" | "PayPal" | "DOT" | "Cash") => void;
-  onReviewPending: () => void;
   onViewHistory: () => void;
 }
 
@@ -21,10 +19,8 @@ export function SettleSheet({
   amount,
   preferredMethod,
   pots,
-  hasPendingAttestations = false,
   onClose,
   onConfirm,
-  onReviewPending,
   onViewHistory,
 }: SettleSheetProps) {
   const [step, setStep] = useState<1 | 2>(1);
@@ -101,20 +97,6 @@ export function SettleSheet({
           <div className="p-4 max-h-[500px] overflow-y-auto">
             {step === 1 ? (
               <div className="space-y-4">
-                {/* Pending Attestations Banner */}
-                {hasPendingAttestations && (
-                  <button
-                    onClick={onReviewPending}
-                    className="w-full p-3 bg-destructive/10 border border-destructive/20 rounded-xl flex items-center gap-3 hover:bg-destructive/20 transition-colors"
-                  >
-                    <Clock className="w-5 h-5 text-destructive-foreground flex-shrink-0" />
-                    <div className="flex-1 text-left">
-                      <p className="text-sm text-destructive-foreground">Attestations required</p>
-                      <p className="text-xs text-destructive-foreground/70">Review pending expenses first</p>
-                    </div>
-                  </button>
-                )}
-
                 {/* Scope Chip */}
                 <div className="flex items-center gap-2">
                   <div className="px-2.5 py-1 bg-muted/60 rounded-full text-xs text-muted-foreground">
@@ -123,7 +105,7 @@ export function SettleSheet({
                 </div>
 
                 {/* Preferred Method (Big Button) */}
-                {preferredMethod && !hasPendingAttestations && (
+                {preferredMethod && (
                   <button
                     onClick={() => handleMethodSelect(preferredMethod)}
                     className="w-full p-6 glass-sm rounded-2xl hover:bg-muted/50 transition-all duration-200 active:scale-[0.98] active-ripple border-2 border-border/50"
@@ -139,22 +121,20 @@ export function SettleSheet({
                 )}
 
                 {/* Other Methods (Tiny Text Links) */}
-                {!hasPendingAttestations && (
-                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                    <span>or</span>
-                    {otherMethods.map((method, index) => (
-                      <span key={method}>
-                        <button
-                          onClick={() => handleMethodSelect(method)}
-                          className="hover:text-foreground transition-colors underline"
-                        >
-                          {method}
-                        </button>
-                        {index < otherMethods.length - 1 && <span className="mx-1">•</span>}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                  <span>or</span>
+                  {otherMethods.map((method, index) => (
+                    <span key={method}>
+                      <button
+                        onClick={() => handleMethodSelect(method)}
+                        className="hover:text-foreground transition-colors underline"
+                      >
+                        {method}
+                      </button>
+                      {index < otherMethods.length - 1 && <span className="mx-1">•</span>}
+                    </span>
+                  ))}
+                </div>
 
                 {/* Pots Breakdown */}
                 <div className="mt-6 pt-4 border-t border-border/30 space-y-2">

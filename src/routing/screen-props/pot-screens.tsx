@@ -52,8 +52,6 @@ export function renderPotHome(ctx: RouterContext) {
             handleArchivePot,
             handleLeavePot,
             deleteExpense,
-            attestExpense,
-            batchAttestExpenses,
             addExpenseToPot,
             handleRemoveMember,
             persistPotPartial,
@@ -138,13 +136,6 @@ export function renderPotHome(ctx: RouterContext) {
                 void revokeInviteForPot(pot.id, memberId.replace("invite-", ""));
             }}
             onDeleteExpense={deleteExpense}
-            onAttestExpense={(expenseId, silent) => {
-                attestExpense(expenseId);
-                if (!silent) {
-                    showToast("Expense confirmed", "success");
-                }
-            }}
-            onBatchAttestExpenses={batchAttestExpenses}
             onShowToast={showToast}
             onAddContribution={() => push({ type: "add-contribution" })}
             onWithdraw={() => push({ type: "withdraw-funds" })}
@@ -319,16 +310,11 @@ export function renderExpenseDetail(ctx: RouterContext) {
             currentPot: pot,
             currentPotLoading,
             hasLoadedInitialData,
-            pots,
-            currentPotId,
         },
-        userState: { user, walletConnected },
+        userState: { user },
         actions: {
-            setPots,
             setCurrentExpenseId,
-            setWalletConnected,
             deleteExpense,
-            attestExpense,
             showToast,
         },
     } = ctx;
@@ -342,14 +328,11 @@ export function renderExpenseDetail(ctx: RouterContext) {
                 baseCurrency={
                     (pot as Pot | null | undefined)?.baseCurrency || "USD"
                 }
-                walletConnected={walletConnected}
                 onBack={back}
                 isLoading
                 onEdit={() => undefined}
                 onDelete={() => undefined}
-                onAttest={() => undefined}
                 onCopyReceiptLink={() => undefined}
-                onConnectWallet={() => setWalletConnected(true)}
                 expense={undefined as any}
                 members={[]}
             />
@@ -377,7 +360,6 @@ export function renderExpenseDetail(ctx: RouterContext) {
             members={detailMembers}
             currentUserId={user?.id || "owner"}
             baseCurrency={pot.baseCurrency}
-            walletConnected={walletConnected}
             onBack={back}
             onEdit={() => {
                 setCurrentExpenseId(expense.id);
@@ -387,28 +369,9 @@ export function renderExpenseDetail(ctx: RouterContext) {
                 });
             }}
             onDelete={() => deleteExpense(expense.id, { navigateBack: true })}
-            onAttest={() => attestExpense(expense.id)}
             onCopyReceiptLink={() =>
                 showToast("Receipt link copied", "success")
             }
-            onUpdateExpense={(updates) => {
-                setPots(
-                    pots.map((p) =>
-                        p.id === currentPotId
-                            ? {
-                                  ...p,
-                                  expenses: p.expenses.map((e) =>
-                                      e.id === expense.id
-                                          ? { ...e, ...updates }
-                                          : e
-                                  ),
-                              }
-                            : p
-                    )
-                );
-                showToast("Expense anchored on-chain", "success");
-            }}
-            onConnectWallet={() => setWalletConnected(true)}
         />
     );
 }
