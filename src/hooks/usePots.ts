@@ -89,9 +89,6 @@ export function usePots(pageSize = 10): UsePotsResult {
       // Simple heuristic: if we got fewer than requested, we're at the end
       setHasMore(newPots.length === pageSize);
       
-      if (import.meta.env.DEV) {
-        console.log(`[usePots] Loaded ${newPots.length} pots (offset: ${currentOffset})`);
-      }
     } catch (error) {
       console.error('[usePots] Failed to load pots:', error);
       if (isRefresh) setPots([]);
@@ -125,6 +122,11 @@ export function usePots(pageSize = 10): UsePotsResult {
     // Intentionally keyed by auth scope only.
     // loadPots depends on offset/pageSize and would cause unnecessary loops here.
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      // Reset fetch guard so React StrictMode's second invocation (or re-mount after
+      // auth scope change) isn't blocked by a stale isFetchingRef from the first run.
+      isFetchingRef.current = false;
+    };
   }, [authScopeKey]);
 
   // Listen for global refresh events (e.g. after creating a pot)

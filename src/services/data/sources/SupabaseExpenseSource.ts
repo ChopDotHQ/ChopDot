@@ -229,7 +229,14 @@ export class SupabaseExpenseSource {
     for (const row of (expenseRows ?? []) as Array<{ id: string; pot_id: string; amount_minor: number | string; paid_by: string | null; currency_code?: string | null; metadata?: Record<string, unknown> | null }>) {
       const potId = row.pot_id;
       const currency = row.currency_code ?? 'USD';
-      const amount = fromMinorAmount(row.amount_minor, currency);
+      let amount = fromMinorAmount(row.amount_minor, currency);
+      // Fallback: if amount_minor is 0 (e.g. DOT expenses stored without minor conversion),
+      // compute from metadata split totals — same strategy as mapExpenseRow
+      if (amount === 0 && Array.isArray(row.metadata?.split)) {
+        amount = (row.metadata!.split as Array<{ amount?: number }>).reduce(
+          (sum, s) => sum + Number(s.amount ?? 0), 0,
+        );
+      }
       const metadataPaidBy = typeof row.metadata?.paidBy === 'string' ? row.metadata.paidBy : null;
       expenseIdToPotId.set(row.id, potId);
       expenseIdToCurrency.set(row.id, currency);

@@ -42,7 +42,9 @@ export class SupabasePotSource {
 
     const rows = (data ?? []) as unknown as SupabasePotRow[];
     const potMembersByPotId = await this.fetchMembersByPotId(rows.map((row) => row.id));
-    return rows.map((row) => mapPotRow(row, potMembersByPotId.get(row.id) ?? null, []));
+    // Don't pass [] as expensesOverride — let mapPotRow read from metadata.expenses
+    // (expenses stored in the normalized table are handled via getExpenseSummaries)
+    return rows.map((row) => mapPotRow(row, potMembersByPotId.get(row.id) ?? null));
   }
 
   async getPot(id: string): Promise<Pot | null> {

@@ -16,6 +16,7 @@ interface Pot {
   id: string;
   name: string;
   type?: "expense" | "savings";
+  baseCurrency?: string;
   myExpenses: number;
   totalExpenses: number;
   net: number;
@@ -117,6 +118,7 @@ export function PotsHome({
         id: pot.id,
         name: pot.name,
         type: pot.type,
+        baseCurrency: pot.baseCurrency,
         myExpenses,
         totalExpenses,
         net,
@@ -181,6 +183,16 @@ export function PotsHome({
   const formatCurrency = (amount: number, withSign: boolean = false): string => {
     const absoluteAmount = Math.abs(amount);
     const sign = withSign ? (amount > 0 ? '+' : amount < 0 ? '-' : '') : '';
+    return `${sign}$${absoluteAmount.toFixed(2)}`;
+  };
+
+  // Currency-aware formatter for pot-level amounts
+  const formatPotAmount = (amount: number, currency?: string, withSign: boolean = false): string => {
+    const absoluteAmount = Math.abs(amount);
+    const sign = withSign ? (amount > 0 ? '+' : amount < 0 ? '-' : '') : '';
+    if (currency === 'DOT') {
+      return `${sign}${absoluteAmount.toFixed(6)} DOT`;
+    }
     return `${sign}$${absoluteAmount.toFixed(2)}`;
   };
 
@@ -315,6 +327,7 @@ export function PotsHome({
           <div className="grid grid-cols-4 gap-2">
             {/* Add Expense - Primary Action */}
             <button
+              aria-label="Add expense"
               onClick={() => onQuickAddExpense?.(pots)}
               className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 ${isPSA ? '' : ''}`}
               style={isPSA ? psaStyles.pinkAccentButton : {
@@ -335,6 +348,7 @@ export function PotsHome({
 
             {/* Settle - Secondary */}
             <button
+              aria-label="Settle up"
               onClick={onQuickSettle}
               className={isPSA ? `flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 ${psaClasses.card}` : 'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]'}
               style={isPSA ? psaStyles.card : undefined}
@@ -352,6 +366,7 @@ export function PotsHome({
 
             {/* Scan QR - Tertiary */}
             <button
+              aria-label="Scan QR code"
               onClick={onQuickScan}
               className={isPSA ? `flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 ${psaClasses.card}` : 'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]'}
               style={isPSA ? psaStyles.card : undefined}
@@ -369,6 +384,7 @@ export function PotsHome({
 
             {/* Request - Tertiary */}
             <button
+              aria-label="Request payment"
               onClick={onQuickRequest}
               className={isPSA ? `flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 ${psaClasses.card}` : 'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl transition-all duration-200 active:scale-95 card hover:shadow-[var(--shadow-fab)]'}
               style={isPSA ? psaStyles.card : undefined}
@@ -495,6 +511,7 @@ export function PotsHome({
                     return (
                       <button
                         key={pot.id}
+                        aria-label={`Open ${pot.name} pot`}
                         onClick={() => onPotClick?.(pot.id)}
                         className={isPSA ? `w-full p-4 ${psaClasses.card} text-left transition-all duration-200` : 'w-full p-4 card text-left card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200'}
                         style={isPSA ? psaStyles.card : undefined}
@@ -521,13 +538,13 @@ export function PotsHome({
                                 <div>
                                   <p className="text-micro text-secondary mb-0.5">Your contribution</p>
                                   <p className="text-[18px] tabular-nums" style={{ fontWeight: 600 }}>
-                                    ${pot.myExpenses.toFixed(2)}
+                                    {formatPotAmount(pot.myExpenses, pot.baseCurrency)}
                                   </p>
                                 </div>
                                 <div className="text-right">
                                   <p className="text-micro text-secondary mb-0.5">Total pooled</p>
                                   <p className="text-[24px] tabular-nums" style={{ fontWeight: 700, color: 'var(--money)' }}>
-                                    ${pot.totalExpenses.toFixed(2)}
+                                    {formatPotAmount(pot.totalExpenses, pot.baseCurrency)}
                                   </p>
                                 </div>
                               </>
@@ -536,7 +553,7 @@ export function PotsHome({
                                 <div>
                                   <p className="text-micro text-secondary mb-0.5">Total expenses</p>
                                   <p className="text-[18px] tabular-nums" style={{ fontWeight: 600 }}>
-                                    ${pot.totalExpenses.toFixed(2)}
+                                    {formatPotAmount(pot.totalExpenses, pot.baseCurrency)}
                                   </p>
                                 </div>
                                 <div className="text-right">
@@ -545,16 +562,16 @@ export function PotsHome({
                                     className="text-[24px] tabular-nums"
                                     style={{
                                       fontWeight: 700,
-                                      color: Math.abs(pot.net) < 0.01
+                                      color: Math.abs(pot.net) < (pot.baseCurrency === 'DOT' ? 0.000001 : 0.01)
                                         ? 'var(--muted)'
                                         : pot.net >= 0
                                           ? 'var(--money)'
                                           : 'var(--ink)'
                                     }}
                                   >
-                                    {Math.abs(pot.net) < 0.01
-                                      ? '$0.00'
-                                      : `${pot.net >= 0 ? '+' : '-'}$${Math.abs(pot.net).toFixed(2)}`
+                                    {Math.abs(pot.net) < (pot.baseCurrency === 'DOT' ? 0.000001 : 0.01)
+                                      ? formatPotAmount(0, pot.baseCurrency)
+                                      : formatPotAmount(pot.net, pot.baseCurrency, true)
                                     }
                                   </p>
                                 </div>
@@ -568,9 +585,9 @@ export function PotsHome({
                               <span className="text-micro text-secondary">Budget</span>
                               <span className="text-micro text-foreground tabular-nums">
                                 <span className={isOverBudget ? "text-destructive" : ""}>
-                                  ${pot.totalExpenses}
+                                  {formatPotAmount(pot.totalExpenses, pot.baseCurrency)}
                                 </span>
-                                <span className="text-secondary"> / ${pot.budget}</span>
+                                <span className="text-secondary"> / {formatPotAmount(pot.budget || 0, pot.baseCurrency)}</span>
                               </span>
                             </div>
                             <div className="h-1 bg-muted rounded-full overflow-hidden">

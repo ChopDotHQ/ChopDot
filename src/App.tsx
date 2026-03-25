@@ -105,6 +105,7 @@ function AppContent() {
   const derived = useDerivedData({
     pots: potState.pots, settlements: potState.settlements,
     userId: user?.id, currentPot: potState.currentPot as Pot | null | undefined,
+    summaries: potState.summaries,
   });
 
   const actions = useAppActions({
