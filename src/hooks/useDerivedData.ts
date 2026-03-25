@@ -4,7 +4,6 @@ import { calculateSettlements } from '../utils/settlements';
 import type { Pot, Settlement, Person, ActivityItem, PotHistory } from '../types/app';
 import type { ExpenseSummary } from '../services/data/types';
 import type { PersonSettlement, SettlementBreakdown } from '../utils/settlements';
-import { usePots } from './usePots';
 
 type PendingExpense = {
   id: string;
@@ -51,9 +50,7 @@ export const useDerivedData = ({
   currentPot,
   summaries: summariesProp,
 }: UseDerivedDataParams) => {
-  // Fetch summaries directly so they're always up-to-date regardless of prop threading
-  const { summaries: fetchedSummaries } = usePots();
-  const summaries = summariesProp ?? fetchedSummaries;
+  const summaries = summariesProp;
   const currentUserId = userId || 'owner';
   const people: Person[] = useMemo(() => {
     const peopleMap = new Map<string, Person>();

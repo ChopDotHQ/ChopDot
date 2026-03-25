@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Expense, ExpenseSummary } from '../types';
 import type { ExpenseListOptions } from '../repositories/ExpenseRepository';
 import type { SupabaseExpenseRow, SupabaseExpenseSplitRow } from '../types/supabase';
-import { getOptionalUserId, requireAuthenticatedUser } from './supabase-auth-helper';
+import { getOptionalUserId } from './supabase-auth-helper';
 import { isUuid, stripUndefined } from './supabase-utils';
 import { mapExpenseRow, normalizeExpenseId } from './expense-row-mapper';
 import { fromMinorAmount, toMinorAmount } from '../utils/amounts';
@@ -208,7 +208,12 @@ export class SupabaseExpenseSource {
     potIds: string[],
     userId: string,
   ): Promise<Record<string, ExpenseSummary>> {
-    const resolvedUserId = userId || (await requireAuthenticatedUser(this.client, 'read expense summaries'));
+    // Guard: guests and unauthenticated users must never hit Supabase for summaries.
+    // All other expense methods already check getOptionalUserId; this is the one that was missing it.
+    const authedUserId = await getOptionalUserId(this.client, 'read expense summaries');
+    if (!authedUserId) return {};
+
+    const resolvedUserId = authedUserId || userId;
     const uuidPotIds = potIds.filter((id) => isUuid(id));
     if (uuidPotIds.length === 0) {
       return {};
