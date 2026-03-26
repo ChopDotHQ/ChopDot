@@ -106,16 +106,23 @@ export async function initSession(
 
   let unsubscribe: (() => void) | undefined;
 
-  const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
+  const { data: sub } = supabase.auth.onAuthStateChange((event, newSession) => {
+    if (import.meta.env.DEV) {
+      console.log('[auth] onAuthStateChange:', event);
+    }
     if (newSession?.user) {
+      // Session present — apply regardless of event type (covers TOKEN_REFRESHED,
+      // USER_UPDATED, SIGNED_IN, INITIAL_SESSION, etc.)
       applySession(newSession.user as unknown as Record<string, unknown>, newSession.access_token, setUser);
-    } else {
+    } else if (event === 'SIGNED_OUT') {
+      // Explicit sign-out or expired refresh token — clear everything
       if (!tryRestoreGuestFromStorage(allowLocalGuestFallback, setUser)) {
         setUser(null);
         clearAuthItem(AUTH_USER_KEY);
         clearAuthItem(AUTH_TOKEN_KEY);
       }
     }
+    // Other no-session events (e.g. PASSWORD_RECOVERY) are intentionally ignored
   });
   unsubscribe = () => sub.subscription.unsubscribe();
 
@@ -160,10 +167,17 @@ export async function checkSession(
   const storedUser = getAuthItem(AUTH_USER_KEY);
   const storedToken = getAuthItem(AUTH_TOKEN_KEY);
   if (storedUser && storedToken) {
-    const userData = JSON.parse(storedUser) as User;
-    if (allowLocalGuestFallback || userData?.authMethod !== 'guest') {
-      setUser(userData);
-    } else {
+    try {
+      const userData = JSON.parse(storedUser) as User;
+      if (allowLocalGuestFallback || userData?.authMethod !== 'guest') {
+        setUser(userData);
+      } else {
+        setUser(null);
+      }
+    } catch {
+      // Corrupted storage — clear and force re-login
+      clearAuthItem(AUTH_USER_KEY);
+      clearAuthItem(AUTH_TOKEN_KEY);
       setUser(null);
     }
   } else {

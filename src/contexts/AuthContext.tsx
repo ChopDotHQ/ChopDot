@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { useAccount } from './AccountContext';
 import { getSupabase } from '../utils/supabase-client';
 import { setErrorTrackingUser } from '../utils/errorTracking';
@@ -38,6 +38,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const account = useAccount();
   const useSupabaseAnonymousGuest = import.meta.env.VITE_ENABLE_SUPABASE_ANON_GUEST_LOGIN === '1';
   const allowLocalGuestFallback = !useSupabaseAnonymousGuest;
+  // Guard against StrictMode double-invocation of the auto-login effect.
+  // Without this, two concurrent wallet sign requests hit the 30s nonce cooldown.
+  const autoLoginInFlightRef = useRef(false);
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
@@ -116,6 +119,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.warn('[auth.signUp] profile upsert failed:', (e as Error).message);
         }
       }
+    } catch (error) {
+      console.error('[auth.signUp] failed:', error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -135,14 +141,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         account.disconnect();
       }
-      const supabase = getSupabase();
-      if (supabase) await supabase.auth.signOut();
+      // Clear local state first — user is logged out regardless of what happens next
       clearAuthItem(AUTH_USER_KEY);
       clearAuthItem(AUTH_TOKEN_KEY);
       setUser(null);
+      // Best-effort Supabase sign-out — failure doesn't block logout
+      const supabase = getSupabase();
+      if (supabase) {
+        try {
+          await supabase.auth.signOut();
+        } catch (err) {
+          console.warn('[AuthContext] Supabase signOut failed (local session already cleared):', err);
+        }
+      }
     } catch (error) {
       console.error('Logout failed:', error);
-      throw error;
+      // Don't re-throw — local state is already cleared, user is effectively signed out
     } finally {
       setIsLoading(false);
     }
@@ -192,15 +206,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [allowLocalGuestFallback]);
 
-  // Auto-login when a linked wallet is detected
+  // Auto-login when a linked wallet is detected.
+  // The ref guard prevents React StrictMode's double-invocation from firing two
+  // concurrent sign requests, which would hit the 30s nonce cooldown on the second.
   useEffect(() => {
     if (!account.linkedUserId || account.status !== 'connected' || !account.address || user || isLoading) return;
+    if (autoLoginInFlightRef.current) return;
 
+    autoLoginInFlightRef.current = true;
     (async () => {
       try {
         const walletAddress = account.address;
         if (!walletAddress) return;
-
         if (!getSupabase()) return;
 
         const nonce = await requestWalletNonce(walletAddress);
@@ -227,6 +244,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('[AuthContext] Auto-login successful');
       } catch (error) {
         console.error('[AuthContext] Auto-login failed:', error);
+      } finally {
+        autoLoginInFlightRef.current = false;
       }
     })();
   }, [account.linkedUserId, account.status, account.address, account.connector, user, isLoading, login]);
