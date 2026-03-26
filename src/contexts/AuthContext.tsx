@@ -36,8 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const account = useAccount();
-  const dataSource = import.meta.env.VITE_DATA_SOURCE || 'local';
-  const allowLocalGuestFallback = dataSource !== 'supabase';
+  const useSupabaseAnonymousGuest = import.meta.env.VITE_ENABLE_SUPABASE_ANON_GUEST_LOGIN === '1';
+  const allowLocalGuestFallback = !useSupabaseAnonymousGuest;
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
@@ -151,15 +151,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginAsGuest = useCallback(async () => {
     try {
       setIsLoading(true);
-      const useSupabaseAnonymous = (import.meta.env.VITE_DATA_SOURCE || 'local') === 'supabase';
-      await loginAsGuestAction(getSupabase(), useSupabaseAnonymous, setUser);
+      await loginAsGuestAction(getSupabase(), useSupabaseAnonymousGuest, setUser);
     } catch (error) {
       console.error('Guest login failed:', error);
       throw error;
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [useSupabaseAnonymousGuest]);
 
   const loginWithEthereum = useCallback(async () => {
     try {

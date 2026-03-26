@@ -25,6 +25,7 @@ import { useOverlayHandlers } from './hooks/useOverlayHandlers';
 import { buildOverlayProps } from './hooks/useOverlayProps';
 import { useEnsureUserProfile } from './hooks/useEnsureUserProfile';
 import { useAppActions } from './hooks/useAppActions';
+import { usePersistedPaymentMethods } from './hooks/usePersistedPaymentMethods';
 import type { PaymentMethod } from './components/screens/PaymentMethods';
 import type { Pot } from './types/app';
 
@@ -63,8 +64,16 @@ function AppContent() {
   const [selectedCounterpartyId, setSelectedCounterpartyId] = useState<string | null>(null);
   const [walletConnected, setWalletConnected] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState<{ provider: string; address: string; name?: string }>();
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(() => INITIAL_PAYMENT_METHODS);
-  const [preferredMethodId, setPreferredMethodId] = useState<string>('1');
+  const {
+    paymentMethods,
+    setPaymentMethods,
+    preferredMethodId,
+    setPreferredMethodId,
+  } = usePersistedPaymentMethods({
+    storageScope: user?.id || (isGuest ? 'guest' : 'default'),
+    initialMethods: INITIAL_PAYMENT_METHODS,
+    initialPreferredMethodId: '1',
+  });
   const [newPot, setNewPot] = useState<Partial<Pot>>(() => ({ ...INITIAL_NEW_POT }));
 
   const potState = usePotState({ authLoading, isAuthenticated, user, isGuest, account, screen, stack, showToast });
@@ -102,6 +111,7 @@ function AppContent() {
     newPot, setNewPot, potService, expenseService, memberService,
     usingSupabaseSource: potState.usingSupabaseSource,
     pots: potState.pots, setPots: potState.setPots,
+    settlements: potState.settlements,
     setSettlements: potState.setSettlements,
     currentPotId: potState.currentPotId, setCurrentPotId: potState.setCurrentPotId,
     currentExpenseId, currentPot: potState.currentPot,
@@ -222,7 +232,7 @@ function AppContent() {
               handleDeletePot: actions.handleDeletePot, handleArchivePot: actions.handleArchivePot, handleLeavePot: actions.handleLeavePot,
               persistPotPartial: actions.persistPotPartial,
               acceptInvite: inviteFlow.acceptInvite, declineInvite: inviteFlow.declineInvite,
-              confirmSettlement: actions.confirmSettlement, showToast,
+              confirmSettlement: actions.confirmSettlement, retrySettlementProof: actions.retrySettlementProof, showToast,
               newPotState: newPot, joinProcessingRef: inviteFlow.joinProcessingRef, selectedCounterpartyId,
             }}
             flags={{ DEMO_MODE, POLKADOT_APP_ENABLED }}

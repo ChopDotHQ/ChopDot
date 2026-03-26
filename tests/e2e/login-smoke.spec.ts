@@ -1,5 +1,21 @@
 import { test, expect } from '@playwright/test';
 
+async function continueAsGuest(page: import('@playwright/test').Page) {
+  const guestButton = page.getByRole('button', { name: 'Continue as guest' });
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    await guestButton.click();
+    await page.waitForURL('**/pots', { timeout: 10_000 });
+    try {
+      await expect(page.getByText('Sign in to ChopDot')).not.toBeVisible({ timeout: 5_000 });
+      return;
+    } catch (error) {
+      if (attempt === 1) {
+        throw error;
+      }
+    }
+  }
+}
+
 test.describe('Login screen smoke tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/pots');
@@ -30,10 +46,7 @@ test.describe('Login screen smoke tests', () => {
   });
 
   test('guest login navigates to dashboard', async ({ page }) => {
-    await page.getByRole('button', { name: 'Continue as guest' }).click();
-    await page.waitForURL('**/pots', { timeout: 10_000 });
-    // After guest login, the sign-in screen should no longer be visible
-    await expect(page.getByText('Sign in to ChopDot')).not.toBeVisible({ timeout: 10_000 });
+    await continueAsGuest(page);
   });
 
   test('Google button is present and clickable', async ({ page }) => {

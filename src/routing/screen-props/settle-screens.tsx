@@ -99,6 +99,85 @@ function buildTrackedConfirmationResultFromLeg({
     };
 }
 
+type SelectionBalance = {
+    id: string;
+    name: string;
+    amount: number;
+    direction: 'owe' | 'owed';
+    paymentPreference?: string;
+    trustScore?: number;
+};
+
+function buildSelectionBalances({
+    latestTrackedCloseout,
+    currentPot,
+    normalizedCurrentPot,
+    settleCurrentUserId,
+    balances,
+}: {
+    latestTrackedCloseout?: ReturnType<typeof findLatestTrackedCloseout>;
+    currentPot: RouterContext['data']['currentPot'];
+    normalizedCurrentPot: RouterContext['data']['normalizedCurrentPot'];
+    settleCurrentUserId: string;
+    balances: RouterContext['data']['balances'];
+}): SelectionBalance[] {
+    if (latestTrackedCloseout) {
+        const nextBalances: SelectionBalance[] = [];
+        latestTrackedCloseout.legs
+            .filter((leg) => leg.fromMemberId === settleCurrentUserId || leg.toMemberId === settleCurrentUserId)
+            .forEach((leg) => {
+                if (leg.fromMemberId === settleCurrentUserId) {
+                    const member = currentPot?.members.find((entry) => entry.id === leg.toMemberId)
+                        || normalizedCurrentPot?.members.find((entry) => entry.id === leg.toMemberId);
+                    nextBalances.push({
+                        id: leg.toMemberId,
+                        name: member?.name || leg.toMemberId,
+                        amount: Number(leg.amount),
+                        direction: 'owe',
+                        paymentPreference: leg.asset,
+                    });
+                    return;
+                }
+                if (leg.toMemberId === settleCurrentUserId) {
+                    const member = currentPot?.members.find((entry) => entry.id === leg.fromMemberId)
+                        || normalizedCurrentPot?.members.find((entry) => entry.id === leg.fromMemberId);
+                    nextBalances.push({
+                        id: leg.fromMemberId,
+                        name: member?.name || leg.fromMemberId,
+                        amount: Number(leg.amount),
+                        direction: 'owed',
+                        paymentPreference: leg.asset,
+                    });
+                }
+            });
+        return nextBalances;
+    }
+
+    const potSettlements =
+        normalizedCurrentPot
+            ? calculatePotSettlements(normalizedCurrentPot as any, settleCurrentUserId)
+            : balances;
+
+    return [
+        ...potSettlements.youOwe.map((person) => ({
+            id: person.id,
+            name: person.name,
+            amount: Number(person.totalAmount),
+            direction: 'owe' as const,
+            trustScore: person.trustScore,
+            paymentPreference: person.paymentPreference,
+        })),
+        ...potSettlements.owedToYou.map((person) => ({
+            id: person.id,
+            name: person.name,
+            amount: Number(person.totalAmount),
+            direction: 'owed' as const,
+            trustScore: person.trustScore,
+            paymentPreference: person.paymentPreference,
+        })),
+    ];
+}
+
 export function renderSettleSelection(ctx: RouterContext) {
     const {
         data: { normalizedCurrentPot, balances, currentPot, currentPotId },
@@ -109,69 +188,13 @@ export function renderSettleSelection(ctx: RouterContext) {
 
     const settleCurrentUserId = isGuest ? 'owner' : (user?.id || 'owner');
     const latestTrackedCloseout = findLatestTrackedCloseout(currentPot || normalizedCurrentPot || undefined);
-    const selectionBalances = latestTrackedCloseout
-        ? (() => {
-            const nextBalances: Array<{
-                id: string;
-                name: string;
-                amount: number;
-                direction: 'owe' | 'owed';
-                paymentPreference: string;
-            }> = [];
-            latestTrackedCloseout.legs
-                .filter((leg) => leg.fromMemberId === settleCurrentUserId || leg.toMemberId === settleCurrentUserId)
-                .forEach((leg) => {
-                    if (leg.fromMemberId === settleCurrentUserId) {
-                        const member = currentPot?.members.find((entry) => entry.id === leg.toMemberId)
-                            || normalizedCurrentPot?.members.find((entry) => entry.id === leg.toMemberId);
-                        nextBalances.push({
-                            id: leg.toMemberId,
-                            name: member?.name || leg.toMemberId,
-                            amount: Number(leg.amount),
-                            direction: 'owe',
-                            paymentPreference: leg.asset,
-                        });
-                        return;
-                    }
-                    if (leg.toMemberId === settleCurrentUserId) {
-                        const member = currentPot?.members.find((entry) => entry.id === leg.fromMemberId)
-                            || normalizedCurrentPot?.members.find((entry) => entry.id === leg.fromMemberId);
-                        nextBalances.push({
-                            id: leg.fromMemberId,
-                            name: member?.name || leg.fromMemberId,
-                            amount: Number(leg.amount),
-                            direction: 'owed',
-                            paymentPreference: leg.asset,
-                        });
-                    }
-                });
-            return nextBalances;
-        })()
-        : (() => {
-            const potSettlements =
-                normalizedCurrentPot
-                    ? calculatePotSettlements(normalizedCurrentPot as any, settleCurrentUserId)
-                    : balances;
-
-            return [
-                ...potSettlements.youOwe.map((p) => ({
-                    id: p.id,
-                    name: p.name,
-                    amount: Number(p.totalAmount),
-                    direction: "owe" as const,
-                    trustScore: p.trustScore,
-                    paymentPreference: p.paymentPreference,
-                })),
-                ...potSettlements.owedToYou.map((p) => ({
-                    id: p.id,
-                    name: p.name,
-                    amount: Number(p.totalAmount),
-                    direction: "owed" as const,
-                    trustScore: p.trustScore,
-                    paymentPreference: p.paymentPreference,
-                })),
-            ];
-        })();
+    const selectionBalances = buildSelectionBalances({
+        latestTrackedCloseout,
+        currentPot,
+        normalizedCurrentPot,
+        settleCurrentUserId,
+        balances,
+    });
 
     return (
         <SettleSelection
@@ -179,6 +202,7 @@ export function renderSettleSelection(ctx: RouterContext) {
             balances={selectionBalances}
             baseCurrency={currentPot?.baseCurrency || "USD"}
             onBack={() => {
+                setSelectedCounterpartyId(null);
                 if (currentPotId) {
                     replace({ type: "pot-home", potId: currentPotId });
                 } else {
@@ -187,7 +211,7 @@ export function renderSettleSelection(ctx: RouterContext) {
             }}
             onSelectPerson={(personId) => {
                 setSelectedCounterpartyId(personId);
-                push({ type: "settle-home" });
+                push({ type: "settle-home", personId });
             }}
         />
     );
@@ -195,20 +219,32 @@ export function renderSettleSelection(ctx: RouterContext) {
 
 export function renderSettleHome(ctx: RouterContext) {
     const {
-        data: { currentPot, currentPotId, normalizedCurrentPot, balances, pots, people },
+        screen,
+        data: { currentPot, currentPotId, normalizedCurrentPot, balances, pots },
         userState: { user, isGuest },
         nav: { push, replace, reset },
-        actions: { setPots, confirmSettlement, showToast, selectedCounterpartyId },
+        actions: { setPots, confirmSettlement, setSelectedCounterpartyId, showToast, selectedCounterpartyId },
     } = ctx;
 
     const shCurrentUserId = isGuest ? 'owner' : (user?.id || 'owner');
     const shLabel = currentPot ? currentPot.name : "All pots";
     const shCurrency = currentPot?.baseCurrency || "USD";
-    const personIdFromNav = selectedCounterpartyId;
+    const personIdFromRoute =
+        screen && screen.type === 'settle-home'
+            ? screen.personId || null
+            : null;
+    const personIdFromNav = personIdFromRoute || selectedCounterpartyId;
 
     const potForCloseout =
         currentPotId ? (normalizedCurrentPot || currentPot || undefined) : undefined;
     const latestCloseout = potForCloseout ? findLatestTrackedCloseout(potForCloseout) : undefined;
+    const availableBalances = buildSelectionBalances({
+        latestTrackedCloseout: latestCloseout,
+        currentPot,
+        normalizedCurrentPot,
+        settleCurrentUserId: shCurrentUserId,
+        balances,
+    });
     const sourceData = currentPotId && normalizedCurrentPot
         ? calculatePotSettlements(normalizedCurrentPot as any, shCurrentUserId)
         : balances;
@@ -287,25 +323,9 @@ export function renderSettleHome(ctx: RouterContext) {
             return nextSettlements;
         })();
 
-    const settlementsForUi =
-        reMappedSettlements.length > 0 || !personIdFromNav
-            ? reMappedSettlements
-            : (() => {
-                const roPerson = people.find((p) => p.id === personIdFromNav);
-                if (!roPerson) return reMappedSettlements;
-                return [
-                    {
-                        id: roPerson.id,
-                        name: roPerson.name,
-                        totalAmount: 0,
-                        direction: 'owe' as const,
-                        pots: [] as { potId: string; potName: string; amount: number }[],
-                    },
-                ];
-            })();
-
+    const settlementsForUi = reMappedSettlements;
     const hasPersonMatch =
-        !!personIdFromNav && settlementsForUi.some((s) => s.id === personIdFromNav);
+        !!personIdFromNav && settlementsForUi.some((settlement) => settlement.id === personIdFromNav);
     const targetCounterpartyId = hasPersonMatch ? personIdFromNav : settlementsForUi[0]?.id;
     const selectedCounterparty = [...sourceData.youOwe, ...sourceData.owedToYou]
         .find((p) => p.id === targetCounterpartyId);
@@ -333,9 +353,32 @@ export function renderSettleHome(ctx: RouterContext) {
                 || findCloseoutLegForMembers(latestCloseout, targetCounterpartyId, shCurrentUserId)
             : undefined;
 
+    if (personIdFromNav && !hasPersonMatch) {
+        return (
+            <SettleSelection
+                potName={currentPot?.name}
+                balances={availableBalances}
+                baseCurrency={shCurrency}
+                onBack={() => {
+                    setSelectedCounterpartyId(null);
+                    if (currentPotId) {
+                        replace({ type: "pot-home", potId: currentPotId });
+                    } else {
+                        reset({ type: "people-home" });
+                    }
+                }}
+                onSelectPerson={(personId) => {
+                    setSelectedCounterpartyId(personId);
+                    replace({ type: "settle-home", personId });
+                }}
+            />
+        );
+    }
+
     return (
         <SettleHome
             onBack={() => {
+                setSelectedCounterpartyId(null);
                 if (currentPotId) {
                     replace({ type: "settle-selection" });
                 } else {
@@ -406,7 +449,13 @@ export function renderSettleHome(ctx: RouterContext) {
                 const targetSettlementId = personIdFromNav || reMappedSettlements[0]?.id;
                 const settlement = reMappedSettlements.find(s => s.id === targetSettlementId);
                 if (!settlement) {
-                    showToast("Error: Could not find settlement details", "error");
+                    setSelectedCounterpartyId(null);
+                    showToast("Settlement target is no longer available. Pick a person again.", "error");
+                    if (currentPotId) {
+                        replace({ type: "settle-selection" });
+                    } else {
+                        reset({ type: "people-home" });
+                    }
                     return;
                 }
                 const result = await confirmSettlement({
@@ -422,10 +471,16 @@ export function renderSettleHome(ctx: RouterContext) {
                             : undefined,
                 });
                 if (result) {
+                    setSelectedCounterpartyId(null);
                     push({ type: 'settlement-confirmation', result });
                 }
             }}
             onHistory={() => {
+                setSelectedCounterpartyId(null);
+                if (targetCounterpartyId) {
+                    push({ type: "settlement-history", personId: targetCounterpartyId });
+                    return;
+                }
                 push({ type: "settlement-history" });
             }}
             onOpenTrackedConfirmation={() => {
@@ -467,13 +522,21 @@ export function renderSettleHome(ctx: RouterContext) {
 
 export function renderSettlementHistory(ctx: RouterContext) {
     const {
+        screen,
         data: { settlements, people, pots },
+        actions: { retrySettlementProof },
         nav: { back },
     } = ctx;
+    const personId =
+        screen && screen.type === 'settlement-history'
+            ? screen.personId
+            : undefined;
 
     return (
         <SettlementHistory
             onBack={back}
+            personId={personId}
+            onRetryProof={retrySettlementProof}
             settlements={settlements.map((s) => ({
                 id: s.id,
                 method: s.method,
@@ -495,6 +558,7 @@ export function renderSettlementHistory(ctx: RouterContext) {
 export function renderSettlementConfirmation(ctx: RouterContext) {
     const {
         screen,
+        actions: { setSelectedCounterpartyId },
         nav: { back, push, reset },
     } = ctx;
 
@@ -504,8 +568,14 @@ export function renderSettlementConfirmation(ctx: RouterContext) {
         <SettlementConfirmation
             onBack={back}
             result={screen.result}
-            onViewHistory={() => push({ type: "settlement-history" })}
-            onDone={() => reset({ type: "pots-home" })}
+            onViewHistory={() => {
+                setSelectedCounterpartyId(null);
+                push({ type: "settlement-history", personId: screen.result.counterpartyId });
+            }}
+            onDone={() => {
+                setSelectedCounterpartyId(null);
+                reset({ type: "pots-home" });
+            }}
         />
     );
 }
