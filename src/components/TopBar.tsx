@@ -19,7 +19,7 @@ export function TopBar({ title, onBack, rightAction }: TopBarProps) {
           <ChevronLeft className="w-5 h-5" />
         </button>
       )}
-      <h1 className="text-screen-title flex-1">{title}</h1>
+      <h1 className="text-screen-title flex-1 truncate min-w-0">{title}</h1>
       {rightAction}
     </div>
   );
