@@ -36,7 +36,7 @@
 ### IPFS & Storage
 - **IPFS/Crust Guide:** [`docs/IPFS_CRUST_GUIDE.md`](docs/IPFS_CRUST_GUIDE.md) - Complete IPFS integration guide
 - **Sync Analysis:** [`TECHNICAL_SYNC_ANALYSIS.md`](TECHNICAL_SYNC_ANALYSIS.md) - Multi-user sync challenges and solutions
-- **Sharing Guide:** [`SHARING_VS_ADDING_MEMBERS.md`](SHARING_VS_ADDING_MEMBERS.md) - User guide for pot sharing
+- **Sharing Guide:** [`docs/product/SHARING_VS_ADDING_MEMBERS.md`](docs/product/SHARING_VS_ADDING_MEMBERS.md) - User guide for pot sharing
 
 ---
 

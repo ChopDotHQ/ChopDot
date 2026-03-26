@@ -70,8 +70,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "vite.config.ts",
-    "eslint.config.js",
-    "test-supabase-auth.ts"
+    "eslint.config.js"
   ],
   "exclude": [
     "node_modules",

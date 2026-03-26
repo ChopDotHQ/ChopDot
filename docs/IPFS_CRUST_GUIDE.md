@@ -218,7 +218,7 @@ When users share a pot via IPFS link, each person gets a snapshot copy. Changes 
 
 - **Technical Sync Analysis:** `TECHNICAL_SYNC_ANALYSIS.md` - Detailed analysis of syncing challenges
 - **Implementation Analysis:** `CRUST_IPFS_IMPLEMENTATION_ANALYSIS.md` - Comprehensive code flow analysis
-- **Sharing Guide:** `SHARING_VS_ADDING_MEMBERS.md` - User guide for sharing vs adding members
+- **Sharing Guide:** `docs/product/SHARING_VS_ADDING_MEMBERS.md` - User guide for sharing vs adding members
 
 ---
 

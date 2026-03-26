@@ -220,6 +220,6 @@ supabase db push
 
 ## Related Docs
 
-- `SUPABASE_SETUP.md` - General Supabase setup guide
+- `docs/setup/SUPABASE_SETUP.md` - General Supabase setup guide
 - `supabase-dev.sh` - Helper script for migration commands
 - Migration conflict fix: See git commit `be255d1` and related commits

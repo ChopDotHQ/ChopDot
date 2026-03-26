@@ -300,7 +300,7 @@ These features are **critical** for ChopDot to achieve basic parity with Splitwi
    - **Current State:** CRDT-based real-time sync **prototype exists** (`src/services/crdt/realtimeSync.ts`, `src/hooks/usePotSync.ts`) but **not integrated** into main app components and likely experimental/not production-ready
    - **Required:** Integrate `usePotSync` hook into `PotHome`, `ExpensesTab`, and other components
    - **Evidence:** 
-     - ✅ Implementation: `CRDT_SYNC_IMPLEMENTATION.md` (Nov 13, 2025 - "Implementation Complete")
+     - ✅ Historical implementation notes were archived locally from the repo root after the CRDT spike
      - ✅ Code: `src/services/crdt/realtimeSync.ts` (PotRealtimeSync class with WebSocket)
      - ✅ Hook: `src/hooks/usePotSync.ts` (React hook for CRDT sync)
      - ❌ Integration: No components use `usePotSync` (grep shows no matches in `src/components`)
@@ -329,9 +329,9 @@ These features are **critical** for ChopDot to achieve basic parity with Splitwi
      - `src/components/screens/ExpensesTab.tsx`
      - `src/components/screens/MembersTab.tsx`
      - `src/App.tsx` (pot loading logic)
-   - **Status:** ✅ Implementation complete (`CRDT_SYNC_IMPLEMENTATION.md`), ❌ Integration pending
+   - **Status:** ✅ Historical spike implemented, ❌ integration into the current product baseline still pending
    - **Files to modify:** Component files listed above, replace data source hooks
-   - **Reference:** `QUICK_START_CRDT.md` for integration examples
+   - **Reference:** rely on `src/services/crdt/*` and `src/hooks/usePotSync.ts` directly; earlier CRDT quick-start notes were archived locally
 
 2. **Cross-Device Multi-User Sync** (M effort)
    - **Problem:** Same as above - CRDT sync supports multi-user but not integrated.
@@ -402,7 +402,7 @@ These features are **critical** for ChopDot to achieve basic parity with Splitwi
    - **Action:** Review `src/components/screens/ExpenseDetail.tsx` line 231
 
 3. **Multi-User Sync Integration Priority**
-   - **Status:** CRDT sync is implemented (`CRDT_SYNC_IMPLEMENTATION.md`) but not integrated into components
+   - **Status:** CRDT sync code exists but is not integrated into components
    - **Verification Needed:** Confirm integration priority - is it acceptable to ship with CRDT sync available but not integrated, or must it be integrated before launch?
    - **Action:** Product decision on integration timeline vs. launch date
 
@@ -473,7 +473,7 @@ These features are **critical** for ChopDot to achieve basic parity with Splitwi
 ### Key Files for Parity Work
 
 - **Sync Integration:** `src/components/screens/PotHome.tsx`, `src/components/screens/ExpensesTab.tsx`, `src/components/screens/MembersTab.tsx`, `src/App.tsx` (replace `usePot` with `usePotSync`)
-- **Sync Implementation (already done):** `src/services/crdt/realtimeSync.ts`, `src/hooks/usePotSync.ts`, `CRDT_SYNC_IMPLEMENTATION.md`
+- **Sync Implementation (already done):** `src/services/crdt/realtimeSync.ts`, `src/hooks/usePotSync.ts`
 - **Notifications:** `src/components/screens/NotificationCenter.tsx`, notification service
 - **Receipt OCR:** `src/components/screens/AddExpense.tsx`, OCR service
 - **Templates:** `src/components/screens/AddExpense.tsx`, template storage
