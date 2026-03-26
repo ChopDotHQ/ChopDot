@@ -604,13 +604,13 @@ export function PotsHome({
                             <div className="flex items-center justify-between mb-0.5">
                               <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Total Pooled</span>
                               <span className="text-micro text-foreground tabular-nums">
-                                ${pot.totalPooled}
+                                {formatPotAmount(pot.totalPooled ?? 0, pot.baseCurrency)}
                               </span>
                             </div>
                             <div className="flex items-center justify-between mb-0.5">
                               <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Yield Rate</span>
                               <span className="text-micro text-foreground tabular-nums">
-                                ${pot.yieldRate}%
+                                {pot.yieldRate?.toFixed(1)}%
                               </span>
                             </div>
                           </div>
