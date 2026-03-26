@@ -161,7 +161,7 @@ function AppContent() {
 
   if (!isAuthenticated) {
     return (
-      <div className="app-shell bg-background overflow-auto">
+      <div className="fixed inset-0 overflow-auto">
         <AuthScreen onAuthSuccess={() => reset({ type: 'pots-home' })} />
       </div>
     );
