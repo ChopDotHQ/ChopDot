@@ -15,6 +15,7 @@ interface AppActionsDeps extends BusinessParams {
   people: Person[];
   userId: string | undefined;
   currentUserAddress?: string | null;
+  settlements: Settlement[];
   setSettlements: Dispatch<SetStateAction<Settlement[]>>;
   copyInviteLink: (potId: string) => Promise<void>;
   resendInviteForPot: (potId: string, inviteId: string) => Promise<void>;
@@ -24,8 +25,9 @@ interface AppActionsDeps extends BusinessParams {
 export function useAppActions(deps: AppActionsDeps) {
   const business = useBusinessActions(deps);
 
-  const { confirmSettlement } = useSettlementActions({
+  const { confirmSettlement, retrySettlementProof } = useSettlementActions({
     pots: deps.pots,
+    settlements: deps.settlements,
     currentPot: deps.currentPot,
     currentPotId: deps.currentPotId,
     setPots: deps.setPots,
@@ -74,6 +76,7 @@ export function useAppActions(deps: AppActionsDeps) {
   return {
     ...business,
     confirmSettlement,
+    retrySettlementProof,
     persistPotPartial,
     copyInviteLink: deps.copyInviteLink,
     resendInviteForPot: deps.resendInviteForPot,

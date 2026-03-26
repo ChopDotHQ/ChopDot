@@ -1,12 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Send, ArrowLeft, Check } from "lucide-react";
 import { deliverText, type DeliveryMode } from "../../utils/delivery";
+import {
+  buildPaymentRequestText,
+  formatRequestAmount,
+  inferRequestCurrency,
+  type RequestPaymentBreakdown,
+} from "../../utils/requestPayment";
 
 interface PersonBalance {
   id: string;
   name: string;
   totalAmount: number;
-  breakdown: { potName: string; amount: number }[];
+  breakdown: RequestPaymentBreakdown[];
   trustScore: number;
   paymentPreference: string;
 }
@@ -14,33 +20,24 @@ interface PersonBalance {
 interface RequestPaymentProps {
   people: PersonBalance[];
   onBack: () => void;
-  onSendRequest: (personId: string, message: string) => boolean | Promise<boolean> | void;
+  onSendRequest: (
+    personId: string,
+    message: string,
+    context: {
+      deliveryMethod: DeliveryMethod;
+      requestText: string;
+    },
+  ) => boolean | Promise<boolean> | void;
 }
 
 type DeliveryMethod = DeliveryMode | "in-app";
 
-const formatUsd = (amount: number) => `$${amount.toFixed(2)}`;
-
-const buildPaymentRequestText = (person: PersonBalance, message: string) => {
-  const lines: string[] = [
-    `Payment request from ChopDot`,
-    `For: ${person.name}`,
-    `Amount: ${formatUsd(person.totalAmount)}`,
-  ];
-
-  if (person.breakdown.length > 0) {
-    const breakdown = person.breakdown
-      .map((item) => `${item.potName} (${formatUsd(item.amount)})`)
-      .join(", ");
-    lines.push(`Pots: ${breakdown}`);
+const personAmountLabel = (person: PersonBalance) => {
+  const currency = inferRequestCurrency(person);
+  if (currency === null && person.breakdown.length > 0) {
+    return "Mixed";
   }
-
-  const trimmed = message.trim();
-  if (trimmed.length > 0) {
-    lines.push(`Message: ${trimmed}`);
-  }
-
-  return lines.join("\n");
+  return formatRequestAmount(person.totalAmount, currency);
 };
 
 export function RequestPayment({
@@ -57,6 +54,7 @@ export function RequestPayment({
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedPerson = people.find(p => p.id === selectedPersonId);
+  const selectedPersonCurrency = selectedPerson ? inferRequestCurrency(selectedPerson) : null;
 
   useEffect(() => {
     return () => {
@@ -77,12 +75,18 @@ export function RequestPayment({
     setIsSending(true);
     setSendError(null);
     try {
+      const requestText = buildPaymentRequestText(personToRequest, message);
       const deliveryMode = await deliverText({
         title: "ChopDot payment request",
-        text: buildPaymentRequestText(personToRequest, message),
+        text: requestText,
       });
       const delivery: DeliveryMethod = deliveryMode === "none" ? "in-app" : deliveryMode;
-      const result = await Promise.resolve(onSendRequest(selectedPersonId, message));
+      const result = await Promise.resolve(
+        onSendRequest(selectedPersonId, message, {
+          deliveryMethod: delivery,
+          requestText,
+        }),
+      );
       if (result === false) {
         setSendError("Request could not be sent. Please try again.");
         return;
@@ -198,24 +202,32 @@ export function RequestPayment({
                         <p className="text-caption text-muted">
                           {person.breakdown.length} pot{person.breakdown.length !== 1 ? 's' : ''}
                         </p>
+                        {inferRequestCurrency(person) === null && person.breakdown.length > 1 && (
+                          <>
+                            <span className="text-caption text-muted">•</span>
+                            <p className="text-caption text-muted">Mixed currencies</p>
+                          </>
+                        )}
                         <span className="text-caption text-muted">•</span>
                         <p className="text-caption text-muted">{person.paymentPreference}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-section" style={{ color: 'var(--success)' }}>
-                        ${person.totalAmount.toFixed(2)}
+                        {personAmountLabel(person)}
                       </p>
                     </div>
                   </div>
 
                   {/* Breakdown */}
-                  {selectedPersonId === person.id && person.breakdown.length > 1 && (
+                  {selectedPersonId === person.id && person.breakdown.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-border/50 space-y-1.5">
                       {person.breakdown.map((pot, i) => (
                         <div key={i} className="flex items-center justify-between">
                           <p className="text-caption text-secondary">{pot.potName}</p>
-                          <p className="text-caption text-muted">${pot.amount.toFixed(2)}</p>
+                          <p className="text-caption text-muted">
+                            {formatRequestAmount(pot.amount, pot.currency)}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -269,7 +281,9 @@ export function RequestPayment({
             <span className="text-body" style={{ fontWeight: 500 }}>
               {isSending
                 ? "Sending request..."
-                : `Request $${selectedPerson.totalAmount.toFixed(2)} from ${selectedPerson.name}`}
+                : selectedPersonCurrency === null && selectedPerson.breakdown.length > 0
+                  ? `Request payment from ${selectedPerson.name}`
+                  : `Request ${formatRequestAmount(selectedPerson.totalAmount, selectedPersonCurrency)} from ${selectedPerson.name}`}
             </span>
           </button>
         </div>

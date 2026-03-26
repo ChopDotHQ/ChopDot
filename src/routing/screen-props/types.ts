@@ -95,7 +95,14 @@ export interface AppRouterProps {
     setSettlements: Dispatch<SetStateAction<StoredSettlement[]>>;
     setNotifications: (updater: (prev: Notification[]) => Notification[]) => void;
     createPot: () => Promise<void>;
-    addExpenseToPot: (potId: string, data: any) => void;
+    addExpenseToPot: (
+      potId: string,
+      data: any,
+      options?: {
+        navigateToPotHome?: boolean;
+        showSuccessToast?: boolean;
+      },
+    ) => void;
     updateExpense: (data: any) => void;
     deleteExpense: (expenseId?: string, options?: { navigateBack?: boolean }) => void;
     addContribution: (amount: number, method: 'wallet' | 'bank') => void;
@@ -129,6 +136,7 @@ export interface AppRouterProps {
         legIndex: number;
       };
     }) => Promise<import('../../nav').SettlementResult | null>;
+    retrySettlementProof: (settlementId: string) => Promise<boolean>;
     showToast: (msg: string, type?: 'success' | 'error' | 'info') => void;
     newPotState: Partial<Pot>;
     joinProcessingRef: MutableRefObject<boolean>;

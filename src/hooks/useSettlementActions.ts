@@ -47,6 +47,7 @@ type PotServiceLike = {
 
 type UseSettlementActionsParams = {
   pots: Pot[];
+  settlements: Settlement[];
   currentPot?: Pot | null;
   currentPotId?: string | null;
   setPots: Dispatch<SetStateAction<Pot[]>>;
@@ -63,6 +64,10 @@ type UseSettlementActionsParams = {
       hasReceipt: boolean;
       receiptUrl?: string;
     },
+    options?: {
+      navigateToPotHome?: boolean;
+      showSuccessToast?: boolean;
+    },
   ) => void;
   showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   currentUserId: string;
@@ -74,6 +79,7 @@ type UseSettlementActionsParams = {
 
 export const useSettlementActions = ({
   pots,
+  settlements,
   currentPot,
   currentPotId,
   setPots,
@@ -440,6 +446,9 @@ export const useSettlementActions = ({
           date: new Date().toISOString(),
           split: [{ memberId: receiverMemberId, amount }],
           hasReceipt: false,
+        }, {
+          navigateToPotHome: false,
+          showSuccessToast: false,
         });
         setSettlements((prev) => [
           {
@@ -490,7 +499,80 @@ export const useSettlementActions = ({
     [addExpenseToPot, buildTrackedConfirmationResult, currentUserAddress, currentUserId, persistTrackedCloseoutLeg, pots, setPots, setSettlements, showToast, syncRemotePot],
   );
 
+  const retrySettlementProof = useCallback(async (settlementId: string): Promise<boolean> => {
+    const targetSettlement = settlements.find((entry) => entry.id === settlementId);
+    if (!targetSettlement) {
+      showToast('Settlement not found', 'error');
+      return false;
+    }
+
+    if (targetSettlement.proofTxHash || targetSettlement.proofStatus === 'completed') {
+      showToast('Proof already recorded for this settlement', 'info');
+      return true;
+    }
+
+    if (
+      !targetSettlement.closeoutId ||
+      typeof targetSettlement.closeoutLegIndex !== 'number' ||
+      !targetSettlement.txHash
+    ) {
+      showToast('This settlement does not have retryable proof data', 'info');
+      return false;
+    }
+
+    try {
+      const proofResult = await recordSettlementProof({
+        closeoutId: targetSettlement.closeoutId,
+        legIndex: targetSettlement.closeoutLegIndex,
+        settlementTxHash: targetSettlement.txHash,
+      });
+
+      setSettlements((prev) =>
+        prev.map((entry) =>
+          entry.id === settlementId
+            ? {
+              ...entry,
+              proofTxHash: proofResult.proofTxHash,
+              proofStatus: proofResult.proofStatus,
+              proofContract: proofResult.proofContract,
+            }
+            : entry,
+        ),
+      );
+
+      const targetPotIds = targetSettlement.potIds && targetSettlement.potIds.length > 0
+        ? targetSettlement.potIds
+        : pots
+          .filter((pot) => pot.closeouts?.some((closeout) => closeout.closeoutId === targetSettlement.closeoutId))
+          .map((pot) => pot.id);
+
+      targetPotIds.forEach((potId) => {
+        const targetPot = pots.find((pot) => pot.id === potId);
+        if (!targetPot) {
+          return;
+        }
+
+        persistTrackedCloseoutLeg({
+          targetPot,
+          closeoutId: targetSettlement.closeoutId,
+          legIndex: targetSettlement.closeoutLegIndex,
+          settlementTxHash: targetSettlement.txHash,
+          proofTxHash: proofResult.proofTxHash,
+          proofStatus: proofResult.proofStatus,
+        });
+      });
+
+      showToast('Settlement proof recorded', 'success');
+      return true;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      showToast(`Proof retry failed: ${message}`, 'error');
+      return false;
+    }
+  }, [persistTrackedCloseoutLeg, pots, settlements, setSettlements, showToast]);
+
   return {
     confirmSettlement,
+    retrySettlementProof,
   };
 };
