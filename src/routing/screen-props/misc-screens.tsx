@@ -114,11 +114,30 @@ export function renderMemberDetail(ctx: RouterContext) {
     const mDetailId = screen.memberId;
     const { data: { people, pots, settlements }, nav: { push, back }, actions: { setSelectedCounterpartyId } } = ctx;
     const mDetailPerson = people.find(p => p.id === mDetailId);
+    const currentUserId = ctx.userState.user?.id ?? 'owner';
 
     if (!mDetailPerson) return null;
 
     const mSharedPots = pots.filter(p => !p.archived && p.members.some(m => m.id === mDetailId)).map(p => {
-        return { id: p.id, name: p.name, yourBalance: 0 };
+        // Mirror the balance logic in MembersTab.getMemberBalance:
+        // positive = they owe you, negative = you owe them
+        let theirShareOfMyExpenses = 0;
+        let myShareOfTheirExpenses = 0;
+        p.expenses.forEach((expense) => {
+            if (expense.paidBy === currentUserId) {
+                const split = expense.split.find((s) => s.memberId === mDetailId);
+                if (split) theirShareOfMyExpenses += split.amount;
+            }
+            if (expense.paidBy === mDetailId) {
+                const split = expense.split.find((s) => s.memberId === currentUserId);
+                if (split) myShareOfTheirExpenses += split.amount;
+            }
+        });
+        return {
+            id: p.id,
+            name: p.name,
+            yourBalance: theirShareOfMyExpenses - myShareOfTheirExpenses,
+        };
     });
 
     const mRecentSettlements = settlements.filter(s => s.personId === mDetailId).map(s => ({

@@ -279,6 +279,44 @@ export class SupabasePotSource {
     }
   }
 
+  /**
+   * Upsert a membership row directly into pot_members for an existing user.
+   * Called when adding someone who already has a Supabase UUID (e.g. "add existing contact").
+   */
+  async addMemberRow(potId: string, userId: string, name: string): Promise<void> {
+    // Best-effort: keep the users display name current
+    await this.client
+      .from('users')
+      .upsert({ id: userId, name }, { onConflict: 'id', ignoreDuplicates: true });
+
+    const { error } = await this.client
+      .from('pot_members')
+      .upsert(
+        { pot_id: potId, user_id: userId, role: 'member', status: 'active' },
+        { onConflict: 'pot_id,user_id' },
+      );
+
+    if (error) {
+      throw new Error(`[SupabaseSource] Failed to add member ${userId} to pot ${potId}: ${error.message}`);
+    }
+  }
+
+  /**
+   * Update the display name of a user in the public.users table.
+   * Called when editing a member whose ID is a real Supabase UUID.
+   */
+  async updateMemberName(userId: string, name: string): Promise<void> {
+    const { error } = await this.client
+      .from('users')
+      .update({ name })
+      .eq('id', userId);
+
+    if (error) {
+      // Best-effort — log but don't throw (metadata is the primary store for wallet data)
+      console.warn(`[SupabaseSource] Failed to update users.name for ${userId}:`, error.message);
+    }
+  }
+
   async fetchMembersByPotId(potIds: string[]): Promise<Map<string, Pot['members']>> {
     const result = new Map<string, Pot['members']>();
     if (potIds.length === 0) {
