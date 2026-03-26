@@ -236,8 +236,9 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
 
   return (
     <div
-      className={`min-h-full flex flex-col overflow-auto transition-colors duration-200 ${containerTextColor}`}
+      className={`flex min-h-screen w-full flex-col overflow-auto transition-colors duration-200 ${containerTextColor}`}
       style={{
+        minHeight: '100dvh',
         ...(useGlassmorphism
           ? getPolkadotSecondAgeSceneBackgroundStyles(panelMode, backgroundIndex)
           : (sceneBackgroundStyles[panelMode] ?? sceneBackgroundStyles.dark)),
