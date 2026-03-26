@@ -9,6 +9,7 @@ export interface Invite {
     expires_at: string;
     created_at: string;
     created_by: string;
+    pot_name?: string; // Joined from pots table (may be absent if RLS blocks)
 }
 
 export class InviteService {
@@ -108,7 +109,7 @@ export class InviteService {
     }
 
     /**
-     * Get all pending invites sent TO the current user.
+     * Get all pending invites sent TO the current user, joined with pot name.
      */
     async getMyPendingInvites(): Promise<Invite[]> {
         if (!this.supabase) return [];
@@ -119,7 +120,7 @@ export class InviteService {
 
         const { data, error } = await this.supabase
             .from("invites")
-            .select("*")
+            .select("*, pots(name)")
             .ilike("invitee_email", email)
             .eq("status", "pending")
             .order("created_at", { ascending: false });
@@ -128,7 +129,11 @@ export class InviteService {
             console.warn("[InviteService] getMyPendingInvites failed", error);
             return [];
         }
-        return (data || []) as Invite[];
+        return (data || []).map((row: any) => ({
+            ...row,
+            pot_name: row.pots?.name ?? undefined,
+            pots: undefined,
+        })) as Invite[];
     }
 
     /**
@@ -240,13 +245,14 @@ export class InviteService {
 
     /**
      * Get a single invite by token (for previewing before accept).
+     * Attempts to join pot name — succeeds once the invitee RLS policy is in place.
      */
     async getInviteByToken(token: string): Promise<Partial<Invite> | null> {
         if (!this.supabase) return null;
 
         const { data, error } = await this.supabase
             .from("invites")
-            .select("id, invitee_email, status, created_by, pot_id")
+            .select("id, invitee_email, status, created_by, pot_id, pots(name)")
             .eq("token", token)
             .maybeSingle();
 
@@ -254,6 +260,12 @@ export class InviteService {
             console.warn("[InviteService] getInviteByToken failed", error);
             return null;
         }
-        return data as Partial<Invite>;
+        if (!data) return null;
+        const row = data as any;
+        return {
+            ...row,
+            pot_name: row.pots?.name ?? undefined,
+            pots: undefined,
+        } as Partial<Invite>;
     }
 }

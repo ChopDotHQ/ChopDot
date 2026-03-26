@@ -8,7 +8,16 @@ import { deliverText } from "../utils/delivery";
 type ToastType = "success" | "error" | "info";
 
 type PotInvite = Pick<Invite, "id" | "invitee_email" | "status" | "token">;
-type PendingInvite = Pick<Invite, "id" | "token" | "created_at" | "expires_at">;
+type PendingInvite = Pick<Invite, "id" | "token" | "created_at" | "expires_at"> & {
+  pot_id?: string;
+  pot_name?: string;
+};
+
+interface InviteDetails {
+  potName?: string;
+  potId?: string;
+  inviteeEmail?: string;
+}
 
 type UseInviteFlowParams = {
   inviteService: InviteService;
@@ -25,6 +34,7 @@ type UseInviteFlowParams = {
 type UseInviteFlowResult = {
   invitesByPot: Record<string, PotInvite[]>;
   pendingInviteToken: string | null;
+  inviteDetails: InviteDetails | null;
   isProcessingInvite: boolean;
   pendingInvites: PendingInvite[];
   showInviteModal: boolean;
@@ -53,6 +63,7 @@ export const useInviteFlow = ({
 }: UseInviteFlowParams): UseInviteFlowResult => {
   const [invitesByPot, setInvitesByPot] = useState<Record<string, PotInvite[]>>({});
   const [pendingInviteToken, setPendingInviteToken] = useState<string | null>(null);
+  const [inviteDetails, setInviteDetails] = useState<InviteDetails | null>(null);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [isProcessingInvite, setIsProcessingInvite] = useState(false);
   const joinProcessingRef = useRef(false);
@@ -90,7 +101,14 @@ export const useInviteFlow = ({
 
   const refreshPendingInvites = useCallback(async () => {
     const invites = await inviteService.getMyPendingInvites();
-    setPendingInvites(invites);
+    setPendingInvites(invites.map((inv) => ({
+      id: inv.id,
+      token: inv.token,
+      created_at: inv.created_at,
+      expires_at: inv.expires_at,
+      pot_id: inv.pot_id,
+      pot_name: inv.pot_name,
+    })));
   }, [inviteService]);
 
   const resendInviteLink = useCallback(
@@ -188,6 +206,7 @@ export const useInviteFlow = ({
       }
       refreshPendingInvites();
       cleanInviteParams();
+      setInviteDetails(null);
       setShowInviteModal(false);
     },
     [
@@ -215,6 +234,7 @@ export const useInviteFlow = ({
       showToast("Invite declined", "success");
       refreshPendingInvites();
       cleanInviteParams();
+      setInviteDetails(null);
       setShowInviteModal(false);
     },
     [inviteService, showToast, refreshPendingInvites, cleanInviteParams],
@@ -227,10 +247,24 @@ export const useInviteFlow = ({
       return;
     }
     joinProcessingRef.current = true;
-
     setPendingInviteToken(token);
     setShowInviteModal(true);
-  }, [cleanInviteParams]);
+
+    // Fetch invite details (pot name, invitee email) to show in the modal.
+    // This requires the user to be authenticated — if not yet, details will be
+    // fetched on next render when auth resolves (modal stays open).
+    inviteService.getInviteByToken(token).then((details) => {
+      if (details) {
+        setInviteDetails({
+          potName: details.pot_name,
+          potId: details.pot_id,
+          inviteeEmail: details.invitee_email,
+        });
+      }
+    }).catch(() => {
+      // Non-fatal — modal still shows without details
+    });
+  }, [cleanInviteParams, inviteService]);
 
   const confirmPendingInvite = useCallback(async () => {
     if (!pendingInviteToken) {
@@ -241,6 +275,7 @@ export const useInviteFlow = ({
 
   const cancelPendingInvite = useCallback(() => {
     setPendingInviteToken(null);
+    setInviteDetails(null);
     setShowInviteModal(false);
     joinProcessingRef.current = false;
     cleanInviteParams();
@@ -249,6 +284,7 @@ export const useInviteFlow = ({
   return {
     invitesByPot,
     pendingInviteToken,
+    inviteDetails,
     isProcessingInvite,
     pendingInvites,
     showInviteModal,

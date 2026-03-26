@@ -176,9 +176,15 @@ function AppContent() {
           tabBar={{ activeTab: getActiveTab(), onTabChange: handleTabChange, fabAction: fabState.action, fabVisible: fabState.visible, fabIcon: fabState.icon, fabColor: fabState.color }}
           overlayProps={buildOverlayProps({
             inviteModal: (
-              <AcceptInviteModal isOpen={inviteFlow.showInviteModal} isProcessing={inviteFlow.isProcessingInvite}
+              <AcceptInviteModal
+                isOpen={inviteFlow.showInviteModal}
+                isProcessing={inviteFlow.isProcessingInvite}
                 onAccept={inviteFlow.confirmPendingInvite}
-                onDecline={() => { inviteFlow.pendingInviteToken ? inviteFlow.declineInvite(inviteFlow.pendingInviteToken) : inviteFlow.cancelPendingInvite(); }} />
+                onDecline={() => { inviteFlow.pendingInviteToken ? inviteFlow.declineInvite(inviteFlow.pendingInviteToken) : inviteFlow.cancelPendingInvite(); }}
+                onDismiss={inviteFlow.cancelPendingInvite}
+                potName={inviteFlow.inviteDetails?.potName}
+                inviteeEmail={inviteFlow.inviteDetails?.inviteeEmail}
+              />
             ),
             overlayState: {
               showWalletSheet: overlay.showWalletSheet, showNotifications: overlay.showNotifications,

@@ -44,7 +44,7 @@ interface PotsHomeProps {
   owedToYou?: PersonDebt[];
   onCreatePot: () => void;
   onPotClick?: (potId: string) => void;
-  pendingInvites?: Array<{ id: string; token: string; created_at?: string; expires_at?: string }>;
+  pendingInvites?: Array<{ id: string; token: string; created_at?: string; expires_at?: string; pot_name?: string }>;
   onAcceptInvite?: (token: string) => void;
   onDeclineInvite?: (token: string) => void;
   onSettleWithPerson?: (personId: string) => void;
@@ -410,9 +410,11 @@ export function PotsHome({
                   style={isPSA ? psaStyles.card : undefined}
                 >
                   <div>
-                    <p className="text-body" style={{ fontWeight: 500 }}>You have a pending invite</p>
+                    <p className="text-body" style={{ fontWeight: 500 }}>
+                      {invite.pot_name ? `Invite to "${invite.pot_name}"` : 'Pot invite'}
+                    </p>
                     <p className="text-caption text-secondary">
-                      Accept to join. {invite.expires_at ? `Expires ${new Date(invite.expires_at).toLocaleDateString()}.` : ''}
+                      Accept to join.{invite.expires_at ? ` Expires ${new Date(invite.expires_at).toLocaleDateString()}.` : ''}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
