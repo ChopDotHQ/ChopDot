@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { Screen } from '../nav';
 import type { Pot, Settlement } from '../types/app';
 import type { Notification } from '../components/screens/NotificationCenter';
-import { usePots as useRemotePots } from './usePots';
+import { usePots as useRemotePots, refreshPots } from './usePots';
 import { usePot as useRemotePot } from './usePot';
 import { cleanupBackupTimers } from '../services/backup/autoBackup';
 import { attemptAutoRestore } from '../services/restore/autoRestore';
@@ -69,7 +69,7 @@ export const usePotState = ({
 
   const notifyPotRefresh = useCallback((potId: string) => {
     window.dispatchEvent(new CustomEvent('pot-refresh', { detail: { potId } }));
-    window.dispatchEvent(new CustomEvent('pots-refresh'));
+    refreshPots(); // increments globalRefreshTrigger so usePots handler fires
   }, []);
 
   const dataSourceType = import.meta.env.VITE_DATA_SOURCE || 'local';
