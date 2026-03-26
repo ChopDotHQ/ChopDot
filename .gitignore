@@ -58,6 +58,7 @@ expo-app/.expo/
 expo-app
 expo-app/
 /expo-app
+.expo/
 
 # Generated test output
 output/

@@ -134,7 +134,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
-        sandbox: path.resolve(__dirname, 'sandbox.html'),
+        sandbox: path.resolve(__dirname, 'public/dev/sandbox.html'),
       }
     }
   },

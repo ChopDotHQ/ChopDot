@@ -72,7 +72,7 @@ docs/
 ### I'm a Product Manager
 **Start here:**
 1. `/README.md` (root) - Project overview & roadmap
-2. `/spec.md` - Full specification
+2. `/docs/archive/spec.md` - Archived full specification
 3. `/CHANGELOG.md` - Version history
 
 ---
@@ -88,7 +88,7 @@ docs/
 → [Auth System](./AUTH_SYSTEM.md)
 
 **...know what's implemented vs. planned?**  
-→ `/spec.md` - Full specification and current state
+→ `/docs/archive/spec.md` - Archived full specification and previous state snapshot
 
 **...understand a specific feature?**  
 → [Implementation Docs](./implementation/)
@@ -105,7 +105,7 @@ docs/
 ### "I want to..."
 
 **...add a new feature**  
-1. Check `/spec.md` for context and current state
+1. Check `/docs/archive/spec.md` for historical context
 2. Review related [Implementation Docs](./implementation/)
 3. Follow design system in `/guidelines/`
 
@@ -116,7 +116,7 @@ docs/
 
 **...understand the codebase**  
 1. Read `/README.md` (root) for high-level overview
-2. Check `/spec.md` for detailed specification
+2. Check `/docs/archive/spec.md` for the archived detailed specification
 3. Explore [Implementation Docs](./implementation/) for specific features
 
 ---
@@ -147,7 +147,7 @@ Each feature has detailed documentation in `/docs/implementation/`:
 ## 🛠️ Development Workflow
 
 ### Before You Start
-1. Read `/spec.md` for current state and architecture
+1. Read `/docs/archive/spec.md` for the archived architecture snapshot
 2. Check `/CHANGELOG.md` for recent changes
 3. Review relevant [Implementation Docs](./implementation/)
 
@@ -157,7 +157,7 @@ Each feature has detailed documentation in `/docs/implementation/`:
 - Check browser console for ChopDot logs
 
 ### After Implementing
-- Update `/spec.md` if architecture changes
+- Add or update a current architecture doc under `/docs/` if architecture changes
 - Add implementation doc in `/docs/implementation/`
 - Update `/CHANGELOG.md`
 

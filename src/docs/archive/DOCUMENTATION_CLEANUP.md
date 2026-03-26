@@ -13,7 +13,7 @@
 
 ### Documentation Index
 - `src/docs/README.md` - Removed references to non-existent files:
-  - `CURRENT_STATE.md` (replaced by `/spec.md`)
+  - `CURRENT_STATE.md` (replaced by `/docs/archive/spec.md`)
   - `checkpoint-system.md` (feature removed)
   - `batch-confirm-preview.md` (feature removed)
   - Updated all references to point to correct files
@@ -23,7 +23,7 @@
 ### Root Level
 ```
 ├── README.md                          # Main project overview
-├── spec.md                            # Full specification & current state
+├── docs/archive/spec.md               # Archived specification & prior state
 ├── SECURITY.md                        # Security policy
 ├── SECURITY_REVIEW.md                 # Security audit notes
 ├── FEE_SYSTEM_IMPLEMENTATION.md       # Fee system documentation
@@ -84,7 +84,7 @@ src/
 ### For New Developers
 1. **Start:** `/README.md` (root) - Project overview
 2. **Setup:** `src/docs/SETUP_GUIDE.md` - Get running locally
-3. **Architecture:** `/spec.md` - Full specification
+3. **Architecture:** `/docs/archive/spec.md` - Archived specification
 4. **Reference:** `src/docs/QUICK_REFERENCE.md` - Quick lookup
 
 ### For Designers
@@ -94,7 +94,7 @@ src/
 
 ### For Product Managers
 1. **Start:** `/README.md` (root) - Overview & roadmap
-2. **Spec:** `/spec.md` - Full specification
+2. **Spec:** `/docs/archive/spec.md` - Archived specification
 3. **History:** `src/CHANGELOG.md` - Version history
 
 ## ✅ Cleanup Actions Taken
@@ -121,4 +121,3 @@ src/
 - Consider consolidating `src/README.md` and `src/docs/README.md` if they overlap
 - Review `src/WORKFLOW_GUIDE.md` and `src/EXPORT_CHECKLIST.md` for relevance
 - Consider moving root-level docs (`FEE_SYSTEM_IMPLEMENTATION.md`, etc.) to `docs/` folder
-

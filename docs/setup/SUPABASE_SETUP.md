@@ -121,12 +121,12 @@ This occurs when the connection pooler is blocked or disabled. **Solution:**
 echo "SUPABASE_DB_URL='postgresql://postgres:[YOUR-PASSWORD]@db.jpzacnkirymlyxwmafox.supabase.co:5432/postgres'" >> .env
 
 # 3. Run alternative setup:
-./supabase-setup-alt.sh
+./scripts/supabase/supabase-setup-alt.sh
 ```
 
 **Option 2: Manual Setup**
 ```bash
-./supabase-setup-manual.sh
+./scripts/supabase/supabase-setup-manual.sh
 # Follow the prompts and instructions
 ```
 

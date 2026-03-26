@@ -23,8 +23,8 @@ The following files explicitly mention Splitwise or Tricount as competitors or d
 | File Path | Context | Quote/Reference |
 |-----------|---------|-----------------|
 | `src/README.md` | Direct comparison table | "What Makes ChopDot Different?" table comparing Splitwise/Tricount vs ChopDot on Savings Pots, Settlement, Receipts, UI/UX |
-| `TECHNICAL_SYNC_ANALYSIS.md` | Competitive analysis | "Splitwise/Tricount have real-time sync" as competitive advantage (line 201) |
-| `TECHNICAL_SYNC_ANALYSIS.md` | Solution reference | "Proven approach (Splitwise, Tricount)" for centralized server sync (line 217) |
+| `docs/archive/TECHNICAL_SYNC_ANALYSIS.md` | Competitive analysis | "Splitwise/Tricount have real-time sync" as competitive advantage (line 201) |
+| `docs/archive/TECHNICAL_SYNC_ANALYSIS.md` | Solution reference | "Proven approach (Splitwise, Tricount)" for centralized server sync (line 217) |
 | `docs/GEMINI_POLISH_PLAN.md` | Competitive goal | "leapfrog Splitwise-style apps" in context of Receipt OCR pipeline (line 64) |
 | `src/components/screens/ExpenseDetail.tsx` | UI inspiration | Code comment: `{/* Main Info - Two column layout like Tricount */}` (line 231) |
 
@@ -135,8 +135,8 @@ The following files explicitly mention Splitwise or Tricount as competitors or d
 | Feature | Status | Evidence |
 |---------|--------|----------|
 | In-app notifications | ⚠️ Partial | `src/components/screens/NotificationCenter.tsx` (mock exists) |
-| Push notifications | ❌ Missing | `spec.md` (line 116: "mock NotificationCenter exists", line 446: "No push notifications") |
-| Settlement reminders | ❌ Missing | `spec.md` (Future Roadmap: "Push notifications - Settlement reminders") |
+| Push notifications | ❌ Missing | `docs/archive/spec.md` (line 116: "mock NotificationCenter exists", line 446: "No push notifications") |
+| Settlement reminders | ❌ Missing | `docs/archive/spec.md` (Future Roadmap: "Push notifications - Settlement reminders") |
 | Expense confirmation requests | ❌ Missing | Notifications exist in schema (`src/database/init/01-schema.sql` line 227) but not implemented |
 
 ### Currency & Multi-Currency ✅
@@ -155,8 +155,8 @@ The following files explicitly mention Splitwise or Tricount as competitors or d
 | Feature | Status | Evidence |
 |---------|--------|----------|
 | Mobile-first PWA | ✅ Present | `README.md` (line 24: "iPhone 15 viewport optimized") |
-| iOS-style design | ✅ Present | `src/guidelines/Guidelines.md`, `spec.md` (line 72) |
-| Dark mode | ✅ Present | `src/utils/useTheme.ts`, `spec.md` (line 73) |
+| iOS-style design | ✅ Present | `src/guidelines/Guidelines.md`, `docs/archive/spec.md` (line 72) |
+| Dark mode | ✅ Present | `src/utils/useTheme.ts`, `docs/archive/spec.md` (line 73) |
 | Empty states | ✅ Present | `src/components/EmptyState.tsx` |
 | Loading states (skeletons) | ⚠️ Partial | `src/components/Skeleton.tsx` (components exist; gap noted in `docs/USER_ONBOARDING_READINESS.md`) |
 | Toast notifications | ✅ Present | `src/App.tsx` (showToast helper) |
@@ -169,10 +169,10 @@ The following files explicitly mention Splitwise or Tricount as competitors or d
 
 | Feature | Status | Evidence |
 |---------|--------|----------|
-| Recurring expenses | ❌ Missing | `spec.md` (Future Roadmap: "Smart Features - Recurring expenses") |
-| Expense templates | ❌ Missing | `spec.md` (Future Roadmap: "Smart Features - Templates") |
-| Auto-split suggestions | ❌ Missing | `spec.md` (Future Roadmap: "Smart Features - Auto-split") |
-| DeFi yield (Acala) | ⚠️ Mock | `spec.md` (line 225: "DeFi yield (mock)", line 130: "❌ DeFi yield (Acala integration placeholder)") |
+| Recurring expenses | ❌ Missing | `docs/archive/spec.md` (Future Roadmap: "Smart Features - Recurring expenses") |
+| Expense templates | ❌ Missing | `docs/archive/spec.md` (Future Roadmap: "Smart Features - Templates") |
+| Auto-split suggestions | ❌ Missing | `docs/archive/spec.md` (Future Roadmap: "Smart Features - Auto-split") |
+| DeFi yield (Acala) | ⚠️ Mock | `docs/archive/spec.md` (line 225: "DeFi yield (mock)", line 130: "❌ DeFi yield (Acala integration placeholder)") |
 | Insights dashboard | ⚠️ Partial | `src/components/screens/InsightsScreen.tsx`, `src/App.tsx` (mock data) |
 | Budget tracking | ✅ Present | `src/components/screens/PotHome.tsx` (budget progress) |
 
@@ -216,16 +216,16 @@ The following files explicitly mention Splitwise or Tricount as competitors or d
 | Real-time sync | ✅ | ✅ | ⚠️ Partial | `src/services/crdt/realtimeSync.ts`, `src/hooks/usePotSync.ts` | CRDT sync prototype exists but not integrated; experimental/not production-ready | P0 | M | Component integration, testing |
 | Cross-device sync | ✅ | ✅ | ⚠️ Partial | `src/services/data/sources/SupabaseSource.ts` | Feature-flagged Supabase sync (single user, cross-device); no realtime subscriptions | P0 | M | Multi-user sync |
 | **Notifications** |
-| Push notifications | ✅ | ✅ | ❌ Missing | `spec.md` (line 446) | Mock exists, not implemented | P1 | M | Push service |
+| Push notifications | ✅ | ✅ | ❌ Missing | `docs/archive/spec.md` (line 446) | Mock exists, not implemented | P1 | M | Push service |
 | In-app notifications | ✅ | ✅ | ⚠️ Partial | `src/components/screens/NotificationCenter.tsx` | Mock implementation | P1 | S | Notification service |
-| Settlement reminders | ✅ | ⚠️ Partial | ❌ Missing | `spec.md` (Future Roadmap) | Planned feature | P2 | M | Push notifications |
+| Settlement reminders | ✅ | ⚠️ Partial | ❌ Missing | `docs/archive/spec.md` (Future Roadmap) | Planned feature | P2 | M | Push notifications |
 | **Currency** |
 | Multi-currency | ✅ | ✅ | ✅ Present | `src/services/prices/types.ts` | DOT, USDC, fiat | P0 | - | - |
 | Currency conversion | ✅ | ✅ | ✅ Present | `src/services/prices/coingecko.ts` | Real-time rates | P0 | - | - |
 | **Advanced Features** |
-| Recurring expenses | ✅ | ❌ | ❌ Missing | `spec.md` (Future Roadmap) | Planned feature | P2 | M | Recurrence engine |
-| Expense templates | ✅ | ⚠️ Partial | ❌ Missing | `spec.md` (Future Roadmap) | Planned feature | P2 | S | Template storage |
-| Auto-split suggestions | ⚠️ Partial | ❌ | ❌ Missing | `spec.md` (Future Roadmap) | Planned feature | P2 | M | ML/heuristics |
+| Recurring expenses | ✅ | ❌ | ❌ Missing | `docs/archive/spec.md` (Future Roadmap) | Planned feature | P2 | M | Recurrence engine |
+| Expense templates | ✅ | ⚠️ Partial | ❌ Missing | `docs/archive/spec.md` (Future Roadmap) | Planned feature | P2 | S | Template storage |
+| Auto-split suggestions | ⚠️ Partial | ❌ | ❌ Missing | `docs/archive/spec.md` (Future Roadmap) | Planned feature | P2 | M | ML/heuristics |
 | Budget tracking | ✅ | ✅ | ✅ Present | `src/components/screens/PotHome.tsx` | Per-pot budgets | P1 | - | - |
 | Insights/analytics | ✅ | ⚠️ Partial | ⚠️ Partial | `src/components/screens/InsightsScreen.tsx` | Mock data and placeholder totals | P1 | - | - |
 | **Export/Import** |
@@ -311,7 +311,7 @@ These features are **critical** for ChopDot to achieve basic parity with Splitwi
 2. **Cross-Device Multi-User Sync** ⚠️
    - **Current State:** Supabase sync works for single user across devices. CRDT sync supports multi-user but not integrated.
    - **Required:** Integrate CRDT sync so multiple users can collaborate on same pot with live updates
-   - **Evidence:** `spec.md` (line 445: "Multi-user sync not implemented") - outdated, CRDT sync exists but not used
+   - **Evidence:** `docs/archive/spec.md` (line 445: "Multi-user sync not implemented") - outdated, CRDT sync exists but not used
    - **Impact:** HIGH - Users can't collaborate effectively until integration complete
    - **Effort:** M (1-2 weeks, same as above - part of CRDT integration)
    - **Dependencies:** Real-time sync integration (see above)
@@ -420,7 +420,7 @@ These features are **critical** for ChopDot to achieve basic parity with Splitwi
 
 1. **Multi-User Sync Approach**
    - **Question:** Should ChopDot prioritize centralized sync (fastest parity) or decentralized sync (aligns with Polkadot ethos)?
-   - **Context:** `TECHNICAL_SYNC_ANALYSIS.md` recommends centralized server first, then decentralize
+   - **Context:** `docs/archive/TECHNICAL_SYNC_ANALYSIS.md` recommends centralized server first, then decentralize
    - **Decision Needed:** Product/engineering alignment on sync strategy
 
 2. **Native Mobile Apps**
@@ -430,7 +430,7 @@ These features are **critical** for ChopDot to achieve basic parity with Splitwi
 
 3. **DeFi Yield Integration**
    - **Question:** Is mock DeFi yield sufficient, or is real Acala integration required?
-   - **Context:** `spec.md` lists DeFi yield as mock, Acala integration as future
+   - **Context:** `docs/archive/spec.md` lists DeFi yield as mock, Acala integration as future
    - **Decision Needed:** Product decision on DeFi feature completeness
 
 4. **Expense Attestation System**

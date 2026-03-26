@@ -31,7 +31,7 @@
     "lint:size": "bash scripts/check-file-size.sh 400",
     "lint:circular": "npx madge --circular --extensions ts,tsx src/",
     "verify:edge-functions": "./scripts/verify-edge-functions.sh",
-    "db:setup": "./supabase-setup-local.sh",
+    "db:setup": "./scripts/supabase/supabase-setup-local.sh",
     "db:pull": "bash -c 'set -a && source .env && supabase db pull --db-url \"$SUPABASE_DB_URL\" && npm run db:reset'",
     "db:push": "bash -c 'set -a && source .env && supabase db push --db-url \"$SUPABASE_DB_URL\"'",
     "db:start": "supabase start",

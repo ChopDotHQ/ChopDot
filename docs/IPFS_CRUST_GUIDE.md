@@ -210,13 +210,13 @@ When users share a pot via IPFS link, each person gets a snapshot copy. Changes 
 
 **Why:** IPFS is immutable (snapshots), and there's no coordination mechanism for updates.
 
-**See:** `TECHNICAL_SYNC_ANALYSIS.md` for detailed analysis and potential solutions.
+**See:** `docs/archive/TECHNICAL_SYNC_ANALYSIS.md` for the archived detailed analysis and potential solutions.
 
 ---
 
 ## Related Documentation
 
-- **Technical Sync Analysis:** `TECHNICAL_SYNC_ANALYSIS.md` - Detailed analysis of syncing challenges
+- **Technical Sync Analysis:** `docs/archive/TECHNICAL_SYNC_ANALYSIS.md` - Archived analysis of syncing challenges
 - **Implementation Analysis:** `CRUST_IPFS_IMPLEMENTATION_ANALYSIS.md` - Comprehensive code flow analysis
 - **Sharing Guide:** `docs/product/SHARING_VS_ADDING_MEMBERS.md` - User guide for sharing vs adding members
 

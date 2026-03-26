@@ -21,12 +21,12 @@ Sources:
 
 ## Parity Gaps
 
-- Push notifications is missing: `spec.md` (line 116: "mock NotificationCenter exists", line 446: "No push notifications")
+- Push notifications is missing: `docs/archive/spec.md` (line 116: "mock NotificationCenter exists", line 446: "No push notifications")
 - Receipt OCR is missing: Mentioned in `docs/GEMINI_POLISH_PLAN.md` as future feature
-- Settlement reminders is missing: `spec.md` (Future Roadmap: "Push notifications - Settlement reminders")
+- Settlement reminders is missing: `docs/archive/spec.md` (Future Roadmap: "Push notifications - Settlement reminders")
 - Expense confirmation requests is missing: Notifications exist in schema (`src/database/init/01-schema.sql` line 227) but not implemented
-- Recurring expenses is missing: `spec.md` (Future Roadmap: "Smart Features - Recurring expenses")
-- Expense templates is missing: `spec.md` (Future Roadmap: "Smart Features - Templates")
+- Recurring expenses is missing: `docs/archive/spec.md` (Future Roadmap: "Smart Features - Recurring expenses")
+- Expense templates is missing: `docs/archive/spec.md` (Future Roadmap: "Smart Features - Templates")
 
 ## Stability Risks
 

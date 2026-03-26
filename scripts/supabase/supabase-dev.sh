@@ -41,7 +41,7 @@ case "$1" in
   new)
     if [ -z "$2" ]; then
       echo "❌ Please provide a migration name"
-      echo "Usage: ./supabase-dev.sh new my_migration_name"
+      echo "Usage: ./scripts/supabase/supabase-dev.sh new my_migration_name"
       exit 1
     fi
     echo "📝 Creating new migration: $2"
@@ -50,7 +50,7 @@ case "$1" in
   diff)
     if [ -z "$2" ]; then
       echo "❌ Please provide a migration name"
-      echo "Usage: ./supabase-dev.sh diff my_changes"
+      echo "Usage: ./scripts/supabase/supabase-dev.sh diff my_changes"
       exit 1
     fi
     echo "🔍 Generating migration from schema diff: $2"
@@ -60,7 +60,7 @@ case "$1" in
     echo "Supabase Development Commands"
     echo "=============================="
     echo ""
-    echo "Usage: ./supabase-dev.sh [command]"
+    echo "Usage: ./scripts/supabase/supabase-dev.sh [command]"
     echo ""
     echo "Commands:"
     echo "  setup     - Full setup: link cloud, pull, start, reset (first time)"
@@ -71,13 +71,13 @@ case "$1" in
     echo "  status    - Show status of local services"
     echo "  studio    - Open Supabase Studio (http://localhost:54323)"
     echo "  reset     - Reset local database (reapply all migrations)"
-    echo "  new       - Create new migration: ./supabase-dev.sh new migration_name"
-    echo "  diff      - Generate migration from changes: ./supabase-dev.sh diff migration_name"
+    echo "  new       - Create new migration: ./scripts/supabase/supabase-dev.sh new migration_name"
+    echo "  diff      - Generate migration from changes: ./scripts/supabase/supabase-dev.sh diff migration_name"
     echo ""
     echo "Examples:"
-    echo "  ./supabase-dev.sh setup"
-    echo "  ./supabase-dev.sh new add_user_table"
-    echo "  ./supabase-dev.sh diff my_schema_changes"
-    echo "  ./supabase-dev.sh push"
+    echo "  ./scripts/supabase/supabase-dev.sh setup"
+    echo "  ./scripts/supabase/supabase-dev.sh new add_user_table"
+    echo "  ./scripts/supabase/supabase-dev.sh diff my_schema_changes"
+    echo "  ./scripts/supabase/supabase-dev.sh push"
     ;;
 esac
