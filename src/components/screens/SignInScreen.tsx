@@ -256,7 +256,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       }}
     >
       {isDev && <LoginVariantToggle value={loginVariant} onChange={setLoginVariant} mode={panelMode} />}
-      {enableMobileUi && !device.isMobile && (
+      {isDev && enableMobileUi && !device.isMobile && (
         <ViewModeToggle value={viewModeOverride} onChange={setViewModeOverride} resolvedView={resolvedViewMode} mode={panelMode} />
       )}
       {isDev && <WalletConnectModalToggle enabled={wcModalEnabled} onChange={setWcModalEnabled} mode={panelMode} />}

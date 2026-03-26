@@ -74,12 +74,16 @@ export const sceneBackgroundStyles: Record<PanelMode, CSSProperties> = {
     backgroundPosition: '0 0, 24px 24px',
   },
   light: {
-    backgroundColor: '#fdf7ff',
+    backgroundColor: '#faf5ff',
     color: '#0f0f11',
-    backgroundImage:
-      'radial-gradient(rgba(230,0,122,0.06) 1px, transparent 1px), radial-gradient(rgba(230,0,122,0.03) 1px, transparent 1px)',
-    backgroundSize: '52px 52px, 52px 52px',
-    backgroundPosition: '0 0, 26px 26px',
+    backgroundImage: [
+      'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(230,0,122,0.12) 0%, transparent 100%)',
+      'radial-gradient(rgba(230,0,122,0.07) 1px, transparent 1px)',
+      'radial-gradient(rgba(230,0,122,0.035) 1px, transparent 1px)',
+    ].join(', '),
+    backgroundSize: '100% 100%, 52px 52px, 52px 52px',
+    backgroundPosition: '0 0, 0 0, 26px 26px',
+    backgroundRepeat: 'no-repeat, repeat, repeat',
   },
 };
 
