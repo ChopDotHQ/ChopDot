@@ -158,7 +158,21 @@ export const useInviteFlow = ({
       return;
     }
     refreshPendingInvites();
-  }, [authLoading, isAuthenticated, userId, refreshPendingInvites]);
+
+    // If a URL invite token was detected before auth resolved, retry fetching
+    // its details now that we have a session (the invitee RLS policy requires auth).
+    if (pendingInviteToken && isAuthenticated && !inviteDetails) {
+      inviteService.getInviteByToken(pendingInviteToken).then((details) => {
+        if (details) {
+          setInviteDetails({
+            potName: details.pot_name,
+            potId: details.pot_id,
+            inviteeEmail: details.invitee_email,
+          });
+        }
+      }).catch(() => {});
+    }
+  }, [authLoading, isAuthenticated, userId, refreshPendingInvites, pendingInviteToken, inviteDetails, inviteService]);
 
   const cleanInviteParams = useCallback(() => {
     const cleaned = new URL(window.location.href);
