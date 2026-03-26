@@ -220,7 +220,7 @@ export function renderSettleSelection(ctx: RouterContext) {
 export function renderSettleHome(ctx: RouterContext) {
     const {
         screen,
-        data: { currentPot, currentPotId, normalizedCurrentPot, balances, pots },
+        data: { currentPot, currentPotId, normalizedCurrentPot, balances, pots, people },
         userState: { user, isGuest },
         nav: { push, replace, reset },
         actions: { setPots, confirmSettlement, setSelectedCounterpartyId, showToast, selectedCounterpartyId },
@@ -238,13 +238,6 @@ export function renderSettleHome(ctx: RouterContext) {
     const potForCloseout =
         currentPotId ? (normalizedCurrentPot || currentPot || undefined) : undefined;
     const latestCloseout = potForCloseout ? findLatestTrackedCloseout(potForCloseout) : undefined;
-    const availableBalances = buildSelectionBalances({
-        latestTrackedCloseout: latestCloseout,
-        currentPot,
-        normalizedCurrentPot,
-        settleCurrentUserId: shCurrentUserId,
-        balances,
-    });
     const sourceData = currentPotId && normalizedCurrentPot
         ? calculatePotSettlements(normalizedCurrentPot as any, shCurrentUserId)
         : balances;
@@ -323,7 +316,22 @@ export function renderSettleHome(ctx: RouterContext) {
             return nextSettlements;
         })();
 
-    const settlementsForUi = reMappedSettlements;
+    const settlementsForUi =
+        reMappedSettlements.length > 0 || !personIdFromNav
+            ? reMappedSettlements
+            : (() => {
+                const fallbackPerson = people.find((entry) => entry.id === personIdFromNav);
+                if (!fallbackPerson) return reMappedSettlements;
+                return [
+                    {
+                        id: fallbackPerson.id,
+                        name: fallbackPerson.name,
+                        totalAmount: 0,
+                        direction: 'owe' as const,
+                        pots: [] as { potId: string; potName: string; amount: number }[],
+                    },
+                ];
+            })();
     const hasPersonMatch =
         !!personIdFromNav && settlementsForUi.some((settlement) => settlement.id === personIdFromNav);
     const targetCounterpartyId = hasPersonMatch ? personIdFromNav : settlementsForUi[0]?.id;
@@ -352,28 +360,6 @@ export function renderSettleHome(ctx: RouterContext) {
             ? findCloseoutLegForMembers(latestCloseout, shCurrentUserId, targetCounterpartyId)
                 || findCloseoutLegForMembers(latestCloseout, targetCounterpartyId, shCurrentUserId)
             : undefined;
-
-    if (personIdFromNav && !hasPersonMatch) {
-        return (
-            <SettleSelection
-                potName={currentPot?.name}
-                balances={availableBalances}
-                baseCurrency={shCurrency}
-                onBack={() => {
-                    setSelectedCounterpartyId(null);
-                    if (currentPotId) {
-                        replace({ type: "pot-home", potId: currentPotId });
-                    } else {
-                        reset({ type: "people-home" });
-                    }
-                }}
-                onSelectPerson={(personId) => {
-                    setSelectedCounterpartyId(personId);
-                    replace({ type: "settle-home", personId });
-                }}
-            />
-        );
-    }
 
     return (
         <SettleHome
