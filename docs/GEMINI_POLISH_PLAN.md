@@ -6,7 +6,7 @@ Use this plan to coordinate the “next-level polish” upgrades that came from 
 
 ## Phase 0 – Prep / Shared Context
 
-- ✅ Read `docs/GEMINI_FEEDBACK_CONTEXT.md` + `docs/GEMINI_POLISH_AUDIT.md`
+- ✅ Review the local Gemini feedback context and `docs/GEMINI_POLISH_AUDIT.md` if that working note is available
 - ✅ Confirm target files for each theme (TopBar, SettlementConfirmation, PotsHome, AddExpense, SettleHome, App.tsx, etc.)
 - 🔲 Decide whether we tackle these in one polish sprint or fold into regular releases
 
@@ -75,4 +75,3 @@ Use this plan to coordinate the “next-level polish” upgrades that came from 
 4. **Tracking**: Convert each task into a ticket once we assign owners/dates.
 
 _Update this plan after each milestone (e.g., after Quick Wins, revisit Phase 2 priorities)._ 
-

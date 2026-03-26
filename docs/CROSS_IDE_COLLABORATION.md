@@ -41,10 +41,7 @@ Start from:
 - `AGENTS.md`
 - `.knowns/tasks/`
 
-Treat these generated docs as summaries, not as the primary execution surface:
-
-- `docs/AGENTOPS_OPERATOR_BRIEF.md`
-- `docs/AGENTOPS_TASK_QUEUE.md`
+Treat any generated local summaries as optional aids, not as the primary execution surface.
 
 If repo state has materially changed, refresh the task surface instead of trusting stale generated output.
 

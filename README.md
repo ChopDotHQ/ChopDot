@@ -179,9 +179,6 @@ This repo has an active AgentOps workflow.
 Start here:
 
 - [`AGENTS.md`](AGENTS.md)
-- [`docs/AGENTOPS_INTEGRATION.md`](docs/AGENTOPS_INTEGRATION.md)
-- [`docs/AGENTOPS_OPERATOR_BRIEF.md`](docs/AGENTOPS_OPERATOR_BRIEF.md)
-- [`docs/AGENTOPS_TASK_QUEUE.md`](docs/AGENTOPS_TASK_QUEUE.md)
 - `.knowns/tasks/`
 
-If you are continuing work in a new thread or IDE, prefer `.knowns/tasks` as the execution surface rather than treating generated summaries as the primary truth.
+If you are continuing work in a new thread or IDE, prefer `.knowns/tasks` as the execution surface rather than treating any local generated summaries as the primary truth.
