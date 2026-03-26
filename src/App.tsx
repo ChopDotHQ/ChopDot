@@ -26,6 +26,7 @@ import { buildOverlayProps } from './hooks/useOverlayProps';
 import { useEnsureUserProfile } from './hooks/useEnsureUserProfile';
 import { useAppActions } from './hooks/useAppActions';
 import { usePersistedPaymentMethods } from './hooks/usePersistedPaymentMethods';
+import { ScreenErrorBoundary } from './components/ScreenErrorBoundary';
 import type { PaymentMethod } from './components/screens/PaymentMethods';
 import type { Pot } from './types/app';
 
@@ -168,7 +169,14 @@ function AppContent() {
 
   return (
     <div className="app-shell bg-background overflow-hidden">
-      <Suspense fallback={<div className="flex h-full items-center justify-center text-sm text-secondary">Loading...</div>}>
+      <Suspense fallback={
+        <div className="flex flex-col items-center justify-center h-full gap-3">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'var(--accent)' }}>
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          </div>
+          <p className="text-caption text-secondary">Loading...</p>
+        </div>
+      }>
         <AppLayout
           onSwipeBack={canSwipeBack() ? back : undefined}
           screenKey={screen?.type ?? 'screen'}
@@ -200,6 +208,7 @@ function AppContent() {
             handleAddMemberExisting: actions.handleAddMemberExisting, isGuest, walletAddress: account.address0,
           })}
         >
+          <ScreenErrorBoundary resetKey={screen?.type ?? 'screen'} onGoBack={back}>
           <AppRouter
             screen={screen || null}
             nav={{ push, replace, back, reset }}
@@ -244,6 +253,7 @@ function AppContent() {
             }}
             flags={{ DEMO_MODE, POLKADOT_APP_ENABLED }}
           />
+          </ScreenErrorBoundary>
         </AppLayout>
       </Suspense>
     </div>
