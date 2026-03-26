@@ -69,6 +69,9 @@ export const CreateMemberDTOSchema = MemberSchema.omit({
   id: true,
 }).extend({
   potId: z.string().min(1, 'Pot ID is required'),
+  // When adding an existing user who already has a Supabase UUID, pass it here so the
+  // repository can write directly to pot_members instead of generating a Date.now() id.
+  userId: z.string().optional(),
 });
 
 export type CreateMemberDTO = z.infer<typeof CreateMemberDTOSchema>;

@@ -144,12 +144,13 @@ export function AccountMenu() {
     <div className="relative inline-block">
       <button
         onClick={() => setShowMenu(!showMenu)}
-        className="px-4 py-2 rounded-lg border bg-card hover:bg-muted transition-colors flex items-center gap-2 disabled:opacity-50"
+        className="px-2.5 py-2 sm:px-4 rounded-lg border bg-card hover:bg-muted transition-colors flex items-center gap-1.5 sm:gap-2 disabled:opacity-50"
         style={{ borderColor: 'var(--border)' }}
         disabled={connecting || account.status === 'connecting'}
+        aria-label={connecting || account.status === 'connecting' ? 'Connecting wallet' : 'Connect Wallet'}
       >
-        <Wallet className="w-4 h-4" />
-        <span className="text-sm font-medium">
+        <Wallet className="w-4 h-4 shrink-0" />
+        <span className="text-sm font-medium truncate max-w-[90px]">
           {connecting || account.status === 'connecting' ? 'Connecting...' : 'Connect Wallet'}
         </span>
       </button>

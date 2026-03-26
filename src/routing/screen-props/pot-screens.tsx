@@ -6,8 +6,53 @@ import {
     normalizeExpenses,
     normalizeConfirmations,
 } from "../../utils/normalization";
+import { Skeleton } from "../../components/Skeleton";
 
 type RouterContext = AppRouterProps;
+
+/** Shown while currentPotLoading is true and pot data hasn't arrived yet. */
+function PotHomeLoadingSkeleton({ onBack }: { onBack?: () => void }) {
+    return (
+        <div className="flex flex-col h-full bg-background">
+            {/* Header */}
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+                {onBack && (
+                    <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-muted/30 transition-colors active:scale-95 cursor-pointer">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-foreground">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                    </button>
+                )}
+                <Skeleton height={22} width="45%" />
+            </div>
+            {/* Tab bar skeleton */}
+            <div className="flex gap-1 px-4 py-2 border-b border-border">
+                {[40, 55, 45, 50].map((w, i) => (
+                    <Skeleton key={i} height={28} width={w} className="rounded-lg" />
+                ))}
+            </div>
+            {/* Content */}
+            <div className="flex-1 overflow-auto p-4 space-y-3">
+                {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="card p-4 space-y-3">
+                        <div className="flex justify-between items-start">
+                            <div className="space-y-2">
+                                <Skeleton height={16} width={140} />
+                                <Skeleton height={12} width={90} />
+                            </div>
+                            <Skeleton height={20} width={64} />
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                            {[1, 2].map((j) => (
+                                <Skeleton key={j} width={28} height={28} className="rounded-full" />
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
 
 const PotHome = lazy(() =>
     import("../../components/screens/PotHome").then((module) => ({
@@ -60,6 +105,7 @@ export function renderPotHome(ctx: RouterContext) {
     } = ctx;
 
     if (!screen || screen.type !== "pot-home") return null;
+    if (!pot && ctx.data.currentPotLoading) return <PotHomeLoadingSkeleton onBack={back} />;
     if (!pot) return null;
 
     const potInvites = invitesByPot[pot.id] || [];

@@ -182,25 +182,26 @@ export function calculateSettlements(
     // Net balance: Positive = they owe me. Negative = I owe them.
     const net = owedAmount.minus(oweAmount);
 
-    // Skip if negligible
-    if (net.abs().lessThan(0.01)) continue;
+    // Skip if negligible — use currency-aware threshold
+    // Check if any breakdown involves DOT (micro-precision currency)
+    const allBreakdownsCurrencies = [
+      ...(oweEntry ? oweEntry.settlement.breakdown : []),
+      ...(owedEntry ? owedEntry.settlement.breakdown : [])
+    ];
+    const hasDotBreakdown = allBreakdownsCurrencies.some(b => b.currency === 'DOT');
+    const negligibleThreshold = hasDotBreakdown ? new Decimal('0.000001') : new Decimal('0.01');
+    if (net.abs().lessThan(negligibleThreshold)) continue;
 
     // Determine person info
     const person = people.find(p => p.id === personId);
     // Use data from temporary settlements if person lookup fails (shouldn't happen if people list is complete)
     const stub = oweEntry?.settlement || owedEntry?.settlement;
 
-    // Collect all breakdowns
-    const allBreakdowns = [
-      ...(oweEntry ? oweEntry.settlement.breakdown : []),
-      ...(owedEntry ? owedEntry.settlement.breakdown : [])
-    ];
-
     const baseSettlement: PersonSettlement = {
       id: personId,
       name: person?.name || stub?.name || "Unknown",
       totalAmount: net.abs().toNumber(),
-      breakdown: allBreakdowns,
+      breakdown: allBreakdownsCurrencies,
       trustScore: person?.trustScore || stub?.trustScore || 95,
       paymentPreference: person?.paymentPreference || stub?.paymentPreference,
       address: person?.address || stub?.address,

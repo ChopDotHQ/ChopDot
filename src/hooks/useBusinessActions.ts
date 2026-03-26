@@ -6,6 +6,7 @@ import type { PaymentMethod } from "../components/screens/PaymentMethods";
 import { isBaseCurrency } from "../schema/pot";
 import { triggerHaptic } from "../utils/haptics";
 import { logDev, warnDev } from "../utils/logDev";
+import { refreshPots } from "./usePots";
 
 type ToastType = "success" | "error" | "info";
 
@@ -139,7 +140,7 @@ export const useBusinessActions = ({
       logDev("Pot created via service", { potId: createdPot.id });
 
       if (usingSupabaseSource) {
-        window.dispatchEvent(new CustomEvent("pots-refresh"));
+        refreshPots(); // increments globalRefreshTrigger so usePots handler fires
       } else {
         setPots([...pots, createdPot as Pot]);
       }

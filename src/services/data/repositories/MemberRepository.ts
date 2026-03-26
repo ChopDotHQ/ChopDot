@@ -52,16 +52,36 @@ export class MemberRepository {
   }
 
   /**
-   * Create a new member in a pot
+   * Create a new member in a pot.
+   *
+   * If the source supports `addMemberRow` AND a `userId` was supplied in the DTO
+   * (meaning the person already has a Supabase UUID), write directly to pot_members
+   * instead of embedding in pot metadata. This keeps the relational store consistent.
    */
   async create(potId: string, input: CreateMemberDTO): Promise<Member> {
+    const sourceAny = this.source as any;
+    const userId: string | undefined = input.userId;
+
+    if (userId && typeof sourceAny.addMemberRow === 'function') {
+      await sourceAny.addMemberRow(potId, userId, input.name);
+      return {
+        id: userId,
+        name: input.name,
+        address: input.address || null,
+        verified: input.verified ?? false,
+        role: input.role || 'Member',
+        status: input.status || 'active',
+      };
+    }
+
+    // Local/other sources: embed in pot metadata
     const pot = await this.source.getPot(potId);
     if (!pot) {
       throw new NotFoundError('Pot', potId);
     }
 
     const member: Member = {
-      id: Date.now().toString(), // Temporary ID generation
+      id: userId ?? Date.now().toString(),
       name: input.name,
       address: input.address || null,
       verified: input.verified,
@@ -69,12 +89,11 @@ export class MemberRepository {
       status: input.status || 'active',
     };
 
-    // Check for duplicate ID
+    // Check for duplicate
     if (pot.members?.some(m => m.id === member.id)) {
-      throw new Error(`Member with id "${member.id}" already exists`);
+      return { ...member }; // Idempotent — already exists
     }
 
-    // Add member to pot
     const updatedPot: typeof pot = {
       ...pot,
       members: [...(pot.members || []), member],
@@ -83,13 +102,23 @@ export class MemberRepository {
 
     await this.source.savePot(updatedPot);
 
-    return { ...member }; // Return copy
+    return { ...member };
   }
 
   /**
-   * Update an existing member
+   * Update an existing member.
+   *
+   * If the source supports `updateMemberName` and the memberId looks like a UUID
+   * (i.e. it's a real Supabase user), also update public.users for consistency.
    */
   async update(potId: string, memberId: string, updates: UpdateMemberDTO): Promise<Member> {
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const sourceAny = this.source as any;
+    if (updates.name && UUID_RE.test(memberId) && typeof sourceAny.updateMemberName === 'function') {
+      // Fire-and-forget — failure is logged inside updateMemberName, not thrown
+      void sourceAny.updateMemberName(memberId, updates.name);
+    }
+
     const pot = await this.source.getPot(potId);
     if (!pot) {
       throw new NotFoundError('Pot', potId);

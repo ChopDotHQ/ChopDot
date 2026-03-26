@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Expense, ExpenseSummary } from '../types';
 import type { ExpenseListOptions } from '../repositories/ExpenseRepository';
 import type { SupabaseExpenseRow, SupabaseExpenseSplitRow } from '../types/supabase';
-import { getOptionalUserId, requireAuthenticatedUser } from './supabase-auth-helper';
+import { getOptionalUserId } from './supabase-auth-helper';
 import { isUuid, stripUndefined } from './supabase-utils';
 import { mapExpenseRow, normalizeExpenseId } from './expense-row-mapper';
 import { fromMinorAmount, toMinorAmount } from '../utils/amounts';
@@ -208,7 +208,12 @@ export class SupabaseExpenseSource {
     potIds: string[],
     userId: string,
   ): Promise<Record<string, ExpenseSummary>> {
-    const resolvedUserId = userId || (await requireAuthenticatedUser(this.client, 'read expense summaries'));
+    // Guard: guests and unauthenticated users must never hit Supabase for summaries.
+    // All other expense methods already check getOptionalUserId; this is the one that was missing it.
+    const authedUserId = await getOptionalUserId(this.client, 'read expense summaries');
+    if (!authedUserId) return {};
+
+    const resolvedUserId = authedUserId || userId;
     const uuidPotIds = potIds.filter((id) => isUuid(id));
     if (uuidPotIds.length === 0) {
       return {};
@@ -229,7 +234,14 @@ export class SupabaseExpenseSource {
     for (const row of (expenseRows ?? []) as Array<{ id: string; pot_id: string; amount_minor: number | string; paid_by: string | null; currency_code?: string | null; metadata?: Record<string, unknown> | null }>) {
       const potId = row.pot_id;
       const currency = row.currency_code ?? 'USD';
-      const amount = fromMinorAmount(row.amount_minor, currency);
+      let amount = fromMinorAmount(row.amount_minor, currency);
+      // Fallback: if amount_minor is 0 (e.g. DOT expenses stored without minor conversion),
+      // compute from metadata split totals — same strategy as mapExpenseRow
+      if (amount === 0 && Array.isArray(row.metadata?.split)) {
+        amount = (row.metadata!.split as Array<{ amount?: number }>).reduce(
+          (sum, s) => sum + Number(s.amount ?? 0), 0,
+        );
+      }
       const metadataPaidBy = typeof row.metadata?.paidBy === 'string' ? row.metadata.paidBy : null;
       expenseIdToPotId.set(row.id, potId);
       expenseIdToCurrency.set(row.id, currency);

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { Screen } from '../nav';
 import type { Pot, Settlement } from '../types/app';
 import type { Notification } from '../components/screens/NotificationCenter';
-import { usePots as useRemotePots } from './usePots';
+import { usePots as useRemotePots, refreshPots } from './usePots';
 import { usePot as useRemotePot } from './usePot';
 import { cleanupBackupTimers } from '../services/backup/autoBackup';
 import { attemptAutoRestore } from '../services/restore/autoRestore';
@@ -69,7 +69,7 @@ export const usePotState = ({
 
   const notifyPotRefresh = useCallback((potId: string) => {
     window.dispatchEvent(new CustomEvent('pot-refresh', { detail: { potId } }));
-    window.dispatchEvent(new CustomEvent('pots-refresh'));
+    refreshPots(); // increments globalRefreshTrigger so usePots handler fires
   }, []);
 
   const dataSourceType = import.meta.env.VITE_DATA_SOURCE || 'local';
@@ -388,7 +388,7 @@ export const usePotState = ({
   }, [screen, stack, currentPotId]);
 
   // --- Remote pot sync ---
-  const { pots: remotePots } = useRemotePots();
+  const { pots: remotePots, summaries: remoteSummaries } = useRemotePots();
   const remoteSyncSnapshot = useRef<string>('');
   const hasRemotePot = useMemo(
     () => (currentPotId ? remotePots.some((p) => p.id === currentPotId) : false),
@@ -433,6 +433,9 @@ export const usePotState = ({
     : undefined;
 
   // --- Sync remote pots to local state ---
+  // The sync effect bridges remote pots into local state for localStorage persistence.
+  // It intentionally avoids re-running when remotePots changes to prevent render loops;
+  // for Supabase mode, effectivePots (below) reads remotePots directly.
   useEffect(() => {
     if (!usingSupabaseSource || authLoading || !isAuthenticated) return;
     const serialized = JSON.stringify(remotePots);
@@ -440,6 +443,16 @@ export const usePotState = ({
     remoteSyncSnapshot.current = serialized;
     setPots(remotePots.map((pot) => mergeTrackedPotRecovery(pot) ?? pot) as unknown as Pot[]);
   }, [remotePots, usingSupabaseSource, authLoading, isAuthenticated]);
+
+  // In Supabase mode, use remotePots directly rather than relying on the sync
+  // effect (which can miss updates due to render timing). For local mode, use
+  // the localStorage-backed pots state.
+  const effectivePots = useMemo(() => {
+    if (usingSupabaseSource && remotePots.length > 0) {
+      return remotePots.map((pot) => mergeTrackedPotRecovery(pot) ?? pot) as unknown as Pot[];
+    }
+    return pots;
+  }, [usingSupabaseSource, remotePots, pots]);
 
   // --- Toast when pot not found ---
   useEffect(() => {
@@ -456,7 +469,8 @@ export const usePotState = ({
   }, [usingSupabaseSource, currentPotId, currentPot, currentPotLoading, currentPotError, hasRemotePot, showToast]);
 
   return {
-    pots,
+    pots: effectivePots,
+    summaries: remoteSummaries,
     setPots,
     settlements,
     setSettlements,

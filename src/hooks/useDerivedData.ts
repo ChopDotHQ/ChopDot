@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import Decimal from 'decimal.js';
 import { calculateSettlements } from '../utils/settlements';
 import type { Pot, Settlement, Person, ActivityItem, PotHistory } from '../types/app';
+import type { ExpenseSummary } from '../services/data/types';
+import type { PersonSettlement, SettlementBreakdown } from '../utils/settlements';
 
 type PendingExpense = {
   id: string;
@@ -38,6 +40,7 @@ type UseDerivedDataParams = {
   settlements: Settlement[];
   userId?: string;
   currentPot?: Pot | null;
+  summaries?: Record<string, ExpenseSummary>; // Optional override; falls back to usePots()
 };
 
 export const useDerivedData = ({
@@ -45,7 +48,9 @@ export const useDerivedData = ({
   settlements,
   userId,
   currentPot,
+  summaries: summariesProp,
 }: UseDerivedDataParams) => {
+  const summaries = summariesProp;
   const currentUserId = userId || 'owner';
   const people: Person[] = useMemo(() => {
     const peopleMap = new Map<string, Person>();
@@ -84,6 +89,65 @@ export const useDerivedData = ({
     }
     return result;
   }, [currentUserId, pots, people]);
+
+  // When Supabase pots have no expense data yet (normalized table, not in metadata),
+  // fall back to computing settlements from ExpenseSummary data.
+  const summaryBalances = useMemo(() => {
+    if (balances.youOwe.length > 0 || balances.owedToYou.length > 0) return null;
+    if (!summaries || Object.keys(summaries).length === 0) return null;
+
+    const youOweMap = new Map<string, { settlement: PersonSettlement; total: Decimal }>();
+    const owedToYouMap = new Map<string, { settlement: PersonSettlement; total: Decimal }>();
+
+    for (const [potId, summary] of Object.entries(summaries)) {
+      const pot = pots.find((p) => p.id === potId);
+      if (!pot || pot.archived) continue;
+
+      const net = new Decimal(summary.myExpenses).minus(summary.myShare);
+      const currency = pot.baseCurrency || 'USD';
+      const threshold = currency === 'DOT' ? new Decimal('0.000001') : new Decimal('0.01');
+      if (net.abs().lessThan(threshold)) continue;
+
+      const otherMembers = pot.members.filter((m) => m.id !== currentUserId);
+      if (otherMembers.length === 0) continue;
+
+      const perMember = net.abs().dividedBy(otherMembers.length);
+      const breakdown: SettlementBreakdown = {
+        potName: pot.name,
+        amount: perMember.toNumber(),
+        currency,
+      };
+
+      for (const member of otherMembers) {
+        const targetMap = net.lessThan(0) ? youOweMap : owedToYouMap;
+        const existing = targetMap.get(member.id);
+        if (existing) {
+          existing.total = existing.total.plus(perMember);
+          existing.settlement.totalAmount = existing.total.toNumber();
+          existing.settlement.breakdown.push(breakdown);
+        } else {
+          const settlement: PersonSettlement = {
+            id: member.id,
+            name: member.name,
+            totalAmount: perMember.toNumber(),
+            breakdown: [{ ...breakdown }],
+            trustScore: 95,
+            paymentPreference: member.address ? 'DOT' : 'Bank',
+            address: member.address,
+          };
+          targetMap.set(member.id, { settlement, total: perMember });
+        }
+      }
+    }
+
+    return {
+      youOwe: Array.from(youOweMap.values()).map((e) => ({ ...e.settlement, totalAmount: e.total.toNumber() })),
+      owedToYou: Array.from(owedToYouMap.values()).map((e) => ({ ...e.settlement, totalAmount: e.total.toNumber() })),
+      byPerson: new Map<string, string>(),
+    };
+  }, [balances, summaries, pots, currentUserId]);
+
+  const effectiveBalances = summaryBalances ?? balances;
 
   const pendingExpenses: PendingExpense[] = useMemo(() => {
     void currentUserId;
@@ -176,8 +240,8 @@ export const useDerivedData = ({
     return sorted;
   }, [currentUserId, pots, settlements]);
 
-  const totalOwed = balances.owedToYou.reduce((sum, p) => sum + Number(p.totalAmount), 0);
-  const totalOwing = balances.youOwe.reduce((sum, p) => sum + Number(p.totalAmount), 0);
+  const totalOwed = effectiveBalances.owedToYou.reduce((sum, p) => sum + Number(p.totalAmount), 0);
+  const totalOwing = effectiveBalances.youOwe.reduce((sum, p) => sum + Number(p.totalAmount), 0);
 
   const { expensesConfirmed, expensesNeedingConfirmation, monthlySpending } = useMemo(() => {
     const allExpenses = pots.flatMap((p) => p.expenses);
@@ -242,7 +306,7 @@ export const useDerivedData = ({
 
   return {
     people,
-    balances,
+    balances: effectiveBalances,
     pendingExpenses,
     activities,
     totalOwed,

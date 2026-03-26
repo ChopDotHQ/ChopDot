@@ -5,7 +5,6 @@ import { triggerHaptic } from '../../utils/haptics';
 import { ChopDotMark } from '../auth/ChopDotMark';
 import { EmailLoginDrawer } from '../auth/EmailLoginDrawer';
 import { WalletConnectQROverlay } from '../auth/WalletConnectQROverlay';
-import { ViewModeToggle, LoginVariantToggle, WalletConnectModalToggle } from '../auth/DevToggles';
 import { WalletLoginPanel } from '../auth/panels/WalletLoginPanel';
 import { SignupPanel } from '../auth/panels/SignupPanel';
 import { AuthFooter } from '../auth/AuthFooter';
@@ -53,14 +52,12 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   const {
     loading, setLoading,
     error, setError,
-    viewModeOverride, setViewModeOverride,
     authPanelView, setAuthPanelView,
     showEmailLogin, setShowEmailLogin,
-    wcModalEnabled, setWcModalEnabled,
-    device, isDev, enableMobileUi, resolvedViewMode, isMobileWalletFlow, enableWcModal, openEmailLoginDrawer,
+    device, isMobileWalletFlow, enableWcModal, openEmailLoginDrawer,
   } = useLoginState();
 
-  const { panelMode, loginVariant, setLoginVariant, backgroundIndex } = useThemeHandler();
+  const { panelMode, loginVariant, backgroundIndex } = useThemeHandler();
 
   const {
     showWalletConnectQR, setShowWalletConnectQR,
@@ -94,14 +91,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   } = useSignInHandlers({ setLoading, setError, onLoginSuccess, getWalletAuthMessage });
 
   const hasTrackedMobilePanelRef = useRef(false);
-
-  useEffect(() => {
-    if (!enableMobileUi && viewModeOverride === 'mobile') setViewModeOverride('auto');
-  }, [enableMobileUi, viewModeOverride]);
-
-  useEffect(() => {
-    if (!enableMobileUi && showWalletConnectQR) setShowWalletConnectQR(false);
-  }, [enableMobileUi, showWalletConnectQR]);
 
   useEffect(() => {
     if (authPanelView === 'login') {
@@ -255,12 +244,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         WebkitOverflowScrolling: 'touch',
       }}
     >
-      {isDev && <LoginVariantToggle value={loginVariant} onChange={setLoginVariant} mode={panelMode} />}
-      {enableMobileUi && !device.isMobile && (
-        <ViewModeToggle value={viewModeOverride} onChange={setViewModeOverride} resolvedView={resolvedViewMode} mode={panelMode} />
-      )}
-      {isDev && <WalletConnectModalToggle enabled={wcModalEnabled} onChange={setWcModalEnabled} mode={panelMode} />}
-
       {renderPanelLayout()}
 
       <EmailLoginDrawer

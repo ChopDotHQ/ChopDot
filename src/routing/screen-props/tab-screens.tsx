@@ -95,7 +95,7 @@ export function renderPotsHome(ctx: RouterContext): React.ReactElement | null {
             balances,
         },
         uiState: { pendingInvites },
-        userState: { walletConnected, notifications },
+        userState: { user, walletConnected, notifications },
         actions: {
             setCurrentPotId,
             setSelectedCounterpartyId,
@@ -111,9 +111,10 @@ export function renderPotsHome(ctx: RouterContext): React.ReactElement | null {
         flags: { DEMO_MODE, POLKADOT_APP_ENABLED },
     } = ctx;
 
+    const currentUserId = user?.id || 'owner';
     const potSummaries = pots.filter(p => !p.archived).map((pot) => {
         const myExpenses = pot.expenses
-            .filter((e) => e.paidBy === 'owner')
+            .filter((e) => e.paidBy === currentUserId)
             .reduce((sum, e) => sum + e.amount, 0);
 
         const totalExpenses = pot.expenses.reduce(
@@ -123,7 +124,7 @@ export function renderPotsHome(ctx: RouterContext): React.ReactElement | null {
 
         const myShare = pot.expenses.reduce((sum, e) => {
             const split = e.split.find(
-                (s) => s.memberId === 'owner',
+                (s) => s.memberId === currentUserId,
             );
             return sum + (split?.amount || 0);
         }, 0);
@@ -134,6 +135,7 @@ export function renderPotsHome(ctx: RouterContext): React.ReactElement | null {
             id: pot.id,
             name: pot.name,
             type: pot.type,
+            baseCurrency: pot.baseCurrency,
             myExpenses,
             totalExpenses,
             net,

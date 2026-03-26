@@ -57,6 +57,9 @@ export const useMemberActions = ({
 
           const createMemberDTO = {
             potId: currentPotId,
+            // Pass the person's existing ID so the repository can upsert into
+            // pot_members (Supabase) instead of generating a new Date.now() string.
+            userId: person.id,
             name: person.name,
             role: 'Member' as const,
             status: 'active' as const,
