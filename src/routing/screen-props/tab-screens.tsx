@@ -24,7 +24,7 @@ export function renderActivityHome(ctx: RouterContext): React.ReactElement | nul
             setShowWalletSheet,
             showToast,
         },
-        flags: { DEMO_MODE, POLKADOT_APP_ENABLED },
+        flags: { DEMO_MODE },
     } = ctx;
 
     return (
@@ -68,10 +68,6 @@ export function renderActivityHome(ctx: RouterContext): React.ReactElement | nul
                     showToast('Wallet disabled in demo', 'info');
                     return;
                 }
-                if (!POLKADOT_APP_ENABLED) {
-                    showToast('Wallet feature disabled', 'info');
-                    return;
-                }
                 setShowWalletSheet(true);
             }}
             walletConnected={walletConnected}
@@ -108,7 +104,7 @@ export function renderPotsHome(ctx: RouterContext): React.ReactElement | null {
             showToast,
             joinProcessingRef,
         },
-        flags: { DEMO_MODE, POLKADOT_APP_ENABLED },
+        flags: { DEMO_MODE },
     } = ctx;
 
     const currentUserId = user?.id || 'owner';
@@ -141,8 +137,6 @@ export function renderPotsHome(ctx: RouterContext): React.ReactElement | null {
             net,
             budget: pot.budget,
             budgetEnabled: pot.budgetEnabled,
-            totalPooled: pot.totalPooled,
-            yieldRate: pot.yieldRate,
         };
     });
 
@@ -180,10 +174,6 @@ export function renderPotsHome(ctx: RouterContext): React.ReactElement | null {
                     showToast('Wallet disabled in demo', 'info');
                     return;
                 }
-                if (!POLKADOT_APP_ENABLED) {
-                    showToast('Wallet feature disabled', 'info');
-                    return;
-                }
                 setShowWalletSheet(true);
             }}
             walletConnected={walletConnected}
@@ -217,11 +207,7 @@ export function renderPotsHome(ctx: RouterContext): React.ReactElement | null {
                 setShowScanQR(true);
             }}
             onQuickRequest={() => {
-                if (balances.owedToYou.length === 0) {
-                    showToast('Nobody owes you money yet', 'info');
-                    return;
-                }
-                push({ type: 'request-payment' });
+                showToast('Request payment coming soon', 'info');
             }}
         />
     );
@@ -243,7 +229,7 @@ export function renderPeopleHome(ctx: RouterContext): React.ReactElement | null 
             setWalletConnected,
             showToast,
         },
-        flags: { DEMO_MODE, POLKADOT_APP_ENABLED },
+        flags: { DEMO_MODE },
     } = ctx;
 
     return (
@@ -268,10 +254,6 @@ export function renderPeopleHome(ctx: RouterContext): React.ReactElement | null 
             onWalletClick={() => {
                 if (DEMO_MODE) {
                     showToast('Wallet disabled in demo', 'info');
-                    return;
-                }
-                if (!POLKADOT_APP_ENABLED) {
-                    showToast('Wallet feature disabled', 'info');
                     return;
                 }
                 setShowWalletSheet(true);
@@ -301,7 +283,7 @@ export function renderYouTab(ctx: RouterContext): React.ReactElement | null {
             handleDeleteAccount,
             showToast,
         },
-        flags: { DEMO_MODE, POLKADOT_APP_ENABLED },
+        flags: { DEMO_MODE },
     } = ctx;
 
     return (
@@ -313,25 +295,19 @@ export function renderYouTab(ctx: RouterContext): React.ReactElement | null {
                 setShowScanQR(true);
             }}
             onReceive={() => {
-                if (!walletConnected && user?.status !== 'connected') {
-                    if (!walletConnected) {
-                        showToast('Connect wallet first', 'info');
-                        return;
-                    }
-                }
-                push({ type: 'receive-qr' });
+                showToast('Receive coming soon', 'info');
             }}
             onPaymentMethods={() => {
-                push({ type: 'payment-methods' });
+                showToast('Payment methods coming soon', 'info');
             }}
             onViewInsights={() => {
-                push({ type: 'insights' });
+                showToast('Insights coming soon', 'info');
             }}
             onSettings={() => {
                 push({ type: 'settings' });
             }}
             onCrustStorage={() => {
-                push({ type: 'crust-storage' });
+                showToast('Storage coming soon', 'info');
             }}
             onNotificationClick={() => {
                 setShowNotifications(true);
@@ -339,10 +315,6 @@ export function renderYouTab(ctx: RouterContext): React.ReactElement | null {
             onWalletClick={() => {
                 if (DEMO_MODE) {
                     showToast('Wallet disabled in demo', 'info');
-                    return;
-                }
-                if (!POLKADOT_APP_ENABLED) {
-                    showToast('Wallet feature disabled', 'info');
                     return;
                 }
                 setShowWalletSheet(true);

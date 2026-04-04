@@ -80,9 +80,7 @@ export function ExpenseDetail({
 
   const safeMembers = members ?? [];
   const normalizedBaseCurrency = normalizeCurrency(baseCurrency);
-  const isDotPot = normalizedBaseCurrency === 'DOT';
-  // For DOT pots, always use baseCurrency; for others, use expense.currency if available
-  const displayCurrency = isDotPot ? normalizedBaseCurrency : (expense.currency || normalizedBaseCurrency);
+  const displayCurrency = expense.currency || normalizedBaseCurrency;
   const formatAmount = (amt: number) => formatCurrencyAmount(amt, displayCurrency);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showReceiptViewer, setShowReceiptViewer] = useState(false);

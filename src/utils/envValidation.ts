@@ -25,7 +25,6 @@ const CRITICAL_ENV_VAR_GROUPS = [
 
 // Optional vars - app works but features may be disabled
 const OPTIONAL_ENV_VARS = {
-  VITE_WALLETCONNECT_PROJECT_ID: 'WalletConnect Cloud project ID',
   VITE_SENTRY_DSN: 'Sentry DSN for error tracking',
 } as const;
 
@@ -88,8 +87,7 @@ export function requireValidEnvironment(): void {
       '2. Fill in the missing values in your .env file',
       '3. Restart the development server\n',
       '💡 Get your credentials from:',
-      '   • Supabase: https://app.supabase.com/project/_/settings/api',
-      '   • WalletConnect: https://cloud.walletconnect.com/\n',
+      '   • Supabase: https://app.supabase.com/project/_/settings/api\n',
     ].join('\n');
 
     console.error(errorMessage);

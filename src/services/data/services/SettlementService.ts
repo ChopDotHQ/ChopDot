@@ -6,7 +6,7 @@
  */
 
 import { SettlementRepository } from '../repositories/SettlementRepository';
-import type { SettlementSuggestion, OnchainSettlementHistory } from '../types/dto';
+import type { SettlementSuggestion } from '../types/dto';
 import { calculatePotSettlements } from '../../../utils/settlements';
 import type { PotRepository } from '../repositories/PotRepository';
 
@@ -83,24 +83,4 @@ export class SettlementService {
     return suggestions;
   }
 
-  /**
-   * Record an on-chain settlement in pot history
-   * 
-   * This persists the settlement entry to the pot's history array.
-   * The actual on-chain transaction is handled by the chain service.
-   * 
-   * @param potId - Pot ID
-   * @param entry - On-chain settlement history entry
-   * @throws {NotFoundError} If pot not found
-   */
-  async recordOnchainSettlement(potId: string, entry: OnchainSettlementHistory): Promise<void> {
-    const pot = await this.potRepository.get(potId);
-
-    // Add entry to pot history
-    const updatedHistory = [...(pot.history || []), entry];
-
-    await this.potRepository.update(potId, {
-      history: updatedHistory,
-    });
-  }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { PaymentMethod } from '../components/screens/PaymentMethods';
+import type { PaymentMethod } from '../App';
 
 type StoredPaymentMethods = {
   methods?: PaymentMethod[];

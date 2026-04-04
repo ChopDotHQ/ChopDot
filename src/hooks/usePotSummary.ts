@@ -12,7 +12,6 @@ interface UsePotSummaryOptions {
   currentUserId: string;
   budget?: number;
   contributions: Array<{ memberId: string; amount: number }>;
-  totalPooled: number;
   checkpointConfirmations?: Map<string, CheckpointConfirmation> | Record<string, CheckpointConfirmation>;
 }
 
@@ -22,7 +21,6 @@ export function usePotSummary({
   currentUserId,
   budget,
   contributions,
-  totalPooled,
   checkpointConfirmations,
 }: UsePotSummaryOptions) {
   const myExpenses = expenses
@@ -84,7 +82,7 @@ export function usePotSummary({
     myShare,
     net: myExpenses - myShare,
     totalContributed,
-    yieldEarned: (totalPooled ?? 0) - totalContributed,
+    yieldEarned: 0 - totalContributed,
     budgetPercentage: budget ? Math.min((totalExpenses / budget) * 100, 100) : 0,
     budgetRemaining: budget ? Math.max(budget - totalExpenses, 0) : 0,
     isOverBudget: budget ? totalExpenses > budget : false,

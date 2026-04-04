@@ -56,7 +56,7 @@ export const DEFAULT_POTS: Pot[] = [
     id: "3",
     name: "💰 Emergency Fund",
     type: "savings",
-    baseCurrency: "DOT",
+    baseCurrency: "USD",
     members: [
       { id: "owner", name: "You", role: "Owner", status: "active" }
     ],
@@ -66,9 +66,6 @@ export const DEFAULT_POTS: Pot[] = [
     budgetEnabled: false,
     checkpointEnabled: false,
     contributions: [],
-    totalPooled: 750,
-    yieldRate: 12.5,
-    defiProtocol: "Acala",
     goalAmount: 5000,
     goalDescription: "Build a 6-month emergency fund",
     mode: 'casual',
@@ -77,98 +74,98 @@ export const DEFAULT_POTS: Pot[] = [
   },
   {
     id: "4",
-    name: "Polkadot Builder Party",
+    name: "🎉 Team Offsite",
     type: "expense",
-    baseCurrency: "DOT",
+    baseCurrency: "USD",
     members: [
-        { id: "owner", name: "You", role: "Owner", status: "active", address: "15GrwkvKWLJUXwKZFXChsVGdfnRDEhinYMiGWXnV8Pfv7Hjq" },
-        { id: "alice", name: "Alice", role: "Member", status: "active", address: "15Jh2k3Xm29ry1CNtXNvzPTC2QgHYMnyqcG4cSnhpV9MrAbf" },
-        { id: "bob", name: "Bob", role: "Member", status: "active", address: "13FJ4i6TJyGXPRvWHzRvDDDeZPAHDq6cHruM3aMcDwZJWLEH" },
-        { id: "charlie", name: "Charlie", role: "Member", status: "active", address: "16Hk8qqBPGF6NQvM6PgZGZXzx9Dj2TqkBTsEz9wqgFudaGt3" }
+        { id: "owner", name: "You", role: "Owner", status: "active" },
+        { id: "alice", name: "Alice", role: "Member", status: "active" },
+        { id: "bob", name: "Bob", role: "Member", status: "active" },
+        { id: "charlie", name: "Charlie", role: "Member", status: "active" }
     ],
     expenses: [
       {
         id: "pb1",
-        amount: 2.5,
-        currency: "DOT",
+        amount: 250,
+        currency: "USD",
         paidBy: "owner",
         memo: "Conference tickets (3-day pass)",
         date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
         split: [
-          { memberId: "owner", amount: 0.625 },
-          { memberId: "alice", amount: 0.625 },
-          { memberId: "bob", amount: 0.625 },
-          { memberId: "charlie", amount: 0.625 }
+          { memberId: "owner", amount: 62.50 },
+          { memberId: "alice", amount: 62.50 },
+          { memberId: "bob", amount: 62.50 },
+          { memberId: "charlie", amount: 62.50 }
         ],
         attestations: ["alice", "bob", "charlie"],
         hasReceipt: true
       },
       {
         id: "pb2",
-        amount: 1.8,
-        currency: "DOT",
+        amount: 180,
+        currency: "USD",
         paidBy: "alice",
-        memo: "Team dinner at Hackathon venue",
+        memo: "Team dinner",
         date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
         split: [
-          { memberId: "owner", amount: 0.45 },
-          { memberId: "alice", amount: 0.45 },
-          { memberId: "bob", amount: 0.45 },
-          { memberId: "charlie", amount: 0.45 }
+          { memberId: "owner", amount: 45 },
+          { memberId: "alice", amount: 45 },
+          { memberId: "bob", amount: 45 },
+          { memberId: "charlie", amount: 45 }
         ],
         attestations: ["bob"],
         hasReceipt: true
       },
       {
         id: "pb3",
-        amount: 0.75,
-        currency: "DOT",
+        amount: 75,
+        currency: "USD",
         paidBy: "bob",
-        memo: "Coffee & snacks for coding sessions",
+        memo: "Coffee & snacks",
         date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
         split: [
-          { memberId: "owner", amount: 0.1875 },
-          { memberId: "alice", amount: 0.1875 },
-          { memberId: "bob", amount: 0.1875 },
-          { memberId: "charlie", amount: 0.1875 }
+          { memberId: "owner", amount: 18.75 },
+          { memberId: "alice", amount: 18.75 },
+          { memberId: "bob", amount: 18.75 },
+          { memberId: "charlie", amount: 18.75 }
         ],
         attestations: ["alice", "charlie"],
         hasReceipt: false
       },
       {
         id: "pb4",
-        amount: 3.2,
-        currency: "DOT",
+        amount: 320,
+        currency: "USD",
         paidBy: "charlie",
         memo: "Workshop materials & swag",
         date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
         split: [
-          { memberId: "owner", amount: 0.8 },
-          { memberId: "alice", amount: 0.8 },
-          { memberId: "bob", amount: 0.8 },
-          { memberId: "charlie", amount: 0.8 }
+          { memberId: "owner", amount: 80 },
+          { memberId: "alice", amount: 80 },
+          { memberId: "bob", amount: 80 },
+          { memberId: "charlie", amount: 80 }
         ],
         attestations: [],
         hasReceipt: true
       },
       {
         id: "pb5",
-        amount: 1.25,
-        currency: "DOT",
+        amount: 125,
+        currency: "USD",
         paidBy: "owner",
         memo: "Transportation (shared rides)",
         date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
         split: [
-          { memberId: "owner", amount: 0.3125 },
-          { memberId: "alice", amount: 0.3125 },
-          { memberId: "bob", amount: 0.3125 },
-          { memberId: "charlie", amount: 0.3125 }
+          { memberId: "owner", amount: 31.25 },
+          { memberId: "alice", amount: 31.25 },
+          { memberId: "bob", amount: 31.25 },
+          { memberId: "charlie", amount: 31.25 }
         ],
         attestations: ["alice"],
         hasReceipt: false
       }
     ],
-    budget: 10.0,
+    budget: 1000,
     budgetEnabled: true,
     checkpointEnabled: false,
     history: [],

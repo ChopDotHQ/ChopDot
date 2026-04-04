@@ -6,7 +6,7 @@
  */
 
 // Re-export from schema/pot.ts (our canonical schema)
-export type { Pot, Expense, Member, PotHistory } from '../../../schema/pot';
+export type { Pot, Expense, Member } from '../../../schema/pot';
 
 // Re-export from settlements utility
 export type { Person, SettlementBreakdown, PersonSettlement, CalculatedSettlements } from '../../../utils/settlements';
@@ -39,7 +39,7 @@ export interface Settlement {
   personId: string;
   amount: number;
   currency: string;
-  method: 'cash' | 'bank' | 'paypal' | 'twint' | 'dot' | 'usdc';
+  method: 'cash' | 'bank' | 'paypal' | 'twint';
   potIds?: string[];
   date: string;
   txHash?: string;

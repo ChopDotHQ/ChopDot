@@ -31,7 +31,7 @@ interface Expense {
 
 interface SettlementExportItem {
   id: string;
-  method: "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc";
+  method: "cash" | "bank" | "paypal" | "twint";
   personName: string;
   amount: number;
   currency: string;
@@ -264,8 +264,6 @@ export function buildSettlementsHistoryCSVContent(
     bank: "Bank",
     paypal: "PayPal",
     twint: "TWINT",
-    dot: "DOT",
-    usdc: "USDC",
   };
 
   const rows = [...settlements]

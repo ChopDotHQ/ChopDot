@@ -1,4 +1,3 @@
-import type { PotHistory } from '../types/app';
 import Decimal from 'decimal.js';
 
 Decimal.set({ precision: 28, rounding: Decimal.ROUND_HALF_UP });
@@ -46,9 +45,7 @@ interface Pot {
   baseCurrency: string;
   members: Member[];
   expenses: Expense[];
-  // Optional on-chain history for DOT settlements (when available)
-  history?: PotHistory[];
-  archived?: boolean; // Added archived
+  archived?: boolean;
 }
 
 export interface Person {
@@ -285,26 +282,7 @@ export function calculatePotSettlements(
 
     // Calculate net balance
     // Positive = they owe you, Negative = you owe them
-    let balance = theirShareOfMyExpenses.minus(myShareOfTheirExpenses);
-
-    // Apply DOT history offsets to move balance toward zero
-    if (pot.history && pot.history.length > 0) {
-      const relevant = pot.history.filter(
-        (h): h is Extract<PotHistory, { type: 'onchain_settlement' }> =>
-          h.type === 'onchain_settlement' && h.status !== 'failed'
-      );
-      for (const h of relevant) {
-        const amt = toDecimal(h.amountDot ?? '0');
-        if (!amt.isFinite() || amt.lte(0)) continue;
-        if (h.fromMemberId === currentUserId && h.toMemberId === member.id) {
-          // You paid them → you owe less → reduce how much you owe (increase balance)
-          balance = balance.plus(amt);
-        } else if (h.fromMemberId === member.id && h.toMemberId === currentUserId) {
-          // They paid you → they owe less → decrease balance
-          balance = balance.minus(amt);
-        }
-      }
-    }
+    const balance = theirShareOfMyExpenses.minus(myShareOfTheirExpenses);
 
     // Currency-aware negligible threshold: DOT uses micro precision
     const threshold = pot.baseCurrency === 'DOT'

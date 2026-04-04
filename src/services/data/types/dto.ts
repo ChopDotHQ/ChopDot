@@ -12,7 +12,7 @@ import { MemberSchema, ExpenseSchema, PotSchema } from '../../../schema/pot';
 export const CreatePotDTOSchema = z.object({
   name: z.string().min(1, 'Pot name is required'),
   type: z.enum(['expense', 'savings']),
-  baseCurrency: z.enum(['DOT', 'USD', 'USDC', 'EUR', 'GBP', 'CHF', 'JPY']).default('USD'),
+  baseCurrency: z.enum(['USD', 'EUR', 'GBP', 'CHF', 'CAD', 'AUD', 'JPY']).default('USD'),
   budget: z.number().nullable().optional(),
   budgetEnabled: z.boolean().optional().default(false),
   checkpointEnabled: z.boolean().optional(),
@@ -43,8 +43,6 @@ export type UpdatePotDTO = z.infer<typeof UpdatePotDTOSchema>;
 export const CreateExpenseDTOSchema = ExpenseSchema.omit({
   id: true,
   attestations: true,
-  attestationTxHash: true,
-  attestationTimestamp: true,
 }).extend({
   potId: z.string().min(1, 'Pot ID is required'),
 });
@@ -79,8 +77,6 @@ export type CreateMemberDTO = z.infer<typeof CreateMemberDTOSchema>;
 // Update Member DTO (partial)
 export const UpdateMemberDTOSchema = MemberSchema.partial().pick({
   name: true,
-  address: true,
-  evmAddress: true,
   verified: true,
   status: true,
 });
@@ -94,20 +90,3 @@ export interface SettlementSuggestion {
   amount: string;
 }
 
-// On-chain Settlement History Entry
-export interface OnchainSettlementHistory {
-  id: string;
-  when: number;
-  type: 'onchain_settlement';
-  fromMemberId: string;
-  toMemberId: string;
-  fromAddress: string;
-  toAddress: string;
-  amountDot?: string;
-  amountUsdc?: string;
-  assetId?: number;
-  txHash: string;
-  status: 'submitted' | 'in_block' | 'finalized' | 'failed';
-  subscan?: string;
-  note?: string;
-}

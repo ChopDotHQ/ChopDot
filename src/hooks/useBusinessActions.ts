@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import type { Dispatch, SetStateAction } from "react";
 import type { Screen } from "../nav";
-import type { Contribution, Expense, Pot } from "../types/app";
-import type { PaymentMethod } from "../components/screens/PaymentMethods";
+import type { Expense, Pot } from "../types/app";
+import type { PaymentMethod } from '../App';
 import { isBaseCurrency } from "../schema/pot";
 import { triggerHaptic } from "../utils/haptics";
 import { logDev, warnDev } from "../utils/logDev";
@@ -92,29 +92,16 @@ export const useBusinessActions = ({
   notifyPotRefresh,
   currentPotId,
   currentExpenseId,
-  currentPot,
+  currentPot: _currentPot,
   logout,
   paymentMethods,
   setPaymentMethods,
   setPreferredMethodId,
 }: UseBusinessActionsParams) => {
   const createPot = useCallback(async () => {
-    let processedMembers = newPot.members || [];
-    const { getMockAddressForMember, isSimulationMode } = await import("../utils/simulation");
+    const processedMembers = newPot.members || [];
     const rawBaseCurrency = newPot.baseCurrency || "USD";
     const baseCurrency = isBaseCurrency(rawBaseCurrency) ? rawBaseCurrency : "USD";
-
-    if (isSimulationMode() && baseCurrency === "DOT") {
-      processedMembers = processedMembers.map((m) => {
-        if (!m.address) {
-          const mockAddr = getMockAddressForMember(m.name);
-          if (mockAddr) {
-            return { ...m, address: mockAddr };
-          }
-        }
-        return m;
-      });
-    }
 
     try {
       const createDto = {
@@ -520,95 +507,6 @@ export const useBusinessActions = ({
     showToast("Default payment method updated", "success");
   }, [setPreferredMethodId, showToast]);
 
-  const addContribution = useCallback((
-    amount: number,
-    method: "wallet" | "bank",
-  ) => {
-    if (!currentPotId) return;
-    const pot = currentPot;
-    if (!pot || pot.type !== "savings") return;
-
-    const contribution: Contribution = {
-      id: Date.now().toString(),
-      memberId: "owner",
-      amount,
-      date: new Date().toISOString(),
-      txHash:
-        method === "wallet"
-          ? `0x${Math.random().toString(16).substr(2, 40)}`
-          : undefined,
-    };
-
-    setPots(
-      pots.map((p) =>
-        p.id === currentPotId
-          ? {
-            ...p,
-            contributions: [
-              ...(p.contributions || []),
-              contribution,
-            ],
-            totalPooled: (p.totalPooled || 0) + amount,
-          }
-          : p,
-      ),
-    );
-
-    back();
-    showToast(
-      method === "wallet"
-        ? `${pot.baseCurrency} ${amount.toFixed(2)} added via wallet`
-        : `${pot.baseCurrency} ${amount.toFixed(2)} added via bank transfer`,
-      "success",
-    );
-  }, [back, currentPot, currentPotId, pots, setPots, showToast]);
-
-  const withdrawFunds = useCallback((amount: number) => {
-    if (!currentPotId) return;
-    const pot = currentPot;
-    if (!pot || pot.type !== "savings") return;
-
-    const userContributions = (pot.contributions || [])
-      .filter((c) => c.memberId === "owner")
-      .reduce((sum, c) => sum + c.amount, 0);
-
-    if (amount > userContributions) {
-      showToast("Insufficient balance", "error");
-      return;
-    }
-
-    const withdrawal: Contribution = {
-      id: Date.now().toString(),
-      memberId: "owner",
-      amount: -amount,
-      date: new Date().toISOString(),
-      txHash: `0x${Math.random().toString(16).substr(2, 40)}`,
-    };
-
-    const newTotal = (pot.totalPooled || 0) - amount;
-
-    setPots(
-      pots.map((p) =>
-        p.id === currentPotId
-          ? {
-            ...p,
-            contributions: [
-              ...(p.contributions || []),
-              withdrawal,
-            ],
-            totalPooled: Math.max(0, newTotal),
-          }
-          : p,
-      ),
-    );
-
-    back();
-    showToast(
-      `${pot.baseCurrency} ${amount.toFixed(2)} withdrawn successfully`,
-      "success",
-    );
-  }, [back, currentPot, currentPotId, pots, setPots, showToast]);
-
   return {
     createPot,
     addExpenseToPot,
@@ -620,7 +518,5 @@ export const useBusinessActions = ({
     deletePot,
     updatePaymentMethodValue,
     setPreferredMethod,
-    addContribution,
-    withdrawFunds,
   };
 };

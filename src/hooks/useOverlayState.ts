@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { PaymentMethod } from '../components/screens/PaymentMethods';
+import type { PaymentMethod } from '../App';
 
 export const useOverlayState = () => {
   const [showNotifications, setShowNotifications] = useState(false);

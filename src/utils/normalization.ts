@@ -1,4 +1,4 @@
-import { Member, Expense, CheckpointConfirmation, PotHistory } from "../types/app";
+import { Member, Expense, CheckpointConfirmation } from "../types/app";
 
 // Helpers to normalize data to strict types
 export const normalizeMembers = (members: any[]): Member[] =>
@@ -63,48 +63,3 @@ export const normalizeConfirmations = (
     return normalized;
 };
 
-export const normalizeHistory = (history: any[]): PotHistory[] =>
-    (history || [])
-        .map((h) => {
-            const status = h.status ?? "submitted";
-            if (h.type === "onchain_settlement") {
-                return {
-                    id: h.id,
-                    when: Number(h.when ?? Date.now()),
-                    type: "onchain_settlement" as const,
-                    fromMemberId: h.fromMemberId,
-                    toMemberId: h.toMemberId,
-                    fromAddress: h.fromAddress,
-                    toAddress: h.toAddress,
-                    amountDot: h.amountDot,
-                    amountUsdc: h.amountUsdc,
-                    assetId: h.assetId,
-                    txHash: h.txHash ?? "",
-                    block: h.block,
-                    status,
-                    subscan: h.subscan ?? "",
-                    note: h.note,
-                    closeoutId: h.closeoutId,
-                    closeoutLegIndex: h.closeoutLegIndex,
-                    proofTxHash: h.proofTxHash,
-                    proofStatus: h.proofStatus,
-                    proofContract: h.proofContract,
-                };
-            }
-            if (h.type === "remark_checkpoint") {
-                return {
-                    id: h.id,
-                    when: Number(h.when ?? Date.now()),
-                    type: "remark_checkpoint" as const,
-                    message: h.message ?? "",
-                    potHash: h.potHash ?? "",
-                    cid: h.cid,
-                    txHash: h.txHash,
-                    block: h.block,
-                    status,
-                    subscan: h.subscan,
-                };
-            }
-            return null;
-        })
-        .filter(Boolean) as PotHistory[];

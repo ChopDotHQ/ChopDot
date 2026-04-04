@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import Decimal from 'decimal.js';
 import { calculateSettlements } from '../utils/settlements';
-import type { Pot, Settlement, Person, ActivityItem, PotHistory } from '../types/app';
+import type { Pot, Settlement, Person, ActivityItem } from '../types/app';
 import type { ExpenseSummary } from '../services/data/types';
 import type { PersonSettlement, SettlementBreakdown } from '../utils/settlements';
 
@@ -187,29 +187,6 @@ export const useDerivedData = ({
           title: expense.memo,
           subtitle: `${pot.name} • Paid by ${expense.paidBy === currentUserId ? 'You' : expense.paidBy}`,
           amount: String(expense.amount),
-        });
-      });
-    });
-
-    pots.forEach((pot) => {
-      (pot.history || []).forEach((h: PotHistory) => {
-        if (h.type !== 'onchain_settlement') return;
-        const fromName =
-          pot.members.find((m) => m.id === h.fromMemberId)?.name || h.fromMemberId;
-        const toName = pot.members.find((m) => m.id === h.toMemberId)?.name || h.toMemberId;
-        const amountStr = h.amountDot
-          ? `${h.amountDot} DOT`
-          : h.amountUsdc
-            ? `${h.amountUsdc} USDC`
-            : '';
-        const title = amountStr ? `On-chain settlement ${amountStr}` : 'On-chain settlement';
-        items.push({
-          id: `history-${pot.id}-${h.id}`,
-          type: 'settlement',
-          timestamp: new Date(h.when).toISOString(),
-          title,
-          subtitle: `${pot.name} • ${fromName} → ${toName}`,
-          amount: h.amountDot || h.amountUsdc,
         });
       });
     });

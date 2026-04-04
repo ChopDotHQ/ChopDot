@@ -1,4 +1,4 @@
-import { Suspense, useState, useMemo, useEffect } from 'react';
+import { Suspense, useState, useMemo } from 'react';
 import { AppRouter } from './components/AppRouter';
 import { useNav } from './nav';
 import { useTheme } from './utils/useTheme';
@@ -15,7 +15,6 @@ import { AppLayout } from './components/app/AppLayout';
 import { useTabNavigation } from './hooks/useTabNavigation';
 import { useFabState } from './hooks/useFabState';
 import { useScreenValidation } from './hooks/useScreenValidation';
-import { setOnboardingCallback } from './services/storage/ipfsWithOnboarding';
 import { getInitialScreenFromLocation, useUrlSync } from './hooks/useUrlSync';
 import { useInviteFlow } from './hooks/useInviteFlow';
 import { useDerivedData } from './hooks/useDerivedData';
@@ -27,13 +26,19 @@ import { useEnsureUserProfile } from './hooks/useEnsureUserProfile';
 import { useAppActions } from './hooks/useAppActions';
 import { usePersistedPaymentMethods } from './hooks/usePersistedPaymentMethods';
 import { ScreenErrorBoundary } from './components/ScreenErrorBoundary';
-import type { PaymentMethod } from './components/screens/PaymentMethods';
 import type { Pot } from './types/app';
 
-const INITIAL_PAYMENT_METHODS: PaymentMethod[] = [
-  { id: '1', kind: 'bank', iban: 'CH93 0000 0000 0000 0000 0' },
-  { id: '2', kind: 'crypto', address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', network: 'polkadot' },
-];
+// PaymentMethod type inline since PaymentMethods screen was removed
+export interface PaymentMethod {
+  id: string;
+  kind: 'bank' | 'crypto' | 'other';
+  iban?: string;
+  address?: string;
+  network?: string;
+  label?: string;
+}
+
+const INITIAL_PAYMENT_METHODS: PaymentMethod[] = [];
 
 const INITIAL_NEW_POT: Partial<Pot> = {
   name: '', type: 'expense', baseCurrency: 'USD',
@@ -48,7 +53,7 @@ const showToast = (message: string, type?: 'success' | 'error' | 'info') => {
 };
 
 function AppContent() {
-  const { DEMO_MODE, POLKADOT_APP_ENABLED } = useFeatureFlags();
+  const { DEMO_MODE } = useFeatureFlags();
   const { pots: potService, expenses: expenseService, members: memberService } = useData();
   const { theme, setTheme } = useTheme();
   const account = useAccount();
@@ -63,8 +68,8 @@ function AppContent() {
   const inviteService = useMemo(() => new InviteService(getSupabase()), []);
   const [currentExpenseId, setCurrentExpenseId] = useState<string | null>(null);
   const [selectedCounterpartyId, setSelectedCounterpartyId] = useState<string | null>(null);
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [connectedWallet, setConnectedWallet] = useState<{ provider: string; address: string; name?: string }>();
+  const [walletConnected] = useState(false);
+  const [connectedWallet] = useState<{ provider: string; address: string; name?: string } | undefined>(undefined);
   const {
     paymentMethods,
     setPaymentMethods,
@@ -73,7 +78,7 @@ function AppContent() {
   } = usePersistedPaymentMethods({
     storageScope: user?.id || (isGuest ? 'guest' : 'default'),
     initialMethods: INITIAL_PAYMENT_METHODS,
-    initialPreferredMethodId: '1',
+    initialPreferredMethodId: '',
   });
   const [newPot, setNewPot] = useState<Partial<Pot>>(() => ({ ...INITIAL_NEW_POT }));
 
@@ -85,13 +90,6 @@ function AppContent() {
     currentPotId: potState.currentPotId, setCurrentPotId: potState.setCurrentPotId,
     reset, notifyPotRefresh: potState.notifyPotRefresh, showToast,
   });
-
-  useEffect(() => {
-    setOnboardingCallback((_walletAddress: string, onContinue: () => Promise<void>) => {
-      overlay.setShowIPFSAuthOnboarding(true);
-      overlay.setPendingIPFSAction(() => onContinue);
-    });
-  }, []);
 
   const { getActiveTab, handleTabChange, shouldShowTabBar, canSwipeBack } = useTabNavigation({
     screen: screen as any, stack: stack as any[], reset: reset as any,
@@ -126,7 +124,7 @@ function AppContent() {
   });
 
   const overlayHandlers = useOverlayHandlers({
-    setWalletConnected, setConnectedWallet, setShowWalletSheet: overlay.setShowWalletSheet,
+    setWalletConnected: () => {}, setConnectedWallet: () => {}, setShowWalletSheet: overlay.setShowWalletSheet,
     setShowNotifications: overlay.setShowNotifications, setNotifications: potState.setNotifications,
     setShowYouSheet: overlay.setShowYouSheet, setShowMyQR: overlay.setShowMyQR,
     setShowScanQR: overlay.setShowScanQR, setShowChoosePot: overlay.setShowChoosePot,
@@ -227,7 +225,7 @@ function AppContent() {
               fabQuickAddPotId: overlay.fabQuickAddPotId,
             }}
             actions={{
-              setPots: potState.setPots, setCurrentPotId: potState.setCurrentPotId, setCurrentExpenseId, setWalletConnected,
+              setPots: potState.setPots, setCurrentPotId: potState.setCurrentPotId, setCurrentExpenseId, setWalletConnected: () => {},
               setShowNotifications: overlay.setShowNotifications, setShowWalletSheet: overlay.setShowWalletSheet,
               setShowMyQR: overlay.setShowMyQR, setShowScanQR: overlay.setShowScanQR,
               setShowChoosePot: overlay.setShowChoosePot, setShowAddMember: overlay.setShowAddMember,
@@ -236,7 +234,6 @@ function AppContent() {
               setSelectedCounterpartyId, setSettlements: potState.setSettlements, setNotifications: potState.setNotifications,
               createPot: actions.createPot, addExpenseToPot: actions.addExpenseToPot, updateExpense: actions.updateExpense,
               deleteExpense: actions.deleteExpense,
-              addContribution: actions.addContribution, withdrawFunds: actions.withdrawFunds,
               handleLogout: actions.handleLogout, handleDeleteAccount: actions.handleDeleteAccount,
               updatePaymentMethodValue: actions.updatePaymentMethodValue, setPreferredMethod: actions.setPreferredMethod,
               handleInviteNew: overlayHandlers.handleInviteNew,
@@ -248,10 +245,10 @@ function AppContent() {
               handleDeletePot: actions.handleDeletePot, handleArchivePot: actions.handleArchivePot, handleLeavePot: actions.handleLeavePot,
               persistPotPartial: actions.persistPotPartial,
               acceptInvite: inviteFlow.acceptInvite, declineInvite: inviteFlow.declineInvite,
-              confirmSettlement: actions.confirmSettlement, retrySettlementProof: actions.retrySettlementProof, showToast,
+              confirmSettlement: actions.confirmSettlement, showToast,
               newPotState: newPot, joinProcessingRef: inviteFlow.joinProcessingRef, selectedCounterpartyId,
             }}
-            flags={{ DEMO_MODE, POLKADOT_APP_ENABLED }}
+            flags={{ DEMO_MODE }}
           />
           </ScreenErrorBoundary>
         </AppLayout>
