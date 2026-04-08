@@ -219,6 +219,7 @@ Work against these docs:
 - [KERNEL_VERIFICATION.md](/Users/devinsonpena/ChopDot/.worktrees/docs-shared-commitment-kernel/docs/KERNEL_VERIFICATION.md)
 - [TEDDY_IMPLEMENTATION_ORDER.md](/Users/devinsonpena/ChopDot/.worktrees/docs-shared-commitment-kernel/docs/TEDDY_IMPLEMENTATION_ORDER.md)
 - [TEDDY_UX_MAPPING.md](/Users/devinsonpena/ChopDot/.worktrees/docs-shared-commitment-kernel/docs/TEDDY_UX_MAPPING.md)
+- [TEDDY_FOUNDER_HANDOFF.md](/Users/devinsonpena/ChopDot/.worktrees/docs-shared-commitment-kernel/docs/TEDDY_FOUNDER_HANDOFF.md)
 
 ## Task checklist
 
