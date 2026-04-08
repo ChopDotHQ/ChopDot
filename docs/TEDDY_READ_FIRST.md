@@ -11,11 +11,21 @@ Start here.
 
 ## Branch
 
-Work from:
+Use these docs from:
 
 - `docs/shared-commitment-kernel-roadmap`
 
 Treat the docs in this branch as the current source of truth for the next ChopDot implementation pass.
+
+For code work:
+
+- use `mvp` as the implementation base
+- use this docs branch as the instruction layer
+
+In other words:
+
+- docs branch = what to do
+- `mvp` = where to do it
 
 ## Read these first, in this order
 
@@ -52,6 +62,19 @@ The first proof is:
 5. confirm it from the counterparty side
 6. close the chapter visibly
 7. refresh and verify it persists
+
+This first proof is intentionally:
+
+- chapter / closeout loop first
+
+It is not yet:
+
+- the full multi-flow commitment platform
+- the full builder package
+- the full long-horizon lifecycle surface
+
+The broader shared commitment lifecycle remains the design target.
+The chapter / closeout loop is the first implementation proof.
 
 ## Do not optimize for yet
 

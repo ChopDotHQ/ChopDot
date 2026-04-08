@@ -29,6 +29,20 @@ For now:
 That abstraction can become cleaner later.
 Right now the goal is to restore the kernel with the smallest viable code change.
 
+## Scope assumption
+
+The immediate implementation target is:
+
+- the chapter / closeout loop first
+
+The broader shared commitment lifecycle described elsewhere remains the product direction, but it is not the first full implementation target.
+
+That means:
+
+- restore the chaptered loop now
+- keep the design compatible with `expense`, `goal`, and `deposit`
+- do not attempt to fully realize every commitment lifecycle shape in the first pass
+
 ## Branch assumption
 
 Continue from the cleanup direction.

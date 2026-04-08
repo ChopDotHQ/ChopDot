@@ -29,6 +29,9 @@ That means:
 
 If the current `mvp` shape blocks the commitment loop in a fundamental way, stop and raise that immediately before widening scope.
 
+The docs branch is the instruction layer.
+`mvp` is the code base.
+
 ## What you are building now
 
 You are not building:
@@ -56,6 +59,10 @@ Return when this exact slice works:
 7. refresh and verify the state persists
 
 This is the first proof.
+
+This first proof is deliberately narrower than the full shared commitment vision.
+The first requirement is to restore the chapter / closeout loop cleanly.
+Do not wait to implement the full broader commitment surface before returning with this.
 
 Do not wait for every edge case or commitment type before returning with this.
 
