@@ -1,0 +1,31 @@
+# ChopDot Obsidian Home
+
+This repository now works as a tracked Obsidian vault.
+
+The curated entry notes live in `obsidian/`.
+The source-of-truth implementation and strategy docs remain in `docs/`.
+
+## Start here
+
+- [[10_CURRENT_DIRECTION]]
+- [[20_TECH_AND_PRODUCT_MAP]]
+- [[30_FINANCE_AND_MONETIZATION]]
+- [[40_TEDDY_AND_EXECUTION]]
+- [[99_INCONSISTENCIES_AND_WATCHOUTS]]
+
+## Current source-of-truth docs
+
+- [Shared Commitment Kernel Roadmap](../docs/SHARED_COMMITMENT_KERNEL_ROADMAP.md)
+- [Shared Commitment Kernel Spec](../docs/SHARED_COMMITMENT_KERNEL_SPEC.md)
+- [Tech Architecture Map](../docs/TECH_ARCHITECTURE_MAP.md)
+- [Founder Validation Plan](../docs/FOUNDER_VALIDATION_PLAN.md)
+- [Launch Perimeter And Survivability Plan](../docs/LAUNCH_PERIMETER_AND_SURVIVABILITY_PLAN.md)
+- [API Readiness Plan](../docs/API_READINESS_PLAN.md)
+- [Financial Overview](../docs/finance/CHOPDOT_FINANCIAL_OVERVIEW_2026.md)
+- [Monetization Model](../docs/finance/MONETIZATION_MODEL_TODAY_VS_TOMORROW.md)
+- [Protocol And Layer Monetization Map](../docs/finance/PROTOCOL_AND_LAYER_MONETIZATION_MAP.md)
+
+## Working rule
+
+Use `obsidian/` for fast founder navigation.
+Use `docs/` for the detailed tracked documents.
