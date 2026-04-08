@@ -11,6 +11,9 @@ The source-of-truth implementation and strategy docs remain in `docs/`.
 - [[20_TECH_AND_PRODUCT_MAP]]
 - [[30_FINANCE_AND_MONETIZATION]]
 - [[40_TEDDY_AND_EXECUTION]]
+- [[50_DECISION_LOG]]
+- [[60_ACTIVE_DEFERRED_REJECTED]]
+- [[70_REPO_AND_BRANCH_MAP]]
 - [[99_INCONSISTENCIES_AND_WATCHOUTS]]
 
 ## Current source-of-truth docs
