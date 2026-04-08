@@ -217,6 +217,7 @@ Work against these docs:
 - [SHARED_COMMITMENT_KERNEL_SPEC.md](/Users/devinsonpena/ChopDot/.worktrees/docs-shared-commitment-kernel/docs/SHARED_COMMITMENT_KERNEL_SPEC.md)
 - [REFERENCE_FLOWS.md](/Users/devinsonpena/ChopDot/.worktrees/docs-shared-commitment-kernel/docs/REFERENCE_FLOWS.md)
 - [KERNEL_VERIFICATION.md](/Users/devinsonpena/ChopDot/.worktrees/docs-shared-commitment-kernel/docs/KERNEL_VERIFICATION.md)
+- [TEDDY_IMPLEMENTATION_ORDER.md](/Users/devinsonpena/ChopDot/.worktrees/docs-shared-commitment-kernel/docs/TEDDY_IMPLEMENTATION_ORDER.md)
 
 ## Task checklist
 
