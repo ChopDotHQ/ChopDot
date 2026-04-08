@@ -1,5 +1,9 @@
 # Teddy Read First
 
+If you only read one file first, read:
+
+- `docs/TEDDY_START_HERE.md`
+
 ## Purpose
 
 This is the entrypoint for Teddy or any agent working on the shared commitment MVP.
