@@ -15,6 +15,7 @@ The source-of-truth implementation and strategy docs remain in `docs/`.
 - [[60_ACTIVE_DEFERRED_REJECTED]]
 - [[70_REPO_AND_BRANCH_MAP]]
 - [[80_DOC_STATUS_MAP]]
+- [[90_BIG_DOG_READINESS]]
 - [[99_INCONSISTENCIES_AND_WATCHOUTS]]
 
 ## Current source-of-truth docs
