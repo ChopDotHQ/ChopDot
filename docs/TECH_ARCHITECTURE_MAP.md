@@ -85,6 +85,18 @@ These should remain deferred:
 | Agent execution | agents should not own money movement now |
 | Deep provider integrations | category expansion before kernel proof |
 
+## Future-ready layers
+
+These are not active implementation targets now, but the architecture should remain compatible with them:
+
+| Future layer | Why it matters later | Current rule |
+| --- | --- | --- |
+| Tokenized commitment or release rights | some commitments may later benefit from tokenized ownership or entitlement models | keep tokenization behind adapter boundaries, not in the domain core |
+| Agent preview / validation layer | agents may later read, validate, prepare, and request actions | agents stop at preview, validation, or approval request unless a human-approved policy allows more |
+| Scoped approval grants | delegated approval will matter when agent and multi-system actions increase | approval tokens/grants should be scoped, expiring, and additive to human control |
+| Proof adapters | external proofs and onchain signals may later enrich trust | proof should feed typed events and state, not bypass them |
+| Multi-rail execution | different communities and businesses will adopt different rails at different speeds | keep the action contract stable and the rail-specific logic replaceable |
+
 ## Current data flow
 
 The current intended flow should be:
@@ -120,6 +132,23 @@ Use this rule for every design and code decision:
 - keep the rails replaceable
 - keep the history typed
 - keep the UI honest
+
+## SMB and community design rule
+
+This architecture should stay friendly to:
+
+- popup communities
+- small groups
+- organizers
+- SMBs
+
+That means:
+
+- low setup burden
+- modular adoption
+- clear upgrade path
+- no forced commitment to one chain, one wallet model, or one heavy backend
+- ability to adopt new rails or proof systems without rewriting the product core
 
 ## What success looks like
 

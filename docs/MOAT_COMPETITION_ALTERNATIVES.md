@@ -202,6 +202,33 @@ If ChopDot wants a builder story later, it needs:
 - narrower semantics than “everything around shared finance”
 - better lifecycle clarity than the current open-source expense trackers
 
+## 5. SMB and popup-community opportunity
+
+There is also a positive market shape here:
+
+- popup communities
+- clubs
+- organizers
+- retreats
+- studios
+- coaches
+- small service businesses
+
+often do not want:
+
+- enterprise software
+- heavyweight booking stacks
+- rigid finance workflows
+- expensive and hard-to-upgrade systems
+
+This matters because ChopDot can position around:
+
+- clarity
+- low setup friction
+- modular adoption
+- upgradeability
+- replaceable rails and policies over time
+
 ## Current weaknesses in ChopDot
 
 Right now ChopDot is still weak if judged against the market.
@@ -399,6 +426,28 @@ The builder/hackathon strategy only makes sense after the internal kernel is:
 - real
 - stable
 - understandable
+
+## 5. Build for modular adoption
+
+The product should be able to serve:
+
+- friend groups
+- popup communities
+- organizers
+- SMB service operators
+
+without forcing them into:
+
+- full booking software
+- full fintech ops
+- chain-native behavior from day one
+
+That means offensive strength comes from:
+
+- one small understandable core
+- upgradeable rules
+- swappable rails
+- clear interfaces between commitment, proof, and execution
 
 ## Bottom line
 

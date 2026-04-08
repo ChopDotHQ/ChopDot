@@ -235,6 +235,70 @@ Builders should not break:
 - event-history guarantees
 - closure semantics
 
+## Future readiness
+
+The kernel should remain compatible with a future where:
+
+- commitments may be represented or mirrored as tokenized rights
+- external systems may provide proof or validation signals
+- agents may prepare, validate, or request actions
+- different rails may be adopted unevenly over time
+
+To stay future-ready, the kernel should preserve these rules:
+
+### 1. Tokenization is an adapter, not the product
+
+The kernel should be able to support future tokenized representations, but:
+
+- `SharedCommitment` remains the core object
+- token state must not replace commitment semantics
+- the product should not depend on one token standard or one chain to stay coherent
+
+### 2. Agent actions must stay bounded
+
+Future agent participation should fit this shape:
+
+- agents can read commitment state
+- agents can prepare or preview actions
+- agents can validate conditions or proofs
+- agents can request approval
+- agents should not execute value-moving actions silently
+
+### 3. Approval should remain explicit
+
+Future approval and authorization should be representable as:
+
+- human approval
+- scoped delegated approval
+- rule-based approval policy
+
+But never as:
+
+- hidden agent execution
+- implicit authorization
+
+### 4. Proof should be additive
+
+The kernel should allow future proof sources such as:
+
+- payment references
+- external attestations
+- token or chain events
+- signed validation grants
+
+But proof should enrich the commitment state, not replace the product’s own event history.
+
+### 5. Rails must remain swappable
+
+The kernel should be able to adopt:
+
+- manual proof
+- bank-like proof
+- tokenized rights
+- chain execution
+
+without rewriting the domain core.
+
 ## Current success criterion
 
 A builder understands the kernel if they can answer:
