@@ -26,4 +26,5 @@
 - [Financial Model Workbook](../docs/finance/CHOPDOT_FINANCIAL_MODEL_2026.xlsx)
 - [Monetization Model](../docs/finance/MONETIZATION_MODEL_TODAY_VS_TOMORROW.md)
 - [Protocol And Layer Monetization Map](../docs/finance/PROTOCOL_AND_LAYER_MONETIZATION_MAP.md)
+- [Ecosystem Funding And Measurement Map](../docs/ECOSYSTEM_FUNDING_AND_MEASUREMENT_MAP.md)
 - [Launch Perimeter And Survivability Plan](../docs/LAUNCH_PERIMETER_AND_SURVIVABILITY_PLAN.md)
