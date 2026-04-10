@@ -95,3 +95,26 @@ The model can be mistaken for proof of market fit or profitability.
 ### What to remember
 
 It is a planning model that needs to be updated as pricing, hiring, and user behavior become real.
+
+## 7. Root README still presents a more chain-forward story than the current docs package
+
+### Current truth
+
+- the root README still emphasizes:
+  - Polkadot-native closeout
+  - wallet and settlement flows
+  - testnet release context
+- the current docs branch now emphasizes:
+  - shared commitment kernel
+  - coordination first
+  - proof second
+  - modular future stack
+
+### Why this matters
+
+A new reader can still land on the README and form an older mental model before they ever reach the current docs branch.
+
+### What to remember
+
+The docs branch is the current instruction layer.
+The README should be treated as older release framing until it is reconciled with the shared commitment kernel reset.

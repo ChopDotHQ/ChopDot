@@ -54,15 +54,21 @@ Not current product scope.
 - `docs/SHARED_COMMITMENT_KERNEL_ROADMAP.md`
 - `docs/SHARED_COMMITMENT_KERNEL_SPEC.md`
 - `docs/REFERENCE_FLOWS.md`
+- `docs/CHAT_SHARE_69D95681_SYNTHESIS.md`
 - `docs/USE_CASES_MATRIX.md`
 - `docs/EDGE_CASES_MATRIX.md`
 - `docs/FOUNDER_VALIDATION_PLAN.md`
 - `docs/MOAT_COMPETITION_ALTERNATIVES.md`
+- `docs/RESEARCH_AGENDA_TRUST_AND_FAILURE.md`
+- `docs/ANTIFRAGILITY_AND_FAILURE_LEARNING.md`
 
 ### Architecture / implementation posture
 
 - `docs/TECH_ARCHITECTURE_MAP.md`
 - `docs/API_READINESS_PLAN.md`
+- `docs/FUTURE_TECH_REPLACEMENT_MAP.md`
+- `docs/BUILD_MATRIX_V1.md`
+- `docs/SYSTEM_METRICS_AND_FORMULAS.md`
 - `docs/SECURITY_PRIVACY_REVIEW.md`
 - `docs/LAUNCH_PERIMETER_AND_SURVIVABILITY_PLAN.md`
 - `docs/WEB3_REPO_BEST_PRACTICES_MAP.md`
@@ -89,6 +95,7 @@ These can support current execution but should be interpreted through the curren
 - `docs/KERNEL_VERIFICATION.md`
 - `docs/BUILDER_QUICKSTART.md`
 - `docs/FEATURE_FLAGS.md`
+- `docs/CHAT_SHARE_69D95681_TECH_REPLACEMENT_EXTRACT.md`
 - `docs/API_REFERENCE.md`
 - `docs/ENGINEERING_REMEDIATION_PLAN.md`
 - `docs/APP_ROUTER_ACTION_CONTRACT.md`

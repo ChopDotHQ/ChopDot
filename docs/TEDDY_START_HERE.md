@@ -221,6 +221,20 @@ Read these after this file:
 5. `docs/TEDDY_FOUNDER_HANDOFF.md`
 6. `docs/TEDDY_FULL_CONTEXT_BRIEF.md`
 
+## Additional Context That Now Matters
+
+These are supporting docs, not blockers to the first proof slice.
+Use them when you need deeper context on why the architecture and product direction are being held this way.
+
+- `docs/FUTURE_TECH_REPLACEMENT_MAP.md`
+- `docs/BUILD_MATRIX_V1.md`
+- `docs/SYSTEM_METRICS_AND_FORMULAS.md`
+- `docs/ANTIFRAGILITY_AND_FAILURE_LEARNING.md`
+- `docs/RESEARCH_AGENDA_TRUST_AND_FAILURE.md`
+- `docs/CHAT_SHARE_69D95681_SYNTHESIS.md`
+5. `docs/TEDDY_FOUNDER_HANDOFF.md`
+6. `docs/TEDDY_FULL_CONTEXT_BRIEF.md`
+
 Then use these as reference:
 
 - `docs/SHARED_COMMITMENT_KERNEL_ROADMAP.md`
