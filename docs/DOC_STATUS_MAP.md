@@ -61,6 +61,7 @@ Not current product scope.
 - `docs/FOUNDER_VALIDATION_PLAN.md`
 - `docs/MOAT_COMPETITION_ALTERNATIVES.md`
 - `docs/RESEARCH_AGENDA_TRUST_AND_FAILURE.md`
+- `docs/RESEARCH_REPORT_DELTA_AND_MERGE_PLAN.md`
 - `docs/ANTIFRAGILITY_AND_FAILURE_LEARNING.md`
 
 ### Architecture / implementation posture
