@@ -59,6 +59,8 @@ Not current product scope.
 - `docs/USE_CASES_MATRIX.md`
 - `docs/EDGE_CASES_MATRIX.md`
 - `docs/FOUNDER_VALIDATION_PLAN.md`
+- `docs/PARALLEL_EXECUTION_PRIORITY_LIST.md`
+- `docs/FOUNDER_PARALLEL_WORKSTREAM.md`
 - `docs/MOAT_COMPETITION_ALTERNATIVES.md`
 - `docs/RESEARCH_AGENDA_TRUST_AND_FAILURE.md`
 - `docs/RESEARCH_REPORT_DELTA_AND_MERGE_PLAN.md`
@@ -155,6 +157,7 @@ If someone is new to the repo, they should read in this order:
 3. `docs/SHARED_COMMITMENT_KERNEL_SPEC.md`
 4. `docs/TECH_ARCHITECTURE_MAP.md`
 5. `docs/FOUNDER_VALIDATION_PLAN.md`
+6. `docs/PARALLEL_EXECUTION_PRIORITY_LIST.md`
 6. finance docs if business planning is needed
 
 ## Practical Rule
