@@ -28,6 +28,7 @@ The source-of-truth implementation and strategy docs remain in `docs/`.
 - [Build Matrix V1](../docs/BUILD_MATRIX_V1.md)
 - [Founder Validation Plan](../docs/FOUNDER_VALIDATION_PLAN.md)
 - [Research Agenda: Trust And Failure](../docs/RESEARCH_AGENDA_TRUST_AND_FAILURE.md)
+- [Research Recovery Confidence Memo](../docs/RESEARCH_RECOVERY_CONFIDENCE_MEMO.md)
 - [System Metrics And Formulas](../docs/SYSTEM_METRICS_AND_FORMULAS.md)
 - [Antifragility And Failure Learning](../docs/ANTIFRAGILITY_AND_FAILURE_LEARNING.md)
 - [Launch Perimeter And Survivability Plan](../docs/LAUNCH_PERIMETER_AND_SURVIVABILITY_PLAN.md)
