@@ -29,6 +29,7 @@ The source-of-truth implementation and strategy docs remain in `docs/`.
 - [Founder Validation Plan](../docs/FOUNDER_VALIDATION_PLAN.md)
 - [Parallel Execution Priority List](../docs/PARALLEL_EXECUTION_PRIORITY_LIST.md)
 - [Founder Parallel Workstream](../docs/FOUNDER_PARALLEL_WORKSTREAM.md)
+- [Open Areas Priority Map](../docs/OPEN_AREAS_PRIORITY_MAP.md)
 - [Research Agenda: Trust And Failure](../docs/RESEARCH_AGENDA_TRUST_AND_FAILURE.md)
 - [Research Recovery Confidence Memo](../docs/RESEARCH_RECOVERY_CONFIDENCE_MEMO.md)
 - [Research Report Delta And Merge Plan](../docs/RESEARCH_REPORT_DELTA_AND_MERGE_PLAN.md)
