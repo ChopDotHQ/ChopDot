@@ -32,6 +32,7 @@ The source-of-truth implementation and strategy docs remain in `docs/`.
 - [Open Areas Priority Map](../docs/OPEN_AREAS_PRIORITY_MAP.md)
 - [Open Source Strategy Memo](../docs/OPEN_SOURCE_STRATEGY_MEMO.md)
 - [Public Private Materials Inventory](../docs/PUBLIC_PRIVATE_MATERIALS_INVENTORY.md)
+- [Cell System / Polkadot Future Lessons](../docs/CELL_SYSTEM_POLKADOT_FUTURE_LESSONS.md)
 - [Research Agenda: Trust And Failure](../docs/RESEARCH_AGENDA_TRUST_AND_FAILURE.md)
 - [Research Recovery Confidence Memo](../docs/RESEARCH_RECOVERY_CONFIDENCE_MEMO.md)
 - [Research Report Delta And Merge Plan](../docs/RESEARCH_REPORT_DELTA_AND_MERGE_PLAN.md)
