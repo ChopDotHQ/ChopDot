@@ -29,6 +29,7 @@ The source-of-truth implementation and strategy docs remain in `docs/`.
 - [Founder Validation Plan](../docs/FOUNDER_VALIDATION_PLAN.md)
 - [Parallel Execution Priority List](../docs/PARALLEL_EXECUTION_PRIORITY_LIST.md)
 - [Founder Parallel Workstream](../docs/FOUNDER_PARALLEL_WORKSTREAM.md)
+- [Operator Parallel Execution Checklist](../docs/OPERATOR_PARALLEL_EXECUTION_CHECKLIST.md)
 - [Open Areas Priority Map](../docs/OPEN_AREAS_PRIORITY_MAP.md)
 - [Open Source Strategy Memo](../docs/OPEN_SOURCE_STRATEGY_MEMO.md)
 - [Public Private Materials Inventory](../docs/PUBLIC_PRIVATE_MATERIALS_INVENTORY.md)
