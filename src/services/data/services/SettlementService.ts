@@ -94,18 +94,8 @@ export class SettlementService {
     potId: string,
     legs: Array<{ fromMemberId: string; toMemberId: string; amount: number; currency: string }>,
   ): Promise<SettlementLeg[]> {
-    const created = await Promise.all(
-      legs.map(leg =>
-        this.settlementRepository.create({
-          potId,
-          fromMemberId: leg.fromMemberId,
-          toMemberId: leg.toMemberId,
-          amount: leg.amount,
-          currency: leg.currency,
-        }),
-      ),
-    );
-    return created;
+    const idempotencyKey = crypto.randomUUID();
+    return this.settlementRepository.createBatch(potId, legs, idempotencyKey);
   }
 
   /**

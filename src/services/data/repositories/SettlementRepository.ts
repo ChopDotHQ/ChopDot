@@ -11,6 +11,11 @@
  *   POST   /api/pots/:potId/settlements          { legs: [...] }
  *   PATCH  /api/pots/:potId/settlements/:id/pay  { method, reference }
  *   PATCH  /api/pots/:potId/settlements/:id/confirm
+ *
+ * Features:
+ *   - In-memory TTL cache for reads (configurable, defaults to 5 min)
+ *   - Offline mutation queue: failed mutations are persisted to localStorage
+ *     and replayed on the next successful online request
  */
 
 import type { SettlementLeg, SettlementLegStatus } from "../../../types/app";
@@ -18,6 +23,8 @@ import { getSupabase } from "../../../utils/supabase-client";
 
 const API_BASE =
   (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3001";
+
+const QUEUE_STORAGE_KEY = "chopdot:settlement_mutation_queue";
 
 // ─── Wire shape from backend ──────────────────────────────────────────────────
 
@@ -80,19 +87,146 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+// ─── Offline mutation queue ───────────────────────────────────────────────────
+
+interface QueuedMutation {
+  id: string;
+  path: string;
+  method: string;
+  body?: string;
+  enqueuedAt: number;
+}
+
+function loadQueue(): QueuedMutation[] {
+  try {
+    return JSON.parse(localStorage.getItem(QUEUE_STORAGE_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveQueue(queue: QueuedMutation[]): void {
+  try {
+    localStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify(queue));
+  } catch {
+    // Storage may be unavailable (e.g. private mode quota)
+  }
+}
+
+function enqueue(mutation: Omit<QueuedMutation, "id" | "enqueuedAt">): void {
+  const queue = loadQueue();
+  queue.push({ ...mutation, id: crypto.randomUUID(), enqueuedAt: Date.now() });
+  saveQueue(queue);
+}
+
+async function flushQueue(): Promise<void> {
+  const queue = loadQueue();
+  if (queue.length === 0) return;
+
+  const failed: QueuedMutation[] = [];
+  for (const item of queue) {
+    try {
+      await apiFetch(item.path, { method: item.method, body: item.body });
+    } catch {
+      failed.push(item);
+    }
+  }
+  saveQueue(failed);
+}
+
+// ─── Cache entry ──────────────────────────────────────────────────────────────
+
+interface CacheEntry<T> {
+  value: T;
+  expiresAt: number;
+}
+
 // ─── Repository class ─────────────────────────────────────────────────────────
 
 export class SettlementRepository {
-  // TTL/cache params kept for DataContext interface compatibility
-  constructor(_ttl: number = 300_000, _maxCacheSize: number = 100) {}
+  private readonly ttl: number;
+  private readonly maxCacheSize: number;
+  private readonly cache = new Map<string, CacheEntry<SettlementLeg[]>>();
 
-  /** Fetch all settlement legs for a pot, newest first */
-  async listByPot(potId: string): Promise<SettlementLeg[]> {
-    const rows = await apiFetch<WireLeg[]>(`/api/pots/${potId}/settlements`);
-    return rows.map(wireToLeg);
+  constructor(ttl: number = 300_000, maxCacheSize: number = 100) {
+    this.ttl = ttl;
+    this.maxCacheSize = maxCacheSize;
   }
 
-  /** Create new settlement legs (propose a chapter) */
+  // ─── Cache helpers ──────────────────────────────────────────────────────────
+
+  private getCached(key: string): SettlementLeg[] | null {
+    const entry = this.cache.get(key);
+    if (!entry) return null;
+    if (Date.now() > entry.expiresAt) {
+      this.cache.delete(key);
+      return null;
+    }
+    return entry.value;
+  }
+
+  private setCached(key: string, value: SettlementLeg[]): void {
+    // Evict oldest entry when at capacity
+    if (!this.cache.has(key) && this.cache.size >= this.maxCacheSize) {
+      this.cache.delete(this.cache.keys().next().value!);
+    }
+    this.cache.set(key, { value, expiresAt: Date.now() + this.ttl });
+  }
+
+  private invalidateCache(potId: string): void {
+    this.cache.delete(potId);
+  }
+
+  // ─── Public API ─────────────────────────────────────────────────────────────
+
+  /** Fetch all settlement legs for a pot, newest first. Results are cached. */
+  async listByPot(potId: string): Promise<SettlementLeg[]> {
+    const cached = this.getCached(potId);
+    if (cached) return cached;
+
+    // Flush any queued offline mutations before reading
+    await flushQueue();
+
+    const rows = await apiFetch<WireLeg[]>(`/api/pots/${potId}/settlements`);
+    const legs = rows.map(wireToLeg);
+    this.setCached(potId, legs);
+    return legs;
+  }
+
+  /** Create a batch of settlement legs (propose a chapter). Clears the cache. */
+  async createBatch(
+    potId: string,
+    legs: Array<{
+      fromMemberId: string;
+      toMemberId: string;
+      amount: number;
+      currency: string;
+    }>,
+    idempotencyKey?: string,
+  ): Promise<SettlementLeg[]> {
+    this.invalidateCache(potId);
+    const extraHeaders: HeadersInit = idempotencyKey
+      ? { "x-idempotency-key": idempotencyKey }
+      : {};
+    try {
+      const rows = await apiFetch<WireLeg[]>(`/api/pots/${potId}/settlements`, {
+        method: "POST",
+        body: JSON.stringify({ legs }),
+        headers: extraHeaders,
+      });
+      return rows.map(wireToLeg);
+    } catch (err) {
+      // Queue for offline replay — store the full request
+      enqueue({
+        path: `/api/pots/${potId}/settlements`,
+        method: "POST",
+        body: JSON.stringify({ legs }),
+      });
+      throw err;
+    }
+  }
+
+  /** @deprecated Use createBatch for multi-leg proposals */
   async create(leg: {
     potId: string;
     fromMemberId: string;
@@ -100,23 +234,12 @@ export class SettlementRepository {
     amount: number;
     currency: string;
   }): Promise<SettlementLeg> {
-    // The backend endpoint accepts an array; we wrap single legs
-    const rows = await apiFetch<WireLeg[]>(`/api/pots/${leg.potId}/settlements`, {
-      method: "POST",
-      body: JSON.stringify({
-        legs: [
-          {
-            fromMemberId: leg.fromMemberId,
-            toMemberId: leg.toMemberId,
-            amount: leg.amount,
-            currency: leg.currency,
-          },
-        ],
-      }),
-    });
+    const rows = await this.createBatch(leg.potId, [
+      { fromMemberId: leg.fromMemberId, toMemberId: leg.toMemberId, amount: leg.amount, currency: leg.currency },
+    ]);
     const first = rows[0];
     if (!first) throw new Error("[SettlementRepository] create returned empty array");
-    return wireToLeg(first);
+    return first;
   }
 
   /** Payer marks a leg as paid — pending → paid */
@@ -126,6 +249,7 @@ export class SettlementRepository {
     method: SettlementLeg["method"],
     reference?: string,
   ): Promise<SettlementLeg> {
+    this.invalidateCache(potId);
     const row = await apiFetch<WireLeg>(
       `/api/pots/${potId}/settlements/${id}/pay`,
       {
@@ -138,6 +262,7 @@ export class SettlementRepository {
 
   /** Receiver confirms receipt — paid → confirmed */
   async confirmReceipt(id: string, potId: string): Promise<SettlementLeg> {
+    this.invalidateCache(potId);
     const row = await apiFetch<WireLeg>(
       `/api/pots/${potId}/settlements/${id}/confirm`,
       { method: "PATCH" },
@@ -146,7 +271,9 @@ export class SettlementRepository {
   }
 
   /** @deprecated kept for DataContext interface compat */
-  invalidate(): void {}
+  invalidate(): void {
+    this.cache.clear();
+  }
 
   /** @deprecated kept for DataContext interface compat */
   async list(): Promise<unknown[]> {
