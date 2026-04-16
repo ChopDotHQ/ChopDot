@@ -1,3 +1,49 @@
+// Commitment lifecycle — the state a pot/chapter can be in
+export type PotStatus =
+    | 'draft'
+    | 'active'
+    | 'partially_settled'
+    | 'completed'
+    | 'cancelled';
+
+// Settlement leg statuses — tracks a single bilateral payment
+export type SettlementLegStatus = 'pending' | 'paid' | 'confirmed';
+
+// A single leg in a chapter settlement
+export interface SettlementLeg {
+    id: string;
+    potId: string;
+    fromMemberId: string;
+    toMemberId: string;
+    amount: number;        // fiat units (e.g. 12.50)
+    currency: string;
+    status: SettlementLegStatus;
+    method?: 'cash' | 'bank' | 'paypal' | 'twint';
+    reference?: string;
+    createdAt: string;     // ISO
+    paidAt?: string;       // ISO — set when status → paid
+    confirmedAt?: string;  // ISO — set when status → confirmed
+}
+
+// Typed commitment event — append-only history entry
+export type PotEventType =
+    | 'commitment_created'
+    | 'participant_joined'
+    | 'expense_added'
+    | 'chapter_proposed'
+    | 'leg_marked_paid'
+    | 'leg_confirmed'
+    | 'chapter_closed'
+    | 'commitment_cancelled';
+
+export interface PotEvent {
+    id: string;
+    type: PotEventType;
+    actorId: string;       // member ID who triggered the event
+    timestamp: string;     // ISO
+    meta?: Record<string, unknown>;
+}
+
 export interface Member {
     id: string;
     name: string;
@@ -43,6 +89,7 @@ export interface Pot {
     baseCurrency: string;
     members: Member[];
     expenses: Expense[];
+    status?: PotStatus;
     budget?: number;
     budgetEnabled?: boolean;
     goalAmount?: number;
@@ -55,6 +102,7 @@ export interface Pot {
     createdAt?: string;
     updatedAt?: number;
     lastEditAt?: string;
+    events?: PotEvent[];
 }
 
 export interface Settlement {

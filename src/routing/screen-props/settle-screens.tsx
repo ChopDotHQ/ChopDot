@@ -178,15 +178,22 @@ export function renderSettleHome(ctx: RouterContext) {
 export function renderSettlementHistory(ctx: RouterContext) {
     const {
         screen,
-        data: { settlements, people, pots },
+        data: { settlements, people, pots, currentPotId, normalizedCurrentPot },
+        userState: { user, isGuest },
         nav: { back },
     } = ctx;
     const personId = screen && screen.type === 'settlement-history' ? screen.personId : undefined;
+    const currentUserId = isGuest ? 'owner' : (user?.id || 'owner');
+    const members = (normalizedCurrentPot as any)?.members ?? [];
 
     return (
         <SettlementHistory
             onBack={back}
             personId={personId}
+            potId={currentPotId ?? undefined}
+            members={members}
+            currentUserId={currentUserId}
+            baseCurrency={(normalizedCurrentPot as any)?.baseCurrency ?? 'USD'}
             settlements={settlements.map((s) => ({
                 id: s.id,
                 method: s.method,

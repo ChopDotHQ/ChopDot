@@ -13,6 +13,8 @@ import { usePSAStyle } from '../../utils/usePSAStyle';
 import { usePotDataMerge } from '../../hooks/usePotDataMerge';
 import { usePotSummary } from '../../hooks/usePotSummary';
 import { useCheckpointState } from '../../hooks/useCheckpointState';
+import { useChapterState } from '../../hooks/useChapterState';
+import { ChapterPanel } from '../commit/ChapterPanel';
 import type { Pot } from '../../schema/pot';
 
 interface PotHomeProps {
@@ -116,6 +118,12 @@ export function PotHome(props: PotHomeProps) {
     budget,
     contributions,
     checkpointConfirmations,
+  });
+
+  const chapter = useChapterState({
+    potId,
+    currentUserId,
+    onShowToast,
   });
 
   const isWalletConnected = false;
@@ -244,6 +252,18 @@ export function PotHome(props: PotHomeProps) {
           ))}
         </div>
 
+        {potType === 'expense' && (
+          <ChapterPanel
+            legs={chapter.legs}
+            chapterStatus={chapter.chapterStatus}
+            members={members}
+            currentUserId={currentUserId}
+            baseCurrency={baseCurrency}
+            onMarkPaid={chapter.markPaid}
+            onConfirmReceipt={chapter.confirmReceipt}
+          />
+        )}
+
         <div className="flex-1 overflow-auto">
           {activeTab === 'Expenses' && potType === 'expense' && (
             <ExpensesTab
@@ -267,7 +287,7 @@ export function PotHome(props: PotHomeProps) {
               }}
               onExpenseClick={onExpenseClick}
               onSettle={onSettle}
-              trackedCloseout={null}
+              trackedCloseout={chapter.hasOpenChapter ? chapter : null}
               onReopenTrackedSettlement={undefined}
               canAddExpense={canAddExpense}
               addExpenseDisabledReason={addExpenseDisabledReason}

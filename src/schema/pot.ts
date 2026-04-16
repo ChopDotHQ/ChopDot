@@ -59,6 +59,16 @@ export type Expense = z.infer<typeof ExpenseSchema>;
 export const PotModeSchema = z.enum(['casual', 'auditable']).default('casual');
 export type PotMode = z.infer<typeof PotModeSchema>;
 
+// Commitment lifecycle status
+export const PotStatusSchema = z.enum([
+  'draft',
+  'active',
+  'partially_settled',
+  'completed',
+  'cancelled',
+]).default('active');
+export type PotStatus = z.infer<typeof PotStatusSchema>;
+
 // Base currency type - common fiat currencies
 export type BaseCurrency = 'USD' | 'EUR' | 'GBP' | 'CHF' | 'CAD' | 'AUD' | 'JPY';
 
@@ -77,6 +87,7 @@ export const PotSchema = z.object({
   members: z.array(MemberSchema).min(1, 'Pot must have at least one member'),
   expenses: z.array(ExpenseSchema).default([]),
   history: z.array(z.unknown()).optional().default([]),
+  status: PotStatusSchema.optional(),
   budget: z.number().nullable().optional(),
   budgetEnabled: z.boolean().optional().default(false),
   checkpointEnabled: z.boolean().optional().default(true),
