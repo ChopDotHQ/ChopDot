@@ -1,92 +1,98 @@
 /**
  * Settlement Repository
  *
- * Data access layer for settlement legs.
- * Persists and retrieves typed settlement legs from Supabase `settlements` table.
+ * HTTP client for the ChopDot API settlement endpoints.
+ * All persistence goes through the backend, which uses Prisma + Postgres.
  *
- * Column mapping:
- *   id, pot_id, from_member_id, to_member_id,
- *   amount_minor (cents), currency_code, status,
- *   tx_hash (repurposed for method+reference JSON), created_at
+ * API base: VITE_API_URL (defaults to http://localhost:3001)
+ *
+ * Endpoints consumed:
+ *   GET    /api/pots/:potId/settlements
+ *   POST   /api/pots/:potId/settlements          { legs: [...] }
+ *   PATCH  /api/pots/:potId/settlements/:id/pay  { method, reference }
+ *   PATCH  /api/pots/:potId/settlements/:id/confirm
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { SettlementLeg, SettlementLegStatus } from '../../../types/app';
-import { getSupabase } from '../../../utils/supabase-client';
+import type { SettlementLeg, SettlementLegStatus } from "../../../types/app";
+import { getSupabase } from "../../../utils/supabase-client";
 
-// Supabase row shape for the settlements table
-interface SettlementRow {
+const API_BASE =
+  (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3001";
+
+// ─── Wire shape from backend ──────────────────────────────────────────────────
+
+interface WireLeg {
   id: string;
-  pot_id: string;
-  from_member_id: string;
-  to_member_id: string;
-  amount_minor: number;
-  currency_code: string;
+  potId: string;
+  fromMemberId: string;
+  toMemberId: string;
+  amount: number;
+  currency: string;
   status: string;
-  tx_hash: string | null;
-  created_at: string;
-}
-
-/** Parse method/reference packed into tx_hash as JSON */
-function unpackTxHash(txHash: string | null): {
-  method?: SettlementLeg['method'];
+  method?: string;
   reference?: string;
+  createdAt: string;
   paidAt?: string;
   confirmedAt?: string;
-} {
-  if (!txHash) return {};
-  try {
-    return JSON.parse(txHash) as ReturnType<typeof unpackTxHash>;
-  } catch {
-    return {};
-  }
 }
 
-function rowToLeg(row: SettlementRow): SettlementLeg {
-  const packed = unpackTxHash(row.tx_hash);
+function wireToLeg(w: WireLeg): SettlementLeg {
   return {
-    id: row.id,
-    potId: row.pot_id,
-    fromMemberId: row.from_member_id,
-    toMemberId: row.to_member_id,
-    // amount_minor is in cents for fiat (amount * 100)
-    amount: row.amount_minor / 100,
-    currency: row.currency_code,
-    status: (row.status as SettlementLegStatus) ?? 'pending',
-    method: packed.method,
-    reference: packed.reference,
-    createdAt: row.created_at,
-    paidAt: packed.paidAt,
-    confirmedAt: packed.confirmedAt,
+    id: w.id,
+    potId: w.potId,
+    fromMemberId: w.fromMemberId,
+    toMemberId: w.toMemberId,
+    amount: w.amount,
+    currency: w.currency,
+    status: w.status as SettlementLegStatus,
+    method: w.method as SettlementLeg["method"],
+    reference: w.reference,
+    createdAt: w.createdAt,
+    paidAt: w.paidAt,
+    confirmedAt: w.confirmedAt,
   };
 }
 
+// ─── Auth header helper ───────────────────────────────────────────────────────
+
+async function authHeaders(): Promise<HeadersInit> {
+  const client = getSupabase();
+  if (!client) return {};
+  const { data } = await client.auth.getSession();
+  const userId = data.session?.user?.id;
+  return userId ? { "x-user-id": userId } : {};
+}
+
+async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = await authHeaders();
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+      ...(init?.headers ?? {}),
+    },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`[SettlementRepository] ${res.status} ${path}: ${body}`);
+  }
+  return res.json() as Promise<T>;
+}
+
+// ─── Repository class ─────────────────────────────────────────────────────────
+
 export class SettlementRepository {
-  private client: SupabaseClient | null;
-
-  // TTL and cache size params kept for interface compatibility with DataContext
-  constructor(_ttl: number = 300_000, _maxCacheSize: number = 100) {
-    this.client = getSupabase();
-  }
-
-  private get db(): SupabaseClient {
-    if (!this.client) throw new Error('[SettlementRepository] Supabase not configured');
-    return this.client;
-  }
+  // TTL/cache params kept for DataContext interface compatibility
+  constructor(_ttl: number = 300_000, _maxCacheSize: number = 100) {}
 
   /** Fetch all settlement legs for a pot, newest first */
   async listByPot(potId: string): Promise<SettlementLeg[]> {
-    const { data, error } = await this.db
-      .from('settlements')
-      .select('id, pot_id, from_member_id, to_member_id, amount_minor, currency_code, status, tx_hash, created_at')
-      .eq('pot_id', potId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw new Error(`[SettlementRepository] listByPot failed: ${error.message}`);
-    return (data ?? []).map(row => rowToLeg(row as SettlementRow));
+    const rows = await apiFetch<WireLeg[]>(`/api/pots/${potId}/settlements`);
+    return rows.map(wireToLeg);
   }
 
-  /** Create a new settlement leg with status = pending */
+  /** Create new settlement legs (propose a chapter) */
   async create(leg: {
     potId: string;
     fromMemberId: string;
@@ -94,70 +100,81 @@ export class SettlementRepository {
     amount: number;
     currency: string;
   }): Promise<SettlementLeg> {
-    const { data, error } = await this.db
-      .from('settlements')
-      .insert({
-        pot_id: leg.potId,
-        from_member_id: leg.fromMemberId,
-        to_member_id: leg.toMemberId,
-        amount_minor: Math.round(leg.amount * 100),
-        currency_code: leg.currency,
-        status: 'pending',
-        tx_hash: null,
-      })
-      .select('id, pot_id, from_member_id, to_member_id, amount_minor, currency_code, status, tx_hash, created_at')
-      .single();
-
-    if (error) throw new Error(`[SettlementRepository] create failed: ${error.message}`);
-    return rowToLeg(data as SettlementRow);
+    // The backend endpoint accepts an array; we wrap single legs
+    const rows = await apiFetch<WireLeg[]>(`/api/pots/${leg.potId}/settlements`, {
+      method: "POST",
+      body: JSON.stringify({
+        legs: [
+          {
+            fromMemberId: leg.fromMemberId,
+            toMemberId: leg.toMemberId,
+            amount: leg.amount,
+            currency: leg.currency,
+          },
+        ],
+      }),
+    });
+    const first = rows[0];
+    if (!first) throw new Error("[SettlementRepository] create returned empty array");
+    return wireToLeg(first);
   }
 
-  /** Mark a leg as paid — payer side */
-  async markPaid(id: string, method: SettlementLeg['method'], reference?: string): Promise<SettlementLeg> {
-    const paidAt = new Date().toISOString();
-    const packed = JSON.stringify({ method, reference, paidAt });
-
-    const { data, error } = await this.db
-      .from('settlements')
-      .update({ status: 'paid', tx_hash: packed })
-      .eq('id', id)
-      .select('id, pot_id, from_member_id, to_member_id, amount_minor, currency_code, status, tx_hash, created_at')
-      .single();
-
-    if (error) throw new Error(`[SettlementRepository] markPaid failed: ${error.message}`);
-    return rowToLeg(data as SettlementRow);
+  /** Payer marks a leg as paid — pending → paid */
+  async markPaid(
+    id: string,
+    method: SettlementLeg["method"],
+    reference?: string,
+  ): Promise<SettlementLeg> {
+    // We need potId for the URL; fetch the leg first
+    const leg = await this._findLeg(id);
+    const row = await apiFetch<WireLeg>(
+      `/api/pots/${leg.potId}/settlements/${id}/pay`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ method, reference }),
+      },
+    );
+    return wireToLeg(row);
   }
 
-  /** Confirm receipt — counterparty side */
+  /** Receiver confirms receipt — paid → confirmed */
   async confirmReceipt(id: string): Promise<SettlementLeg> {
-    // Fetch current tx_hash to preserve method/reference/paidAt
-    const { data: existing, error: fetchErr } = await this.db
-      .from('settlements')
-      .select('tx_hash')
-      .eq('id', id)
-      .single();
-
-    if (fetchErr) throw new Error(`[SettlementRepository] confirmReceipt fetch failed: ${fetchErr.message}`);
-
-    const current = unpackTxHash((existing as { tx_hash: string | null }).tx_hash);
-    const confirmedAt = new Date().toISOString();
-    const packed = JSON.stringify({ ...current, confirmedAt });
-
-    const { data, error } = await this.db
-      .from('settlements')
-      .update({ status: 'confirmed', tx_hash: packed })
-      .eq('id', id)
-      .select('id, pot_id, from_member_id, to_member_id, amount_minor, currency_code, status, tx_hash, created_at')
-      .single();
-
-    if (error) throw new Error(`[SettlementRepository] confirmReceipt failed: ${error.message}`);
-    return rowToLeg(data as SettlementRow);
+    const leg = await this._findLeg(id);
+    const row = await apiFetch<WireLeg>(
+      `/api/pots/${leg.potId}/settlements/${id}/confirm`,
+      { method: "PATCH" },
+    );
+    return wireToLeg(row);
   }
 
-  /** @deprecated Use listByPot. Kept for interface compatibility. */
+  /**
+   * Internal helper: resolves the potId for a given leg id.
+   * We do a lightweight fetch of all pots' settlements — in practice the
+   * caller (useChapterState) always has potId in scope; this is only used
+   * by markPaid/confirmReceipt which receive just the leg id.
+   *
+   * TODO: when the API exposes GET /api/settlements/:id, replace this.
+   */
+  private async _findLeg(legId: string): Promise<{ potId: string }> {
+    // The hook always passes potId through; this path is only hit when
+    // called from SettlementService.markPaid / confirmReceipt which currently
+    // don't receive potId. We re-query via the Supabase client as a fallback.
+    const client = getSupabase();
+    if (client) {
+      const { data } = await client
+        .from("settlements")
+        .select("pot_id")
+        .eq("id", legId)
+        .single();
+      if (data) return { potId: (data as { pot_id: string }).pot_id };
+    }
+    throw new Error(`[SettlementRepository] Cannot resolve potId for leg ${legId}`);
+  }
+
+  /** @deprecated kept for DataContext interface compat */
   invalidate(): void {}
 
-  /** @deprecated Use listByPot. Kept for interface compatibility. */
+  /** @deprecated kept for DataContext interface compat */
   async list(): Promise<unknown[]> {
     return [];
   }

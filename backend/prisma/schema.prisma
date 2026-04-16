@@ -1,0 +1,182 @@
+// ChopDot Prisma Schema
+// Maps to the existing Supabase/PostgreSQL tables.
+// Supabase auth.users is not modelled here — user IDs are UUIDs from auth.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Core ────────────────────────────────────────────────────────────────────
+
+model Pot {
+  id                String    @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  name              String    @db.VarChar(100)
+  createdBy         String    @map("created_by") @db.Uuid
+  createdAt         DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime? @default(now()) @map("updated_at") @db.Timestamptz
+  archivedAt        DateTime? @map("archived_at") @db.Timestamptz
+  lastSyncedAt      DateTime? @default(now()) @map("last_synced_at") @db.Timestamptz
+  metadata          Json?     @default("{}")
+  baseCurrency      String?   @default("USD") @map("base_currency")
+  potType           String?   @default("expense") @map("pot_type")
+  checkpointEnabled Boolean?  @default(true) @map("checkpoint_enabled")
+  budgetEnabled     Boolean?  @default(false) @map("budget_enabled")
+  budget            Decimal?  @db.Decimal
+  goalAmount        Decimal?  @map("goal_amount") @db.Decimal
+  goalDescription   String?   @map("goal_description")
+  lastEditAt        DateTime? @map("last_edit_at") @db.Timestamptz
+  // Commitment lifecycle status — new field, nullable for backward compat
+  status            String?   @default("active")
+
+  members     PotMember[]
+  expenses    Expense[]
+  settlements Settlement[]
+  invites     Invite[]
+  events      PotEvent[]
+
+  @@map("pots")
+}
+
+model PotMember {
+  id       String    @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  potId    String    @map("pot_id") @db.Uuid
+  userId   String    @map("user_id") @db.Uuid
+  role     String    @default("member") @db.VarChar(20)
+  status   String    @default("active") @db.VarChar(20)
+  joinedAt DateTime? @default(now()) @map("joined_at") @db.Timestamptz
+
+  pot Pot @relation(fields: [potId], references: [id], onDelete: Cascade)
+
+  @@map("pot_members")
+}
+
+model Expense {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  potId            String   @map("pot_id") @db.Uuid
+  creatorId        String   @map("creator_id") @db.Uuid
+  amountMinor      BigInt   @map("amount_minor")
+  currencyCode     String   @default("USD") @map("currency_code")
+  description      String?
+  receiptPath      String?  @map("receipt_path")
+  receiptThumbPath String?  @map("receipt_thumb_path")
+  receiptSize      Int?     @map("receipt_size")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz
+  metadata         Json?    @default("{}")
+
+  pot           Pot            @relation(fields: [potId], references: [id], onDelete: Cascade)
+  contributions Contribution[]
+
+  @@map("expenses")
+}
+
+model Contribution {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  expenseId  String   @map("expense_id") @db.Uuid
+  memberId   String   @map("member_id") @db.Uuid
+  shareMinor BigInt   @map("share_minor")
+  paid       Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+  metadata   Json?    @default("{}")
+
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+
+  @@map("contributions")
+}
+
+// ─── Settlement / chapter kernel ─────────────────────────────────────────────
+
+model Settlement {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  potId        String    @map("pot_id") @db.Uuid
+  fromMemberId String    @map("from_member_id") @db.Uuid
+  toMemberId   String    @map("to_member_id") @db.Uuid
+  amountMinor  BigInt    @map("amount_minor")
+  currencyCode String    @default("USD") @map("currency_code")
+  // status: pending | paid | confirmed
+  status       String    @default("pending")
+  // txHash repurposed: stores JSON { method, reference, paidAt, confirmedAt }
+  txHash       String?   @map("tx_hash")
+  confirmations Int      @default(0)
+  lastCheckedAt DateTime? @map("last_checked_at") @db.Timestamptz
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  pot      Pot       @relation(fields: [potId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@map("settlements")
+}
+
+model Payment {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  settlementId String   @map("settlement_id") @db.Uuid
+  method       String
+  reference    String?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  settlement Settlement @relation(fields: [settlementId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+// ─── Typed commitment event history ──────────────────────────────────────────
+
+model PotEvent {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  potId     String   @map("pot_id") @db.Uuid
+  // type: chapter_proposed | leg_marked_paid | leg_confirmed | chapter_closed | commitment_cancelled
+  type      String
+  actorId   String   @map("actor_id") @db.Uuid
+  meta      Json?    @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  pot Pot @relation(fields: [potId], references: [id], onDelete: Cascade)
+
+  @@map("pot_events")
+}
+
+// ─── Users & auth ────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  walletAddress String?   @map("wallet_address") @db.VarChar(255)
+  name          String?   @db.VarChar(100)
+  avatarUrl     String?   @map("avatar_url")
+  createdAt     DateTime? @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime? @default(now()) @map("updated_at") @db.Timestamptz
+  lastSeenAt    DateTime? @map("last_seen_at") @db.Timestamptz
+
+  @@map("users")
+}
+
+model Profile {
+  id        String   @id @db.Uuid
+  username  String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  @@map("profiles")
+}
+
+model Invite {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  potId        String    @map("pot_id") @db.Uuid
+  inviteeEmail String    @map("invitee_email")
+  status       String    @default("pending")
+  token        String    @db.Uuid @default(dbgenerated("gen_random_uuid()"))
+  expiresAt    DateTime? @map("expires_at") @db.Timestamptz
+  acceptedAt   DateTime? @map("accepted_at") @db.Timestamptz
+  acceptedBy   String?   @map("accepted_by") @db.Uuid
+  createdBy    String    @map("created_by") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  declinedAt   DateTime? @map("declined_at") @db.Timestamptz
+  declinedBy   String?   @map("declined_by") @db.Uuid
+
+  pot Pot @relation(fields: [potId], references: [id], onDelete: Cascade)
+
+  @@map("invites")
+}

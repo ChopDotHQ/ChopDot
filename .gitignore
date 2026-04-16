@@ -76,3 +76,6 @@ antigravity-awesome-skills/
 
 # Generated reports (regenerate with scripts/)
 artifacts/
+
+# Prisma generated client (regenerated via npm run db:generate)
+backend/src/generated/
