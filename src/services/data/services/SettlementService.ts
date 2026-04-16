@@ -94,8 +94,9 @@ export class SettlementService {
     potId: string,
     legs: Array<{ fromMemberId: string; toMemberId: string; amount: number; currency: string }>,
   ): Promise<SettlementLeg[]> {
-    const idempotencyKey = crypto.randomUUID();
-    return this.settlementRepository.createBatch(potId, legs, idempotencyKey);
+    // createBatch auto-generates and caches an idempotency key per batch signature,
+    // so retries of the same legs reuse the same key without any extra coordination here.
+    return this.settlementRepository.createBatch(potId, legs);
   }
 
   /**

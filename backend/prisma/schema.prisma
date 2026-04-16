@@ -91,19 +91,20 @@ model Contribution {
 // ─── Settlement / chapter kernel ─────────────────────────────────────────────
 
 model Settlement {
-  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  potId        String    @map("pot_id") @db.Uuid
-  fromMemberId String    @map("from_member_id") @db.Uuid
-  toMemberId   String    @map("to_member_id") @db.Uuid
-  amountMinor  BigInt    @map("amount_minor")
-  currencyCode String    @default("USD") @map("currency_code")
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  potId           String    @map("pot_id") @db.Uuid
+  fromMemberId    String    @map("from_member_id") @db.Uuid
+  toMemberId      String    @map("to_member_id") @db.Uuid
+  amountMinor     BigInt    @map("amount_minor")
+  currencyCode    String    @default("USD") @map("currency_code")
   // status: pending | paid | confirmed
-  status       String    @default("pending")
+  status          String    @default("pending")
   // txHash repurposed: stores JSON { method, reference, paidAt, confirmedAt }
-  txHash       String?   @map("tx_hash")
-  confirmations Int      @default(0)
-  lastCheckedAt DateTime? @map("last_checked_at") @db.Timestamptz
-  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  txHash          String?   @map("tx_hash")
+  confirmations   Int       @default(0)
+  lastCheckedAt   DateTime? @map("last_checked_at") @db.Timestamptz
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  idempotencyKey  String?   @map("idempotency_key") @unique
 
   pot      Pot       @relation(fields: [potId], references: [id], onDelete: Cascade)
   payments Payment[]

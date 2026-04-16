@@ -87,6 +87,34 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+// ─── Idempotency key cache ────────────────────────────────────────────────────
+
+/**
+ * In-memory cache of idempotency keys keyed by a canonical batch signature.
+ * Retries of the same logical batch reuse the key; cleared after success so a
+ * genuinely new batch gets a fresh key.
+ */
+const _idempotencyCache = new Map<string, string>();
+
+function batchCacheKey(
+  potId: string,
+  legs: Array<{ fromMemberId: string; toMemberId: string; amount: number }>,
+): string {
+  const sorted = [...legs].sort((a, b) =>
+    `${a.fromMemberId}:${a.toMemberId}:${a.amount}`.localeCompare(
+      `${b.fromMemberId}:${b.toMemberId}:${b.amount}`,
+    ),
+  );
+  return `${potId}:${sorted.map(l => `${l.fromMemberId}:${l.toMemberId}:${l.amount}`).join("|")}`;
+}
+
+function generateIdempotencyKey(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 // ─── Offline mutation queue ───────────────────────────────────────────────────
 
 interface QueuedMutation {
@@ -205,18 +233,28 @@ export class SettlementRepository {
     idempotencyKey?: string,
   ): Promise<SettlementLeg[]> {
     this.invalidateCache(potId);
-    const extraHeaders: HeadersInit = idempotencyKey
-      ? { "x-idempotency-key": idempotencyKey }
-      : {};
+
+    // Auto-generate and cache an idempotency key per batch signature so retries
+    // reuse the same key without the caller needing to manage it.
+    const cacheKey = batchCacheKey(potId, legs);
+    let resolvedKey = idempotencyKey ?? _idempotencyCache.get(cacheKey);
+    if (!resolvedKey) {
+      resolvedKey = generateIdempotencyKey();
+      _idempotencyCache.set(cacheKey, resolvedKey);
+    }
+
+    const extraHeaders: HeadersInit = { "x-idempotency-key": resolvedKey };
     try {
       const rows = await apiFetch<WireLeg[]>(`/api/pots/${potId}/settlements`, {
         method: "POST",
         body: JSON.stringify({ legs }),
         headers: extraHeaders,
       });
+      // Clear cache entry after success — next distinct batch gets a fresh key
+      _idempotencyCache.delete(cacheKey);
       return rows.map(wireToLeg);
     } catch (err) {
-      // Queue for offline replay — store the full request
+      // Queue for offline replay — store the full request (key preserved in cache for retry)
       enqueue({
         path: `/api/pots/${potId}/settlements`,
         method: "POST",

@@ -60,6 +60,7 @@ function toWire(row: {
   status: string;
   txHash: string | null;
   createdAt: Date;
+  idempotencyKey?: string | null;
 }) {
   const packed = unpackTxHash(row.txHash);
   return {
@@ -124,6 +125,23 @@ settlementsRouter.post("/", async (req: Request, res: Response, next: NextFuncti
       return;
     }
 
+    // Idempotency: if the header is present and rows already exist for this key, return them
+    const idempotencyKey = req.headers["x-idempotency-key"];
+    if (typeof idempotencyKey === "string" && idempotencyKey.length > 0) {
+      const existing = await prisma.settlement.findMany({
+        where: { idempotencyKey, potId },
+      });
+      if (existing.length > 0) {
+        res.status(200).json(existing.map(toWire));
+        return;
+      }
+    }
+
+    const idempotencyKeyValue =
+      typeof idempotencyKey === "string" && idempotencyKey.length > 0
+        ? idempotencyKey
+        : undefined;
+
     const created = await prisma.$transaction(
       legs.map((leg) =>
         prisma.settlement.create({
@@ -134,6 +152,7 @@ settlementsRouter.post("/", async (req: Request, res: Response, next: NextFuncti
             amountMinor: BigInt(Math.round(leg.amount * 100)),
             currencyCode: leg.currency,
             status: "pending",
+            idempotencyKey: idempotencyKeyValue,
           },
         })
       )
