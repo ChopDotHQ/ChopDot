@@ -1,23 +1,19 @@
 /**
- * ChapterPanel
+ * ChapterPanel — renders the open commitment chapter for a pot.
  *
- * Displays the open chapter for a pot — the commitment loop.
- *
- * Shows:
- * - Chapter status (active / partially settled / completed)
- * - Each settlement leg with its status badge
- * - "Mark paid" action for the payer
- * - "Confirm receipt" action for the receiver
- * - Visible closure when all legs are confirmed
- *
- * This component does NOT load data itself. It receives legs from
- * useChapterState and calls back to the parent for actions.
+ * Receives legs from useChapterState; does not load data itself.
  */
 
 import { useState } from 'react';
 import { CheckCircle, Clock, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 import type { SettlementLeg, PotStatus } from '../../types/app';
 import { formatCurrencyAmount } from '../../utils/currencyFormat';
+import {
+  LEG_STATUS_LABELS,
+  LEG_STATUS_COLORS,
+  METHOD_LABELS,
+  getMemberDisplayName,
+} from '../../utils/settlementLabels';
 
 interface Member {
   id: string;
@@ -34,7 +30,7 @@ interface ChapterPanelProps {
   onConfirmReceipt: (legId: string) => Promise<void>;
 }
 
-const STATUS_LABELS: Record<PotStatus, string> = {
+const CHAPTER_STATUS_LABELS: Record<PotStatus, string> = {
   draft: 'Draft',
   active: 'In progress',
   partially_settled: 'Partially settled',
@@ -42,16 +38,7 @@ const STATUS_LABELS: Record<PotStatus, string> = {
   cancelled: 'Cancelled',
 };
 
-const LEG_STATUS_LABELS: Record<SettlementLeg['status'], string> = {
-  pending: 'Pending',
-  paid: 'Paid — awaiting confirmation',
-  confirmed: 'Confirmed',
-};
-
-function getMemberName(members: Member[], id: string, currentUserId: string): string {
-  if (id === currentUserId) return 'You';
-  return members.find(m => m.id === id)?.name ?? 'Member';
-}
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
 function PayMethodPicker({
   onSelect,
@@ -75,7 +62,7 @@ function PayMethodPicker({
               color: method === m ? 'var(--bg)' : 'var(--ink)',
             }}
           >
-            {m === 'bank' ? 'Bank' : m === 'paypal' ? 'PayPal' : m === 'twint' ? 'TWINT' : 'Cash'}
+            {METHOD_LABELS[m]}
           </button>
         ))}
       </div>
@@ -117,25 +104,16 @@ function LegRow({
   const [showPayPicker, setShowPayPicker] = useState(false);
   const [isActing, setIsActing] = useState(false);
 
-  const fromName = getMemberName(members, leg.fromMemberId, currentUserId);
-  const toName   = getMemberName(members, leg.toMemberId, currentUserId);
+  const fromName  = getMemberDisplayName(members, leg.fromMemberId, currentUserId);
+  const toName    = getMemberDisplayName(members, leg.toMemberId, currentUserId);
   const amountStr = formatCurrencyAmount(leg.amount, baseCurrency);
+  const color     = LEG_STATUS_COLORS[leg.status];
 
-  const isPayer    = leg.fromMemberId === currentUserId;
-  const isReceiver = leg.toMemberId === currentUserId;
-
-  const canMarkPaid      = isPayer && leg.status === 'pending';
-  const canConfirmReceipt = isReceiver && leg.status === 'paid';
-
-  const statusColor: Record<SettlementLeg['status'], string> = {
-    pending: 'var(--text-secondary)',
-    paid: 'var(--accent)',
-    confirmed: 'var(--success)',
-  };
+  const canMarkPaid       = leg.fromMemberId === currentUserId && leg.status === 'pending';
+  const canConfirmReceipt = leg.toMemberId   === currentUserId && leg.status === 'paid';
 
   return (
     <div className="p-3 card rounded-xl space-y-2">
-      {/* Header row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 flex-1 min-w-0">
           <span className="text-label font-medium truncate">{fromName}</span>
@@ -145,25 +123,19 @@ function LegRow({
         <span className="text-label tabular-nums font-semibold flex-shrink-0 ml-2">{amountStr}</span>
       </div>
 
-      {/* Status */}
       <div className="flex items-center gap-1.5">
-        {leg.status === 'confirmed' ? (
-          <CheckCircle className="w-3.5 h-3.5" style={{ color: 'var(--success)' }} />
-        ) : (
-          <Clock className="w-3.5 h-3.5" style={{ color: statusColor[leg.status] }} />
-        )}
-        <span className="text-caption" style={{ color: statusColor[leg.status] }}>
-          {LEG_STATUS_LABELS[leg.status]}
-        </span>
+        {leg.status === 'confirmed'
+          ? <CheckCircle className="w-3.5 h-3.5" style={{ color: 'var(--success)' }} />
+          : <Clock className="w-3.5 h-3.5" style={{ color }} />}
+        <span className="text-caption" style={{ color }}>{LEG_STATUS_LABELS[leg.status]}</span>
         {leg.method && (
           <span className="text-caption text-secondary">
-            &bull; {leg.method === 'bank' ? 'Bank' : leg.method === 'paypal' ? 'PayPal' : leg.method === 'twint' ? 'TWINT' : 'Cash'}
+            &bull; {METHOD_LABELS[leg.method] ?? leg.method}
             {leg.reference ? ` (${leg.reference})` : ''}
           </span>
         )}
       </div>
 
-      {/* Payer action: mark paid */}
       {canMarkPaid && (
         <>
           <button
@@ -190,7 +162,6 @@ function LegRow({
         </>
       )}
 
-      {/* Receiver action: confirm receipt */}
       {canConfirmReceipt && (
         <button
           disabled={isActing}
@@ -211,6 +182,8 @@ function LegRow({
     </div>
   );
 }
+
+// ─── Main export ──────────────────────────────────────────────────────────────
 
 export function ChapterPanel({
   legs,
@@ -234,7 +207,6 @@ export function ChapterPanel({
           background: isCompleted ? 'rgba(var(--success-rgb, 34,197,94), 0.04)' : 'var(--card)',
         }}
       >
-        {/* Chapter header */}
         <div className="flex items-center justify-between">
           <p className="text-label font-semibold">Settlement chapter</p>
           <span
@@ -244,46 +216,38 @@ export function ChapterPanel({
               color: isCompleted ? '#fff' : 'var(--text-secondary)',
             }}
           >
-            {STATUS_LABELS[chapterStatus]}
+            {CHAPTER_STATUS_LABELS[chapterStatus]}
           </span>
         </div>
 
-        {/* Closed state */}
-        {isCompleted && (
+        {isCompleted ? (
           <div className="flex items-center gap-2 py-1">
             <CheckCircle className="w-5 h-5" style={{ color: 'var(--success)' }} />
             <p className="text-body" style={{ color: 'var(--success)' }}>
               All payments confirmed — chapter closed
             </p>
           </div>
-        )}
-
-        {/* Active legs */}
-        {!isCompleted && (
-          <div className="space-y-2">
-            {legs.map(leg => (
-              <LegRow
-                key={leg.id}
-                leg={leg}
-                members={members}
-                currentUserId={currentUserId}
-                baseCurrency={baseCurrency}
-                onMarkPaid={onMarkPaid}
-                onConfirmReceipt={onConfirmReceipt}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Next-action hint */}
-        {!isCompleted && (
-          <p className="text-micro text-secondary">
-            {chapterStatus === 'active'
-              ? 'Waiting for payers to mark payments.'
-              : chapterStatus === 'partially_settled'
-              ? 'Some payments marked — waiting for receivers to confirm.'
-              : ''}
-          </p>
+        ) : (
+          <>
+            <div className="space-y-2">
+              {legs.map(leg => (
+                <LegRow
+                  key={leg.id}
+                  leg={leg}
+                  members={members}
+                  currentUserId={currentUserId}
+                  baseCurrency={baseCurrency}
+                  onMarkPaid={onMarkPaid}
+                  onConfirmReceipt={onConfirmReceipt}
+                />
+              ))}
+            </div>
+            <p className="text-micro text-secondary">
+              {chapterStatus === 'active'
+                ? 'Waiting for payers to mark payments.'
+                : 'Some payments marked — waiting for receivers to confirm.'}
+            </p>
+          </>
         )}
       </div>
     </div>

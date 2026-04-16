@@ -15,6 +15,7 @@
 
 import { Router, Request, Response, NextFunction } from "express";
 import { prisma } from "../lib/prisma";
+import type { Prisma } from "../generated/prisma";
 
 export const settlementsRouter = Router({ mergeParams: true });
 
@@ -81,7 +82,7 @@ async function appendEvent(
   potId: string,
   type: string,
   actorId: string,
-  meta: Record<string, unknown> = {}
+  meta: Prisma.InputJsonValue = {}
 ) {
   await prisma.potEvent.create({
     data: { potId, type, actorId, meta },
@@ -218,22 +219,19 @@ settlementsRouter.patch("/:id/confirm", async (req: Request, res: Response, next
       data: { status: "confirmed", txHash, confirmations: { increment: 1 } },
     });
 
-    if (actorId) {
-      await appendEvent(potId, "leg_confirmed", actorId, { legId: id });
-    }
+    // Fire event + remaining-count check in parallel
+    const [, remaining] = await Promise.all([
+      actorId ? appendEvent(potId, "leg_confirmed", actorId, { legId: id }) : Promise.resolve(),
+      prisma.settlement.count({ where: { potId, status: { not: "confirmed" } } }),
+    ]);
 
-    // Check if all legs for this pot are now confirmed — emit chapter_closed
-    const remaining = await prisma.settlement.count({
-      where: { potId, status: { not: "confirmed" } },
-    });
     if (remaining === 0) {
       const closerId = actorId ?? existing.toMemberId;
-      await appendEvent(potId, "chapter_closed", closerId, {});
-      // Update pot status
-      await prisma.pot.update({
-        where: { id: potId },
-        data: { status: "completed" },
-      });
+      // Close event and pot status update in parallel
+      await Promise.all([
+        appendEvent(potId, "chapter_closed", closerId, {}),
+        prisma.pot.update({ where: { id: potId }, data: { status: "completed" } }),
+      ]);
     }
 
     res.json(toWire(updated));

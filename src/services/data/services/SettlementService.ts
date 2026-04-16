@@ -121,18 +121,19 @@ export class SettlementService {
    */
   async markPaid(
     legId: string,
+    potId: string,
     method: SettlementLeg['method'],
     reference?: string,
   ): Promise<SettlementLeg> {
-    return this.settlementRepository.markPaid(legId, method, reference);
+    return this.settlementRepository.markPaid(legId, potId, method, reference);
   }
 
   /**
    * Receiver confirms a leg.
    * Transitions: paid → confirmed
    */
-  async confirmReceipt(legId: string): Promise<SettlementLeg> {
-    return this.settlementRepository.confirmReceipt(legId);
+  async confirmReceipt(legId: string, potId: string): Promise<SettlementLeg> {
+    return this.settlementRepository.confirmReceipt(legId, potId);
   }
 
   /**

@@ -122,13 +122,12 @@ export class SettlementRepository {
   /** Payer marks a leg as paid — pending → paid */
   async markPaid(
     id: string,
+    potId: string,
     method: SettlementLeg["method"],
     reference?: string,
   ): Promise<SettlementLeg> {
-    // We need potId for the URL; fetch the leg first
-    const leg = await this._findLeg(id);
     const row = await apiFetch<WireLeg>(
-      `/api/pots/${leg.potId}/settlements/${id}/pay`,
+      `/api/pots/${potId}/settlements/${id}/pay`,
       {
         method: "PATCH",
         body: JSON.stringify({ method, reference }),
@@ -138,37 +137,12 @@ export class SettlementRepository {
   }
 
   /** Receiver confirms receipt — paid → confirmed */
-  async confirmReceipt(id: string): Promise<SettlementLeg> {
-    const leg = await this._findLeg(id);
+  async confirmReceipt(id: string, potId: string): Promise<SettlementLeg> {
     const row = await apiFetch<WireLeg>(
-      `/api/pots/${leg.potId}/settlements/${id}/confirm`,
+      `/api/pots/${potId}/settlements/${id}/confirm`,
       { method: "PATCH" },
     );
     return wireToLeg(row);
-  }
-
-  /**
-   * Internal helper: resolves the potId for a given leg id.
-   * We do a lightweight fetch of all pots' settlements — in practice the
-   * caller (useChapterState) always has potId in scope; this is only used
-   * by markPaid/confirmReceipt which receive just the leg id.
-   *
-   * TODO: when the API exposes GET /api/settlements/:id, replace this.
-   */
-  private async _findLeg(legId: string): Promise<{ potId: string }> {
-    // The hook always passes potId through; this path is only hit when
-    // called from SettlementService.markPaid / confirmReceipt which currently
-    // don't receive potId. We re-query via the Supabase client as a fallback.
-    const client = getSupabase();
-    if (client) {
-      const { data } = await client
-        .from("settlements")
-        .select("pot_id")
-        .eq("id", legId)
-        .single();
-      if (data) return { potId: (data as { pot_id: string }).pot_id };
-    }
-    throw new Error(`[SettlementRepository] Cannot resolve potId for leg ${legId}`);
   }
 
   /** @deprecated kept for DataContext interface compat */

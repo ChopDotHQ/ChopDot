@@ -11,8 +11,6 @@
  */
 
 import { useCallback } from 'react';
-import type { Dispatch, SetStateAction } from 'react';
-import type { Pot, Settlement } from '../types/app';
 import type { SettlementResult } from '../nav';
 import { useData } from '../services/data/DataContext';
 
@@ -31,17 +29,9 @@ export type SettleHomeSettlement = {
 };
 
 interface UseSettlementActionsParams {
-  potService: any;
-  pots: Pot[];
-  setPots: Dispatch<SetStateAction<Pot[]>>;
-  settlements: Settlement[];
-  setSettlements: Dispatch<SetStateAction<Settlement[]>>;
   currentPotId: string | null;
   userId: string | undefined;
-  currentUserAddress: string | null;
   showToast: (msg: string, type?: 'success' | 'error' | 'info') => void;
-  back: () => void;
-  replace: (screen: any) => void;
   notifyPotRefresh: () => void;
 }
 

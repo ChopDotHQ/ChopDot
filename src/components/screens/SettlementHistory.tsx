@@ -6,8 +6,14 @@ import { exportSettlementHistoryToCSV } from "../../utils/export";
 import { formatCurrencyAmount } from "../../utils/currencyFormat";
 import type { SettlementLeg } from "../../types/app";
 import { useChapterState } from "../../hooks/useChapterState";
+import {
+  LEG_STATUS_LABELS,
+  LEG_STATUS_COLORS,
+  METHOD_LABELS,
+  getMemberDisplayName,
+} from "../../utils/settlementLabels";
 
-// ─── Legacy settlement (from the old Settlement[] array) ──────────────────────
+// ─── Legacy settlement shape (from old Settlement[] array) ───────────────────
 
 interface LegacySettlement {
   id: string;
@@ -24,8 +30,10 @@ interface LegacySettlement {
 
 interface SettlementHistoryProps {
   settlements: LegacySettlement[];
-  legs?: SettlementLeg[];          // typed legs (passed in or self-loaded when potId given)
-  potId?: string;                  // when provided, legs are self-loaded via useChapterState
+  /** Typed legs; when omitted and potId is given, they self-load. */
+  legs?: SettlementLeg[];
+  /** When provided, typed legs are loaded from the backend. */
+  potId?: string;
   members?: Array<{ id: string; name: string }>;
   currentUserId?: string;
   baseCurrency?: string;
@@ -36,43 +44,14 @@ interface SettlementHistoryProps {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const METHOD_LABELS: Record<string, string> = {
-  cash: "Cash",
-  bank: "Bank",
-  paypal: "PayPal",
-  twint: "TWINT",
-};
-
-const LEG_STATUS_LABELS: Record<string, string> = {
-  pending: "Pending",
-  paid: "Paid — awaiting confirmation",
-  confirmed: "Confirmed",
-};
-
-const LEG_STATUS_COLORS: Record<string, string> = {
-  pending: "var(--text-secondary)",
-  paid: "var(--accent)",
-  confirmed: "var(--success)",
-};
-
 function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
+  return new Date(dateString).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
     hour: "numeric",
     minute: "2-digit",
   });
-}
-
-function getMemberName(
-  members: Array<{ id: string; name: string }>,
-  id: string,
-  currentUserId?: string,
-): string {
-  if (id === currentUserId) return "You";
-  return members.find(m => m.id === id)?.name ?? id.slice(0, 8);
 }
 
 // ─── Typed leg card ───────────────────────────────────────────────────────────
@@ -88,10 +67,10 @@ function LegCard({
   currentUserId?: string;
   baseCurrency: string;
 }) {
-  const fromName = getMemberName(members, leg.fromMemberId, currentUserId);
-  const toName = getMemberName(members, leg.toMemberId, currentUserId);
+  const fromName  = getMemberDisplayName(members, leg.fromMemberId, currentUserId);
+  const toName    = getMemberDisplayName(members, leg.toMemberId, currentUserId);
   const amountStr = formatCurrencyAmount(leg.amount, baseCurrency);
-  const statusColor = LEG_STATUS_COLORS[leg.status] ?? "var(--text-secondary)";
+  const color     = LEG_STATUS_COLORS[leg.status] ?? "var(--text-secondary)";
 
   return (
     <div className="p-4 card rounded-xl space-y-2 card-hover-lift transition-shadow duration-200">
@@ -105,12 +84,10 @@ function LegCard({
       </div>
 
       <div className="flex items-center gap-1.5">
-        {leg.status === "confirmed" ? (
-          <CheckCircle className="w-3.5 h-3.5" style={{ color: "var(--success)" }} />
-        ) : (
-          <Clock className="w-3.5 h-3.5" style={{ color: statusColor }} />
-        )}
-        <span className="text-caption" style={{ color: statusColor }}>
+        {leg.status === "confirmed"
+          ? <CheckCircle className="w-3.5 h-3.5" style={{ color: "var(--success)" }} />
+          : <Clock className="w-3.5 h-3.5" style={{ color }} />}
+        <span className="text-caption" style={{ color }}>
           {LEG_STATUS_LABELS[leg.status] ?? leg.status}
         </span>
       </div>
@@ -153,14 +130,12 @@ function LegacyCard({ settlement }: { settlement: LegacySettlement }) {
     <div className="p-4 card rounded-xl space-y-2 card-hover-lift transition-shadow duration-200 hover:shadow-[var(--shadow-fab)]">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-label font-semibold">{METHOD_LABELS[settlement.method] ?? settlement.method}</p>
+          <p className="text-label font-semibold">
+            {METHOD_LABELS[settlement.method] ?? settlement.method}
+          </p>
           <p className="text-micro text-secondary mt-0.5">{formatDate(settlement.date)}</p>
         </div>
-        <div className="text-right">
-          <p className="text-[18px] tabular-nums font-bold">
-            ${settlement.amount.toFixed(2)}
-          </p>
-        </div>
+        <p className="text-[18px] tabular-nums font-bold">${settlement.amount.toFixed(2)}</p>
       </div>
       <div className="pt-2 border-t border-border space-y-0.5">
         <div className="flex justify-between text-caption text-secondary">
@@ -190,23 +165,23 @@ export function SettlementHistory({
   onBack,
   personId,
 }: SettlementHistoryProps) {
-  // Self-load typed legs from Supabase when potId is provided
-  const { legs: loadedLegs } = useChapterState({
-    potId,
-    currentUserId: currentUserId ?? '',
-  });
+  // Self-load typed legs when potId is provided and none were passed in
+  const {
+    legs: loadedLegs,
+    isLoading,
+    error,
+  } = useChapterState({ potId, currentUserId: currentUserId ?? "" });
+
   const legs = legsProp.length > 0 ? legsProp : loadedLegs;
+
   const filteredLegacy = useMemo(() => {
     if (!personId) return settlements;
-    return settlements.filter((s: any) => {
-      const matchById = typeof s.personId === "string" && s.personId === personId;
-      const matchByName =
-        s.personName && s.personName.toLowerCase() === personId.toLowerCase();
-      return matchById || matchByName;
-    });
+    return settlements.filter(s =>
+      (typeof (s as any).personId === "string" && (s as any).personId === personId) ||
+      (s.personName?.toLowerCase() === personId.toLowerCase())
+    );
   }, [settlements, personId]);
 
-  // Filter legs: if personId is a member ID, show only legs involving that member
   const filteredLegs = useMemo(() => {
     if (!personId) return legs;
     return legs.filter(l => l.fromMemberId === personId || l.toMemberId === personId);
@@ -220,18 +195,24 @@ export function SettlementHistory({
         title={personId ? "Settlements" : "Settlement History"}
         onBack={onBack}
       />
+
       <div className="flex-1 overflow-auto p-4 space-y-2">
-        {isEmpty ? (
+        {isLoading && filteredLegs.length === 0 ? (
+          <div className="pt-8 text-center text-caption text-secondary">Loading…</div>
+        ) : error ? (
+          <div className="pt-8 text-center text-caption" style={{ color: "var(--danger)" }}>
+            Failed to load settlement history
+          </div>
+        ) : isEmpty ? (
           <div className="pt-8">
             <EmptyState
               icon={CheckCircle}
               message="No settlements yet"
-              description="Your settlement history will appear here once you propose a chapter"
+              description="Settlement history will appear here once a chapter is proposed"
             />
           </div>
         ) : (
           <>
-            {/* Typed legs first — they carry the full commitment story */}
             {filteredLegs.map(leg => (
               <LegCard
                 key={leg.id}
@@ -241,14 +222,13 @@ export function SettlementHistory({
                 baseCurrency={baseCurrency}
               />
             ))}
-
-            {/* Legacy settlements below */}
-            {filteredLegacy.map(settlement => (
-              <LegacyCard key={settlement.id} settlement={settlement} />
+            {filteredLegacy.map(s => (
+              <LegacyCard key={s.id} settlement={s} />
             ))}
           </>
         )}
       </div>
+
       <div className="p-4 border-t border-border">
         <button
           onClick={() => exportSettlementHistoryToCSV(filteredLegacy)}

@@ -26,17 +26,9 @@ export function useAppActions(deps: AppActionsDeps) {
   const business = useBusinessActions(deps);
 
   const { confirmSettlement, retrySettlementProof } = useSettlementActions({
-    pots: deps.pots,
-    settlements: deps.settlements,
     currentPotId: deps.currentPotId,
-    setPots: deps.setPots,
-    setSettlements: deps.setSettlements,
     showToast: deps.showToast,
     userId: deps.userId,
-    currentUserAddress: deps.currentUserAddress ?? null,
-    potService: deps.potService as unknown as Parameters<typeof useSettlementActions>[0]['potService'],
-    back: deps.back,
-    replace: deps.replace,
     notifyPotRefresh: () => deps.notifyPotRefresh(''),
   });
 
