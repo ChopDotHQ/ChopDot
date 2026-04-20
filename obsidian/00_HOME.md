@@ -38,6 +38,7 @@ The source-of-truth implementation and strategy docs remain in `docs/`.
 - [Long-Term Trust Layer Economics](../docs/LONG_TERM_TRUST_LAYER_ECONOMICS.md)
 - [Protocol Durability And Organic Growth Research](../docs/PROTOCOL_DURABILITY_AND_ORGANIC_GROWTH_RESEARCH.md)
 - [Group Commitment Research Program](../docs/GROUP_COMMITMENT_RESEARCH_PROGRAM.md)
+- [Rigor And Evidence Operating Model](../docs/RIGOR_AND_EVIDENCE_OPERATING_MODEL.md)
 - [Frontier Security And Reliability Research](../docs/FRONTIER_SECURITY_AND_RELIABILITY_RESEARCH.md)
 - [Frontier Identity, Privacy, And Authority Research](../docs/FRONTIER_IDENTITY_PRIVACY_AND_AUTHORITY_RESEARCH.md)
 - [Open System Sustainability And Growth Mechanisms](../docs/OPEN_SYSTEM_SUSTAINABILITY_AND_GROWTH_MECHANISMS.md)
