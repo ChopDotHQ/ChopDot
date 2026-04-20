@@ -35,6 +35,7 @@ The source-of-truth implementation and strategy docs remain in `docs/`.
 - [Public Private Materials Inventory](../docs/PUBLIC_PRIVATE_MATERIALS_INVENTORY.md)
 - [Cell System / Polkadot Future Lessons](../docs/CELL_SYSTEM_POLKADOT_FUTURE_LESSONS.md)
 - [Cell System / ChopDot Alignment Deep Dive](../docs/CELL_SYSTEM_CHOPDOT_ALIGNMENT_DEEP_DIVE.md)
+- [Zama-Style GTM Lessons For ChopDot](../docs/ZAMA_STYLE_GTM_LESSONS_FOR_CHOPDOT.md)
 - [Research Agenda: Trust And Failure](../docs/RESEARCH_AGENDA_TRUST_AND_FAILURE.md)
 - [Research Recovery Confidence Memo](../docs/RESEARCH_RECOVERY_CONFIDENCE_MEMO.md)
 - [Research Report Delta And Merge Plan](../docs/RESEARCH_REPORT_DELTA_AND_MERGE_PLAN.md)
