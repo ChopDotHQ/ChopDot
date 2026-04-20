@@ -47,6 +47,8 @@ The source-of-truth implementation and strategy docs remain in `docs/`.
 - [Scientific Validation Framework](../docs/SCIENTIFIC_VALIDATION_FRAMEWORK.md)
 - [Human Mechanisms Experiment Program](../docs/HUMAN_MECHANISMS_EXPERIMENT_PROGRAM.md)
 - [Future Development Stress Test Matrix](../docs/FUTURE_DEVELOPMENT_STRESS_TEST_MATRIX.md)
+- [Experiment Log Template](../docs/EXPERIMENT_LOG_TEMPLATE.md)
+- [Joined Vs Committed Test Plan](../docs/JOINED_VS_COMMITTED_TEST_PLAN.md)
 - [Frontier Security And Reliability Research](../docs/FRONTIER_SECURITY_AND_RELIABILITY_RESEARCH.md)
 - [Frontier Identity, Privacy, And Authority Research](../docs/FRONTIER_IDENTITY_PRIVACY_AND_AUTHORITY_RESEARCH.md)
 - [Open System Sustainability And Growth Mechanisms](../docs/OPEN_SYSTEM_SUSTAINABILITY_AND_GROWTH_MECHANISMS.md)
