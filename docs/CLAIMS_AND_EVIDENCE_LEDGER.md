@@ -56,6 +56,8 @@
 | `CL-016` | Proof of personhood may help with Sybil resistance but can create exclusion, privacy, and coercion risks | identity / anti-abuse | `B` | medium-high | proof-of-personhood literature and decentralized identity research | ChopDot-specific threat model and user comfort testing | study optional personhood paths before product adoption |
 | `CL-017` | Trusted agents must be a distinct actor class, not disguised participants | agent authority | `C` | medium | authority model, agent risk reasoning, future-watch research | implementation policy and misuse testing | create trusted-agent authority policy |
 | `CL-018` | Cultural trust settings will change which verification and commitment mechanisms are acceptable | cultural fit | `B` | medium-high | historical trust-system research and localization work | field interviews and pilot evidence | create cultural fieldwork protocol and compare pilot results |
+| `CL-019` | ChopDot must measure trust outcomes, not vanity usage, to know whether it is working | metrics | `B` | high | DORA, CHAOSS, savings-group, and dispute-monitoring measurement patterns | event instrumentation and real baseline studies | create dashboard schema and baseline comparison tests |
+| `CL-020` | ChopDot's real benchmark is the user's whole workaround stack, not one direct competitor | strategy / metrics | `C` | medium-high | comparative systems analysis across social trust, savings groups, chat, payment apps, escrow, contracts, and team tools | structured baseline studies | run group-chat-vs-ChopDot and payment-request-vs-ChopDot tests |
 
 ## Practical Rule
 

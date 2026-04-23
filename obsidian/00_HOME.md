@@ -54,6 +54,8 @@ The source-of-truth implementation and strategy docs remain in `docs/`.
 - [Privacy, Personhood, And No-KYC Research Program](../docs/PRIVACY_PERSONHOOD_AND_NO_KYC_RESEARCH_PROGRAM.md)
 - [Assurance Level Policy](../docs/ASSURANCE_LEVEL_POLICY.md)
 - [No-KYC Abuse Model](../docs/NO_KYC_ABUSE_MODEL.md)
+- [Commitment Metrics And 10X Scorecard](../docs/COMMITMENT_METRICS_AND_10X_SCORECARD.md)
+- [Commitment Systems Comparative Benchmark](../docs/COMMITMENT_SYSTEMS_COMPARATIVE_BENCHMARK.md)
 - [Frontier Security And Reliability Research](../docs/FRONTIER_SECURITY_AND_RELIABILITY_RESEARCH.md)
 - [Frontier Identity, Privacy, And Authority Research](../docs/FRONTIER_IDENTITY_PRIVACY_AND_AUTHORITY_RESEARCH.md)
 - [Open System Sustainability And Growth Mechanisms](../docs/OPEN_SYSTEM_SUSTAINABILITY_AND_GROWTH_MECHANISMS.md)
