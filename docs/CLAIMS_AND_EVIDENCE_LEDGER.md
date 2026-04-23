@@ -52,6 +52,10 @@
 | `CL-012` | Ecosystems may later pay ChopDot for attributable usage and coordination value | strategy | `C` | medium | Nova / ecosystem funding / continuity research | real attributable usage and dashboard proof | implement impact dashboard requirements |
 | `CL-013` | Wallet-centric identity and portable authority will matter later | future architecture | `B` | medium-high | Ethereum / Polkadot frontier research | evidence of relevance to ChopDot's near-midterm flows | keep adapters possible, do not overbuild |
 | `CL-014` | ChopDot does not yet meet its full rigor and proof standard | operating model | `A` | high | explicit audit plus incomplete validation and implementation state | completion of control docs and proof logs | maintain audit until materially changed |
+| `CL-015` | ChopDot should default to minimum sufficient assurance instead of mandatory KYC | identity / privacy | `C` | medium | NIST assurance-level framing, W3C VC model, FATF digital identity guidance, privacy/personhood research | legal review, abuse testing, user privacy research | create assurance-level policy and no-KYC abuse model |
+| `CL-016` | Proof of personhood may help with Sybil resistance but can create exclusion, privacy, and coercion risks | identity / anti-abuse | `B` | medium-high | proof-of-personhood literature and decentralized identity research | ChopDot-specific threat model and user comfort testing | study optional personhood paths before product adoption |
+| `CL-017` | Trusted agents must be a distinct actor class, not disguised participants | agent authority | `C` | medium | authority model, agent risk reasoning, future-watch research | implementation policy and misuse testing | create trusted-agent authority policy |
+| `CL-018` | Cultural trust settings will change which verification and commitment mechanisms are acceptable | cultural fit | `B` | medium-high | historical trust-system research and localization work | field interviews and pilot evidence | create cultural fieldwork protocol and compare pilot results |
 
 ## Practical Rule
 
