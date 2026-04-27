@@ -5,6 +5,7 @@ import { AccountMenu } from "../AccountMenu";
 import { EmptyState } from "../EmptyState";
 import { usePots } from "../../hooks/usePots";
 import { useAuth } from "../../contexts/AuthContext";
+import { usePendingActions } from "../../hooks/usePendingActions";
 import { warnDev } from "../../utils/logDev";
 import { shouldPreferDLReads } from "../../utils/dlReadsFlag";
 import { usePSAStyle } from "../../utils/usePSAStyle";
@@ -86,6 +87,8 @@ export function PotsHome({
   const { pots: dlPots, loading: potsLoading, hasMore, loadMore, summaries } = usePots(10); // Page size 10
   const { user } = useAuth();
   const summaryUserId = user?.id ?? 'owner';
+
+  const { actions: pendingActions } = usePendingActions(user?.id);
 
   // Transform Data Layer pots to potSummaries format
   const transformPotToSummary = useMemo(() => {
@@ -519,6 +522,21 @@ export function PotsHome({
                             )}
                             <p className="text-body flex-1 truncate" style={{ fontWeight: 500 }}>{pot.name}</p>
                           </div>
+                          {pendingActions.has(pot.id) && (() => {
+                            const action = pendingActions.get(pot.id)!;
+                            return (
+                              <span
+                                className="flex-shrink-0 text-micro font-semibold px-1.5 py-0.5 rounded-full"
+                                style={{
+                                  background: action.role === 'receiver' ? 'var(--success)' : 'var(--accent)',
+                                  color: '#fff',
+                                }}
+                                title={action.role === 'receiver' ? 'Confirm receipt' : 'Payment due'}
+                              >
+                                {action.role === 'receiver' ? 'Confirm' : 'Pay'}
+                              </span>
+                            );
+                          })()}
                         </div>
                         {balancesVisible && (
                           <div className="flex items-center justify-between">

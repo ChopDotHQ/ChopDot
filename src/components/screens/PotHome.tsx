@@ -14,6 +14,7 @@ import { usePotDataMerge } from '../../hooks/usePotDataMerge';
 import { usePotSummary } from '../../hooks/usePotSummary';
 import { useCheckpointState } from '../../hooks/useCheckpointState';
 import { useChapterState } from '../../hooks/useChapterState';
+import { useEventFeed } from '../../hooks/useEventFeed';
 import { ChapterPanel } from '../commit/ChapterPanel';
 import type { Pot } from '../../schema/pot';
 
@@ -125,6 +126,8 @@ export function PotHome(props: PotHomeProps) {
     currentUserId,
     onShowToast,
   });
+
+  const eventFeed = useEventFeed(potId);
 
   const isWalletConnected = false;
   const showCheckpointSection = false;
@@ -261,6 +264,7 @@ export function PotHome(props: PotHomeProps) {
             baseCurrency={baseCurrency}
             onMarkPaid={chapter.markPaid}
             onConfirmReceipt={chapter.confirmReceipt}
+            events={eventFeed.events}
           />
         )}
 

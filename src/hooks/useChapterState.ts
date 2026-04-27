@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import type { SettlementLeg, PotStatus } from '../types/app';
 import { useData } from '../services/data/DataContext';
 import { deriveChapterStatus } from '../services/data/services/SettlementService';
@@ -52,10 +52,36 @@ export function useChapterState({
     }
   }, [potId, settlementService]);
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     const controller = new AbortController();
     load(controller.signal);
-    return () => controller.abort();
+
+    // Poll every 30 s while the tab is visible so counterparties see updates.
+    function scheduleNext() {
+      timerRef.current = setTimeout(() => {
+        if (!controller.signal.aborted && document.visibilityState === 'visible') {
+          load(controller.signal);
+        }
+        scheduleNext();
+      }, 30_000);
+    }
+
+    function onVisibilityChange() {
+      if (document.visibilityState === 'visible' && !controller.signal.aborted) {
+        load(controller.signal);
+      }
+    }
+
+    scheduleNext();
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+      controller.abort();
+      if (timerRef.current) clearTimeout(timerRef.current);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
   }, [load]);
 
   const markPaid = useCallback(

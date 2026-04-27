@@ -70,21 +70,7 @@ export function useSignInHandlers({
 
       switch (method) {
         case 'polkadot': {
-          const { web3Enable, web3Accounts } = await import('@polkadot/extension-dapp');
-          const extensions = await web3Enable('ChopDot');
-          const polkadotJsExtension = extensions.find(ext =>
-            ext.name === 'polkadot-js' || ext.name.toLowerCase().includes('polkadot.js')
-          );
-          if (!polkadotJsExtension) throw new Error('Polkadot.js extension not found. Please install Polkadot.js browser extension.');
-
-          const accounts = await web3Accounts();
-          const polkadotJsAccount = accounts.find(acc => acc.meta.source === 'polkadot-js');
-          if (!polkadotJsAccount) throw new Error('No Polkadot.js account found. Please create an account in Polkadot.js extension.');
-
-          address = polkadotJsAccount.address;
-          const message = await getWalletAuthMessage(address);
-          signature = await signPolkadotMessage(address, message);
-          break;
+          throw new Error('Polkadot wallet login is not available in this version.');
         }
         case 'rainbow': {
           throw new Error('WalletConnect is not available in MVP');
@@ -121,11 +107,10 @@ export function useSignInHandlers({
   }, [login, getWalletAuthMessage, setLoading, setError, onLoginSuccess]);
 
   const loginWithExtension = useCallback(async ({
-    sources,
-    walletDisplayName,
+    walletDisplayName: _walletDisplayName,
     notFoundMessage,
   }: {
-    sources: string[];
+    sources?: string[];
     walletDisplayName: string;
     notFoundMessage: string;
     }) => {
@@ -134,46 +119,17 @@ export function useSignInHandlers({
       setLoading(true);
       setError(null);
 
-      const { web3Enable, web3Accounts } = await import('@polkadot/extension-dapp');
-      await web3Enable('ChopDot');
-      const accounts = await web3Accounts();
-      const matchedAccounts = accounts.filter((acc) => {
-        const metaSource = (acc.meta.source || '').toLowerCase();
-        return sources.some((source) => metaSource === source || metaSource === source.replace('-js', ''));
-      });
-      if (matchedAccounts.length === 0) throw new Error(notFoundMessage);
-
-      if (matchedAccounts.length > 1) {
-        setPendingExtensionAccounts(
-          matchedAccounts.map((matchedAccount) => ({
-            address: matchedAccount.address,
-            name: matchedAccount.meta.name,
-            source: matchedAccount.meta.source,
-          })),
-        );
-        setPendingExtensionWalletName(walletDisplayName);
-        return;
-      }
-
-      const matchedAccount = matchedAccounts[0];
-      if (!matchedAccount) throw new Error(notFoundMessage);
-
-      const address = matchedAccount.address;
-      const message = await getWalletAuthMessage(address);
-      const signature = await signPolkadotMessage(address, message);
-      await login('polkadot', { type: 'wallet', address, signature, chain: 'polkadot' });
-      triggerHaptic('medium');
-      onLoginSuccess?.();
+      throw new Error(notFoundMessage);
     } catch (err: unknown) {
-      const error = err instanceof Error ? err : new Error(`Failed to connect ${walletDisplayName}`);
-      console.error(`[Login] ${walletDisplayName} login failed:`, error);
+      const error = err instanceof Error ? err : new Error('Wallet extension not available in this version');
+      console.error('[Login] Extension login failed:', error);
       const friendlyError = error.message?.includes('not found') ? notFoundMessage : error.message;
       setError(friendlyError);
       triggerHaptic('error');
     } finally {
       setLoading(false);
     }
-  }, [login, getWalletAuthMessage, setLoading, setError, onLoginSuccess]);
+  }, [setLoading, setError]);
 
   const completeExtensionLogin = useCallback(async (selectedAccount: PendingExtensionAccount) => {
     try {

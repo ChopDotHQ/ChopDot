@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { settlementsRouter, potEventsRouter } from "./routes/settlements";
+import { usersRouter } from "./routes/users";
 import { prisma } from "./lib/prisma";
 
 const app = express();
@@ -23,6 +24,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/pots/:potId/settlements", settlementsRouter);
 app.use("/api/pots/:potId/events", potEventsRouter);
+app.use("/api/users", usersRouter);
 
 // ─── Error handler ────────────────────────────────────────────────────────────
 

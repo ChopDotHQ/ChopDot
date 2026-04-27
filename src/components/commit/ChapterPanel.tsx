@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { CheckCircle, Clock, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
-import type { SettlementLeg, PotStatus } from '../../types/app';
+import type { SettlementLeg, PotStatus, PotEvent } from '../../types/app';
 import { formatCurrencyAmount } from '../../utils/currencyFormat';
 import {
   LEG_STATUS_LABELS,
@@ -14,6 +14,7 @@ import {
   METHOD_LABELS,
   getMemberDisplayName,
 } from '../../utils/settlementLabels';
+import { EventTimeline } from './EventTimeline';
 
 interface Member {
   id: string;
@@ -28,6 +29,7 @@ interface ChapterPanelProps {
   baseCurrency: string;
   onMarkPaid: (legId: string, method: SettlementLeg['method'], reference?: string) => Promise<void>;
   onConfirmReceipt: (legId: string) => Promise<void>;
+  events?: PotEvent[];
 }
 
 const CHAPTER_STATUS_LABELS: Record<PotStatus, string> = {
@@ -193,6 +195,7 @@ export function ChapterPanel({
   baseCurrency,
   onMarkPaid,
   onConfirmReceipt,
+  events = [],
 }: ChapterPanelProps) {
   if (legs.length === 0) return null;
 
@@ -221,12 +224,17 @@ export function ChapterPanel({
         </div>
 
         {isCompleted ? (
-          <div className="flex items-center gap-2 py-1">
-            <CheckCircle className="w-5 h-5" style={{ color: 'var(--success)' }} />
-            <p className="text-body" style={{ color: 'var(--success)' }}>
-              All payments confirmed — chapter closed
-            </p>
-          </div>
+          <>
+            <div className="flex items-center gap-2 py-1">
+              <CheckCircle className="w-5 h-5" style={{ color: 'var(--success)' }} />
+              <p className="text-body" style={{ color: 'var(--success)' }}>
+                All payments confirmed — chapter closed
+              </p>
+            </div>
+            {events.length > 0 && (
+              <EventTimeline events={events} members={members} currentUserId={currentUserId} />
+            )}
+          </>
         ) : (
           <>
             <div className="space-y-2">
@@ -247,6 +255,9 @@ export function ChapterPanel({
                 ? 'Waiting for payers to mark payments.'
                 : 'Some payments marked — waiting for receivers to confirm.'}
             </p>
+            {events.length > 0 && (
+              <EventTimeline events={events} members={members} currentUserId={currentUserId} />
+            )}
           </>
         )}
       </div>
