@@ -7,8 +7,13 @@ services:
     environment:
       VITE_SUPABASE_URL: ${VITE_SUPABASE_URL}
       VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY}
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
+      VITE_DATA_SOURCE: ${VITE_DATA_SOURCE:-supabase}
+      VITE_DL_READS: ${VITE_DL_READS:-on}
     ports:
       - "3000:80"
+    depends_on:
+      - api
     restart: unless-stopped
 
   api:
@@ -19,6 +24,7 @@ services:
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       PORT: 3001
+      DATABASE_URL: ${DATABASE_URL}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
     ports:
       - "3001:3001"

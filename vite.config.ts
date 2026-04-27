@@ -22,18 +22,9 @@ function validateEnvPlugin() {
         },
       ];
 
-      // Runtime-only vars (warn but don't fail build)
-      const runtimeVars = {
-        VITE_WALLETCONNECT_PROJECT_ID: 'WalletConnect Cloud project ID',
-      };
-
       const missingCritical = criticalVarGroups
         .filter(({ keys }) => keys.every((key) => !env[key] || env[key].trim() === ''))
         .map(({ keys, description }) => `  ❌ ${keys.join(' or ')} - ${description}`);
-
-      const missingRuntime = Object.entries(runtimeVars)
-        .filter(([key]) => !env[key] || env[key].trim() === '')
-        .map(([key, desc]) => `  ⚠️  ${key} - ${desc} (runtime only)`);
 
       if (missingCritical.length > 0) {
         console.error('\n🚨 BUILD ERROR: Missing required environment variables:\n');
@@ -43,19 +34,6 @@ function validateEnvPlugin() {
         console.error('2. Fill in the missing values');
         console.error('3. Restart the build\n');
         throw new Error(`Missing required environment variables: ${missingCritical.length} variable(s)`);
-      }
-
-      if (missingRuntime.length > 0) {
-        console.warn('\n⚠️  WARNING: Missing runtime environment variables:\n');
-        console.warn(missingRuntime.join('\n'));
-        console.warn('\nThese are only needed at runtime. WalletConnect features may not work until set.\n');
-      }
-
-      if (config.command === 'build' && env.VITE_SIMULATE_CHAIN === '1') {
-        throw new Error(
-          '🚨 VITE_SIMULATE_CHAIN=1 is not allowed in production builds. ' +
-          'Remove or set to "0" before deploying.'
-        );
       }
 
       console.log('✅ All critical environment variables validated');
@@ -131,19 +109,32 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    // Gzip size of the largest chunk is ~210 kB — well within mobile budget.
+    // Raw minified size triggers the default 500 kB warning; raise limit to avoid noise.
+    chunkSizeWarningLimit: 800,
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
         sandbox: path.resolve(__dirname, 'public/dev/sandbox.html'),
-      }
-    }
+      },
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-ui': ['lucide-react'],
+          'vendor-radix': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-select',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-tooltip',
+          ],
+        },
+      },
+    },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'lucide-react', 'buffer', 'eventemitter3'],
-    exclude: ['@polkadot/api', '@polkadot/types'], // Exclude from pre-bundling to avoid initialization errors
-    // Fix dev-only ESM/CJS interop issue where browser ESM can't default-import CJS `eventemitter3`.
-    // This shows up as: "does not provide an export named 'default'" when fetching balances.
-    needsInterop: ['eventemitter3'],
+    include: ['react', 'react-dom', 'lucide-react', 'buffer'],
     esbuildOptions: {
       define: {
         global: 'globalThis',
