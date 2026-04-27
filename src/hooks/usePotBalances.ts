@@ -6,7 +6,6 @@ import { normalizeCurrency } from '../utils/currencyFormat';
 interface Member {
   id: string;
   name: string;
-  address?: string;
 }
 
 interface Expense {
@@ -40,10 +39,7 @@ export function usePotBalances({
   budget,
 }: UsePotBalancesParams) {
   const normalizedBaseCurrency = normalizeCurrency(baseCurrency);
-  const isDotPot = normalizedBaseCurrency === 'DOT';
-  const isUsdcPot = normalizedBaseCurrency === 'USDC';
-  const isCryptoPot = isDotPot || isUsdcPot;
-  const settleThreshold = isCryptoPot ? 0.000001 : 0.01;
+  const settleThreshold = 0.01;
 
   const totalExpenses = useMemo(
     () => expenses.reduce((sum, e) => sum + e.amount, 0),
@@ -123,9 +119,6 @@ export function usePotBalances({
 
   return {
     normalizedBaseCurrency,
-    isDotPot,
-    isUsdcPot,
-    isCryptoPot,
     settleThreshold,
     totalExpenses,
     computedBalances,

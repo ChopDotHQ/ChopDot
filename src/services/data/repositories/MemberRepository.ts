@@ -67,7 +67,6 @@ export class MemberRepository {
       return {
         id: userId,
         name: input.name,
-        address: input.address || null,
         verified: input.verified ?? false,
         role: input.role || 'Member',
         status: input.status || 'active',
@@ -83,7 +82,6 @@ export class MemberRepository {
     const member: Member = {
       id: userId ?? Date.now().toString(),
       name: input.name,
-      address: input.address || null,
       verified: input.verified,
       role: input.role || 'Member',
       status: input.status || 'active',

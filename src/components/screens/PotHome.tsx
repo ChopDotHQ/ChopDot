@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TopBar } from '../TopBar';
 import { ExpensesTab } from './ExpensesTab';
-import { SavingsTab } from './SavingsTab';
 import { MembersTab } from './MembersTab';
 import { SettingsTab } from './SettingsTab';
 import { Download, Share2 } from 'lucide-react';
@@ -9,18 +8,15 @@ import { exportPotExpensesToCSV } from '../../utils/export';
 import { triggerHaptic } from '../../utils/haptics';
 import { QuickKeypadSheet } from '../QuickKeypadSheet';
 import { useAccount } from '../../contexts/AccountContext';
-import { useFeatureFlags } from '../../contexts/FeatureFlagsContext';
-import type { CloseoutRecord, PotHistory } from '../../types/app';
 import { useData } from '../../services/data/DataContext';
 import { usePSAStyle } from '../../utils/usePSAStyle';
 import { usePotDataMerge } from '../../hooks/usePotDataMerge';
 import { usePotSummary } from '../../hooks/usePotSummary';
 import { useCheckpointState } from '../../hooks/useCheckpointState';
+import { useChapterState } from '../../hooks/useChapterState';
+import { useEventFeed } from '../../hooks/useEventFeed';
+import { ChapterPanel } from '../commit/ChapterPanel';
 import type { Pot } from '../../schema/pot';
-import {
-  canReopenTrackedCloseout,
-  findLatestTrackedCloseout,
-} from '../../services/closeout/pvmCloseout';
 
 interface PotHomeProps {
   potId?: string;
@@ -28,17 +24,14 @@ interface PotHomeProps {
   potName: string;
   baseCurrency: string;
   currentUserId: string;
-  members: Array<{ id: string; name: string; role: 'Owner' | 'Member'; status: 'active' | 'pending'; address?: string; evmAddress?: string; verified?: boolean }>;
+  members: Array<{ id: string; name: string; role: 'Owner' | 'Member'; status: 'active' | 'pending'; verified?: boolean }>;
   expenses: Array<{ id: string; amount: number; currency: string; paidBy: string; memo: string; date: string; split: { memberId: string; amount: number }[]; attestations: string[]; hasReceipt: boolean; receiptUrl?: string }>;
   budget?: number;
   budgetEnabled?: boolean;
   checkpointEnabled?: boolean;
   hasActiveCheckpoint?: boolean;
   checkpointConfirmations?: Map<string, { confirmed: boolean; confirmedAt?: string }> | Record<string, { confirmed: boolean; confirmedAt?: string }>;
-  contributions?: Array<{ id: string; memberId: string; amount: number; date: string; txHash?: string }>;
-  totalPooled?: number;
-  yieldRate?: number;
-  defiProtocol?: string;
+  contributions?: Array<{ id: string; memberId: string; amount: number; date: string }>;
   goalAmount?: number;
   goalDescription?: string;
   onBack: () => void;
@@ -46,7 +39,7 @@ interface PotHomeProps {
   onExpenseClick: (expense: any) => void;
   onAddMember: () => void;
   onRemoveMember: (id: string) => void;
-  onUpdateMember?: (member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean }) => void;
+  onUpdateMember?: (member: { id: string; name: string; verified?: boolean }) => void;
   onUpdateSettings: (settings: any) => void;
   onSettle: () => void;
   onCopyInviteLink?: () => void;
@@ -64,9 +57,9 @@ interface PotHomeProps {
   onDeletePot?: () => void;
   onLeavePot?: () => void;
   onArchivePot?: () => void;
-  potHistory?: PotHistory[];
-  closeouts?: CloseoutRecord[];
-  onUpdatePot?: (updates: { history?: PotHistory[]; lastCheckpoint?: any; lastEditAt?: string }) => void;
+  potHistory?: Array<{ type: string; [key: string]: unknown }>;
+  closeouts?: unknown[];
+  onUpdatePot?: (updates: { history?: unknown[]; lastCheckpoint?: unknown; lastEditAt?: string }) => void;
   onReopenTrackedSettlement?: () => void;
 }
 
@@ -74,7 +67,6 @@ export function PotHome(props: PotHomeProps) {
   const {
     potId,
     currentUserId,
-    defiProtocol = 'Acala Earn',
     onBack,
     onExpenseClick,
     onAddMember,
@@ -87,8 +79,6 @@ export function PotHome(props: PotHomeProps) {
     onRevokeInvite,
     onDeleteExpense,
     onShowToast,
-    onAddContribution,
-    onWithdraw,
     onQuickAddSave,
     openQuickAdd,
     onClearQuickAdd,
@@ -97,16 +87,13 @@ export function PotHome(props: PotHomeProps) {
     onLeavePot,
     onArchivePot,
     potHistory: potHistoryProp = [],
-    closeouts = [],
     onUpdatePot,
-    onReopenTrackedSettlement,
     checkpointConfirmations,
   } = props;
 
   const { isPSA, psaStyles, psaClasses: _psaClasses } = usePSAStyle();
   const { pots: potService } = useData();
   const account = useAccount();
-  const { POLKADOT_APP_ENABLED } = useFeatureFlags();
 
   const merged = usePotDataMerge({
     potId,
@@ -119,13 +106,11 @@ export function PotHome(props: PotHomeProps) {
     budgetEnabled: props.budgetEnabled,
     checkpointEnabled: props.checkpointEnabled,
     contributions: props.contributions,
-    totalPooled: props.totalPooled,
-    yieldRate: props.yieldRate,
     goalAmount: props.goalAmount,
     goalDescription: props.goalDescription,
   });
 
-  const { potType, potName, baseCurrency, members, expenses, budget, budgetEnabled, checkpointEnabled, contributions, totalPooled, yieldRate, goalAmount, goalDescription, pot, refreshPot } = merged;
+  const { potType, potName, baseCurrency, members, expenses, budget, budgetEnabled, checkpointEnabled, contributions, pot, refreshPot } = merged;
 
   const summary = usePotSummary({
     expenses,
@@ -133,13 +118,19 @@ export function PotHome(props: PotHomeProps) {
     currentUserId,
     budget,
     contributions,
-    totalPooled,
     checkpointConfirmations,
   });
 
-  const isWalletConnected = account.status === 'connected' && !!account.address0;
-  const isDev = import.meta.env.MODE !== 'production';
-  const showCheckpointSection = POLKADOT_APP_ENABLED && checkpointEnabled === true && isWalletConnected && (pot?.mode === 'auditable' || isDev);
+  const chapter = useChapterState({
+    potId,
+    currentUserId,
+    onShowToast,
+  });
+
+  const eventFeed = useEventFeed(potId);
+
+  const isWalletConnected = false;
+  const showCheckpointSection = false;
 
   const checkpoint = useCheckpointState({
     pot,
@@ -157,18 +148,11 @@ export function PotHome(props: PotHomeProps) {
     refreshPot,
   });
 
-  const tabs = potType === 'savings' ? ['Savings', 'Members', 'Settings'] : ['Expenses', 'Members', 'Settings'];
+  const tabs = potType === 'savings' ? ['Members', 'Settings'] : ['Expenses', 'Members', 'Settings'];
   const [activeTab, setActiveTab] = useState<string>(tabs[0] ?? 'Expenses');
   const [keypadOpen, setKeypadOpen] = useState(false);
-  const latestCloseout = useMemo(() => findLatestTrackedCloseout({ closeouts }), [closeouts]);
-  const smartSettlementStarted =
-    latestCloseout &&
-    latestCloseout.status !== 'cancelled' &&
-    latestCloseout.status !== 'draft';
-  const canAddExpense = !smartSettlementStarted;
-  const addExpenseDisabledReason = smartSettlementStarted
-    ? 'This tab has already started smart settlement. Reopen it to change expenses.'
-    : undefined;
+  const canAddExpense = true;
+  const addExpenseDisabledReason: string | undefined = undefined;
 
   useEffect(() => {
     if (!openQuickAdd) return;
@@ -196,7 +180,7 @@ export function PotHome(props: PotHomeProps) {
         name: pot.name || potName,
         type: pot.type || potType,
         baseCurrency: (pot.baseCurrency || baseCurrency) as Pot['baseCurrency'],
-        members: pot.members || members.map(m => ({ id: m.id, name: m.name, address: m.address || null, evmAddress: m.evmAddress || null })),
+        members: pot.members || members.map(m => ({ id: m.id, name: m.name })),
         expenses: pot.expenses || expenses.map(e => ({ id: e.id, potId: potId || '', description: e.memo, amount: e.amount, paidBy: e.paidBy, createdAt: e.date ? new Date(e.date).getTime() : Date.now() })),
         history: pot.history || [],
         closeouts: pot.closeouts || [],
@@ -216,10 +200,9 @@ export function PotHome(props: PotHomeProps) {
       name: potName,
       type: potType,
       baseCurrency: baseCurrency as Pot['baseCurrency'],
-      members: members.map(m => ({ id: m.id, name: m.name, address: m.address || null, evmAddress: m.evmAddress || null })),
+      members: members.map(m => ({ id: m.id, name: m.name })),
       expenses: expenses.map(e => ({ id: e.id, potId: potId || '', description: e.memo, amount: e.amount, paidBy: e.paidBy, createdAt: e.date ? new Date(e.date).getTime() : Date.now() })),
       history: [],
-      closeouts: [],
       budgetEnabled: false,
       checkpointEnabled: checkpointEnabled ?? true,
       mode: 'casual',
@@ -272,22 +255,20 @@ export function PotHome(props: PotHomeProps) {
           ))}
         </div>
 
+        {potType === 'expense' && (
+          <ChapterPanel
+            legs={chapter.legs}
+            chapterStatus={chapter.chapterStatus}
+            members={members}
+            currentUserId={currentUserId}
+            baseCurrency={baseCurrency}
+            onMarkPaid={chapter.markPaid}
+            onConfirmReceipt={chapter.confirmReceipt}
+            events={eventFeed.events}
+          />
+        )}
+
         <div className="flex-1 overflow-auto">
-          {activeTab === 'Savings' && potType === 'savings' && (
-            <SavingsTab
-              members={members}
-              currentUserId={currentUserId}
-              baseCurrency={baseCurrency}
-              contributions={contributions}
-              totalPooled={totalPooled}
-              yieldRate={yieldRate}
-              defiProtocol={defiProtocol}
-              goalAmount={goalAmount}
-              goalDescription={goalDescription}
-              onAddContribution={onAddContribution || (() => {})}
-              onWithdraw={onWithdraw || (() => {})}
-            />
-          )}
           {activeTab === 'Expenses' && potType === 'expense' && (
             <ExpensesTab
               expenses={expenses}
@@ -310,12 +291,8 @@ export function PotHome(props: PotHomeProps) {
               }}
               onExpenseClick={onExpenseClick}
               onSettle={onSettle}
-              trackedCloseout={latestCloseout}
-              onReopenTrackedSettlement={
-                onReopenTrackedSettlement && latestCloseout && canReopenTrackedCloseout(latestCloseout)
-                  ? onReopenTrackedSettlement
-                  : undefined
-              }
+              trackedCloseout={chapter.hasOpenChapter ? chapter : null}
+              onReopenTrackedSettlement={undefined}
               canAddExpense={canAddExpense}
               addExpenseDisabledReason={addExpenseDisabledReason}
               onDeleteExpense={onDeleteExpense}

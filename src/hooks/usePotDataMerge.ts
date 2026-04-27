@@ -9,14 +9,12 @@ interface PotDataMergeProps {
   potType: 'expense' | 'savings';
   potName: string;
   baseCurrency: string;
-  members: Array<{ id: string; name: string; role: string; status: string; address?: string; evmAddress?: string; verified?: boolean }>;
-  expenses: Array<{ id: string; amount: number; currency?: string; paidBy: string; memo?: string; date?: string; split?: Array<{ memberId: string; amount: number }>; attestations?: string[]; hasReceipt?: boolean; receiptUrl?: string }>;
+  members: Array<{ id: string; name: string; role: string; status: string; verified?: boolean }>;
+  expenses: Array<{ id: string; amount: number; currency?: string; paidBy: string; memo?: string; date?: string; split?: Array<{ memberId: string; amount: number }>; attestations?: string[]; hasReceipt?: boolean }>;
   budget?: number;
   budgetEnabled?: boolean;
   checkpointEnabled?: boolean;
-  contributions?: Array<{ id: string; memberId: string; amount: number; date: string; txHash?: string }>;
-  totalPooled?: number;
-  yieldRate?: number;
+  contributions?: Array<{ id: string; memberId: string; amount: number; date: string }>;
   goalAmount?: number;
   goalDescription?: string;
 }
@@ -26,8 +24,6 @@ export interface NormalizedMember {
   name: string;
   role: 'Owner' | 'Member';
   status: 'active' | 'pending';
-  address?: string;
-  evmAddress?: string;
   verified?: boolean;
 }
 
@@ -41,7 +37,6 @@ export interface NormalizedExpense {
   split: Array<{ memberId: string; amount: number }>;
   attestations: string[];
   hasReceipt: boolean;
-  receiptUrl?: string;
 }
 
 export function usePotDataMerge(props: PotDataMergeProps) {
@@ -73,8 +68,6 @@ export function usePotDataMerge(props: PotDataMergeProps) {
       name: m.name,
       role: (m.role === 'Owner' || m.role === 'Member' ? m.role : 'Member') as 'Owner' | 'Member',
       status: (m.status === 'active' || m.status === 'pending' ? m.status : 'active') as 'active' | 'pending',
-      address: m.address ?? undefined,
-      evmAddress: (m as any).evmAddress ?? undefined,
       verified: m.verified ?? false,
     }));
   }, [pot?.members, props.members]);
@@ -94,7 +87,6 @@ export function usePotDataMerge(props: PotDataMergeProps) {
         split: e.split ?? [],
         attestations: (e.attestations ?? []) as string[],
         hasReceipt: e.hasReceipt ?? false,
-        receiptUrl: e.receiptUrl,
       };
     });
   }, [pot?.expenses, props.expenses, baseCurrency]);
@@ -103,8 +95,6 @@ export function usePotDataMerge(props: PotDataMergeProps) {
   const budgetEnabled = pot?.budgetEnabled ?? props.budgetEnabled;
   const checkpointEnabled = pot?.checkpointEnabled ?? props.checkpointEnabled;
   const contributions = pot?.contributions ?? props.contributions ?? [];
-  const totalPooled = pot?.totalPooled ?? props.totalPooled ?? 0;
-  const yieldRate = pot?.yieldRate ?? props.yieldRate ?? 0;
   const goalAmount = pot?.goalAmount ?? props.goalAmount;
   const goalDescription = pot?.goalDescription ?? props.goalDescription;
 
@@ -120,8 +110,6 @@ export function usePotDataMerge(props: PotDataMergeProps) {
     budgetEnabled,
     checkpointEnabled,
     contributions,
-    totalPooled,
-    yieldRate,
     goalAmount,
     goalDescription,
   };

@@ -4,7 +4,6 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useAccount } from '../../../contexts/AccountContext';
 import { requestWalletNonce, buildWalletAuthMessage } from '../../../utils/walletAuth';
 import { triggerHaptic } from '../../../utils/haptics';
-import QRCodeLib from 'qrcode'; // Add QRCodeLib import
 
 interface UseWalletAuthProps {
     setLoading: (loading: boolean) => void;
@@ -39,9 +38,7 @@ export const useWalletAuth = ({
 
     // Start WalletConnect Session
     const startWalletConnectSession = async (
-        handleWalletConnectModal: () => Promise<void>,
-        openQrModal: boolean = true
-        // source param removed as it was unused
+        handleWalletConnectModal: () => Promise<void>
     ) => {
         try {
             setLoading(true);
@@ -49,30 +46,11 @@ export const useWalletAuth = ({
 
             // Use WC Modal v2 if enabled
             if (enableWcModal) {
-                console.log('[useWalletAuth] Using WC Modal v2');
                 await handleWalletConnectModal();
                 return null;
             }
 
-            // Legacy WalletConnect flow
-            const result = (await account.connectWalletConnect()) as { uri?: string } | string | null | undefined;
-            const uri = typeof result === 'string' ? result : result?.uri;
-
-            if (!uri) {
-                throw new Error('Failed to generate WalletConnect QR code');
-            }
-
-            const qrCodeDataUrl = await QRCodeLib.toDataURL(uri, {
-                errorCorrectionLevel: 'M',
-                width: 300,
-                margin: 2,
-            });
-
-            setWalletConnectQRCode(qrCodeDataUrl);
-            setShowWalletConnectQR(openQrModal);
-            setIsWaitingForWalletConnect(true);
-
-            return uri;
+            throw new Error('WalletConnect is not available in MVP');
         } catch (err: any) {
             console.error('[useWalletAuth] Failed to start WalletConnect session:', err);
             setError(err.message || 'Failed to start WalletConnect. Please try again.');
@@ -99,7 +77,7 @@ export const useWalletAuth = ({
         }
 
         // Check if connection completed
-        if (account.status === 'connected' && account.address0) {
+        if ((account.status as string) === 'connected' && account.address0) {
             console.log('[useWalletAuth] ✅ WalletConnect connection detected! Address:', account.address0);
 
             // Clear timeout
@@ -125,49 +103,7 @@ export const useWalletAuth = ({
                     // Mobile wallets need time to process the connection and show the UI
                     await new Promise((resolve) => setTimeout(resolve, 300));
 
-                    // Sign message via WalletConnect (guarded import)
-                    const signerModule = await import('../../../services/chain/walletconnect').catch((err) => {
-                        console.error('[useWalletAuth] WC signer import failed:', err);
-                        throw new Error('WalletConnect is unavailable right now. Please retry.');
-                    });
-                    const utilModule = await import('@polkadot/util').catch((err) => {
-                        console.error('[useWalletAuth] util import failed:', err);
-                        throw new Error('WalletConnect is unavailable right now. Please retry.');
-                    });
-
-                    const { createWalletConnectSigner } = signerModule;
-                    const { stringToHex } = utilModule;
-                    const signer = createWalletConnectSigner(address);
-                    const message = await getWalletAuthMessage(address);
-
-                    console.log('[useWalletAuth] Requesting signature from WalletConnect...');
-                    console.log('[useWalletAuth] 💡 Stay in your wallet app until you approve the signature');
-
-                    // Small delay to ensure wallet app is ready for signature request
-                    await new Promise((resolve) => setTimeout(resolve, 400));
-
-                    // Request signature - this should trigger the wallet app to show the prompt
-                    const { signature } = await signer.signRaw({
-                        address,
-                        data: stringToHex(message),
-                    });
-
-                    console.log('[useWalletAuth] Signature received, logging in...');
-
-                    // Clear waiting state before login (login might redirect)
-                    setIsWaitingForSignature(false);
-
-                    // Login with signature
-                    await login('rainbow', {
-                        type: 'wallet',
-                        address,
-                        signature,
-                        chain: 'polkadot',
-                    });
-
-                    console.log('[useWalletAuth] ✅ Login successful!');
-                    triggerHaptic('medium');
-                    onLoginSuccess?.();
+                    throw new Error('WalletConnect is not available in MVP');
                 } catch (err: any) {
                     console.error('[useWalletAuth] ❌ WalletConnect login failed:', err);
                     setError(err.message || 'Failed to sign message with WalletConnect');
@@ -184,7 +120,7 @@ export const useWalletAuth = ({
     useEffect(() => {
         if (isWaitingForWalletConnect && showWalletConnectQR) {
             walletConnectTimeoutRef.current = setTimeout(() => {
-                if (account.status !== 'connected') {
+                if ((account.status as string) !== 'connected') {
                     console.warn('[useWalletAuth] WalletConnect connection timeout');
                     setShowWalletConnectQR(false);
                     setWalletConnectQRCode(null);

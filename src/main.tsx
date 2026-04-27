@@ -4,8 +4,6 @@ import App from './App.tsx'
 import './index.css'
 import './styles/globals.css'
 import { AccountProvider } from './contexts/AccountContext'
-import { AccountProviderLuno } from './contexts/AccountContextLuno'
-import { EvmAccountProvider } from './contexts/EvmAccountContext'
 import { DataProvider } from './services/data/DataContext'
 import { DataLayerErrorBoundary } from './components/DataLayerErrorBoundary'
 import { requireValidEnvironment } from './utils/envValidation'
@@ -93,58 +91,21 @@ if (loadingEl) {
 
 const rootEl = document.getElementById('root')!
 
-const isFlagEnabled = (value?: string) =>
-  value === '1' || value?.toLowerCase() === 'true';
-
-const enableLunoKit = isFlagEnabled(import.meta.env.VITE_ENABLE_LUNOKIT);
-const enableEmbeddedWallet = isFlagEnabled(import.meta.env.VITE_ENABLE_EMBEDDED_WALLET);
-
-const PolkadotProviderComponent = enableLunoKit ? AccountProviderLuno : AccountProvider;
-
 const renderWithProviders = (content: ReactNode) => (
   <StrictMode>
     <ErrorBoundary>
-      <PolkadotProviderComponent>
-        <EvmAccountProvider enabled={enableEmbeddedWallet}>
-          <DataLayerErrorBoundary>
-            <DataProvider>
-              {content}
-            </DataProvider>
-          </DataLayerErrorBoundary>
-        </EvmAccountProvider>
-      </PolkadotProviderComponent>
+      <AccountProvider>
+        <DataLayerErrorBoundary>
+          <DataProvider>
+            {content}
+          </DataProvider>
+        </DataLayerErrorBoundary>
+      </AccountProvider>
     </ErrorBoundary>
   </StrictMode>
 );
 
-async function ensureCryptoReady() {
-  try {
-    const { cryptoWaitReady } = await import('@polkadot/util-crypto');
-    await cryptoWaitReady();
-  } catch (error) {
-    console.warn('[main] Failed to initialize Polkadot crypto utilities:', error);
-  }
-}
-
-// Polyfill Buffer for deps that expect it in the browser
-if (!(window as any).Buffer) {
-  import('buffer').then(({ Buffer }) => {
-    (window as any).Buffer = Buffer
-  })
-}
-
 async function bootstrapApp() {
-  await ensureCryptoReady();
-
-  // Throwaway path-level page: /chain-test (dev only)
-  if (import.meta.env.DEV && window.location.pathname === '/chain-test') {
-    const { ChainTestPage } = await import('./chain/chain-test-page');
-    createRoot(rootEl).render(
-      renderWithProviders(<ChainTestPage />),
-    );
-    return;
-  }
-
   if (window.location.pathname === '/reset-password') {
     const { default: ResetPasswordScreen } = await import('./components/screens/ResetPasswordScreen');
     createRoot(rootEl).render(

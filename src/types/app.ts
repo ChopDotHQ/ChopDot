@@ -1,3 +1,49 @@
+// Commitment lifecycle — the state a pot/chapter can be in
+export type PotStatus =
+    | 'draft'
+    | 'active'
+    | 'partially_settled'
+    | 'completed'
+    | 'cancelled';
+
+// Settlement leg statuses — tracks a single bilateral payment
+export type SettlementLegStatus = 'pending' | 'paid' | 'confirmed';
+
+// A single leg in a chapter settlement
+export interface SettlementLeg {
+    id: string;
+    potId: string;
+    fromMemberId: string;
+    toMemberId: string;
+    amount: number;        // fiat units (e.g. 12.50)
+    currency: string;
+    status: SettlementLegStatus;
+    method?: 'cash' | 'bank' | 'paypal' | 'twint';
+    reference?: string;
+    createdAt: string;     // ISO
+    paidAt?: string;       // ISO — set when status → paid
+    confirmedAt?: string;  // ISO — set when status → confirmed
+}
+
+// Typed commitment event — append-only history entry
+export type PotEventType =
+    | 'commitment_created'
+    | 'participant_joined'
+    | 'expense_added'
+    | 'chapter_proposed'
+    | 'leg_marked_paid'
+    | 'leg_confirmed'
+    | 'chapter_closed'
+    | 'commitment_cancelled';
+
+export interface PotEvent {
+    id: string;
+    type: PotEventType;
+    actorId: string;       // member ID who triggered the event
+    timestamp: string;     // ISO
+    meta?: Record<string, unknown>;
+}
+
 export interface Member {
     id: string;
     name: string;
@@ -18,16 +64,6 @@ export interface Expense {
     split: { memberId: string; amount: number }[];
     attestations: string[];
     hasReceipt: boolean;
-    attestationTxHash?: string;
-    attestationTimestamp?: string;
-}
-
-export interface Contribution {
-    id: string;
-    memberId: string;
-    amount: number;
-    date: string;
-    txHash?: string;
 }
 
 export interface CheckpointConfirmation {
@@ -40,97 +76,11 @@ export interface ExpenseCheckpoint {
     createdBy: string;
     createdAt: string;
     status: "pending" | "confirmed" | "bypassed";
-    confirmations: Map<
-        string,
-        { confirmed: boolean; confirmedAt?: string }
-    >;
+    confirmations: Map<string, { confirmed: boolean; confirmedAt?: string }>;
     expiresAt: string;
     bypassedBy?: string;
     bypassedAt?: string;
 }
-
-export type CloseoutAsset = "DOT" | "USDC";
-
-export type CloseoutLegStatus =
-    | "pending"
-    | "paid"
-    | "proven"
-    | "acknowledged";
-
-export type CloseoutStatus =
-    | "draft"
-    | "anchored"
-    | "active"
-    | "partially_settled"
-    | "completed"
-    | "cancelled";
-
-export type CloseoutLeg = {
-    index: number;
-    fromMemberId: string;
-    toMemberId: string;
-    fromAddress: string;
-    toAddress: string;
-    amount: string;
-    asset: CloseoutAsset;
-    settlementTxHash?: string;
-    proofTxHash?: string;
-    status: CloseoutLegStatus;
-};
-
-export type CloseoutRecord = {
-    id: string;
-    potId: string;
-    asset: CloseoutAsset;
-    snapshotHash: string;
-    metadataHash?: string;
-    contractAddress?: string;
-    closeoutId?: string;
-    contractTxHash?: string;
-    status: CloseoutStatus;
-    createdByMemberId: string;
-    createdAt: number;
-    participantMemberIds: string[];
-    participantAddresses: string[];
-    settledLegCount: number;
-    totalLegCount: number;
-    legs: CloseoutLeg[];
-};
-
-export type PotHistoryBase = {
-    id: string;
-    when: number;
-    txHash?: string;
-    block?: string;
-    status: "submitted" | "in_block" | "finalized" | "failed";
-    subscan?: string;
-};
-
-export type PotHistory =
-    | (PotHistoryBase & {
-        type: "onchain_settlement";
-        fromMemberId: string;
-        toMemberId: string;
-        fromAddress: string;
-        toAddress: string;
-        amountDot?: string; // Optional - required if amountUsdc not present
-        amountUsdc?: string; // Optional - required if amountDot not present
-        assetId?: number; // Asset ID for USDC (1337), undefined for DOT
-        txHash: string;
-        subscan: string;
-        note?: string;
-        closeoutId?: string;
-        closeoutLegIndex?: number;
-        proofTxHash?: string;
-        proofStatus?: "anchored" | "recorded" | "completed";
-        proofContract?: string;
-    })
-    | (PotHistoryBase & {
-        type: "remark_checkpoint";
-        message: string;
-        potHash: string;
-        cid?: string;
-    });
 
 export interface Pot {
     id: string;
@@ -139,26 +89,20 @@ export interface Pot {
     baseCurrency: string;
     members: Member[];
     expenses: Expense[];
+    status?: PotStatus;
     budget?: number;
     budgetEnabled?: boolean;
-    contributions?: Contribution[];
-    totalPooled?: number;
-    yieldRate?: number;
-    defiProtocol?: string;
     goalAmount?: number;
     goalDescription?: string;
     checkpointEnabled?: boolean;
     currentCheckpoint?: ExpenseCheckpoint;
     mode?: "casual" | "auditable";
     confirmationsEnabled?: boolean;
-    lastCheckpoint?: { hash: string; txHash?: string; at: string; cid?: string };
     archived?: boolean;
-    history?: PotHistory[];
-    closeouts?: CloseoutRecord[];
     createdAt?: string;
     updatedAt?: number;
     lastEditAt?: string;
-    lastBackupCid?: string;
+    events?: PotEvent[];
 }
 
 export interface Settlement {
@@ -166,15 +110,10 @@ export interface Settlement {
     personId: string;
     amount: string;
     currency: string;
-    method: "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc";
+    method: "cash" | "bank" | "paypal" | "twint";
     potIds?: string[];
     date: string;
-    txHash?: string;
-    closeoutId?: string;
-    closeoutLegIndex?: number;
-    proofTxHash?: string;
-    proofStatus?: "anchored" | "recorded" | "completed";
-    proofContract?: string;
+    ref?: string;
 }
 
 export interface ActivityItem {

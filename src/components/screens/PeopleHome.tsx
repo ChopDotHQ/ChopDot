@@ -1,7 +1,6 @@
 import { User, Bell, HandCoins, ListFilter } from "lucide-react";
 import { PrimaryButton } from "../PrimaryButton";
 import { SecondaryButton } from "../SecondaryButton";
-import { WalletBanner } from "../WalletBanner";
 import { TrustIndicator } from "../TrustIndicator";
 import { EmptyState } from "../EmptyState";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
@@ -317,9 +316,6 @@ export function PeopleHome({
           />
         ) : (
           <div className="p-3 space-y-3">
-            {/* Wallet Balance Banner - Shows when connected */}
-            <WalletBanner />
-
             {/* Overview Chips */}
             <div
               className={isPSA ? `${psaClasses.card} p-4 transition-shadow duration-200` : 'card p-4 transition-shadow duration-200'}

@@ -1,21 +1,13 @@
-import { UserPlus, MoreVertical, UserMinus, Send, Edit, Copy, CheckCircle, Wallet } from "lucide-react";
-import { toast } from "sonner";
-import { copyWithToast } from "../../utils/clipboard";
+import { UserPlus, MoreVertical, UserMinus, Send, Edit } from "lucide-react";
 import { TrustDots } from "../TrustDots";
 import { useState } from "react";
 import { EditMemberModal } from "../EditMemberModal";
-import {
-  normalizeWalletAddress,
-  resolvePaymentPreference,
-} from "../../utils/identityResolver";
 
 interface Member {
   id: string;
   name: string;
   role: "Owner" | "Member";
   status: "active" | "pending";
-  address?: string;
-  evmAddress?: string;
   verified?: boolean;
 }
 
@@ -28,12 +20,12 @@ interface Expense {
 
 interface MembersTabProps {
   members: Member[];
-  expenses?: Expense[]; // Optional for calculating balances
+  expenses?: Expense[];
   currentUserId?: string;
-  baseCurrency?: string; // Base currency for the pot (e.g., "DOT", "USD")
+  baseCurrency?: string;
   onAddMember: () => void;
   onRemoveMember: (id: string) => void;
-  onUpdateMember?: (member: { id: string; name: string; address?: string; evmAddress?: string; verified?: boolean }) => void;
+  onUpdateMember?: (member: { id: string; name: string; verified?: boolean }) => void;
   onCopyInviteLink?: () => void;
   onResendInvite?: (memberId: string) => void;
   onRevokeInvite?: (memberId: string) => void;
@@ -43,7 +35,6 @@ export function MembersTab({
   members,
   expenses = [],
   currentUserId = "owner",
-  baseCurrency = "USD",
   onAddMember,
   onRemoveMember,
   onUpdateMember,
@@ -51,74 +42,35 @@ export function MembersTab({
   onResendInvite,
   onRevokeInvite,
 }: MembersTabProps) {
-  const isDotPot = baseCurrency === 'DOT';
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
 
-  // Calculate balance for each member relative to current user
-  // Balance = how much they owe you (or you owe them)
-  // Positive = they owe you, Negative = you owe them
   const getMemberBalance = (memberId: string): number => {
     if (!expenses || expenses.length === 0) return 0;
-
-    // Calculate: their share of expenses you paid - your share of expenses they paid
-    // This matches the logic in calculatePotSettlements()
     let theirShareOfMyExpenses = 0;
     let myShareOfTheirExpenses = 0;
-
     expenses.forEach(expense => {
-      // If you paid, find their share
       if (expense.paidBy === currentUserId) {
         const memberSplit = expense.split.find(s => s.memberId === memberId);
-        if (memberSplit) {
-          theirShareOfMyExpenses += memberSplit.amount;
-        }
+        if (memberSplit) theirShareOfMyExpenses += memberSplit.amount;
       }
-
-      // If they paid, find your share
       if (expense.paidBy === memberId) {
         const yourSplit = expense.split.find(s => s.memberId === currentUserId);
-        if (yourSplit) {
-          myShareOfTheirExpenses += yourSplit.amount;
-        }
+        if (yourSplit) myShareOfTheirExpenses += yourSplit.amount;
       }
     });
-
-    // Balance = theirShareOfMyExpenses - myShareOfTheirExpenses
-    // Positive = they owe you, Negative = you owe them
     return theirShareOfMyExpenses - myShareOfTheirExpenses;
   };
 
-  // Mock payment preferences (in real app, would come from member data)
-  const getPaymentPreference = (memberId: string): string | undefined => {
-    // You don't have a payment preference shown
-    if (memberId === currentUserId) return undefined;
-
-    // Mock data for other members
-    const preferences: Record<string, string> = {
-      alice: "Bank",
-      bob: "TWINT",
-      charlie: "DOT",
-      diana: "PayPal",
-    };
-    return preferences[memberId] || "Bank";
-  };
-
-  // Mock trust scores (in real app, would come from member data)
   const getTrustScore = (_memberId: string): number => 9;
 
   return (
     <div className="p-3 space-y-3">
-      {/* Member Cards */}
       <div className="space-y-2">
         {members.map((member) => {
           const balance = getMemberBalance(member.id);
           const isCurrentUser = member.id === currentUserId;
           const displayName = isCurrentUser ? "You" : member.name;
-          const normalizedAddress = normalizeWalletAddress(member.address);
-          const paymentPref = isCurrentUser
-            ? undefined
-            : resolvePaymentPreference(normalizedAddress, getPaymentPreference(member.id), "Bank");
           const trustScore = getTrustScore(member.id);
           const isPositive = balance >= 0;
           const amountColor = isPositive ? 'var(--success)' : 'var(--ink)';
@@ -135,7 +87,6 @@ export function MembersTab({
                 <div className="flex items-center justify-between gap-3">
                   {/* Left: Avatar + Name + Info */}
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    {/* Avatar with TrustDots badge */}
                     <div className="relative flex-shrink-0">
                       <div
                         className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -146,35 +97,21 @@ export function MembersTab({
                       >
                         <span
                           className="text-body"
-                          style={{
-                            fontWeight: 500,
-                            color: 'var(--foreground)',
-                            opacity: 1,
-                          }}
+                          style={{ fontWeight: 500, color: 'var(--foreground)', opacity: 1 }}
                         >
                           {displayName.charAt(0).toUpperCase()}
                         </span>
                       </div>
-                      {/* TrustDots overlay - bottom-right corner */}
                       {!isCurrentUser && (
-                        <TrustDots
-                          score={trustScore}
-                          className="bottom-0 right-0"
-                        />
+                        <TrustDots score={trustScore} className="bottom-0 right-0" />
                       )}
                     </div>
 
-                    {/* Name + Role + Payment Preference */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <p
-                          className="text-body truncate"
-                          style={{ fontWeight: 500 }}
-                        >
+                        <p className="text-body truncate" style={{ fontWeight: 500 }}>
                           {displayName}
                         </p>
-
-                        {/* Role Badge */}
                         <span
                           className="inline-block px-1.5 py-0.5 rounded text-micro"
                           style={{
@@ -187,123 +124,26 @@ export function MembersTab({
                         </span>
                       </div>
 
-                      {/* Payment Preference Pill - Only show for non-DOT pots or when no address */}
-                      {paymentPref && !isDotPot && !normalizedAddress && (
-                        <div className="flex items-center gap-1 mt-1">
-                          <span
-                            className="inline-block px-2 py-0.5 rounded-md text-caption"
-                            style={{
-                              backgroundColor: 'var(--muted)',
-                              color: 'var(--bg)',
-                              opacity: 0.8,
-                            }}
-                          >
-                            Pref: {paymentPref}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Wallet Address Display - Show readiness or CTA */}
-                      {normalizedAddress || member.evmAddress ? (
-                        <div className="flex flex-wrap items-center gap-2 mt-1">
-                          {normalizedAddress && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 text-[11px] text-green-700 dark:text-green-400">
-                              <CheckCircle className="w-3 h-3" />
-                              DOT wallet ready
-                            </span>
-                          )}
-                          {member.evmAddress && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 text-[11px] text-blue-700 dark:text-blue-400">
-                              <CheckCircle className="w-3 h-3" />
-                              PVM wallet ready
-                            </span>
-                          )}
-                          {normalizedAddress && (
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
-                              <span className="text-micro font-mono text-foreground">
-                                {normalizedAddress.slice(0, 8)}...{normalizedAddress.slice(-6)}
-                              </span>
-                              <button
-                                onClick={async (e) => {
-                                  e.stopPropagation();
-                                  await copyWithToast(normalizedAddress, 'Address copied', (msg) => toast.success(msg));
-                                }}
-                                className="p-0.5 hover:bg-muted rounded transition-colors"
-                                title="Copy address"
-                              >
-                                <Copy className="w-3 h-3 text-secondary" />
-                              </button>
-                              {member.verified && (
-                                <div className="flex items-center gap-0.5 px-1 py-0.5 bg-green-500/20 rounded text-micro text-green-600 dark:text-green-400">
-                                  <CheckCircle className="w-2.5 h-2.5" />
-                                  <span>Verified</span>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                          {member.evmAddress && (
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/30">
-                              <span className="text-micro font-mono text-foreground">
-                                {member.evmAddress.slice(0, 8)}...{member.evmAddress.slice(-6)}
-                              </span>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  void navigator.clipboard.writeText(member.evmAddress || '');
-                                }}
-                                className="p-0.5 hover:bg-muted rounded transition-colors"
-                                title="Copy EVM address"
-                              >
-                                <Copy className="w-3 h-3 text-secondary" />
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingMember(member);
-                          }}
-                          className="inline-flex items-center gap-1.5 mt-1 px-2 py-1 rounded-lg bg-[var(--accent)]/10 text-[11px] text-[var(--accent)] hover:bg-[var(--accent)]/15 transition-colors"
-                        >
-                          <Wallet className="w-3 h-3" />
-                          Add DOT wallet
-                        </button>
-                      )}
-
-
-                      {/* Status for pending members */}
                       {member.status === "pending" && (
-                        <p className="text-caption text-secondary mt-0.5">
-                          Invite pending
-                        </p>
+                        <p className="text-caption text-secondary mt-0.5">Invite pending</p>
                       )}
                     </div>
                   </div>
 
-                  {/* Right: Balance or Menu Button */}
+                  {/* Right: Balance + Menu */}
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    {/* Balance (if not current user and there are expenses) */}
                     {!isCurrentUser && expenses.length > 0 && (
                       <div className="text-right">
                         {(() => {
-                          // Use currency-aware threshold for "Settled" status
-                          const settleThreshold = isDotPot ? 0.000001 : 0.01;
-                          const isSettled = Math.abs(balance) < settleThreshold;
-                          const decimals = isDotPot ? 6 : 2;
+                          const isSettled = Math.abs(balance) < 0.01;
                           const balanceDisplay = isSettled
                             ? "Settled"
-                            : `${isPositive ? '+' : ''}${isDotPot ? `${Math.abs(balance).toFixed(decimals)} DOT` : `$${Math.abs(balance).toFixed(decimals)}`}`;
-
+                            : `${isPositive ? '+' : ''}$${Math.abs(balance).toFixed(2)}`;
                           return (
                             <>
                               <p
                                 className="text-[18px] tabular-nums"
-                                style={{
-                                  fontWeight: 700,
-                                  color: isSettled ? 'var(--muted)' : amountColor,
-                                }}
+                                style={{ fontWeight: 700, color: isSettled ? 'var(--muted)' : amountColor }}
                               >
                                 {balanceDisplay}
                               </p>
@@ -318,7 +158,6 @@ export function MembersTab({
                       </div>
                     )}
 
-                    {/* Menu Button (for non-owners) */}
                     {canShowMenu && (
                       <button
                         onClick={() => setOpenMenuId(showMenu ? null : member.id)}
@@ -331,72 +170,47 @@ export function MembersTab({
                 </div>
               </div>
 
-              {/* Dropdown Menu */}
               {showMenu && (
                 <>
-                  {/* Backdrop */}
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setOpenMenuId(null)}
-                  />
-
-                  {/* Menu */}
+                  <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
                   <div
                     className="absolute right-0 top-full mt-1 w-48 card p-1 z-50"
                     style={{ boxShadow: 'var(--shadow-fab)' }}
                   >
                     {canEditMember && (
                       <button
-                        onClick={() => {
-                          setEditingMember(member);
-                          setOpenMenuId(null);
-                        }}
+                        onClick={() => { setEditingMember(member); setOpenMenuId(null); }}
                         className="w-full px-3 py-2 text-left rounded-lg hover:bg-muted/30 transition-colors flex items-center gap-2"
                       >
                         <Edit className="w-4 h-4 text-secondary" />
                         <span className="text-body">Edit member</span>
                       </button>
                     )}
-
                     {canResendInvite && (
                       <button
-                        onClick={() => {
-                          onResendInvite?.(member.id);
-                          setOpenMenuId(null);
-                        }}
+                        onClick={() => { onResendInvite?.(member.id); setOpenMenuId(null); }}
                         className="w-full px-3 py-2 text-left rounded-lg hover:bg-muted/30 transition-colors flex items-center gap-2"
                       >
                         <Send className="w-4 h-4 text-secondary" />
                         <span className="text-body">Resend invite</span>
                       </button>
                     )}
-
                     {canRevokeInvite && (
                       <button
-                        onClick={() => {
-                          onRevokeInvite?.(member.id);
-                          setOpenMenuId(null);
-                        }}
+                        onClick={() => { onRevokeInvite?.(member.id); setOpenMenuId(null); }}
                         className="w-full px-3 py-2 text-left rounded-lg hover:bg-muted/30 transition-colors flex items-center gap-2"
                       >
-                        {/* Reusing UserMinus icon but maybe a differen style? */}
                         <UserMinus className="w-4 h-4 text-secondary" />
                         <span className="text-body">Revoke invite</span>
                       </button>
                     )}
-
                     {canRemoveMember && (
                       <button
-                        onClick={() => {
-                          onRemoveMember(member.id);
-                          setOpenMenuId(null);
-                        }}
+                        onClick={() => { onRemoveMember(member.id); setOpenMenuId(null); }}
                         className="w-full px-3 py-2 text-left rounded-lg hover:bg-destructive/10 transition-colors flex items-center gap-2"
                       >
                         <UserMinus className="w-4 h-4" style={{ color: 'var(--danger)' }} />
-                        <span className="text-body" style={{ color: 'var(--danger)' }}>
-                          Remove member
-                        </span>
+                        <span className="text-body" style={{ color: 'var(--danger)' }}>Remove member</span>
                       </button>
                     )}
                   </div>
@@ -407,7 +221,6 @@ export function MembersTab({
         })}
       </div>
 
-      {/* Add Member Button */}
       <button
         onClick={onAddMember}
         className="w-full py-3 rounded-xl hover:bg-accent/15 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
@@ -417,7 +230,6 @@ export function MembersTab({
         <span className="text-body" style={{ color: 'var(--accent)' }}>Add Member</span>
       </button>
 
-      {/* Edit Member Modal */}
       {onUpdateMember && (
         <EditMemberModal
           isOpen={editingMember !== null}

@@ -138,33 +138,4 @@ export class PotService {
     return this.repository.import(pot);
   }
 
-  /**
-   * Compute checkpoint hint (hash + last checkpoint hash)
-   * 
-   * This computes the pot hash for checkpointing.
-   * The actual on-chain checkpoint is handled by the chain service.
-   * 
-   * @param id - Pot ID
-   * @returns Checkpoint hint with hash and optional last checkpoint hash
-   * @throws {NotFoundError} If pot not found
-   */
-  async checkpointHint(id: string): Promise<{ hash: string; lastCheckpointHash?: string }> {
-    const pot = await this.repository.get(id);
-    
-    // Import computePotHash from chain service (will be implemented)
-    // For now, return placeholder
-    const hash = `hash_${pot.id}_${Date.now()}`;
-    
-    // Get last checkpoint hash from history
-    const lastCheckpoint = pot.history
-      ?.filter(h => h.type === 'remark_checkpoint')
-      .sort((a, b) => b.when - a.when)[0];
-    
-    return {
-      hash,
-      lastCheckpointHash: lastCheckpoint?.type === 'remark_checkpoint' 
-        ? lastCheckpoint.potHash 
-        : undefined,
-    };
-  }
 }

@@ -1,80 +1,75 @@
 /**
  * Settlement Service
- * 
- * Business logic layer for settlements.
- * Wraps settlement calculation and history recording.
+ *
+ * Business logic layer for the shared commitment settlement kernel.
+ *
+ * Responsibilities:
+ * - Computing settlement suggestions from pot expenses
+ * - Proposing a chapter (persisting typed settlement legs)
+ * - Progressing legs: pending → paid → confirmed
+ * - Deriving chapter status from leg states
  */
 
 import { SettlementRepository } from '../repositories/SettlementRepository';
-import type { SettlementSuggestion, OnchainSettlementHistory } from '../types/dto';
+import type { SettlementSuggestion } from '../types/dto';
 import { calculatePotSettlements } from '../../../utils/settlements';
 import type { PotRepository } from '../repositories/PotRepository';
+import type { SettlementLeg, PotStatus } from '../../../types/app';
+
+export { SettlementRepository };
 
 /**
- * Settlement Service
- * 
- * Provides business logic for settlement operations:
- * - Settlement suggestions (wraps existing calc)
- * - On-chain settlement history recording
+ * Derive a pot's chapter status from its settlement legs.
+ *
+ * - No legs → active (nothing proposed yet)
+ * - All confirmed → completed
+ * - Any paid or confirmed → partially_settled
+ * - All pending → active (chapter open but no payments yet)
  */
+export function deriveChapterStatus(legs: SettlementLeg[]): PotStatus {
+  if (legs.length === 0) return 'active';
+  if (legs.every(l => l.status === 'confirmed')) return 'completed';
+  if (legs.some(l => l.status === 'paid' || l.status === 'confirmed')) return 'partially_settled';
+  return 'active';
+}
+
 export class SettlementService {
   private potRepository: PotRepository;
+  private settlementRepository: SettlementRepository;
 
-  constructor(_repository: SettlementRepository, potRepository: PotRepository) {
-    // Repository will be used when settlement history is implemented
+  constructor(repository: SettlementRepository, potRepository: PotRepository) {
+    this.settlementRepository = repository;
     this.potRepository = potRepository;
   }
 
+  // ─── Suggestions ──────────────────────────────────────────────────────────
+
   /**
-   * Get settlement suggestions for a pot
-   * 
-   * Uses the existing calculatePotSettlements logic.
-   * 
-   * @param potId - Pot ID
-   * @returns Array of settlement suggestions
-   * @throws {NotFoundError} If pot not found
+   * Compute settlement suggestions for a pot based on expense balances.
+   * Does not write anything to the database.
    */
   async suggest(potId: string): Promise<SettlementSuggestion[]> {
     const pot = await this.potRepository.get(potId);
-
-    // Use existing calculation logic
-    // calculatePotSettlements returns CalculatedSettlements with youOwe/owedToYou arrays
-    // Type assertion: repository Pot is compatible with calculatePotSettlements Pot
-    // (members may have optional role/status in schema, but runtime values match)
     const settlements = calculatePotSettlements(pot as any, 'owner');
-
-    // Convert to SettlementSuggestion format
     const suggestions: SettlementSuggestion[] = [];
 
-    // Process "you owe" settlements (current user owes others)
     settlements.youOwe.forEach(person => {
       person.breakdown.forEach(breakdown => {
         if (breakdown.potName === pot.name) {
-          // Find the member ID for this person
           const member = pot.members.find(m => m.id === person.id);
           if (member) {
-            suggestions.push({
-              from: 'owner', // Current user owes
-              to: member.id,
-              amount: String(breakdown.amount),
-            });
+            suggestions.push({ from: 'owner', to: member.id, amount: String(breakdown.amount) });
           }
         }
       });
     });
 
-    // Process "owed to you" settlements (others owe current user)
     settlements.owedToYou.forEach(person => {
       person.breakdown.forEach(breakdown => {
         if (breakdown.potName === pot.name) {
-          // Find the member ID for this person
           const member = pot.members.find(m => m.id === person.id);
           if (member) {
-            suggestions.push({
-              from: member.id, // Member owes current user
-              to: 'owner',
-              amount: String(breakdown.amount),
-            });
+            suggestions.push({ from: member.id, to: 'owner', amount: String(breakdown.amount) });
           }
         }
       });
@@ -83,24 +78,59 @@ export class SettlementService {
     return suggestions;
   }
 
+  // ─── Chapter lifecycle ─────────────────────────────────────────────────────
+
   /**
-   * Record an on-chain settlement in pot history
-   * 
-   * This persists the settlement entry to the pot's history array.
-   * The actual on-chain transaction is handled by the chain service.
-   * 
-   * @param potId - Pot ID
-   * @param entry - On-chain settlement history entry
-   * @throws {NotFoundError} If pot not found
+   * Propose a chapter for a pot.
+   *
+   * Creates one settlement leg per bilateral payment needed to clear balances.
+   * Each leg starts as 'pending'.
+   *
+   * @param potId - Pot to settle
+   * @param legs  - Computed legs (from, to, amount, currency)
+   * @returns Persisted settlement legs
    */
-  async recordOnchainSettlement(potId: string, entry: OnchainSettlementHistory): Promise<void> {
-    const pot = await this.potRepository.get(potId);
+  async proposeChapter(
+    potId: string,
+    legs: Array<{ fromMemberId: string; toMemberId: string; amount: number; currency: string }>,
+  ): Promise<SettlementLeg[]> {
+    // createBatch auto-generates and caches an idempotency key per batch signature,
+    // so retries of the same legs reuse the same key without any extra coordination here.
+    return this.settlementRepository.createBatch(potId, legs);
+  }
 
-    // Add entry to pot history
-    const updatedHistory = [...(pot.history || []), entry];
+  /**
+   * Load all settlement legs for a pot (open chapter view).
+   */
+  async getChapterLegs(potId: string): Promise<SettlementLeg[]> {
+    return this.settlementRepository.listByPot(potId);
+  }
 
-    await this.potRepository.update(potId, {
-      history: updatedHistory,
-    });
+  /**
+   * Payer marks a leg as paid.
+   * Transitions: pending → paid
+   */
+  async markPaid(
+    legId: string,
+    potId: string,
+    method: SettlementLeg['method'],
+    reference?: string,
+  ): Promise<SettlementLeg> {
+    return this.settlementRepository.markPaid(legId, potId, method, reference);
+  }
+
+  /**
+   * Receiver confirms a leg.
+   * Transitions: paid → confirmed
+   */
+  async confirmReceipt(legId: string, potId: string): Promise<SettlementLeg> {
+    return this.settlementRepository.confirmReceipt(legId, potId);
+  }
+
+  /**
+   * Derive chapter status from current legs.
+   */
+  chapterStatus(legs: SettlementLeg[]): PotStatus {
+    return deriveChapterStatus(legs);
   }
 }

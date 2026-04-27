@@ -28,9 +28,7 @@ export const debugHelpers = {
     localStorage.removeItem('chopdot_notifications');
     
     // Clear feature flags
-    localStorage.removeItem('flag_POLKADOT_APP_ENABLED');
-    localStorage.removeItem('flag_IPFS_RECEIPTS_ENABLED');
-    localStorage.removeItem('flag_PUSH_ENABLED');
+    localStorage.removeItem('flag_DEMO_MODE');
     localStorage.removeItem('flag_SERVICE_FEE_CAP_BPS');
     
     // Clear theme preference

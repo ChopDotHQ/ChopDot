@@ -1,11 +1,11 @@
 import { Plus, Bell, TrendingUp, Search, Eye, EyeOff, ListFilter, Receipt, ArrowLeftRight, QrCode, Send, Loader2 } from "lucide-react";
-import { WalletBanner } from "../WalletBanner";
 import { SortFilterSheet, SortOption } from "../SortFilterSheet";
 import { useState, useMemo } from "react";
 import { AccountMenu } from "../AccountMenu";
 import { EmptyState } from "../EmptyState";
 import { usePots } from "../../hooks/usePots";
 import { useAuth } from "../../contexts/AuthContext";
+import { usePendingActions } from "../../hooks/usePendingActions";
 import { warnDev } from "../../utils/logDev";
 import { shouldPreferDLReads } from "../../utils/dlReadsFlag";
 import { usePSAStyle } from "../../utils/usePSAStyle";
@@ -22,8 +22,6 @@ interface Pot {
   net: number;
   budget?: number;
   budgetEnabled?: boolean;
-  totalPooled?: number;
-  yieldRate?: number;
 }
 
 interface DebtBreakdown {
@@ -90,6 +88,8 @@ export function PotsHome({
   const { user } = useAuth();
   const summaryUserId = user?.id ?? 'owner';
 
+  const { actions: pendingActions } = usePendingActions(user?.id);
+
   // Transform Data Layer pots to potSummaries format
   const transformPotToSummary = useMemo(() => {
     return (pot: DataLayerPot, summary?: { totalExpenses: number; myExpenses: number; myShare: number }): Pot => {
@@ -124,8 +124,6 @@ export function PotsHome({
         net,
         budget: pot.budget ?? undefined,
         budgetEnabled: pot.budgetEnabled,
-        totalPooled: pot.totalPooled,
-        yieldRate: pot.yieldRate,
       };
     };
   }, [summaryUserId]);
@@ -146,8 +144,8 @@ export function PotsHome({
           return potsProp;
         }
       }
-      // DL empty/loading but flag is on - still prefer DL (will show empty until loaded)
-      return [];
+      // DL empty — fall back to props (covers guest users and local-only mode)
+      return potsProp;
     } else {
       // Flag is off - use existing behavior (prefer props, use DL if props empty)
       if (dlPots.length > 0 && potsProp.length === 0) {
@@ -259,9 +257,6 @@ export function PotsHome({
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <div className="p-4 space-y-3">
-
-          {/* Wallet Balance Banner - Shows when connected */}
-          <WalletBanner />
 
           {/* Balance Summary with Privacy Toggle */}
           <div
@@ -527,11 +522,21 @@ export function PotsHome({
                             )}
                             <p className="text-body flex-1 truncate" style={{ fontWeight: 500 }}>{pot.name}</p>
                           </div>
-                          {pot.type === "savings" && pot.yieldRate && (
-                            <span className="px-2 py-0.5 rounded text-caption whitespace-nowrap flex-shrink-0 tabular-nums" style={{ background: 'rgba(25, 195, 125, 0.15)', color: 'var(--success)' }}>
-                              {pot.yieldRate.toFixed(1)}% APY
-                            </span>
-                          )}
+                          {pendingActions.has(pot.id) && (() => {
+                            const action = pendingActions.get(pot.id)!;
+                            return (
+                              <span
+                                className="flex-shrink-0 text-micro font-semibold px-1.5 py-0.5 rounded-full"
+                                style={{
+                                  background: action.role === 'receiver' ? 'var(--success)' : 'var(--accent)',
+                                  color: '#fff',
+                                }}
+                                title={action.role === 'receiver' ? 'Confirm receipt' : 'Payment due'}
+                              >
+                                {action.role === 'receiver' ? 'Confirm' : 'Pay'}
+                              </span>
+                            );
+                          })()}
                         </div>
                         {balancesVisible && (
                           <div className="flex items-center justify-between">
@@ -544,7 +549,7 @@ export function PotsHome({
                                   </p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-micro text-secondary mb-0.5">Total pooled</p>
+                                  <p className="text-micro text-secondary mb-0.5">Total saved</p>
                                   <p className="text-[24px] tabular-nums" style={{ fontWeight: 700, color: 'var(--money)' }}>
                                     {formatPotAmount(pot.totalExpenses, pot.baseCurrency)}
                                   </p>
@@ -601,18 +606,12 @@ export function PotsHome({
                             </div>
                           </div>
                         )}
-                        {pot.type === "savings" && (
+                        {pot.type === "savings" && pot.totalExpenses > 0 && (
                           <div className="mt-1.5">
                             <div className="flex items-center justify-between mb-0.5">
-                              <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Total Pooled</span>
+                              <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Total saved</span>
                               <span className="text-micro text-foreground tabular-nums">
-                                {formatPotAmount(pot.totalPooled ?? 0, pot.baseCurrency)}
-                              </span>
-                            </div>
-                            <div className="flex items-center justify-between mb-0.5">
-                              <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Yield Rate</span>
-                              <span className="text-micro text-foreground tabular-nums">
-                                {pot.yieldRate?.toFixed(1)}%
+                                {formatPotAmount(pot.totalExpenses, pot.baseCurrency)}
                               </span>
                             </div>
                           </div>

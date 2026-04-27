@@ -156,14 +156,12 @@ export class PotRepository {
       expenses: [],
       budget: input.budget,
       budgetEnabled: input.budgetEnabled ?? false,
-      checkpointEnabled: input.checkpointEnabled ?? false,
+      checkpointEnabled: input.checkpointEnabled ?? true,
       mode: 'casual',
       history: [],
       archived: false,
       // Savings pot fields
       contributions: input.type === 'savings' ? [] : undefined,
-      totalPooled: input.type === 'savings' ? 0 : undefined,
-      yieldRate: input.type === 'savings' ? 0 : undefined,
       goalAmount: input.goalAmount,
       goalDescription: input.goalDescription,
     };
