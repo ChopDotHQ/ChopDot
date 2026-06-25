@@ -5,7 +5,6 @@ import { TopBar } from '../TopBar';
 import { useData } from '../../services/data/DataContext';
 import { usePot } from '../../hooks/usePot';
 import { useSpendSession } from '../../hooks/useSpendSession';
-import { ChapterStore } from '../../services/capture/ChapterStore';
 import { commitSpendSession } from '../../services/capture/KernelBridge';
 import { parsePaymentEvidence } from '../../services/capture/PaymentEvidenceAdapter';
 import {
@@ -50,7 +49,6 @@ export function SpendCardScreen({
 }: SpendCardScreenProps) {
   const { pots: potService } = useData();
   const { pot, loading: potLoading } = usePot(potId);
-  const store = useMemo(() => new ChapterStore(potService), [potService]);
 
   const resolvedMember = pot ? resolvePotMember(pot, currentUserId) : {
     memberId: currentMemberId,
@@ -78,7 +76,7 @@ export function SpendCardScreen({
   const chapterLoading = false;
 
 
-  const chapter: any = { spendCards: [] };
+
   const resolvedSpendCardId =
     spendCardId ?? chapter?.spendCards?.[0]?.id ?? `sc_${potId}`;
 
