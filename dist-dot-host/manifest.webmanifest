@@ -1,0 +1,10 @@
+{
+  "name": "ChopDot",
+  "short_name": "ChopDot",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F2F2F7",
+  "theme_color": "#E6007A",
+  "icons": []
+}
+

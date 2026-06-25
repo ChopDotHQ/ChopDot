@@ -1,0 +1,433 @@
+.dot-product-root {
+  min-height: 100vh;
+  background: var(--bg, #f2f2f7);
+  color: var(--ink, #000);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.summit-banner {
+  background: color-mix(in srgb, var(--accent, #e6007a) 12%, white);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent, #e6007a) 28%, transparent);
+  color: var(--ink, #000);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 0.65rem 1rem;
+  text-align: center;
+}
+
+.dot-product-root * {
+  box-sizing: border-box;
+}
+
+.dot-product-root button {
+  align-items: center;
+  background: var(--card, #fff);
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  border-radius: 12px;
+  color: var(--ink, #000);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 650;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.72rem 0.95rem;
+  transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+}
+
+.dot-product-root button:hover {
+  background: color-mix(in srgb, var(--accent, #e6007a) 7%, white);
+  border-color: color-mix(in srgb, var(--accent, #e6007a) 24%, transparent);
+}
+
+.dot-product-root button:active {
+  transform: scale(0.985);
+}
+
+.dot-product-shell,
+.dot-mode-shell {
+  margin: 0 auto;
+  max-width: 560px;
+  min-height: 100vh;
+}
+
+.dot-product-shell {
+  background: var(--bg, #f2f2f7);
+}
+
+.dot-product-top {
+  align-items: flex-start;
+  background: color-mix(in srgb, var(--bg, #f2f2f7) 92%, white);
+  border-bottom: 1px solid var(--border, rgba(0, 0, 0, 0.06));
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1.1rem 1rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.dot-product-top h1,
+.dot-mode-shell h1 {
+  font-size: clamp(1.8rem, 7vw, 2.45rem);
+  line-height: 1.04;
+  margin: 0.3rem 0 0;
+}
+
+.dot-top-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.45rem;
+}
+
+.dot-app-mark {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.dot-kicker {
+  color: var(--muted, #8e8e93);
+  font-size: 0.76rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.dot-product-main,
+.dot-mode-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.dot-mode-screen {
+  align-items: center;
+  display: flex;
+}
+
+.dot-mode-shell {
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.dot-mode-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.dot-mode-row {
+  justify-content: space-between !important;
+  padding: 1rem !important;
+  text-align: left;
+  width: 100%;
+}
+
+.dot-mode-row strong,
+.dot-mode-row small {
+  display: block;
+}
+
+.dot-mode-row small {
+  color: var(--text-secondary, #606066);
+  font-weight: 450;
+  line-height: 1.35;
+  margin-top: 0.25rem;
+  max-width: 25rem;
+}
+
+.dot-hero,
+.dot-section,
+.dot-view-as,
+.dot-receipt,
+.dot-inspector {
+  background: var(--card, #fff);
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.06));
+  border-radius: 18px;
+  box-shadow: var(--shadow-card, 0 1px 2px rgba(0, 0, 0, 0.04));
+}
+
+.dot-hero {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent, #e6007a) 13%, white), var(--card, #fff) 50%),
+    var(--card, #fff);
+  padding: 1.2rem;
+}
+
+.dot-hero h2 {
+  font-size: clamp(1.65rem, 7vw, 2.35rem);
+  line-height: 1.05;
+  margin: 0.45rem 0 0;
+}
+
+.dot-hero p:not(.dot-kicker) {
+  color: var(--text-secondary, #606066);
+  line-height: 1.45;
+  margin: 0.75rem 0 0;
+}
+
+.dot-hero-stats {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr;
+  margin-top: 1rem;
+}
+
+.dot-hero-stats span {
+  background: rgb(255 255 255 / 72%);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  font-weight: 700;
+  padding: 0.7rem 0.8rem;
+}
+
+.dot-hero-action {
+  margin-top: 0.8rem;
+  width: 100%;
+}
+
+.dot-view-as,
+.dot-section,
+.dot-receipt,
+.dot-inspector {
+  padding: 1rem;
+}
+
+.dot-person-tabs {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 0.75rem;
+}
+
+.dot-person-tabs button {
+  display: block;
+  min-height: 64px;
+  text-align: left;
+}
+
+.dot-person-tabs button.is-active {
+  background: var(--accent-pink-soft, rgba(230, 0, 122, 0.1));
+  border-color: var(--accent-pink-medium, rgba(230, 0, 122, 0.2));
+}
+
+.dot-person-tabs span,
+.dot-person-tabs small {
+  display: block;
+}
+
+.dot-person-tabs small {
+  color: var(--text-secondary, #606066);
+  font-size: 0.78rem;
+  font-weight: 450;
+  margin-top: 0.18rem;
+}
+
+.dot-section-heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.dot-section h2,
+.dot-receipt h2 {
+  font-size: 1.25rem;
+  line-height: 1.15;
+  margin: 0.25rem 0 0;
+}
+
+.dot-section-copy,
+.dot-receipt p {
+  color: var(--text-secondary, #606066);
+  line-height: 1.45;
+  margin: 0.75rem 0 0;
+}
+
+.dot-wait-list {
+  color: var(--text-secondary, #606066);
+  display: grid;
+  gap: 0.45rem;
+  line-height: 1.35;
+  list-style: none;
+  margin: 0.85rem 0 0;
+  padding: 0;
+}
+
+.dot-wait-list li {
+  border-top: 1px solid var(--border, rgba(0, 0, 0, 0.06));
+  padding-top: 0.55rem;
+}
+
+.dot-money-list {
+  display: grid;
+  margin-top: 0.75rem;
+}
+
+.dot-money-row {
+  align-items: flex-start;
+  border-top: 1px solid var(--border, rgba(0, 0, 0, 0.06));
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 0.9rem 0;
+}
+
+.dot-money-row:first-child {
+  border-top: 0;
+}
+
+.dot-row-title {
+  font-size: 1.05rem;
+  font-weight: 750;
+  margin: 0;
+}
+
+.dot-row-copy {
+  color: var(--text-secondary, #606066);
+  margin: 0.2rem 0 0;
+}
+
+.dot-row-side {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-width: 9rem;
+}
+
+.dot-row-actions,
+.dot-action-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.dot-primary-action {
+  background: var(--accent, #e6007a) !important;
+  border-color: var(--accent, #e6007a) !important;
+  color: white !important;
+}
+
+.dot-status {
+  align-items: center;
+  background: rgba(142, 142, 147, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 999px;
+  color: var(--text-secondary, #606066);
+  display: inline-flex;
+  font-size: 0.76rem;
+  font-weight: 750;
+  min-height: 28px;
+  padding: 0.28rem 0.62rem;
+  white-space: nowrap;
+}
+
+.dot-status-confirmed,
+.dot-status-approved {
+  background: rgba(25, 195, 125, 0.12);
+  color: var(--success, #19c37d);
+}
+
+.dot-status-claimed,
+.dot-status-claimed_released {
+  background: rgba(0, 122, 255, 0.1);
+  color: #0a6dca;
+}
+
+.dot-status-exception_recorded,
+.dot-status-needs_review {
+  background: rgba(255, 204, 0, 0.16);
+  color: #806200;
+}
+
+.dot-receipt {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.dot-hidden-receipt {
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
+}
+
+.dot-inspector {
+  color: var(--text-secondary, #606066);
+}
+
+.dot-inspector summary {
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.dot-inspector-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.dot-inspector h3 {
+  color: var(--ink, #000);
+  font-size: 1rem;
+  margin: 0 0 0.45rem;
+}
+
+.dot-inspector p {
+  line-height: 1.4;
+  margin: 0.35rem 0;
+}
+
+.dot-inspector pre {
+  background: #111;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.78);
+  max-height: 18rem;
+  overflow: auto;
+  padding: 0.75rem;
+  white-space: pre-wrap;
+}
+
+@media (min-width: 760px) {
+  .dot-product-shell,
+  .dot-mode-shell {
+    max-width: 680px;
+  }
+
+  .dot-hero-stats,
+  .dot-person-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .dot-product-top {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dot-top-actions,
+  .dot-receipt,
+  .dot-money-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dot-row-side,
+  .dot-row-actions,
+  .dot-action-strip {
+    align-items: stretch;
+    justify-content: stretch;
+    width: 100%;
+  }
+}

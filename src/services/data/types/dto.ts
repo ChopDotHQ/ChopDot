@@ -6,7 +6,7 @@
  */
 
 import { z } from 'zod';
-import { MemberSchema, ExpenseSchema, PotSchema } from '../../../schema/pot';
+import { MemberSchema, ExpenseSchema, PotSchema, SpendGroupSchema } from '../../../schema/pot';
 
 // Create Pot DTO
 export const CreatePotDTOSchema = z.object({
@@ -19,6 +19,15 @@ export const CreatePotDTOSchema = z.object({
   // Savings pot fields
   goalAmount: z.number().optional(),
   goalDescription: z.string().optional(),
+  potIntent: z.enum(['split', 'trip', 'deposits', 'savings_circle', 'emergency', 'community_fund']).optional(),
+  chapterMode: z.enum(['shared_expense', 'savings_circle', 'emergency_pot', 'community_fund']).optional(),
+  spendGroup: SpendGroupSchema.optional(),
+  dotChapter: z.any().optional(),
+  dotAgents: z.array(z.any()).optional(),
+  dotActiveAgentId: z.string().optional(),
+  dotRail: z.any().optional(),
+  dotEvents: z.array(z.any()).optional(),
+  dotReleaseTemplate: z.any().optional(),
   // Members (optional - defaults to owner only)
   members: z.array(MemberSchema).optional(),
 });
@@ -35,6 +44,20 @@ export const UpdatePotDTOSchema = PotSchema.partial().pick({
   archived: true,
   goalAmount: true,
   goalDescription: true,
+  potIntent: true,
+  chapterMode: true,
+  spendGroup: true,
+  dotChapter: true,
+  dotAgents: true,
+  dotActiveAgentId: true,
+  dotRail: true,
+  dotEvents: true,
+  dotReleaseTemplate: true,
+  chapter: true,
+  expenses: true,
+  members: true,
+  mode: true,
+  confirmationsEnabled: true,
 });
 
 export type UpdatePotDTO = z.infer<typeof UpdatePotDTOSchema>;

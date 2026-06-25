@@ -178,6 +178,7 @@ export class SupabasePotSource {
       ...('archived' in sanitized ? { archived: sanitized.archived ?? false } : {}),
       ...('goalAmount' in sanitized ? { goalAmount: sanitized.goalAmount ?? null } : {}),
       ...('goalDescription' in sanitized ? { goalDescription: sanitized.goalDescription ?? null } : {}),
+      ...('potIntent' in sanitized ? { potIntent: sanitized.potIntent ?? null } : {}),
       lastEditAt: nextLastEditAt,
     };
 

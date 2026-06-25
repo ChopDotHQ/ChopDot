@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-06-24T13:27:50.525Z",
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "cards": 16,
+    "decisions": 5,
+    "decisionContracts": 16,
+    "history": 5,
+    "readyOrActive": 10,
+    "blocked": 1
+  },
+  "byStatus": {
+    "backlog": 0,
+    "discovery": 5,
+    "ready": 7,
+    "building": 0,
+    "validation": 2,
+    "measuring": 0,
+    "blocked": 1,
+    "done": 1,
+    "deferred": 0
+  },
+  "topCard": "P-002"
+}

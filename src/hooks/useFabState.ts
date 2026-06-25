@@ -41,7 +41,7 @@ export function useFabState({
   return useMemo(() => {
     const activeTab = getActiveTab();
 
-    if (screen?.type === 'settle-selection' || screen?.type === 'settle-home') {
+    if (screen?.type === 'settle-selection' || screen?.type === 'settle-home' || screen?.type === 'spend-card') {
       return hidden;
     }
 
