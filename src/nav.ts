@@ -2,13 +2,19 @@ import { useState } from "react";
 
 export type SettlementResult = {
   amount: number;
-  method: "cash" | "bank" | "paypal" | "twint";
+  method: "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc";
   counterpartyId: string;
   counterpartyName: string;
   direction?: "owe" | "owed";
   scope: "pot" | "person-all" | "expense";
   pots?: Array<{ id: string; name: string; amount: number }>;
   ref?: string;
+  txHash?: string;
+  closeoutId?: string;
+  closeoutLegIndex?: number;
+  proofTxHash?: string;
+  proofStatus?: "anchored" | "recorded" | "completed";
+  proofContract?: string;
   at: number;
 };
 
@@ -19,16 +25,39 @@ export type Screen =
   | { type: "people-home" }
   | { type: "you-tab" }
   | { type: "settings" }
+  | { type: "payment-methods" }
+  | { type: "insights" }
   | { type: "create-pot" }
   | { type: "pot-home"; potId: string }
   | { type: "add-expense"; prefilledMemo?: string; prefilledAmount?: number }
   | { type: "edit-expense"; expenseId: string }
   | { type: "expense-detail"; expenseId: string }
   | { type: "settle-selection" }
+  | { type: "closeout-review"; potId: string }
   | { type: "settle-home"; personId?: string }
+  | { type: "settle-cash" }
+  | { type: "settle-bank" }
+  | { type: "settle-dot" }
   | { type: "settlement-history"; personId?: string }
   | { type: "settlement-confirmation"; result: SettlementResult }
-  | { type: "member-detail"; memberId: string };
+  | { type: "member-detail"; memberId: string }
+  | { type: "add-contribution" }
+  | { type: "withdraw-funds" }
+  | { type: "checkpoint-status" }
+  | { type: "request-payment" }
+  | { type: "crust-storage" }
+  | { type: "crust-auth-setup" }
+  | { type: "import-pot" }
+  | { type: "receive-qr" }
+  | { type: "spend-card"; potId: string; spendCardId?: string; captureToken?: string; actingMemberId?: string }
+  | { type: "capture-handoff"; potId: string; legId: string; captureToken?: string; actingMemberId?: string }
+  | { type: "capture-confirm"; potId: string; legId: string; captureToken: string; receiverId: string }
+  | {
+      type: "capture-link-error";
+      code: "not_found" | "expired" | "consumed" | "wrong_user";
+      message: string;
+      expectedName?: string;
+    };
 
 export function useNav(initialScreen: Screen = { type: "pots-home" }) {
   const [stack, setStack] = useState<Screen[]>([initialScreen]);

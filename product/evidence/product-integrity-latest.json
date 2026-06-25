@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-06-24T13:27:50.525Z",
+  "source": "product/cards.md",
+  "sourceHash": "62172ece670896f9503621520772e35dfe533ada0a624622cf08146de9fa4040",
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "cards": 16,
+    "decisions": 5,
+    "decisionContracts": 16,
+    "history": 5,
+    "readyOrActive": 10,
+    "blocked": 1
+  },
+  "issues": []
+}

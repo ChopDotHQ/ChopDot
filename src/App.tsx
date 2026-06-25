@@ -19,6 +19,8 @@ import { getInitialScreenFromLocation, useUrlSync } from './hooks/useUrlSync';
 import { useInviteFlow } from './hooks/useInviteFlow';
 import { useDerivedData } from './hooks/useDerivedData';
 import { usePotState } from './hooks/usePotState';
+import { useCaptureLinkFlow } from './hooks/useCaptureLinkFlow';
+import { createCaptureLinkService } from './services/capture/CaptureLinkService';
 import { useOverlayState } from './hooks/useOverlayState';
 import { useOverlayHandlers } from './hooks/useOverlayHandlers';
 import { buildOverlayProps } from './hooks/useOverlayProps';
@@ -83,6 +85,7 @@ function AppContent() {
   const [newPot, setNewPot] = useState<Partial<Pot>>(() => ({ ...INITIAL_NEW_POT }));
 
   const potState = usePotState({ authLoading, isAuthenticated, user, isGuest, account, screen, stack, showToast });
+  const captureLinkServiceInstance = useMemo(() => createCaptureLinkService(getSupabase()), []);
   useEnsureUserProfile(authLoading, isAuthenticated, user?.id, userEmail);
 
   const inviteFlow = useInviteFlow({
@@ -136,6 +139,17 @@ function AppContent() {
     pendingIPFSAction: overlay.pendingIPFSAction,
     push, showToast, inviteService, fetchInvites: inviteFlow.fetchInvites,
     currentPotId: potState.currentPotId, isGuest,
+  });
+
+
+
+  useCaptureLinkFlow({
+    captureLinkService: captureLinkServiceInstance,
+    authLoading,
+    isAuthenticated,
+    reset,
+    setCurrentPotId: potState.setCurrentPotId,
+    showToast,
   });
 
   useScreenValidation({

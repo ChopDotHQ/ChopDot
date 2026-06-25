@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-06-22T00:00:00+00:00",
+  "updated_at": "2026-06-22T00:00:00+00:00",
+  "loop_id": "ux-shape",
+  "loop_name": "UX Shape Loop",
+  "role": "product designer",
+  "decision": "Bad UX shape packet should fail",
+  "user_job": "A member understands what to do next.",
+  "route_or_screen": "/pots",
+  "expected_user_visible_outcome": "The screen explains kernel adapter rail state to the user.",
+  "verifier": "Runner should reject technical copy.",
+  "stop_condition": "Technical terms appear in user-facing copy.",
+  "evidence_paths": [
+    "docs/CHOPDOT_OPERATING_LOOPS.md"
+  ],
+  "surface_delta": {
+    "visible_choices_added": 0,
+    "user_action_gained": "The user sees a clearer next action.",
+    "workflow_effect": "The next action is easier to find.",
+    "friction_added": "None.",
+    "confusion_removed": "Developer wording is removed from the main surface.",
+    "evidence_of_removed_friction": "Negative fixture for technical copy rejection.",
+    "keep_change_remove": "change"
+  },
+  "verdict": "spike"
+}

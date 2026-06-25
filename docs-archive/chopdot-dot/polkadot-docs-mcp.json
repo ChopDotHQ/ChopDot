@@ -1,0 +1,8 @@
+{
+  "_note": "Alias — see docs/chopdot-dot/recommended-mcps.md and mcp/chopdot-dot-phase-a.json for full ChopDot.dot MCP setup",
+  "mcpServers": {
+    "polkadot-docs": {
+      "url": "https://docs-mcp.polkadot.com"
+    }
+  }
+}

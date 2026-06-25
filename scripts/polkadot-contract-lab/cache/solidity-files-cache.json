@@ -1,0 +1,154 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/devinsonpena/ChopDot/scripts/polkadot-contract-lab/contracts/CloseoutRegistry.sol": {
+      "lastModificationDate": 1774112790762,
+      "contentHash": "35bb7cfd246b90479f17e1d1357dbd7a",
+      "sourceName": "contracts/CloseoutRegistry.sol",
+      "solcConfig": {
+        "version": "0.8.28",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.28"
+      ],
+      "artifacts": [
+        "CloseoutRegistry"
+      ]
+    },
+    "/Users/devinsonpena/ChopDot/scripts/polkadot-contract-lab/contracts/Storage.sol": {
+      "lastModificationDate": 1774112790763,
+      "contentHash": "779ccabafdc8dbc2f1fb00dd4cb9846b",
+      "sourceName": "contracts/Storage.sol",
+      "solcConfig": {
+        "version": "0.8.28",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.28"
+      ],
+      "artifacts": [
+        "Storage"
+      ]
+    },
+    "/Users/devinsonpena/ChopDot/scripts/polkadot-contract-lab/contracts/ChopDotEscrowVault.sol": {
+      "lastModificationDate": 1781959168495,
+      "contentHash": "94c04f202c82c9cd502ff100f21deacb",
+      "sourceName": "contracts/ChopDotEscrowVault.sol",
+      "solcConfig": {
+        "version": "0.8.28",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.28"
+      ],
+      "artifacts": [
+        "ChopDotEscrowVault",
+        "IERC20Minimal"
+      ]
+    },
+    "/Users/devinsonpena/ChopDot/scripts/polkadot-contract-lab/contracts/ChopDotMockToken.sol": {
+      "lastModificationDate": 1781959081452,
+      "contentHash": "79e0ab7b53bee3a92af5b800180ac938",
+      "sourceName": "contracts/ChopDotMockToken.sol",
+      "solcConfig": {
+        "version": "0.8.28",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.28"
+      ],
+      "artifacts": [
+        "ChopDotMockToken"
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "H-2026-06-24-cockpit-migration-start",
+  "timestamp": "2026-06-24T00:00:00.000Z",
+  "type": "checkpoint",
+  "summary": "Started migration from generated registry to Logos-grade ChopDot product cockpit.",
+  "cards": ["P-014"],
+  "roadmap": ["Continuous"],
+  "evidence": ["product/cards.md", "product/board-policy.md", "product/decision-contracts.md"],
+  "notes": [
+    "Current JSON-centered cockpit is treated as migration seed, not final source truth.",
+    "New model centers readable cards, decisions, evidence, history, and lifecycle commands."
+  ]
+}

@@ -1,0 +1,400 @@
+{
+  "schemaVersion": "0.1",
+  "updatedAt": "2026-06-15",
+  "method": "Discovery -> Fact -> Inference -> Next Step",
+  "goal": "Build ChopDot.dot into a strongly Polkadot-native product path without making the user experience technical or worse.",
+  "sourceEvidence": [
+    {
+      "id": "parity-product-sdk",
+      "url": "https://github.com/paritytech/product-sdk",
+      "fact": "Product SDK is a prototype TypeScript SDK family with packages for chain client, tx lifecycle, signer, contracts, cloud storage, statement store, keys, local storage, host, address, crypto, descriptors, logger, and utilities."
+    },
+    {
+      "id": "parity-playground-app-template",
+      "url": "https://github.com/paritytech/playground-app-template",
+      "fact": "Playground app template is a React/Vite/Product SDK app wired to a Polkadot host and product-account signing."
+    },
+    {
+      "id": "parity-bulletin-chain",
+      "url": "https://github.com/paritytech/polkadot-bulletin-chain",
+      "fact": "Bulletin Chain is an experimental Polkadot SDK parachain for distributed data storage and retrieval with IPFS access and proof-of-storage guarantees."
+    },
+    {
+      "id": "statement-store-dev-issue",
+      "url": "https://github.com/paritytech/polkadot-sdk/issues/11684",
+      "fact": "Statement Store has had local development rough edges; simple dev modes did not expose statement RPCs in the referenced issue."
+    },
+    {
+      "id": "local-signed-session",
+      "path": "src/chopdot-dot/polkadotSession.ts",
+      "fact": "ChopDot.dot currently has signed session events, deterministic replay, an offline local transport, a local Statement Store-style lab transport, and lab adapters for Bulletin, Asset Hub references, and proof anchors."
+    },
+    {
+      "id": "native-cross-device-proof",
+      "path": "tests/e2e/chopdot-dot-native-session.spec.ts",
+      "fact": "The focused Playwright proof opens Leo, Mina, Nina, and Omar in separate browser contexts and verifies they converge through the no-Supabase Statement Store-style lab transport."
+    },
+    {
+      "id": "product-account-signer-spike",
+      "path": "docs/chopdot-dot/product-account-signer-spike-report.md",
+      "fact": "ChopDot.dot now has a DotSessionSignerAdapter seam, demo fallback, and unit-tested Polkadot raw signature verification; Product SDK host signing remains unproven because local host-wrapper import compatibility failed outside the intended host container."
+    },
+    {
+      "id": "signed-receipt-archive-event",
+      "path": "src/chopdot-dot/polkadotSession.ts",
+      "fact": "Native closeout now records receipt archive as an explicit signed save_receipt event, and Playwright verifies Receipt saved appears in Activity after closeout."
+    },
+    {
+      "id": "product-sdk-cloud-storage-receipt-adapter",
+      "path": "src/chopdot-dot/polkadotSession.ts",
+      "fact": "ChopDot.dot now has a runtime-loaded ProductSdkCloudStorageReceiptAdapter with local fallback; unit tests prove both fallback and cloud-storage reference paths."
+    }
+  ],
+  "rows": [
+    {
+      "id": "auth_session",
+      "centralizedDependency": "Supabase Auth session and local token persistence",
+      "currentDiscovery": [
+        "src/contexts/AuthContext.tsx",
+        "src/services/auth/session-manager.ts",
+        "src/utils/supabase-client.ts"
+      ],
+      "userJob": "A person opens ChopDot and is recognized as the right participant without seeing technical account plumbing.",
+      "facts": [
+        "Current sessions are restored from Supabase auth when configured, with local/session storage fallback for guest state.",
+        "OAuth, email/password, anonymous guest, and wallet login all route through AuthContext.",
+        "ChopDot.dot now has a DotSessionSignerAdapter seam and ProductAccountDotSessionSignerAdapter with demo fallback outside a host container."
+      ],
+      "polkadotNativeCandidate": "Product Account identity from @parity/product-sdk-signer and @parity/product-sdk-host, with local guest/device identity for non-host contexts.",
+      "candidateEvidence": [
+        "Product SDK exposes signer and host packages.",
+        "Playground template demonstrates host API product-account signing.",
+        "src/chopdot-dot/polkadotSession.test.ts verifies polkadot-raw session signatures without demo secrets.",
+        "docs/chopdot-dot/product-account-signer-spike-report.md records the current Product SDK host package import mismatch."
+      ],
+      "inference": "Product Account signing is still the closest Polkadot-native replacement for session authority. The adapter seam and raw-signature replay are proven, but actual host signing is not proven until tested inside a Product SDK host container.",
+      "status": "in_progress",
+      "risk": "Host setup or current Product SDK host package compatibility could make onboarding or bundling worse than the current guest flow.",
+      "nextStep": "Run the same savings-circle mark-paid and confirm-received proof inside a Product SDK host container using ProductAccountDotSessionSignerAdapter without demo fallback.",
+      "proofTest": "Leo signs a mark-paid event through Product Account; Mina signs a confirm-received event through Product Account; replay verifies polkadot-raw signatures and rejects unsigned, wrong-app, or wrong-participant events.",
+      "userCopyBoundary": "Show ordinary account/person language only, such as 'Using Leo' or 'Ready to sign'.",
+      "redLines": [
+        "Do not require wallet setup to inspect a group invitation.",
+        "Do not let provider session state directly close a chapter."
+      ],
+      "firstBuildTarget": true
+    },
+    {
+      "id": "wallet_auth_identity",
+      "centralizedDependency": "Supabase wallet-auth edge function, auth_nonces table, wallet_links table, profiles table",
+      "currentDiscovery": [
+        "supabase/functions/wallet-auth/index.ts",
+        "src/services/auth/wallet-login.ts",
+        "src/repos/walletLinks.ts",
+        "src/repos/profiles.ts"
+      ],
+      "userJob": "A wallet user proves they are the same participant again without passwords or account confusion.",
+      "facts": [
+        "Current Polkadot wallet auth uses server-generated nonce, signature verification, Supabase user creation, profile upsert, and wallet_links lookup.",
+        "The current flow creates a Supabase session token after signature verification."
+      ],
+      "polkadotNativeCandidate": "@parity/product-sdk-keys plus Product Account derivation for app-scoped identity; signed membership claims for participant mapping.",
+      "candidateEvidence": [
+        "Product SDK lists keys, signer, host, address, and crypto packages."
+      ],
+      "inference": "Wallet auth can become a signed local/host identity proof, but we still need a membership registry that tells ChopDot which key may act as Leo or Mina.",
+      "status": "lab_only",
+      "risk": "Replacing auth without a membership model creates spoofable participant identities.",
+      "nextStep": "Define DotIdentityClaim and DotMembershipGrant events before removing wallet_links from the native path.",
+      "proofTest": "A replay rejects a Leo action signed by an address that has no membership grant for Leo.",
+      "userCopyBoundary": "Never surface 'nonce', 'wallet_links', or 'Product Account derivation' in normal UI.",
+      "redLines": [
+        "Do not equate wallet ownership with group authority.",
+        "Do not expose raw addresses in emergency receipts by default."
+      ],
+      "firstBuildTarget": true
+    },
+    {
+      "id": "pot_expense_persistence",
+      "centralizedDependency": "Supabase pots, pot_members, expenses, expense_splits tables through SupabaseSource",
+      "currentDiscovery": [
+        "src/services/data/DataContext.tsx",
+        "src/services/data/sources/SupabaseSource.ts",
+        "src/services/data/sources/SupabasePotSource.ts",
+        "src/services/data/sources/SupabaseExpenseSource.ts"
+      ],
+      "userJob": "The group sees the same pot state and can recover it later.",
+      "facts": [
+        "Current DataContext can select local, Supabase, or HTTP data sources.",
+        "SupabaseSource delegates pot CRUD and expense CRUD to table-backed sources and hydrates expenses into pots."
+      ],
+      "polkadotNativeCandidate": "ChopDot signed event log, deterministic reducer, local snapshots, and later Statement Store transport.",
+      "candidateEvidence": [
+        "src/chopdot-dot/polkadotSession.ts already replays signed session events into the ChopDot.dot kernel.",
+        "tests/e2e/chopdot-dot-native-session.spec.ts proves separate-browser-context convergence for savings circle through a no-Supabase Statement Store-style lab endpoint."
+      ],
+      "inference": "The event log is the right product-truth replacement for tables. The local lab now proves cross-context event sharing, but it still needs real Product SDK host transport and snapshot recovery.",
+      "status": "in_progress",
+      "risk": "The dev/test endpoint proves the adapter contract, not public host availability or long-term recovery.",
+      "nextStep": "Replace the local Statement Store-style lab endpoint with a Product SDK host StatementStoreSessionAdapter and keep the same convergence test.",
+      "proofTest": "A fresh browser context can import/poll the same event log and derive the same savings-circle state without Supabase or shared localStorage.",
+      "userCopyBoundary": "Show 'up to date', 'syncing', or 'needs refresh', never transport names.",
+      "redLines": [
+        "Do not store product truth as mutable provider rows.",
+        "Do not let token/payment evidence mutate confirmation directly."
+      ],
+      "firstBuildTarget": true
+    },
+    {
+      "id": "membership_access_control",
+      "centralizedDependency": "Supabase RLS, pot_members table, created_by ownership checks",
+      "currentDiscovery": [
+        "src/services/data/sources/SupabasePotSource.ts",
+        "supabase/migrations/20260101090000_lockdown_financial_tables.sql",
+        "supabase/migrations/20260101100000_member_policies_financial_tables.sql"
+      ],
+      "userJob": "Only the right people can see or change the right group-money record.",
+      "facts": [
+        "Current Supabase writes rely on authenticated user id and table policies for object access.",
+        "The native signed-session reducer validates action authority through the kernel.",
+        "DotMembershipGrant now binds participant id, signer address, roles, issuer, expiry/revocation, and signature for the native savings-circle path.",
+        "The native signed-session reducer can enforce membership grants before applying events.",
+        "ProductSdkPrivatePayloadAdapter now encrypts sensitive payment refs and notes with Product SDK crypto XChaCha20-Poly1305 sidecars.",
+        "DotChapterInvitation now proves local invite-derived private chapter key handoff, but production transport and scoped key distribution are still missing."
+      ],
+      "polkadotNativeCandidate": "Signed membership grants, encrypted per-chapter event payloads, and kernel authority checks.",
+      "candidateEvidence": [
+        "Product SDK crypto package is available as a candidate for encryption primitives.",
+        "The ChopDot kernel already separates participant roles from adapter behavior.",
+        "src/chopdot-dot/polkadotSession.test.ts proves valid grants are accepted and missing, expired, or revoked grants are rejected before replay mutates the chapter.",
+        "src/chopdot-dot/polkadotSession.test.ts proves raw payment refs stay out of signed session events and can round-trip through encrypted private payload refs.",
+        "src/chopdot-dot/polkadotSession.test.ts proves accepted invites can provide a usable private chapter key."
+      ],
+      "inference": "Signed membership grants, encrypted private payload refs, and invite-derived key handoff can replace part of Supabase member-table/RLS authority for native ChopDot.dot sessions, but production privacy still requires transport, revocation propagation, and viewer-scoped decryption.",
+      "status": "in_progress",
+      "risk": "Public or shared transport still leaks sensitive emergency/member data if keys are broadly shared or invite-derived scopes are wrong.",
+      "nextStep": "Add invite transport, revocation propagation, and scoped private-key distribution so each participant can decrypt only their allowed sensitive payloads.",
+      "proofTest": "A viewer can read only scoped status; an unauthorized key cannot decrypt or replay private contribution details; expired or forwarded invites cannot produce valid grants.",
+      "userCopyBoundary": "Use 'member', 'viewer', 'organizer', and 'private' language.",
+      "redLines": [
+        "Do not publish raw emergency reasons, names, payment references, or dispute notes.",
+        "Do not use public proof as access control."
+      ]
+    },
+    {
+      "id": "invites_join_flow",
+      "centralizedDependency": "Supabase invites table and accept/decline edge functions",
+      "currentDiscovery": [
+        "src/services/InviteService.ts",
+        "supabase/functions/accept-invite/index.ts",
+        "supabase/functions/decline-invite/index.ts"
+      ],
+      "userJob": "Mina invites Leo; Leo joins the right circle without accidentally joining the wrong record.",
+      "facts": [
+        "Current invites are email/token records with pending/accepted/declined/revoked/expired status.",
+        "Accept and decline route through Supabase edge functions with authenticated sessions.",
+        "DotChapterInvitation now signs the invite envelope, seals a private chapter key to the invitee, and carries an issuer-signed DotMembershipGrant.",
+        "Accepted and revoked invitations now replay as ordered access events through local/Statement Store-style transport adapters."
+      ],
+      "polkadotNativeCandidate": "Signed invitation object, encrypted chapter seed, membership grant event, and optional DotNS/share link for discovery.",
+      "candidateEvidence": [
+        "Product SDK host/local storage can support app-local invitation payloads.",
+        "Statement Store may transport invitation acceptance events after privacy boundaries exist.",
+        "src/chopdot-dot/polkadotSession.test.ts proves accepted invites produce a membership grant and chapter key, and expired, revoked, or forwarded invites are rejected.",
+        "src/chopdot-dot/polkadotSession.test.ts proves access-event replay derives membership and removes it after revocation."
+      ],
+      "inference": "The signed invite shape and access-event stream now prove the core authority, private-key handoff, and revocation semantics locally, but production replacement still needs delivery, Product SDK host transport, and abuse controls.",
+      "status": "in_progress",
+      "risk": "A decentralized invite without abuse controls can still leak groups or allow stale invitations to circulate.",
+      "nextStep": "Run invite access events through Product SDK host Statement Store and add user-facing revocation propagation for fresh-device joins.",
+      "proofTest": "An expired, revoked, stale, or forwarded invite cannot grant authority; an accepted invite produces one membership grant and a scoped private key on a fresh device.",
+      "userCopyBoundary": "Show 'Invite sent', 'Joined', 'Expired', 'Revoked'.",
+      "redLines": [
+        "Do not replace invite tokens before identity and membership grants exist.",
+        "Do not expose private group metadata in share URLs."
+      ]
+    },
+    {
+      "id": "realtime_event_transport",
+      "centralizedDependency": "Supabase realtime channel and crdt_changes table",
+      "currentDiscovery": [
+        "src/services/crdt/realtimeSync.ts"
+      ],
+      "userJob": "Leo acts on his device and Mina sees what changed quickly enough to trust the group status.",
+      "facts": [
+        "Current CRDT realtime subscribes to Supabase postgres_changes on crdt_changes.",
+        "Current no-Supabase native test now converges through a Vite dev/test Statement Store-style endpoint, not shared browser localStorage."
+      ],
+      "polkadotNativeCandidate": "@parity/product-sdk-statement-store as signed event pub/sub transport.",
+      "candidateEvidence": [
+        "Product SDK lists a statement-store publish/subscribe client.",
+        "Playground template names Statement Store for comments, challenges, notifications, and cross-account features.",
+        "Polkadot SDK issue evidence shows Statement Store local dev setup needs careful handling.",
+        "tests/e2e/chopdot-dot-native-session.spec.ts proves the shared-event transport contract across separate browser contexts."
+      ],
+      "inference": "Statement Store remains the highest-risk, highest-value candidate for replacing Supabase realtime. The local lab now proves the ChopDot adapter contract; the next risk is real host/Product SDK connectivity.",
+      "status": "highest_priority_spike",
+      "risk": "The local lab endpoint is not the real Product SDK host Statement Store and does not solve encryption or retention.",
+      "nextStep": "Implement the real Product SDK host StatementStoreSessionAdapter behind the same interface and run the same separate-device savings-circle proof.",
+      "proofTest": "Two separate browser contexts with no shared localStorage converge after Leo marks paid and Mina confirms, without Supabase; the next proof must use the Product SDK host transport.",
+      "userCopyBoundary": "Only show 'up to date', 'syncing', or 'needs refresh'.",
+      "redLines": [
+        "Do not publish unencrypted sensitive payloads.",
+        "Do not call local multi-tab sync real cross-device sync."
+      ],
+      "firstBuildTarget": true
+    },
+    {
+      "id": "checkpoint_snapshot_recovery",
+      "centralizedDependency": "Supabase crdt_checkpoints table",
+      "currentDiscovery": [
+        "src/services/crdt/checkpointManager.ts"
+      ],
+      "userJob": "A group can reopen a record later without replaying an unbounded event history.",
+      "facts": [
+        "Current checkpoint manager compresses Automerge documents and stores them in Supabase with heads and change count.",
+        "ChopDot.dot signed session currently replays from the initial template and local event log.",
+        "ChopDot.dot now emits a signed save_receipt event after native savings-circle closeout."
+      ],
+      "polkadotNativeCandidate": "Signed snapshot events plus Bulletin/cloud-storage archive for redacted or encrypted snapshots.",
+      "candidateEvidence": [
+        "Bulletin stores arbitrary data, exposes retrieval via IPFS/direct node, and has configurable retention.",
+        "Product SDK cloud-storage is currently backed by Bulletin.",
+        "tests/e2e/chopdot-dot-native-session.spec.ts verifies Receipt saved appears in Activity after native closeout.",
+        "ProductSdkCloudStorageReceiptAdapter gives checkpoint/recovery work a concrete storage adapter seam."
+      ],
+      "inference": "Signed archive events are part of the session log and a cloud-storage adapter seam now exists. Snapshot/checkpoint recovery still needs live Bulletin/cloud-storage retrieval proof.",
+      "status": "ready_to_spike_after_transport",
+      "risk": "A short-retention archive could fail the History promise if users expect durable records.",
+      "nextStep": "Implement DotReceiptArchiveAdapter backed by Product SDK cloud-storage/Bulletin and retrieve one saved redacted closeout reference.",
+      "proofTest": "A fresh install retrieves a saved receipt/snapshot reference and reconstructs closeout summary without private leaks.",
+      "userCopyBoundary": "Show 'Receipt saved' and 'Record restored'.",
+      "redLines": [
+        "Do not rely on temporary retention for permanent legal or financial history.",
+        "Do not archive unredacted emergency data by default."
+      ],
+      "firstBuildTarget": true
+    },
+    {
+      "id": "receipt_metadata_storage",
+      "centralizedDependency": "Supabase receipts table plus IPFS upload metadata",
+      "currentDiscovery": [
+        "src/services/crdt/receiptService.ts",
+        "src/services/storage/ipfs.ts",
+        "src/services/storage/ipfsWithOnboarding.ts"
+      ],
+      "userJob": "The closeout receipt can be found later and shared safely.",
+      "facts": [
+        "Current receipt upload stores file data in IPFS and writes metadata rows to Supabase when configured.",
+        "ChopDot.dot receipt export already redacts sensitive emergency fields.",
+        "ChopDot.dot now emits a signed save_receipt event after native savings-circle closeout.",
+        "Product SDK cloud-storage package is installed and runtime-loaded behind ProductSdkCloudStorageReceiptAdapter."
+      ],
+      "polkadotNativeCandidate": "@parity/product-sdk-cloud-storage / Bulletin for payload storage and hash-only proof references for public anchors.",
+      "candidateEvidence": [
+        "Product SDK cloud-storage package is listed for upload/retrieve via Cloud Storage.",
+        "Bulletin provides IPFS-compatible retrieval.",
+        "tests/e2e/chopdot-dot-native-session.spec.ts verifies Receipt saved appears in Activity after native closeout.",
+        "src/chopdot-dot/polkadotSession.test.ts proves cloud-storage receipt refs can pass through the archive adapter boundary and fallback remains available."
+      ],
+      "inference": "Receipt archive is now represented as product history in the signed event log, and a runtime-loaded Product SDK cloud-storage adapter seam exists. Live Bulletin/cloud-storage upload and retrieve remain unproven until tested with a host/signer context.",
+      "status": "in_progress",
+      "risk": "CID availability and retention could be misunderstood as permanent safe storage.",
+      "nextStep": "Run ProductSdkCloudStorageReceiptAdapter with a real Product SDK host signer and verify upload plus retrieve of one redacted savings-circle closeout receipt.",
+      "proofTest": "Savings-circle closeout uploads a redacted receipt through Product SDK cloud-storage/Bulletin, reopens it by CID/reference, and Activity still shows Receipt saved without exposing private fields.",
+      "userCopyBoundary": "Use 'Receipt saved' and 'Private receipt'.",
+      "redLines": [
+        "Do not expose raw receipt JSON in normal UI.",
+        "Do not make public proof contain sensitive payment or identity data."
+      ]
+    },
+    {
+      "id": "transaction_payment_evidence",
+      "centralizedDependency": "Current app chain service, wallet connectors, and status callbacks; not primarily Supabase",
+      "currentDiscovery": [
+        "src/services/chain/polkadot.ts",
+        "src/services/chain/adapter.ts",
+        "src/hooks/useSettlementTx.ts",
+        "src/chopdot-dot/polkadotSession.ts"
+      ],
+      "userJob": "A crypto-native group can attach DOT/USDC payment evidence without confusing it for receipt confirmation.",
+      "facts": [
+        "Current app has Asset Hub DOT/USDC transfer code and tx callbacks.",
+        "ChopDot.dot session events can carry Asset Hub references as evidence only.",
+        "ProductSdkAssetHubEvidenceAdapter now runtime-loads Product SDK tx when a tx/signer are available and falls back to a local evidence reference otherwise."
+      ],
+      "polkadotNativeCandidate": "@parity/product-sdk-chain-client and @parity/product-sdk-tx for lifecycle states and Asset Hub references.",
+      "candidateEvidence": [
+        "Product SDK lists chain-client and tx packages.",
+        "Playground template suggests chain RPC additions via product-sdk-chain-client.",
+        "src/chopdot-dot/polkadotSession.test.ts proves Product SDK tx lifecycle evidence can be attached to a claim without confirming receipt."
+      ],
+      "inference": "Product SDK tx lifecycle now has an adapter seam in ChopDot.dot and can improve payment evidence clarity, but it remains subordinate to ChopDot confirmation.",
+      "status": "in_progress",
+      "risk": "Users or code may treat finality as receiver confirmation.",
+      "nextStep": "Run ProductSdkAssetHubEvidenceAdapter with a real Product SDK host signer and an Asset Hub tx, then verify the UI still requires receiver confirmation.",
+      "proofTest": "A finalized tx reference leaves contribution state as claimed until receiver confirmation.",
+      "userCopyBoundary": "Use 'payment reference added' or 'payment finalized on rail', never 'confirmed received'.",
+      "redLines": [
+        "Do not auto-close based on transaction finality.",
+        "Do not call ChopDot custodial or escrowed."
+      ],
+      "firstBuildTarget": true
+    },
+    {
+      "id": "command_edge_functions",
+      "centralizedDependency": "Supabase edge functions for wallet auth and invite accept/decline",
+      "currentDiscovery": [
+        "supabase/functions/wallet-auth/index.ts",
+        "supabase/functions/accept-invite/index.ts",
+        "supabase/functions/decline-invite/index.ts"
+      ],
+      "userJob": "Sensitive actions happen once, with clear authority and no hidden server magic.",
+      "facts": [
+        "Current edge functions centralize nonce verification, Supabase user/session creation, and invite membership updates.",
+        "ChopDot.dot currently has no native command API or relay."
+      ],
+      "polkadotNativeCandidate": "Client-signed commands with deterministic validation; optional untrusted relay for delivery only.",
+      "candidateEvidence": [
+        "The local signed-event reducer already validates command authority in-process."
+      ],
+      "inference": "We can remove trusted server mutation only after event validity is self-contained and replayable.",
+      "status": "defer_until_identity_transport",
+      "risk": "Removing server functions too early loses abuse protection, idempotency, and membership integrity.",
+      "nextStep": "Write a DotCommandEnvelope contract that every adapter must satisfy before any server replacement.",
+      "proofTest": "Duplicate accept, stale nonce, wrong signer, and replayed closeout commands are rejected deterministically.",
+      "userCopyBoundary": "No user-facing server/relay language.",
+      "redLines": [
+        "Do not introduce a trusted relay that can mutate product truth.",
+        "Do not rely on client UI checks for authority."
+      ]
+    },
+    {
+      "id": "deployment_distribution",
+      "centralizedDependency": "Current Vite deployment and conventional web hosting assumptions",
+      "currentDiscovery": [
+        "package.json",
+        "docs/chopdot-dot/polkadot-adapter-map.md"
+      ],
+      "userJob": "People can open ChopDot.dot like a normal app without install complexity.",
+      "facts": [
+        "Current app is a Vite React application.",
+        "Playground template supports deployment to a .dot domain via Playground CLI."
+      ],
+      "polkadotNativeCandidate": "Playground/.dot deployment path for a native ChopDot.dot edition.",
+      "candidateEvidence": [
+        "Playground template documents deployment to a .dot domain."
+      ],
+      "inference": ".dot deployment is useful for ecosystem fit, but it should come after the actual savings-circle sync works.",
+      "status": "defer_until_core_flow",
+      "risk": "A .dot deployment could become branding theater if identity/sync/receipt do not work.",
+      "nextStep": "Keep deployment as a later milestone after Product Account signing and shared event transport pass.",
+      "proofTest": "A deployed ChopDot.dot build can run the same savings-circle convergence test in a host context.",
+      "userCopyBoundary": "Show normal product names, not deployment mechanics.",
+      "redLines": [
+        "Do not ship a .dot demo that depends on hidden Supabase product truth.",
+        "Do not prioritize deployment before user-job proof."
+      ]
+    }
+  ]
+}

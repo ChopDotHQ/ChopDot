@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "previous_contenthash": null,
+  "deployed_at": "2026-06-17T06:52:27.337Z",
+  "framework": null,
+  "files": {
+    "index.html": {
+      "cid": "bafkreid3ksbbx2m7rj3xojlwtfdotxuf5d2yfp5xogqty2cz7bgv3tt73e",
+      "type": "volatile",
+      "size": 1740
+    }
+  },
+  "stableBlockOrder": [],
+  "blocks": [
+    "bafkreie6drbf6cc45tmmbhur7vx6o2r7tf6rlg72atzqjthzw4m2cto6lu",
+    "bafkreid3ksbbx2m7rj3xojlwtfdotxuf5d2yfp5xogqty2cz7bgv3tt73e",
+    "bafybeihlwvkdn3cpoy3fz5trkrcs4jjotre7wn55xiyxt5y764uztnxtla",
+    "bafybeie7uoiubrdyxtvra5fwlhwsnq2fhxoau5lsq5hgxdx6eh5dqraeya"
+  ],
+  "chunks": {}
+}

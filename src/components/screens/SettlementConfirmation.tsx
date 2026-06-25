@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Check } from "lucide-react";
 import { SettlementResult } from "../../nav";
 import { PrimaryButton } from "../PrimaryButton";

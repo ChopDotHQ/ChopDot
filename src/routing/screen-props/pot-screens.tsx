@@ -69,6 +69,21 @@ const ExpenseDetail = lazy(() =>
         default: module.ExpenseDetail,
     }))
 );
+const SpendCardScreen = lazy(() =>
+    import("../../components/screens/SpendCardScreen").then((module) => ({
+        default: module.SpendCardScreen,
+    }))
+);
+const CaptureHandoffScreen = lazy(() =>
+    import("../../components/screens/CaptureHandoffScreen").then((module) => ({
+        default: module.CaptureHandoffScreen,
+    }))
+);
+const CaptureConfirmScreen = lazy(() =>
+    import("../../components/screens/CaptureConfirmScreen").then((module) => ({
+        default: module.CaptureConfirmScreen,
+    }))
+);
 
 export function renderPotHome(ctx: RouterContext) {
     const {
@@ -342,5 +357,124 @@ export function renderExpenseDetail(ctx: RouterContext) {
                 showToast("Receipt link copied", "success")
             }
         />
+    );
+}
+export function renderSpendCard(ctx: RouterContext) {
+    const {
+        screen,
+        nav: { push, back },
+        userState: { user },
+        actions: { showToast },
+    } = ctx;
+
+    if (!screen || screen.type !== "spend-card") return null;
+    if (!("potId" in screen)) return null;
+
+    const memberId = user?.id || "owner";
+    const memberName = user?.name || "You";
+
+    return (
+        <SpendCardScreen
+            potId={screen.potId}
+            spendCardId={screen.spendCardId}
+            actingMemberIdOverride={screen.actingMemberId}
+            currentMemberId={memberId}
+            currentMemberName={memberName}
+            currentUserId={user?.id}
+            onBack={back}
+            onOpenHandoff={(legId) =>
+                push({ type: "capture-handoff", potId: screen.potId, legId })
+            }
+            onShowToast={showToast}
+        />
+    );
+}
+
+export function renderCaptureHandoff(ctx: RouterContext) {
+    const {
+        screen,
+        nav: { back },
+        userState: { user },
+        actions: { showToast },
+    } = ctx;
+
+    if (!screen || screen.type !== "capture-handoff") return null;
+    if (!("potId" in screen) || !("legId" in screen)) return null;
+
+    const memberId = user?.id || "owner";
+    const memberName = user?.name || "You";
+
+    return (
+        <CaptureHandoffScreen
+            potId={screen.potId}
+            legId={screen.legId}
+            captureToken={screen.captureToken}
+            actingMemberIdOverride={screen.actingMemberId}
+            currentMemberId={memberId}
+            currentMemberName={memberName}
+            currentUserId={user?.id}
+            onBack={back}
+            onShowToast={showToast}
+        />
+    );
+}
+
+export function renderCaptureConfirm(ctx: RouterContext) {
+    const {
+        screen,
+        nav: { back, reset },
+        userState: { user },
+        actions: { showToast },
+    } = ctx;
+
+    if (!screen || screen.type !== "capture-confirm") return null;
+
+    const memberId = user?.id || "owner";
+    const memberName = user?.name || "You";
+
+    return (
+        <CaptureConfirmScreen
+            potId={screen.potId}
+            legId={screen.legId}
+            captureToken={screen.captureToken}
+            receiverId={screen.receiverId}
+            currentMemberId={memberId}
+            currentMemberName={memberName}
+            currentUserId={user?.id}
+            onBack={back}
+            onShowToast={showToast}
+            onComplete={() => {
+                window.history.replaceState({}, "", "/pots");
+                reset({ type: "pot-home", potId: screen.potId });
+            }}
+        />
+    );
+}
+
+export function renderCaptureLinkError(ctx: RouterContext) {
+    const {
+        screen,
+        nav: { reset },
+    } = ctx;
+
+    if (!screen || screen.type !== "capture-link-error") return null;
+
+    return (
+        <div className="flex flex-col h-full bg-background p-4" data-testid="capture-link-error-screen">
+            <div className="card p-4 space-y-2 mt-8">
+                <h1 className="text-body font-semibold">Link unavailable</h1>
+                <p className="text-caption text-secondary">{screen.message}</p>
+                {screen.expectedName && (
+                    <p className="text-caption text-secondary">This link is for {screen.expectedName}.</p>
+                )}
+                <button
+                    type="button"
+                    className="w-full py-3 rounded-xl bg-accent text-white font-medium mt-2"
+                    onClick={() => reset({ type: "pots-home" })}
+                >
+                    Go to pots
+                </button>
+            </div>
+        </div>
     );
 }

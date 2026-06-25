@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { TopBar } from '../TopBar';
 import { ExpensesTab } from './ExpensesTab';
 import { MembersTab } from './MembersTab';
+import { CapturePotHomeSection } from '../capture/CapturePotHomeSection';
 import { SettingsTab } from './SettingsTab';
 import { Download, Share2 } from 'lucide-react';
 import { exportPotExpensesToCSV } from '../../utils/export';
@@ -61,6 +62,8 @@ interface PotHomeProps {
   closeouts?: unknown[];
   onUpdatePot?: (updates: { history?: unknown[]; lastCheckpoint?: unknown; lastEditAt?: string }) => void;
   onReopenTrackedSettlement?: () => void;
+  onOpenSpendCard?: (spendCardId?: string) => void;
+  hasCaptureChapter?: boolean;
 }
 
 export function PotHome(props: PotHomeProps) {
@@ -269,6 +272,44 @@ export function PotHome(props: PotHomeProps) {
         )}
 
         <div className="flex-1 overflow-auto">
+          {potType === 'expense' && props.onOpenSpendCard && (
+            <div className="px-4 pt-4" data-testid="pot-10x-capture-entry">
+              <button
+                type="button"
+                onClick={() => props.onOpenSpendCard?.()}
+                className="w-full rounded-[1.25rem] border border-border bg-card px-4 py-3 text-left transition-all duration-200 active:scale-[0.99]"
+                data-testid="pot-open-spend-card"
+              >
+                <span className="flex items-center justify-between gap-3">
+                  <span>
+                    <span className="block text-label text-secondary">Group shortcut</span>
+                    <span className="block text-body font-semibold mt-0.5">{potName}</span>
+                    <span className="block text-caption text-secondary mt-0.5">
+                      {members.length} people
+                    </span>
+                  </span>
+                  <span
+                    className="rounded-full px-3 py-1.5 text-caption font-medium text-white"
+                    style={{ backgroundColor: 'var(--accent)' }}
+                  >
+                    Use at checkout
+                  </span>
+                </span>
+              </button>
+            </div>
+          )}
+
+          {potType === 'expense' && potId && (
+            <CapturePotHomeSection
+              potId={potId}
+              currentMemberId={currentUserId}
+              currentMemberName={members.find((m) => m.id === currentUserId)?.name ?? 'You'}
+              hasChapter={Boolean(props.hasCaptureChapter)}
+              onOpenSpendCard={props.onOpenSpendCard}
+              onShowToast={onShowToast}
+            />
+          )}
+
           {activeTab === 'Expenses' && potType === 'expense' && (
             <ExpensesTab
               expenses={expenses}

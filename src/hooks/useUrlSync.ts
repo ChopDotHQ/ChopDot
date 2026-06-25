@@ -1,5 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { Screen } from "../nav";
+import {
+  getCaptureTokenFromSearch,
+  parseCaptureRoute,
+  resolveCaptureScreenFromLocation,
+} from "../services/capture/captureRoutes";
 
 type ResetNavigation = (screen: Screen) => void;
 type TabScreen = "pots-home" | "activity-home" | "people-home" | "you-tab";
@@ -27,6 +32,20 @@ const TAB_SCREEN_TYPES = [
 ] as const satisfies readonly TabScreen[];
 
 export const getInitialScreenFromLocation = (): Screen => {
+  const captureScreen = resolveCaptureScreenFromLocation(
+    window.location.pathname,
+    window.location.search,
+  );
+  if (captureScreen) {
+    return captureScreen;
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const cidParam = urlParams.get("cid");
+  if (cidParam) {
+    return { type: "import-pot" };
+  }
+
   const pathname = window.location.pathname;
   const routeScreen = ROUTE_TO_SCREEN[pathname];
   if (routeScreen) {
@@ -40,13 +59,78 @@ export const useUrlSync = ({
   screen,
   stackLength,
   reset,
+  disabled = false,
 }: {
   screen: Screen | null | undefined;
   stackLength: number;
   reset: ResetNavigation;
+  disabled?: boolean;
 }) => {
+  const lastCidRef = useRef<string | null>(null);
+  const lastCaptureRef = useRef<string | null>(null);
+
   useEffect(() => {
+    if (disabled) {
+      return;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const cidParam = urlParams.get("cid");
+
+    if (cidParam !== lastCidRef.current) {
+      lastCidRef.current = cidParam;
+
+      if (cidParam && screen?.type !== "import-pot") {
+        reset({ type: "import-pot" });
+      } else if (!cidParam && screen?.type === "import-pot") {
+        reset({ type: "pots-home" });
+      }
+    }
+  }, [screen?.type, reset, disabled]);
+
+  useEffect(() => {
+    if (disabled) {
+      return;
+    }
+
+    const captureRoute = parseCaptureRoute(window.location.pathname);
+    const captureToken = getCaptureTokenFromSearch(window.location.search);
+    const captureScreen =
+      captureRoute && captureToken
+        ? resolveCaptureScreenFromLocation(window.location.pathname, window.location.search)
+        : null;
+    const captureKey = captureScreen
+      ? `${captureScreen.type}:${window.location.pathname}${window.location.search}`
+      : null;
+
+    if (
+      captureKey &&
+      captureScreen &&
+      captureScreen.type !== "capture-link-error" &&
+      captureKey !== lastCaptureRef.current
+    ) {
+      lastCaptureRef.current = captureKey;
+      if (screen?.type !== captureScreen.type) {
+        reset(captureScreen);
+      }
+    }
+  }, [screen?.type, reset, disabled]);
+
+  useEffect(() => {
+    if (disabled) {
+      return;
+    }
+
     const handlePopState = () => {
+      const captureScreen = resolveCaptureScreenFromLocation(
+        window.location.pathname,
+        window.location.search,
+      );
+      if (captureScreen && captureScreen.type !== "capture-link-error") {
+        reset(captureScreen);
+        return;
+      }
+
       const pathname = window.location.pathname;
       const screenType = ROUTE_TO_SCREEN[pathname];
 
@@ -57,10 +141,10 @@ export const useUrlSync = ({
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [screen?.type, reset]);
+  }, [screen?.type, reset, disabled]);
 
   useEffect(() => {
-    if (!screen) {
+    if (disabled || !screen) {
       return;
     }
 
@@ -81,5 +165,5 @@ export const useUrlSync = ({
     if (window.location.pathname === "/" && screen.type === "pots-home") {
       window.history.replaceState({}, "", "/pots");
     }
-  }, [screen, stackLength]);
+  }, [screen, stackLength, disabled]);
 };

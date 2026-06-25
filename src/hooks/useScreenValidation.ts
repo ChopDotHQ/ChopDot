@@ -19,15 +19,16 @@ interface UseScreenValidationParams {
 
 const VALID_SCREEN_TYPES = [
   'activity-home', 'pots-home', 'settlements-home', 'people-home', 'you-tab',
-  'settings',
+  'settings', 'crust-storage', 'crust-auth-setup', 'payment-methods', 'insights',
   'create-pot', 'pot-home', 'add-expense', 'edit-expense', 'expense-detail',
-  'settle-selection', 'settle-home', 'settlement-history', 'settlement-confirmation',
-  'member-detail',
+  'closeout-review', 'settle-selection', 'settle-home', 'settlement-history', 'settlement-confirmation',
+  'member-detail', 'add-contribution', 'withdraw-funds', 'checkpoint-status',
+  'request-payment', 'receive-qr', 'import-pot', 'spend-card', 'capture-handoff', 'capture-confirm', 'capture-link-error',
 ];
 
 const POT_REQUIRED_SCREENS = [
   'add-expense', 'edit-expense', 'expense-detail',
-  'add-contribution', 'withdraw-funds', 'pot-home',
+  'add-contribution', 'withdraw-funds', 'pot-home', 'spend-card', 'capture-handoff', 'capture-confirm',
 ];
 
 export function useScreenValidation({
@@ -74,6 +75,17 @@ export function useScreenValidation({
       }
     }
 
+    if (screenType === 'checkpoint-status') {
+      if (!currentPot || !currentPot.currentCheckpoint) {
+        if (currentPotId) {
+          replace({ type: 'pot-home', potId: currentPotId });
+        } else {
+          reset({ type: 'pots-home' });
+        }
+        return;
+      }
+    }
+
     if (screenType === 'member-detail' && screen.memberId) {
       const personFromPeople = people.find(p => p.id === screen.memberId);
       const foundInPots = pots.some(p => p.members.some(m => m.id === screen.memberId));
@@ -81,6 +93,15 @@ export function useScreenValidation({
         reset({ type: 'people-home' });
         return;
       }
+    }
+
+    if (screenType === 'settle-cash' || screenType === 'settle-bank' || screenType === 'settle-dot') {
+      if (currentPotId) {
+        replace({ type: 'settle-selection' });
+      } else {
+        reset({ type: 'people-home' });
+      }
+      return;
     }
 
     if (!VALID_SCREEN_TYPES.includes(screenType)) {

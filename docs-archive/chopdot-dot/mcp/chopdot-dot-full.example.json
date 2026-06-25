@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "polkadot-docs": {
+      "url": "https://docs-mcp.polkadot.com"
+    },
+    "playwright-extension": {
+      "command": "/opt/homebrew/bin/npx",
+      "args": ["-y", "@playwright/mcp@latest", "--extension"],
+      "env": {
+        "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin",
+        "PLAYWRIGHT_MCP_EXTENSION_TOKEN": "REPLACE_WITH_EXTENSION_TOKEN"
+      }
+    },
+    "supabase": {
+      "command": "npx",
+      "args": ["-y", "@supabase/mcp-server-supabase@latest"],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "REPLACE_WITH_SBP_TOKEN"
+      }
+    },
+    "polkadot-onchain": {
+      "command": "npx",
+      "args": ["-y", "polkadot-mcp"]
+    }
+  }
+}
