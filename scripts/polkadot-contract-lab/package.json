@@ -10,6 +10,10 @@
     "deploy:mainnet": "hardhat ignition deploy ./ignition/modules/Storage.ts --network polkadotHubMainnet",
     "deploy:closeout:testnet": "hardhat ignition deploy ./ignition/modules/CloseoutRegistry.ts --network polkadotHubTestnet",
     "deploy:closeout:mainnet": "hardhat ignition deploy ./ignition/modules/CloseoutRegistry.ts --network polkadotHubMainnet",
+    "deploy:escrow:testnet": "hardhat ignition deploy ./ignition/modules/ChopDotEscrowVault.ts --network polkadotHubTestnet",
+    "deploy:mock-usdc:testnet": "hardhat ignition deploy ./ignition/modules/ChopDotMockUSDC.ts --network polkadotHubTestnet",
+    "deploy:escrow-direct:testnet": "node ./scripts/deploy-escrow-direct.mjs",
+    "scenario:escrow-public:testnet": "node ./scripts/run-escrow-public-scenarios.mjs",
     "rpc:check": "node ./scripts/chain-health.mjs"
   },
   "devDependencies": {

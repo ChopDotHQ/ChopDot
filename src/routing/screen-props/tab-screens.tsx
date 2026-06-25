@@ -143,6 +143,8 @@ export function renderPotsHome(ctx: RouterContext): React.ReactElement | null {
             budgetEnabled: pot.budgetEnabled,
             totalPooled: pot.totalPooled,
             yieldRate: pot.yieldRate,
+            chapterMode: pot.chapterMode,
+            dotChapter: pot.dotChapter,
         };
     });
 

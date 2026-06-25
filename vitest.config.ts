@@ -6,6 +6,7 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/.worktrees/**',
+      '**/.local-private/**',
       '**/antigravity-awesome-skills/**',
       '**/output/**',
       '**/coverage/**',

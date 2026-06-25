@@ -151,6 +151,8 @@ If you are validating the current smart-settlement flow, the minimum meaningful 
 Useful repo entry points:
 
 - orientation and operator rules: [`AGENTS.md`](AGENTS.md)
+- product/engineering decision loops: [`docs/CHOPDOT_OPERATING_LOOPS.md`](docs/CHOPDOT_OPERATING_LOOPS.md)
+- executable loop runner: [`docs/CHOPDOT_LOOP_RUNNER.md`](docs/CHOPDOT_LOOP_RUNNER.md)
 - cross-IDE collaboration guide: [`docs/CROSS_IDE_COLLABORATION.md`](docs/CROSS_IDE_COLLABORATION.md)
 - long-horizon strategy and positioning: [`docs/CHOPDOT_2030_STRATEGIC_PLAN.md`](docs/CHOPDOT_2030_STRATEGIC_PLAN.md)
 - Polkadot Hub contract experiments: [`docs/POLKADOT_HUB_CONTRACT_EXPERIMENTS.md`](docs/POLKADOT_HUB_CONTRACT_EXPERIMENTS.md)

@@ -23,12 +23,12 @@ const VALID_SCREEN_TYPES = [
   'create-pot', 'pot-home', 'add-expense', 'edit-expense', 'expense-detail',
   'closeout-review', 'settle-selection', 'settle-home', 'settlement-history', 'settlement-confirmation',
   'member-detail', 'add-contribution', 'withdraw-funds', 'checkpoint-status',
-  'request-payment', 'receive-qr', 'import-pot',
+  'request-payment', 'receive-qr', 'import-pot', 'spend-card', 'capture-handoff', 'capture-confirm', 'capture-link-error',
 ];
 
 const POT_REQUIRED_SCREENS = [
   'add-expense', 'edit-expense', 'expense-detail',
-  'add-contribution', 'withdraw-funds', 'pot-home',
+  'add-contribution', 'withdraw-funds', 'pot-home', 'spend-card', 'capture-handoff', 'capture-confirm',
 ];
 
 export function useScreenValidation({

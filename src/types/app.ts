@@ -1,3 +1,47 @@
+import type { DotChapter, DotChapterMode } from "../chopdot-dot/commitmentKernel";
+import type { TestTokenRailState } from "../chopdot-dot/testTokenRail";
+import type { ChapterDocument } from "../chapter/types";
+
+export type ChapterPotMode = Extract<
+    DotChapterMode,
+    "shared_expense" | "savings_circle" | "emergency_pot" | "community_fund"
+>;
+
+export type PotIntent =
+    | "split"
+    | "trip"
+    | "deposits"
+    | "savings_circle"
+    | "emergency"
+    | "community_fund";
+
+export interface ChapterPotAgent {
+    id: string;
+    participantId: string;
+    name: string;
+    job: string;
+    canDo: string[];
+    cannotDo: string[];
+    visibility: string;
+}
+
+export interface ChapterPotEvent {
+    id: string;
+    actor: string;
+    label: string;
+    detail: string;
+    kind: "success" | "blocked" | "info";
+}
+
+export interface ChapterPotReleaseTemplate {
+    title: string;
+    requesterId: string;
+    recipientId: string;
+    amount: number;
+    currency: string;
+    requiredApproverIds: string[];
+}
+
 export interface Member {
     id: string;
     name: string;
@@ -155,10 +199,19 @@ export interface Pot {
     archived?: boolean;
     history?: PotHistory[];
     closeouts?: CloseoutRecord[];
+    chapterMode?: ChapterPotMode;
+    dotChapter?: DotChapter;
+    dotAgents?: ChapterPotAgent[];
+    dotActiveAgentId?: string;
+    dotRail?: TestTokenRailState;
+    dotEvents?: ChapterPotEvent[];
+    dotReleaseTemplate?: ChapterPotReleaseTemplate;
+    chapter?: ChapterDocument;
     createdAt?: string;
     updatedAt?: number;
     lastEditAt?: string;
     lastBackupCid?: string;
+    potIntent?: PotIntent;
 }
 
 export interface Settlement {

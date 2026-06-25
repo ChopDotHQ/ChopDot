@@ -69,6 +69,7 @@ const DEFAULT_CHAIN_ID = 420420417;
 const DEFAULT_CHAIN_NAME = 'Polkadot Hub Testnet';
 const DEFAULT_RPC_URL = 'https://services.polkadothub-rpc.com/testnet';
 const DEFAULT_BLOCK_EXPLORER_URL = 'https://blockscout-passet-hub.parity-testnet.parity.io/';
+const EVM_ADDRESS_PATTERN = /^0x[a-fA-F0-9]{40}$/;
 
 const CLOSEOUT_REGISTRY_ABI = [
   'event CloseoutCreated(uint256 indexed closeoutId, bytes32 indexed snapshotHash, address indexed creator, string asset, string metadataHash)',
@@ -119,6 +120,10 @@ function getCloseoutAsset(baseCurrency: string): CloseoutAsset | null {
 
 function normalizeCloseoutMemberAddress(address?: string | null): string {
   return (address || '').trim() || 'unassigned';
+}
+
+export function isValidCloseoutEvmAddress(address?: string | null): boolean {
+  return EVM_ADDRESS_PATTERN.test((address || '').trim());
 }
 
 function getContractAddress(): string {
@@ -362,7 +367,7 @@ export function canCreatePvmCloseout(pot: Pot): boolean {
   return suggestions.every((suggestion) => {
     const fromMember = pot.members.find((member) => member.id === suggestion.from);
     const toMember = pot.members.find((member) => member.id === suggestion.to);
-    return Boolean(fromMember?.evmAddress && toMember?.evmAddress);
+    return isValidCloseoutEvmAddress(fromMember?.evmAddress) && isValidCloseoutEvmAddress(toMember?.evmAddress);
   });
 }
 
@@ -373,8 +378,8 @@ export async function getCloseoutReadiness(pot: Pot): Promise<CloseoutReadinessI
     const missing: string[] = [];
     const fromMember = pot.members.find((member) => member.id === suggestion.from);
     const toMember = pot.members.find((member) => member.id === suggestion.to);
-    if (!fromMember?.evmAddress) missing.push(suggestion.from);
-    if (!toMember?.evmAddress) missing.push(suggestion.to);
+    if (!isValidCloseoutEvmAddress(fromMember?.evmAddress)) missing.push(suggestion.from);
+    if (!isValidCloseoutEvmAddress(toMember?.evmAddress)) missing.push(suggestion.to);
     return missing;
   });
 
@@ -417,8 +422,8 @@ export async function getCloseoutReadiness(pot: Pot): Promise<CloseoutReadinessI
       status: missingMemberIds.length === 0 ? 'pass' : 'fail',
       detail:
         missingMemberIds.length === 0
-          ? 'Every settlement participant has a 0x address.'
-          : `Missing EVM address for member id${missingMemberIds.length === 1 ? '' : 's'}: ${[...new Set(missingMemberIds)].join(', ')}`,
+          ? 'Every settlement participant has a valid 0x address.'
+          : `Missing or invalid EVM address for member id${missingMemberIds.length === 1 ? '' : 's'}: ${[...new Set(missingMemberIds)].join(', ')}`,
     },
   ];
   if (shouldSimulatePvmCloseout()) {
@@ -596,16 +601,19 @@ export async function createCloseoutDraft({
     const fromMember = pot.members.find((member) => member.id === suggestion.from);
     const toMember = pot.members.find((member) => member.id === suggestion.to);
 
-    if (!fromMember?.evmAddress || !toMember?.evmAddress) {
-      throw new Error('All participants need EVM wallet addresses before anchoring a closeout.');
+    if (!isValidCloseoutEvmAddress(fromMember?.evmAddress) || !isValidCloseoutEvmAddress(toMember?.evmAddress)) {
+      throw new Error('All participants need valid EVM wallet addresses before anchoring a closeout.');
     }
+
+    const fromAddress = normalizeCloseoutMemberAddress(fromMember?.evmAddress);
+    const toAddress = normalizeCloseoutMemberAddress(toMember?.evmAddress);
 
     return {
       index,
       fromMemberId: suggestion.from,
       toMemberId: suggestion.to,
-      fromAddress: normalizeCloseoutMemberAddress(fromMember.evmAddress),
-      toAddress: normalizeCloseoutMemberAddress(toMember.evmAddress),
+      fromAddress,
+      toAddress,
       amount: suggestion.amount.toFixed(6),
       asset,
       status: 'pending' as const,

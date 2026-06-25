@@ -2,6 +2,195 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import fs from 'fs'
+import type { IncomingMessage, ServerResponse } from 'http'
+import {
+  DOT_SESSION_GENESIS_HASH,
+  dotInviteAccessEventHash,
+  dotSessionEventHash,
+  type DotInviteAccessEvent,
+  type DotSessionEvent,
+} from './src/chopdot-dot/polkadotSession'
+
+function statementStoreKey(chapterId: string, sessionId = 'default'): string {
+  return `${sessionId}:${chapterId}`;
+}
+
+function sendJson(res: ServerResponse, statusCode: number, payload: unknown) {
+  res.statusCode = statusCode;
+  res.setHeader('content-type', 'application/json');
+  res.end(JSON.stringify(payload));
+}
+
+function readBody(req: IncomingMessage): Promise<unknown> {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+    req.on('end', () => {
+      if (!body) {
+        resolve({});
+        return;
+      }
+      try {
+        resolve(JSON.parse(body));
+      } catch (error) {
+        reject(error);
+      }
+    });
+    req.on('error', reject);
+  });
+}
+
+function chopdotDotStatementStorePlugin() {
+  const eventsByChapter = new Map<string, DotSessionEvent[]>();
+  const accessEventsByChapter = new Map<string, DotInviteAccessEvent[]>();
+
+  return {
+    name: 'chopdot-dot-statement-store-lab',
+    configureServer(server: any) {
+      server.middlewares.use('/__chopdot_dot_statement_store', async (req: IncomingMessage, res: ServerResponse) => {
+        const url = new URL(req.url ?? '/', 'http://localhost');
+
+        if (req.method === 'GET' && url.pathname === '/events') {
+          const chapterId = url.searchParams.get('chapterId');
+          const sessionId = url.searchParams.get('sessionId') ?? 'default';
+          if (!chapterId) {
+            sendJson(res, 400, { error: 'chapterId is required' });
+            return;
+          }
+          sendJson(res, 200, { events: eventsByChapter.get(statementStoreKey(chapterId, sessionId)) ?? [] });
+          return;
+        }
+
+        if (req.method === 'GET' && url.pathname === '/access-events') {
+          const chapterId = url.searchParams.get('chapterId');
+          const sessionId = url.searchParams.get('sessionId') ?? 'default';
+          if (!chapterId) {
+            sendJson(res, 400, { error: 'chapterId is required' });
+            return;
+          }
+          sendJson(res, 200, { events: accessEventsByChapter.get(statementStoreKey(chapterId, sessionId)) ?? [] });
+          return;
+        }
+
+        if (req.method === 'POST' && url.pathname === '/append') {
+          const body = (await readBody(req)) as { chapterId?: string; sessionId?: string; event?: DotSessionEvent };
+          if (!body.chapterId || !body.event) {
+            sendJson(res, 400, { error: 'chapterId and event are required' });
+            return;
+          }
+          const key = statementStoreKey(body.chapterId, body.sessionId);
+          const events = eventsByChapter.get(key) ?? [];
+          const duplicateEvent = events.find((event) => event.id === body.event?.id);
+          if (duplicateEvent) {
+            if (dotSessionEventHash(duplicateEvent) === dotSessionEventHash(body.event)) {
+              sendJson(res, 200, { events });
+              return;
+            }
+            sendJson(res, 409, { error: 'duplicate event' });
+            return;
+          }
+          const previousEvent = events.at(-1);
+          const expectedPreviousHash = previousEvent ? dotSessionEventHash(previousEvent) : DOT_SESSION_GENESIS_HASH;
+          if (body.event.previousEventHash !== expectedPreviousHash) {
+            sendJson(res, 409, { error: 'event chain is out of order' });
+            return;
+          }
+          const nextEvents = [...events, body.event];
+          eventsByChapter.set(key, nextEvents);
+          sendJson(res, 200, { events: nextEvents });
+          return;
+        }
+
+        if (req.method === 'POST' && url.pathname === '/append-access') {
+          const body = (await readBody(req)) as { chapterId?: string; sessionId?: string; event?: DotInviteAccessEvent };
+          if (!body.chapterId || !body.event) {
+            sendJson(res, 400, { error: 'chapterId and event are required' });
+            return;
+          }
+          const key = statementStoreKey(body.chapterId, body.sessionId);
+          const events = accessEventsByChapter.get(key) ?? [];
+          const duplicateEvent = events.find((event) => event.id === body.event?.id);
+          if (duplicateEvent) {
+            if (dotInviteAccessEventHash(duplicateEvent) === dotInviteAccessEventHash(body.event)) {
+              sendJson(res, 200, { events });
+              return;
+            }
+            sendJson(res, 409, { error: 'duplicate access event' });
+            return;
+          }
+          const previousEvent = events.at(-1);
+          const expectedPreviousHash = previousEvent ? dotInviteAccessEventHash(previousEvent) : DOT_SESSION_GENESIS_HASH;
+          if (body.event.previousEventHash !== expectedPreviousHash) {
+            sendJson(res, 409, { error: 'access event chain is out of order' });
+            return;
+          }
+          const nextEvents = [...events, body.event];
+          accessEventsByChapter.set(key, nextEvents);
+          sendJson(res, 200, { events: nextEvents });
+          return;
+        }
+
+        if (req.method === 'POST' && url.pathname === '/reset') {
+          const body = (await readBody(req)) as { chapterId?: string; sessionId?: string };
+          if (body.chapterId) {
+            eventsByChapter.delete(statementStoreKey(body.chapterId, body.sessionId));
+            accessEventsByChapter.delete(statementStoreKey(body.chapterId, body.sessionId));
+          } else {
+            eventsByChapter.clear();
+            accessEventsByChapter.clear();
+          }
+          sendJson(res, 200, { ok: true });
+          return;
+        }
+
+        sendJson(res, 404, { error: 'not found' });
+      });
+    },
+  };
+}
+
+function agentWalletTrialPlugin() {
+  return {
+    name: 'chopdot-agent-wallet-trial-artifacts',
+    configureServer(server: any) {
+      server.middlewares.use('/__agent_wallet_trial', async (req: IncomingMessage, res: ServerResponse) => {
+        const url = new URL(req.url ?? '/', 'http://localhost');
+
+        if (req.method === 'GET' && url.pathname === '/pas-report') {
+          const sessionId = url.searchParams.get('sessionId');
+          if (!sessionId || !/^[a-z0-9-]+$/i.test(sessionId)) {
+            sendJson(res, 400, { error: 'valid sessionId is required' });
+            return;
+          }
+
+          const reportPath = path.resolve(
+            __dirname,
+            'artifacts',
+            'agent-wallet-trials',
+            sessionId,
+            'pas-scenario-report.json',
+          );
+          if (!reportPath.startsWith(path.resolve(__dirname, 'artifacts', 'agent-wallet-trials'))) {
+            sendJson(res, 400, { error: 'invalid sessionId' });
+            return;
+          }
+          if (!fs.existsSync(reportPath)) {
+            sendJson(res, 404, { error: 'report not found' });
+            return;
+          }
+
+          sendJson(res, 200, JSON.parse(fs.readFileSync(reportPath, 'utf8')));
+          return;
+        }
+
+        sendJson(res, 404, { error: 'not found' });
+      });
+    },
+  };
+}
 
 // Validate required environment variables at build time
 function validateEnvPlugin() {
@@ -35,6 +224,11 @@ function validateEnvPlugin() {
         .filter(([key]) => !env[key] || env[key].trim() === '')
         .map(([key, desc]) => `  ⚠️  ${key} - ${desc} (runtime only)`);
 
+      if (env.VITE_BUILD_PROFILE === 'dot-host') {
+        console.warn('dot-host profile: skipping critical env validation at build');
+        return;
+      }
+
       if (missingCritical.length > 0) {
         console.error('\n🚨 BUILD ERROR: Missing required environment variables:\n');
         console.error(missingCritical.join('\n'));
@@ -64,10 +258,14 @@ function validateEnvPlugin() {
 }
 
 // https://vite.dev/config/
+const isDotHostBuild = process.env.VITE_BUILD_PROFILE === 'dot-host';
+
 export default defineConfig({
   envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
   plugins: [
     validateEnvPlugin(),
+    chopdotDotStatementStorePlugin(),
+    agentWalletTrialPlugin(),
     react(),
     tailwindcss(),
   ],
@@ -132,11 +330,15 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
     rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'index.html'),
-        sandbox: path.resolve(__dirname, 'public/dev/sandbox.html'),
-      }
-    }
+      input: isDotHostBuild
+        ? {
+            index: path.resolve(__dirname, 'dot-lab.html'),
+          }
+        : {
+            main: path.resolve(__dirname, 'index.html'),
+            sandbox: path.resolve(__dirname, 'public/dev/sandbox.html'),
+          },
+    },
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'lucide-react', 'buffer', 'eventemitter3'],

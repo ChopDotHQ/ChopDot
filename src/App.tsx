@@ -17,7 +17,10 @@ import { useFabState } from './hooks/useFabState';
 import { useScreenValidation } from './hooks/useScreenValidation';
 import { setOnboardingCallback } from './services/storage/ipfsWithOnboarding';
 import { getInitialScreenFromLocation, useUrlSync } from './hooks/useUrlSync';
+import './services/capture/captureWebhookTestHarness';
 import { useInviteFlow } from './hooks/useInviteFlow';
+import { useCaptureLinkFlow } from './hooks/useCaptureLinkFlow';
+import { createCaptureLinkService } from './services/capture/CaptureLinkService';
 import { useDerivedData } from './hooks/useDerivedData';
 import { usePotState } from './hooks/usePotState';
 import { useOverlayState } from './hooks/useOverlayState';
@@ -29,6 +32,24 @@ import { usePersistedPaymentMethods } from './hooks/usePersistedPaymentMethods';
 import { ScreenErrorBoundary } from './components/ScreenErrorBoundary';
 import type { PaymentMethod } from './components/screens/PaymentMethods';
 import type { Pot } from './types/app';
+import { GroupMoneyLoopLab } from './lab/group-money-loop/GroupMoneyLoopLab';
+import { ChopDotDotLab } from './lab/chopdot-dot/ChopDotDotLab';
+import { isDotHostProfile } from './utils/envValidation';
+
+const isLoopLabEnabled = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('loop-lab') === '1';
+};
+
+const isDotLabEnabled = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return new URLSearchParams(window.location.search).get('chopdot-dot-lab') === '1';
+};
+
+const isDotLiHost = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return window.location.hostname.endsWith('.dot.li');
+};
 
 const INITIAL_PAYMENT_METHODS: PaymentMethod[] = [
   { id: '1', kind: 'bank', iban: 'CH93 0000 0000 0000 0000 0' },
@@ -36,7 +57,7 @@ const INITIAL_PAYMENT_METHODS: PaymentMethod[] = [
 ];
 
 const INITIAL_NEW_POT: Partial<Pot> = {
-  name: '', type: 'expense', baseCurrency: 'USD',
+  name: '', type: 'expense', baseCurrency: 'USD', potIntent: 'split',
   members: [{ id: 'owner', name: 'You', role: 'Owner', status: 'active' }],
   expenses: [], budgetEnabled: false,
 };
@@ -48,6 +69,20 @@ const showToast = (message: string, type?: 'success' | 'error' | 'info') => {
 };
 
 function AppContent() {
+  const [loopLabActive, setLoopLabActive] = useState(isLoopLabEnabled);
+  const [dotLabActive, setDotLabActive] = useState(isDotLabEnabled);
+
+  useEffect(() => {
+    if (isDotLabEnabled()) return;
+    if (!isDotLiHost() && !isDotHostProfile()) return;
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('chopdot-dot-lab', '1');
+    url.searchParams.set('mode', 'savings_circle');
+    window.history.replaceState({}, '', url.toString());
+    setDotLabActive(true);
+  }, []);
+
   const { DEMO_MODE, POLKADOT_APP_ENABLED } = useFeatureFlags();
   const { pots: potService, expenses: expenseService, members: memberService } = useData();
   const { theme, setTheme } = useTheme();
@@ -57,10 +92,11 @@ function AppContent() {
   const userEmail = (user as Record<string, unknown> | null)?.email as string | undefined;
 
   const { current: screen, stack, push, back, reset, replace } = useNav(getInitialScreenFromLocation());
-  useUrlSync({ screen, stackLength: stack.length, reset });
+  useUrlSync({ screen, stackLength: stack.length, reset, disabled: loopLabActive || dotLabActive });
 
   const overlay = useOverlayState();
   const inviteService = useMemo(() => new InviteService(getSupabase()), []);
+  const captureLinkServiceInstance = useMemo(() => createCaptureLinkService(getSupabase()), []);
   const [currentExpenseId, setCurrentExpenseId] = useState<string | null>(null);
   const [selectedCounterpartyId, setSelectedCounterpartyId] = useState<string | null>(null);
   const [walletConnected, setWalletConnected] = useState(false);
@@ -84,6 +120,15 @@ function AppContent() {
     inviteService, authLoading, isAuthenticated, userId: user?.id,
     currentPotId: potState.currentPotId, setCurrentPotId: potState.setCurrentPotId,
     reset, notifyPotRefresh: potState.notifyPotRefresh, showToast,
+  });
+
+  useCaptureLinkFlow({
+    captureLinkService: captureLinkServiceInstance,
+    authLoading,
+    isAuthenticated,
+    reset,
+    setCurrentPotId: potState.setCurrentPotId,
+    showToast,
   });
 
   useEffect(() => {
@@ -146,7 +191,7 @@ function AppContent() {
     currentPotLoading: potState.currentPotLoading, reset: reset as any, replace: replace as any,
   });
 
-  if (authLoading) {
+  if (authLoading && !loopLabActive && !dotLabActive) {
     return (
       <div className="app-shell bg-background flex items-center justify-center">
         <div className="text-center">
@@ -156,6 +201,38 @@ function AppContent() {
           <p className="text-sm text-secondary">Loading ChopDot...</p>
         </div>
       </div>
+    );
+  }
+
+  if (loopLabActive) {
+    const loopScenarioId = new URLSearchParams(window.location.search).get('scenario');
+    return (
+      <GroupMoneyLoopLab
+        scenarioId={loopScenarioId}
+        onExit={() => {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('loop-lab');
+          url.searchParams.delete('scenario');
+          window.history.replaceState({}, '', url.toString());
+          setLoopLabActive(false);
+        }}
+      />
+    );
+  }
+
+  if (dotLabActive) {
+    const dotMode = new URLSearchParams(window.location.search).get('mode');
+    return (
+      <ChopDotDotLab
+        modeParam={dotMode}
+        onExit={() => {
+          const url = new URL(window.location.href);
+          url.searchParams.delete('chopdot-dot-lab');
+          url.searchParams.delete('mode');
+          window.history.replaceState({}, '', url.toString());
+          setDotLabActive(false);
+        }}
+      />
     );
   }
 

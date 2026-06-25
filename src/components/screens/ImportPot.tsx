@@ -12,7 +12,9 @@ import { PrimaryButton } from '../PrimaryButton';
 import { SecondaryButton } from '../SecondaryButton';
 import { importPotFromCID, extractCIDFromUrl } from '../../services/sharing/potShare';
 import { triggerHaptic } from '../../utils/haptics';
+import { persistImportedPot } from '../../utils/importedPot';
 import type { Pot } from '../../schema/pot';
+import type { Pot as AppPot } from '../../types/app';
 
 interface ImportPotProps {
   initialCid?: string; // CID from URL parameter
@@ -93,6 +95,9 @@ export function ImportPot({
 
   const handleConfirmImport = () => {
     if (importedPot) {
+      const importedAppPot = importedPot as unknown as AppPot;
+      persistImportedPot(importedAppPot);
+      window.setTimeout(() => persistImportedPot(importedAppPot), 250);
       onImport(importedPot);
       triggerHaptic('success');
     }
@@ -220,4 +225,3 @@ export function ImportPot({
     </div>
   );
 }
-

@@ -1,0 +1,136 @@
+{
+  "version": "2026-06-16",
+  "status": "frozen",
+  "parity_org_total_repos": 698,
+  "in_scope_total": 46,
+  "excluded_total": 652,
+  "scoring_model": {
+    "repo_audit_score": "audited_in_scope_weighted / total_in_scope_weighted",
+    "capability_evidence_score": "entries_with_proven_or_lab_proven_or_blocked / total_mapped_capabilities",
+    "runtime_gate_score": "passed_gates / 6",
+    "risk_register_score": "scored_risks / identified_risks",
+    "overall_99_ready": "all scores >= 0.99 AND no Tier A blocker open",
+    "audit_depth_order": [
+      "inventory",
+      "readme",
+      "module_map",
+      "line_review",
+      "runtime_proof"
+    ],
+    "tier_requirements": {
+      "A": "module_map + line_review minimum",
+      "B": "module_map minimum",
+      "C": "readme + dependency_graph minimum"
+    }
+  },
+  "inclusion_rules": [
+    "identity_signing_host_api",
+    "realtime_transport_statement_store",
+    "storage_archive_bulletin",
+    "chain_tx_evidence_asset_hub",
+    "wallet_onboarding_connectivity",
+    "deployment_host_templates",
+    "polkadot_sdk_targeted_modules"
+  ],
+  "exclusion_rules": [
+    "legacy_ethereum_repos",
+    "archived_forks_without_active_migration_relevance",
+    "e2e_cli_moddable_auto_fixture_noise",
+    "unrelated_infra_and_historical_dapps"
+  ],
+  "tiers": {
+    "A": {
+      "description": "Migration blockers and direct adapter dependencies",
+      "repos": [
+        "paritytech/product-sdk",
+        "paritytech/truapi",
+        "paritytech/triangle-js-sdks",
+        "paritytech/statement-store-tools",
+        "paritytech/polkadot-bulletin-chain",
+        "paritytech/playground-app-template",
+        "paritytech/polkadot-sdk",
+        "paritytech/asset-transfer-api",
+        "paritytech/subxt-assets",
+        "paritytech/polkadot-onboard"
+      ]
+    },
+    "B": {
+      "description": "Supporting native path repos",
+      "repos": [
+        "paritytech/smoldot",
+        "paritytech/polkadot-rest-api",
+        "paritytech/substrate-api-sidecar",
+        "paritytech/web3-storage",
+        "paritytech/polkadot-apps",
+        "paritytech/xcm",
+        "paritytech/xcm-docs",
+        "paritytech/pallet-contracts-xcm",
+        "paritytech/revive",
+        "paritytech/cargo-pvm-contract",
+        "paritytech/contract-docs",
+        "paritytech/dotli-community",
+        "paritytech/polkadot-android-community",
+        "paritytech/polkadot-ios-community"
+      ]
+    },
+    "C": {
+      "description": "Context and topology references (deduped from Tier A/B)",
+      "repos": [
+        "paritytech/polkadot-sdk-docs",
+        "paritytech/polkadot-sdk-minimal-template",
+        "paritytech/polkadot-sdk-parachain-template",
+        "paritytech/helm-charts",
+        "paritytech/ansible-polkadot",
+        "paritytech/bridge-ui",
+        "paritytech/parity-bridges-common",
+        "paritytech/ethereum_xcm_builder",
+        "paritytech/substrate-connect",
+        "paritytech/capi",
+        "paritytech/host-api-test-sdk",
+        "paritytech/asset-hub-migration-monitor",
+        "paritytech/deployment-tracker",
+        "paritytech/contracts-boilerplate",
+        "paritytech/smart-contracts-devcontainer",
+        "paritytech/useink-kitchen-sink",
+        "paritytech/governance-ui",
+        "paritytech/identity-backend-community",
+        "paritytech/festival",
+        "paritytech/t3rminal",
+        "paritytech/smoldot-archive",
+        "paritytech/polkadot-cloud"
+      ]
+    }
+  },
+  "external_dependencies_in_scope": [
+    "@polkadot-api/json-rpc-provider",
+    "@novasamatech/host-api",
+    "@novasamatech/host-api-wrapper",
+    "@parity/product-sdk-signer",
+    "@parity/product-sdk-host",
+    "@parity/product-sdk-statement-store",
+    "@parity/product-sdk-cloud-storage",
+    "@parity/product-sdk-tx",
+    "wallet_extension_stacks",
+    "walletconnect_stacks",
+    "delivery_channels_email_chat_push",
+    "indexer_search_analytics_ops"
+  ],
+  "exclusion_samples_with_rationale": [
+    {
+      "pattern": "e2e-cli-moddable-*",
+      "reason": "auto-cleaned CI fixtures with no product capability"
+    },
+    {
+      "pattern": "legacy ethereum parity repos (parity.js, web3.js, alethzero, etc.)",
+      "reason": "pre-Substrate stack, no ChopDot native migration relevance"
+    },
+    {
+      "pattern": "archived moved repos (Parity-JS dapps)",
+      "reason": "superseded by external orgs, not active integration targets"
+    },
+    {
+      "pattern": "unrelated security/tooling (qualysapi, cachepot, highfive)",
+      "reason": "internal ops tooling, not product-native capability"
+    }
+  ]
+}

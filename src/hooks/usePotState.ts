@@ -7,6 +7,7 @@ import { usePot as useRemotePot } from './usePot';
 import { cleanupBackupTimers } from '../services/backup/autoBackup';
 import { attemptAutoRestore } from '../services/restore/autoRestore';
 import { createPolkadotBuilderPartyPot } from '../data/builder-party';
+import { createDefaultChapterPots, ensureChapterPots } from '../chopdot-dot/chapterPotTemplates';
 import {
   normalizeMembers,
   normalizeExpenses,
@@ -157,8 +158,18 @@ export const usePotState = ({
               }
             }
 
+            migrated = ensureChapterPots(migrated as Pot[]);
             setPots(migrated as Pot[]);
             setHasLoadedInitialData(true);
+            try {
+              const updatedJson = JSON.stringify(migrated);
+              if (updatedJson.length < 1000000) {
+                localStorage.setItem('chopdot_pots', updatedJson);
+                localStorage.setItem('chopdot_pots_backup', updatedJson);
+              }
+            } catch {
+              // Ignore save failure during chapter mode migration
+            }
             window.dispatchEvent(new CustomEvent('pots-refresh'));
             return;
           }
@@ -171,14 +182,14 @@ export const usePotState = ({
             if (Array.isArray(parsed) && parsed.length > 0) {
               console.warn('[ChopDot] Restored pots from backup');
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const migrated = parsed.map((pot: any) => ({
+              const migrated = ensureChapterPots(parsed.map((pot: any) => ({
                 ...pot,
                 expenses: (pot.expenses || []).map(migrateAttestations),
                 mode: pot.mode ?? 'casual',
                 confirmationsEnabled:
                   pot.confirmationsEnabled ?? import.meta.env.VITE_REQUIRE_CONFIRMATIONS_DEFAULT === '1',
                 lastEditAt: pot.lastEditAt ?? new Date().toISOString(),
-              }));
+              })) as Pot[]);
               setPots(migrated as Pot[]);
               setHasLoadedInitialData(true);
               try {
@@ -241,6 +252,7 @@ export const usePotState = ({
               goalDescription: 'Build a 6-month emergency fund',
             },
             createPolkadotBuilderPartyPot(),
+            ...createDefaultChapterPots(),
           ];
 
           try {

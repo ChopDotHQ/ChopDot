@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "polkadot-docs": {
+      "url": "https://docs-mcp.polkadot.com"
+    },
+    "playwright-extension": {
+      "command": "/opt/homebrew/bin/npx",
+      "args": ["-y", "@playwright/mcp@latest", "--extension"],
+      "env": {
+        "PATH": "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin",
+        "PLAYWRIGHT_MCP_EXTENSION_TOKEN": "REPLACE_WITH_EXTENSION_TOKEN"
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "project": "ChopDot",
+  "source": "product/chopdot-product-graph.json",
+  "generatedDir": "product/generated",
+  "evidenceDir": "product/evidence",
+  "scopes": [
+    "Catch",
+    "Management",
+    "Payout",
+    "History",
+    "Native Stack",
+    "Quality / Agent Testing"
+  ],
+  "readinessThreshold": 8,
+  "forbiddenNormalUiTerms": [
+    "evidence",
+    "rail",
+    "claim",
+    "kernel",
+    "adapter",
+    "obligation",
+    "chapter",
+    "test-token",
+    "raw JSON",
+    "protocol",
+    "native",
+    "host",
+    "state machine"
+  ],
+  "evidenceLevels": [
+    "local-code",
+    "browser-agent",
+    "human-reviewed",
+    "testnet-payment",
+    "production-payment",
+    "blocked-live"
+  ]
+}

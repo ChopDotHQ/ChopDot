@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-06-22T00:00:00+00:00",
+  "updated_at": "2026-06-22T00:00:00+00:00",
+  "loop_id": "ux-shape",
+  "loop_name": "UX Shape Loop",
+  "role": "product designer",
+  "decision": "Decorative trip preset should fail",
+  "user_job": "A person creates a pot for a trip without extra setup friction.",
+  "route_or_screen": "/pots/create",
+  "expected_user_visible_outcome": "The user sees a Plan a trip choice inside Create Pot.",
+  "verifier": "Runner rejects visible choices that only change defaults.",
+  "stop_condition": "A visible option adds a decision but does not change the next action or workflow.",
+  "evidence_paths": [
+    "docs/CHOPDOT_OPERATING_LOOPS.md"
+  ],
+  "surface_delta": {
+    "visible_choices_added": 1,
+    "user_action_gained": "No new action; it changes the pot name and currency only.",
+    "workflow_effect": "Defaults only.",
+    "friction_added": "One more decision before the user can create the pot.",
+    "confusion_removed": "None.",
+    "evidence_of_removed_friction": "Negative fixture for the UX shape runner.",
+    "keep_change_remove": "keep"
+  },
+  "verdict": "spike"
+}

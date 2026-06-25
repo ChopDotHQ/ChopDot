@@ -18,8 +18,8 @@ export function WithdrawFunds({
   baseCurrency,
   yourBalance,
   totalPooled: _totalPooled,
-  yieldRate,
-  defiProtocol,
+  yieldRate: _yieldRate,
+  defiProtocol: _defiProtocol,
   onBack,
   onConfirm,
 }: WithdrawFundsProps) {
@@ -28,34 +28,33 @@ export function WithdrawFunds({
 
   const numAmount = withdrawAll ? yourBalance : (parseFloat(amount) || 0);
   const remainingBalance = yourBalance - numAmount;
-  const lostYield = (numAmount * yieldRate) / 100 / 12; // Monthly yield lost
 
   const isValid = numAmount > 0 && numAmount <= yourBalance;
 
   return (
     <div className="flex flex-col h-full bg-background">
-      <TopBar title="Withdraw Funds" onBack={onBack} />
+      <TopBar title="Record Withdrawal" onBack={onBack} />
 
       <div className="flex-1 overflow-auto p-3 space-y-3 pb-[68px]">
         {/* Balance Card */}
         <div className="hero-card p-4 space-y-3">
           <div>
-            <p className="text-micro text-secondary mb-1">Your balance in {potName}</p>
+            <p className="text-micro text-secondary mb-1">Recorded balance in {potName}</p>
             <p className="text-[32px] tabular-nums" style={{ fontWeight: 600 }}>
               {baseCurrency} {yourBalance.toFixed(2)}
             </p>
           </div>
           <div className="flex items-center justify-between p-3 rounded-lg bg-muted/10">
             <div>
-              <p className="text-micro text-secondary">Earning via {defiProtocol}</p>
+              <p className="text-micro text-secondary">ChopDot role</p>
               <p className="text-[18px]" style={{ fontWeight: 700, color: 'var(--success)' }}>
-                {yieldRate.toFixed(1)}% APY
+                Record only
               </p>
             </div>
             <div className="text-right">
-              <p className="text-micro text-secondary">Est. monthly yield</p>
-              <p className="text-[18px] tabular-nums" style={{ fontWeight: 700, color: 'var(--success)' }}>
-                +{baseCurrency} {((yourBalance * yieldRate) / 100 / 12).toFixed(2)}
+              <p className="text-micro text-secondary">Money movement</p>
+              <p className="text-[18px]" style={{ fontWeight: 700 }}>
+                Outside app
               </p>
             </div>
           </div>
@@ -63,7 +62,7 @@ export function WithdrawFunds({
 
         {/* Amount Input */}
         <div className="space-y-2">
-          <label className="text-micro text-secondary px-1">Amount to withdraw</label>
+          <label className="text-micro text-secondary px-1">Amount to record</label>
           <div className="relative">
             <input
               type="number"
@@ -132,12 +131,9 @@ export function WithdrawFunds({
                   {baseCurrency} {remainingBalance.toFixed(2)}
                 </p>
               </div>
-              <div className="flex items-center justify-between">
-                <p className="text-micro text-secondary">Monthly yield lost</p>
-                <p className="text-[18px] tabular-nums text-secondary">
-                  -{baseCurrency} {lostYield.toFixed(2)}/mo
-                </p>
-              </div>
+              <p className="text-micro text-secondary">
+                Record this only after the withdrawal or transfer happened outside ChopDot.
+              </p>
             </div>
 
             {withdrawAll && (
@@ -146,7 +142,7 @@ export function WithdrawFunds({
                 <div>
                   <p className="text-micro" style={{ fontWeight: 500 }}>Full withdrawal</p>
                   <p className="text-micro text-secondary">
-                    You'll stop earning yield on these funds. You can add funds back anytime.
+                    This will record the balance as fully withdrawn. It does not move money by itself.
                   </p>
                 </div>
               </div>
@@ -159,17 +155,17 @@ export function WithdrawFunds({
           <label className="text-micro text-secondary px-1">Withdrawal details</label>
           <div className="p-3 bg-card border border-border rounded-lg space-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-micro text-secondary">Processing time</p>
-              <p className="text-micro" style={{ fontWeight: 500 }}>~2-5 minutes</p>
+              <p className="text-micro text-secondary">When to record</p>
+              <p className="text-micro" style={{ fontWeight: 500 }}>After external transfer</p>
             </div>
             <div className="flex items-center justify-between">
-              <p className="text-micro text-secondary">Network fee</p>
-              <p className="text-micro" style={{ fontWeight: 500 }}>~$0.50</p>
+              <p className="text-micro text-secondary">ChopDot fee</p>
+              <p className="text-micro" style={{ fontWeight: 500 }}>None in this record</p>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-border">
-              <p className="text-micro" style={{ fontWeight: 500 }}>You'll receive</p>
+              <p className="text-micro" style={{ fontWeight: 500 }}>Recorded withdrawal</p>
               <p className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>
-                {baseCurrency} {(numAmount - 0.50).toFixed(2)}
+                {baseCurrency} {numAmount.toFixed(2)}
               </p>
             </div>
           </div>
@@ -178,8 +174,7 @@ export function WithdrawFunds({
         {/* Info Note */}
         <div className="p-3 bg-muted/10 rounded-lg">
           <p className="text-micro text-secondary">
-            Funds will be withdrawn from {defiProtocol} and sent to your connected wallet. 
-            The transaction typically completes within 2-5 minutes.
+            ChopDot records that money moved outside the app. It does not custody funds, send withdrawals, or guarantee settlement.
           </p>
         </div>
       </div>
@@ -199,7 +194,7 @@ export function WithdrawFunds({
             fontWeight: 600,
           }}
         >
-          {isValid ? `Withdraw ${baseCurrency} ${numAmount.toFixed(2)}` : 'Enter amount'}
+          {isValid ? `Record ${baseCurrency} ${numAmount.toFixed(2)}` : 'Enter amount'}
         </button>
       </div>
     </div>

@@ -6,9 +6,10 @@ import { loginWithEmailAction, signUpWithEmailAction } from './authActions';
 import { upsertProfile } from '../repos/profiles';
 import {
   initSession, checkSession,
-  setAuthItem, clearAuthItem,
+  setAuthItem,
   AUTH_USER_KEY, AUTH_TOKEN_KEY,
 } from '../services/auth/session-manager';
+import { clearLocalAuthAndAccountSession } from '../services/auth/session-cleanup';
 import { loginWithWallet, loginWithEthereumWeb3 } from '../services/auth/wallet-login';
 import { loginWithOAuthRedirect } from '../services/auth/oauth-login';
 import { loginAsGuestAction } from '../services/auth/guest-login';
@@ -141,9 +142,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         account.disconnect();
       }
-      // Clear local state first — user is logged out regardless of what happens next
-      clearAuthItem(AUTH_USER_KEY);
-      clearAuthItem(AUTH_TOKEN_KEY);
+      // Clear local state first — user is logged out regardless of what happens next.
+      clearLocalAuthAndAccountSession();
       setUser(null);
       // Best-effort Supabase sign-out — failure doesn't block logout
       const supabase = getSupabase();

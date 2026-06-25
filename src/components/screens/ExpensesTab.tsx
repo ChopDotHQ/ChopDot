@@ -1,4 +1,4 @@
-import { Receipt } from 'lucide-react';
+import { Plane, Receipt } from 'lucide-react';
 import { useMemo } from 'react';
 import { SwipeableExpenseRow } from '../SwipeableExpenseRow';
 import type { Pot } from '../../schema/pot';
@@ -52,6 +52,7 @@ interface ExpensesTabProps {
   contributions?: Contribution[];
   potId?: string;
   pot?: Pot;
+  potIntent?: Pot['potIntent'];
   potHistory?: PotHistory[];
   onAddExpense: () => void;
   onExpenseClick: (expense: Expense) => void;
@@ -76,6 +77,8 @@ export function ExpensesTab({
   budgetEnabled,
   contributions = [],
   potId,
+  pot,
+  potIntent,
   potHistory = [],
   onAddExpense,
   onExpenseClick,
@@ -147,7 +150,7 @@ export function ExpensesTab({
   });
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 pt-3">
       {expenses.length > 0 && (
         <HeroDashboard
           netBalance={netBalance}
@@ -193,6 +196,7 @@ export function ExpensesTab({
         groupedExpenses={groupedExpenses}
         members={members}
         currentUserId={currentUserId}
+        potIntent={pot?.potIntent ?? potIntent}
         normalizedBaseCurrency={normalizedBaseCurrency}
         formatPotAmount={formatPotAmount}
         onAddExpense={onAddExpense}
@@ -223,6 +227,7 @@ function ExpensesList({
   groupedExpenses,
   members,
   currentUserId,
+  potIntent,
   normalizedBaseCurrency,
   formatPotAmount,
   onAddExpense,
@@ -244,6 +249,7 @@ function ExpensesList({
   }>>;
   members: { id: string; name: string; address?: string; verified?: boolean }[];
   currentUserId: string;
+  potIntent?: Pot['potIntent'];
   normalizedBaseCurrency: string;
   formatPotAmount: (value: number, withSign?: boolean) => string;
   onAddExpense: () => void;
@@ -251,6 +257,28 @@ function ExpensesList({
   onDeleteExpense?: (expenseId: string) => void;
 }) {
   if (expenses.length === 0) {
+    if (potIntent === 'trip') {
+      return (
+        <div className="mx-3">
+          <button
+            onClick={onAddExpense}
+            className="w-full text-left p-5 card card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-muted/10 flex items-center justify-center flex-shrink-0">
+                <Plane className="w-5 h-5" style={{ color: 'var(--accent)' }} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-body text-foreground" style={{ fontWeight: 600 }}>Add first trip cost</p>
+                <p className="text-caption mt-1 text-secondary">
+                  Start with a booking, deposit, or receipt.
+                </p>
+              </div>
+            </div>
+          </button>
+        </div>
+      );
+    }
     return (
       <div className="mx-3">
         <button

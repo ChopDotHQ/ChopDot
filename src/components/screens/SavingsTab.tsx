@@ -1,4 +1,4 @@
-import { TrendingUp, Plus, ArrowDownToLine, Info } from "lucide-react";
+import { Plus, ArrowDownToLine, Info } from "lucide-react";
 import { useState } from "react";
 
 interface Member {
@@ -34,8 +34,8 @@ export function SavingsTab({
   baseCurrency: _baseCurrency,
   contributions,
   totalPooled,
-  yieldRate,
-  defiProtocol,
+  yieldRate: _yieldRate,
+  defiProtocol: _defiProtocol,
   goalAmount,
   goalDescription,
   onAddContribution,
@@ -55,7 +55,6 @@ export function SavingsTab({
   });
 
   const totalContributed = memberBalances.reduce((sum, b) => sum + b.total, 0);
-  const yieldEarned = totalPooled - totalContributed;
 
   // Progress towards goal
   const goalProgress = goalAmount ? (totalPooled / goalAmount) * 100 : 0;
@@ -67,41 +66,30 @@ export function SavingsTab({
 
   return (
     <div className="p-3 space-y-3">
-      {/* Hero Card - Total Pooled */}
+      {/* Hero Card - Recorded Total */}
       <div className="hero-card p-4 space-y-3">
-        {/* Total Pooled Amount */}
         <div>
-          <p className="text-micro text-secondary mb-1">Total Pooled</p>
+          <p className="text-micro text-secondary mb-1">Recorded total</p>
           <div className="flex items-baseline gap-2">
             <p className="text-[32px] tabular-nums" style={{ fontWeight: 600 }}>
               ${totalPooled.toFixed(2)}
             </p>
-            {yieldEarned > 0 && (
-              <div className="flex items-center gap-1 px-2 py-0.5 rounded-md" style={{ background: 'var(--success)', opacity: 0.15 }}>
-                <TrendingUp className="w-3 h-3" style={{ color: 'var(--success)' }} />
-                <span className="text-micro" style={{ color: 'var(--success)' }}>
-                  +${yieldEarned.toFixed(2)}
-                </span>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* DeFi Protocol & APY */}
         <div className="flex items-center justify-between p-3 rounded-lg" style={{ background: 'rgba(25, 195, 125, 0.08)' }}>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--success)' }}>
-              <TrendingUp className="w-4 h-4 text-white" />
+              <Info className="w-4 h-4 text-white" />
             </div>
             <div>
-              <p className="text-micro" style={{ fontWeight: 500 }}>{defiProtocol}</p>
-              <p className="text-micro text-secondary">Earning yield via Polkadot</p>
+              <p className="text-micro" style={{ fontWeight: 500 }}>ChopDot role</p>
+              <p className="text-micro text-secondary">Shared record for outside payments</p>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-[18px]" style={{ fontWeight: 700, color: 'var(--success)' }}>
-              {yieldRate.toFixed(1)}% APY
-            </p>
+            <p className="text-label" style={{ fontWeight: 700, color: 'var(--success)' }}>Record only</p>
+            <p className="text-micro text-secondary">No custody</p>
           </div>
         </div>
 
@@ -140,14 +128,14 @@ export function SavingsTab({
             style={{ background: 'var(--success)', color: '#fff' }}
           >
             <Plus className="w-4 h-4" />
-            <span className="text-body" style={{ fontWeight: 600 }}>Add Funds</span>
+            <span className="text-body" style={{ fontWeight: 600 }}>Record contribution</span>
           </button>
           <button
             onClick={onWithdraw}
             className="flex items-center justify-center gap-2 px-4 py-2.5 bg-card border border-border rounded-xl transition-all hover:bg-muted/30 active:scale-[0.98]"
           >
             <ArrowDownToLine className="w-4 h-4" />
-            <span className="text-body" style={{ fontWeight: 500 }}>Withdraw</span>
+            <span className="text-body" style={{ fontWeight: 500 }}>Record withdrawal</span>
           </button>
         </div>
       </div>
@@ -157,15 +145,14 @@ export function SavingsTab({
         <Info className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: 'var(--success)' }} />
         <div>
           <p className="text-micro">
-            Your pooled funds are earning {yieldRate.toFixed(1)}% APY through {defiProtocol}. 
-            Yield is distributed proportionally to all members.
+            ChopDot keeps a shared record of contributions and withdrawals. Money moves outside the app.
           </p>
         </div>
       </div>
 
       {/* Member Balances */}
       <div className="space-y-1.5">
-        <p className="text-micro text-secondary px-1">Member Contributions</p>
+        <p className="text-micro text-secondary px-1">Member records</p>
         <div className="space-y-1">
           {memberBalances.map((balance) => {
             const percentage = totalContributed > 0 ? (balance.total / totalContributed) * 100 : 0;
@@ -226,7 +213,7 @@ export function SavingsTab({
                       <div className="flex items-center gap-1.5 mb-0.5">
                         <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--success)' }} />
                         <p className="text-label">
-                          {isYou ? "You" : member?.name} added funds
+                          {isYou ? "You" : member?.name} recorded contribution
                         </p>
                       </div>
                       <p className="text-micro text-secondary">

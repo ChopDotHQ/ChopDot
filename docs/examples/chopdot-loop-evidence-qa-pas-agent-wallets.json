@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-06-22T00:00:00+00:00",
+  "updated_at": "2026-06-22T00:00:00+00:00",
+  "loop_id": "evidence-qa",
+  "loop_name": "Evidence And QA Loop",
+  "role": "verifier",
+  "decision": "Verify funded PAS agent-wallet scenarios",
+  "user_job": "Group members see real public-testnet payment movement reflected in ChopDot records.",
+  "expected_user_visible_outcome": "The Activity tab says PAS evidence applied, each scenario record closes, and emergency receipt review stays redacted.",
+  "verifier": "Focused Playwright passes for group expense, savings circle, emergency pot, community fund, and emergency receipt redaction.",
+  "stop_condition": "Any scenario fails to close, PAS evidence does not appear in Activity, or emergency receipt leaks sensitive text or tx hashes.",
+  "commands": [
+    {
+      "cmd": "npx playwright test tests/e2e/agent-wallet-pas-scenarios.spec.ts --project=chromium --workers=1",
+      "status": "pass"
+    }
+  ],
+  "evidence_paths": [
+    "artifacts/agent-wallet-trials/agent-wallet-trial-2026-06-22/pas-scenario-report.md",
+    "docs/chopdot-dot/agent-wallet-journey-model-2026-06-22.md"
+  ],
+  "residual_risk": "This is public-testnet and local-product evidence, not production custody, live .dot proof, or a real-user comprehension pass.",
+  "verdict": "keep"
+}

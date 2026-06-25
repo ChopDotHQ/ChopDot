@@ -41,6 +41,53 @@ type SettlementProgressStep =
   | 'sending-payment'
   | 'recording-confirmation';
 
+type SettlementStatusKey =
+  | 'pending'
+  | 'in_flight'
+  | 'confirmation_required'
+  | 'finalized'
+  | 'failed';
+
+export function getSettlementStatusCopy(status: SettlementStatusKey, detail?: string): {
+  label: string;
+  title: string;
+  body: string;
+} {
+  if (status === 'failed') {
+    return {
+      label: 'Needs attention',
+      title: 'Payment did not finish',
+      body: detail || 'No payment was marked complete. Try again or choose a normal settlement method.',
+    };
+  }
+  if (status === 'finalized') {
+    return {
+      label: 'Confirmed',
+      title: 'Payment confirmed',
+      body: 'The payment and tracked confirmation are recorded for this settlement.',
+    };
+  }
+  if (status === 'confirmation_required') {
+    return {
+      label: 'Waiting for confirmation',
+      title: 'Payment sent, confirmation still open',
+      body: 'The payment is recorded, but the receiver still needs to confirm what arrived.',
+    };
+  }
+  if (status === 'in_flight') {
+    return {
+      label: 'In progress',
+      title: 'Payment is moving',
+      body: detail || 'Keep this screen open while the wallet and network finish.',
+    };
+  }
+  return {
+    label: 'Pending',
+    title: 'Not started yet',
+    body: 'No payment has been sent from this tracked settlement yet.',
+  };
+}
+
 export function SettleHome({
   settlements,
   onBack,
@@ -106,6 +153,7 @@ export function SettleHome({
   const [finalityConfirmed, setFinalityConfirmed] = useState(false);
   const [localTrackedCloseout, setLocalTrackedCloseout] = useState(trackedCloseout ?? null);
   const [settlementProgressStep, setSettlementProgressStep] = useState<SettlementProgressStep | null>(null);
+  const [settlementFailureMessage, setSettlementFailureMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setLocalTrackedCloseout(trackedCloseout ?? null);
@@ -274,6 +322,7 @@ export function SettleHome({
   const smartModeLabel = isPaying ? 'Smart settle' : 'Track payment';
 
   const handleConfirm = useCallback(async () => {
+    setSettlementFailureMessage(null);
     if (settlementMode === 'smart' && !smartSettlementStarted) {
       return;
     }
@@ -317,8 +366,12 @@ export function SettleHome({
         const message = err instanceof Error ? err.message : 'Unknown error';
         if (message === 'USER_REJECTED') {
           onShowToast?.('Transaction cancelled', 'info');
+          setSettlementFailureMessage('Wallet approval was cancelled. No payment was marked complete.');
         } else if (message !== 'INSUFFICIENT_BALANCE' && message !== 'DOT_PRICE_UNAVAILABLE') {
           onShowToast?.(`Settlement failed: ${message}`, 'error');
+          setSettlementFailureMessage(`The payment did not finish: ${message}`);
+        } else {
+          setSettlementFailureMessage('The payment could not continue. Check the amount, fees, and wallet balance.');
         }
         return;
       }
@@ -413,6 +466,20 @@ export function SettleHome({
       body: 'The payment was sent. ChopDot is now attaching the confirmation to the smart settlement package.',
     };
   })();
+  const settlementStatusCopy = settlementMode === 'smart'
+    ? getSettlementStatusCopy(
+      settlementFailureMessage
+        ? 'failed'
+        : smartLegComplete
+          ? 'finalized'
+          : smartLegRecorded
+            ? 'confirmation_required'
+            : startingSmartSettlement || settlementProgressStep
+              ? 'in_flight'
+              : 'pending',
+      settlementFailureMessage || settlementProgressCopy?.body,
+    )
+    : null;
   const smartProgressSteps = settlementMode === 'smart'
     ? [
       {
@@ -508,6 +575,18 @@ export function SettleHome({
           assetSymbol={isDotPot ? 'DOT' : isUsdcPot ? 'USDC' : 'USD'}
           formatAmount={formatAmount}
         />
+
+        {settlementMode === 'smart' && settlementStatusCopy && (
+          <div className="card p-4 space-y-2" data-testid="settlement-status-card">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-body font-medium">{settlementStatusCopy.title}</p>
+              <span className="rounded-full bg-muted/15 px-2.5 py-1 text-caption text-secondary">
+                {settlementStatusCopy.label}
+              </span>
+            </div>
+            <p className="text-caption text-secondary">{settlementStatusCopy.body}</p>
+          </div>
+        )}
 
         <div className="card p-4 space-y-3">
           <div className="flex items-start gap-3">

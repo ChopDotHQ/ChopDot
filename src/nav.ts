@@ -48,7 +48,16 @@ export type Screen =
   | { type: "crust-storage" }
   | { type: "crust-auth-setup" }
   | { type: "import-pot" }
-  | { type: "receive-qr" };
+  | { type: "receive-qr" }
+  | { type: "spend-card"; potId: string; spendCardId?: string; captureToken?: string; actingMemberId?: string }
+  | { type: "capture-handoff"; potId: string; legId: string; captureToken?: string; actingMemberId?: string }
+  | { type: "capture-confirm"; potId: string; legId: string; captureToken: string; receiverId: string }
+  | {
+      type: "capture-link-error";
+      code: "not_found" | "expired" | "consumed" | "wrong_user";
+      message: string;
+      expectedName?: string;
+    };
 
 export function useNav(initialScreen: Screen = { type: "pots-home" }) {
   const [stack, setStack] = useState<Screen[]>([initialScreen]);

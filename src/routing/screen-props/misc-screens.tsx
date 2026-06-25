@@ -3,6 +3,11 @@ import type { AppRouterProps } from './types';
 import { Pot } from "../../types/app";
 import { PaymentMethod } from "../../components/screens/PaymentMethods";
 import { Notification } from "../../components/screens/NotificationCenter";
+import {
+    buildPaymentRequestNotificationMessage,
+    type RequestPaymentPerson,
+} from "../../utils/requestPayment";
+import { addImportedPot, persistImportedPot } from "../../utils/importedPot";
 
 type RouterContext = AppRouterProps;
 
@@ -42,6 +47,23 @@ const ReceiveQR = lazy(() =>
 const ImportPot = lazy(() =>
     import("../../components/screens/ImportPot").then((module) => ({ default: module.ImportPot }))
 );
+
+export function buildRequestPaymentNotification(params: {
+    person: RequestPaymentPerson;
+    message: string;
+    deliveryMethod?: string | null;
+    timestamp?: Date;
+}): Notification {
+    const { person, message, deliveryMethod, timestamp = new Date() } = params;
+    return {
+        id: `${timestamp.getTime()}-${person.id}`,
+        type: "settlement",
+        title: "Payment request",
+        message: buildPaymentRequestNotificationMessage(person, message, deliveryMethod),
+        timestamp: timestamp.toISOString(),
+        read: false,
+    };
+}
 
 export function renderSettings(ctx: RouterContext) {
     const { nav: { push, back }, actions: { handleLogout, handleDeleteAccount, setTheme }, uiState: { theme } } = ctx;
@@ -172,20 +194,20 @@ export function renderCreatePot(ctx: RouterContext) {
         <CreatePot
             potName={newPotState.name || ""}
             setPotName={(name) =>
-                setNewPot({ ...newPotState, name })
+                setNewPot((current) => ({ ...current, name }))
             }
             potType={newPotState.type || "expense"}
             setPotType={(type) =>
-                setNewPot({ ...newPotState, type })
+                setNewPot((current) => ({ ...current, type, potIntent: type === "savings" ? "savings_circle" : "split", chapterMode: undefined }))
             }
             baseCurrency={newPotState.baseCurrency || "USD"}
             setBaseCurrency={(currency) =>
-                setNewPot({ ...newPotState, baseCurrency: currency })
+                setNewPot((current) => ({ ...current, baseCurrency: currency }))
             }
             members={newPotState.members || []}
             setMembers={(members) =>
-                setNewPot({
-                    ...newPotState,
+                setNewPot((current) => ({
+                    ...current,
                     members: members.map((m) => ({
                         id: m.id,
                         name: m.name,
@@ -194,18 +216,18 @@ export function renderCreatePot(ctx: RouterContext) {
                         address: m.address,
                         verified: m.verified,
                     })),
-                })
+                }))
             }
             goalAmount={newPotState.goalAmount}
             setGoalAmount={(amount) =>
-                setNewPot({ ...newPotState, goalAmount: amount })
+                setNewPot((current) => ({ ...current, goalAmount: amount }))
             }
             goalDescription={newPotState.goalDescription}
             setGoalDescription={(description) =>
-                setNewPot({
-                    ...newPotState,
+                setNewPot((current) => ({
+                    ...current,
                     goalDescription: description,
-                })
+                }))
             }
             onBack={back}
             onCreate={createPot}
@@ -221,7 +243,7 @@ export function renderAddContribution(ctx: RouterContext) {
         <AddContribution
             potName={pot.name}
             baseCurrency={pot.baseCurrency}
-            currentBalance={0}
+            currentBalance={pot.totalPooled || 0}
             yieldRate={pot.yieldRate || 0}
             onBack={back}
             defiProtocol={pot.defiProtocol || ""}
@@ -238,7 +260,7 @@ export function renderWithdrawFunds(ctx: RouterContext) {
         <WithdrawFunds
             potName={pot.name}
             baseCurrency={pot.baseCurrency}
-            yourBalance={0}
+            yourBalance={pot.totalPooled || 0}
             totalPooled={pot.totalPooled || 0}
             yieldRate={pot.yieldRate || 0}
             onBack={back}
@@ -258,24 +280,25 @@ export function renderRequestPayment(ctx: RouterContext) {
                 totalAmount: Number(person.totalAmount),
                 paymentPreference: person.paymentPreference || "Any method",
             })) as any}
-            onSendRequest={(personId, message) => {
+            onSendRequest={(personId, message, context) => {
                 const person = balances.owedToYou.find((p) => p.id === personId);
                 if (!person) {
                     showToast("Could not find person to request", "error");
                     return;
                 }
 
-                const amount = Number(person.totalAmount);
-                const notification: Notification = {
-                    id: `${Date.now()}-${personId}`,
-                    type: "settlement",
-                    title: "Payment request",
-                    message:
-                        message.trim() ||
-                        `You requested payment of $${amount.toFixed(2)} from ${person.name}`,
-                    timestamp: new Date().toISOString(),
-                    read: false,
+                const requestPerson: RequestPaymentPerson = {
+                    id: person.id,
+                    name: person.name,
+                    totalAmount: Number(person.totalAmount),
+                    breakdown: person.breakdown,
+                    paymentPreference: person.paymentPreference,
                 };
+                const notification = buildRequestPaymentNotification({
+                    person: requestPerson,
+                    message,
+                    deliveryMethod: context.deliveryMethod,
+                });
 
                 setNotifications((prev) => [notification, ...prev]);
                 showToast(`Request sent to ${person.name}`, "success");
@@ -299,12 +322,24 @@ export function renderReceiveQR(ctx: RouterContext) {
 }
 
 export function renderImportPot(ctx: RouterContext) {
-    const { nav: { replace }, data: { pots }, actions: { setPots } } = ctx;
+    const { nav: { replace }, data: { pots }, actions: { setPots, showToast } } = ctx;
+    const initialCid =
+        typeof window !== 'undefined'
+            ? new URLSearchParams(window.location.search).get('cid') ?? undefined
+            : undefined;
     return (
         <ImportPot
+            initialCid={initialCid}
             onBack={ctx.nav.back}
+            onShowToast={showToast}
             onImport={(p) => {
-                setPots([...pots, p as Pot]);
+                const importedPot = p as Pot;
+                const commitImport = () => {
+                    const persisted = persistImportedPot(importedPot);
+                    setPots(addImportedPot(persisted.length ? persisted : pots, importedPot));
+                };
+                commitImport();
+                window.setTimeout(commitImport, 250);
                 replace({ type: 'pot-home', potId: p.id });
             }}
         />

@@ -1,4 +1,4 @@
-import { Receipt, TrendingUp, AlertCircle, CheckCircle } from "lucide-react";
+import { AlertCircle, CheckCircle, Receipt, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { TopBar } from "../TopBar";
 import { copyWithToast } from "../../utils/clipboard";
@@ -121,42 +121,36 @@ export function CreatePot({
       <TopBar title="Create Pot" onBack={onBack} />
       
       <div className="flex-1 overflow-auto p-3 space-y-3 pb-[68px]">
-        {/* Pot Type Selection */}
         <div className="space-y-2">
           <h3 className="text-micro text-secondary">Type</h3>
           <div className="grid grid-cols-2 gap-2">
             <button
+              type="button"
               onClick={() => setPotType("expense")}
-              className={`p-3 rounded-xl border-2 transition-all active:scale-[0.98] ${
+              className={`px-3 py-2 rounded-lg border transition-all active:scale-[0.98] ${
                 potType === "expense"
-                  ? "border-[var(--accent)]"
-                  : "border-border bg-card"
+                  ? "border-[var(--accent)] bg-[var(--accent-pink-soft)] text-foreground"
+                  : "border-border bg-card text-secondary"
               }`}
             >
-              <div className="flex items-center gap-2 mb-1">
-                <Receipt className="w-4 h-4" style={{ color: potType === "expense" ? "var(--accent)" : "var(--muted)" }} />
-                <p className="text-body text-foreground">Expense</p>
-              </div>
-              <p className="text-caption text-secondary text-left">
-                Track and split shared costs
-              </p>
+              <span className="flex items-center justify-center gap-2 text-caption">
+                <Receipt className="w-4 h-4" />
+                Expense
+              </span>
             </button>
-            
             <button
+              type="button"
               onClick={() => setPotType("savings")}
-              className={`p-3 rounded-xl border-2 transition-all active:scale-[0.98] ${
+              className={`px-3 py-2 rounded-lg border transition-all active:scale-[0.98] ${
                 potType === "savings"
-                  ? "border-[var(--success)] bg-[rgba(25,195,125,0.08)]"
-                  : "border-border bg-card"
+                  ? "border-[var(--accent)] bg-[var(--accent-pink-soft)] text-foreground"
+                  : "border-border bg-card text-secondary"
               }`}
             >
-              <div className="flex items-center gap-2 mb-1">
-                <TrendingUp className="w-4 h-4" style={{ color: potType === "savings" ? "var(--success)" : "var(--muted)" }} />
-                <p className="text-body text-foreground">Savings</p>
-              </div>
-              <p className="text-caption text-secondary text-left">
-                Pool funds & earn yield
-              </p>
+              <span className="flex items-center justify-center gap-2 text-caption">
+                <TrendingUp className="w-4 h-4" />
+                Savings
+              </span>
             </button>
           </div>
         </div>
@@ -186,6 +180,7 @@ export function CreatePot({
                 className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body appearance-none"
               >
                 <option value="USD">USD</option>
+                <option value="CHF">CHF</option>
                 <option value="EUR">EUR</option>
                 <option value="GBP">GBP</option>
                 <option value="DOT">DOT</option>
@@ -324,7 +319,7 @@ export function CreatePot({
                 : "bg-muted/30 text-secondary cursor-not-allowed border border-border"
             }`}
           >
-            Create Pot
+            {potType === "savings" ? "Create savings pot" : "Create pot"}
           </button>
         </div>
       </div>

@@ -10,6 +10,7 @@
  */
 
 import type { Pot } from '../types';
+import { createDefaultChapterPots } from '../../../chopdot-dot/chapterPotTemplates';
 
 export const DEFAULT_POTS: Pot[] = [
   {
@@ -176,7 +177,8 @@ export const DEFAULT_POTS: Pot[] = [
     mode: 'casual',
     confirmationsEnabled: false,
     lastEditAt: new Date().toISOString()
-  }
+  },
+  ...(createDefaultChapterPots() as unknown as Pot[]),
 ];
 
 /**

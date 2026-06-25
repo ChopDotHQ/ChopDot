@@ -16,8 +16,8 @@ export function AddContribution({
   potName,
   baseCurrency,
   currentBalance,
-  yieldRate,
-  defiProtocol,
+  yieldRate: _yieldRate,
+  defiProtocol: _defiProtocol,
   onBack,
   onConfirm,
 }: AddContributionProps) {
@@ -25,14 +25,13 @@ export function AddContribution({
   const [method, setMethod] = useState<"wallet" | "bank">("wallet");
 
   const numAmount = parseFloat(amount) || 0;
-  const estimatedYield = (numAmount * yieldRate) / 100 / 12; // Monthly yield
   const newTotal = currentBalance + numAmount;
 
   const isValid = numAmount > 0;
 
   return (
     <div className="flex flex-col h-full bg-background">
-      <TopBar title="Add Funds" onBack={onBack} />
+      <TopBar title="Record Contribution" onBack={onBack} />
 
       <div className="flex-1 overflow-auto p-3 space-y-3 pb-[68px]">
         {/* Pot Info Banner */}
@@ -43,11 +42,11 @@ export function AddContribution({
             </div>
             <div className="flex-1">
               <p className="text-label" style={{ fontWeight: 500 }}>{potName}</p>
-              <p className="text-micro text-secondary">{defiProtocol} · {yieldRate.toFixed(1)}% APY</p>
+              <p className="text-micro text-secondary">Contribution record · external money movement</p>
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <p className="text-micro text-secondary">Current pooled</p>
+            <p className="text-micro text-secondary">Recorded so far</p>
             <p className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>
               {baseCurrency} {currentBalance.toFixed(2)}
             </p>
@@ -56,7 +55,7 @@ export function AddContribution({
 
         {/* Amount Input */}
         <div className="space-y-2">
-          <label className="text-micro text-secondary px-1">Amount to add</label>
+          <label className="text-micro text-secondary px-1">Amount to record</label>
           <div className="relative">
             <input
               type="number"
@@ -87,27 +86,24 @@ export function AddContribution({
           </div>
         </div>
 
-        {/* Yield Projection */}
+        {/* Record Preview */}
         {numAmount > 0 && (
           <div className="p-3 rounded-lg" style={{ background: 'rgba(86, 243, 154, 0.08)', border: '1px solid rgba(86, 243, 154, 0.2)' }}>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-micro text-secondary">Estimated monthly yield</p>
-              <p className="text-[18px] tabular-nums" style={{ fontWeight: 700, color: 'var(--success)' }}>
-                +{baseCurrency} {estimatedYield.toFixed(2)}
-              </p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-micro text-secondary">New total pooled</p>
+              <p className="text-micro text-secondary">New recorded total</p>
               <p className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>
                 {baseCurrency} {newTotal.toFixed(2)}
               </p>
             </div>
+            <p className="text-micro text-secondary">
+              This records a contribution that moved outside ChopDot. It does not move or hold money.
+            </p>
           </div>
         )}
 
         {/* Payment Method Selection */}
         <div className="space-y-2">
-          <label className="text-micro text-secondary px-1">Payment method</label>
+          <label className="text-micro text-secondary px-1">How it moved</label>
           
           <div className="space-y-2">
             <button
@@ -126,8 +122,8 @@ export function AddContribution({
                   <Wallet className={`w-5 h-5 ${method === "wallet" ? "text-white" : "text-secondary"}`} />
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="text-label" style={{ fontWeight: 500 }}>Polkadot Wallet</p>
-                  <p className="text-micro text-secondary">Direct on-chain deposit</p>
+                  <p className="text-label" style={{ fontWeight: 500 }}>External wallet transfer</p>
+                  <p className="text-micro text-secondary">Record a wallet payment made outside ChopDot</p>
                 </div>
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                   method === "wallet" ? "" : "border-border"
@@ -158,7 +154,7 @@ export function AddContribution({
                 </div>
                 <div className="flex-1 text-left">
                   <p className="text-label" style={{ fontWeight: 500 }}>Bank Transfer</p>
-                  <p className="text-micro text-secondary">Traditional banking (2-3 days)</p>
+                  <p className="text-micro text-secondary">Record a bank payment made outside ChopDot</p>
                 </div>
                 <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
                   method === "bank" ? "" : "border-border"
@@ -176,8 +172,8 @@ export function AddContribution({
         <div className="p-3 bg-muted/10 rounded-lg">
           <p className="text-micro text-secondary">
             {method === "wallet" 
-              ? `Funds will be deposited directly into ${defiProtocol} and start earning ${yieldRate.toFixed(1)}% APY immediately.`
-              : `Bank transfers take 2-3 business days to clear before funds start earning yield.`
+              ? `ChopDot saves the wallet transfer in the group record after you record it.`
+              : `ChopDot saves the bank transfer in the group record after you record it.`
             }
           </p>
         </div>
@@ -199,7 +195,7 @@ export function AddContribution({
             fontWeight: 600,
           }}
         >
-          {isValid ? `Add ${baseCurrency} ${numAmount.toFixed(2)}` : 'Enter amount'}
+          {isValid ? `Record ${baseCurrency} ${numAmount.toFixed(2)}` : 'Enter amount'}
         </button>
       </div>
     </div>

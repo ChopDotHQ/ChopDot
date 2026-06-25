@@ -37,10 +37,10 @@ const writeRecoveryMap = (value: Record<string, TrackedPotRecoveryEntry>) => {
   }
 };
 
-const toTimestamp = (value?: string) => {
-  if (!value) return 0;
+const toTimestamp = (value?: string): number | null => {
+  if (!value) return null;
   const parsed = Date.parse(value);
-  return Number.isFinite(parsed) ? parsed : 0;
+  return Number.isFinite(parsed) ? parsed : null;
 };
 
 export const saveTrackedPotRecovery = (
@@ -81,7 +81,9 @@ export const mergeTrackedPotRecovery = <TPot extends {
 
   const potLastEditAt = toTimestamp(pot.lastEditAt);
   const recoveryLastEditAt = toTimestamp(recovery.lastEditAt);
-  const recoveryIsNewer = recoveryLastEditAt >= potLastEditAt;
+  const recoveryIsNewer =
+    recoveryLastEditAt !== null &&
+    (potLastEditAt === null || recoveryLastEditAt >= potLastEditAt);
 
   const currentCloseouts = pot.closeouts ?? [];
   const currentHistory = pot.history ?? [];

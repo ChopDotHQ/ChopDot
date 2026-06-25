@@ -90,7 +90,7 @@ export interface AppRouterProps {
     setPreferredMethodId: (id: string) => void;
     setTheme: (theme: 'light' | 'dark' | 'system') => void;
     setFabQuickAddPotId: (id: string | null) => void;
-    setNewPot: (pot: Partial<Pot>) => void;
+    setNewPot: Dispatch<SetStateAction<Partial<Pot>>>;
     setSelectedCounterpartyId: (id: string | null) => void;
     setSettlements: Dispatch<SetStateAction<StoredSettlement[]>>;
     setNotifications: (updater: (prev: Notification[]) => Notification[]) => void;

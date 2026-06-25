@@ -174,6 +174,20 @@ const CloseoutRecordSchema = z.object({
 // Pot mode: casual (no confirmations) vs auditable (with confirmations)
 export const PotModeSchema = z.enum(['casual', 'auditable']).default('casual');
 export type PotMode = z.infer<typeof PotModeSchema>;
+export const PotIntentSchema = z.enum(['split', 'trip', 'deposits', 'savings_circle', 'emergency', 'community_fund']);
+export type PotIntent = z.infer<typeof PotIntentSchema>;
+
+export const SpendGroupSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  memberIds: z.array(z.string()).default([]),
+  defaultSplitRule: z.enum(['equal']).default('equal'),
+  preferredPaymentApp: z.enum(['twint', 'bank', 'wise', 'revolut', 'venmo', 'cashapp', 'outside']).default('twint'),
+  activePotId: z.string().optional(),
+  closedPotIds: z.array(z.string()).default([]),
+}).passthrough();
+
+export type SpendGroup = z.infer<typeof SpendGroupSchema>;
 
 // Last checkpoint metadata (simplified)
 const LastCheckpointSchema = z.object({
@@ -224,6 +238,16 @@ export const PotSchema = z.object({
   createdAt: z.union([z.number().int().nonnegative(), z.string()]).optional(),
   updatedAt: z.number().int().nonnegative().optional(),
   lastBackupCid: z.string().nullable().optional(),
+  potIntent: PotIntentSchema.optional(),
+  chapterMode: z.enum(['shared_expense', 'savings_circle', 'emergency_pot', 'community_fund']).optional(),
+  spendGroup: SpendGroupSchema.optional(),
+  dotChapter: z.any().optional(),
+  dotAgents: z.array(z.any()).optional(),
+  dotActiveAgentId: z.string().optional(),
+  dotRail: z.any().optional(),
+  dotEvents: z.array(z.any()).optional(),
+  dotReleaseTemplate: z.any().optional(),
+  chapter: z.any().optional(),
 }).passthrough() // Allow unknown fields for forward compatibility
 .refine((data) => {
   // Validate no duplicate member IDs

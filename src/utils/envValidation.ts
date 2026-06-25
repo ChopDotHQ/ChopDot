@@ -29,6 +29,10 @@ const OPTIONAL_ENV_VARS = {
   VITE_SENTRY_DSN: 'Sentry DSN for error tracking',
 } as const;
 
+export function isDotHostProfile(): boolean {
+  return import.meta.env.VITE_BUILD_PROFILE === 'dot-host';
+}
+
 /**
  * Validate all required environment variables
  */
@@ -71,6 +75,11 @@ export function validateEnvironment(): EnvValidationResult {
  * Only throws for critical vars; warns about optional vars
  */
 export function requireValidEnvironment(): void {
+  if (isDotHostProfile()) {
+    console.warn('dot-host profile: skipping Supabase env validation');
+    return;
+  }
+
   const result = validateEnvironment();
   
   // Only throw if critical vars are missing

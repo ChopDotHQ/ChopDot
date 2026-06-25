@@ -166,6 +166,14 @@ export class PotRepository {
       yieldRate: input.type === 'savings' ? 0 : undefined,
       goalAmount: input.goalAmount,
       goalDescription: input.goalDescription,
+      potIntent: input.potIntent,
+      chapterMode: input.chapterMode,
+      dotChapter: input.dotChapter,
+      dotAgents: input.dotAgents,
+      dotActiveAgentId: input.dotActiveAgentId,
+      dotRail: input.dotRail,
+      dotEvents: input.dotEvents,
+      dotReleaseTemplate: input.dotReleaseTemplate,
     };
 
     await this.source.savePot(pot);

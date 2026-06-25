@@ -51,7 +51,10 @@ export function buildPotMetadata(pot: Pot, lastEditAt: string): Record<string, u
     defiProtocol: pot.defiProtocol,
     goalAmount: pot.goalAmount,
     goalDescription: pot.goalDescription,
+    potIntent: pot.potIntent,
+    spendGroup: pot.spendGroup,
     lastBackupCid: pot.lastBackupCid,
+    chapter: pot.chapter,
   };
 
   return stripUndefined(metadata);
@@ -239,7 +242,10 @@ export function mapPotRow(
     defiProtocol: metadata.defiProtocol as string | undefined,
     goalAmount: row.goal_amount ?? (metadata.goalAmount as number | undefined),
     goalDescription: row.goal_description ?? (metadata.goalDescription as string | undefined),
+    potIntent: metadata.potIntent as Pot['potIntent'],
+    spendGroup: metadata.spendGroup as Pot['spendGroup'],
     lastBackupCid: metadata.lastBackupCid as string | undefined,
+    chapter: metadata.chapter,
   };
 
   const parsed = PotSchema.safeParse({

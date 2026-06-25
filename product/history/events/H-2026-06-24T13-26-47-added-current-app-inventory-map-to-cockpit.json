@@ -1,0 +1,24 @@
+{
+  "id": "H-2026-06-24T13-26-47-added-current-app-inventory-map-to-cockpit",
+  "timestamp": "2026-06-24T13:26:47.560Z",
+  "type": "checkpoint",
+  "summary": "Added current app inventory map to cockpit",
+  "cards": [
+    "P-014"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/generated/current-app-map.md",
+    "product/evidence/current-app-inventory-latest.json",
+    "product/evidence/screenshots/product-cockpit-latest.png"
+  ],
+  "notes": [
+    "Cockpit now scans routes",
+    "screen renderers",
+    "screen files",
+    "tests",
+    "product card screen refs",
+    "missing refs",
+    "and unmapped screens."
+  ]
+}

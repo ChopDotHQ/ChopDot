@@ -171,6 +171,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
       };
 
       return {
+        id: option.id,
         title: option.title,
         subtitle: option.subtitle,
         iconSrc: option.icon.src,

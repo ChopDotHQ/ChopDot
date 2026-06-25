@@ -11,6 +11,8 @@ import { shouldPreferDLReads } from "../../utils/dlReadsFlag";
 import { usePSAStyle } from "../../utils/usePSAStyle";
 import type { Pot as DataLayerPot } from "../../services/data/types";
 import { Skeleton } from "../Skeleton";
+import { buildDotStatus, type DotChapter } from "../../chopdot-dot/commitmentKernel";
+import type { ChapterPotMode } from "../../types/app";
 
 interface Pot {
   id: string;
@@ -24,6 +26,8 @@ interface Pot {
   budgetEnabled?: boolean;
   totalPooled?: number;
   yieldRate?: number;
+  chapterMode?: ChapterPotMode;
+  dotChapter?: DotChapter;
 }
 
 interface DebtBreakdown {
@@ -57,6 +61,32 @@ interface PotsHomeProps {
   onQuickSettle?: () => void;
   onQuickScan?: () => void;
   onQuickRequest?: () => void;
+}
+
+function chapterPersonName(chapter: DotChapter, participantId: string): string {
+  return chapter.participants.find((participant) => participant.id === participantId)?.name ?? participantId;
+}
+
+function chapterAmount(chapter: DotChapter, states?: string[]): number {
+  return chapter.obligations
+    .filter((obligation) => !states || states.includes(obligation.state))
+    .reduce((total, obligation) => total + obligation.amount, 0);
+}
+
+function formatChapterCardPrompt(chapter: DotChapter): string {
+  const openObligation = chapter.obligations.find((obligation) => obligation.state === 'open');
+  if (openObligation) {
+    return `${chapterPersonName(chapter, openObligation.fromParticipantId)} pays ${chapterPersonName(chapter, openObligation.toParticipantId)}`;
+  }
+  const claimedObligation = chapter.obligations.find((obligation) => obligation.state === 'claimed');
+  if (claimedObligation) {
+    return `${chapterPersonName(chapter, claimedObligation.toParticipantId)} confirms ${chapterPersonName(chapter, claimedObligation.fromParticipantId)}`;
+  }
+  const release = chapter.releaseRequests.at(-1);
+  if (release?.state === 'requested') return 'Approval needed';
+  if (release?.state === 'approved') return 'Ready to release';
+  if (release?.state === 'claimed_released') return `${chapterPersonName(chapter, release.recipientId)} confirms receipt`;
+  return 'Ready to close';
 }
 
 export function PotsHome({
@@ -126,6 +156,8 @@ export function PotsHome({
         budgetEnabled: pot.budgetEnabled,
         totalPooled: pot.totalPooled,
         yieldRate: pot.yieldRate,
+        chapterMode: pot.chapterMode,
+        dotChapter: pot.dotChapter,
       };
     };
   }, [summaryUserId]);
@@ -509,6 +541,25 @@ export function PotsHome({
                     const isOverBudget = pot.budgetEnabled && pot.budget
                       ? pot.totalExpenses > pot.budget
                       : false;
+                    const chapterStatus = pot.dotChapter ? buildDotStatus(pot.dotChapter) : null;
+                    const chapterHandled = pot.dotChapter
+                      ? pot.dotChapter.obligations.filter((item: { state: string }) => item.state === 'confirmed' || item.state === 'exception_recorded').length
+                      : 0;
+                    const chapterTotal = pot.dotChapter?.obligations.length ?? 0;
+                    const chapterExpected = pot.dotChapter ? chapterAmount(pot.dotChapter) : 0;
+                    const chapterConfirmed = pot.dotChapter ? chapterAmount(pot.dotChapter, ['confirmed']) : 0;
+                    const chapterPrompt = pot.dotChapter ? formatChapterCardPrompt(pot.dotChapter) : null;
+                    const chapterCurrency = pot.dotChapter?.obligations[0]?.currency ?? pot.baseCurrency;
+                    const chapterLabel =
+                      pot.chapterMode === 'shared_expense'
+                        ? 'Group expense'
+                        : pot.chapterMode === 'savings_circle'
+                        ? 'Savings circle'
+                        : pot.chapterMode === 'emergency_pot'
+                          ? 'Emergency pot'
+                          : pot.chapterMode === 'community_fund'
+                            ? 'Community fund'
+                            : null;
 
                     return (
                       <button
@@ -522,31 +573,59 @@ export function PotsHome({
                       >
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <div className="flex items-center gap-2 flex-1 min-w-0">
-                            {pot.type === "savings" && (
+                            {pot.type === "savings" && !pot.chapterMode && (
                               <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--success)' }} />
                             )}
                             <p className="text-body flex-1 truncate" style={{ fontWeight: 500 }}>{pot.name}</p>
                           </div>
-                          {pot.type === "savings" && pot.yieldRate && (
-                            <span className="px-2 py-0.5 rounded text-caption whitespace-nowrap flex-shrink-0 tabular-nums" style={{ background: 'rgba(25, 195, 125, 0.15)', color: 'var(--success)' }}>
-                              {pot.yieldRate.toFixed(1)}% APY
+                          {chapterLabel && (
+                            <span className="px-2 py-0.5 rounded text-caption whitespace-nowrap flex-shrink-0" style={{ background: 'var(--accent-pink-soft)', color: 'var(--accent)' }}>
+                              {chapterLabel}
+                            </span>
+                          )}
+                          {!chapterLabel && pot.type === "savings" && (
+                            <span className="px-2 py-0.5 rounded text-caption whitespace-nowrap flex-shrink-0" style={{ background: 'rgba(25, 195, 125, 0.15)', color: 'var(--success)' }}>
+                              Record only
                             </span>
                           )}
                         </div>
                         {balancesVisible && (
-                          <div className="flex items-center justify-between">
-                            {pot.type === "savings" ? (
+                          <div className={pot.chapterMode && chapterStatus ? 'space-y-3' : 'flex items-center justify-between'}>
+                            {pot.chapterMode && chapterStatus ? (
+                              <div className="space-y-2">
+                                <div>
+                                  <p className="text-micro text-secondary mb-0.5">Next up</p>
+                                  <p className="text-[24px] leading-tight" style={{ fontWeight: 700, color: chapterStatus.closeoutReadiness === 'ready' ? 'var(--money)' : 'var(--ink)' }}>
+                                    {chapterPrompt}
+                                  </p>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <div className="rounded-lg bg-muted/10 p-2">
+                                    <p className="text-micro text-secondary">Expected</p>
+                                    <p className="text-body tabular-nums" style={{ fontWeight: 600 }}>
+                                      {formatPotAmount(chapterExpected, chapterCurrency)}
+                                    </p>
+                                  </div>
+                                  <div className="rounded-lg bg-muted/10 p-2">
+                                    <p className="text-micro text-secondary">Confirmed</p>
+                                    <p className="text-body tabular-nums" style={{ fontWeight: 600 }}>
+                                      {formatPotAmount(chapterConfirmed, chapterCurrency)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ) : pot.type === "savings" ? (
                               <>
                                 <div>
-                                  <p className="text-micro text-secondary mb-0.5">Your contribution</p>
+                                  <p className="text-micro text-secondary mb-0.5">Your recorded</p>
                                   <p className="text-[18px] tabular-nums" style={{ fontWeight: 600 }}>
                                     {formatPotAmount(pot.myExpenses, pot.baseCurrency)}
                                   </p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-micro text-secondary mb-0.5">Total pooled</p>
+                                  <p className="text-micro text-secondary mb-0.5">Recorded total</p>
                                   <p className="text-[24px] tabular-nums" style={{ fontWeight: 700, color: 'var(--money)' }}>
-                                    {formatPotAmount(pot.totalExpenses, pot.baseCurrency)}
+                                    {formatPotAmount(pot.totalPooled ?? pot.totalExpenses, pot.baseCurrency)}
                                   </p>
                                 </div>
                               </>
@@ -581,7 +660,23 @@ export function PotsHome({
                             )}
                           </div>
                         )}
-                        {pot.budgetEnabled && pot.budget && pot.type !== "savings" && (
+                        {pot.chapterMode && chapterStatus && (
+                          <div className="mt-1.5">
+                            <div className="flex items-center justify-between mb-0.5">
+                              <span className="text-micro text-secondary">{chapterHandled}/{chapterTotal} handled</span>
+                              <span className="text-micro text-foreground tabular-nums">
+                                {chapterStatus.blockers.length} open
+                              </span>
+                            </div>
+                            <div className="h-1 bg-muted rounded-full overflow-hidden">
+                              <div
+                                className="h-full transition-all duration-300 bg-primary"
+                                style={{ width: `${chapterTotal ? (chapterHandled / chapterTotal) * 100 : 0}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {!pot.chapterMode && pot.budgetEnabled && pot.budget && pot.type !== "savings" && (
                           <div className="mt-1.5">
                             <div className="flex items-center justify-between mb-0.5">
                               <span className="text-micro text-secondary">Budget</span>
@@ -601,18 +696,18 @@ export function PotsHome({
                             </div>
                           </div>
                         )}
-                        {pot.type === "savings" && (
+                        {!pot.chapterMode && pot.type === "savings" && (
                           <div className="mt-1.5">
                             <div className="flex items-center justify-between mb-0.5">
-                              <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Total Pooled</span>
+                              <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Shared record</span>
                               <span className="text-micro text-foreground tabular-nums">
                                 {formatPotAmount(pot.totalPooled ?? 0, pot.baseCurrency)}
                               </span>
                             </div>
                             <div className="flex items-center justify-between mb-0.5">
-                              <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Yield Rate</span>
-                              <span className="text-micro text-foreground tabular-nums">
-                                {pot.yieldRate?.toFixed(1)}%
+                              <span className="text-micro" style={{ color: 'var(--text-secondary)' }}>Money movement</span>
+                              <span className="text-micro text-foreground">
+                                Outside app
                               </span>
                             </div>
                           </div>

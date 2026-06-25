@@ -7,6 +7,7 @@ import { isBaseCurrency } from "../schema/pot";
 import { triggerHaptic } from "../utils/haptics";
 import { logDev, warnDev } from "../utils/logDev";
 import { refreshPots } from "./usePots";
+import { createChapterPot } from "../chopdot-dot/chapterPotTemplates";
 
 type ToastType = "success" | "error" | "info";
 
@@ -117,16 +118,27 @@ export const useBusinessActions = ({
     }
 
     try {
+      const chapterPot = newPot.chapterMode ? createChapterPot(newPot.chapterMode) : null;
       const createDto = {
-        name: newPot.name || "Unnamed Pot",
-        type: newPot.type || "expense",
-        baseCurrency,
+        name: newPot.name || chapterPot?.name || "Unnamed Pot",
+        type: chapterPot?.type || newPot.type || "expense",
+        baseCurrency: chapterPot?.baseCurrency || baseCurrency,
         budget: newPot.budget ?? null,
         budgetEnabled: newPot.budgetEnabled ?? false,
-        checkpointEnabled: newPot.type === "expense" ? false : undefined,
+        checkpointEnabled: chapterPot ? false : newPot.type === "expense" ? false : undefined,
         goalAmount: newPot.goalAmount,
         goalDescription: newPot.goalDescription,
-        members: processedMembers.map((m) => ({
+        potIntent: newPot.potIntent,
+        chapterMode: chapterPot?.chapterMode,
+        dotChapter: chapterPot?.dotChapter
+          ? { ...chapterPot.dotChapter, name: newPot.name || chapterPot.dotChapter.name }
+          : undefined,
+        dotAgents: chapterPot?.dotAgents,
+        dotActiveAgentId: chapterPot?.dotActiveAgentId,
+        dotRail: chapterPot?.dotRail,
+        dotEvents: chapterPot?.dotEvents,
+        dotReleaseTemplate: chapterPot?.dotReleaseTemplate,
+        members: (chapterPot?.members || processedMembers).map((m) => ({
           id: m.id,
           name: m.name,
           address: m.address || null,
@@ -149,6 +161,8 @@ export const useBusinessActions = ({
         name: "",
         type: "expense",
         baseCurrency: "USD",
+        potIntent: "split",
+        chapterMode: undefined,
         members: [
           {
             id: "owner",

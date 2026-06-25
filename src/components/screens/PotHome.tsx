@@ -21,10 +21,12 @@ import {
   canReopenTrackedCloseout,
   findLatestTrackedCloseout,
 } from '../../services/closeout/pvmCloseout';
+import { CapturePotHomeSection } from '../capture/CapturePotHomeSection';
 
 interface PotHomeProps {
   potId?: string;
   potType: 'expense' | 'savings';
+  potIntent?: Pot['potIntent'];
   potName: string;
   baseCurrency: string;
   currentUserId: string;
@@ -68,6 +70,8 @@ interface PotHomeProps {
   closeouts?: CloseoutRecord[];
   onUpdatePot?: (updates: { history?: PotHistory[]; lastCheckpoint?: any; lastEditAt?: string }) => void;
   onReopenTrackedSettlement?: () => void;
+  onOpenSpendCard?: (spendCardId?: string) => void;
+  hasCaptureChapter?: boolean;
 }
 
 export function PotHome(props: PotHomeProps) {
@@ -100,6 +104,8 @@ export function PotHome(props: PotHomeProps) {
     closeouts = [],
     onUpdatePot,
     onReopenTrackedSettlement,
+    onOpenSpendCard,
+    hasCaptureChapter,
     checkpointConfirmations,
   } = props;
 
@@ -126,6 +132,11 @@ export function PotHome(props: PotHomeProps) {
   });
 
   const { potType, potName, baseCurrency, members, expenses, budget, budgetEnabled, checkpointEnabled, contributions, totalPooled, yieldRate, goalAmount, goalDescription, pot, refreshPot } = merged;
+  const spendGroupLabel = pot?.spendGroup?.label ?? potName;
+  const spendGroupPeople =
+    pot?.spendGroup?.memberIds?.length || members.length;
+  const preferredPaymentApp =
+    (pot?.spendGroup?.preferredPaymentApp ?? 'twint').toUpperCase();
 
   const summary = usePotSummary({
     expenses,
@@ -273,6 +284,44 @@ export function PotHome(props: PotHomeProps) {
         </div>
 
         <div className="flex-1 overflow-auto">
+          {potType === 'expense' && onOpenSpendCard && (
+            <div className="px-4 pt-4" data-testid="pot-10x-capture-entry">
+              <button
+                type="button"
+                onClick={() => onOpenSpendCard?.()}
+                className="w-full rounded-[1.25rem] border border-border bg-card px-4 py-3 text-left transition-all duration-200 active:scale-[0.99]"
+                data-testid="pot-open-spend-card"
+              >
+                <span className="flex items-center justify-between gap-3">
+                  <span>
+                    <span className="block text-label text-secondary">Group shortcut</span>
+                    <span className="block text-body font-semibold mt-0.5">{spendGroupLabel}</span>
+                    <span className="block text-caption text-secondary mt-0.5">
+                      {spendGroupPeople} people · {preferredPaymentApp}
+                    </span>
+                  </span>
+                  <span
+                    className="rounded-full px-3 py-1.5 text-caption font-medium text-white"
+                    style={{ backgroundColor: 'var(--accent)' }}
+                  >
+                    Use at checkout
+                  </span>
+                </span>
+              </button>
+            </div>
+          )}
+
+          {potType === 'expense' && potId && (
+            <CapturePotHomeSection
+              potId={potId}
+              currentMemberId={currentUserId}
+              currentMemberName={members.find((m) => m.id === currentUserId)?.name ?? 'You'}
+              hasChapter={Boolean(hasCaptureChapter)}
+              onOpenSpendCard={onOpenSpendCard}
+              onShowToast={onShowToast}
+            />
+          )}
+
           {activeTab === 'Savings' && potType === 'savings' && (
             <SavingsTab
               members={members}
@@ -300,6 +349,7 @@ export function PotHome(props: PotHomeProps) {
               contributions={contributions}
               potId={potId}
               pot={pot ?? undefined}
+              potIntent={pot?.potIntent ?? props.potIntent}
               potHistory={checkpoint.activeHistory}
               onAddExpense={() => {
                 if (!canAddExpense) {
