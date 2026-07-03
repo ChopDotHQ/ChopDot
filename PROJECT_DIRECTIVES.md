@@ -17,6 +17,7 @@ This project inherits its core intelligence from the **AutoBots Agent Hub**. You
 - **Architecture**: Closeout-driven state snapshots with chain-anchored proof.
 - **Concrete Spine**: reduce friction across `Catch -> Management -> Payout -> History` while increasing trust and future optionality; chain, payment, AI, and data systems are adapters unless a pillar-specific product need promotes them.
 - **Primary Source of Truth**:
+    - [AgentOps KG Bridge](/Users/devinsonpena/ChopDot/docs/agentops_kg_bridge.md) (agent hydration and anti-loop routing)
     - [README.md](/Users/devinsonpena/ChopDot/README.md)
     - [CHOPDOT_CONCRETE_SPINE.md](/Users/devinsonpena/ChopDot/.local-private/CHOPDOT_CONCRETE_SPINE.md) (private-local active product spine)
     - [Strategic Plan](/Users/devinsonpena/ChopDot/docs/CURSOR_CHOPDOT_2030_STRATEGIC_PLAN.md)
@@ -33,4 +34,4 @@ This project inherits its core intelligence from the **AutoBots Agent Hub**. You
 - **Local Rules**: respect the local-only files (`.memory`, `.worktrees`, `.agents`) as untracked assets.
 - **Spine Guardrail**: Before recommending a product surface, chain adapter, proof path, or stack, state which of the four pillars it improves and what evidence would falsify it.
 - **Doctrine Feedback**: Put reusable lessons in `/Users/devinsonpena/ChopDot/docs/AGENT_DOCTRINE_FEEDBACK.md`; keep ChopDot product strategy local.
-- **Hydration**: interpret `Hydrate this repo` as lane selection and repo-context routing first, not as a generic repo scan.
+- **Hydration**: interpret `Hydrate this repo` as lane selection and repo-context routing first, not as a generic repo scan. For non-trivial product, UI, wallet, payment, AI-builder, or integration work, read `docs/agentops_kg_bridge.md` and the local AgentOps KG bridge files before scanning broad docs.
