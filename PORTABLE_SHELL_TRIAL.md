@@ -139,7 +139,8 @@ Pause or kill this trial if:
 5. Produce the first web/mobile proof packet. `Done for local web`
 6. Select one mini-app host candidate for the second proof packet. `Done with Telegram-style embedded simulation`
 7. Add Telegram Mini App readiness seam. `Done`
-8. Package or deploy into a real Telegram Mini App sandbox. `Next`
+8. Package or deploy into a real Telegram Mini App sandbox. `Done for HTTPS deploy; BotFather client setup remains manual`
+9. Validate inside the real Telegram mobile client. `Next`
 
 ## Current Proof
 
@@ -151,6 +152,16 @@ Local web proof packet:
 - screenshots: `20`
 - report: `proof/portable-shell-web/report.json`
 - storage: `localStorage` key `chopdot-portable-shell-state-v1`
+- result: full normal journey completed and state persisted after refresh
+
+Live HTTPS web proof packet:
+
+- path: `proof/portable-shell-web-live/`
+- host profile: `web`
+- url: `https://portable-shell-trial.vercel.app`
+- viewport: `390 x 844`
+- screenshots: `20`
+- report: `proof/portable-shell-web-live/report.json`
 - result: full normal journey completed and state persisted after refresh
 
 Covered path:
@@ -227,6 +238,23 @@ Telegram readiness seam:
 - The app mirrors local state writes to Telegram `CloudStorage` when available,
   while keeping `localStorage` as the current readable prototype persistence
   source.
+
+Live HTTPS Telegram-style proof packet:
+
+- path: `proof/portable-shell-telegram-live/`
+- host profile: `telegram`
+- url: `https://portable-shell-trial.vercel.app/?tgWebAppStartParam=portable-proof`
+- viewport: `390 x 844`
+- screenshots: `20`
+- report: `proof/portable-shell-telegram-live/report.json`
+- result: full normal journey completed and state persisted after refresh
+
+Deployment:
+
+- alias: `https://portable-shell-trial.vercel.app`
+- deployment: `https://portable-shell-trial-fn778sj2z-devinsons-projects-b5ab981e.vercel.app`
+- inspect: `https://vercel.com/devinsons-projects-b5ab981e/portable-shell-trial/bjqNKYpJDmbucGVmd3RYBcxQL6B3`
+- sandbox setup notes: `TELEGRAM_SANDBOX.md`
 
 This does not prove a real Telegram deployment, real share-sheet behavior,
 host SDK payment behavior, BotFather setup, server-side `initData` validation,

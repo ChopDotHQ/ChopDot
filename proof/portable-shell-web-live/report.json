@@ -1,0 +1,73 @@
+{
+  "baseUrl": "https://portable-shell-trial.vercel.app",
+  "hostProfile": "web",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "capabilityMatrix": {
+    "hostProfile": "web",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": {
+      "width": 390,
+      "height": 844
+    },
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36",
+    "canUseLocalStorage": true,
+    "canUseClipboard": true,
+    "canUseShareSheet": true,
+    "browserHistoryLength": 2,
+    "displayModeStandalone": false,
+    "safeAreaInsets": {
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px"
+    },
+    "hostBackButton": false,
+    "hostMainButton": false,
+    "hasTelegramWebApp": false,
+    "canUseTelegramCloudStorage": false,
+    "launchStartParam": null,
+    "telegramPlatform": null,
+    "telegramViewportStableHeight": null
+  },
+  "hostCallLog": {
+    "beforeReload": [],
+    "afterReload": []
+  },
+  "screenshots": [
+    "01-first-run.png",
+    "02-guest-setup.png",
+    "03-empty-home.png",
+    "04-create-group-empty.png",
+    "05-create-group-filled.png",
+    "06-group-before-spend.png",
+    "07-add-spend-empty.png",
+    "08-add-spend-filled.png",
+    "09-review-split.png",
+    "10-open-balances.png",
+    "11-settle-up.png",
+    "12-settle-up-request-sent.png",
+    "13-group-request-sent.png",
+    "14-payer-view.png",
+    "15-needs-confirm.png",
+    "16-after-confirm-leo.png",
+    "17-finish-group.png",
+    "18-group-summary.png",
+    "19-history-home.png",
+    "20-after-refresh-persisted.png"
+  ],
+  "storageSnapshot": {
+    "hasPersistedState": true,
+    "keys": [
+      "chopdot-portable-shell-state-v1"
+    ]
+  },
+  "finalText": "ChopDot\n\nHey, Mina\n\nM\n\nNet position\n\n$40.00\nYour Groups\nNew\nWT\nWeekend Trip\n\n3 members\n\n+$40.00\nHome\nFriends\nPay\nHistory\nSettings",
+  "consoleEvents": [],
+  "passed": true
+}
