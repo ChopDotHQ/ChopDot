@@ -1,12 +1,12 @@
 {
   "baseUrl": "http://127.0.0.1:5180/",
-  "hostProfile": "web",
+  "hostProfile": "telegram",
   "viewport": {
     "width": 390,
     "height": 844
   },
   "capabilityMatrix": {
-    "hostProfile": "web",
+    "hostProfile": "telegram",
     "viewport": {
       "width": 390,
       "height": 844
@@ -15,7 +15,7 @@
       "width": 390,
       "height": 844
     },
-    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 TelegramBot (like TwitterBot)",
     "canUseLocalStorage": true,
     "canUseClipboard": true,
     "canUseShareSheet": true,
@@ -27,9 +27,9 @@
       "bottom": "0px",
       "left": "0px"
     },
-    "hostBackButton": false,
-    "hostMainButton": false,
-    "hasTelegramWebApp": false
+    "hostBackButton": true,
+    "hostMainButton": true,
+    "hasTelegramWebApp": true
   },
   "screenshots": [
     "01-first-run.png",

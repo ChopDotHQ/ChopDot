@@ -6,7 +6,11 @@ import { spawn } from 'node:child_process';
 const root = process.cwd();
 const port = Number(process.env.PORT || 5180);
 const baseUrl = process.env.PROOF_URL || `http://127.0.0.1:${port}/`;
-const outDir = process.env.PROOF_OUT || path.join(root, 'proof', 'portable-shell-web');
+const hostProfile = (process.env.HOST_PROFILE || 'web').toLowerCase();
+const defaultOutDir = hostProfile === 'web'
+  ? path.join(root, 'proof', 'portable-shell-web')
+  : path.join(root, 'proof', `portable-shell-${hostProfile}`);
+const outDir = process.env.PROOF_OUT || defaultOutDir;
 const chromePath = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 await rm(outDir, { recursive: true, force: true });
@@ -27,11 +31,8 @@ try {
     headless: true,
     executablePath: chromePath,
   });
-  const context = await browser.newContext({
-    viewport: { width: 390, height: 844 },
-    deviceScaleFactor: 1,
-    isMobile: true,
-  });
+  const context = await browser.newContext(getHostContextOptions(hostProfile));
+  await installHostShim(context, hostProfile);
 
   const page = await context.newPage();
   const consoleEvents = [];
@@ -111,10 +112,64 @@ try {
     hasPersistedState: Boolean(window.localStorage.getItem('chopdot-portable-shell-state-v1')),
     keys: Object.keys(window.localStorage).sort(),
   }));
+  const capabilityMatrix = await page.evaluate((profile) => {
+    let canUseLocalStorage = false;
+    try {
+      window.localStorage.setItem('__chopdot_capability_test__', '1');
+      window.localStorage.removeItem('__chopdot_capability_test__');
+      canUseLocalStorage = true;
+    } catch {
+      canUseLocalStorage = false;
+    }
+
+    const safeAreaProbe = document.createElement('div');
+    safeAreaProbe.style.cssText = [
+      'position:absolute',
+      'left:-9999px',
+      'top:-9999px',
+      'padding-top:env(safe-area-inset-top)',
+      'padding-right:env(safe-area-inset-right)',
+      'padding-bottom:env(safe-area-inset-bottom)',
+      'padding-left:env(safe-area-inset-left)',
+    ].join(';');
+    document.body.appendChild(safeAreaProbe);
+    const safeArea = getComputedStyle(safeAreaProbe);
+    const safeAreaInsets = {
+      top: safeArea.paddingTop,
+      right: safeArea.paddingRight,
+      bottom: safeArea.paddingBottom,
+      left: safeArea.paddingLeft,
+    };
+    safeAreaProbe.remove();
+
+    return {
+      hostProfile: profile,
+      viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      },
+      screen: {
+        width: window.screen.width,
+        height: window.screen.height,
+      },
+      userAgent: window.navigator.userAgent,
+      canUseLocalStorage,
+      canUseClipboard: Boolean(window.navigator.clipboard?.writeText),
+      canUseShareSheet: Boolean(window.navigator.share),
+      browserHistoryLength: window.history.length,
+      displayModeStandalone: window.matchMedia('(display-mode: standalone)').matches || Boolean(window.navigator.standalone),
+      safeAreaInsets,
+      hostBackButton: Boolean(window.Telegram?.WebApp?.BackButton),
+      hostMainButton: Boolean(window.Telegram?.WebApp?.MainButton),
+      hasTelegramWebApp: Boolean(window.Telegram?.WebApp),
+    };
+  }, hostProfile);
 
   const report = {
     baseUrl,
-    viewport: { width: 390, height: 844 },
+    hostProfile,
+    viewport: getHostContextOptions(hostProfile).viewport,
+    capabilityMatrix,
     screenshots,
     storageSnapshot,
     finalText: text,
@@ -153,4 +208,68 @@ async function waitForServer(url, child) {
   }
 
   throw new Error(`Vite did not start at ${url}\n${errors.join('')}`);
+}
+
+function getHostContextOptions(profile) {
+  const baseOptions = {
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 1,
+    isMobile: true,
+    hasTouch: true,
+  };
+
+  if (profile === 'telegram') {
+    return {
+      ...baseOptions,
+      userAgent: [
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X)',
+        'AppleWebKit/605.1.15 (KHTML, like Gecko)',
+        'Mobile/15E148 TelegramBot (like TwitterBot)',
+      ].join(' '),
+      locale: 'en-US',
+      colorScheme: 'light',
+    };
+  }
+
+  return baseOptions;
+}
+
+async function installHostShim(context, profile) {
+  if (profile !== 'telegram') {
+    return;
+  }
+
+  await context.addInitScript(() => {
+    window.Telegram = {
+      WebApp: {
+        initData: 'query_id=portable-shell-proof',
+        initDataUnsafe: {
+          user: {
+            id: 1001,
+            first_name: 'Mina',
+            username: 'mina',
+          },
+        },
+        platform: 'ios',
+        colorScheme: 'light',
+        viewportHeight: window.innerHeight,
+        viewportStableHeight: window.innerHeight,
+        ready() {},
+        expand() {},
+        BackButton: {
+          show() {},
+          hide() {},
+          onClick() {},
+          offClick() {},
+        },
+        MainButton: {
+          setText() {},
+          show() {},
+          hide() {},
+          onClick() {},
+          offClick() {},
+        },
+      },
+    };
+  });
 }

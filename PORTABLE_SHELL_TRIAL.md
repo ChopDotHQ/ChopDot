@@ -137,13 +137,15 @@ Pause or kill this trial if:
 3. Route clipboard invite through the seam. `Done`
 4. Add a persistence seam, still local-only. `Done`
 5. Produce the first web/mobile proof packet. `Done for local web`
-6. Select one mini-app host candidate for the second proof packet. `Next`
+6. Select one mini-app host candidate for the second proof packet. `Done with Telegram-style embedded simulation`
+7. Package or deploy into a real mini-app host sandbox. `Next`
 
 ## Current Proof
 
 Local web proof packet:
 
 - path: `proof/portable-shell-web/`
+- host profile: `web`
 - viewport: `390 x 844`
 - screenshots: `20`
 - report: `proof/portable-shell-web/report.json`
@@ -171,3 +173,39 @@ first run
 -> history/home
 -> reload with persisted state
 ```
+
+Telegram-style embedded webview proof packet:
+
+- path: `proof/portable-shell-telegram/`
+- host profile: `telegram`
+- viewport: `390 x 844`
+- screenshots: `20`
+- report: `proof/portable-shell-telegram/report.json`
+- storage: `localStorage` key `chopdot-portable-shell-state-v1`
+- host simulation: mobile Telegram-like user agent plus `window.Telegram.WebApp`
+  object with `BackButton` and `MainButton`
+- result: full normal journey completed and state persisted after refresh
+
+Capability matrix from the simulated embedded run:
+
+```json
+{
+  "canUseLocalStorage": true,
+  "canUseClipboard": true,
+  "canUseShareSheet": true,
+  "hostBackButton": true,
+  "hostMainButton": true,
+  "hasTelegramWebApp": true,
+  "safeAreaInsets": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+  }
+}
+```
+
+This does not prove a real Telegram deployment, real share-sheet behavior,
+host SDK payment behavior, or production mini-app packaging. It proves the
+current shell can complete the same core journey in a Telegram-like embedded
+browser shape without forking product UI or breaking local persistence.
