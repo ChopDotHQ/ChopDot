@@ -132,9 +132,42 @@ Pause or kill this trial if:
 
 ## Next Ordered Tasks
 
-1. Verify web/mobile-browser journey from a clean load.
-2. Add a minimal environment capability seam.
-3. Route clipboard invite through the seam.
-4. Add a persistence seam, still local-only.
-5. Produce the first web/mobile proof packet.
-6. Select one mini-app host candidate for the second proof packet.
+1. Verify web/mobile-browser journey from a clean load. `Done for local web`
+2. Add a minimal environment capability seam. `Done`
+3. Route clipboard invite through the seam. `Done`
+4. Add a persistence seam, still local-only. `Done`
+5. Produce the first web/mobile proof packet. `Done for local web`
+6. Select one mini-app host candidate for the second proof packet. `Next`
+
+## Current Proof
+
+Local web proof packet:
+
+- path: `proof/portable-shell-web/`
+- viewport: `390 x 844`
+- screenshots: `20`
+- report: `proof/portable-shell-web/report.json`
+- storage: `localStorage` key `chopdot-portable-shell-state-v1`
+- result: full normal journey completed and state persisted after refresh
+
+Covered path:
+
+```text
+first run
+-> guest setup
+-> empty home
+-> create group
+-> group before spend
+-> add spend
+-> review split
+-> open balances
+-> settle up
+-> request sent
+-> payer view
+-> needs confirm
+-> confirm received
+-> finish group
+-> group summary
+-> history/home
+-> reload with persisted state
+```

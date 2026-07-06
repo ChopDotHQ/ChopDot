@@ -53,6 +53,45 @@ export async function copyText(text: string): Promise<'copied' | 'ready'> {
   }
 }
 
+export const appStorage = {
+  read(key: string): string | null {
+    if (!getEnvironmentCapabilities().canUseLocalStorage) {
+      return null;
+    }
+
+    try {
+      return window.localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+
+  write(key: string, value: string): 'saved' | 'memory-only' {
+    if (!getEnvironmentCapabilities().canUseLocalStorage) {
+      return 'memory-only';
+    }
+
+    try {
+      window.localStorage.setItem(key, value);
+      return 'saved';
+    } catch {
+      return 'memory-only';
+    }
+  },
+
+  remove(key: string): void {
+    if (!getEnvironmentCapabilities().canUseLocalStorage) {
+      return;
+    }
+
+    try {
+      window.localStorage.removeItem(key);
+    } catch {
+      // Storage can be blocked in embedded hosts. Memory state still works.
+    }
+  },
+};
+
 function canAccessLocalStorage(): boolean {
   try {
     const key = '__chopdot_storage_check__';
