@@ -138,7 +138,8 @@ Pause or kill this trial if:
 4. Add a persistence seam, still local-only. `Done`
 5. Produce the first web/mobile proof packet. `Done for local web`
 6. Select one mini-app host candidate for the second proof packet. `Done with Telegram-style embedded simulation`
-7. Package or deploy into a real mini-app host sandbox. `Next`
+7. Add Telegram Mini App readiness seam. `Done`
+8. Package or deploy into a real Telegram Mini App sandbox. `Next`
 
 ## Current Proof
 
@@ -183,8 +184,12 @@ Telegram-style embedded webview proof packet:
 - report: `proof/portable-shell-telegram/report.json`
 - storage: `localStorage` key `chopdot-portable-shell-state-v1`
 - host simulation: mobile Telegram-like user agent plus `window.Telegram.WebApp`
-  object with `BackButton` and `MainButton`
+  object with `BackButton`, `MainButton`, and `CloudStorage`
 - result: full normal journey completed and state persisted after refresh
+- launch param: `tgWebAppStartParam=portable-proof`
+- adapter calls verified: `ready`, `expand`, `setHeaderColor`,
+  `setBackgroundColor`, `BackButton.show`, `BackButton.onClick`,
+  `BackButton.offClick`, and `CloudStorage.setItem`
 
 Capability matrix from the simulated embedded run:
 
@@ -193,6 +198,9 @@ Capability matrix from the simulated embedded run:
   "canUseLocalStorage": true,
   "canUseClipboard": true,
   "canUseShareSheet": true,
+  "canUseTelegramCloudStorage": true,
+  "launchStartParam": "portable-proof",
+  "telegramPlatform": "ios",
   "hostBackButton": true,
   "hostMainButton": true,
   "hasTelegramWebApp": true,
@@ -205,7 +213,23 @@ Capability matrix from the simulated embedded run:
 }
 ```
 
+Telegram readiness seam:
+
+- The Telegram script is conditionally loaded only for Telegram-like launches,
+  avoiding normal web pollution.
+- `src/environment/index.ts` detects `telegram-mini-app` when
+  `window.Telegram.WebApp` is present.
+- The app initializes Telegram with `ready()`, `expand()`, header color, and
+  background color while keeping those calls hidden from normal UI.
+- The app maps Telegram's host back button to the same view-level back behavior
+  used by existing visible back buttons.
+- The app reads Telegram launch parameters through the environment seam.
+- The app mirrors local state writes to Telegram `CloudStorage` when available,
+  while keeping `localStorage` as the current readable prototype persistence
+  source.
+
 This does not prove a real Telegram deployment, real share-sheet behavior,
-host SDK payment behavior, or production mini-app packaging. It proves the
-current shell can complete the same core journey in a Telegram-like embedded
-browser shape without forking product UI or breaking local persistence.
+host SDK payment behavior, BotFather setup, server-side `initData` validation,
+or production mini-app packaging. It proves the current shell can complete the
+same core journey in a Telegram-like embedded browser shape without forking
+product UI or breaking local persistence.

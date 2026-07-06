@@ -5,8 +5,11 @@ import { spawn } from 'node:child_process';
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 5180);
-const baseUrl = process.env.PROOF_URL || `http://127.0.0.1:${port}/`;
 const hostProfile = (process.env.HOST_PROFILE || 'web').toLowerCase();
+const localBaseUrl = `http://127.0.0.1:${port}/`;
+const baseUrl = process.env.PROOF_URL || (hostProfile === 'telegram'
+  ? `${localBaseUrl}?tgWebAppStartParam=portable-proof`
+  : localBaseUrl);
 const defaultOutDir = hostProfile === 'web'
   ? path.join(root, 'proof', 'portable-shell-web')
   : path.join(root, 'proof', `portable-shell-${hostProfile}`);
@@ -33,6 +36,12 @@ try {
   });
   const context = await browser.newContext(getHostContextOptions(hostProfile));
   await installHostShim(context, hostProfile);
+  if (hostProfile === 'telegram') {
+    await context.route('https://telegram.org/js/telegram-web-app.js?62', (route) => route.fulfill({
+      contentType: 'application/javascript',
+      body: '/* Telegram script is provided by the proof shim in this localhost run. */',
+    }));
+  }
 
   const page = await context.newPage();
   const consoleEvents = [];
@@ -104,6 +113,7 @@ try {
   await click(/done/i);
   await shot('history-home');
 
+  const hostCallLogBeforeReload = await page.evaluate(() => window.__chopdotTelegramProof?.calls ?? []);
   await page.reload({ waitUntil: 'networkidle' });
   await shot('after-refresh-persisted');
 
@@ -162,14 +172,23 @@ try {
       hostBackButton: Boolean(window.Telegram?.WebApp?.BackButton),
       hostMainButton: Boolean(window.Telegram?.WebApp?.MainButton),
       hasTelegramWebApp: Boolean(window.Telegram?.WebApp),
+      canUseTelegramCloudStorage: Boolean(window.Telegram?.WebApp?.CloudStorage?.setItem),
+      launchStartParam: window.Telegram?.WebApp?.initDataUnsafe?.start_param ?? new URLSearchParams(window.location.search).get('tgWebAppStartParam'),
+      telegramPlatform: window.Telegram?.WebApp?.platform ?? null,
+      telegramViewportStableHeight: window.Telegram?.WebApp?.viewportStableHeight ?? null,
     };
   }, hostProfile);
+  const hostCallLogAfterReload = await page.evaluate(() => window.__chopdotTelegramProof?.calls ?? []);
 
   const report = {
     baseUrl,
     hostProfile,
     viewport: getHostContextOptions(hostProfile).viewport,
     capabilityMatrix,
+    hostCallLog: {
+      beforeReload: hostCallLogBeforeReload,
+      afterReload: hostCallLogAfterReload,
+    },
     screenshots,
     storageSnapshot,
     finalText: text,
@@ -240,10 +259,21 @@ async function installHostShim(context, profile) {
   }
 
   await context.addInitScript(() => {
+    window.__chopdotTelegramProof = {
+      calls: [],
+      cloudStorage: {},
+      backCallbacks: [],
+    };
+
+    const record = (name, payload = {}) => {
+      window.__chopdotTelegramProof.calls.push({ name, payload });
+    };
+
     window.Telegram = {
       WebApp: {
         initData: 'query_id=portable-shell-proof',
         initDataUnsafe: {
+          start_param: 'portable-proof',
           user: {
             id: 1001,
             first_name: 'Mina',
@@ -254,13 +284,35 @@ async function installHostShim(context, profile) {
         colorScheme: 'light',
         viewportHeight: window.innerHeight,
         viewportStableHeight: window.innerHeight,
-        ready() {},
-        expand() {},
+        safeAreaInset: { top: 0, right: 0, bottom: 0, left: 0 },
+        contentSafeAreaInset: { top: 0, right: 0, bottom: 0, left: 0 },
+        ready() {
+          record('ready');
+        },
+        expand() {
+          record('expand');
+        },
+        setHeaderColor(color) {
+          record('setHeaderColor', { color });
+        },
+        setBackgroundColor(color) {
+          record('setBackgroundColor', { color });
+        },
         BackButton: {
-          show() {},
-          hide() {},
-          onClick() {},
-          offClick() {},
+          show() {
+            record('BackButton.show');
+          },
+          hide() {
+            record('BackButton.hide');
+          },
+          onClick(callback) {
+            window.__chopdotTelegramProof.backCallbacks.push(callback);
+            record('BackButton.onClick');
+          },
+          offClick(callback) {
+            window.__chopdotTelegramProof.backCallbacks = window.__chopdotTelegramProof.backCallbacks.filter((item) => item !== callback);
+            record('BackButton.offClick');
+          },
         },
         MainButton: {
           setText() {},
@@ -268,6 +320,18 @@ async function installHostShim(context, profile) {
           hide() {},
           onClick() {},
           offClick() {},
+        },
+        CloudStorage: {
+          setItem(key, value, callback) {
+            window.__chopdotTelegramProof.cloudStorage[key] = value;
+            record('CloudStorage.setItem', { key, bytes: value.length });
+            callback?.(null, true);
+          },
+          removeItem(key, callback) {
+            delete window.__chopdotTelegramProof.cloudStorage[key];
+            record('CloudStorage.removeItem', { key });
+            callback?.(null, true);
+          },
         },
       },
     };

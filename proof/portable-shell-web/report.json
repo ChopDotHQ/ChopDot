@@ -29,7 +29,15 @@
     },
     "hostBackButton": false,
     "hostMainButton": false,
-    "hasTelegramWebApp": false
+    "hasTelegramWebApp": false,
+    "canUseTelegramCloudStorage": false,
+    "launchStartParam": null,
+    "telegramPlatform": null,
+    "telegramViewportStableHeight": null
+  },
+  "hostCallLog": {
+    "beforeReload": [],
+    "afterReload": []
   },
   "screenshots": [
     "01-first-run.png",

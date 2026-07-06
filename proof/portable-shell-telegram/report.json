@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://127.0.0.1:5180/",
+  "baseUrl": "http://127.0.0.1:5180/?tgWebAppStartParam=portable-proof",
   "hostProfile": "telegram",
   "viewport": {
     "width": 390,
@@ -29,7 +29,382 @@
     },
     "hostBackButton": true,
     "hostMainButton": true,
-    "hasTelegramWebApp": true
+    "hasTelegramWebApp": true,
+    "canUseTelegramCloudStorage": true,
+    "launchStartParam": "portable-proof",
+    "telegramPlatform": "ios",
+    "telegramViewportStableHeight": 2121
+  },
+  "hostCallLog": {
+    "beforeReload": [
+      {
+        "name": "BackButton.hide",
+        "payload": {}
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 207
+        }
+      },
+      {
+        "name": "BackButton.hide",
+        "payload": {}
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 207
+        }
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.hide",
+        "payload": {}
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 276
+        }
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 705
+        }
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 1438
+        }
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 1446
+        }
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 1445
+        }
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 1443
+        }
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 2059
+        }
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.hide",
+        "payload": {}
+      }
+    ],
+    "afterReload": [
+      {
+        "name": "BackButton.hide",
+        "payload": {}
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 2059
+        }
+      },
+      {
+        "name": "BackButton.hide",
+        "payload": {}
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 2059
+        }
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      }
+    ]
   },
   "screenshots": [
     "01-first-run.png",

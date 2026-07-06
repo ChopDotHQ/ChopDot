@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AppStateProvider, useAppState } from './state/AppStateContext';
 import { Welcome } from './components/Welcome';
 import { GuestSetup } from './components/GuestSetup';
@@ -25,6 +25,7 @@ import { History } from './components/History';
 import { Settings } from './components/Settings';
 import { StyleGuide } from './components/dev/StyleGuide';
 import { Home as HomeIcon, Users, Settings as SettingsIcon, History as HistoryIcon, Wallet } from 'lucide-react';
+import { configureHostBackButton, initializeHostEnvironment } from './environment';
 
 type View = 
   | { name: 'welcome' }
@@ -53,6 +54,15 @@ function AppRouter() {
   const [view, setView] = useState<View>(getEntryView);
 
   const isDev = new URLSearchParams(window.location.search).get("dev") === "1";
+  const backView = getBackView(view);
+
+  useEffect(() => {
+    return configureHostBackButton(Boolean(backView), () => {
+      if (backView) {
+        setView(backView);
+      }
+    });
+  }, [view]);
 
   if (view.name === 'state_proof') {
     if (!isDev) return <Home onGoToStateProof={() => setView({ name: 'home' })} onStartGroup={() => setView({ name: 'home' })} onGoToGroup={() => setView({ name: 'home' })} onGoToProfile={() => setView({ name: 'home' })} />;
@@ -194,6 +204,20 @@ function AppRouter() {
 
 function ThemedLayout() {
   const { state } = useAppState();
+
+  useEffect(() => {
+    initializeHostEnvironment(state.theme);
+    const handleTelegramReady = () => initializeHostEnvironment(state.theme);
+    const retry = window.setTimeout(handleTelegramReady, 250);
+
+    window.addEventListener('chopdot:telegram-ready', handleTelegramReady);
+
+    return () => {
+      window.clearTimeout(retry);
+      window.removeEventListener('chopdot:telegram-ready', handleTelegramReady);
+    };
+  }, [state.theme]);
+
   return (
     <div className={`min-h-[100dvh] ${state.theme === 'dark' ? 'dark bg-gray-900' : 'bg-gray-50'} flex items-center justify-center sm:py-10 transition-colors`}>
       <div className={`w-full h-[100dvh] sm:h-[800px] sm:max-w-[375px] ${state.theme === 'dark' ? 'bg-gray-950 border-gray-900' : 'bg-gray-50 border-gray-200'} sm:rounded-3xl sm:shadow-2xl overflow-hidden relative flex flex-col font-sans sm:border transition-colors`}>
@@ -201,6 +225,41 @@ function ThemedLayout() {
       </div>
     </div>
   );
+}
+
+function getBackView(view: View): View | null {
+  switch (view.name) {
+    case 'guest_setup':
+      return { name: 'welcome' };
+    case 'create_group':
+    case 'profile':
+    case 'friends':
+    case 'payment_methods':
+    case 'history':
+    case 'settings':
+      return { name: 'home' };
+    case 'group_detail':
+      return { name: 'home' };
+    case 'settle_up':
+    case 'close_group':
+    case 'capture_spend':
+    case 'request_payment':
+    case 'payer_view':
+      return { name: 'group_detail', groupId: view.groupId };
+    case 'review_split':
+      return { name: 'capture_spend', groupId: view.groupId };
+    case 'saved_record':
+      return { name: 'home' };
+    case 'state_proof':
+      return { name: 'home' };
+    case 'style_guide':
+      return { name: 'settings' };
+    case 'welcome':
+    case 'home':
+      return null;
+    default:
+      return null;
+  }
 }
 
 export default function App() {
