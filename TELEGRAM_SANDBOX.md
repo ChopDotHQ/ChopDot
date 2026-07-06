@@ -8,6 +8,32 @@ Use this HTTPS URL for the Telegram sandbox:
 https://portable-shell-trial.vercel.app
 ```
 
+## Sandbox Bot
+
+Bot username:
+
+```text
+@ChopDotMiniAppBot
+```
+
+Configured through the Telegram Bot API on 2026-07-06:
+
+- bot description
+- bot short description
+- global commands: `/start`, `/help`, `/settings`
+- default menu button:
+  - text: `Open ChopDot`
+  - URL: `https://portable-shell-trial.vercel.app`
+
+Not configured by API:
+
+- BotFather Main Mini App short name
+- public `t.me/<bot>/<app>` Mini App link
+
+Telegram keeps the Main Mini App registration inside BotFather. Complete that
+manually with `/newapp` when the sandbox is ready to test as a direct Mini App
+link.
+
 Preview deployment details:
 
 - Vercel project: `portable-shell-trial`
@@ -83,14 +109,10 @@ Button. They also describe setting up a bot's Main Mini App through BotFather.
 
 Recommended sandbox path:
 
-1. Open Telegram and message `@BotFather`.
-2. Use an existing test bot or create one with `/newbot`.
-3. Configure the menu button:
-   - run `/setmenubutton`, or use Bot Settings > Menu Button;
-   - select the test bot;
-   - set button text to `Open ChopDot`;
-   - set URL to `https://portable-shell-trial.vercel.app`.
-4. Configure the Main Mini App if available in your BotFather UI:
+1. Open Telegram and message `@ChopDotMiniAppBot`.
+2. Confirm the bot menu button shows `Open ChopDot`.
+3. Tap `Open ChopDot` and validate the app launches inside Telegram.
+4. Open `@BotFather` and configure the Main Mini App if available:
    - select the same bot;
    - choose Main Mini App / Mini App setup;
    - use the same deployed URL;
