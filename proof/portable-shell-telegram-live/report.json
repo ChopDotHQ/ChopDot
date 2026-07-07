@@ -1,5 +1,5 @@
 {
-  "baseUrl": "https://portable-shell-trial.vercel.app/?tgWebAppStartParam=portable-proof",
+  "baseUrl": "https://portable-shell-trial.vercel.app?tgWebAppStartParam=portable-proof",
   "hostProfile": "telegram",
   "viewport": {
     "width": 390,
@@ -178,7 +178,7 @@
         "name": "CloudStorage.setItem",
         "payload": {
           "key": "chopdot-portable-shell-state-v1",
-          "bytes": 1437
+          "bytes": 1441
         }
       },
       {
@@ -197,7 +197,7 @@
         "name": "CloudStorage.setItem",
         "payload": {
           "key": "chopdot-portable-shell-state-v1",
-          "bytes": 1445
+          "bytes": 1449
         }
       },
       {
@@ -211,44 +211,6 @@
       {
         "name": "BackButton.onClick",
         "payload": {}
-      },
-      {
-        "name": "BackButton.offClick",
-        "payload": {}
-      },
-      {
-        "name": "BackButton.show",
-        "payload": {}
-      },
-      {
-        "name": "BackButton.onClick",
-        "payload": {}
-      },
-      {
-        "name": "BackButton.offClick",
-        "payload": {}
-      },
-      {
-        "name": "BackButton.show",
-        "payload": {}
-      },
-      {
-        "name": "BackButton.onClick",
-        "payload": {}
-      },
-      {
-        "name": "CloudStorage.setItem",
-        "payload": {
-          "key": "chopdot-portable-shell-state-v1",
-          "bytes": 1444
-        }
-      },
-      {
-        "name": "CloudStorage.setItem",
-        "payload": {
-          "key": "chopdot-portable-shell-state-v1",
-          "bytes": 1442
-        }
       },
       {
         "name": "BackButton.offClick",
@@ -278,7 +240,45 @@
         "name": "CloudStorage.setItem",
         "payload": {
           "key": "chopdot-portable-shell-state-v1",
-          "bytes": 2058
+          "bytes": 1448
+        }
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 1446
+        }
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 2064
         }
       },
       {
@@ -319,7 +319,7 @@
         "name": "CloudStorage.setItem",
         "payload": {
           "key": "chopdot-portable-shell-state-v1",
-          "bytes": 2058
+          "bytes": 2064
         }
       },
       {
@@ -358,7 +358,7 @@
     "11-settle-up.png",
     "12-settle-up-request-sent.png",
     "13-group-request-sent.png",
-    "14-payer-view.png",
+    "14-payment-request.png",
     "15-needs-confirm.png",
     "16-after-confirm-leo.png",
     "17-finish-group.png",

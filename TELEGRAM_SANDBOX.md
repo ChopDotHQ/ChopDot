@@ -37,9 +37,9 @@ link.
 Preview deployment details:
 
 - Vercel project: `portable-shell-trial`
-- Deployment URL: `https://portable-shell-trial-fn778sj2z-devinsons-projects-b5ab981e.vercel.app`
+- Deployment URL: `https://portable-shell-trial-jn5shlwpf-devinsons-projects-b5ab981e.vercel.app`
 - Alias: `https://portable-shell-trial.vercel.app`
-- Inspect: `https://vercel.com/devinsons-projects-b5ab981e/portable-shell-trial/bjqNKYpJDmbucGVmd3RYBcxQL6B3`
+- Inspect: `https://vercel.com/devinsons-projects-b5ab981e/portable-shell-trial/AHzcgvvTNEucvQBehX3ZZ62x2EHM`
 
 ## What Is Ready
 
@@ -76,7 +76,7 @@ first run
 -> open balances
 -> settle up
 -> request sent
--> payer view
+-> payment request
 -> needs confirm
 -> confirm received
 -> finish group
@@ -134,12 +134,12 @@ In the real Telegram client, validate:
 
 1. App opens inside Telegram, not Safari/Chrome.
 2. First screen shows `ChopDot` and `Continue as guest`.
-3. Create guest `Mina`.
+3. Create guest `Mina`, or accept the Telegram-suggested name.
 4. Create `Weekend Trip` with `Leo` and `Nina`.
 5. Add `$120` spend for `Dinner at Gusto`.
 6. Save equal split.
 7. Send link to Leo.
-8. Open payer view and mark paid.
+8. Open the payment request and mark paid.
 9. Confirm received from Leo.
 10. Finish group.
 11. Group Summary shows:
