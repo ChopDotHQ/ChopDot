@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
+    "hosts:matrix": "node -e \"const fs=require('fs'); const m=JSON.parse(fs.readFileSync('proof/host-matrix.json','utf8')); console.log(JSON.stringify(m.hosts,null,2));\"",
     "proof:web": "node scripts/run-portable-shell-proof.mjs",
     "proof:telegram": "HOST_PROFILE=telegram node scripts/run-portable-shell-proof.mjs"
   },

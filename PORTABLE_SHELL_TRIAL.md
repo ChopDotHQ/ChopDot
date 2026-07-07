@@ -144,6 +144,13 @@ Pause or kill this trial if:
 
 ## Current Proof
 
+Host governance:
+
+- human registry: `HOSTS.md`
+- machine matrix: `proof/host-matrix.json`
+- rule: one portable ChopDot shell with host profiles, not separate host
+  products
+
 Local web proof packet:
 
 - path: `proof/portable-shell-web/`
@@ -177,7 +184,7 @@ first run
 -> open balances
 -> settle up
 -> request sent
--> payer view
+-> payment request
 -> needs confirm
 -> confirm received
 -> finish group
@@ -252,8 +259,8 @@ Live HTTPS Telegram-style proof packet:
 Deployment:
 
 - alias: `https://portable-shell-trial.vercel.app`
-- deployment: `https://portable-shell-trial-fn778sj2z-devinsons-projects-b5ab981e.vercel.app`
-- inspect: `https://vercel.com/devinsons-projects-b5ab981e/portable-shell-trial/bjqNKYpJDmbucGVmd3RYBcxQL6B3`
+- deployment: `https://portable-shell-trial-jn5shlwpf-devinsons-projects-b5ab981e.vercel.app`
+- inspect: `https://vercel.com/devinsons-projects-b5ab981e/portable-shell-trial/AHzcgvvTNEucvQBehX3ZZ62x2EHM`
 - sandbox setup notes: `TELEGRAM_SANDBOX.md`
 
 This does not prove a real Telegram deployment, real share-sheet behavior,

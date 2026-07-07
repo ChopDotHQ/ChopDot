@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "productShell": "chopdot-portable-shell",
+  "coreExperience": [
+    "first_run",
+    "guest_or_profile_setup",
+    "create_group",
+    "add_spend",
+    "review_split",
+    "settle_up",
+    "send_request",
+    "payer_marks_paid",
+    "receiver_confirms_received",
+    "finish_group",
+    "group_summary_history"
+  ],
+  "coreStateInvariants": [
+    "request_sent_does_not_reduce_net_position",
+    "marked_paid_does_not_reduce_net_position",
+    "confirmed_reduces_receiver_net_position",
+    "finish_group_saves_summary_without_rewriting_open_money",
+    "normal_ui_hides_host_protocol_internal_language"
+  ],
+  "changeClasses": ["core", "host-adapter", "proof", "docs"],
+  "hosts": {
+    "web": {
+      "status": "validated",
+      "role": "baseline portable web shell",
+      "identity": {
+        "available": false,
+        "source": "manual guest setup"
+      },
+      "launchParams": {
+        "available": false,
+        "source": null
+      },
+      "backNavigation": {
+        "hostBackButton": false,
+        "behavior": "visible in-app back buttons"
+      },
+      "storage": {
+        "primary": "localStorage",
+        "mirror": null,
+        "crossDevice": false
+      },
+      "clipboard": {
+        "available": "browser-dependent",
+        "fallback": "Invite ready"
+      },
+      "shareSheet": {
+        "available": "browser-dependent"
+      },
+      "safeArea": {
+        "required": false,
+        "notes": "uses responsive viewport and bottom action spacing"
+      },
+      "payments": {
+        "mode": "external-only",
+        "realProcessing": false
+      },
+      "proof": {
+        "localCommand": "npm run proof:web",
+        "localReport": "proof/portable-shell-web/report.json",
+        "liveCommand": "PROOF_URL=https://portable-shell-trial.vercel.app PROOF_OUT=proof/portable-shell-web-live npm run proof:web",
+        "liveReport": "proof/portable-shell-web-live/report.json",
+        "latestLiveStatus": "passed"
+      },
+      "openItems": []
+    },
+    "telegram-mini-app": {
+      "status": "sandbox-validated",
+      "role": "first real mini-app sandbox",
+      "identity": {
+        "available": true,
+        "source": "window.Telegram.WebApp.initDataUnsafe.user",
+        "currentUse": "suggest guest display name"
+      },
+      "launchParams": {
+        "available": true,
+        "source": "window.Telegram.WebApp.initDataUnsafe.start_param or tgWebAppStartParam"
+      },
+      "backNavigation": {
+        "hostBackButton": true,
+        "behavior": "mirrors visible in-app back route"
+      },
+      "storage": {
+        "primary": "localStorage",
+        "mirror": "Telegram CloudStorage when available",
+        "crossDevice": false
+      },
+      "clipboard": {
+        "available": "host-dependent",
+        "fallback": "Invite ready"
+      },
+      "shareSheet": {
+        "available": "host-dependent"
+      },
+      "safeArea": {
+        "required": true,
+        "notes": "bottom actions use env(safe-area-inset-bottom)"
+      },
+      "payments": {
+        "mode": "external-only",
+        "realProcessing": false
+      },
+      "proof": {
+        "localCommand": "npm run proof:telegram",
+        "localReport": "proof/portable-shell-telegram/report.json",
+        "liveCommand": "PROOF_URL=https://portable-shell-trial.vercel.app?tgWebAppStartParam=portable-proof PROOF_OUT=proof/portable-shell-telegram-live npm run proof:telegram",
+        "liveReport": "proof/portable-shell-telegram-live/report.json",
+        "manualReport": "proof/manual-telegram-desktop-validation.md",
+        "latestLiveStatus": "passed",
+        "manualDesktopStatus": "passed",
+        "manualMobileStatus": "pending"
+      },
+      "openItems": [
+        "real mobile Telegram proof",
+        "server-side initData validation",
+        "BotFather Main Mini App registration",
+        "real cross-device sync"
+      ]
+    }
+  },
+  "candidateHosts": {
+    "farcaster-mini-app": {
+      "status": "not-started",
+      "requiredBeforeCode": [
+        "add host matrix entry",
+        "document identity and launch params",
+        "create proof shim",
+        "run same core journey"
+      ]
+    },
+    "base-app": {
+      "status": "not-started",
+      "requiredBeforeCode": [
+        "add host matrix entry",
+        "document wallet and identity boundaries",
+        "create proof shim",
+        "run same core journey"
+      ]
+    }
+  }
+}
