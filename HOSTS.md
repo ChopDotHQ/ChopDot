@@ -126,7 +126,8 @@ must reduce friction, increase trust, or preserve the same journey more cleanly.
 
 ## Current Open Items
 
-- Real Telegram mobile device proof is still pending.
+- Real Telegram mobile device proof passed by user-reported manual validation on
+  2026-07-07. See `proof/mobile-telegram-step-count.md`.
 - Server-side Telegram `initData` validation is not implemented.
 - BotFather Main Mini App registration is still manual.
 - Real payments and cross-device sync are outside this portable-shell trial.

@@ -111,10 +111,10 @@
         "manualReport": "proof/manual-telegram-desktop-validation.md",
         "latestLiveStatus": "passed",
         "manualDesktopStatus": "passed",
-        "manualMobileStatus": "pending"
+        "manualMobileStatus": "passed",
+        "manualMobileReport": "proof/mobile-telegram-step-count.md"
       },
       "openItems": [
-        "real mobile Telegram proof",
         "server-side initData validation",
         "BotFather Main Mini App registration",
         "real cross-device sync"
