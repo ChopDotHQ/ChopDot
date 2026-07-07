@@ -159,6 +159,16 @@ export function getTelegramViewport() {
   };
 }
 
+export function getTelegramUserDisplayName(): string | null {
+  const user = getTelegramWebApp()?.initDataUnsafe?.user;
+  if (!user) {
+    return null;
+  }
+
+  const name = [user.first_name, user.last_name].filter(Boolean).join(' ').trim();
+  return name || user.username || null;
+}
+
 export async function copyText(text: string): Promise<'copied' | 'ready'> {
   const capabilities = getEnvironmentCapabilities();
 

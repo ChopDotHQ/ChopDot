@@ -50,13 +50,13 @@ export function PayerView({
 
   return (
     <Screen>
-      <ScreenHeader title="Payer View" onBack={onBack} />
+      <ScreenHeader title={`Pay ${requester.name}`} onBack={onBack} />
       
       <ScreenContent className="p-6 flex flex-col items-center justify-center space-y-2 pb-24">
         <div className="w-24 h-24 rounded-full bg-orange-50 dark:bg-orange-900/30 border-4 border-white dark:border-[#0a0a0a] flex items-center justify-center text-orange-700 dark:text-orange-400 font-bold text-3xl mb-4 shadow-sm transition-colors">
           {getInitials(member.name)}
         </div>
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{member.name}</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Payment request</h2>
         <p className="text-gray-500 dark:text-gray-400 font-medium text-center">
           You owe {requester.name} for {group.name}
         </p>

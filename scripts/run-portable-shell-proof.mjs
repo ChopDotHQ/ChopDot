@@ -72,7 +72,7 @@ try {
   await click(/continue as guest/i);
   await shot('guest-setup');
   await fill(/display name/i, 'Mina');
-  await click(/^start$/i);
+  await click(/^(start|continue as .+)$/i);
   await page.waitForLoadState('networkidle');
   await shot('empty-home');
   await click(/start with a group/i);
@@ -100,8 +100,8 @@ try {
   await shot('settle-up-request-sent');
   await click(/back/i);
   await shot('group-request-sent');
-  await click(/payer view/i);
-  await shot('payer-view');
+  await click(/view request/i);
+  await shot('payment-request');
   await click(/i paid mina/i);
   await shot('needs-confirm');
   await click(/confirm received from leo/i);

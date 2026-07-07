@@ -51,7 +51,7 @@ export function CaptureSpend({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">What was it for?</label>
           <input 
             type="text"
-            placeholder="Dinner at Gusto"
+            placeholder="e.g. Dinner at Gusto"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full text-xl border-b-2 border-gray-200 dark:border-gray-700 py-3 focus:outline-none focus:border-gray-900 dark:focus:border-gray-100 transition-colors placeholder:text-gray-300 dark:placeholder:text-gray-600 font-medium bg-transparent text-gray-900 dark:text-white"

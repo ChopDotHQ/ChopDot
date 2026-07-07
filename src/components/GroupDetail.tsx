@@ -124,7 +124,7 @@ export function GroupDetail({
                             onClick={() => onOpenPayerView(member.id)}
                             className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                           >
-                            Payer view
+                            View request
                           </button>
                         </div>
                       ) : markedSplits.length > 0 ? (

@@ -58,7 +58,7 @@ export function CreateGroup({ onBack, onCreated }: { onBack: () => void, onCreat
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Group name</label>
           <input 
             type="text"
-            placeholder="Weekend Trip"
+            placeholder="e.g. Weekend Trip"
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
             className="w-full text-2xl border-b-2 border-gray-200 dark:border-gray-700 py-2 focus:outline-none focus:border-gray-900 dark:focus:border-gray-100 transition-colors placeholder:text-gray-300 dark:placeholder:text-gray-600 font-medium bg-transparent text-gray-900 dark:text-white"

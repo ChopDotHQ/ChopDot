@@ -1,9 +1,11 @@
 import { useState, FormEvent } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useAppState } from '../state/AppStateContext';
+import { getTelegramUserDisplayName } from '../environment';
 
 export function GuestSetup({ onBack, onComplete }: { onBack: () => void, onComplete: () => void }) {
-  const [name, setName] = useState('');
+  const suggestedName = getTelegramUserDisplayName();
+  const [name, setName] = useState(suggestedName ?? '');
   const { dispatch } = useAppState();
 
   const handleSubmit = (e: FormEvent) => {
@@ -33,6 +35,11 @@ export function GuestSetup({ onBack, onComplete }: { onBack: () => void, onCompl
             className="w-full text-2xl border-b-2 border-gray-200 py-3 focus:outline-none focus:border-gray-900 transition-colors placeholder:text-gray-300 font-medium bg-transparent"
             autoFocus
           />
+          {suggestedName && (
+            <p className="mt-3 text-sm font-medium text-gray-500">
+              Suggested from Telegram. You can edit it.
+            </p>
+          )}
           <div className="flex-1" />
           <div className="pb-8 pt-4">
             <button 
@@ -40,7 +47,7 @@ export function GuestSetup({ onBack, onComplete }: { onBack: () => void, onCompl
               disabled={!name.trim()}
               className="w-full py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-sm"
             >
-              Start
+              {name.trim() ? `Continue as ${name.trim()}` : 'Start'}
             </button>
           </div>
         </form>
