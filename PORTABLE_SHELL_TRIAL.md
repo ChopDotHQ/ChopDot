@@ -259,8 +259,8 @@ Live HTTPS Telegram-style proof packet:
 Deployment:
 
 - alias: `https://portable-shell-trial.vercel.app`
-- deployment: `https://portable-shell-trial-jn5shlwpf-devinsons-projects-b5ab981e.vercel.app`
-- inspect: `https://vercel.com/devinsons-projects-b5ab981e/portable-shell-trial/AHzcgvvTNEucvQBehX3ZZ62x2EHM`
+- deployment: `https://portable-shell-trial-pcmzf4hek-devinsons-projects-b5ab981e.vercel.app`
+- inspect: `https://vercel.com/devinsons-projects-b5ab981e/portable-shell-trial/ASSHxtThq4BXKPL7QWtsNNnCMGLZ`
 - sandbox setup notes: `TELEGRAM_SANDBOX.md`
 
 This does not prove a real Telegram deployment, real share-sheet behavior,

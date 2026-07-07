@@ -237,6 +237,18 @@
         "payload": {}
       },
       {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
         "name": "CloudStorage.setItem",
         "payload": {
           "key": "chopdot-portable-shell-state-v1",

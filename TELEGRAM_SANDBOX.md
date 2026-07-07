@@ -37,9 +37,9 @@ link.
 Preview deployment details:
 
 - Vercel project: `portable-shell-trial`
-- Deployment URL: `https://portable-shell-trial-jn5shlwpf-devinsons-projects-b5ab981e.vercel.app`
+- Deployment URL: `https://portable-shell-trial-pcmzf4hek-devinsons-projects-b5ab981e.vercel.app`
 - Alias: `https://portable-shell-trial.vercel.app`
-- Inspect: `https://vercel.com/devinsons-projects-b5ab981e/portable-shell-trial/AHzcgvvTNEucvQBehX3ZZ62x2EHM`
+- Inspect: `https://vercel.com/devinsons-projects-b5ab981e/portable-shell-trial/ASSHxtThq4BXKPL7QWtsNNnCMGLZ`
 
 ## What Is Ready
 
