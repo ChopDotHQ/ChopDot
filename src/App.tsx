@@ -85,8 +85,6 @@ function AppRouter() {
       groupId={view.groupId} 
       onBack={() => setView({ name: 'home' })} 
       onAddSpend={() => setView({ name: 'capture_spend', groupId: view.groupId })}
-      onRequestPayment={(memberId) => setView({ name: 'request_payment', groupId: view.groupId, memberId })}
-      onOpenPayerView={(memberId) => setView({ name: 'payer_view', groupId: view.groupId, memberId })}
       onCloseGroup={() => setView({ name: 'close_group', groupId: view.groupId })}
       onGoToSettleUp={() => setView({ name: 'settle_up', groupId: view.groupId })}
     />;
@@ -94,7 +92,7 @@ function AppRouter() {
     content = <SettleUp
       groupId={view.groupId}
       onBack={() => setView({ name: 'group_detail', groupId: view.groupId })}
-      onRequestPayment={(memberId) => setView({ name: 'request_payment', groupId: view.groupId, memberId })}
+      onOpenPayerView={(memberId) => setView({ name: 'payer_view', groupId: view.groupId, memberId })}
     />;
   } else if (view.name === 'close_group') {
     content = <CloseGroup 

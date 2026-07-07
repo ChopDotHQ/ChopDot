@@ -36,7 +36,7 @@ Not counted as steps:
 This is the path already used in the proof scripts and Telegram Desktop/mobile
 validation. It proves that a group can be finished even while Nina remains open.
 
-Total: 28 user-visible steps.
+Total: 27 user-visible steps.
 
 | # | Person | Screen | Action | Required result |
 |---:|---|---|---|---|
@@ -60,37 +60,35 @@ Total: 28 user-visible steps.
 | 18 | Mina | Review Split | Tap `Save spend` | Group Detail shows open balances |
 | 19 | Mina | Group Detail | Tap `Settle up` | Settle Up opens |
 | 20 | Mina | Settle Up | Tap `Send link to Leo` | Leo becomes `Request sent`; Mina net stays `+$80.00` |
-| 21 | Mina | Settle Up | Tap back | Group Detail opens |
-| 22 | Leo | Group Detail | Tap `View request` for Leo | Payment request opens |
-| 23 | Leo | Payment request | Tap `I paid Mina` | Leo becomes `Needs confirm`; Mina net stays `+$80.00` |
-| 24 | Mina | Group Detail | Tap `Confirm received from Leo` | Leo settles; Mina net becomes `+$40.00` |
-| 25 | Mina | Group Detail | Tap `Finish group` | Finish Group opens with `$40.00` still open warning |
-| 26 | Mina | Finish Group | Tap `Finish and save summary` | Group Summary opens |
-| 27 | Mina | Group Summary | Review summary | Total `$120.00`; open `$40.00`; Leo settled; Nina owes |
-| 28 | Mina | Group Summary | Tap `Done` | Home/History is reachable with persisted group summary |
+| 21 | Leo | Settle Up | Tap `View request` for Leo | Payment request opens |
+| 22 | Leo | Payment request | Tap `I paid Mina` | Leo becomes `Needs confirm`; Mina net stays `+$80.00` |
+| 23 | Mina | Group Detail | Tap `Confirm received from Leo` | Leo settles; Mina net becomes `+$40.00` |
+| 24 | Mina | Group Detail | Tap `Finish group` | Finish Group opens with `$40.00` still open warning |
+| 25 | Mina | Finish Group | Tap `Finish and save summary` | Group Summary opens |
+| 26 | Mina | Group Summary | Review summary | Total `$120.00`; open `$40.00`; Leo settled; Nina owes |
+| 27 | Mina | Group Summary | Tap `Done` | Home/History is reachable with persisted group summary |
 
 ## Complete Settled Path: Everyone Pays Before Finish
 
 This is the path the product should support when the group is truly finished
 with no open balances.
 
-Total: 35 user-visible steps.
+Total: 33 user-visible steps.
 
-Steps 1-24 match the current validated path above.
+Steps 1-23 match the current validated path above.
 
 | # | Person | Screen | Action | Required result |
 |---:|---|---|---|---|
-| 25 | Mina | Group Detail | Tap `Settle up` | Settle Up opens for Nina |
-| 26 | Mina | Settle Up | Tap `Send link to Nina` | Nina becomes `Request sent`; Mina net stays `+$40.00` |
-| 27 | Mina | Settle Up | Tap back | Group Detail opens |
-| 28 | Nina | Group Detail | Tap `View request` for Nina | Payment request opens |
-| 29 | Nina | Payment request | Tap `I paid Mina` | Nina becomes `Needs confirm`; Mina net stays `+$40.00` |
-| 30 | Mina | Group Detail | Tap `Confirm received from Nina` | Nina settles; Mina net becomes `$0.00` |
-| 31 | Mina | Group Detail | Tap `Finish group` | Finish Group opens as settled |
-| 32 | Mina | Finish Group | Review closure | Screen should say everyone is settled |
-| 33 | Mina | Finish Group | Tap `Finish and save summary` | Group Summary opens |
-| 34 | Mina | Group Summary | Review summary | Total `$120.00`; still open `$0.00`; everyone settled |
-| 35 | Mina | Group Summary | Tap `Done` | Home/History is reachable with settled summary |
+| 24 | Mina | Group Detail | Tap `Settle up` | Settle Up opens for Nina |
+| 25 | Mina | Settle Up | Tap `Send link to Nina` | Nina becomes `Request sent`; Mina net stays `+$40.00` |
+| 26 | Nina | Settle Up | Tap `View request` for Nina | Payment request opens |
+| 27 | Nina | Payment request | Tap `I paid Mina` | Nina becomes `Needs confirm`; Mina net stays `+$40.00` |
+| 28 | Mina | Group Detail | Tap `Confirm received from Nina` | Nina settles; Mina net becomes `$0.00` |
+| 29 | Mina | Group Detail | Tap `Finish group` | Finish Group opens as settled |
+| 30 | Mina | Finish Group | Review closure | Screen should say everyone is settled |
+| 31 | Mina | Finish Group | Tap `Finish and save summary` | Group Summary opens |
+| 32 | Mina | Group Summary | Review summary | Total `$120.00`; still open `$0.00`; everyone settled |
+| 33 | Mina | Group Summary | Tap `Done` | Home/History is reachable with settled summary |
 
 ## Persistence Proof Extension
 
@@ -102,16 +100,16 @@ Add these steps when validating host persistence:
 | +2 | Mina | Telegram chat | Tap `Open ChopDot` | Mini App reopens |
 | +3 | Mina | Home/History | Confirm persisted state | Same user, group, balances, friends, and summary remain |
 
-With persistence proof, the current open-balance path is 31 steps.
-With persistence proof, the complete settled path is 38 steps.
+With persistence proof, the current open-balance path is 30 steps.
+With persistence proof, the complete settled path is 36 steps.
 
 ## Redundancy / Friction Observed
 
 1. Group creation asks Mina to manually type each friend even though Telegram can
    eventually provide chat or share context.
-2. The current request flow makes Mina enter `Settle up`, send one link, go back,
-   then use `View request` from the organizer device to simulate the payer.
-3. `View request` is a prototype bridge. In a real product, Leo/Nina should open
+2. Request-starting actions now live in `Settle up`, but the prototype still
+   uses `View request` from the organizer device to simulate the payer.
+3. `View request` remains a prototype bridge. In a real product, Leo/Nina should open
    their own link/device state directly.
 4. The organizer has to repeat the same send/request/paid/confirm sequence for
    each member.
@@ -126,7 +124,7 @@ With persistence proof, the complete settled path is 38 steps.
 The current shell proves the state spine works, but the journey is too long for
 a real launch-quality product.
 
-The next product improvement should reduce the open-balance path from about 28
+The next product improvement should reduce the open-balance path from about 27
 steps to roughly 18-20 by:
 
 - making group creation use contacts/invites more naturally;
@@ -136,4 +134,3 @@ steps to roughly 18-20 by:
   review;
 - showing a group status that distinguishes `open`, `waiting`, `needs confirm`,
   and `ready to finish` without forcing extra navigation.
-

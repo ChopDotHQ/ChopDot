@@ -100,6 +100,7 @@ try {
   await shot('settle-up-request-sent');
   await click(/back/i);
   await shot('group-request-sent');
+  await click(/settle up/i);
   await click(/view request/i);
   await shot('payment-request');
   await click(/i paid mina/i);

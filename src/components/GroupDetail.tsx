@@ -14,16 +14,12 @@ export function GroupDetail({
   groupId, 
   onBack, 
   onAddSpend, 
-  onRequestPayment, 
-  onOpenPayerView,
   onCloseGroup,
   onGoToSettleUp
 }: { 
   groupId: string, 
   onBack: () => void, 
   onAddSpend: () => void, 
-  onRequestPayment: (memberId: string) => void, 
-  onOpenPayerView: (memberId: string) => void,
   onCloseGroup: () => void,
   onGoToSettleUp: () => void
 }) {
@@ -82,7 +78,6 @@ export function GroupDetail({
           <div className="space-y-2">
             {members.map(member => {
               const bal = getMemberBalance(state, group.id, member.id);
-              const openSplits = (Object.values(state.splits) as Split[]).filter(s => s.userId === member.id && s.status === 'open' && state.expenses[s.expenseId]?.groupId === group.id);
               const reqSplits = (Object.values(state.splits) as Split[]).filter(s => s.userId === member.id && s.status === 'request_sent' && state.expenses[s.expenseId]?.groupId === group.id);
               const markedSplits = (Object.values(state.splits) as Split[]).filter(s => s.userId === member.id && s.status === 'marked_paid' && state.expenses[s.expenseId]?.groupId === group.id);
               
@@ -108,31 +103,14 @@ export function GroupDetail({
 
                   {member.id !== state.currentUserId && isOwed && (
                     <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex justify-end items-center">
-                      {openSplits.length > 0 ? (
-                        <button 
-                          onClick={() => onRequestPayment(member.id)}
-                          className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-sm"
-                        >
-                          Send link
-                        </button>
-                      ) : reqSplits.length > 0 ? (
-                        <div className="flex items-center space-x-3">
-                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            Request sent
-                          </span>
-                          <button 
-                            onClick={() => onOpenPayerView(member.id)}
-                            className="px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                          >
-                            View request
-                          </button>
-                        </div>
+                      {reqSplits.length > 0 ? (
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                          Request sent
+                        </span>
                       ) : markedSplits.length > 0 ? (
-                        <div className="flex items-center space-x-3">
-                          <span className="text-sm font-medium text-orange-600">
-                            Needs confirm
-                          </span>
-                        </div>
+                        <span className="text-sm font-medium text-orange-600">
+                          Needs confirm
+                        </span>
                       ) : null}
                     </div>
                   )}

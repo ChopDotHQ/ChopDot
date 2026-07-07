@@ -209,7 +209,7 @@
         "name": "CloudStorage.setItem",
         "payload": {
           "key": "chopdot-portable-shell-state-v1",
-          "bytes": 1439
+          "bytes": 1441
         }
       },
       {
@@ -228,7 +228,7 @@
         "name": "CloudStorage.setItem",
         "payload": {
           "key": "chopdot-portable-shell-state-v1",
-          "bytes": 1447
+          "bytes": 1449
         }
       },
       {
@@ -266,6 +266,25 @@
       {
         "name": "BackButton.onClick",
         "payload": {}
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 1448
+        }
       },
       {
         "name": "CloudStorage.setItem",
@@ -275,13 +294,6 @@
         }
       },
       {
-        "name": "CloudStorage.setItem",
-        "payload": {
-          "key": "chopdot-portable-shell-state-v1",
-          "bytes": 1444
-        }
-      },
-      {
         "name": "BackButton.offClick",
         "payload": {}
       },
@@ -309,7 +321,7 @@
         "name": "CloudStorage.setItem",
         "payload": {
           "key": "chopdot-portable-shell-state-v1",
-          "bytes": 2061
+          "bytes": 2064
         }
       },
       {
@@ -350,7 +362,7 @@
         "name": "CloudStorage.setItem",
         "payload": {
           "key": "chopdot-portable-shell-state-v1",
-          "bytes": 2061
+          "bytes": 2064
         }
       },
       {
@@ -381,7 +393,7 @@
         "name": "CloudStorage.setItem",
         "payload": {
           "key": "chopdot-portable-shell-state-v1",
-          "bytes": 2061
+          "bytes": 2064
         }
       },
       {

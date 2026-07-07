@@ -7,11 +7,11 @@ import { getInitials } from '../utils';
 export function SettleUp({
   groupId,
   onBack,
-  onRequestPayment
+  onOpenPayerView
 }: {
   groupId: string;
   onBack: () => void;
-  onRequestPayment: (memberId: string) => void;
+  onOpenPayerView: (memberId: string) => void;
 }) {
   const { state, dispatch } = useAppState();
   const group = state.groups[groupId];
@@ -128,22 +128,25 @@ export function SettleUp({
                   )}
 
                   <div className="flex space-x-2 border-t border-gray-50 dark:border-gray-800 pt-3">
-                    {isCurrentUserReceiver && !hasMarkedPaid && (
+                    {isCurrentUserReceiver && !hasMarkedPaid && !hasRequestSent && (
                       <button 
                         onClick={() => {
                           handleRequest(move.from);
-                           // Optional: if we want to navigate to RequestPayment view, or just dispatch and stay. 
-                          // Wait, the prompt says "Sending a payment request from Settle up SHALL transition that payer to request_sent."
-                          // If we just transition and stay, it's easier. We don't need to navigate.
-                          // But wait! GroupDetail navigating to request_payment is a thing.
-                          // Let's just dispatch and let it be. We don't navigate.
                         }}
-                        disabled={hasRequestSent}
                         aria-label={`Send link to ${fromUser?.name}`}
                         className="flex-1 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                       >
                         <Send className="w-4 h-4 mr-2" />
-                        {hasRequestSent ? 'Sent' : 'Send link'}
+                        Send link
+                      </button>
+                    )}
+                    {isCurrentUserReceiver && hasRequestSent && !hasMarkedPaid && (
+                      <button
+                        onClick={() => onOpenPayerView(move.from)}
+                        aria-label={`View request for ${fromUser?.name}`}
+                        className="flex-1 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
+                      >
+                        View request
                       </button>
                     )}
                     {isCurrentUserReceiver && hasMarkedPaid && (
