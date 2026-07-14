@@ -1,12 +1,12 @@
 # P-025 Security Foundation Crosswalk
 
-Date: 2026-07-14  
-Change: `p025-security-foundation-crosswalk-v1`  
-Owner: product/security  
-Card: `P-025`  
-Decision contract: `DC-025`  
-Decision: `DEC-006`  
-Assessment type: repository-grounded control crosswalk and threat model  
+Date: 2026-07-14
+Change: `p025-security-foundation-crosswalk-v1`
+Owner: product/security
+Card: `P-025`
+Decision contract: `DC-025`
+Decision: `DEC-006`
+Assessment type: repository-grounded control crosswalk and threat model
 Runtime changes made by this assessment: none; implementation follow-up below
 
 ## Executive Verdict
@@ -30,10 +30,10 @@ shell contract correctly labels itself as a prototype and its server kernel as
 an in-memory reference. That work is valuable proof, but it does not make the
 current network routes or guest-link paths safe.
 
-**P-025 runtime conformance: FAIL.**  
-**P-025 architecture and reference-kernel quality: PASS WITH LIMITATIONS.**  
+**P-025 runtime conformance: FAIL.**
+**P-025 architecture and reference-kernel quality: PASS WITH LIMITATIONS.**
 **Real shared-money or cross-device launch: NO-GO until server-derived actor
-identity and role authorization exist.**  
+identity and role authorization exist.**
 **Portable host proof with local-only state and bounded claims: acceptable as a
 prototype, not as shared payment truth.**
 
@@ -140,7 +140,7 @@ One next action:
 | C-03 | Server-derived authenticated actor | Express verifies a Supabase bearer token and derives an immutable principal; browser API calls send the access token. Other local/host stores remain outside one canonical authority. | **Partial** | Express impersonation is blocked; cross-surface identity and canonical-state work remain. |
 | C-04 | Payer-only mark-paid authority | Express resolves active membership and requires `fromMemberId` to match the caller's member id; negative HTTP tests cover forged and wrong-role attempts. Direct table policies remain broad. | **Partial** | Route bypass is blocked, but direct database mutation must still be removed or role-scoped. |
 | C-05 | Receiver-only confirmation authority | Express requires `toMemberId` to match the caller's member id and preserves paid-unconfirmed state on rejection. Capture links still substitute bearer possession for receiver identity. | **Partial** | Network route confirmation is bounded; guest-link confirmation remains unsafe. |
-| C-06 | Complete state paths | Database proof confirms the mismatch: Prisma projection accepts `pending`, `paid`, `confirmed`, while the migration-owned constraint allows `pending`, `broadcast`, `finalised`, `failed`, `cancelled`; legitimate mark-paid returns `500`. | **Unsafe** | Route transitions fail against the migrated schema and cannot represent required exceptions. |
+| C-06 | Complete state paths | Forward migration `20260714160000_settlement_status_alignment.sql` aligns the migration-owned normal path with `pending`, `paid`, `confirmed` while preserving legacy rows. The real migrated-database actor proof passes. Delayed, waived, disputed, and other target exceptions are still not implemented. | **Partial** | The normal route path works consistently, but the broader P-025 exception model remains incomplete. |
 | C-07 | Backend-owned payment intent | Portable contract and reference kernel define it. Main Prisma schema has no PaymentIntent entity. | **Documented only** | Requests and evidence are not bound to immutable server scope. |
 | C-08 | Full intent/evidence matching | Reference kernel checks split scope, payer, receiver, amount, currency, rail, reference, expiry, and source. Main runtime stores method/reference JSON on a settlement and has no full matcher. | **Documented only** | Same-amount, wrong-party, wrong-currency, stale, or duplicate evidence can be misapplied if integrated. |
 | C-09 | Scoped, revocable guest capability | Architecture specifies allowed actions, expiry, revocation, and no confirm/close. Capture tokens lack an action list and revocation field; confirm links can invoke confirmation. | **Unsafe** | A bearer capability can exceed its permitted role. |
@@ -269,8 +269,8 @@ hop today.
 
 ### TM-001: Forge or omit actor identity to mutate settlement state
 
-Priority: **Critical**  
-Likelihood: High if the Express routes are internet reachable.  
+Priority: **Critical**
+Likelihood: High if the Express routes are internet reachable.
 Impact: High; shared payment truth and closeout can be changed.
 
 1. Attacker obtains or guesses a pot and settlement id.
@@ -279,10 +279,10 @@ Impact: High; shared payment truth and closeout can be changed.
 3. Route checks the settlement status but not authenticated actor or role.
 4. Attacker changes the leg and may trigger automatic pot closure.
 
-Existing control: state-order checks reject invalid current statuses.  
-Gap: no authentication and no payer/receiver authorization.  
+Existing control: state-order checks reject invalid current statuses.
+Gap: no authentication and no payer/receiver authorization.
 Detection: alert on missing principal, actor/leg role mismatch, and unsigned
-identity headers.  
+identity headers.
 Mitigation status: **implemented at the Express boundary**. Bearer verification,
 active membership, payer/receiver checks, and negative no-side-effect tests now
 block this route-level path. Direct database mutation and other state stores are
@@ -290,9 +290,9 @@ tracked separately.
 
 ### TM-002: Confirm as the receiver through a bearer capture link
 
-Priority: **Critical**  
+Priority: **Critical**
 Likelihood: Medium to high when confirm links are reachable or client storage is
-modifiable.  
+modifiable.
 Impact: High; unreceived payments can become confirmed.
 
 1. Attacker obtains or injects a confirm token containing a receiver id.
@@ -300,38 +300,42 @@ Impact: High; unreceived payments can become confirmed.
 3. The wrong-user condition is false by construction.
 4. Client consumes the token and confirms using the token's receiver id.
 
-Existing control: token expiry and local consumed state.  
+Existing control: token expiry and local consumed state.
 Gap: token possession substitutes for receiver authentication, contradicting
-the guest-link contract.  
+the guest-link contract.
 Detection: log token subject, authenticated principal, command id, and mismatch
-attempts at a server command boundary.  
+attempts at a server command boundary.
 Mitigation: remove confirm authority from bearer links; a link may open a
 read-only projection and the authenticated receiver must issue confirmation.
 
 ### TM-003: Enumerate capture tokens or directly rewrite financial rows
 
-Priority: **High**  
+Priority: **High**
 Likelihood: Medium; requires an authenticated Supabase user and deployed
-policies.  
+policies.
 Impact: High; token payload confidentiality and financial integrity.
 
 1. Ordinary authenticated user queries `capture_link_tokens` without a token
    predicate or targets another pot where policy permits.
-2. Select policy uses `true`, exposing all rows to authenticated users.
-3. Any pot member can also update/delete settlement and payment rows under the
+2. Before the capture-link migration repair, its select policy used `true`,
+   exposing all rows to authenticated users.
+3. Any pot member can still update/delete settlement and payment rows under the
    current membership-only policies.
 
-Existing control: authentication and pot-membership helper on some mutations.  
-Gap: no role or subject scope.  
+Existing control: capture-link rows are now creator/active-member scoped,
+unrelated enumeration is denied, and authenticated updates are limited to
+`consumed_at`.
+Gap: direct settlement/payment table policies still lack role or subject scope,
+and token consumption is not full guest-capability or payment-authority proof.
 Detection: monitor broad selects and direct table mutations outside command
-procedures.  
+procedures.
 Mitigation: revoke direct financial table mutation from clients and expose
 role-checked transactional commands only.
 
 ### TM-004: Runtime fails because route states conflict with database constraint
 
-Priority: **High**  
-Likelihood: High if the listed migration history represents the target DB.  
+Priority: **High**
+Likelihood: High if the listed migration history represents the target DB.
 Impact: Medium to high; payment progress can fail after external payment.
 
 1. Payer legitimately invokes `/pay`.
@@ -340,16 +344,16 @@ Impact: Medium to high; payment progress can fail after external payment.
    `failed`, or `cancelled`.
 4. Mutation fails or environments drift depending on schema history.
 
-Existing control: route unit tests.  
-Gap: mocked Prisma tests do not execute against the real migration schema.  
-Detection: database contract tests in CI against migrated Postgres.  
+Existing control: route unit tests.
+Gap: mocked Prisma tests do not execute against the real migration schema.
+Detection: database contract tests in CI against migrated Postgres.
 Mitigation: choose one canonical state vocabulary and prove migrations, Prisma,
 routes, and clients against it.
 
 ### TM-005: Partial failure or race creates contradictory closeout/audit state
 
-Priority: **High**  
-Likelihood: Medium under network/DB faults or concurrent confirmations.  
+Priority: **High**
+Likelihood: Medium under network/DB faults or concurrent confirmations.
 Impact: High; a leg, event, payment record, and pot status can disagree.
 
 1. Route updates a settlement.
@@ -358,33 +362,33 @@ Impact: High; a leg, event, payment record, and pot status can disagree.
 3. Pot may be closed separately from event append or payment persistence.
 4. Users see a final state without a complete attributable history.
 
-Existing control: some batch creation uses Prisma transactions.  
+Existing control: some batch creation uses Prisma transactions.
 Gap: each command's mutation, audit event, version check, and closeout are not
-atomic.  
-Detection: invariants comparing pot status, open legs, payments, and events.  
+atomic.
+Detection: invariants comparing pot status, open legs, payments, and events.
 Mitigation: one transactional command repository with optimistic versioning.
 
 ### TM-006: Cross-host state forks into multiple truths
 
-Priority: **High**  
-Likelihood: High by design in current local prototypes.  
+Priority: **High**
+Likelihood: High by design in current local prototypes.
 Impact: Medium to high if users mistake local proof for shared coordination.
 
 1. Web, Telegram, `.dot`, bot, or API accepts an action in its own store.
 2. Other surfaces do not receive the same canonical event.
 3. Each surface computes a different balance or closeout.
 
-Existing control: portable documentation explicitly warns that state is local.  
-Gap: no shared command/event authority.  
+Existing control: portable documentation explicitly warns that state is local.
+Gap: no shared command/event authority.
 Detection: host proof should compare canonical server version and event ids once
-available.  
+available.
 Mitigation: do not promote local host actions to cross-device claims; connect
 hosts only after a server-owned command boundary exists.
 
 ### TM-007: Replay or cross-account offline mutation
 
-Priority: **Medium**  
-Likelihood: Medium.  
+Priority: **Medium**
+Likelihood: Medium.
 Impact: Medium; duplicate or incorrectly attributed changes.
 
 1. Browser queues a path/body in localStorage without binding it to a principal
@@ -392,32 +396,32 @@ Impact: Medium; duplicate or incorrectly attributed changes.
 2. Session changes or request is replayed later.
 3. Queue flush sends the old command using the current session-derived header.
 
-Existing control: batch idempotency cache and server key lookup.  
-Gap: queue entries are not principal-, intent-, expiry-, or version-bound.  
-Detection: compare command actor with creation actor and reject stale versions.  
+Existing control: batch idempotency cache and server key lookup.
+Gap: queue entries are not principal-, intent-, expiry-, or version-bound.
+Detection: compare command actor with creation actor and reject stale versions.
 Mitigation: queue signed/opaque command ids only after server intent creation;
 clear or partition queue on session changes.
 
 ### TM-008: Enumerate another user's pending payment actions
 
-Priority: **Medium**  
-Likelihood: High if route is public and ids are discoverable.  
+Priority: **Medium**
+Likelihood: High if route is public and ids are discoverable.
 Impact: Medium; payment relationships and action timing leak.
 
 1. Attacker calls `/api/users/:userId/pending-actions` for another user.
 2. Route performs no identity or membership check.
 3. Response reveals pot ids, counts, and payer/receiver role.
 
-Existing control: response is summarized rather than full details.  
-Gap: no authentication or self/admin authorization.  
-Detection: log subject/principal mismatches and enumeration rate.  
+Existing control: response is summarized rather than full details.
+Gap: no authentication or self/admin authorization.
+Detection: log subject/principal mismatches and enumeration rate.
 Mitigation: derive subject from authenticated principal or enforce explicit
 role-scoped access.
 
 ### TM-009: CI passes the wrong assurance surface
 
-Priority: **Medium**  
-Likelihood: High until workflow drift is repaired.  
+Priority: **Medium**
+Likelihood: High until workflow drift is repaired.
 Impact: Medium; security regressions or broken releases may escape review.
 
 1. Workflow invokes a script absent from the current package manifest.
@@ -425,27 +429,27 @@ Impact: Medium; security regressions or broken releases may escape review.
    different local command.
 3. Reference-kernel and unit-test passes are mistaken for integrated security.
 
-Existing control: secret scanning and multiple local proof scripts.  
+Existing control: secret scanning and multiple local proof scripts.
 Gap: no single current release gate covers authz, migrated DB contracts, host
-identity, and deployment manifest integrity.  
+identity, and deployment manifest integrity.
 Detection: lint workflow-to-package script references and require a green
-protected-branch check set.  
+protected-branch check set.
 Mitigation: repair script ownership and add database-backed negative security
 tests.
 
 ### TM-010: Infrastructure failure returns invented financial interpretation
 
-Priority: **Medium**  
-Likelihood: Medium in an incompletely configured environment.  
+Priority: **Medium**
+Likelihood: Medium in an incompletely configured environment.
 Impact: Medium; users can act on fabricated participants or amounts.
 
 1. AI route cannot reach the database or lacks an API key.
 2. Route substitutes mock members and a simulated expense with HTTP 200.
 3. Client may present the result as a successful parse.
 
-Existing control: server logs warnings and memo includes `Simulation`.  
-Gap: failure does not fail closed at the API contract.  
-Detection: metric and alert on all fallback paths.  
+Existing control: server logs warnings and memo includes `Simulation`.
+Gap: failure does not fail closed at the API contract.
+Detection: metric and alert on all fallback paths.
 Mitigation: return an explicit unavailable/error state and never synthesize
 financial records from infrastructure failure.
 
@@ -481,7 +485,9 @@ Run on 2026-07-14 from the current filesystem:
 | --- | --- | --- | --- |
 | `backend: npm run test:p025:database` against Prisma-projected PostgreSQL | Passed | Real rows enforce active membership, payer-only mark-paid, receiver-only confirm, no rejected-command side effects, unrelated-share preservation, and attributable events | Migration history or deployed RLS |
 | `backend: npm run test:p025:database` against migrations through `20260416000001` | Failed at legitimate mark-paid | Negative actor checks work on migrated rows; migration status contract rejects route state `paid` | Confirmation on the migration-owned schema cannot run until state alignment |
-| Clean Supabase migration replay | Failed at `20260617120000_capture_link_tokens.sql` | Repository migration chain contains a `text` to `uuid` foreign-key mismatch; policy also references absent `pots.members` | A real Supabase project may contain untracked manual drift, which would be a separate audit concern |
+| `backend: npm run test:p025:migrated-database` after `20260714160000_settlement_status_alignment.sql` | Passed | Migration preserves legacy rows; real routes enforce payer-only mark-paid, receiver-only confirm, replay without duplicate effects, unrelated-share preservation, and attributable events | Later capture-link migration, deployed RLS, atomic commands, or production Auth |
+| Clean Supabase migration replay through `20260714170000_capture_link_tokens_repair.sql` | Passed | Capture-link UUID/FK shape, settlement states, and all repository migrations apply in order on disposable PostgreSQL | A real Supabase project may contain untracked manual drift, which remains a separate audit concern |
+| Capture-link legacy conversion and RLS proof | Passed | Valid legacy rows survive UUID conversion; malformed rows fail without deletion; creator/active-member access works; pending/removed/unrelated/anon access and unrelated enumeration are denied | Guest capability scope, payment actor authority, revocation, or production deployment |
 | `backend: npm test` | 46/46 tests passed | Production Supabase Auth request handling, bearer middleware, active membership, payer/receiver authorization, subject privacy, repeated rejection, and existing route behavior are deterministic with mocked HTTP/Prisma boundaries | Deployed database schema, RLS, a live Supabase Auth service, or atomic DB behavior |
 | `backend: npm run type-check` | Passed | Backend authentication and authorization code typechecks | Runtime database and external Auth availability |
 | Runtime `x-user-id` scan | No non-test matches | Current browser and backend runtime no longer use `x-user-id` as authority | Other identity and capability boundaries outside these routes |

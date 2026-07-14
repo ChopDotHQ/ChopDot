@@ -221,6 +221,15 @@ async function run() {
   assert.equal(await settlementStatus(ids.leoSettlement), 'paid');
   assert.equal(await prisma.payment.count({ where: { settlementId: ids.leoSettlement } }), 1);
 
+  const repeatedPaid = await request(app)
+    .patch(`/api/pots/${ids.potA}/settlements/${ids.leoSettlement}/pay`)
+    .set('Authorization', 'Bearer leo-token')
+    .send({ method: 'cash', reference: 'p025-proof' });
+  assert.equal(repeatedPaid.status, 409);
+  assert.equal(await settlementStatus(ids.leoSettlement), 'paid');
+  assert.equal(await prisma.payment.count({ where: { settlementId: ids.leoSettlement } }), 1);
+  assert.equal(await prisma.potEvent.count({ where: { potId: ids.potA } }), 1);
+
   const payerCannotConfirm = await request(app)
     .patch(`/api/pots/${ids.potA}/settlements/${ids.leoSettlement}/confirm`)
     .set('Authorization', 'Bearer leo-token');
@@ -233,6 +242,14 @@ async function run() {
   assert.equal(confirmed.status, 200);
   assert.equal(await settlementStatus(ids.leoSettlement), 'confirmed');
   assert.equal(await settlementStatus(ids.ninaSettlement), 'pending');
+
+  const repeatedConfirmed = await request(app)
+    .patch(`/api/pots/${ids.potA}/settlements/${ids.leoSettlement}/confirm`)
+    .set('Authorization', 'Bearer mina-token');
+  assert.equal(repeatedConfirmed.status, 409);
+  assert.equal(await settlementStatus(ids.leoSettlement), 'confirmed');
+  assert.equal(await prisma.payment.count({ where: { settlementId: ids.leoSettlement } }), 1);
+  assert.equal(await prisma.potEvent.count({ where: { potId: ids.potA } }), 2);
 
   const pot = await prisma.pot.findUniqueOrThrow({ where: { id: ids.potA } });
   assert.equal(pot.status, 'active');
@@ -259,6 +276,7 @@ async function run() {
           crossPotMemberRejected: true,
           wrongPayerRejectedWithoutSideEffects: true,
           payerMarkedOwnPayment: true,
+          repeatedCommandsCreatedNoDuplicateEffects: true,
           payerCouldNotConfirm: true,
           receiverConfirmed: true,
           unrelatedShareRemainedOpen: true,

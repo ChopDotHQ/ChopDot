@@ -1,10 +1,20 @@
 # P-025 Database-Backed Actor Boundary Proof
 
-Date: 2026-07-14  
-Change: `p025-database-backed-actor-boundary-proof-v1`  
-Card: `P-025`  
-Environment: disposable local PostgreSQL 16 container  
+Date: 2026-07-14
+Change: `p025-database-backed-actor-boundary-proof-v1`
+Card: `P-025`
+Environment: disposable local PostgreSQL 16 container
 Production data or services used: none
+
+> Status update: the settlement-state mismatch identified by this report is
+> resolved by `p025-settlement-state-migration-alignment-v1`. See
+> `docs/security/p025-settlement-state-migration-proof-2026-07-14.md`. This
+> report remains the immutable pre-fix evidence.
+>
+> The later capture-link migration failure is resolved by
+> `p025-capture-link-migration-repair-v1`. See
+> `docs/security/p025-capture-link-migration-proof-2026-07-14.md`. The verdict
+> table below remains the original historical result.
 
 ## Verdict
 

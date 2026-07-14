@@ -14,6 +14,7 @@ related_code:
   - src/utils/apiAuthHeaders.ts
 related_docs:
   - docs/security/p025-security-foundation-crosswalk-2026-07-14.md
+  - docs/security/p025-capture-link-migration-proof-2026-07-14.md
   - docs/security/universal-chop-core-security-architecture.md
   - docs/wiki/03-state-models/payment-state.md
 tags:
@@ -69,12 +70,15 @@ declare who performed a money-state action.
 - Local guest/prototype flows without a Supabase session cannot use protected
   shared-state routes. They remain local proof surfaces until an explicit guest
   capability design is implemented.
+- The current Express settlement vocabulary is `pending -> paid -> confirmed`.
+  The migration constraint also accepts legacy values so historical rows remain
+  readable, but new runtime commands must not emit those legacy values.
 - Token verification currently calls the Supabase Auth user endpoint on each
   protected request. A future cached JWKS verifier may reduce latency, but it
   must preserve server verification and revocation/expiry behavior.
 - This decision does not make the full P-025 architecture complete. Direct
-  database policies, guest links, command atomicity, state vocabulary,
-  payment-intent persistence, and one canonical cross-host state remain open.
+  database policies, guest links, command atomicity, payment-intent persistence,
+  and one canonical cross-host state remain open.
 
 ## Verification
 
@@ -85,7 +89,9 @@ declare who performed a money-state action.
 - runtime scan contains no non-test `x-user-id` authority reads
 - backend typecheck and test suite pass
 
-Database-backed authorization proof passes against PostgreSQL projected from
-the Prisma schema. It fails against the repository migration-owned schema
-because the settlement constraint rejects the route's `paid` state. See
-`docs/security/p025-database-backed-actor-boundary-proof-2026-07-14.md`.
+Database-backed authorization proof now passes against both PostgreSQL projected
+from Prisma and the applicable migration-owned schema after the forward-only
+status-alignment migration. The full repository migration chain and the bounded
+capture-link membership proof now pass on disposable PostgreSQL. See
+`docs/security/p025-settlement-state-migration-proof-2026-07-14.md` and
+`docs/security/p025-capture-link-migration-proof-2026-07-14.md`.

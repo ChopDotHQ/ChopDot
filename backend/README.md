@@ -75,10 +75,18 @@ npm run build
 ```
 
 The unit and HTTP integration suite mocks Prisma. The P-025 database harness
-also runs against disposable PostgreSQL. It currently passes against the
-Prisma-projected schema but fails against the migration-owned schema because
-the settlement status constraint rejects `paid`. See the database proof report
-before treating these routes as deployable shared-money authority.
+also runs against disposable PostgreSQL. The full repository migration chain,
+capture-link conversion/RLS proof, and actor/replay proof pass there. Other
+P-025 launch controls remain open.
+
+```bash
+P025_ALLOW_DATABASE_RESET=true \
+P025_DATABASE_URL='postgresql://.../chopdot_p025_capture?schema=public' \
+npm run test:p025:migrated-database
+```
+
+The migration harness refuses non-local hosts and database names without the
+`chopdot_p025_` prefix.
 
 ## Security Boundary
 
@@ -94,5 +102,7 @@ See:
 
 - `docs/adr/0004-server-derived-payment-actor.md`
 - `docs/security/p025-database-backed-actor-boundary-proof-2026-07-14.md`
+- `docs/security/p025-settlement-state-migration-proof-2026-07-14.md`
+- `docs/security/p025-capture-link-migration-proof-2026-07-14.md`
 - `docs/security/p025-security-foundation-crosswalk-2026-07-14.md`
 - `docs/security/universal-chop-core-security-architecture.md`

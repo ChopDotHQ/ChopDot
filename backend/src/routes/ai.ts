@@ -2,7 +2,7 @@
  * AI Routes
  *
  * Implements LLM-based capabilities.
- * 
+ *
  * POST /api/pots/:potId/ai/parse-receipt
  */
 
@@ -89,11 +89,11 @@ ${memberContext}
 
     if (!apiKey) {
       console.warn("[AI] No LLM_API_KEY provided. Simulating response.");
-      
+
       // Attempt to guess the payer and participants if possible (simplistic deterministic fallback)
       const payer = members[0]; // assume first member paid
       const splits = members.map(m => ({ memberId: m.id, amount: 25 }));
-      
+
       // Simulated delay
       await new Promise(r => setTimeout(r, 1500));
 
@@ -125,7 +125,7 @@ ${memberContext}
         ]
       })
     });
-    
+
     const data = await response.json();
     const resultJson = JSON.parse(data.choices[0].message.content);
     res.status(200).json(resultJson);
