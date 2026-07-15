@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AppStateProvider, useAppState } from './state/AppStateContext';
 import { Welcome } from './components/Welcome';
 import { GuestSetup } from './components/GuestSetup';
@@ -24,8 +24,16 @@ import { PaymentMethods } from './components/PaymentMethods';
 import { History } from './components/History';
 import { Settings } from './components/Settings';
 import { StyleGuide } from './components/dev/StyleGuide';
+import { StandalonePayerRequest } from './components/StandalonePayerRequest';
 import { Home as HomeIcon, Users, Settings as SettingsIcon, History as HistoryIcon, Wallet } from 'lucide-react';
 import { configureHostBackButton, initializeHostEnvironment } from './environment';
+import {
+  parsePayerMarkedPaidUpdate,
+  parsePayerRequestRoute,
+  parseStandalonePayerRequest,
+  StandalonePayerRequest as StandalonePayerRequestData,
+} from './requestLinks';
+import { AppState } from './types';
 
 type View = 
   | { name: 'welcome' }
@@ -36,10 +44,11 @@ type View =
   | { name: 'group_detail', groupId: string }
   | { name: 'close_group', groupId: string }
   | { name: 'settle_up', groupId: string }
-  | { name: 'capture_spend', groupId: string }
+  | { name: 'capture_spend', groupId: string, draftAmount?: number, draftTitle?: string }
   | { name: 'review_split', groupId: string, amount: number, title: string }
   | { name: 'request_payment', groupId: string, memberId: string }
   | { name: 'payer_view', groupId: string, memberId: string }
+  | { name: 'standalone_payer_request', request: StandalonePayerRequestData, groupId: string, memberId: string }
   | { name: 'saved_record', recordId: string }
   | { name: 'profile' }
   | { name: 'friends' }
@@ -49,9 +58,37 @@ type View =
   | { name: 'style_guide' };
 
 function AppRouter() {
-  const { state } = useAppState();
-  const getEntryView = (): View => state.currentUserId ? { name: 'home' } : { name: 'welcome' };
+  const { state, dispatch } = useAppState();
+  const getEntryView = (): View => {
+    const returnedUpdate = getReturnedPayerUpdate(state);
+    if (returnedUpdate) {
+      return { name: 'group_detail', groupId: returnedUpdate.groupId };
+    }
+
+    const payerRoute = getPayerRequestEntryView(state);
+    if (payerRoute) {
+      return payerRoute;
+    }
+
+    const standaloneRequest = parseStandalonePayerRequest();
+    const standaloneRoute = parsePayerRequestRoute();
+    if (standaloneRequest && standaloneRoute && !hasKnownLocalPayerRoute(state)) {
+      return {
+        name: 'standalone_payer_request',
+        request: standaloneRequest,
+        groupId: standaloneRoute.groupId,
+        memberId: standaloneRoute.memberId,
+      };
+    }
+
+    if (!state.currentUserId) {
+      return { name: 'welcome' };
+    }
+
+    return { name: 'home' };
+  };
   const [view, setView] = useState<View>(getEntryView);
+  const appliedPayerUpdates = useRef(new Set<string>());
 
   const isDev = new URLSearchParams(window.location.search).get("dev") === "1";
   const backView = getBackView(view);
@@ -64,9 +101,38 @@ function AppRouter() {
     });
   }, [view]);
 
+  useEffect(() => {
+    const returnedUpdate = getReturnedPayerUpdate(state);
+    if (!returnedUpdate || appliedPayerUpdates.current.has(returnedUpdate.requestId)) return;
+
+    appliedPayerUpdates.current.add(returnedUpdate.requestId);
+    returnedUpdate.splitIds.forEach(splitId => {
+      dispatch({ type: 'MARK_PAID', payload: { splitId, userId: returnedUpdate.memberId } });
+    });
+    setView({ name: 'group_detail', groupId: returnedUpdate.groupId });
+  }, [dispatch, state]);
+
+  useEffect(() => {
+    if (parsePayerMarkedPaidUpdate()) return;
+    const payerView = getPayerRequestEntryView(state);
+    if (!payerView || payerView.name !== 'payer_view') return;
+    if (view.name === 'payer_view' && view.groupId === payerView.groupId && view.memberId === payerView.memberId) return;
+    setView(payerView);
+  }, [state.groups, state.users, state.expenses, state.splits, view]);
+
   if (view.name === 'state_proof') {
     if (!isDev) return <Home onGoToStateProof={() => setView({ name: 'home' })} onStartGroup={() => setView({ name: 'home' })} onGoToGroup={() => setView({ name: 'home' })} onGoToProfile={() => setView({ name: 'home' })} />;
     return <StateProof onBack={() => setView(getEntryView())} />;
+  }
+
+  if (view.name === 'standalone_payer_request') {
+    return (
+      <StandalonePayerRequest
+        request={view.request}
+        groupId={view.groupId}
+        memberId={view.memberId}
+      />
+    );
   }
 
   if (!state.currentUserId) {
@@ -93,6 +159,7 @@ function AppRouter() {
       groupId={view.groupId}
       onBack={() => setView({ name: 'group_detail', groupId: view.groupId })}
       onOpenPayerView={(memberId) => setView({ name: 'payer_view', groupId: view.groupId, memberId })}
+      onFinishGroup={() => setView({ name: 'close_group', groupId: view.groupId })}
     />;
   } else if (view.name === 'close_group') {
     content = <CloseGroup 
@@ -103,6 +170,8 @@ function AppRouter() {
   } else if (view.name === 'capture_spend') {
     content = <CaptureSpend 
       groupId={view.groupId} 
+      initialAmount={view.draftAmount}
+      initialTitle={view.draftTitle}
       onBack={() => setView({ name: 'group_detail', groupId: view.groupId })} 
       onNext={(amount, title) => setView({ name: 'review_split', groupId: view.groupId, amount, title })}
     />;
@@ -111,7 +180,12 @@ function AppRouter() {
       groupId={view.groupId}
       amount={view.amount}
       title={view.title}
-      onBack={() => setView({ name: 'capture_spend', groupId: view.groupId })}
+      onBack={() => setView({
+        name: 'capture_spend',
+        groupId: view.groupId,
+        draftAmount: view.amount,
+        draftTitle: view.title
+      })}
       onSave={() => setView({ name: 'group_detail', groupId: view.groupId })}
     />;
   } else if (view.name === 'request_payment') {
@@ -244,8 +318,15 @@ function getBackView(view: View): View | null {
     case 'request_payment':
     case 'payer_view':
       return { name: 'group_detail', groupId: view.groupId };
+    case 'standalone_payer_request':
+      return null;
     case 'review_split':
-      return { name: 'capture_spend', groupId: view.groupId };
+      return {
+        name: 'capture_spend',
+        groupId: view.groupId,
+        draftAmount: view.amount,
+        draftTitle: view.title
+      };
     case 'saved_record':
       return { name: 'home' };
     case 'state_proof':
@@ -258,6 +339,74 @@ function getBackView(view: View): View | null {
     default:
       return null;
   }
+}
+
+function getPayerRequestEntryView(state: AppState): View | null {
+  const route = parsePayerRequestRoute();
+  if (!route || !state.groups[route.groupId] || !state.users[route.memberId]) {
+    return null;
+  }
+
+  const hasRequest = Object.values(state.splits).some((split) => {
+    const expense = state.expenses[split.expenseId];
+    return (
+      split.userId === route.memberId &&
+      split.status === 'request_sent' &&
+      expense?.groupId === route.groupId
+    );
+  });
+
+  if (!hasRequest) {
+    return null;
+  }
+
+  return { name: 'payer_view', groupId: route.groupId, memberId: route.memberId };
+}
+
+function hasKnownLocalPayerRoute(state: AppState): boolean {
+  const route = parsePayerRequestRoute();
+  return Boolean(route && state.groups[route.groupId] && state.users[route.memberId]);
+}
+
+function getReturnedPayerUpdate(state: AppState): {
+  requestId: string;
+  groupId: string;
+  memberId: string;
+  splitIds: string[];
+} | null {
+  const route = parsePayerRequestRoute();
+  const update = parsePayerMarkedPaidUpdate();
+  if (
+    !route ||
+    !update ||
+    route.groupId !== update.groupId ||
+    route.memberId !== update.memberId ||
+    !state.currentUserId ||
+    !state.groups[route.groupId] ||
+    !state.users[route.memberId]
+  ) {
+    return null;
+  }
+
+  const matchingSplits = Object.values(state.splits).filter(split => {
+    const expense = state.expenses[split.expenseId];
+    return split.userId === route.memberId
+      && split.status === 'request_sent'
+      && split.requestId === update.requestId
+      && split.requestExpiresAt === update.expiresAt
+      && expense?.groupId === route.groupId
+      && expense.paidByUserId === state.currentUserId
+      && (expense.currency ?? state.currency) === update.currency;
+  });
+  const matchingAmount = matchingSplits.reduce((sum, split) => sum + split.amount, 0);
+  if (matchingSplits.length === 0 || Math.abs(matchingAmount - update.amount) > 0.005) return null;
+
+  return {
+    requestId: update.requestId,
+    groupId: route.groupId,
+    memberId: route.memberId,
+    splitIds: matchingSplits.map(split => split.id),
+  };
 }
 
 export default function App() {

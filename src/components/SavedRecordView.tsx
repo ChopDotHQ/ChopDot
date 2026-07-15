@@ -20,6 +20,7 @@ export function SavedRecordView({
   if (!record || !group) return null;
 
   const members = group.memberIds.map(id => state.users[id]).filter(Boolean);
+  const isFullySettled = record.openAmount < 0.005;
 
   return (
     <Screen>
@@ -34,8 +35,10 @@ export function SavedRecordView({
           </div>
           
           <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Still open</p>
-            <div className="text-xl font-bold text-orange-600">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+              {isFullySettled ? 'All settled' : 'Still open'}
+            </p>
+            <div className={`text-xl font-bold ${isFullySettled ? 'text-green-600' : 'text-orange-600'}`}>
               <MoneyAmount amount={record.openAmount} currency={state.currency} />
             </div>
           </div>

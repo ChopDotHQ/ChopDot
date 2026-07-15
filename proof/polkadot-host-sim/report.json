@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-07-15T15:15:26.952Z",
+  "sdk": "@parity/host-api-test-sdk@0.10.0",
+  "passed": true,
+  "identities": [
+    "Alice",
+    "Bob"
+  ],
+  "ciphertextOnly": true,
+  "bobReceived": {
+    "type": "payment_marked_paid",
+    "actor": "leo",
+    "amount": "40.00",
+    "currency": "CHF"
+  },
+  "payment": {
+    "requestId": "pay-1",
+    "authority": "observed_only"
+  },
+  "receipt": {
+    "key": "0x009835e1d3a04999c5cc6f5bafd1d9d78b1849a7787d2ff347974832e7968226",
+    "redacted": true,
+    "retrieved": true
+  },
+  "liveBoundary": "Host simulation is not a substitute for Polkadot Mobile login or live Statement Store/payment execution."
+}

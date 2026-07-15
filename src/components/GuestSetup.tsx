@@ -6,13 +6,22 @@ import { getTelegramUserDisplayName } from '../environment';
 export function GuestSetup({ onBack, onComplete }: { onBack: () => void, onComplete: () => void }) {
   const suggestedName = getTelegramUserDisplayName();
   const [name, setName] = useState(suggestedName ?? '');
-  const { dispatch } = useAppState();
+  const { dispatch, hostParticipant } = useAppState();
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    const userId = `u-${Date.now()}`;
-    dispatch({ type: 'ADD_USER', payload: { user: { id: userId, name: name.trim() } } });
+    const userId = hostParticipant?.userId ?? `u-${Date.now()}`;
+    dispatch({
+      type: 'ADD_USER',
+      payload: {
+        user: {
+          id: userId,
+          name: name.trim(),
+          accountPublicKeyHex: hostParticipant?.publicKeyHex,
+        },
+      },
+    });
     dispatch({ type: 'SET_CURRENT_USER', payload: { userId } });
     onComplete();
   };
@@ -37,7 +46,7 @@ export function GuestSetup({ onBack, onComplete }: { onBack: () => void, onCompl
           />
           {suggestedName && (
             <p className="mt-3 text-sm font-medium text-gray-500">
-              Suggested from Telegram. You can edit it.
+              Suggested from your account. You can edit it.
             </p>
           )}
           <div className="flex-1" />

@@ -1,4 +1,6 @@
 export type HostKind = 'web' | 'mobile-browser' | 'embedded-webview' | 'telegram-mini-app';
+export type SafeAreaMode = 'standard' | 'embedded' | 'telegram';
+export type LaunchSource = 'telegram' | 'url' | 'direct' | 'server';
 
 type TelegramBackButton = {
   show?: () => void;
@@ -49,11 +51,17 @@ declare global {
 }
 
 export interface EnvironmentCapabilities {
+  hostId: HostKind;
   host: HostKind;
+  canShare: boolean;
   canUseClipboard: boolean;
   canUseShareSheet: boolean;
+  canUseHostBack: boolean;
+  canUseHostStorage: boolean;
   canUseLocalStorage: boolean;
   canUseTelegramCloudStorage: boolean;
+  safeAreaMode: SafeAreaMode;
+  launchSource: LaunchSource;
   isStandalone: boolean;
   userAgent: string;
   launchStartParam: string | null;
@@ -64,11 +72,17 @@ export interface EnvironmentCapabilities {
 export function getEnvironmentCapabilities(): EnvironmentCapabilities {
   if (typeof window === 'undefined' || typeof navigator === 'undefined') {
     return {
+      hostId: 'web',
       host: 'web',
+      canShare: false,
       canUseClipboard: false,
       canUseShareSheet: false,
+      canUseHostBack: false,
+      canUseHostStorage: false,
       canUseLocalStorage: false,
       canUseTelegramCloudStorage: false,
+      safeAreaMode: 'standard',
+      launchSource: 'server',
       isStandalone: false,
       userAgent: '',
       launchStartParam: null,
@@ -84,16 +98,27 @@ export function getEnvironmentCapabilities(): EnvironmentCapabilities {
     window.matchMedia?.('(display-mode: standalone)').matches ||
     Boolean((navigator as Navigator & { standalone?: boolean }).standalone);
   const maybeEmbedded = Boolean(telegram) || /FBAN|FBAV|Instagram|Line|Telegram|MicroMessenger/i.test(userAgent);
+  const host: HostKind = telegram ? 'telegram-mini-app' : maybeEmbedded ? 'embedded-webview' : isMobile ? 'mobile-browser' : 'web';
+  const launchParameters = getLaunchParameters();
+  const canUseShareSheet = Boolean(navigator.share);
+  const canUseClipboard = Boolean(navigator.clipboard?.writeText);
+  const canUseTelegramCloudStorage = Boolean(telegram?.CloudStorage?.setItem);
 
   return {
-    host: telegram ? 'telegram-mini-app' : maybeEmbedded ? 'embedded-webview' : isMobile ? 'mobile-browser' : 'web',
-    canUseClipboard: Boolean(navigator.clipboard?.writeText),
-    canUseShareSheet: Boolean(navigator.share),
+    hostId: host,
+    host,
+    canShare: canUseShareSheet || canUseClipboard,
+    canUseClipboard,
+    canUseShareSheet,
+    canUseHostBack: Boolean(telegram?.BackButton),
+    canUseHostStorage: canUseTelegramCloudStorage,
     canUseLocalStorage: canAccessLocalStorage(),
-    canUseTelegramCloudStorage: Boolean(telegram?.CloudStorage?.setItem),
+    canUseTelegramCloudStorage,
+    safeAreaMode: telegram ? 'telegram' : maybeEmbedded || isStandalone ? 'embedded' : 'standard',
+    launchSource: launchParameters.source === 'none' ? 'direct' : launchParameters.source,
     isStandalone,
     userAgent,
-    launchStartParam: getLaunchParameters().startParam,
+    launchStartParam: launchParameters.startParam,
     telegramPlatform: telegram?.platform ?? null,
     viewportStableHeight: typeof telegram?.viewportStableHeight === 'number' ? telegram.viewportStableHeight : null,
   };
@@ -182,6 +207,29 @@ export async function copyText(text: string): Promise<'copied' | 'ready'> {
   } catch {
     return 'ready';
   }
+}
+
+export async function shareOrCopyText({
+  title,
+  text,
+  url,
+}: {
+  title: string;
+  text: string;
+  url: string;
+}): Promise<'shared' | 'copied' | 'ready'> {
+  const capabilities = getEnvironmentCapabilities();
+
+  if (capabilities.canUseShareSheet) {
+    try {
+      await navigator.share({ title, text, url });
+      return 'shared';
+    } catch {
+      // User dismissal or host blocking share should fall through to copy.
+    }
+  }
+
+  return copyText(url);
 }
 
 export const appStorage = {

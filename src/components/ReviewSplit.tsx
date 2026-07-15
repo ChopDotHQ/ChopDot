@@ -117,6 +117,7 @@ export function ReviewSplit({
       groupId,
       description: title,
       amount,
+      currency: state.currency,
       paidByUserId: currentUser.id,
       date: new Date().toISOString(),
     };

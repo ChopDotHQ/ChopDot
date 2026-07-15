@@ -2,7 +2,8 @@ export function getCurrencySymbol(code: string): string {
   switch (code) {
     case 'EUR': return '€';
     case 'GBP': return '£';
-    case 'USD':
+    case 'USD': return '$';
+    case 'PAS': return 'PAS ';
     default: return '$';
   }
 }

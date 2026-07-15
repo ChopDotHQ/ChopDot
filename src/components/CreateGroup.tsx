@@ -26,9 +26,16 @@ export function CreateGroup({ onBack, onCreated }: { onBack: () => void, onCreat
     const memberIds = [state.currentUserId!];
     
     friends.forEach(f => {
-      const userId = `u-${crypto.randomUUID()}`;
-      dispatch({ type: 'ADD_USER', payload: { user: { id: userId, name: f.name } } });
-      memberIds.push(userId);
+      const existingUser = Object.values(state.users).find(user =>
+        user.id !== state.currentUserId && normalizeName(user.name) === normalizeName(f.name),
+      );
+      if (existingUser) {
+        memberIds.push(existingUser.id);
+        return;
+      }
+      const newUserId = `u-${crypto.randomUUID()}`;
+      dispatch({ type: 'ADD_USER', payload: { user: { id: newUserId, name: f.name } } });
+      memberIds.push(newUserId);
     });
 
     const groupId = `g-${crypto.randomUUID()}`;
@@ -130,4 +137,8 @@ export function CreateGroup({ onBack, onCreated }: { onBack: () => void, onCreat
       </div>
     </div>
   );
+}
+
+function normalizeName(value: string): string {
+  return value.trim().replace(/\s+/gu, ' ').toLocaleLowerCase();
 }

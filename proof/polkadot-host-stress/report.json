@@ -1,0 +1,74 @@
+{
+  "checkedAt": "2026-07-15T15:15:35.606Z",
+  "sdk": "@parity/host-api-test-sdk@0.10.0",
+  "status": "passed",
+  "participantCount": 5,
+  "participants": [
+    {
+      "person": "mina",
+      "hostAccount": "Alice",
+      "accountId": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
+    },
+    {
+      "person": "leo",
+      "hostAccount": "Bob",
+      "accountId": "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"
+    },
+    {
+      "person": "nina",
+      "hostAccount": "Charlie",
+      "accountId": "5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y"
+    },
+    {
+      "person": "omar",
+      "hostAccount": "Dave",
+      "accountId": "5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy"
+    },
+    {
+      "person": "vera",
+      "hostAccount": "Eve",
+      "accountId": "5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw"
+    }
+  ],
+  "convergence": {
+    "concurrentEventCount": 5,
+    "uniqueEventsReceivedByEachCorrectHost": 5,
+    "ciphertextOnly": true,
+    "burstUniqueCounts": [
+      5,
+      5,
+      5,
+      5,
+      5
+    ],
+    "recoveryRetries": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "retryRequired": false
+  },
+  "wrongSecretIsolation": true,
+  "duplicateDelivery": {
+    "observed": true,
+    "deduplicatedByBridge": true,
+    "note": "Duplicate transport delivery was injected twice and suppressed by the Statement Store client data-hash dedupe."
+  },
+  "payments": {
+    "concurrentCount": 3,
+    "observedOnly": true,
+    "isolatedHostLogs": true
+  },
+  "receipt": {
+    "key": "0x4bf088ab94c1492145c0adbd2eef2d898df646c82b7ef4125b483a93f480c13c",
+    "redacted": true,
+    "retrieved": true,
+    "memberCount": 5
+  },
+  "boundaries": [
+    "Developer bridge actions were used; this is not a real-UI journey pass.",
+    "Official local host simulation is not live-network execution."
+  ]
+}

@@ -43,8 +43,37 @@ export function GroupDetail({
   const needsConfirm = myMarkedSplits.length > 0;
   const usersNeedingConfirm = Array.from(new Set(myMarkedSplits.map(s => s.userId))).map(id => state.users[id]);
   const confirmText = usersNeedingConfirm.length === 1 ? `Confirm received from ${usersNeedingConfirm[0]?.name}` : 'Confirm received';
+  const mySentRequestSplits = (Object.values(state.splits) as Split[]).filter(
+    s => s.status === 'request_sent'
+    && state.expenses[s.expenseId]?.groupId === groupId
+    && state.expenses[s.expenseId]?.paidByUserId === state.currentUserId
+  );
+  const sentRequestUserIds = Array.from(new Set(mySentRequestSplits.map(split => split.userId)));
+  const sentRequestWaitText = sentRequestUserIds.length === 1
+    ? `Waiting for ${state.users[sentRequestUserIds[0]]?.name ?? 'payment'}`
+    : `Waiting for ${sentRequestUserIds.length} people`;
+  const myNewOpenSplits = (Object.values(state.splits) as Split[]).filter(
+    split => split.status === 'open'
+      && state.expenses[split.expenseId]?.groupId === groupId
+      && state.expenses[split.expenseId]?.paidByUserId === state.currentUserId
+      && split.userId !== state.currentUserId,
+  );
+  const myNewOpenAmount = myNewOpenSplits.reduce((sum, split) => sum + split.amount, 0);
 
   const hasOpenBalances = getOpenSplits(state, groupId).length > 0;
+  const currentUserBalance = state.currentUserId ? getMemberBalance(state, groupId, state.currentUserId) : 0;
+  const currentUserPaymentSplits = (Object.values(state.splits) as Split[]).filter(split =>
+    split.userId === state.currentUserId
+    && state.expenses[split.expenseId]?.groupId === groupId
+    && state.expenses[split.expenseId]?.paidByUserId !== state.currentUserId
+    && split.status !== 'confirmed',
+  );
+  const currentUserMarkedPaid = currentUserPaymentSplits.some(split => split.status === 'marked_paid');
+  const currentUserRequestSent = currentUserPaymentSplits.some(split => split.status === 'request_sent');
+  const currentReceiverName = currentUserPaymentSplits.length > 0
+    ? state.users[state.expenses[currentUserPaymentSplits[0].expenseId]?.paidByUserId]?.name
+    : null;
+  const canFinish = groupExpenses.some(expense => expense.paidByUserId === state.currentUserId);
 
   return (
     <Screen className="relative">
@@ -80,8 +109,25 @@ export function GroupDetail({
               const bal = getMemberBalance(state, group.id, member.id);
               const reqSplits = (Object.values(state.splits) as Split[]).filter(s => s.userId === member.id && s.status === 'request_sent' && state.expenses[s.expenseId]?.groupId === group.id);
               const markedSplits = (Object.values(state.splits) as Split[]).filter(s => s.userId === member.id && s.status === 'marked_paid' && state.expenses[s.expenseId]?.groupId === group.id);
-              
-              const isOwed = bal < 0;
+              const newlyOpenSplits = (Object.values(state.splits) as Split[]).filter(s =>
+                s.userId === member.id
+                && s.status === 'open'
+                && state.expenses[s.expenseId]?.groupId === group.id
+                && state.expenses[s.expenseId]?.paidByUserId !== member.id
+              );
+              const newlyOpenAmount = newlyOpenSplits.reduce((sum, split) => sum + split.amount, 0);
+              const memberIsCurrentUser = member.id === state.currentUserId;
+              const status = markedSplits.length > 0
+                ? memberIsCurrentUser
+                  ? `Waiting for ${state.users[state.expenses[markedSplits[0].expenseId]?.paidByUserId]?.name ?? 'confirmation'}`
+                  : 'Needs confirm'
+                : reqSplits.length > 0
+                  ? newlyOpenAmount > 0
+                    ? memberIsCurrentUser
+                      ? <>Ready to pay · <MoneyAmount amount={newlyOpenAmount} currency={state.currency} /> more</>
+                      : <>Request sent · <MoneyAmount amount={newlyOpenAmount} currency={state.currency} /> more</>
+                    : memberIsCurrentUser ? 'Ready to pay' : 'Request sent'
+                  : null;
 
               return (
                 <div key={member.id} className="flex flex-col p-3 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-black/5 dark:border-white/5 transition-colors">
@@ -92,28 +138,14 @@ export function GroupDetail({
                     <div className="font-medium text-gray-900 dark:text-white text-sm flex-1 truncate">
                       {member.name} {member.id === state.currentUserId ? '(You)' : ''}
                     </div>
-                    <div className={`text-sm font-semibold shrink-0 ml-2 ${bal === 0 ? 'text-gray-400' : bal > 0 ? 'text-green-600' : 'text-orange-600'}`}>
-                      {bal === 0 ? 'Settled' : bal > 0 ? (
+                    <div className={`text-sm font-semibold shrink-0 ml-2 ${status ? 'text-orange-600' : bal === 0 ? 'text-gray-400' : bal > 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                      {status ?? (bal === 0 ? 'Settled' : bal > 0 ? (
                         <>Gets <MoneyAmount amount={bal} currency={state.currency} /></>
                       ) : (
                         <>Owes <MoneyAmount amount={Math.abs(bal)} currency={state.currency} /></>
-                      )}
+                      ))}
                     </div>
                   </div>
-
-                  {member.id !== state.currentUserId && isOwed && (
-                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex justify-end items-center">
-                      {reqSplits.length > 0 ? (
-                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                          Request sent
-                        </span>
-                      ) : markedSplits.length > 0 ? (
-                        <span className="text-sm font-medium text-orange-600">
-                          Needs confirm
-                        </span>
-                      ) : null}
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -131,38 +163,57 @@ export function GroupDetail({
             Add spend
           </Button>
         ) : needsConfirm ? (
-          <>
-            <Button 
-              variant="success"
-              fullWidth
-              onClick={() => {
-                 if (usersNeedingConfirm.length === 1) {
-                   myMarkedSplits.forEach(s => {
-                     dispatch({ type: 'CONFIRM_RECEIVED', payload: { splitId: s.id, currentUserId: state.currentUserId! } });
-                   });
-                 } else {
-                   setShowConfirmMenu(true);
-                 }
-              }}
-            >
-              {confirmText}
-            </Button>
-            <Button variant="muted" onClick={onCloseGroup} fullWidth>
-              Finish group
-            </Button>
-          </>
+          <Button
+            variant="success"
+            fullWidth
+            onClick={() => {
+               if (usersNeedingConfirm.length === 1) {
+                 myMarkedSplits.forEach(s => {
+                   dispatch({ type: 'CONFIRM_RECEIVED', payload: { splitId: s.id, currentUserId: state.currentUserId! } });
+                 });
+               } else {
+                 setShowConfirmMenu(true);
+               }
+            }}
+          >
+            {confirmText}
+          </Button>
+        ) : hasOpenBalances && mySentRequestSplits.length > 0 && myNewOpenAmount > 0 ? (
+          <Button onClick={onGoToSettleUp} fullWidth data-testid="group-request-more">
+            Request <MoneyAmount amount={myNewOpenAmount} currency={state.currency} /> more
+          </Button>
+        ) : hasOpenBalances && mySentRequestSplits.length > 0 ? (
+          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400" data-testid="group-request-waiting">
+            {sentRequestWaitText}
+          </div>
+        ) : hasOpenBalances && currentUserMarkedPaid ? (
+          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">
+            Waiting for {currentReceiverName ?? 'confirmation'}
+          </div>
+        ) : hasOpenBalances && currentUserRequestSent ? (
+          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">
+            Payment requested
+          </div>
+        ) : hasOpenBalances && currentUserBalance > 0 ? (
+          <Button onClick={onGoToSettleUp} fullWidth data-testid="group-settle-up">
+            Settle up
+          </Button>
         ) : hasOpenBalances ? (
-          <>
-            <Button onClick={onGoToSettleUp} fullWidth>
-              Settle up
-            </Button>
-            <Button variant="muted" onClick={onCloseGroup} fullWidth>
-              Finish group
-            </Button>
-          </>
-        ) : (
+          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">
+            Waiting on the group
+          </div>
+        ) : canFinish ? (
           <Button onClick={onCloseGroup} fullWidth>
             Finish group
+          </Button>
+        ) : (
+          <div className="w-full py-3 text-center text-sm font-semibold text-green-600">
+            Settled
+          </div>
+        )}
+        {groupExpenses.length > 0 && (
+          <Button variant="muted" onClick={onAddSpend} fullWidth data-testid="group-add-expense">
+            Add expense
           </Button>
         )}
       </BottomAction>

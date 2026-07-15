@@ -1,0 +1,177 @@
+{
+  "checkedAt": "2026-07-15T15:23:31.811Z",
+  "status": "passed",
+  "participantCount": 5,
+  "chain": {
+    "name": "Polkadot Hub TestNet",
+    "chainId": "0x190f1b41",
+    "rpcUrl": "https://services.polkadothub-rpc.com/testnet"
+  },
+  "funding": {
+    "historicalFaucetBoundary": "The wallets had faucet-funded balances, but no matching EVM funding transaction hash was visible. No faucet hash is claimed.",
+    "beforeTopups": {
+      "mina": {
+        "address": "0x7f7Ce4722c61C6616f5C47E905f42A1D02f18b3A",
+        "pas": "4999.890703576"
+      },
+      "leo": {
+        "address": "0x6a6F9609C3798AaD382276cB7804e5E778996C6C",
+        "pas": "5000.020005644"
+      },
+      "nina": {
+        "address": "0x62389da6Bdd046b2046C0439712136bb1C45D0C3",
+        "pas": "4999.9545067517"
+      },
+      "omar": {
+        "address": "0x4eD4923510852d280840ad7dF14719Fd513BC163",
+        "pas": "5000.004894483"
+      },
+      "casey": {
+        "address": "0xeceF95FB7BdFB16A678c6ba6A7129318850E7Bcf",
+        "pas": "4999.989894483"
+      }
+    },
+    "freshTopups": [
+      {
+        "from": "0x7f7Ce4722c61C6616f5C47E905f42A1D02f18b3A",
+        "to": "0x6a6F9609C3798AaD382276cB7804e5E778996C6C",
+        "amountPas": "0.02",
+        "txHash": "0xdd7e9e11fdf6d79910db4ef851beef800f7c004a3948707a3b197216454ec78f",
+        "blockNumber": 11018070,
+        "explorerUrl": "https://blockscout-testnet.polkadot.io/tx/0xdd7e9e11fdf6d79910db4ef851beef800f7c004a3948707a3b197216454ec78f"
+      },
+      {
+        "from": "0x7f7Ce4722c61C6616f5C47E905f42A1D02f18b3A",
+        "to": "0x62389da6Bdd046b2046C0439712136bb1C45D0C3",
+        "amountPas": "0.02",
+        "txHash": "0x5ce18e2ecd805dca983f04e3f32f2ba671ee4e8a32fd9fe8762a5650441d6b64",
+        "blockNumber": 11018073,
+        "explorerUrl": "https://blockscout-testnet.polkadot.io/tx/0x5ce18e2ecd805dca983f04e3f32f2ba671ee4e8a32fd9fe8762a5650441d6b64"
+      },
+      {
+        "from": "0x7f7Ce4722c61C6616f5C47E905f42A1D02f18b3A",
+        "to": "0x4eD4923510852d280840ad7dF14719Fd513BC163",
+        "amountPas": "0.02",
+        "txHash": "0x6fccdcb355985f7436a48ed85c16ba417666e7f4a8a1b09d844ee9bcd02c67f3",
+        "blockNumber": 11018075,
+        "explorerUrl": "https://blockscout-testnet.polkadot.io/tx/0x6fccdcb355985f7436a48ed85c16ba417666e7f4a8a1b09d844ee9bcd02c67f3"
+      },
+      {
+        "from": "0x7f7Ce4722c61C6616f5C47E905f42A1D02f18b3A",
+        "to": "0xeceF95FB7BdFB16A678c6ba6A7129318850E7Bcf",
+        "amountPas": "0.02",
+        "txHash": "0xc29d6668395cf0c0fa83812cac7d7000fcebb118cac02551e47e0e6bec0ff86a",
+        "blockNumber": 11018077,
+        "explorerUrl": "https://blockscout-testnet.polkadot.io/tx/0xc29d6668395cf0c0fa83812cac7d7000fcebb118cac02551e47e0e6bec0ff86a"
+      }
+    ],
+    "afterTopups": {
+      "mina": {
+        "address": "0x7f7Ce4722c61C6616f5C47E905f42A1D02f18b3A",
+        "pas": "4999.80726022"
+      },
+      "leo": {
+        "address": "0x6a6F9609C3798AaD382276cB7804e5E778996C6C",
+        "pas": "5000.040005644"
+      },
+      "nina": {
+        "address": "0x62389da6Bdd046b2046C0439712136bb1C45D0C3",
+        "pas": "4999.9745067517"
+      },
+      "omar": {
+        "address": "0x4eD4923510852d280840ad7dF14719Fd513BC163",
+        "pas": "5000.024894483"
+      },
+      "casey": {
+        "address": "0xeceF95FB7BdFB16A678c6ba6A7129318850E7Bcf",
+        "pas": "5000.009894483"
+      }
+    }
+  },
+  "payments": [
+    {
+      "person": "Nina",
+      "amountPas": 0.01,
+      "txHash": "0xfe611bab3472def18b7f4d2fd9e4ec90d247ddeb49ae806b4eae563d4be9ef26",
+      "chainId": "0x190f1b41",
+      "from": "0x62389da6bdd046b2046c0439712136bb1c45d0c3",
+      "to": "0x7f7ce4722c61c6616f5c47e905f42a1d02f18b3a",
+      "amountBaseUnits": "10000000000000000",
+      "blockNumber": "0xa81f65",
+      "confirmedAt": "2026-07-15T15:23:23.814Z",
+      "explorerUrl": "https://blockscout-testnet.polkadot.io/tx/0xfe611bab3472def18b7f4d2fd9e4ec90d247ddeb49ae806b4eae563d4be9ef26"
+    },
+    {
+      "person": "Leo",
+      "amountPas": 0.01,
+      "txHash": "0x853f601d2380fe7a9fbab70941704190cd1d2c33ce41ba147540bad53e5e0a36",
+      "chainId": "0x190f1b41",
+      "from": "0x6a6f9609c3798aad382276cb7804e5e778996c6c",
+      "to": "0x7f7ce4722c61c6616f5c47e905f42a1d02f18b3a",
+      "amountBaseUnits": "10000000000000000",
+      "blockNumber": "0xa81f64",
+      "confirmedAt": "2026-07-15T15:23:21.765Z",
+      "explorerUrl": "https://blockscout-testnet.polkadot.io/tx/0x853f601d2380fe7a9fbab70941704190cd1d2c33ce41ba147540bad53e5e0a36"
+    },
+    {
+      "person": "Omar",
+      "amountPas": 0.01,
+      "txHash": "0x54d5c7378dee218971ede186c48e8aa5e505aef3c28a399863aa8dda1b3a41e5",
+      "chainId": "0x190f1b41",
+      "from": "0x4ed4923510852d280840ad7df14719fd513bc163",
+      "to": "0x7f7ce4722c61c6616f5c47e905f42a1d02f18b3a",
+      "amountBaseUnits": "10000000000000000",
+      "blockNumber": "0xa81f66",
+      "confirmedAt": "2026-07-15T15:23:26.005Z",
+      "explorerUrl": "https://blockscout-testnet.polkadot.io/tx/0x54d5c7378dee218971ede186c48e8aa5e505aef3c28a399863aa8dda1b3a41e5"
+    },
+    {
+      "person": "Casey",
+      "amountPas": 0.01,
+      "txHash": "0x9ec8b6ac692d54d1cbf18b082d155b4f73795cf75c19a581c749fd6725cc7c77",
+      "chainId": "0x190f1b41",
+      "from": "0xecef95fb7bdfb16a678c6ba6a7129318850e7bcf",
+      "to": "0x7f7ce4722c61c6616f5c47e905f42a1d02f18b3a",
+      "amountBaseUnits": "10000000000000000",
+      "blockNumber": "0xa81f68",
+      "confirmedAt": "2026-07-15T15:23:29.296Z",
+      "explorerUrl": "https://blockscout-testnet.polkadot.io/tx/0x9ec8b6ac692d54d1cbf18b082d155b4f73795cf75c19a581c749fd6725cc7c77"
+    }
+  ],
+  "afterPayments": {
+    "mina": {
+      "address": "0x7f7Ce4722c61C6616f5C47E905f42A1D02f18b3A",
+      "pas": "4999.84726022"
+    },
+    "leo": {
+      "address": "0x6a6F9609C3798AaD382276cB7804e5E778996C6C",
+      "pas": "5000.029144805"
+    },
+    "nina": {
+      "address": "0x62389da6Bdd046b2046C0439712136bb1C45D0C3",
+      "pas": "4999.9636459127"
+    },
+    "omar": {
+      "address": "0x4eD4923510852d280840ad7dF14719Fd513BC163",
+      "pas": "5000.014033644"
+    },
+    "casey": {
+      "address": "0xeceF95FB7BdFB16A678c6ba6A7129318850E7Bcf",
+      "pas": "4999.999033644"
+    }
+  },
+  "product": {
+    "visibleAction": "Pay Mina",
+    "directChainObservation": true,
+    "savedReportUsedAsTruth": false,
+    "developerActionsUsed": false,
+    "directProductStateMutationUsed": false,
+    "finalOpenAmount": 0
+  },
+  "host": {
+    "sdk": "@parity/host-api-test-sdk@0.10.0",
+    "separateBrowserContexts": true,
+    "signedEncryptedSharedActions": true
+  },
+  "boundary": "The browser wallet was an automated EIP-1193 harness backed by disposable funded agent keys. This proves the same interface a browser wallet uses; it is not a manual extension-popup or Polkadot Mobile proof."
+}

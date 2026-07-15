@@ -1,0 +1,25 @@
+{
+  "proof": "dot-host-guest-payment-return",
+  "status": "passed",
+  "liveUrl": "https://chopdot-shell-proof.paseo.li/?chainBackend=rpc-gateway",
+  "capturedAt": "2026-07-15T15:15:07.401Z",
+  "actors": [
+    "Mina",
+    "Leo"
+  ],
+  "assertions": [
+    "fresh payer context opened the public dot-host payment link",
+    "payer saw one exact amount and one mark-paid action",
+    "payer could not confirm receipt or open organizer setup",
+    "payer returned a scoped expiring update link",
+    "receiver state changed only after opening the exact returned update",
+    "receiver confirmation settled only the matching share"
+  ],
+  "screenshots": [
+    "01-mina-request-sent.png",
+    "02-leo-payment-request.png",
+    "03-leo-update-sent.png",
+    "04-mina-needs-confirm.png",
+    "05-mina-confirmed.png"
+  ]
+}

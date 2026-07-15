@@ -12,6 +12,7 @@ export function Settings({ onBack, onGoToStyleGuide, onGoToStateProof }: { onBac
     { code: 'USD', symbol: '$', label: 'USD ($)' },
     { code: 'EUR', symbol: '€', label: 'EUR (€)' },
     { code: 'GBP', symbol: '£', label: 'GBP (£)' },
+    { code: 'PAS', symbol: 'PAS', label: 'PAS' },
   ];
 
   const handleClearData = () => {

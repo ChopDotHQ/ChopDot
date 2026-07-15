@@ -5,18 +5,22 @@ import { getCurrencySymbol } from '../utils';
 
 export function CaptureSpend({ 
   groupId, 
+  initialAmount,
+  initialTitle,
   onBack, 
   onNext 
 }: { 
   groupId: string; 
+  initialAmount?: number;
+  initialTitle?: string;
   onBack: () => void; 
   onNext: (amount: number, title: string) => void;
 }) {
   const { state } = useAppState();
   const group = state.groups[groupId];
   const sym = getCurrencySymbol(state.currency);
-  const [amount, setAmount] = useState('');
-  const [title, setTitle] = useState('');
+  const [amount, setAmount] = useState(() => initialAmount ? String(initialAmount) : '');
+  const [title, setTitle] = useState(() => initialTitle ?? '');
 
   if (!group) return null;
 

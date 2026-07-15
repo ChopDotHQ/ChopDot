@@ -3,6 +3,9 @@ export type PaymentStatus = 'open' | 'request_sent' | 'marked_paid' | 'confirmed
 export interface User {
   id: string;
   name: string;
+  accountPublicKeyHex?: string;
+  statementSignerHex?: string;
+  walletAddress?: string;
 }
 
 export interface Group {
@@ -16,6 +19,7 @@ export interface Expense {
   groupId: string;
   description: string;
   amount: number;
+  currency?: string;
   paidByUserId: string; // The organizer
   date: string;
 }
@@ -26,6 +30,19 @@ export interface Split {
   userId: string;     // The payer
   amount: number;
   status: PaymentStatus;
+  requestId?: string;
+  requestExpiresAt?: string;
+  walletPayment?: WalletPaymentReceipt;
+}
+
+export interface WalletPaymentReceipt {
+  txHash: string;
+  chainId: string;
+  from: string;
+  to: string;
+  amountBaseUnits: string;
+  blockNumber: string;
+  confirmedAt: string;
 }
 
 export interface PaymentMethod {

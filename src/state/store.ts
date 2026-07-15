@@ -1,4 +1,5 @@
-import { AppState, User, Group, Expense, Split, SavedRecord, PaymentMethod } from '../types';
+import { AppState, User, Group, Expense, Split, SavedRecord, PaymentMethod, WalletPaymentReceipt } from '../types';
+import {normalizeEvmAddress, pasToBaseUnits, POLKADOT_HUB_TESTNET_CHAIN_ID} from '../payments/pasWallet';
 
 export const createCleanState = (): AppState => ({
   mode: 'clean',
@@ -27,12 +28,14 @@ export type Action =
   | { type: 'LOAD_DEMO' }
   | { type: 'SET_CURRENT_USER'; payload: { userId: string } }
   | { type: 'ADD_USER'; payload: { user: User } }
+  | { type: 'SET_WALLET_ADDRESS'; payload: { userId: string; walletAddress: string } }
   | { type: 'CREATE_GROUP'; payload: { group: Group } }
   | { type: 'ADD_EXPENSE'; payload: { expense: Expense; splits: Split[] } }
-  | { type: 'SEND_REQUEST'; payload: { splitId: string } }
+  | { type: 'SEND_REQUEST'; payload: { splitId: string; requestId?: string; expiresAt?: string } }
   | { type: 'MARK_PAID'; payload: { splitId: string; userId: string } }
   | { type: 'CONFIRM_RECEIVED'; payload: { splitId: string; currentUserId: string } }
-  | { type: 'SAVE_RECORD'; payload: { recordId: string; groupId: string } }
+  | { type: 'RECORD_MATCHED_PAYMENT'; payload: { splitId: string; userId: string; receiverUserId: string; receipt: WalletPaymentReceipt } }
+  | { type: 'SAVE_RECORD'; payload: { recordId: string; groupId: string; savedAt?: string } }
   | { type: 'SET_THEME'; payload: { theme: 'light' | 'dark' } }
   | { type: 'UPDATE_USER_NAME'; payload: { name: string } }
   | { type: 'ADD_PAYMENT_METHOD'; payload: { method: PaymentMethod } }
@@ -75,6 +78,20 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         users: { ...state.users, [action.payload.user.id]: action.payload.user }
       };
+    case 'SET_WALLET_ADDRESS': {
+      const user = state.users[action.payload.userId];
+      if (!user) return state;
+      let walletAddress: string;
+      try {
+        walletAddress = normalizeEvmAddress(action.payload.walletAddress);
+      } catch {
+        return state;
+      }
+      return {
+        ...state,
+        users: {...state.users, [user.id]: {...user, walletAddress}},
+      };
+    }
     case 'CREATE_GROUP':
       return {
         ...state,
@@ -92,12 +109,17 @@ export function reducer(state: AppState, action: Action): AppState {
     }
     case 'SEND_REQUEST': {
       const split = state.splits[action.payload.splitId];
-      if (!split) return state;
+      if (!split || !['open', 'request_sent'].includes(split.status)) return state;
       return {
         ...state,
         splits: {
           ...state.splits,
-          [split.id]: { ...split, status: 'request_sent' }
+          [split.id]: {
+            ...split,
+            status: 'request_sent',
+            requestId: action.payload.requestId ?? split.requestId,
+            requestExpiresAt: action.payload.expiresAt ?? split.requestExpiresAt,
+          }
         }
       };
     }
@@ -106,7 +128,7 @@ export function reducer(state: AppState, action: Action): AppState {
       const split = state.splits[splitId];
       // Law: Leo/Nina can only mark their own payment as paid.
       // Mina cannot mark Leo/Nina as paid.
-      if (!split || split.userId !== userId) return state; 
+      if (!split || split.userId !== userId || split.status !== 'request_sent') return state;
       return {
         ...state,
         splits: {
@@ -122,7 +144,7 @@ export function reducer(state: AppState, action: Action): AppState {
       const expense = state.expenses[split.expenseId];
       // Law: Leo/Nina cannot confirm received money for Mina.
       // Only the organizer (expense.paidByUserId) can confirm receipt.
-      if (!expense || expense.paidByUserId !== currentUserId) return state;
+      if (!expense || expense.paidByUserId !== currentUserId || split.status !== 'marked_paid') return state;
       return {
         ...state,
         splits: {
@@ -131,8 +153,33 @@ export function reducer(state: AppState, action: Action): AppState {
         }
       };
     }
+    case 'RECORD_MATCHED_PAYMENT': {
+      const {splitId, userId, receiverUserId, receipt} = action.payload;
+      const split = state.splits[splitId];
+      const expense = split ? state.expenses[split.expenseId] : undefined;
+      const payer = state.users[userId];
+      const receiver = state.users[receiverUserId];
+      if (!split || !expense || split.userId !== userId || expense.paidByUserId !== receiverUserId) return state;
+      if (!payer?.walletAddress || !receiver?.walletAddress) return state;
+      if (receipt.chainId.toLowerCase() !== POLKADOT_HUB_TESTNET_CHAIN_ID) return state;
+      try {
+        if (normalizeEvmAddress(receipt.from) !== normalizeEvmAddress(payer.walletAddress)) return state;
+        if (normalizeEvmAddress(receipt.to) !== normalizeEvmAddress(receiver.walletAddress)) return state;
+        if (receipt.amountBaseUnits !== pasToBaseUnits(split.amount)) return state;
+      } catch {
+        return state;
+      }
+      if (Object.values(state.splits).some(item => item.id !== splitId && item.walletPayment?.txHash === receipt.txHash)) return state;
+      return {
+        ...state,
+        splits: {
+          ...state.splits,
+          [split.id]: {...split, status: 'confirmed', walletPayment: receipt},
+        },
+      };
+    }
     case 'SAVE_RECORD': {
-      const { recordId, groupId } = action.payload;
+      const { recordId, groupId, savedAt } = action.payload;
       const groupExpenses = Object.values(state.expenses).filter(e => e.groupId === groupId);
       const expenseIds = groupExpenses.map(e => e.id);
       const groupSplits = Object.values(state.splits).filter(s => expenseIds.includes(s.expenseId));
@@ -145,7 +192,7 @@ export function reducer(state: AppState, action: Action): AppState {
       const record: SavedRecord = {
         id: recordId,
         groupId,
-        dateSaved: new Date().toISOString(),
+        dateSaved: savedAt ?? new Date().toISOString(),
         totalAmount,
         openAmount,
         splits: groupSplits

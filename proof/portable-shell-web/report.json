@@ -15,11 +15,11 @@
       "width": 390,
       "height": 844
     },
-    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.0.0 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/150.0.0.0 Safari/537.36",
     "canUseLocalStorage": true,
     "canUseClipboard": true,
     "canUseShareSheet": true,
-    "browserHistoryLength": 2,
+    "browserHistoryLength": 4,
     "displayModeStandalone": false,
     "safeAreaInsets": {
       "top": "0px",
@@ -33,7 +33,9 @@
     "canUseTelegramCloudStorage": false,
     "launchStartParam": null,
     "telegramPlatform": null,
-    "telegramViewportStableHeight": null
+    "telegramViewportStableHeight": null,
+    "insideDotHostWrapper": false,
+    "appUrl": "http://127.0.0.1:5180/?payGroupId=g-282f4d37-341b-407b-ae14-32a6d05616fc&payMemberId=u-4899ae29-ea9c-459c-b28b-7100050d70ce&payRequest=eyJyZXF1ZXN0SWQiOiJyZXEtZy0yODJmNGQzNy0zNDFiLTQwN2ItYWUxNC0zMmE2ZDA1NjE2ZmMtdS00ODk5YWUyOS1lYTljLTQ1OWMtYjI4Yi03MTAwMDUwZDcwY2UtcHJvb2YiLCJncm91cE5hbWUiOiJXZWVrZW5kIFRyaXAiLCJyZXF1ZXN0ZXJOYW1lIjoiTWluYSIsInBheWVyTmFtZSI6Ik5pbmEiLCJhbW91bnQiOjQwLCJjdXJyZW5jeSI6IlVTRCIsInBheW1lbnRNZXRob2RMYWJlbCI6IkNhc2giLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTE1VDE1OjA5OjM3LjAyMloiLCJleHBpcmVzQXQiOiIyMDI2LTA3LTE2VDE1OjA5OjM3LjAyMloifQ"
   },
   "hostCallLog": {
     "beforeReload": [],
@@ -49,25 +51,33 @@
     "07-add-spend-empty.png",
     "08-add-spend-filled.png",
     "09-review-split.png",
-    "10-open-balances.png",
-    "11-settle-up.png",
-    "12-settle-up-request-sent.png",
-    "13-group-request-sent.png",
-    "14-payment-request.png",
-    "15-needs-confirm.png",
-    "16-after-confirm-leo.png",
-    "17-finish-group.png",
-    "18-group-summary.png",
-    "19-history-home.png",
-    "20-after-refresh-persisted.png"
+    "10-add-spend-after-back.png",
+    "11-open-balances.png",
+    "12-settle-up.png",
+    "13-settle-up-request-sent.png",
+    "14-standalone-payer-request.png",
+    "15-standalone-marked-paid.png",
+    "16-payment-request.png",
+    "17-needs-confirm.png",
+    "18-after-confirm-leo.png",
+    "19-payment-request-nina.png",
+    "20-after-confirm-nina.png",
+    "21-finish-group.png",
+    "22-group-summary.png",
+    "23-history-home.png",
+    "24-after-refresh-persisted.png"
   ],
+  "payerEntryMode": "direct_payer_url",
+  "directPayerUrl": "/?payGroupId=%5Bredacted%5D&payMemberId=%5Bredacted%5D&payRequest=%5Bredacted%5D",
+  "standalonePacketUrl": "/?payGroupId=%5Bredacted%5D&payMemberId=%5Bredacted%5D&payRequest=%5Bredacted%5D",
+  "standalonePacketProof": true,
   "storageSnapshot": {
     "hasPersistedState": true,
     "keys": [
       "chopdot-portable-shell-state-v1"
     ]
   },
-  "finalText": "ChopDot\n\nHey, Mina\n\nM\n\nNet position\n\n$40.00\nYour Groups\nNew\nWT\nWeekend Trip\n\n3 members\n\n+$40.00\nHome\nFriends\nPay\nHistory\nSettings",
+  "finalText": "ChopDot\n\nHey, Mina\n\nM\n\nNet position\n\n$0.00\nYour Groups\nNew\nWT\nWeekend Trip\n\n3 members\n\nSettled\nHome\nFriends\nPay\nHistory\nSettings",
   "consoleEvents": [],
   "passed": true
 }

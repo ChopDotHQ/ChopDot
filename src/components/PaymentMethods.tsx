@@ -1,15 +1,36 @@
+import { useState } from 'react';
 import { Wallet, Building2, Link as LinkIcon, Check } from 'lucide-react';
 import { useAppState } from '../state/AppStateContext';
 import { Screen, ScreenHeader, ScreenContent } from './primitives';
+import {connectPasWallet} from '../payments/pasWallet';
 
 export function PaymentMethods({ onBack }: { onBack: () => void }) {
   const { state, dispatch } = useAppState();
+  const [connecting, setConnecting] = useState(false);
+  const [connectionError, setConnectionError] = useState('');
+  const currentUser = state.currentUserId ? state.users[state.currentUserId] : null;
 
   const methods = [
     { id: 'cash', label: 'Cash', desc: 'Hand it over in person', icon: Wallet, colorClass: 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30' },
     { id: 'bank_transfer', label: 'Bank Details', desc: 'Share sort code & account', icon: Building2, colorClass: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30' },
     { id: 'link', label: 'Payment Link', desc: 'Monzo, Revolut, etc.', icon: LinkIcon, colorClass: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30' }
   ];
+
+  const handleConnectWallet = async () => {
+    if (!currentUser) return;
+    setConnecting(true);
+    setConnectionError('');
+    try {
+      const walletAddress = await connectPasWallet();
+      dispatch({type: 'SET_WALLET_ADDRESS', payload: {userId: currentUser.id, walletAddress}});
+      dispatch({type: 'SET_PREFERRED_PAYMENT_METHOD', payload: {methodId: 'pas_wallet'}});
+      dispatch({type: 'SET_CURRENCY', payload: {currency: 'PAS'}});
+    } catch (reason) {
+      setConnectionError(reason instanceof Error ? reason.message : 'The wallet could not connect.');
+    } finally {
+      setConnecting(false);
+    }
+  };
 
   return (
     <Screen>
@@ -45,11 +66,28 @@ export function PaymentMethods({ onBack }: { onBack: () => void }) {
         </div>
         
         <div className="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-3">
-          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Connected Accounts</h3>
-          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 text-center transition-colors">
-             <p className="text-sm font-medium text-gray-900 dark:text-white">Not connected yet</p>
-             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Real payment processing is coming soon.</p>
-          </div>
+          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Wallet</h3>
+          <button
+            type="button"
+            onClick={() => void handleConnectWallet()}
+            disabled={connecting}
+            className="w-full bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 text-left transition-colors disabled:opacity-60"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {currentUser?.walletAddress ? 'PAS wallet connected' : 'Connect PAS wallet'}
+                </p>
+                {currentUser?.walletAddress && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {currentUser.walletAddress.slice(0, 6)}...{currentUser.walletAddress.slice(-4)}
+                  </p>
+                )}
+              </div>
+              {currentUser?.walletAddress ? <Check className="w-5 h-5" /> : <Wallet className="w-5 h-5" />}
+            </div>
+          </button>
+          {connectionError && <p className="text-sm text-red-600 dark:text-red-400">{connectionError}</p>}
         </div>
       </ScreenContent>
     </Screen>

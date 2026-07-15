@@ -18,7 +18,9 @@
     "request_sent_does_not_reduce_net_position",
     "marked_paid_does_not_reduce_net_position",
     "confirmed_reduces_receiver_net_position",
+    "finalized_exact_wallet_match_confirms_only_matching_item",
     "finish_group_saves_summary_without_rewriting_open_money",
+    "fresh_request_links_do_not_claim_sync_or_confirmation",
     "normal_ui_hides_host_protocol_internal_language"
   ],
   "changeClasses": ["core", "host-adapter", "proof", "docs"],
@@ -27,8 +29,9 @@
       "status": "validated",
       "role": "baseline portable web shell",
       "identity": {
-        "available": false,
-        "source": "manual guest setup"
+        "available": "prompt_available_login_incomplete",
+        "source": "Polkadot host Product Account manager",
+        "currentUse": "live QR login ceremony reached; no Product Account granted yet"
       },
       "launchParams": {
         "available": false,
@@ -55,8 +58,9 @@
         "notes": "uses responsive viewport and bottom action spacing"
       },
       "payments": {
-        "mode": "external-only",
-        "realProcessing": false
+        "mode": "connected-wallet-pas",
+        "realProcessing": "public-testnet-passed",
+        "currentUse": "EIP-1193 wallet handoff plus independent public-RPC match"
       },
       "proof": {
         "localCommand": "npm run proof:web",
@@ -118,6 +122,112 @@
         "server-side initData validation",
         "BotFather Main Mini App registration",
         "real cross-device sync"
+      ]
+    },
+    "dot-host": {
+      "status": "validated",
+      "role": "throwaway Paseo .dot host proof for the portable shell",
+      "identity": {
+        "available": "needs_login",
+        "source": "Polkadot host Product Account manager",
+        "currentUse": "live QR ceremony proven; official local host proof binds five distinct Product Accounts to five separate ChopDot participants"
+      },
+      "launchParams": {
+        "available": true,
+        "source": "gateway wrapper URL",
+        "currentUse": "core journey plus direct external payer-link forwarding and scoped paid-return link proven"
+      },
+      "backNavigation": {
+        "hostBackButton": false,
+        "behavior": "visible in-app back buttons inside hosted iframe"
+      },
+      "storage": {
+        "primary": "localStorage on app iframe origin",
+        "mirror": "encrypted signed Statement Store events in official host simulation",
+        "crossDevice": "official local five-host convergence passed; live multi-device convergence unproven"
+      },
+      "clipboard": {
+        "available": "browser-dependent",
+        "fallback": "Invite ready"
+      },
+      "shareSheet": {
+        "available": "browser-dependent"
+      },
+      "safeArea": {
+        "required": true,
+        "notes": "host chrome reduces app viewport; bottom actions remained visible in proof"
+      },
+      "payments": {
+        "mode": "connected-wallet-pas-current-local-build",
+        "realProcessing": "public-testnet-passed-in-official-local-host",
+        "liveDeploymentUpdated": true
+      },
+      "polkadotHostCapabilities": {
+        "bridge": "implemented-local",
+        "identity": "needs_login_live",
+        "sharedSession": "official_five_host_real_ui_passed_live_encrypted_convergence_unproven",
+        "payments": "official_host_sim_observed_only_passed_browser_wallet_public_pas_passed_live_host_payment_unproven",
+        "receiptArchive": "official_host_sim_redacted_retrieval_passed_live_unproven",
+        "localCapabilityReport": "proof/polkadot-host-capability/report.json",
+        "localCapabilityResult": "all unavailable outside compatible host",
+        "liveCapabilityReport": "proof/polkadot-host-capability-live/report.json",
+        "officialHostSimulationReport": "proof/polkadot-host-sim/report.json",
+        "officialHostStressReport": "proof/polkadot-host-stress/report.json",
+        "officialHostRealUiReport": "proof/polkadot-host-real-ui/report.json",
+        "officialHostWalletSettlementReport": "proof/polkadot-host-wallet-settlement/report.json",
+        "productUiBinding": "five_person_normal_ui_passed_in_official_local_hosts_live_unproven",
+        "statementPayloadBoundary": "512_byte_signed_payload_limit_handled_by_encrypted_chunking",
+        "identityBindingBoundary": "product_account_participant_bound_to_first_valid_statement_signer_live_attestation_unproven"
+      },
+      "deployment": {
+        "domain": "chopdot-shell-proof.dot",
+        "workingGatewayUrl": "https://chopdot-shell-proof.paseo.li/?chainBackend=rpc-gateway",
+        "cliPrintedGatewayUrl": "https://chopdot-shell-proof.dot.li",
+        "cid": "bafybeigyl77b3d5kv4lgbrmwz2a4qdmat3wd4x34xca7gqtdfseyoxxmmu",
+        "environment": "paseo-next-v2",
+        "phaseAStorageTx": "0x274b95d4d78fff2b57624037fec15eb8fdc981ff343eaa35096ac2b71afdd42a",
+        "storageTx": "0xb17eb353abbb5baeff91865324316980310edef4a589f620de1ff5adbffac83c",
+        "registrationTx": "0xf834e0972a173517f7bf28e2dd0f6f7eb12ed22fb200e3a0d03a90b478a77ee5",
+        "contentHashTx": "0x72229e1f0d518512bbac647a4d1ed18ba00f86772b804d45b774994dc35e420b",
+        "appContentHashTx": "0x95a6b8f1822ff274a22b615066828e203d6fc54a171bec0c1cbd790ac7f0d924",
+        "appVersion": "0.2.0"
+      },
+      "proof": {
+        "localCommand": null,
+        "localStatus": "requires a local host-wrapper URL",
+        "liveCommand": "PROOF_URL=https://chopdot-shell-proof.paseo.li/?chainBackend=rpc-gateway PROOF_OUT=proof/portable-shell-dot-host npm run proof:dot-host",
+        "liveReport": "proof/portable-shell-dot-host/report.json",
+        "screenshotPacket": "proof/portable-shell-dot-host/",
+        "latestLiveStatus": "passed on 2026-07-15 against the late-expense recovery CID with 22 screenshots, persisted state, and no journey assertion failures",
+        "lateExpenseRecoveryReport": "proof/dot-host-late-expense-2026-07-15.md",
+        "lateExpenseRecoveryScreenshots": "proof/late-expense-live-2026-07-15/",
+        "guestPaymentReturnCommand": "npm run test:guest-link:live-dot",
+        "guestPaymentReturnReport": "proof/guest-payment-return-live-dot/report.json",
+        "guestPaymentReturnScreenshots": "proof/guest-payment-return-live-dot/",
+        "guestPaymentReturnStatus": "passed on 2026-07-15 with isolated Mina and Leo contexts, public host links, scoped marked-paid return, receiver-only confirmation, and five screenshots",
+        "officialHostSimulationCommand": "npm run test:host-sim",
+        "officialHostSimulationStatus": "passed on 2026-07-14 with distinct identities, ciphertext-only convergence, observed-only payment, and redacted receipt retrieval",
+        "officialHostStressCommand": "npm run test:host-stress",
+        "officialHostStressStatus": "passed on 2026-07-14 with five distinct identities, five-way no-retry encrypted convergence, wrong-secret isolation, duplicate suppression, three isolated observed-only payments, and redacted receipt retrieval",
+        "officialHostRealUiCommand": "npm run test:host-ui",
+        "officialHostRealUiReport": "proof/polkadot-host-real-ui/report.json",
+        "officialHostRealUiStatus": "passed on 2026-07-14 with five isolated host participants completing the normal UI journey through saved summary without developer actions or direct product-state mutation",
+        "officialHostWalletCommand": "npm run test:host-wallet",
+        "officialHostWalletReport": "proof/polkadot-host-wallet-settlement/report.json",
+        "officialHostWalletStatus": "passed on 2026-07-15 with five separate browser contexts, four wallet-signed PAS transfers, independent direct-RPC matching, exact-item clearing, and zero open amount",
+        "payerEntryMode": "public_dot_host_link_plus_scoped_return"
+      },
+      "openItems": [
+        "monitor the host-owned cross-origin iframe sandbox policy; Chromium warns about allow-scripts combined with allow-same-origin",
+        "replace the explicit payer-to-receiver return link with authenticated automatic synchronization before production",
+        "plain paseo.li light-client path stalled during proof; chainBackend=rpc-gateway loaded directly",
+        "cli printed dot.li gateway did not resolve this paseo-next-v2 deployment; paseo.li worked",
+        "mobile safe-area proof",
+        "complete the live QR ceremony with a runnable Polkadot Mobile client and record product-scoped identity",
+        "replace first-valid-statement-signer binding with a live host-owned Product Account to Statement Store signer attestation when available",
+        "live encrypted two-device Statement Store convergence",
+        "live host PaymentManager exact matching; connected-browser-wallet PAS matching already passes against public testnet",
+        "live redacted receipt submit and retrieval"
       ]
     }
   },

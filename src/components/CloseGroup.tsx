@@ -30,7 +30,7 @@ export function CloseGroup({
 
   const handleFinish = () => {
     const recordId = `sr-${Date.now()}`;
-    dispatch({ type: 'SAVE_RECORD', payload: { recordId, groupId } });
+    dispatch({ type: 'SAVE_RECORD', payload: { recordId, groupId, savedAt: new Date().toISOString() } });
     onFinish(recordId);
   };
 

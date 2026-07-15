@@ -24,6 +24,8 @@ foundation before adding backend, wallet, OCR, or payment complexity.
 - Finishing a group creates a readable group summary without changing open
   money truth.
 - Internal/dev surfaces stay hidden from normal users.
+- Cross-device payment authority does not exist in this static shell; the
+  future boundary is defined in `PAYMENT_INTENT_CONTRACT.md`.
 
 ## Scope In
 
@@ -57,6 +59,14 @@ foundation before adding backend, wallet, OCR, or payment complexity.
 7. Refresh/persistence limitations SHALL be called out until a persistence seam
    exists.
 8. No new product mode SHALL be added before the portability proof packet exists.
+9. Payment request links SHALL be real portable URLs that can open the payer
+   view directly when the shell has matching local state.
+10. Payment request links SHALL show a standalone payer request on fresh devices
+    without claiming cross-device sync.
+11. Security-sensitive host data SHALL stay outside product truth unless it
+    passes the foundation in `SECURITY_FOUNDATION.md`.
+12. Future cross-device payment commands SHALL use the scoped authority,
+    idempotency, evidence, and audit rules in `PAYMENT_INTENT_CONTRACT.md`.
 
 ## Scenarios
 
@@ -74,6 +84,24 @@ GIVEN Leo is open
 WHEN Mina sends a link
 THEN Leo becomes request sent
 AND Mina's net position does not decrease.
+
+GIVEN Mina has sent Leo a link
+WHEN Leo opens that payer URL directly
+THEN ChopDot shows the correct group, requester, payer, amount, and payment
+method
+AND Leo can mark the payment as paid from that screen.
+
+GIVEN Leo opens Mina's payer URL in a fresh app context
+WHEN no matching local group state exists
+THEN ChopDot shows a standalone payment request
+AND the screen still shows group, requester, payer, amount, currency, and
+payment method
+AND it does not claim Mina has been notified.
+
+GIVEN Leo taps `I paid Mina` in standalone mode
+WHEN the action completes
+THEN ChopDot shows `Marked as paid`
+AND says Mina still needs to confirm.
 
 GIVEN Leo is request sent
 WHEN Leo marks paid
@@ -128,6 +156,7 @@ Pause or kill this trial if:
 - the UI gets worse to satisfy a host;
 - normal users see host/protocol/internal language;
 - local-state limitations make the proof misleading;
+- a host, URL packet, or evidence source can bypass the payment-intent contract;
 - the same journey cannot be screenshot-proven in at least two environments.
 
 ## Next Ordered Tasks
@@ -156,7 +185,7 @@ Local web proof packet:
 - path: `proof/portable-shell-web/`
 - host profile: `web`
 - viewport: `390 x 844`
-- screenshots: `20`
+- screenshots: `21`
 - report: `proof/portable-shell-web/report.json`
 - storage: `localStorage` key `chopdot-portable-shell-state-v1`
 - result: full normal journey completed and state persisted after refresh
@@ -184,6 +213,7 @@ first run
 -> open balances
 -> settle up
 -> request sent
+-> standalone payer request remains display-only
 -> payment request
 -> needs confirm
 -> confirm received
@@ -198,7 +228,7 @@ Telegram-style embedded webview proof packet:
 - path: `proof/portable-shell-telegram/`
 - host profile: `telegram`
 - viewport: `390 x 844`
-- screenshots: `20`
+- screenshots: `21`
 - report: `proof/portable-shell-telegram/report.json`
 - storage: `localStorage` key `chopdot-portable-shell-state-v1`
 - host simulation: mobile Telegram-like user agent plus `window.Telegram.WebApp`
@@ -245,6 +275,21 @@ Telegram readiness seam:
 - The app mirrors local state writes to Telegram `CloudStorage` when available,
   while keeping `localStorage` as the current readable prototype persistence
   source.
+
+Portable request-link seam:
+
+- `src/requestLinks.ts` creates and parses payer URLs with `payGroupId` and
+  `payMemberId` query parameters plus a compact `payRequest` summary for fresh
+  devices.
+- `src/environment/index.ts` exposes a shared host capability contract and a
+  share-or-copy fallback.
+- `Settle up` creates the payer link after moving open shares to
+  `request_sent`.
+- Opening a valid payer link routes directly to `PayerView` when the matching
+  local request state exists.
+- Opening a valid payer link without matching local state routes to
+  `StandalonePayerRequest`.
+- This is still local/offline prototype behavior, not cross-device backend sync.
 
 Live HTTPS Telegram-style proof packet:
 

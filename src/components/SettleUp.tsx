@@ -1,21 +1,39 @@
 import { ArrowLeft, Send, Check } from 'lucide-react';
+import { useState } from 'react';
 import { useAppState } from '../state/AppStateContext';
 import { getCurrencySymbol } from '../utils';
 import { getMemberBalance, getOpenSplits } from '../state/store';
 import { getInitials } from '../utils';
+import { shareOrCopyText } from '../environment';
+import { buildPayerRequestUrl } from '../requestLinks';
+import {connectPasWallet} from '../payments/pasWallet';
+
+type LinkDeliveryStatus = 'shared' | 'copied' | 'ready';
+
+const paymentMethodLabels: Record<string, string> = {
+  cash: 'Cash',
+  bank_transfer: 'Bank Transfer',
+  link: 'Payment Link',
+};
 
 export function SettleUp({
   groupId,
   onBack,
-  onOpenPayerView
+  onOpenPayerView,
+  onFinishGroup,
 }: {
   groupId: string;
   onBack: () => void;
   onOpenPayerView: (memberId: string) => void;
+  onFinishGroup: () => void;
 }) {
   const { state, dispatch } = useAppState();
+  const [linkDelivery, setLinkDelivery] = useState<Record<string, LinkDeliveryStatus>>({});
+  const [walletError, setWalletError] = useState('');
   const group = state.groups[groupId];
-  const sym = getCurrencySymbol(state.currency);
+  const groupExpenses = Object.values(state.expenses).filter(expense => expense.groupId === groupId);
+  const currency = groupExpenses[0]?.currency ?? state.currency;
+  const sym = getCurrencySymbol(currency);
 
   if (!group) return null;
 
@@ -49,12 +67,52 @@ export function SettleUp({
     if (Math.abs(creditor.balance) < 0.005) c++;
   }
 
-  const handleRequest = (memberId: string) => {
-    // Dispatch SEND_REQUEST for all open splits of this debtor in this group
-    const openSplits = getOpenSplits(state, groupId).filter(s => s.userId === memberId && s.status === 'open');
-    openSplits.forEach(s => {
-      dispatch({ type: 'SEND_REQUEST', payload: { splitId: s.id } });
+  const handleRequest = async (memberId: string, amount: number, receiverName: string, payerName: string) => {
+    const requestId = `req-${crypto.randomUUID()}`;
+    const createdAt = new Date();
+    const expiresAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000).toISOString();
+    const requestedSplits = getOpenSplits(state, groupId).filter(
+      split => split.userId === memberId && ['open', 'request_sent'].includes(split.status),
+    );
+    requestedSplits.forEach(split => {
+      dispatch({ type: 'SEND_REQUEST', payload: { splitId: split.id, requestId, expiresAt } });
     });
+
+    const payerUrl = buildPayerRequestUrl(groupId, memberId, {
+      requestId,
+      groupName: group.name,
+      requesterName: receiverName,
+      payerName,
+      amount,
+      currency,
+      paymentMethodLabel: currency === 'PAS'
+        ? 'PAS wallet'
+        : state.preferredPaymentMethod ? paymentMethodLabels[state.preferredPaymentMethod] : 'Cash',
+      recipientWalletAddress: state.users[state.currentUserId!]?.walletAddress,
+      createdAt: createdAt.toISOString(),
+      expiresAt,
+    });
+    const result = await shareOrCopyText({
+      title: 'ChopDot payment request',
+      text: `${receiverName} requested ${sym}${amount.toFixed(2)} for ${group.name}.`,
+      url: payerUrl,
+    });
+
+    setLinkDelivery(previous => ({
+      ...previous,
+      [memberId]: result,
+    }));
+  };
+
+  const handleConnectWallet = async () => {
+    if (!state.currentUserId) return;
+    setWalletError('');
+    try {
+      const walletAddress = await connectPasWallet();
+      dispatch({type: 'SET_WALLET_ADDRESS', payload: {userId: state.currentUserId, walletAddress}});
+    } catch (reason) {
+      setWalletError(reason instanceof Error ? reason.message : 'The wallet could not connect.');
+    }
   };
 
   return (
@@ -75,6 +133,18 @@ export function SettleUp({
         </div>
 
         <div className="space-y-4">
+          {currency === 'PAS' && state.currentUserId && !state.users[state.currentUserId]?.walletAddress && moves.length > 0 && (
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800">
+              <button
+                type="button"
+                onClick={() => void handleConnectWallet()}
+                className="w-full py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl text-sm font-semibold"
+              >
+                Connect wallet
+              </button>
+              {walletError && <p role="alert" className="text-sm text-red-600 dark:text-red-400 mt-3">{walletError}</p>}
+            </div>
+          )}
           {moves.length === 0 ? (
             <div className="text-center py-8 text-gray-500 dark:text-gray-400 font-medium">
               Everyone is settled up!
@@ -84,17 +154,21 @@ export function SettleUp({
               const fromUser = state.users[move.from];
               const toUser = state.users[move.to];
               
-              // Find status based on the debtor's splits
               const debtorSplits = getOpenSplits(state, groupId).filter(s => s.userId === move.from);
               const hasMarkedPaid = debtorSplits.some(s => s.status === 'marked_paid');
               const hasRequestSent = debtorSplits.some(s => s.status === 'request_sent');
+              const hasUnrequested = debtorSplits.some(s => s.status === 'open');
+              const deliveryStatus = linkDelivery[move.from];
               
               let statusText = '';
               if (hasMarkedPaid) statusText = 'Needs confirm';
+              else if (hasRequestSent && hasUnrequested) statusText = 'Request needs update';
+              else if (hasRequestSent && deliveryStatus === 'shared') statusText = 'Link shared';
+              else if (hasRequestSent && deliveryStatus === 'copied') statusText = 'Link copied';
+              else if (hasRequestSent && deliveryStatus === 'ready') statusText = 'Link ready';
               else if (hasRequestSent) statusText = 'Request sent';
               
               const isCurrentUserReceiver = move.to === state.currentUserId;
-              const isCurrentUserPayer = move.from === state.currentUserId;
 
               return (
                 <div key={idx} className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
@@ -128,19 +202,17 @@ export function SettleUp({
                   )}
 
                   <div className="flex space-x-2 border-t border-gray-50 dark:border-gray-800 pt-3">
-                    {isCurrentUserReceiver && !hasMarkedPaid && !hasRequestSent && (
+                    {isCurrentUserReceiver && !hasMarkedPaid && (!hasRequestSent || hasUnrequested) && (currency !== 'PAS' || Boolean(toUser?.walletAddress)) && (
                       <button 
-                        onClick={() => {
-                          handleRequest(move.from);
-                        }}
-                        aria-label={`Send link to ${fromUser?.name}`}
+                        onClick={() => void handleRequest(move.from, move.amount, toUser?.name ?? 'ChopDot', fromUser?.name ?? 'Friend')}
+                        aria-label={`${hasRequestSent ? 'Send updated link' : 'Send link'} to ${fromUser?.name}`}
                         className="flex-1 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                       >
                         <Send className="w-4 h-4 mr-2" />
-                        Send link
+                        {hasRequestSent ? 'Send updated link' : 'Send link'}
                       </button>
                     )}
-                    {isCurrentUserReceiver && hasRequestSent && !hasMarkedPaid && (
+                    {isCurrentUserReceiver && hasRequestSent && !hasMarkedPaid && !hasUnrequested && (
                       <button
                         onClick={() => onOpenPayerView(move.from)}
                         aria-label={`View request for ${fromUser?.name}`}
@@ -171,6 +243,17 @@ export function SettleUp({
           )}
         </div>
       </div>
+      {moves.length === 0 && (
+        <div className="p-6 bg-white dark:bg-[#0a0a0a] border-t border-gray-100 dark:border-[#1a1a1a] shrink-0">
+          <button
+            type="button"
+            onClick={onFinishGroup}
+            className="w-full py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full font-semibold shadow-sm"
+          >
+            Finish group
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -5,23 +5,6 @@
     <link rel="icon" href="data:," />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ChopDot Portable Shell</title>
-    <script>
-      (() => {
-        const params = new URLSearchParams(window.location.search);
-        const isTelegramLaunch =
-          /Telegram/i.test(window.navigator.userAgent) ||
-          params.has('tgWebAppData') ||
-          params.has('tgWebAppStartParam') ||
-          params.has('startapp');
-
-        if (isTelegramLaunch) {
-          const script = document.createElement('script');
-          script.src = 'https://telegram.org/js/telegram-web-app.js?62';
-          script.onload = () => window.dispatchEvent(new Event('chopdot:telegram-ready'));
-          document.head.appendChild(script);
-        }
-      })();
-    </script>
   </head>
   <body>
     <div id="root"></div>
