@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-15T10:38:59.216Z",
+  "generatedAt": "2026-07-15T12:32:05.742Z",
   "validation": {
     "errors": 0,
-    "warnings": 0,
+    "warnings": 10,
     "cards": 25,
     "decisions": 6,
     "decisionContracts": 25,
-    "history": 70,
+    "history": 71,
     "readyOrActive": 21,
     "blocked": 0
   },
@@ -19,7 +19,7 @@
     "mappedScreens": 10,
     "orphanScreens": 21,
     "referencedScreensMissing": 0,
-    "referencedTestsMissing": 0
+    "referencedTestsMissing": 9
   },
   "links": [
     {
@@ -377,12 +377,17 @@
         "backend/src/__tests__/actor-boundary.routes.test.ts",
         "backend/src/__tests__/settlements.routes.test.ts",
         "backend/src/__tests__/users.routes.test.ts",
+        "backend/src/integration/p025-migration-chain.database.ts",
         "backend/src/integration/p025-actor-boundary.database.ts"
       ],
       "evidence": [
         "docs/security/universal-chop-core-security-architecture.md",
         "docs/security/p025-security-foundation-crosswalk-2026-07-14.md",
         "docs/security/p025-database-backed-actor-boundary-proof-2026-07-14.md",
+        "docs/security/p025-settlement-state-migration-proof-2026-07-14.md",
+        "docs/security/p025-capture-link-migration-proof-2026-07-14.md",
+        "docs/security/p025-security-foundation-integration-manifest-2026-07-14.md",
+        "docs/security/p025-security-foundation-canonical-integration-2026-07-15.md",
         "docs/adr/0004-server-derived-payment-actor.md",
         "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
       ],

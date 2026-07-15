@@ -266,3 +266,11 @@ Required evidence:
 - replay and idempotency rules cover duplicate requests, duplicate events, expired intents, and consumed evidence
 - deployment and manifest boundaries define URL, origin, capability, rail, identity, monitoring, commit, and rollback records
 - public claims are bounded and do not imply universal security, legal settlement, custody, or automatic cross-currency equivalence
+- authenticated actor identity is derived from a verified bearer token
+- payer and receiver role checks execute against a migrated PostgreSQL schema
+- canonical settlement states are `pending`, `paid`, and `confirmed`
+- valid legacy rows are preserved and malformed legacy rows fail without destructive deletion
+- capture-link access is limited to the creator or an active group member
+- authenticated users cannot enumerate unrelated capture links or mutate token payloads
+- replayed mark-paid and confirm-received commands create no duplicate effects
+- direct financial-table writes and atomic command gaps remain explicitly tracked

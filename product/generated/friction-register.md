@@ -17,7 +17,7 @@
 | P-022 Regular pot end-to-end coherence | 3/3 | 3/3 | 3/3 | 1/1 | If the pass adds modes, explanations, dashboard panels, or backend rewrites before the visible normal-pot journey works, this card fails. |
 | P-023 PAS test wallet payment | 3/3 | 3/3 | 3/3 | 1/1 | If a mismatched transfer clears the wrong share, or the UI exposes native/protocol terms, this card fails. |
 | P-024 DOT and USDC wallet payment checks | 3/3 | 3/3 | 3/3 | 1/1 | If DOT or USDC-shaped payment data clears a mismatched share, or the UI exposes technical payment wording, this card fails. |
-| P-025 Universal Chop Core security architecture | 3/3 | 3/3 | 3/3 | 1/1 | If any surface owns final truth, bypasses payment-intent matching, or can confirm/close outside its role, this card fails. |
+| P-025 Universal Chop Core security architecture | 3/3 | 3/3 | 3/3 | 1/1 | If any surface owns final truth, trusts caller-supplied identity, or can confirm or close outside its role, this card fails. |
 | P-010 Polkadot-native session boundary | 3/3 | 3/3 | 3/3 | 1/1 | If plaintext money data enters Statement Store, a host event bypasses the payment-intent boundary, or technical language reaches normal UI, this card fails. |
 | P-011 Product language cleanup | 3/3 | 3/3 | 3/3 | 1/1 | If a normal screen uses internal terms, this card fails. |
 | P-012 Receipt capture without manual-first entry | 3/3 | 3/3 | 3/3 | 1/1 | If the normal path starts with item rows, this card fails. |

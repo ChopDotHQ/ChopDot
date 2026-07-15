@@ -626,20 +626,20 @@ last_touched: "2026-07-15"
 id: "P-025"
 type: "architecture"
 title: "Universal Chop Core security architecture"
-status: "ready"
+status: "building"
 scope: "Quality"
 module: "mini-app-security"
 journey: "Future mini-app surfaces act on one trusted Chop record"
 pillar: "Management"
 priority: "critical"
-evidence_quality: "partial"
+evidence_quality: "strong"
 owner: "product/security"
 depends_on:
   - "P-021"
   - "P-022"
   - "P-023"
   - "P-024"
-blocker: "none"
+blocker: "Direct client mutation paths and non-atomic financial writes remain open."
 decision_contract: "DC-025"
 tests:
   - "npm run product:validate"
@@ -647,27 +647,32 @@ tests:
   - "backend/src/__tests__/actor-boundary.routes.test.ts"
   - "backend/src/__tests__/settlements.routes.test.ts"
   - "backend/src/__tests__/users.routes.test.ts"
+  - "backend/src/integration/p025-migration-chain.database.ts"
   - "backend/src/integration/p025-actor-boundary.database.ts"
 screens: []
 evidence:
   - "docs/security/universal-chop-core-security-architecture.md"
   - "docs/security/p025-security-foundation-crosswalk-2026-07-14.md"
   - "docs/security/p025-database-backed-actor-boundary-proof-2026-07-14.md"
+  - "docs/security/p025-settlement-state-migration-proof-2026-07-14.md"
+  - "docs/security/p025-capture-link-migration-proof-2026-07-14.md"
+  - "docs/security/p025-security-foundation-integration-manifest-2026-07-14.md"
+  - "docs/security/p025-security-foundation-canonical-integration-2026-07-15.md"
   - "docs/adr/0004-server-derived-payment-actor.md"
   - "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
-next_action: "Add a forward-only migration aligning payment states with paid and confirmed."
+next_action: "Inventory and close direct financial-table mutation paths."
 user_story: "I am building ChopDot across mini-app environments, so I need one auditable core contract before Circles, Telegram, or other surfaces can change shared money records."
-one_next_action: "Define core contract"
+one_next_action: "Review security boundary"
 friction_score: 3
 trust_score: 3
 clarity_score: 3
 language_score: 1
 total_score: 10
-why: "Mini-app expansion only works if every surface submits scoped actions and proof into one trusted Chop record model."
-challenge: "If any surface owns final truth, bypasses payment-intent matching, or can confirm/close outside its role, this card fails."
-acceptance: "The architecture defines core entities, record rules, invariants, surface capabilities, identity claims, payment intents, proof matching, guest-link permissions, privacy boundaries, idempotency, deployment boundaries, and bounded launch claims."
+why: "Mini-app expansion only works if every surface submits scoped actions into one trusted Chop record model."
+challenge: "If any surface owns final truth, trusts caller-supplied identity, or can confirm or close outside its role, this card fails."
+acceptance: "The architecture and executable database proofs define server-derived actors, canonical payment states, scoped capture-link access, role boundaries, replay behavior, privacy limits, deployment boundaries, and the remaining enforcement gaps."
 screenshot_required: "no"
-last_touched: "2026-07-14"
+last_touched: "2026-07-15"
 ```
 
 ## P-010 - Polkadot-native session boundary

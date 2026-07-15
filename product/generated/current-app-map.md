@@ -12,7 +12,7 @@
 - Screens mapped to product cards: 10
 - Screens not yet mapped to product cards: 21
 - Product card screen refs not found: 0
-- Product card test refs not found: 0
+- Product card test refs not found: 9
 
 ## Routes
 
@@ -92,3 +92,12 @@
 
 ### Screens
 ### Tests
+- .worktrees/portable-shell-trial/src/environment/encryptedSession.test.ts
+- .worktrees/portable-shell-trial/src/environment/polkadotHostBridge.test.ts
+- .worktrees/portable-shell-trial/src/payments/pasWallet.test.ts
+- .worktrees/portable-shell-trial/tests/polkadot-host-five-person-stress.spec.ts
+- .worktrees/portable-shell-trial/tests/polkadot-host-real-ui.spec.ts
+- .worktrees/portable-shell-trial/tests/polkadot-host-sim.spec.ts
+- .worktrees/portable-shell-trial/tests/polkadot-host-wallet-settlement.spec.ts
+- artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/p006-savings-circle-review.json
+- artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot/p007-emergency-pot-review.json

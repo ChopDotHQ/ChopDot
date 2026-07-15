@@ -6,8 +6,8 @@
 
 - Cards: 25
 - Decisions: 6
-- History events: 70
-- Validation: 0 error(s), 0 warning(s)
+- History events: 71
+- Validation: 0 error(s), 10 warning(s)
 
 ## Cards
 
@@ -26,7 +26,7 @@
 | P-022 Regular pot end-to-end coherence | building | Quality | 10/10 | Review journey | partial |
 | P-023 PAS test wallet payment | done | Payout | 10/10 | Pay Mina | strong |
 | P-024 DOT and USDC wallet payment checks | discovery | Payout | 10/10 | Check payment | partial |
-| P-025 Universal Chop Core security architecture | ready | Quality | 10/10 | Define core contract | partial |
+| P-025 Universal Chop Core security architecture | building | Quality | 10/10 | Review security boundary | strong |
 | P-010 Polkadot-native session boundary | building | Native Stack | 10/10 | Prove the live connection | partial |
 | P-011 Product language cleanup | done | Quality | 10/10 | Clean visible copy | strong |
 | P-012 Receipt capture without manual-first entry | done | Catch | 10/10 | Add receipt | strong |

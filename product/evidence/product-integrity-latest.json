@@ -1,16 +1,87 @@
 {
-  "generatedAt": "2026-07-15T10:38:59.216Z",
+  "generatedAt": "2026-07-15T12:32:05.742Z",
   "source": "product/cards.md",
-  "sourceHash": "769a7efac8050f00a3ff734aa90613439593e80b17bc73fab6db9fe334e9c9d8",
+  "sourceHash": "d30ceebae92383c54b8ed15e7737d49cd3cf269e6d27152ffffee9826b6574ca",
   "summary": {
     "errors": 0,
-    "warnings": 0,
+    "warnings": 10,
     "cards": 25,
     "decisions": 6,
     "decisionContracts": 25,
-    "history": 70,
+    "history": 71,
     "readyOrActive": 21,
     "blocked": 0
   },
-  "issues": []
+  "issues": [
+    {
+      "severity": "warning",
+      "area": "board-policy",
+      "code": "building-wip-limit",
+      "subject": "building",
+      "message": "More than three cards are building."
+    },
+    {
+      "severity": "warning",
+      "area": "app-map",
+      "code": "referenced-test-missing",
+      "subject": ".worktrees/portable-shell-trial/src/environment/encryptedSession.test.ts",
+      "message": ".worktrees/portable-shell-trial/src/environment/encryptedSession.test.ts is referenced by a product card but was not found."
+    },
+    {
+      "severity": "warning",
+      "area": "app-map",
+      "code": "referenced-test-missing",
+      "subject": ".worktrees/portable-shell-trial/src/environment/polkadotHostBridge.test.ts",
+      "message": ".worktrees/portable-shell-trial/src/environment/polkadotHostBridge.test.ts is referenced by a product card but was not found."
+    },
+    {
+      "severity": "warning",
+      "area": "app-map",
+      "code": "referenced-test-missing",
+      "subject": ".worktrees/portable-shell-trial/src/payments/pasWallet.test.ts",
+      "message": ".worktrees/portable-shell-trial/src/payments/pasWallet.test.ts is referenced by a product card but was not found."
+    },
+    {
+      "severity": "warning",
+      "area": "app-map",
+      "code": "referenced-test-missing",
+      "subject": ".worktrees/portable-shell-trial/tests/polkadot-host-five-person-stress.spec.ts",
+      "message": ".worktrees/portable-shell-trial/tests/polkadot-host-five-person-stress.spec.ts is referenced by a product card but was not found."
+    },
+    {
+      "severity": "warning",
+      "area": "app-map",
+      "code": "referenced-test-missing",
+      "subject": ".worktrees/portable-shell-trial/tests/polkadot-host-real-ui.spec.ts",
+      "message": ".worktrees/portable-shell-trial/tests/polkadot-host-real-ui.spec.ts is referenced by a product card but was not found."
+    },
+    {
+      "severity": "warning",
+      "area": "app-map",
+      "code": "referenced-test-missing",
+      "subject": ".worktrees/portable-shell-trial/tests/polkadot-host-sim.spec.ts",
+      "message": ".worktrees/portable-shell-trial/tests/polkadot-host-sim.spec.ts is referenced by a product card but was not found."
+    },
+    {
+      "severity": "warning",
+      "area": "app-map",
+      "code": "referenced-test-missing",
+      "subject": ".worktrees/portable-shell-trial/tests/polkadot-host-wallet-settlement.spec.ts",
+      "message": ".worktrees/portable-shell-trial/tests/polkadot-host-wallet-settlement.spec.ts is referenced by a product card but was not found."
+    },
+    {
+      "severity": "warning",
+      "area": "app-map",
+      "code": "referenced-test-missing",
+      "subject": "artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/p006-savings-circle-review.json",
+      "message": "artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/p006-savings-circle-review.json is referenced by a product card but was not found."
+    },
+    {
+      "severity": "warning",
+      "area": "app-map",
+      "code": "referenced-test-missing",
+      "subject": "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot/p007-emergency-pot-review.json",
+      "message": "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot/p007-emergency-pot-review.json is referenced by a product card but was not found."
+    }
+  ]
 }

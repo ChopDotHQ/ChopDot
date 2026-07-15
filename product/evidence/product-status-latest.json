@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-07-15T10:38:59.216Z",
+  "generatedAt": "2026-07-15T12:32:05.742Z",
   "summary": {
     "errors": 0,
-    "warnings": 0,
+    "warnings": 10,
     "cards": 25,
     "decisions": 6,
     "decisionContracts": 25,
-    "history": 70,
+    "history": 71,
     "readyOrActive": 21,
     "blocked": 0
   },
   "byStatus": {
     "backlog": 0,
     "discovery": 4,
-    "ready": 3,
-    "building": 3,
+    "ready": 2,
+    "building": 4,
     "validation": 0,
     "measuring": 0,
     "blocked": 0,

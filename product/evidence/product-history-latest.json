@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-15T10:38:59.216Z",
-  "count": 70,
+  "generatedAt": "2026-07-15T12:32:05.742Z",
+  "count": 71,
   "events": [
     {
       "id": "H-2026-06-24-cockpit-migration-start",
@@ -1011,6 +1011,20 @@
       "roadmap": [],
       "evidence": [
         "product/cards.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-15T09-58-30-integrated-p-025-server-derived-actor-settlement-state-c",
+      "timestamp": "2026-07-15T09:58:30.613Z",
+      "type": "checkpoint",
+      "summary": "Integrated P-025 server-derived actor, settlement-state, capture-link RLS, and executable database proof on a clean branch.",
+      "cards": [
+        "P-025"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "docs/security/p025-security-foundation-canonical-integration-2026-07-15.md"
       ],
       "notes": []
     },

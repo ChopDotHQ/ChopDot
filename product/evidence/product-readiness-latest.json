@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-15T10:38:59.216Z",
+  "generatedAt": "2026-07-15T12:32:05.742Z",
   "validation": {
     "errors": 0,
-    "warnings": 0,
+    "warnings": 10,
     "cards": 25,
     "decisions": 6,
     "decisionContracts": 25,
-    "history": 70,
+    "history": 71,
     "readyOrActive": 21,
     "blocked": 0
   },
@@ -150,12 +150,12 @@
     {
       "id": "P-025",
       "title": "Universal Chop Core security architecture",
-      "status": "ready",
+      "status": "building",
       "readiness": "ready",
-      "reason": "Add a forward-only migration aligning payment states with paid and confirmed.",
+      "reason": "Inventory and close direct financial-table mutation paths.",
       "score": 10,
-      "evidenceQuality": "partial",
-      "nextAction": "Add a forward-only migration aligning payment states with paid and confirmed."
+      "evidenceQuality": "strong",
+      "nextAction": "Inventory and close direct financial-table mutation paths."
     },
     {
       "id": "P-010",

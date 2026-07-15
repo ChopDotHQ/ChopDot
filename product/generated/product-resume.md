@@ -8,7 +8,7 @@ ChopDot should help groups capture money moments, make the next action obvious, 
 
 ## Current Health
 
-- Validation: 0 error(s), 0 warning(s)
+- Validation: 0 error(s), 10 warning(s)
 - Active or ready cards: 6
 - Blocked cards: 0
 - Current app screens mapped: 10/31
@@ -21,7 +21,7 @@ ChopDot should help groups capture money moments, make the next action obvious, 
 - P-020 Chat capture agent: /addlast (building, 9/10)
 - P-010 Polkadot-native session boundary: Prove the live connection (building, 10/10)
 - P-016 Product resume for future agents: Read product resume (ready, 10/10)
-- P-025 Universal Chop Core security architecture: Define core contract (ready, 10/10)
+- P-025 Universal Chop Core security architecture: Review security boundary (building, 10/10)
 
 ## Blocked
 

@@ -59,5 +59,6 @@ Primary cards:
 
 - `P-014` Product cockpit upgrade
 - `P-016` Product resume for future agents
+- `P-025` Universal Chop Core security architecture
 
 Done means every meaningful product change updates cards, evidence, decisions, or history.

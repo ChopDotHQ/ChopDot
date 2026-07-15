@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-15T10:38:59.215Z",
+  "generatedAt": "2026-07-15T12:32:05.741Z",
   "summary": {
     "screenTypes": 21,
     "routerEntries": 21,
@@ -9,7 +9,7 @@
     "mappedScreens": 10,
     "orphanScreens": 21,
     "referencedScreensMissing": 0,
-    "referencedTestsMissing": 0
+    "referencedTestsMissing": 9
   },
   "routes": [
     {
@@ -877,5 +877,15 @@
     "YouTab"
   ],
   "referencedScreensMissing": [],
-  "referencedTestsMissing": []
+  "referencedTestsMissing": [
+    ".worktrees/portable-shell-trial/src/environment/encryptedSession.test.ts",
+    ".worktrees/portable-shell-trial/src/environment/polkadotHostBridge.test.ts",
+    ".worktrees/portable-shell-trial/src/payments/pasWallet.test.ts",
+    ".worktrees/portable-shell-trial/tests/polkadot-host-five-person-stress.spec.ts",
+    ".worktrees/portable-shell-trial/tests/polkadot-host-real-ui.spec.ts",
+    ".worktrees/portable-shell-trial/tests/polkadot-host-sim.spec.ts",
+    ".worktrees/portable-shell-trial/tests/polkadot-host-wallet-settlement.spec.ts",
+    "artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/p006-savings-circle-review.json",
+    "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot/p007-emergency-pot-review.json"
+  ]
 }
