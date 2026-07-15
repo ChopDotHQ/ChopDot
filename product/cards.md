@@ -658,6 +658,7 @@ evidence:
   - "docs/security/p025-capture-link-migration-proof-2026-07-14.md"
   - "docs/security/p025-security-foundation-integration-manifest-2026-07-14.md"
   - "docs/security/p025-security-foundation-canonical-integration-2026-07-15.md"
+  - "docs/security/p025-owner-checkpoint-node22-proof-2026-07-15.md"
   - "docs/adr/0004-server-derived-payment-actor.md"
   - "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
 next_action: "Inventory and close direct financial-table mutation paths."
