@@ -188,14 +188,20 @@ Current proof:
 - domain: `chopdot-shell-proof.dot`
 - working gateway: `https://chopdot-shell-proof.paseo.li/?chainBackend=rpc-gateway`
 - CLI-printed gateway: `https://chopdot-shell-proof.dot.li`
-- CID: `bafybeigyl77b3d5kv4lgbrmwz2a4qdmat3wd4x34xca7gqtdfseyoxxmmu`
-- phase-A storage tx: `0x274b95d4d78fff2b57624037fec15eb8fdc981ff343eaa35096ac2b71afdd42a`
-- storage finalization tx: `0xb17eb353abbb5baeff91865324316980310edef4a589f620de1ff5adbffac83c`
-- contenthash tx: `0x72229e1f0d518512bbac647a4d1ed18ba00f86772b804d45b774994dc35e420b`
-- app subname contenthash tx: `0x95a6b8f1822ff274a22b615066828e203d6fc54a171bec0c1cbd790ac7f0d924`
-- latest complete live report: passed on 2026-07-15 against the late-expense recovery CID;
+- source commit: `07936cde23a4de5aa1779c17616897021792a41c`
+- deploy tag: `chopdot-portable-capture-truth-07936cd`
+- CID: `bafybeigpwh2lbozdsxp6hddiw7f562kylhsxo7s6pltrrqxf47jlcpwhty`
+- phase-A storage tx: `0x48263163809fa883fedfdf844ee4912965c3e12c8cdeb4d0cfcc70194d75f0f7`
+- storage finalization tx: `0xd3ae1d3351368741a3e15901b78782c996be7c428667e8edb274ee8f2d0af29e`
+- contenthash tx: `0xb66490089c0e79f7fbbefba77e3bfd4aaf418ab5d1e50d076468cc27e02f0d17`
+- app subname contenthash tx: `0x92f355538b979c599865990fac02f4d08155273b765257b6a7a78e57c2b132be`
+- latest complete live report: passed on 2026-07-15 against the capture-truth CID;
 - evidence: `proof/portable-shell-dot-host/report.json` plus screenshots `01`
   through `22`.
+- capture truth evidence:
+  `proof/portable-capture-live-host-proof-2026-07-15.md` proves manual amount
+  and reason entry, Review split authority, payer action, receiver
+  confirmation, settled summary, and persisted reload on the deployed build.
 - late-expense recovery evidence:
   `proof/dot-host-late-expense-2026-07-15.md` and
   `proof/late-expense-live-2026-07-15/` prove Mina can add a forgotten expense
@@ -263,6 +269,10 @@ Known limitations:
   sandbox warning. Cross-origin isolation prevents the same-origin escape case
   in the observed deployment, but the host sandbox policy remains an external
   configuration boundary to monitor.
+- During the focused amount/title frame, automated `.dot` screenshots can show
+  a temporary black host-owned area above the app. The form and bottom action
+  remain usable, and normal host chrome returns on the review screen. Treat
+  this as a host viewport/chrome polish item, not hidden product completion.
 
 ## Adding A New Mini-App Host
 

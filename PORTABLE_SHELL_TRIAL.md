@@ -315,15 +315,15 @@ Live HTTPS Telegram-style proof packet:
 - host profile: `telegram`
 - url: `https://portable-shell-trial.vercel.app/?tgWebAppStartParam=portable-proof`
 - viewport: `390 x 844`
-- screenshots: `20`
+- screenshots: `24`
 - report: `proof/portable-shell-telegram-live/report.json`
-- result: full normal journey completed and state persisted after refresh
+- result: full normal journey completed, fresh-device payer action passed, and
+  state persisted after refresh
 
 Deployment:
 
 - alias: `https://portable-shell-trial.vercel.app`
-- deployment: `https://portable-shell-trial-pcmzf4hek-devinsons-projects-b5ab981e.vercel.app`
-- inspect: `https://vercel.com/devinsons-projects-b5ab981e/portable-shell-trial/ASSHxtThq4BXKPL7QWtsNNnCMGLZ`
+- deployment: `https://portable-shell-trial-d6vd4j1g8-devinsons-projects-b5ab981e.vercel.app`
 - sandbox setup notes: `TELEGRAM_SANDBOX.md`
 
 This does not prove a real Telegram deployment, real share-sheet behavior,
@@ -331,3 +331,21 @@ host SDK payment behavior, BotFather setup, server-side `initData` validation,
 or production mini-app packaging. It proves the current shell can complete the
 same core journey in a Telegram-like embedded browser shape without forking
 product UI or breaking local persistence.
+
+Live `.dot` capture-truth proof packet:
+
+- path: `proof/portable-shell-dot-host/`
+- host profile: `dot-host`
+- url: `https://chopdot-shell-proof.paseo.li/?chainBackend=rpc-gateway`
+- source commit: `07936cde23a4de5aa1779c17616897021792a41c`
+- CID: `bafybeigpwh2lbozdsxp6hddiw7f562kylhsxo7s6pltrrqxf47jlcpwhty`
+- screenshots: `22`
+- report: `proof/portable-shell-dot-host/report.json`
+- result: manual capture, review, payer action, receiver confirmation, settled
+  summary, and persisted reload passed inside the live host
+- review: `proof/portable-capture-live-host-proof-2026-07-15.md`
+
+The focused amount/title frame can briefly show a black host-owned area above
+the app in automated `.dot` screenshots. The form and bottom action remain
+usable and normal host chrome returns on the review screen. This remains a
+host-viewport polish item.

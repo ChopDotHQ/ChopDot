@@ -91,3 +91,16 @@ THEN amount and reason are preserved.
 - Keep the failed candidate plan as historical product-gate evidence.
 - No wiki or ADR change is required because no provider or durable architecture
   decision has been adopted.
+
+## Live Proof Addendum
+
+After the local correction passed and was integrated as commit `07936cd`, the
+same source was deployed to the Paseo `.dot` host and the existing Vercel
+Telegram profile on 2026-07-15.
+
+- `.dot`: 22-frame live journey passed with persisted reload.
+- Telegram profile: 24-frame live host simulation passed, including the
+  fresh-device payer action and persisted reload.
+- Review: `proof/portable-capture-live-host-proof-2026-07-15.md`.
+- Real Telegram client and completed Polkadot Product Account login remain
+  separate proof gates.
