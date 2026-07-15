@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-29T08-32-08-started-p-001-dinner-split-pay-moment-capture-pass",
+  "timestamp": "2026-06-29T08:32:08.709Z",
+  "type": "claim",
+  "summary": "Started P-001 dinner split pay-moment capture pass.",
+  "cards": [
+    "P-001"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md"
+  ],
+  "notes": []
+}

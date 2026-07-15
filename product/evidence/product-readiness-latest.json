@@ -1,37 +1,37 @@
 {
-  "generatedAt": "2026-06-24T13:27:50.525Z",
+  "generatedAt": "2026-07-15T10:38:59.216Z",
   "validation": {
     "errors": 0,
     "warnings": 0,
-    "cards": 16,
-    "decisions": 5,
-    "decisionContracts": 16,
-    "history": 5,
-    "readyOrActive": 10,
-    "blocked": 1
+    "cards": 25,
+    "decisions": 6,
+    "decisionContracts": 25,
+    "history": 70,
+    "readyOrActive": 21,
+    "blocked": 0
   },
   "summary": {
-    "cards": 16,
-    "activeOrReady": 10,
-    "blocked": 1,
-    "readyForPilot": 3
+    "cards": 25,
+    "activeOrReady": 21,
+    "blocked": 0,
+    "readyForPilot": 15
   },
   "cards": [
     {
       "id": "P-001",
       "title": "Dinner split pay-moment capture",
-      "status": "ready",
-      "readiness": "ready",
+      "status": "done",
+      "readiness": "accepted",
       "reason": "Open the capture flow and split the payment without starting from a blank accounting form.",
       "score": 9,
-      "evidenceQuality": "partial",
+      "evidenceQuality": "strong",
       "nextAction": "Open the capture flow and split the payment without starting from a blank accounting form."
     },
     {
       "id": "P-002",
       "title": "No-app friend payment link",
-      "status": "validation",
-      "readiness": "needs review",
+      "status": "done",
+      "readiness": "accepted",
       "reason": "Open the friend link and show only Leo's amount, receiver, and pay action.",
       "score": 10,
       "evidenceQuality": "partial",
@@ -40,8 +40,8 @@
     {
       "id": "P-003",
       "title": "Confirm received",
-      "status": "validation",
-      "readiness": "needs review",
+      "status": "done",
+      "readiness": "accepted",
       "reason": "Show Mina the exact payment to confirm received.",
       "score": 10,
       "evidenceQuality": "partial",
@@ -50,11 +50,11 @@
     {
       "id": "P-004",
       "title": "Close with readable saved record",
-      "status": "ready",
-      "readiness": "ready",
+      "status": "done",
+      "readiness": "accepted",
       "reason": "Show what is confirmed, delayed, waived, or still open before closing.",
       "score": 9,
-      "evidenceQuality": "partial",
+      "evidenceQuality": "strong",
       "nextAction": "Show what is confirmed, delayed, waived, or still open before closing."
     },
     {
@@ -70,22 +70,22 @@
     {
       "id": "P-006",
       "title": "Savings circle round",
-      "status": "discovery",
-      "readiness": "ready",
-      "reason": "Make the treasurer's first action obvious for one current round.",
-      "score": 8,
-      "evidenceQuality": "thin",
-      "nextAction": "Make the treasurer's first action obvious for one current round."
+      "status": "done",
+      "readiness": "accepted",
+      "reason": "Move to the next user journey: emergency pot privacy flow.",
+      "score": 10,
+      "evidenceQuality": "strong",
+      "nextAction": "Move to the next user journey: emergency pot privacy flow."
     },
     {
       "id": "P-007",
       "title": "Emergency pot privacy flow",
-      "status": "discovery",
-      "readiness": "ready",
-      "reason": "Show one private contribution action without exposing sensitive details.",
-      "score": 8,
-      "evidenceQuality": "thin",
-      "nextAction": "Show one private contribution action without exposing sensitive details."
+      "status": "done",
+      "readiness": "accepted",
+      "reason": "Move to the next user journey: community fund role flow.",
+      "score": 10,
+      "evidenceQuality": "strong",
+      "nextAction": "Move to the next user journey: community fund role flow."
     },
     {
       "id": "P-008",
@@ -100,42 +100,92 @@
     {
       "id": "P-009",
       "title": "Agent wallet journey testing",
-      "status": "ready",
-      "readiness": "ready",
+      "status": "done",
+      "readiness": "accepted",
       "reason": "Run agents through the app UI and record confusion, dead ends, and unsafe assumptions.",
       "score": 10,
-      "evidenceQuality": "partial",
+      "evidenceQuality": "strong",
       "nextAction": "Run agents through the app UI and record confusion, dead ends, and unsafe assumptions."
+    },
+    {
+      "id": "P-021",
+      "title": "J-004 no-app friend payment link",
+      "status": "done",
+      "readiness": "accepted",
+      "reason": "Move to the next cockpit card after P-021 validation.",
+      "score": 10,
+      "evidenceQuality": "strong",
+      "nextAction": "Move to the next cockpit card after P-021 validation."
+    },
+    {
+      "id": "P-022",
+      "title": "Regular pot end-to-end coherence",
+      "status": "building",
+      "readiness": "ready",
+      "reason": "Fix the normal pot journey breaks found in the latest screenshot review.",
+      "score": 10,
+      "evidenceQuality": "partial",
+      "nextAction": "Fix the normal pot journey breaks found in the latest screenshot review."
+    },
+    {
+      "id": "P-023",
+      "title": "PAS test wallet payment",
+      "status": "done",
+      "readiness": "accepted",
+      "reason": "Keep PAS on the direct wallet and public-chain path; do not restore artifact-backed payment checks.",
+      "score": 10,
+      "evidenceQuality": "strong",
+      "nextAction": "Keep PAS on the direct wallet and public-chain path; do not restore artifact-backed payment checks."
+    },
+    {
+      "id": "P-024",
+      "title": "DOT and USDC wallet payment checks",
+      "status": "discovery",
+      "readiness": "ready",
+      "reason": "After the PAS wallet path passes, run separate real DOT and real testnet USDC connected-wallet checks without reusing PAS, fixtures, or prior reports.",
+      "score": 10,
+      "evidenceQuality": "partial",
+      "nextAction": "After the PAS wallet path passes, run separate real DOT and real testnet USDC connected-wallet checks without reusing PAS, fixtures, or prior reports."
+    },
+    {
+      "id": "P-025",
+      "title": "Universal Chop Core security architecture",
+      "status": "ready",
+      "readiness": "ready",
+      "reason": "Add a forward-only migration aligning payment states with paid and confirmed.",
+      "score": 10,
+      "evidenceQuality": "partial",
+      "nextAction": "Add a forward-only migration aligning payment states with paid and confirmed."
     },
     {
       "id": "P-010",
       "title": "Polkadot-native session boundary",
-      "status": "blocked",
-      "readiness": "blocked",
-      "reason": "external host and live dot availability",
-      "score": 6,
+      "status": "building",
+      "readiness": "ready",
+      "reason": "Repeat the proven five-person normal-UI journey against live Product Accounts and live Statement Store when a runnable Polkadot Mobile client is available; test real payment execution as a separate evidence lane.",
+      "score": 10,
       "evidenceQuality": "partial",
-      "nextAction": "Keep native session work fail-visible and separate from normal product readiness."
+      "nextAction": "Repeat the proven five-person normal-UI journey against live Product Accounts and live Statement Store when a runnable Polkadot Mobile client is available; test real payment execution as a separate evidence lane."
     },
     {
       "id": "P-011",
       "title": "Product language cleanup",
-      "status": "ready",
-      "readiness": "ready",
+      "status": "done",
+      "readiness": "accepted",
       "reason": "Scan normal UI for internal terms and replace them with user language.",
-      "score": 9,
-      "evidenceQuality": "partial",
+      "score": 10,
+      "evidenceQuality": "strong",
       "nextAction": "Scan normal UI for internal terms and replace them with user language."
     },
     {
       "id": "P-012",
       "title": "Receipt capture without manual-first entry",
-      "status": "ready",
-      "readiness": "ready",
-      "reason": "Make photo, paste, or import the default before any item editing.",
-      "score": 9,
-      "evidenceQuality": "thin",
-      "nextAction": "Make photo, paste, or import the default before any item editing."
+      "status": "done",
+      "readiness": "accepted",
+      "reason": "Move to the next user journey: savings circle round.",
+      "score": 10,
+      "evidenceQuality": "strong",
+      "nextAction": "Move to the next user journey: savings circle round."
     },
     {
       "id": "P-013",
@@ -176,6 +226,46 @@
       "score": 10,
       "evidenceQuality": "partial",
       "nextAction": "Generate a short handoff with thesis, active work, blockers, and next actions."
+    },
+    {
+      "id": "P-017",
+      "title": "AI PM process guardrails",
+      "status": "done",
+      "readiness": "accepted",
+      "reason": "Run the AI PM validator before shipping AI-assisted capture work.",
+      "score": 10,
+      "evidenceQuality": "partial",
+      "nextAction": "Run the AI PM validator before shipping AI-assisted capture work."
+    },
+    {
+      "id": "P-018",
+      "title": "Normal pot expense tracking",
+      "status": "done",
+      "readiness": "accepted",
+      "reason": "Open the normal pot and add one shared expense without entering a dense form.",
+      "score": 10,
+      "evidenceQuality": "strong",
+      "nextAction": "Open the normal pot and add one shared expense without entering a dense form."
+    },
+    {
+      "id": "P-019",
+      "title": "Normal pot mobile and desktop polish",
+      "status": "done",
+      "readiness": "accepted",
+      "reason": "Run the normal pot loop on mobile and desktop, then fix only the visual and flow mismatches.",
+      "score": 10,
+      "evidenceQuality": "strong",
+      "nextAction": "Run the normal pot loop on mobile and desktop, then fix only the visual and flow mismatches."
+    },
+    {
+      "id": "P-020",
+      "title": "Chat capture agent",
+      "status": "building",
+      "readiness": "ready",
+      "reason": "Write a paid message in the chat, then review the draft before adding it.",
+      "score": 9,
+      "evidenceQuality": "partial",
+      "nextAction": "Write a paid message in the chat, then review the draft before adding it."
     }
   ]
 }

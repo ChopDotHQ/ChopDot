@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-28T20-53-36-completed-j-008-mobile-and-desktop-layout-quality-pass-f",
+  "timestamp": "2026-06-28T20:53:36.719Z",
+  "type": "checkpoint",
+  "summary": "Completed J-008 mobile and desktop layout quality pass for the normal pot loop.",
+  "cards": [
+    "P-019"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/journey-reviews/J-008-mobile-desktop-layout-quality.md"
+  ],
+  "notes": []
+}

@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-27T10-30-21-reset-normal-pots-as-the-canonical-first-flow-hid-experi",
+  "timestamp": "2026-06-27T10:30:21.274Z",
+  "type": "checkpoint",
+  "summary": "Reset normal pots as the canonical first flow; hid experimental pot surfaces behind explicit flags; verified guest path and pot detail with screenshots.",
+  "cards": [
+    "P-001"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/evidence/screenshots/normal-pot-reset/09-pot-home-final.png"
+  ],
+  "notes": []
+}

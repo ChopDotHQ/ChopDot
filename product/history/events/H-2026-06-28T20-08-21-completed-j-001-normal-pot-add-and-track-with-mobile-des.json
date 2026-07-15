@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-06-28T20-08-21-completed-j-001-normal-pot-add-and-track-with-mobile-des",
+  "timestamp": "2026-06-28T20:08:21.743Z",
+  "type": "release",
+  "summary": "Completed J-001 normal pot add-and-track with mobile, desktop, and published-app comparison evidence.",
+  "cards": [
+    "P-018"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md",
+    "product/evidence/screenshots/normal-pot-j001-desktop-compare/04-local-desktop-after-add.png"
+  ],
+  "notes": []
+}

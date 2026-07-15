@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-14T17-37-37-p-010-five-person-normal-ui-polkadot-host-proof-passed-m",
+  "timestamp": "2026-07-14T17:37:37.333Z",
+  "type": "checkpoint",
+  "summary": "P-010 five-person normal-UI Polkadot host proof passed: Mina, Leo, Nina, Omar, and Vera converged through saved summary with no developer actions or direct state mutation; live mobile, live multi-device sync, and real payment proof remain open.",
+  "cards": [
+    "P-010"
+  ],
+  "roadmap": [],
+  "evidence": [
+    ".worktrees/portable-shell-trial/proof/polkadot-host-real-ui/report.json"
+  ],
+  "notes": []
+}

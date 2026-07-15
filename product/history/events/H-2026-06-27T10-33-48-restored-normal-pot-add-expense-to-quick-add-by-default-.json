@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-27T10-33-48-restored-normal-pot-add-expense-to-quick-add-by-default-",
+  "timestamp": "2026-06-27T10:33:48.558Z",
+  "type": "checkpoint",
+  "summary": "Restored normal pot Add Expense to quick add by default; receipt/capture drawer remains experimental-only; verified no receipt or internal copy appears in base flow.",
+  "cards": [
+    "P-001"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/evidence/screenshots/normal-pot-reset/11-add-expense-quick-add-final.png"
+  ],
+  "notes": []
+}

@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-05T10-34-47-added-the-effortless-app-gate-to-chopdot-standards-locke",
+  "timestamp": "2026-07-05T10:34:47.982Z",
+  "type": "checkpoint",
+  "summary": "Added the Effortless App Gate to ChopDot standards: locked state model, strict design system, scope cuts, invariants, fewer screens, and hard-path QA before future ChopDot.dot UI expansion.",
+  "cards": [
+    "P-007"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/product-principles.md"
+  ],
+  "notes": []
+}

@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-28T20-59-18-ported-yourturn-telegram-openclaw-guardrails-to-p-020-al",
+  "timestamp": "2026-06-28T20:59:18.703Z",
+  "type": "checkpoint",
+  "summary": "Ported YourTurn Telegram/OpenClaw guardrails to P-020: allowlisted chats, mutation gate, and honest descriptor boundary.",
+  "cards": [
+    "P-020"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "docs/telegram-chat-agent.md"
+  ],
+  "notes": []
+}

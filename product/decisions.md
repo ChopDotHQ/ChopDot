@@ -97,3 +97,21 @@ risk: "Treating scripted success as user comprehension repeats previous mistakes
 follow_up: "Record confusion, hesitation, and dead ends in evidence."
 supersedes: "none"
 ```
+
+## DEC-006 - Mini-app surfaces must conform to Chop Core
+
+```yaml
+id: "DEC-006"
+status: "provisional"
+scope: "Quality"
+cards:
+  - "P-025"
+decision: "New mini-app surfaces must submit scoped commands and evidence into one Chop Core contract instead of owning final product state."
+chosen_path: "Define core entities, state transitions, adapter capabilities, payment-intent matching, guest-link permissions, privacy boundaries, idempotency, deployment boundaries, and public-claim limits before Circles, Telegram, or other surfaces ship."
+why: "Cross-environment ChopDot only works if each environment can use native strengths without fragmenting truth, payment semantics, or closeout records."
+evidence:
+  - "docs/security/universal-chop-core-security-architecture.md"
+risk: "Over-abstracting the core before one useful guest-link flow works would slow product proof."
+follow_up: "Implement the Tier 1 guest-link loop against this contract before adding the first native mini-app adapter."
+supersedes: "none"
+```

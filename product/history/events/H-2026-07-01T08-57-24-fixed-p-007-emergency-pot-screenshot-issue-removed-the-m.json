@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-01T08-57-24-fixed-p-007-emergency-pot-screenshot-issue-removed-the-m",
+  "timestamp": "2026-07-01T08:57:24.810Z",
+  "type": "checkpoint",
+  "summary": "Fixed P-007 emergency pot screenshot issue: removed the misleading pink progress underline below the primary action, cleaned release privacy copy to Recipient kept private, and refreshed the Riley record-release screenshot.",
+  "cards": [
+    "P-007"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot-batch-principles-pass/09-riley-record-release.png"
+  ],
+  "notes": []
+}

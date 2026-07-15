@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-07-15T10-35-07-completed-connected-wallet-pas-five-person-settlement-pr",
+  "timestamp": "2026-07-15T10:35:07.019Z",
+  "type": "checkpoint",
+  "summary": "Completed connected-wallet PAS five-person settlement proof; removed artifact-backed runtime payment checks; kept DOT and real USDC partial.",
+  "cards": [
+    "P-023",
+    "P-024"
+  ],
+  "roadmap": [],
+  "evidence": [
+    ".worktrees/portable-shell-trial/proof/polkadot-host-wallet-settlement/report.json"
+  ],
+  "notes": []
+}

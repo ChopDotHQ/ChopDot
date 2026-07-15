@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-14T14-29-10-ran-p-025-database-actor-proof-real-postgres-projection-",
+  "timestamp": "2026-07-14T14:29:10.470Z",
+  "type": "checkpoint",
+  "summary": "Ran P-025 database actor proof: real Postgres projection passes; migration-owned schema fails on settlement status drift and capture-link migration defects.",
+  "cards": [
+    "P-025"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "docs/security/p025-database-backed-actor-boundary-proof-2026-07-14.md"
+  ],
+  "notes": []
+}

@@ -4,7 +4,7 @@ Purpose: capture ChopDot-specific reusable lessons for AgentOps review without c
 
 ## Candidate reusable lessons
 
-No candidates yet.
+- OpenSpec-lite should be the default workflow for ChopDot AI-builder and prototype-agent interactions: start with a named change, preserve current truth, define scope in/out, write `SHALL` requirements, use `GIVEN / WHEN / THEN` scenarios for behavior, add screenshot-level acceptance criteria for UI work, keep tasks ordered, and require proof mapping before trusting completion. Failure mode addressed: broad vibe prompts cause AI builders to rewrite working behavior, overbuild feature catalogs, or claim visual success without scenario/screenshot proof.
 
 ## Local-only notes
 

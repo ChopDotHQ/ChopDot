@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-03T10-19-09-p-022-first-screen-chf-currency-coherence-verified",
+  "timestamp": "2026-07-03T10:19:09.352Z",
+  "type": "checkpoint",
+  "summary": "P-022 first-screen CHF currency coherence verified",
+  "cards": [
+    "P-022"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "artifacts/chopdot-p022-regular-pot/2026-07-03/p022-regular-pot-currency-fix-1783073838562/p022-regular-pot-coherence-audit.md"
+  ],
+  "notes": []
+}

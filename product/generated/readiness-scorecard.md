@@ -6,19 +6,28 @@ Validation: 0 error(s), 0 warning(s).
 
 | Card | Readiness | Reason |
 | --- | --- | --- |
-| P-001 Dinner split pay-moment capture | ready | Open the capture flow and split the payment without starting from a blank accounting form. |
-| P-002 No-app friend payment link | needs review | Open the friend link and show only Leo's amount, receiver, and pay action. |
-| P-003 Confirm received | needs review | Show Mina the exact payment to confirm received. |
-| P-004 Close with readable saved record | ready | Show what is confirmed, delayed, waived, or still open before closing. |
+| P-001 Dinner split pay-moment capture | accepted | Open the capture flow and split the payment without starting from a blank accounting form. |
+| P-002 No-app friend payment link | accepted | Open the friend link and show only Leo's amount, receiver, and pay action. |
+| P-003 Confirm received | accepted | Show Mina the exact payment to confirm received. |
+| P-004 Close with readable saved record | accepted | Show what is confirmed, delayed, waived, or still open before closing. |
 | P-005 Spend Card capture path | ready | Review the current Spend Card flow and identify the first dead end. |
-| P-006 Savings circle round | ready | Make the treasurer's first action obvious for one current round. |
-| P-007 Emergency pot privacy flow | ready | Show one private contribution action without exposing sensitive details. |
+| P-006 Savings circle round | accepted | Move to the next user journey: emergency pot privacy flow. |
+| P-007 Emergency pot privacy flow | accepted | Move to the next user journey: community fund role flow. |
 | P-008 Community fund role flow | ready | Show each role exactly what they can do next. |
-| P-009 Agent wallet journey testing | ready | Run agents through the app UI and record confusion, dead ends, and unsafe assumptions. |
-| P-010 Polkadot-native session boundary | blocked | external host and live dot availability |
-| P-011 Product language cleanup | ready | Scan normal UI for internal terms and replace them with user language. |
-| P-012 Receipt capture without manual-first entry | ready | Make photo, paste, or import the default before any item editing. |
+| P-009 Agent wallet journey testing | accepted | Run agents through the app UI and record confusion, dead ends, and unsafe assumptions. |
+| P-021 J-004 no-app friend payment link | accepted | Move to the next cockpit card after P-021 validation. |
+| P-022 Regular pot end-to-end coherence | ready | Fix the normal pot journey breaks found in the latest screenshot review. |
+| P-023 PAS test wallet payment | accepted | Keep PAS on the direct wallet and public-chain path; do not restore artifact-backed payment checks. |
+| P-024 DOT and USDC wallet payment checks | ready | After the PAS wallet path passes, run separate real DOT and real testnet USDC connected-wallet checks without reusing PAS, fixtures, or prior reports. |
+| P-025 Universal Chop Core security architecture | ready | Add a forward-only migration aligning payment states with paid and confirmed. |
+| P-010 Polkadot-native session boundary | ready | Repeat the proven five-person normal-UI journey against live Product Accounts and live Statement Store when a runnable Polkadot Mobile client is available; test real payment execution as a separate evidence lane. |
+| P-011 Product language cleanup | accepted | Scan normal UI for internal terms and replace them with user language. |
+| P-012 Receipt capture without manual-first entry | accepted | Move to the next user journey: savings circle round. |
 | P-013 Competitor and 10x benchmark | ready | Compare the same dinner split, no-app pay, confirm, and close record journey against the strongest alternatives. |
 | P-014 Product cockpit upgrade | accepted | Generate a readable cockpit with roadmap, kanban, decisions, history, and resume. |
 | P-015 Friend-pilot readiness scorecard | ready | Mark each journey ready, needs work, or blocked using current proof. |
 | P-016 Product resume for future agents | ready | Generate a short handoff with thesis, active work, blockers, and next actions. |
+| P-017 AI PM process guardrails | accepted | Run the AI PM validator before shipping AI-assisted capture work. |
+| P-018 Normal pot expense tracking | accepted | Open the normal pot and add one shared expense without entering a dense form. |
+| P-019 Normal pot mobile and desktop polish | accepted | Run the normal pot loop on mobile and desktop, then fix only the visual and flow mismatches. |
+| P-020 Chat capture agent | ready | Write a paid message in the chat, then review the draft before adding it. |

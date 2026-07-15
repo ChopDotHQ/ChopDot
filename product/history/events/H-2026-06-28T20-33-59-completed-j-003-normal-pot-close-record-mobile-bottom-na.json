@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-28T20-33-59-completed-j-003-normal-pot-close-record-mobile-bottom-na",
+  "timestamp": "2026-06-28T20:33:59.905Z",
+  "type": "checkpoint",
+  "summary": "Completed J-003 normal pot close record: mobile bottom-nav blocker fixed, close requires note for open items, saved record appears after close, and screenshots are documented in the journey review.",
+  "cards": [
+    "P-004"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/journey-reviews/J-003-normal-pot-close-record.md"
+  ],
+  "notes": []
+}

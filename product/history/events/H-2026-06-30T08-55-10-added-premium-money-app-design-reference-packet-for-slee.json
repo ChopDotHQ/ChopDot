@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-30T08-55-10-added-premium-money-app-design-reference-packet-for-slee",
+  "timestamp": "2026-06-30T08:55:10.978Z",
+  "type": "checkpoint",
+  "summary": "Added premium money app design reference packet for sleek/tight ChopDot screen reviews",
+  "cards": [
+    "P-022"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/design-references/kast-premium-money-app-2026-06-30/README.md"
+  ],
+  "notes": []
+}

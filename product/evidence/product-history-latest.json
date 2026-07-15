@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-06-24T13:27:50.525Z",
-  "count": 5,
+  "generatedAt": "2026-07-15T10:38:59.216Z",
+  "count": 70,
   "events": [
     {
       "id": "H-2026-06-24-cockpit-migration-start",
@@ -106,6 +106,928 @@
         "missing refs",
         "and unmapped screens."
       ]
+    },
+    {
+      "id": "H-2026-06-27T10-30-21-reset-normal-pots-as-the-canonical-first-flow-hid-experi",
+      "timestamp": "2026-06-27T10:30:21.274Z",
+      "type": "checkpoint",
+      "summary": "Reset normal pots as the canonical first flow; hid experimental pot surfaces behind explicit flags; verified guest path and pot detail with screenshots.",
+      "cards": [
+        "P-001"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/evidence/screenshots/normal-pot-reset/09-pot-home-final.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-27T10-33-48-restored-normal-pot-add-expense-to-quick-add-by-default-",
+      "timestamp": "2026-06-27T10:33:48.558Z",
+      "type": "checkpoint",
+      "summary": "Restored normal pot Add Expense to quick add by default; receipt/capture drawer remains experimental-only; verified no receipt or internal copy appears in base flow.",
+      "cards": [
+        "P-001"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/evidence/screenshots/normal-pot-reset/11-add-expense-quick-add-final.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-27T13-11-39-applied-normal-pot-lifecycle-timing-expenses-view-focuse",
+      "timestamp": "2026-06-27T13:11:39.563Z",
+      "type": "checkpoint",
+      "summary": "Applied normal-pot lifecycle timing: Expenses view focuses on adding/reviewing costs, hides suggested settlement transfers, and keeps Settle Up as a compact secondary action.",
+      "cards": [
+        "P-001"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/evidence/screenshots/normal-pot-lifecycle/02-pot-expenses-lifecycle-tight.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-27T13-35-58-tightened-settle-up-lifecycle-selection-now-shows-one-op",
+      "timestamp": "2026-06-27T13:35:58.769Z",
+      "type": "checkpoint",
+      "summary": "Tightened Settle Up lifecycle: selection now shows one open amount and person rows, payment step focuses on amount/method/action, and settlement toasts use user-facing copy.",
+      "cards": [
+        "P-001"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/evidence/screenshots/settle-flow-review/15-settle-confirmed-final.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T19-15-38-closed-the-post-settlement-loop-back-to-pot-returns-to-t",
+      "timestamp": "2026-06-28T19:15:38.848Z",
+      "type": "checkpoint",
+      "summary": "Closed the post-settlement loop: Back to pot returns to the same pot, shows the received payment, updates visible open balances, and aligns pot balances with Settle Up calculations.",
+      "cards": [
+        "P-001"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/evidence/screenshots/post-settlement-pot-state/08-back-to-pot-after-received-final.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T19-27-48-added-the-journey-by-journey-review-plan-each-chopdot-fl",
+      "timestamp": "2026-06-28T19:27:48.263Z",
+      "type": "checkpoint",
+      "summary": "Added the journey-by-journey review plan: each ChopDot flow must be clicked, screenshotted, wireframe-read, critiqued, and fixed before moving to the next journey.",
+      "cards": [
+        "P-009"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/journey-review-plan.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T19-35-06-added-executable-journey-review-gate-and-visual-quality-",
+      "timestamp": "2026-06-28T19:35:06.411Z",
+      "type": "checkpoint",
+      "summary": "Added executable journey review gate and visual quality rubric validator.",
+      "cards": [
+        "P-009"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/journey-reviews/J-002-normal-pot-settle-one-person.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T19-48-52-ran-j-001-normal-pot-expense-cycle-through-product-and-v",
+      "timestamp": "2026-06-28T19:48:52.911Z",
+      "type": "checkpoint",
+      "summary": "Ran J-001 normal pot expense cycle through product and visual gates; product passes but visual quality fails.",
+      "cards": [
+        "P-001"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/journey-reviews/J-001-normal-pot-add-and-track-expenses.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T20-02-21-improved-j-001-normal-pot-expense-tracking-focused-add-e",
+      "timestamp": "2026-06-28T20:02:21.987Z",
+      "type": "checkpoint",
+      "summary": "Improved J-001 normal pot expense tracking: focused Add Expense sheet, reduced payback timing, fresh screenshots, and passing journey review.",
+      "cards": [
+        "P-018"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/journey-reviews/J-001-normal-pot-add-and-track-expenses.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T20-08-21-completed-j-001-normal-pot-add-and-track-with-mobile-des",
+      "timestamp": "2026-06-28T20:08:21.743Z",
+      "type": "release",
+      "summary": "Completed J-001 normal pot add-and-track with mobile, desktop, and published-app comparison evidence.",
+      "cards": [
+        "P-018"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md",
+        "product/evidence/screenshots/normal-pot-j001-desktop-compare/04-local-desktop-after-add.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T20-33-28-completed-j-003-normal-pot-close-record-with-annotated-o",
+      "timestamp": "2026-06-28T20:33:28.439Z",
+      "type": "release",
+      "summary": "Completed J-003 normal pot close record with annotated open-item review, saved-record after-state, mobile/desktop screenshots, and forbidden-language check.",
+      "cards": [
+        "P-004"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md",
+        "product/evidence/screenshots/normal-pot-j003-close-record/mobile-04-saved-record.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T20-33-59-completed-j-003-normal-pot-close-record-mobile-bottom-na",
+      "timestamp": "2026-06-28T20:33:59.905Z",
+      "type": "checkpoint",
+      "summary": "Completed J-003 normal pot close record: mobile bottom-nav blocker fixed, close requires note for open items, saved record appears after close, and screenshots are documented in the journey review.",
+      "cards": [
+        "P-004"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/journey-reviews/J-003-normal-pot-close-record.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T20-53-36-completed-j-008-mobile-and-desktop-layout-quality-pass-f",
+      "timestamp": "2026-06-28T20:53:36.719Z",
+      "type": "checkpoint",
+      "summary": "Completed J-008 mobile and desktop layout quality pass for the normal pot loop.",
+      "cards": [
+        "P-019"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/journey-reviews/J-008-mobile-desktop-layout-quality.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T20-54-17-completed-j-008-mobile-and-desktop-polish-for-the-normal",
+      "timestamp": "2026-06-28T20:54:17.611Z",
+      "type": "release",
+      "summary": "Completed J-008 mobile and desktop polish for the normal pot loop with final screenshots and journey review.",
+      "cards": [
+        "P-019"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md",
+        "product/evidence/screenshots/normal-pot-j008-layout-quality/final/desktop-02-pot-detail.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T20-54-29-completed-j-008-mobile-and-desktop-layout-quality-pass-f",
+      "timestamp": "2026-06-28T20:54:29.250Z",
+      "type": "checkpoint",
+      "summary": "Completed J-008 mobile and desktop layout quality pass for the normal pot loop.",
+      "cards": [
+        "P-019"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/journey-reviews/J-008-mobile-desktop-layout-quality.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T20-54-45-started-telegram-first-chat-capture-agent-staged-chat-me",
+      "timestamp": "2026-06-28T20:54:45.037Z",
+      "type": "checkpoint",
+      "summary": "Started Telegram-first chat capture agent; staged chat messages require /addlast before expense truth.",
+      "cards": [
+        "P-020"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "src/__tests__/chatCaptureDraft.test.ts"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T20-59-18-ported-yourturn-telegram-openclaw-guardrails-to-p-020-al",
+      "timestamp": "2026-06-28T20:59:18.703Z",
+      "type": "checkpoint",
+      "summary": "Ported YourTurn Telegram/OpenClaw guardrails to P-020: allowlisted chats, mutation gate, and honest descriptor boundary.",
+      "cards": [
+        "P-020"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "docs/telegram-chat-agent.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T21-07-22-completed-p-009-agent-ui-audit-mina-organizer-flow-passe",
+      "timestamp": "2026-06-28T21:07:22.869Z",
+      "type": "release",
+      "summary": "Completed P-009 agent UI audit: Mina organizer flow passes, separate friend devices need J-004 payment link repair.",
+      "cards": [
+        "P-009"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md",
+        "artifacts/chopdot-normal-pot-agents/2026-06-28/normal-pot-agent-2026-06-28/02-leo-pot-detail.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-28T21-07-52-completed-p-009-normal-pot-agent-audit-and-created-p-021",
+      "timestamp": "2026-06-28T21:07:52.098Z",
+      "type": "checkpoint",
+      "summary": "Completed P-009 normal-pot agent audit and created P-021 for J-004 friend-link repair.",
+      "cards": [
+        "P-009",
+        "P-021"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/agent-reviews/P-009-normal-pot-agent-ui-audit.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-29T07-40-49-started-j-004-no-app-friend-payment-link-repair",
+      "timestamp": "2026-06-29T07:40:49.706Z",
+      "type": "claim",
+      "summary": "Started J-004 no-app friend payment link repair.",
+      "cards": [
+        "P-021"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-29T08-08-41-completed-j-004-no-app-friend-payment-link-with-screensh",
+      "timestamp": "2026-06-29T08:08:41.767Z",
+      "type": "release",
+      "summary": "Completed J-004 no-app friend payment link with screenshot-backed Leo and Mina agent flow.",
+      "cards": [
+        "P-021"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md",
+        "artifacts/chopdot-p021-friend-link/2026-06-29/p021-friend-link-2026-06-29/01-leo-pay-link.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-29T08-08-58-completed-p-021-j-004-no-app-friend-payment-link-with-fo",
+      "timestamp": "2026-06-29T08:08:58.612Z",
+      "type": "checkpoint",
+      "summary": "Completed P-021 J-004 no-app friend payment link with focused Leo pay and Mina confirm screenshots.",
+      "cards": [
+        "P-021"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/journey-reviews/J-004-no-app-friend-payment-link.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-29T08-32-08-started-p-001-dinner-split-pay-moment-capture-pass",
+      "timestamp": "2026-06-29T08:32:08.709Z",
+      "type": "claim",
+      "summary": "Started P-001 dinner split pay-moment capture pass.",
+      "cards": [
+        "P-001"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-29T08-53-31-completed-p-001-dinner-split-pay-moment-capture-from-nor",
+      "timestamp": "2026-06-29T08:53:31.442Z",
+      "type": "release",
+      "summary": "Completed P-001 dinner split pay-moment capture from normal pot entry through split-created screenshots.",
+      "cards": [
+        "P-001"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md",
+        "artifacts/chopdot-p001-capture/2026-06-29/p001-capture-2026-06-29/01-pot-capture-entry.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-29T08-53-47-completed-p-001-dinner-split-pay-moment-capture-with-nor",
+      "timestamp": "2026-06-29T08:53:47.781Z",
+      "type": "checkpoint",
+      "summary": "Completed P-001 dinner split pay-moment capture with normal pot entry, focused capture screen, and screenshot audit.",
+      "cards": [
+        "P-001"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/journey-reviews/J-000-dinner-split-pay-moment-capture.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-29T09-56-55-started-regular-pot-end-to-end-coherence-pass-from-the-s",
+      "timestamp": "2026-06-29T09:56:55.426Z",
+      "type": "claim",
+      "summary": "Started regular pot end-to-end coherence pass from the S1 story map.",
+      "cards": [
+        "P-022"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-29T10-15-40-completed-regular-pot-end-to-end-coherence-normal-expens",
+      "timestamp": "2026-06-29T10:15:40.602Z",
+      "type": "release",
+      "summary": "Completed regular pot end-to-end coherence: normal expenses survive capture, confirmed friend payments reduce matching shares, and close review matches remaining open items.",
+      "cards": [
+        "P-022"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md",
+        "artifacts/chopdot-p022-regular-pot/2026-06-29/p022-regular-pot-1782727857377/p022-regular-pot-coherence-audit.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-29T10-15-57-closed-p-022-regular-pot-end-to-end-coherence-s1-6-done-",
+      "timestamp": "2026-06-29T10:15:57.496Z",
+      "type": "checkpoint",
+      "summary": "Closed P-022 regular pot end-to-end coherence; S1.6 done and P-011 returns as next story-map slice.",
+      "cards": [
+        "P-022"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "artifacts/chopdot-p022-regular-pot/2026-06-29/p022-regular-pot-1782727857377/p022-regular-pot-coherence-audit.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-30T08-55-10-added-premium-money-app-design-reference-packet-for-slee",
+      "timestamp": "2026-06-30T08:55:10.978Z",
+      "type": "checkpoint",
+      "summary": "Added premium money app design reference packet for sleek/tight ChopDot screen reviews",
+      "cards": [
+        "P-022"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/design-references/kast-premium-money-app-2026-06-30/README.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-30T09-00-03-clean-normal-pot-visible-copy-against-premium-money-app-",
+      "timestamp": "2026-06-30T09:00:03.442Z",
+      "type": "claim",
+      "summary": "Clean normal pot visible copy against premium money app reference",
+      "cards": [
+        "P-011"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-30T09-13-51-finished-normal-pot-visible-language-cleanup-against-pre",
+      "timestamp": "2026-06-30T09:13:51.301Z",
+      "type": "release",
+      "summary": "Finished normal-pot visible language cleanup against premium money app reference",
+      "cards": [
+        "P-011"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md",
+        "product/agent-reviews/P-011-product-language-cleanup.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-30T10-00-01-reaccepted-s1-normal-pot-journey-after-fresh-screenshot-",
+      "timestamp": "2026-06-30T10:00:01.711Z",
+      "type": "checkpoint",
+      "summary": "Reaccepted S1 normal pot journey after fresh screenshot audit; fixed pots-list legibility and saved-record status copy.",
+      "cards": [
+        "P-022"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782813466267/p022-regular-pot-coherence-audit.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-30T11-34-16-applied-s1-screenshot-review-fixes-solid-add-expense-she",
+      "timestamp": "2026-06-30T11:34:16.213Z",
+      "type": "checkpoint",
+      "summary": "Applied S1 screenshot review fixes: solid add-expense sheet, no stale split toast, bottom confirm actions, single saved-record summary.",
+      "cards": [
+        "P-022"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782814632520/p022-regular-pot-coherence-audit.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-30T12-05-31-completed-s1-final-sheet-boundary-cleanup-add-expense-no",
+      "timestamp": "2026-06-30T12:05:31.010Z",
+      "type": "checkpoint",
+      "summary": "Completed S1 final sheet-boundary cleanup: add expense now uses a solid rimmed sheet without blur, P-022 maps QuickKeypadSheet as an in-flow component, and fresh screenshots validate the regular pot journey.",
+      "cards": [
+        "P-022"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782820959927/p022-regular-pot-coherence-audit.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-30T13-21-09-p-023-pas-test-wallet-payment-completed-with-screenshots",
+      "timestamp": "2026-06-30T13:21:09.513Z",
+      "type": "checkpoint",
+      "summary": "P-023 PAS test wallet payment completed with screenshots, matcher test, and focused browser proof",
+      "cards": [
+        "P-023"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "artifacts/chopdot-p023-pas-payment/2026-06-30/p023-pas-payment-1782824214315"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-30T14-42-27-p-024-dot-and-usdc-wallet-payment-checks-completed-with-",
+      "timestamp": "2026-06-30T14:42:27.306Z",
+      "type": "checkpoint",
+      "summary": "P-024 DOT and USDC wallet payment checks completed with exact-share matching and failure-state screenshots",
+      "cards": [
+        "P-024"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "artifacts/chopdot-p024-wallet-payment/2026-06-30/p024-wallet-payment-1782830349578"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-30T17-49-14-executed-public-testnet-pas-and-test-usdc-agent-wallet-p",
+      "timestamp": "2026-06-30T17:49:14.496Z",
+      "type": "checkpoint",
+      "summary": "Executed public-testnet PAS and TEST_USDC agent-wallet payment report for P-024; DOT remains a non-executed boundary in this runner.",
+      "cards": [
+        "P-024"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "artifacts/agent-wallet-trials/agent-wallet-trial-2026-06-22/wallet-scenario-report.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-30T18-04-35-receipt-capture-without-manual-first-entry-implementatio",
+      "timestamp": "2026-06-30T18:04:35.853Z",
+      "type": "claim",
+      "summary": "Receipt capture without manual-first entry implementation pass",
+      "cards": [
+        "P-012"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-06-30T18-27-52-receipt-capture-now-starts-from-add-receipt-paste-link-o",
+      "timestamp": "2026-06-30T18:27:52.344Z",
+      "type": "release",
+      "summary": "Receipt capture now starts from Add receipt, paste link, or fallback total; manual item entry stays after capture.",
+      "cards": [
+        "P-012"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md",
+        "product/journey-reviews/J-009-receipt-capture-without-manual-first-entry.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-01T06-41-14-savings-circle-one-round-product-pass",
+      "timestamp": "2026-07-01T06:41:14.278Z",
+      "type": "claim",
+      "summary": "Savings circle one-round product pass",
+      "cards": [
+        "P-006"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-01T07-11-14-savings-circle-round-now-runs-through-mark-paid-confirm-",
+      "timestamp": "2026-07-01T07:11:14.003Z",
+      "type": "release",
+      "summary": "Savings circle round now runs through Mark paid, Confirm received, Record delay, payout confirmation, and Close round with screenshot evidence.",
+      "cards": [
+        "P-006"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md",
+        "product/journey-reviews/J-010-savings-circle-round.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-01T07-46-53-emergency-pot-privacy-flow-using-batch-1-one-screen-one-",
+      "timestamp": "2026-07-01T07:46:53.898Z",
+      "type": "claim",
+      "summary": "Emergency pot privacy flow using Batch 1 one-screen-one-job reference",
+      "cards": [
+        "P-007"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-01T08-05-06-emergency-pot-privacy-flow-now-runs-through-private-cont",
+      "timestamp": "2026-07-01T08:05:06.792Z",
+      "type": "release",
+      "summary": "Emergency pot privacy flow now runs through private contribution, organizer confirmation, approval, recipient confirmation, and saved redacted record with screenshot evidence.",
+      "cards": [
+        "P-007"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md",
+        "product/journey-reviews/J-011-emergency-pot-privacy-flow.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-01T08-22-42-applied-batch-2-settlement-visual-reference-to-p-007-eme",
+      "timestamp": "2026-07-01T08:22:42.965Z",
+      "type": "checkpoint",
+      "summary": "Applied Batch 2 settlement visual reference to P-007 emergency pot privacy flow: centered hero state, compact detail cards, clean completion without toast overlap.",
+      "cards": [
+        "P-007"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/journey-reviews/J-011-emergency-pot-privacy-flow.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-01T08-46-22-documented-batch-1-and-batch-2-consolidated-design-princ",
+      "timestamp": "2026-07-01T08:46:22.622Z",
+      "type": "checkpoint",
+      "summary": "Documented Batch 1 and Batch 2 consolidated design principles, then reapplied them to P-007 emergency pot: focused first viewport, hidden bottom nav, quieter privacy copy, and refreshed agent screenshots.",
+      "cards": [
+        "P-007"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/design-references/chopdot-batch-1-2-consolidated-principles-2026-07-01.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-01T08-57-24-fixed-p-007-emergency-pot-screenshot-issue-removed-the-m",
+      "timestamp": "2026-07-01T08:57:24.810Z",
+      "type": "checkpoint",
+      "summary": "Fixed P-007 emergency pot screenshot issue: removed the misleading pink progress underline below the primary action, cleaned release privacy copy to Recipient kept private, and refreshed the Riley record-release screenshot.",
+      "cards": [
+        "P-007"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot-batch-principles-pass/09-riley-record-release.png"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-01T12-29-48-expanded-ai-studio-universal-mini-app-shell-plan-with-cu",
+      "timestamp": "2026-07-01T12:29:48.217Z",
+      "type": "checkpoint",
+      "summary": "Expanded AI Studio universal mini-app shell plan with current product inventory, competitor floors, mini-app host requirements, treasurer closeout, and recovery prompts",
+      "cards": [
+        "P-013",
+        "P-025"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-01T12-39-14-added-first-class-spend-card-and-group-card-simulator-re",
+      "timestamp": "2026-07-01T12:39:14.605Z",
+      "type": "checkpoint",
+      "summary": "Added first-class Spend Card and group-card simulator requirements to the AI Studio universal shell plan",
+      "cards": [
+        "P-005",
+        "P-013",
+        "P-025"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-03T10-19-09-p-022-first-screen-chf-currency-coherence-verified",
+      "timestamp": "2026-07-03T10:19:09.352Z",
+      "type": "checkpoint",
+      "summary": "P-022 first-screen CHF currency coherence verified",
+      "cards": [
+        "P-022"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "artifacts/chopdot-p022-regular-pot/2026-07-03/p022-regular-pot-currency-fix-1783073838562/p022-regular-pot-coherence-audit.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-05T09-46-16-p-022-split-rows-now-show-currency-on-remaining-open-sha",
+      "timestamp": "2026-07-05T09:46:16.435Z",
+      "type": "checkpoint",
+      "summary": "P-022 split rows now show currency on remaining open shares",
+      "cards": [
+        "P-022"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "artifacts/chopdot-p022-regular-pot/2026-07-05/p022-regular-pot-split-drift-after-1783244737/p022-regular-pot-coherence-audit.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-05T10-34-47-added-the-effortless-app-gate-to-chopdot-standards-locke",
+      "timestamp": "2026-07-05T10:34:47.982Z",
+      "type": "checkpoint",
+      "summary": "Added the Effortless App Gate to ChopDot standards: locked state model, strict design system, scope cuts, invariants, fewer screens, and hard-path QA before future ChopDot.dot UI expansion.",
+      "cards": [
+        "P-007"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/product-principles.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-05T11-12-21-added-repo-native-chopdot-wiki-with-adrs-generated-index",
+      "timestamp": "2026-07-05T11:12:21.752Z",
+      "type": "checkpoint",
+      "summary": "Added repo-native ChopDot wiki with ADRs, generated indexes, validation, and documentation-impact rule.",
+      "cards": [],
+      "roadmap": [],
+      "evidence": [
+        "docs/wiki/index.generated.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-06T18-52-50-added-context-intake-lane-so-codex-threads-and-agent-run",
+      "timestamp": "2026-07-06T18:52:50.165Z",
+      "type": "checkpoint",
+      "summary": "Added context-intake lane so Codex threads and agent runs become explicit wiki-routed evidence, not silent truth.",
+      "cards": [],
+      "roadmap": [],
+      "evidence": [
+        "docs/wiki/08-context-intake/codex-thread-019f1ce5-telegram-portable-shell.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-14T14-09-41-implemented-the-server-derived-authenticated-actor-bound",
+      "timestamp": "2026-07-14T14:09:41.508Z",
+      "type": "checkpoint",
+      "summary": "Implemented the server-derived authenticated actor boundary for Express money routes; database-backed authorization proof remains the next gate.",
+      "cards": [
+        "P-025"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "docs/security/p025-security-foundation-crosswalk-2026-07-14.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-14T14-29-10-ran-p-025-database-actor-proof-real-postgres-projection-",
+      "timestamp": "2026-07-14T14:29:10.470Z",
+      "type": "checkpoint",
+      "summary": "Ran P-025 database actor proof: real Postgres projection passes; migration-owned schema fails on settlement status drift and capture-link migration defects.",
+      "cards": [
+        "P-025"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "docs/security/p025-database-backed-actor-boundary-proof-2026-07-14.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-14T14-41-41-static-dot-baseline-proven-begin-host-identity-encrypted",
+      "timestamp": "2026-07-14T14:41:41.514Z",
+      "type": "claim",
+      "summary": "Static .dot baseline proven; begin host identity, encrypted Statement Store, payment, and receipt capability integration.",
+      "cards": [
+        "P-010"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-14T14-47-45-p-010-static-dot-blocker-removed-portable-host-bridge-en",
+      "timestamp": "2026-07-14T14:47:45.997Z",
+      "type": "checkpoint",
+      "summary": "P-010 static .dot blocker removed; portable host bridge, encrypted session packets, observed-only payments, redacted receipts, and fail-visible local capability proof added. Live native capability proof remains open.",
+      "cards": [
+        "P-010"
+      ],
+      "roadmap": [],
+      "evidence": [
+        ".worktrees/portable-shell-trial/proof/polkadot-host-capability/report.json"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-14T15-15-02-p-010-bridge-enabled-shell-deployed-at-cid-bafybeid27jig",
+      "timestamp": "2026-07-14T15:15:02.507Z",
+      "type": "checkpoint",
+      "summary": "P-010 bridge-enabled shell deployed at CID bafybeid27jigusqvjugfa76d5xhufz754ndtrbpr7rhudytkn7jgvlgfky. Live .dot journey passed with 22 screenshots and persistence. Host reports identity needs_login; Statement Store, payments, and receipt archive available.",
+      "cards": [
+        "P-010"
+      ],
+      "roadmap": [],
+      "evidence": [
+        ".worktrees/portable-shell-trial/proof/polkadot-host-capability-live/report.json"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-14T15-23-35-p-010-live-product-account-qr-ceremony-proven-completion",
+      "timestamp": "2026-07-14T15:23:35.294Z",
+      "type": "checkpoint",
+      "summary": "P-010 live Product Account QR ceremony proven; completion is blocked on a runnable Polkadot Mobile client, not ChopDot host integration.",
+      "cards": [
+        "P-010"
+      ],
+      "roadmap": [],
+      "evidence": [
+        ".worktrees/portable-shell-trial/proof/product-account-login-boundary-2026-07-14.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-14T15-39-48-p-010-official-host-simulation-passed-distinct-product-a",
+      "timestamp": "2026-07-14T15:39:48.470Z",
+      "type": "checkpoint",
+      "summary": "P-010 official host simulation passed: distinct Product Accounts, ciphertext-only two-person convergence, observed-only payment, and redacted receipt retrieval. Live promotion remains blocked on a runnable Polkadot Mobile client.",
+      "cards": [
+        "P-010"
+      ],
+      "roadmap": [],
+      "evidence": [
+        ".worktrees/portable-shell-trial/proof/polkadot-host-sim/report.json"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-14T16-13-17-corrected-p-010-routing-full-xcode-and-a-source-built-io",
+      "timestamp": "2026-07-14T16:13:17.793Z",
+      "type": "checkpoint",
+      "summary": "Corrected P-010 routing: full Xcode and a source-built iOS reference client are optional fallbacks, not ChopDot prerequisites. Real-UI host simulation remains the active local lane; live QR completion waits for a runnable Polkadot Mobile build.",
+      "cards": [
+        "P-010"
+      ],
+      "roadmap": [],
+      "evidence": [
+        ".worktrees/portable-shell-trial/proof/polkadot-ios-reference-host-setup-2026-07-14.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-14T16-31-11-five-person-official-polkadot-host-stress-passed-after-r",
+      "timestamp": "2026-07-14T16:31:11.952Z",
+      "type": "checkpoint",
+      "summary": "Five-person official Polkadot host stress passed after replacing shared last-write-wins session channels with append-only event publication; real UI and live network gates remain open.",
+      "cards": [
+        "P-010"
+      ],
+      "roadmap": [],
+      "evidence": [
+        ".worktrees/portable-shell-trial/proof/polkadot-host-stress/report.json"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-14T17-37-37-p-010-five-person-normal-ui-polkadot-host-proof-passed-m",
+      "timestamp": "2026-07-14T17:37:37.333Z",
+      "type": "checkpoint",
+      "summary": "P-010 five-person normal-UI Polkadot host proof passed: Mina, Leo, Nina, Omar, and Vera converged through saved summary with no developer actions or direct state mutation; live mobile, live multi-device sync, and real payment proof remain open.",
+      "cards": [
+        "P-010"
+      ],
+      "roadmap": [],
+      "evidence": [
+        ".worktrees/portable-shell-trial/proof/polkadot-host-real-ui/report.json"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-15T09-55-01-started-connected-wallet-pas-five-person-settlement-proo",
+      "timestamp": "2026-07-15T09:55:01.428Z",
+      "type": "claim",
+      "summary": "Started connected-wallet PAS five-person settlement proof; corrected prior report-backed completion claim.",
+      "cards": [
+        "P-023"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/cards.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-15T10-35-07-completed-connected-wallet-pas-five-person-settlement-pr",
+      "timestamp": "2026-07-15T10:35:07.019Z",
+      "type": "checkpoint",
+      "summary": "Completed connected-wallet PAS five-person settlement proof; removed artifact-backed runtime payment checks; kept DOT and real USDC partial.",
+      "cards": [
+        "P-023",
+        "P-024"
+      ],
+      "roadmap": [],
+      "evidence": [
+        ".worktrees/portable-shell-trial/proof/polkadot-host-wallet-settlement/report.json"
+      ],
+      "notes": []
     }
   ]
 }

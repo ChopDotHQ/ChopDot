@@ -9,29 +9,26 @@ ChopDot should help groups capture money moments, make the next action obvious, 
 ## Current Health
 
 - Validation: 0 error(s), 0 warning(s)
-- Active or ready cards: 8
-- Blocked cards: 1
-- Current app screens mapped: 6/46
-- Current app unmapped screens: 40
+- Active or ready cards: 6
+- Blocked cards: 0
+- Current app screens mapped: 10/31
+- Current app unmapped screens: 21
 
 ## Top Work
 
-- P-002 No-app friend payment link: Pay Mina (validation, 10/10)
-- P-003 Confirm received: Confirm received (validation, 10/10)
-- P-009 Agent wallet journey testing: Run agent journey (ready, 10/10)
-- P-001 Dinner split pay-moment capture: Split this payment (ready, 9/10)
-- P-004 Close with readable saved record: Close record (ready, 9/10)
-- P-011 Product language cleanup: Clean visible copy (ready, 9/10)
-- P-012 Receipt capture without manual-first entry: Add receipt (ready, 9/10)
+- P-022 Regular pot end-to-end coherence: Review journey (building, 10/10)
 - P-015 Friend-pilot readiness scorecard: Review readiness (ready, 9/10)
+- P-020 Chat capture agent: /addlast (building, 9/10)
+- P-010 Polkadot-native session boundary: Prove the live connection (building, 10/10)
+- P-016 Product resume for future agents: Read product resume (ready, 10/10)
+- P-025 Universal Chop Core security architecture: Define core contract (ready, 10/10)
 
 ## Blocked
 
-- P-010 Polkadot-native session boundary: external host and live dot availability
 
 ## Next Agent Instruction
 
-Start with P-002 No-app friend payment link. One next action: Pay Mina. Falsifier: If Leo sees admin controls or account setup before the first low-risk action, this card fails..
+Start with P-022 Regular pot end-to-end coherence. One next action: Review journey. Falsifier: If the pass adds modes, explanations, dashboard panels, or backend rewrites before the visible normal-pot journey works, this card fails..
 
 ## Boundaries
 

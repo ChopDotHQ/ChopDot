@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-14T14-41-41-static-dot-baseline-proven-begin-host-identity-encrypted",
+  "timestamp": "2026-07-14T14:41:41.514Z",
+  "type": "claim",
+  "summary": "Static .dot baseline proven; begin host identity, encrypted Statement Store, payment, and receipt capability integration.",
+  "cards": [
+    "P-010"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md"
+  ],
+  "notes": []
+}

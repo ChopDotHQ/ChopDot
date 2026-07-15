@@ -1,23 +1,23 @@
 {
-  "generatedAt": "2026-06-24T13:27:50.525Z",
+  "generatedAt": "2026-07-15T10:38:59.216Z",
   "validation": {
     "errors": 0,
     "warnings": 0,
-    "cards": 16,
-    "decisions": 5,
-    "decisionContracts": 16,
-    "history": 5,
-    "readyOrActive": 10,
-    "blocked": 1
+    "cards": 25,
+    "decisions": 6,
+    "decisionContracts": 25,
+    "history": 70,
+    "readyOrActive": 21,
+    "blocked": 0
   },
   "appInventory": {
-    "screenTypes": 34,
-    "routerEntries": 30,
-    "renderFunctions": 29,
-    "screenFiles": 46,
-    "tests": 68,
-    "mappedScreens": 6,
-    "orphanScreens": 40,
+    "screenTypes": 21,
+    "routerEntries": 21,
+    "renderFunctions": 20,
+    "screenFiles": 31,
+    "tests": 43,
+    "mappedScreens": 10,
+    "orphanScreens": 21,
     "referencedScreensMissing": 0,
     "referencedTestsMissing": 0
   },
@@ -40,7 +40,8 @@
         "tests/e2e/capture-pay-confirm-link.spec.ts"
       ],
       "evidence": [
-        "docs/chopdot-dot/chopdot-10x-experience-thesis-2026-06-23.md"
+        "docs/chopdot-dot/chopdot-10x-experience-thesis-2026-06-23.md",
+        "artifacts/chopdot-p001-capture/2026-06-29/p001-capture-2026-06-29/01-pot-capture-entry.png"
       ],
       "decisionContract": "DC-001"
     },
@@ -60,7 +61,8 @@
         "tests/e2e/capture-pay-confirm-link.spec.ts"
       ],
       "evidence": [
-        "product/evidence/product-readiness-latest.json"
+        "product/evidence/product-readiness-latest.json",
+        "product/evidence/screenshots/07-capture-handoff.png"
       ],
       "decisionContract": "DC-002"
     },
@@ -80,7 +82,8 @@
         "tests/e2e/capture-pay-confirm-link.spec.ts"
       ],
       "evidence": [
-        "product/evidence/product-readiness-latest.json"
+        "product/evidence/product-readiness-latest.json",
+        "product/evidence/screenshots/09-capture-confirm.png"
       ],
       "decisionContract": "DC-003"
     },
@@ -100,7 +103,8 @@
         "tests/e2e/capture-pay-confirm-link.spec.ts"
       ],
       "evidence": [
-        "docs/chopdot-dot/chopdot-10x-experience-thesis-2026-06-23.md"
+        "docs/chopdot-dot/chopdot-10x-experience-thesis-2026-06-23.md",
+        "product/evidence/screenshots/normal-pot-j003-close-record/mobile-04-saved-record.png"
       ],
       "decisionContract": "DC-004"
     },
@@ -121,7 +125,8 @@
         "tests/e2e/capture-wallet-pass-spend.spec.ts"
       ],
       "evidence": [
-        "docs/chopdot-dot/chopdot-10x-experience-thesis-2026-06-23.md"
+        "docs/chopdot-dot/chopdot-10x-experience-thesis-2026-06-23.md",
+        "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
       ],
       "decisionContract": "DC-005"
     },
@@ -138,10 +143,17 @@
         "src/components/screens/ChapterHome.tsx"
       ],
       "tests": [
-        "tests/e2e/chopdot-dot-native-session.spec.ts"
+        "tests/e2e/chopdot-dot-native-session.spec.ts",
+        "artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/p006-savings-circle-review.json"
       ],
       "evidence": [
-        "docs/chopdot-dot/mode-map.md"
+        "docs/chopdot-dot/mode-map.md",
+        "product/journey-reviews/J-010-savings-circle-round.md",
+        "artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/01-leo-mark-paid.png",
+        "artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/03-mina-confirm-leo.png",
+        "artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/09-mina-record-payout.png",
+        "artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/13-mina-round-closed.png",
+        "artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/p006-savings-circle-review.json"
       ],
       "decisionContract": "DC-006"
     },
@@ -158,10 +170,22 @@
         "src/components/screens/ChapterHome.tsx"
       ],
       "tests": [
-        "tests/e2e/chopdot-dot-native-session.spec.ts"
+        "tests/e2e/chopdot-dot-native-session.spec.ts",
+        "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot/p007-emergency-pot-review.json"
       ],
       "evidence": [
-        "docs/chopdot-dot/emergency-pot-spec.md"
+        "docs/chopdot-dot/emergency-pot-spec.md",
+        "product/design-references/chopdot-batch-1-flow-reference-2026-07-01/README.md",
+        "product/design-references/chopdot-batch-2-settlement-reference-2026-07-01/README.md",
+        "product/design-references/chopdot-batch-1-2-consolidated-principles-2026-07-01.md",
+        "product/journey-reviews/J-011-emergency-pot-privacy-flow.md",
+        "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot/p007-emergency-pot-contact-sheet.png",
+        "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot-batch-principles-pass/index.html",
+        "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot-batch-principles-pass/01-casey-contribute.png",
+        "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot-batch-principles-pass/03-riley-confirm-casey.png",
+        "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot-batch-principles-pass/08-taylor-approve-release.png",
+        "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot-batch-principles-pass/12-riley-record-saved.png",
+        "artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot-batch-principles-pass/13-casey-saved-redacted.png"
       ],
       "decisionContract": "DC-007"
     },
@@ -203,9 +227,166 @@
         "tests/e2e/agent-wallet-pas-scenarios.spec.ts"
       ],
       "evidence": [
-        "docs/chopdot-dot/agent-wallet-journey-model-2026-06-22.md"
+        "docs/chopdot-dot/agent-wallet-journey-model-2026-06-22.md",
+        "product/agent-reviews/P-009-normal-pot-agent-ui-audit.md",
+        "artifacts/chopdot-normal-pot-agents/2026-06-28/normal-pot-agent-2026-06-28/normal-pot-agent-ui-audit.md",
+        "artifacts/chopdot-normal-pot-agents/2026-06-28/normal-pot-agent-2026-06-28/02-mina-pot-detail.png",
+        "artifacts/chopdot-normal-pot-agents/2026-06-28/normal-pot-agent-2026-06-28/02-leo-pot-detail.png"
       ],
       "decisionContract": "DC-009"
+    },
+    {
+      "card": "P-021",
+      "title": "J-004 no-app friend payment link",
+      "journey": "Leo receives a link and pays without joining",
+      "scope": "Payout",
+      "module": "friend-action",
+      "screens": [
+        "CaptureHandoffScreen",
+        "CaptureConfirmScreen",
+        "PotHome"
+      ],
+      "mappedAppScreens": [
+        "src/components/screens/CaptureConfirmScreen.tsx",
+        "src/components/screens/CaptureHandoffScreen.tsx",
+        "src/components/screens/PotHome.tsx"
+      ],
+      "tests": [
+        "tests/e2e/capture-pay-confirm-link.spec.ts"
+      ],
+      "evidence": [
+        "product/agent-reviews/P-009-normal-pot-agent-ui-audit.md",
+        "product/journey-reviews/J-004-no-app-friend-payment-link.md",
+        "artifacts/chopdot-p021-friend-link/2026-06-29/p021-friend-link-2026-06-29/p021-friend-link-audit.md",
+        "artifacts/chopdot-p021-friend-link/2026-06-29/p021-friend-link-2026-06-29/01-leo-pay-link.png"
+      ],
+      "decisionContract": "DC-021"
+    },
+    {
+      "card": "P-022",
+      "title": "Regular pot end-to-end coherence",
+      "journey": "Mina uses one regular pot from first cost to saved record",
+      "scope": "Quality",
+      "module": "group-expense",
+      "screens": [
+        "PotsHome",
+        "PotHome",
+        "SpendCardScreen",
+        "CaptureHandoffScreen",
+        "CaptureConfirmScreen",
+        "CloseoutReview"
+      ],
+      "mappedAppScreens": [
+        "src/components/screens/CaptureConfirmScreen.tsx",
+        "src/components/screens/CaptureHandoffScreen.tsx",
+        "src/components/screens/CloseoutReview.tsx",
+        "src/components/screens/PotHome.tsx",
+        "src/components/screens/PotsHome.tsx",
+        "src/components/screens/SpendCardScreen.tsx"
+      ],
+      "tests": [
+        "scripts/run-p022-regular-pot-coherence-audit.mjs",
+        "tests/e2e/capture-pay-confirm-link.spec.ts",
+        "tests/e2e/capture-spend-loop.spec.ts"
+      ],
+      "evidence": [
+        "output/playwright/normal-pot-onboarding-2026-07-01/index.html",
+        "product/story-map.md",
+        "product/journey-reviews/J-005-regular-pot-end-to-end-coherence.md",
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782820959927/p022-regular-pot-coherence-audit.md",
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782820959927/01-pots-list.png",
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782820959927/04-pot-after-first-cost.png",
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782820959927/07-leo-pay-link.png",
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782820959927/17-saved-record.png",
+        "artifacts/chopdot-p022-regular-pot/2026-06-29/p022-regular-pot-1782727857377/p022-regular-pot-coherence-audit.md",
+        "artifacts/chopdot-p022-regular-pot/2026-06-29/p022-regular-pot-1782727857377/04-pot-after-first-cost.png",
+        "artifacts/chopdot-p022-regular-pot/2026-06-29/p022-regular-pot-1782727857377/07-leo-pay-link.png",
+        "artifacts/chopdot-p022-regular-pot/2026-06-29/p022-regular-pot-1782727857377/15-pot-after-confirmations.png",
+        "artifacts/chopdot-p022-regular-pot/2026-06-29/p022-regular-pot-1782727857377/17-saved-record.png"
+      ],
+      "decisionContract": "DC-022"
+    },
+    {
+      "card": "P-023",
+      "title": "PAS test wallet payment",
+      "journey": "Leo pays Mina from a funded test wallet",
+      "scope": "Payout",
+      "module": "friend-action",
+      "screens": [
+        "CaptureHandoffScreen"
+      ],
+      "mappedAppScreens": [
+        "src/components/screens/CaptureHandoffScreen.tsx"
+      ],
+      "tests": [
+        ".worktrees/portable-shell-trial/src/payments/pasWallet.test.ts",
+        ".worktrees/portable-shell-trial/tests/polkadot-host-wallet-settlement.spec.ts"
+      ],
+      "evidence": [
+        "product/journey-reviews/J-006-pas-test-wallet-payment.md",
+        "artifacts/chopdot-p023-pas-payment/2026-06-30/p023-pas-payment-1782824214315/01-leo-pay-with-pas.png",
+        "artifacts/chopdot-p023-pas-payment/2026-06-30/p023-pas-payment-1782824214315/02-leo-payment-received.png",
+        "artifacts/chopdot-p023-pas-payment/2026-06-30/p023-pas-payment-1782824214315/03-payment-not-found.png",
+        "artifacts/chopdot-p023-pas-payment/2026-06-30/p023-pas-payment-1782824214315/p023-pas-payment-review.json",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-wallet-settlement/report.md",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-wallet-settlement/report.json",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-wallet-settlement/05-1-ready-to-pay-leo.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-wallet-settlement/06-1-payment-received-leo.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-wallet-settlement/08-final-group-summary-mina.png"
+      ],
+      "decisionContract": "DC-023"
+    },
+    {
+      "card": "P-024",
+      "title": "DOT and USDC wallet payment checks",
+      "journey": "Leo checks whether his wallet payment clears the right share",
+      "scope": "Payout",
+      "module": "friend-action",
+      "screens": [
+        "CaptureHandoffScreen"
+      ],
+      "mappedAppScreens": [
+        "src/components/screens/CaptureHandoffScreen.tsx"
+      ],
+      "tests": [
+        "src/__tests__/AgentWalletPasSettlement.test.ts"
+      ],
+      "evidence": [
+        "product/journey-reviews/J-006-pas-test-wallet-payment.md",
+        "product/journey-reviews/J-007-wallet-payment-currency-checks.md",
+        "artifacts/chopdot-p024-wallet-payment/2026-06-30/p024-wallet-payment-1782830349578/01-dot-pay-with-wallet.png",
+        "artifacts/chopdot-p024-wallet-payment/2026-06-30/p024-wallet-payment-1782830349578/02-dot-payment-received.png",
+        "artifacts/chopdot-p024-wallet-payment/2026-06-30/p024-wallet-payment-1782830349578/03-usdc-wrong-currency.png",
+        "artifacts/chopdot-p024-wallet-payment/2026-06-30/p024-wallet-payment-1782830349578/04-usdc-wallet-needs-funds.png",
+        "artifacts/chopdot-p024-wallet-payment/2026-06-30/p024-wallet-payment-1782830349578/p024-wallet-payment-review.json",
+        "artifacts/agent-wallet-trials/agent-wallet-trial-2026-06-22/wallet-scenario-report.md"
+      ],
+      "decisionContract": "DC-024"
+    },
+    {
+      "card": "P-025",
+      "title": "Universal Chop Core security architecture",
+      "journey": "Future mini-app surfaces act on one trusted Chop record",
+      "scope": "Quality",
+      "module": "mini-app-security",
+      "screens": [],
+      "mappedAppScreens": [],
+      "tests": [
+        "npm run product:validate",
+        "backend/src/__tests__/auth.middleware.test.ts",
+        "backend/src/__tests__/actor-boundary.routes.test.ts",
+        "backend/src/__tests__/settlements.routes.test.ts",
+        "backend/src/__tests__/users.routes.test.ts",
+        "backend/src/integration/p025-actor-boundary.database.ts"
+      ],
+      "evidence": [
+        "docs/security/universal-chop-core-security-architecture.md",
+        "docs/security/p025-security-foundation-crosswalk-2026-07-14.md",
+        "docs/security/p025-database-backed-actor-boundary-proof-2026-07-14.md",
+        "docs/adr/0004-server-derived-payment-actor.md",
+        "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
+      ],
+      "decisionContract": "DC-025"
     },
     {
       "card": "P-010",
@@ -213,15 +394,38 @@
       "journey": "The group shares one trusted state without a central app database",
       "scope": "Native Stack",
       "module": "polkadot-native",
-      "screens": [
-        "DeveloperChecks"
-      ],
+      "screens": [],
       "mappedAppScreens": [],
       "tests": [
-        "tests/e2e/chopdot-dot-native-session.spec.ts"
+        "tests/e2e/chopdot-dot-native-session.spec.ts",
+        ".worktrees/portable-shell-trial/src/environment/encryptedSession.test.ts",
+        ".worktrees/portable-shell-trial/src/environment/polkadotHostBridge.test.ts",
+        ".worktrees/portable-shell-trial/tests/polkadot-host-sim.spec.ts",
+        ".worktrees/portable-shell-trial/tests/polkadot-host-five-person-stress.spec.ts",
+        ".worktrees/portable-shell-trial/tests/polkadot-host-real-ui.spec.ts"
       ],
       "evidence": [
-        "docs/chopdot-dot/native-execution-playbook.md"
+        ".worktrees/portable-shell-trial/HOSTS.md",
+        ".worktrees/portable-shell-trial/proof/portable-shell-dot-host/report.json",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-capability/report.json",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-capability-live/report.json",
+        ".worktrees/portable-shell-trial/proof/product-account-login-boundary-2026-07-14.md",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-capability-live/product-account-login-qr.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-sim/report.json",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-sim/alice-host.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-sim/bob-host.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-stress/report.json",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-stress/mina-host.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-stress/leo-host.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-stress/nina-host.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-stress/omar-host.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-stress/vera-host.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-real-ui/report.json",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-real-ui/06-leo-marked-paid-leo.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-real-ui/07-all-confirmed-mina.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-host-real-ui/08-saved-summary-mina.png",
+        ".worktrees/portable-shell-trial/proof/polkadot-ios-reference-host-setup-2026-07-14.md",
+        "docs/adr/0005-portable-product-native-host-boundary.md"
       ],
       "decisionContract": "DC-010"
     },
@@ -236,10 +440,16 @@
       ],
       "mappedAppScreens": [],
       "tests": [
-        "scripts/audit-components-and-structure.mjs"
+        "scripts/chopdot-product-cockpit.mjs"
       ],
       "evidence": [
-        "product/evidence/product-integrity-latest.json"
+        "product/evidence/product-integrity-latest.json",
+        "product/agent-reviews/P-011-product-language-cleanup.md",
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782810444015/p022-regular-pot-coherence-audit.md",
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782810444015/06-split-payment-created.png",
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782810444015/07-leo-pay-link.png",
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782810444015/16-close-record-review.png",
+        "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782810444015/17-saved-record.png"
       ],
       "decisionContract": "DC-011"
     },
@@ -250,16 +460,21 @@
       "scope": "Catch",
       "module": "receipt-capture",
       "screens": [
-        "CaptureHandoffScreen"
+        "SpendCardScreen"
       ],
       "mappedAppScreens": [
-        "src/components/screens/CaptureHandoffScreen.tsx"
+        "src/components/screens/SpendCardScreen.tsx"
       ],
       "tests": [
-        "tests/e2e/capture-pay-confirm-link.spec.ts"
+        "tests/e2e/capture-spend-loop.spec.ts",
+        "tests/e2e/capture-image-receipt-flow.spec.ts"
       ],
       "evidence": [
-        "docs/chopdot-dot/chopdot-10x-experience-thesis-2026-06-23.md"
+        "product/journey-reviews/J-009-receipt-capture-without-manual-first-entry.md",
+        "artifacts/chopdot-p012-receipt-capture/2026-06-30/p012-receipt-capture/01-add-receipt.png",
+        "artifacts/chopdot-p012-receipt-capture/2026-06-30/p012-receipt-capture/02-review-split.png",
+        "artifacts/chopdot-p012-receipt-capture/2026-06-30/p012-receipt-capture/03-payment-links.png",
+        "artifacts/chopdot-p012-receipt-capture/2026-06-30/p012-receipt-capture/p012-receipt-capture-review.json"
       ],
       "decisionContract": "DC-012"
     },
@@ -277,7 +492,8 @@
         "manual-competitor-walkthrough"
       ],
       "evidence": [
-        "docs/chopdot-dot/chopdot-10x-experience-thesis-2026-06-23.md"
+        "docs/chopdot-dot/chopdot-10x-experience-thesis-2026-06-23.md",
+        "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
       ],
       "decisionContract": "DC-013"
     },
@@ -338,6 +554,102 @@
         "product/cards.md"
       ],
       "decisionContract": "DC-016"
+    },
+    {
+      "card": "P-017",
+      "title": "AI PM process guardrails",
+      "journey": "Future agents apply AI PM lessons without making ChopDot more complex",
+      "scope": "Quality",
+      "module": "ai-product-management",
+      "screens": [
+        "product/ai-manager/ai-product-management-adoption.md"
+      ],
+      "mappedAppScreens": [],
+      "tests": [
+        "npm run product:ai-pm:validate"
+      ],
+      "evidence": [
+        "product/ai-manager/ai-product-management-adoption.md",
+        "scripts/validate-ai-pm-process.mjs",
+        "product/ai-manager/post-mortems/smart-scan-text-trap.md"
+      ],
+      "decisionContract": "DC-017"
+    },
+    {
+      "card": "P-018",
+      "title": "Normal pot expense tracking",
+      "journey": "Mina adds shared costs during an evening or trip",
+      "scope": "Catch",
+      "module": "group-expense",
+      "screens": [
+        "PotHome",
+        "ExpensesTab"
+      ],
+      "mappedAppScreens": [
+        "src/components/screens/ExpensesTab.tsx",
+        "src/components/screens/PotHome.tsx"
+      ],
+      "tests": [
+        "npm run validate:journey-reviews"
+      ],
+      "evidence": [
+        "product/journey-reviews/J-001-normal-pot-add-and-track-expenses.md",
+        "product/evidence/screenshots/normal-pot-j001-desktop-compare/04-local-desktop-after-add.png"
+      ],
+      "decisionContract": "DC-018"
+    },
+    {
+      "card": "P-019",
+      "title": "Normal pot mobile and desktop polish",
+      "journey": "J-008 Mobile/Desktop Layout Quality for J-001 through J-003",
+      "scope": "Quality",
+      "module": "group-expense",
+      "screens": [
+        "PotsHome",
+        "PotHome",
+        "SettleSelection",
+        "SettleHome",
+        "CloseoutReview"
+      ],
+      "mappedAppScreens": [
+        "src/components/screens/CloseoutReview.tsx",
+        "src/components/screens/PotHome.tsx",
+        "src/components/screens/PotsHome.tsx",
+        "src/components/screens/SettleHome.tsx",
+        "src/components/screens/SettleSelection.tsx"
+      ],
+      "tests": [
+        "npm run validate:journey-reviews",
+        "npm run product:validate"
+      ],
+      "evidence": [
+        "product/journey-review-plan.md",
+        "product/journey-reviews/J-008-mobile-desktop-layout-quality.md",
+        "product/evidence/screenshots/normal-pot-j008-layout-quality/final/mobile-02-pot-detail.png",
+        "product/evidence/screenshots/normal-pot-j008-layout-quality/final/desktop-02-pot-detail.png",
+        "product/evidence/screenshots/normal-pot-j008-layout-quality/final/mobile-07-saved-record.png",
+        "product/evidence/screenshots/normal-pot-j008-layout-quality/final/desktop-07-saved-record.png"
+      ],
+      "decisionContract": "DC-019"
+    },
+    {
+      "card": "P-020",
+      "title": "Chat capture agent",
+      "journey": "Mina adds ChopDot to a Telegram dinner chat",
+      "scope": "Catch",
+      "module": "chat-capture",
+      "screens": [],
+      "mappedAppScreens": [],
+      "tests": [
+        "src/__tests__/chatCaptureDraft.test.ts",
+        "src/__tests__/telegramSafety.test.ts",
+        "src/bot/store/chapterStoreAdapter.test.ts"
+      ],
+      "evidence": [
+        "src/__tests__/chatCaptureDraft.test.ts",
+        "docs/telegram-chat-agent.md"
+      ],
+      "decisionContract": "DC-020"
     }
   ]
 }

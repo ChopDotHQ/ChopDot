@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-14T15-15-02-p-010-bridge-enabled-shell-deployed-at-cid-bafybeid27jig",
+  "timestamp": "2026-07-14T15:15:02.507Z",
+  "type": "checkpoint",
+  "summary": "P-010 bridge-enabled shell deployed at CID bafybeid27jigusqvjugfa76d5xhufz754ndtrbpr7rhudytkn7jgvlgfky. Live .dot journey passed with 22 screenshots and persistence. Host reports identity needs_login; Statement Store, payments, and receipt archive available.",
+  "cards": [
+    "P-010"
+  ],
+  "roadmap": [],
+  "evidence": [
+    ".worktrees/portable-shell-trial/proof/polkadot-host-capability-live/report.json"
+  ],
+  "notes": []
+}

@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-28T19-48-52-ran-j-001-normal-pot-expense-cycle-through-product-and-v",
+  "timestamp": "2026-06-28T19:48:52.911Z",
+  "type": "checkpoint",
+  "summary": "Ran J-001 normal pot expense cycle through product and visual gates; product passes but visual quality fails.",
+  "cards": [
+    "P-001"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/journey-reviews/J-001-normal-pot-add-and-track-expenses.md"
+  ],
+  "notes": []
+}

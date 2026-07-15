@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-29T10-15-57-closed-p-022-regular-pot-end-to-end-coherence-s1-6-done-",
+  "timestamp": "2026-06-29T10:15:57.496Z",
+  "type": "checkpoint",
+  "summary": "Closed P-022 regular pot end-to-end coherence; S1.6 done and P-011 returns as next story-map slice.",
+  "cards": [
+    "P-022"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "artifacts/chopdot-p022-regular-pot/2026-06-29/p022-regular-pot-1782727857377/p022-regular-pot-coherence-audit.md"
+  ],
+  "notes": []
+}

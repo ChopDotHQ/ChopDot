@@ -1,25 +1,25 @@
 {
-  "generatedAt": "2026-06-24T13:27:50.525Z",
+  "generatedAt": "2026-07-15T10:38:59.216Z",
   "summary": {
     "errors": 0,
     "warnings": 0,
-    "cards": 16,
-    "decisions": 5,
-    "decisionContracts": 16,
-    "history": 5,
-    "readyOrActive": 10,
-    "blocked": 1
+    "cards": 25,
+    "decisions": 6,
+    "decisionContracts": 25,
+    "history": 70,
+    "readyOrActive": 21,
+    "blocked": 0
   },
   "byStatus": {
     "backlog": 0,
-    "discovery": 5,
-    "ready": 7,
-    "building": 0,
-    "validation": 2,
+    "discovery": 4,
+    "ready": 3,
+    "building": 3,
+    "validation": 0,
     "measuring": 0,
-    "blocked": 1,
-    "done": 1,
+    "blocked": 0,
+    "done": 15,
     "deferred": 0
   },
-  "topCard": "P-002"
+  "topCard": "P-022"
 }

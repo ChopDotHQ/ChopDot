@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-06-30T18-27-52-receipt-capture-now-starts-from-add-receipt-paste-link-o",
+  "timestamp": "2026-06-30T18:27:52.344Z",
+  "type": "release",
+  "summary": "Receipt capture now starts from Add receipt, paste link, or fallback total; manual item entry stays after capture.",
+  "cards": [
+    "P-012"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md",
+    "product/journey-reviews/J-009-receipt-capture-without-manual-first-entry.md"
+  ],
+  "notes": []
+}

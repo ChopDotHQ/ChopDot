@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-01T07-46-53-emergency-pot-privacy-flow-using-batch-1-one-screen-one-",
+  "timestamp": "2026-07-01T07:46:53.898Z",
+  "type": "claim",
+  "summary": "Emergency pot privacy flow using Batch 1 one-screen-one-job reference",
+  "cards": [
+    "P-007"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md"
+  ],
+  "notes": []
+}

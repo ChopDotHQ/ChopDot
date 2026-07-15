@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-14T15-39-48-p-010-official-host-simulation-passed-distinct-product-a",
+  "timestamp": "2026-07-14T15:39:48.470Z",
+  "type": "checkpoint",
+  "summary": "P-010 official host simulation passed: distinct Product Accounts, ciphertext-only two-person convergence, observed-only payment, and redacted receipt retrieval. Live promotion remains blocked on a runnable Polkadot Mobile client.",
+  "cards": [
+    "P-010"
+  ],
+  "roadmap": [],
+  "evidence": [
+    ".worktrees/portable-shell-trial/proof/polkadot-host-sim/report.json"
+  ],
+  "notes": []
+}

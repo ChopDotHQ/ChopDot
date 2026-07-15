@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-01T06-41-14-savings-circle-one-round-product-pass",
+  "timestamp": "2026-07-01T06:41:14.278Z",
+  "type": "claim",
+  "summary": "Savings circle one-round product pass",
+  "cards": [
+    "P-006"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md"
+  ],
+  "notes": []
+}

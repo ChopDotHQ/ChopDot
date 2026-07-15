@@ -1,0 +1,12 @@
+{
+  "id": "H-2026-07-06T18-52-50-added-context-intake-lane-so-codex-threads-and-agent-run",
+  "timestamp": "2026-07-06T18:52:50.165Z",
+  "type": "checkpoint",
+  "summary": "Added context-intake lane so Codex threads and agent runs become explicit wiki-routed evidence, not silent truth.",
+  "cards": [],
+  "roadmap": [],
+  "evidence": [
+    "docs/wiki/08-context-intake/codex-thread-019f1ce5-telegram-portable-shell.md"
+  ],
+  "notes": []
+}

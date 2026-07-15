@@ -4,28 +4,37 @@
 
 ## Summary
 
-- Cards: 16
-- Decisions: 5
-- History events: 5
+- Cards: 25
+- Decisions: 6
+- History events: 70
 - Validation: 0 error(s), 0 warning(s)
 
 ## Cards
 
 | Card | Status | Scope | Score | One next action | Evidence |
 | --- | --- | --- | ---: | --- | --- |
-| P-001 Dinner split pay-moment capture | ready | Catch | 9/10 | Split this payment | partial |
-| P-002 No-app friend payment link | validation | Payout | 10/10 | Pay Mina | partial |
-| P-003 Confirm received | validation | Management | 10/10 | Confirm received | partial |
-| P-004 Close with readable saved record | ready | History | 9/10 | Close record | partial |
+| P-001 Dinner split pay-moment capture | done | Catch | 9/10 | Split this payment | strong |
+| P-002 No-app friend payment link | done | Payout | 10/10 | Pay Mina | partial |
+| P-003 Confirm received | done | Management | 10/10 | Confirm received | partial |
+| P-004 Close with readable saved record | done | History | 9/10 | Close record | strong |
 | P-005 Spend Card capture path | discovery | Catch | 8/10 | Split this spend | thin |
-| P-006 Savings circle round | discovery | Management | 8/10 | Review this round | thin |
-| P-007 Emergency pot privacy flow | discovery | Management | 8/10 | Contribute privately | thin |
+| P-006 Savings circle round | done | Management | 10/10 | Confirm received | strong |
+| P-007 Emergency pot privacy flow | done | Management | 10/10 | Contribute | strong |
 | P-008 Community fund role flow | discovery | Management | 8/10 | Review request | thin |
-| P-009 Agent wallet journey testing | ready | Quality | 10/10 | Run agent journey | partial |
-| P-010 Polkadot-native session boundary | blocked | Native Stack | 6/10 | Check native boundary | partial |
-| P-011 Product language cleanup | ready | Quality | 9/10 | Clean visible copy | partial |
-| P-012 Receipt capture without manual-first entry | ready | Catch | 9/10 | Add receipt | thin |
+| P-009 Agent wallet journey testing | done | Quality | 10/10 | Run agent journey | strong |
+| P-021 J-004 no-app friend payment link | done | Payout | 10/10 | Pay Mina | strong |
+| P-022 Regular pot end-to-end coherence | building | Quality | 10/10 | Review journey | partial |
+| P-023 PAS test wallet payment | done | Payout | 10/10 | Pay Mina | strong |
+| P-024 DOT and USDC wallet payment checks | discovery | Payout | 10/10 | Check payment | partial |
+| P-025 Universal Chop Core security architecture | ready | Quality | 10/10 | Define core contract | partial |
+| P-010 Polkadot-native session boundary | building | Native Stack | 10/10 | Prove the live connection | partial |
+| P-011 Product language cleanup | done | Quality | 10/10 | Clean visible copy | strong |
+| P-012 Receipt capture without manual-first entry | done | Catch | 10/10 | Add receipt | strong |
 | P-013 Competitor and 10x benchmark | discovery | Quality | 8/10 | Compare one journey | thin |
 | P-014 Product cockpit upgrade | done | Quality | 10/10 | Open product cockpit | partial |
 | P-015 Friend-pilot readiness scorecard | ready | Quality | 9/10 | Review readiness | partial |
 | P-016 Product resume for future agents | ready | Quality | 10/10 | Read product resume | partial |
+| P-017 AI PM process guardrails | done | Quality | 10/10 | Run AI PM check | partial |
+| P-018 Normal pot expense tracking | done | Catch | 10/10 | Add Expense | strong |
+| P-019 Normal pot mobile and desktop polish | done | Quality | 10/10 | Keep the current money action obvious | strong |
+| P-020 Chat capture agent | building | Catch | 9/10 | /addlast | partial |

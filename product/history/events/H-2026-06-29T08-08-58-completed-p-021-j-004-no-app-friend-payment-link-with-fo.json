@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-29T08-08-58-completed-p-021-j-004-no-app-friend-payment-link-with-fo",
+  "timestamp": "2026-06-29T08:08:58.612Z",
+  "type": "checkpoint",
+  "summary": "Completed P-021 J-004 no-app friend payment link with focused Leo pay and Mina confirm screenshots.",
+  "cards": [
+    "P-021"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/journey-reviews/J-004-no-app-friend-payment-link.md"
+  ],
+  "notes": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-07-01T08-05-06-emergency-pot-privacy-flow-now-runs-through-private-cont",
+  "timestamp": "2026-07-01T08:05:06.792Z",
+  "type": "release",
+  "summary": "Emergency pot privacy flow now runs through private contribution, organizer confirmation, approval, recipient confirmation, and saved redacted record with screenshot evidence.",
+  "cards": [
+    "P-007"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md",
+    "product/journey-reviews/J-011-emergency-pot-privacy-flow.md"
+  ],
+  "notes": []
+}

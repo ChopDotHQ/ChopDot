@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-27T13-35-58-tightened-settle-up-lifecycle-selection-now-shows-one-op",
+  "timestamp": "2026-06-27T13:35:58.769Z",
+  "type": "checkpoint",
+  "summary": "Tightened Settle Up lifecycle: selection now shows one open amount and person rows, payment step focuses on amount/method/action, and settlement toasts use user-facing copy.",
+  "cards": [
+    "P-001"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/evidence/screenshots/settle-flow-review/15-settle-confirmed-final.png"
+  ],
+  "notes": []
+}

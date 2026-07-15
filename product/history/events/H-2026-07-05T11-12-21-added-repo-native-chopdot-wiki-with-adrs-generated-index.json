@@ -1,0 +1,12 @@
+{
+  "id": "H-2026-07-05T11-12-21-added-repo-native-chopdot-wiki-with-adrs-generated-index",
+  "timestamp": "2026-07-05T11:12:21.752Z",
+  "type": "checkpoint",
+  "summary": "Added repo-native ChopDot wiki with ADRs, generated indexes, validation, and documentation-impact rule.",
+  "cards": [],
+  "roadmap": [],
+  "evidence": [
+    "docs/wiki/index.generated.md"
+  ],
+  "notes": []
+}

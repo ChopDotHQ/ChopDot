@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-28T19-15-38-closed-the-post-settlement-loop-back-to-pot-returns-to-t",
+  "timestamp": "2026-06-28T19:15:38.848Z",
+  "type": "checkpoint",
+  "summary": "Closed the post-settlement loop: Back to pot returns to the same pot, shows the received payment, updates visible open balances, and aligns pot balances with Settle Up calculations.",
+  "cards": [
+    "P-001"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/evidence/screenshots/post-settlement-pot-state/08-back-to-pot-after-received-final.png"
+  ],
+  "notes": []
+}

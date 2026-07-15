@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-30T10-00-01-reaccepted-s1-normal-pot-journey-after-fresh-screenshot-",
+  "timestamp": "2026-06-30T10:00:01.711Z",
+  "type": "checkpoint",
+  "summary": "Reaccepted S1 normal pot journey after fresh screenshot audit; fixed pots-list legibility and saved-record status copy.",
+  "cards": [
+    "P-022"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782813466267/p022-regular-pot-coherence-audit.md"
+  ],
+  "notes": []
+}

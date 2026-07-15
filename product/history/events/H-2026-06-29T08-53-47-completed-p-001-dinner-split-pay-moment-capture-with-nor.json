@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-29T08-53-47-completed-p-001-dinner-split-pay-moment-capture-with-nor",
+  "timestamp": "2026-06-29T08:53:47.781Z",
+  "type": "checkpoint",
+  "summary": "Completed P-001 dinner split pay-moment capture with normal pot entry, focused capture screen, and screenshot audit.",
+  "cards": [
+    "P-001"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/journey-reviews/J-000-dinner-split-pay-moment-capture.md"
+  ],
+  "notes": []
+}

@@ -2,6 +2,13 @@
 
 The roadmap is organized around user outcomes, not technical lanes.
 
+Routing rule:
+
+- `product/story-map.md` owns the user-journey sequence.
+- `product/cards.md` owns buildable execution slices.
+- The cockpit is a generated workbench for status and evidence, not the source of product truth.
+- If the cockpit next card does not fit the active story-map sequence, reframe or park the card before implementation.
+
 ## Now
 
 Outcome: first useful shared state in under 30 seconds.

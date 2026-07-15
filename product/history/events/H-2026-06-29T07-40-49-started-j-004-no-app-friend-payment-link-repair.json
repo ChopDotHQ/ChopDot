@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-29T07-40-49-started-j-004-no-app-friend-payment-link-repair",
+  "timestamp": "2026-06-29T07:40:49.706Z",
+  "type": "claim",
+  "summary": "Started J-004 no-app friend payment link repair.",
+  "cards": [
+    "P-021"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md"
+  ],
+  "notes": []
+}

@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-30T17-49-14-executed-public-testnet-pas-and-test-usdc-agent-wallet-p",
+  "timestamp": "2026-06-30T17:49:14.496Z",
+  "type": "checkpoint",
+  "summary": "Executed public-testnet PAS and TEST_USDC agent-wallet payment report for P-024; DOT remains a non-executed boundary in this runner.",
+  "cards": [
+    "P-024"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "artifacts/agent-wallet-trials/agent-wallet-trial-2026-06-22/wallet-scenario-report.md"
+  ],
+  "notes": []
+}

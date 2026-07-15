@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-14T16-13-17-corrected-p-010-routing-full-xcode-and-a-source-built-io",
+  "timestamp": "2026-07-14T16:13:17.793Z",
+  "type": "checkpoint",
+  "summary": "Corrected P-010 routing: full Xcode and a source-built iOS reference client are optional fallbacks, not ChopDot prerequisites. Real-UI host simulation remains the active local lane; live QR completion waits for a runnable Polkadot Mobile build.",
+  "cards": [
+    "P-010"
+  ],
+  "roadmap": [],
+  "evidence": [
+    ".worktrees/portable-shell-trial/proof/polkadot-ios-reference-host-setup-2026-07-14.md"
+  ],
+  "notes": []
+}

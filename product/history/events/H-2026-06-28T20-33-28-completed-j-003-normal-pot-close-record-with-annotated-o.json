@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-06-28T20-33-28-completed-j-003-normal-pot-close-record-with-annotated-o",
+  "timestamp": "2026-06-28T20:33:28.439Z",
+  "type": "release",
+  "summary": "Completed J-003 normal pot close record with annotated open-item review, saved-record after-state, mobile/desktop screenshots, and forbidden-language check.",
+  "cards": [
+    "P-004"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md",
+    "product/evidence/screenshots/normal-pot-j003-close-record/mobile-04-saved-record.png"
+  ],
+  "notes": []
+}

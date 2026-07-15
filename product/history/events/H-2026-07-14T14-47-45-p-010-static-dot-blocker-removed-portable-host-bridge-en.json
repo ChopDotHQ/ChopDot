@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-14T14-47-45-p-010-static-dot-blocker-removed-portable-host-bridge-en",
+  "timestamp": "2026-07-14T14:47:45.997Z",
+  "type": "checkpoint",
+  "summary": "P-010 static .dot blocker removed; portable host bridge, encrypted session packets, observed-only payments, redacted receipts, and fail-visible local capability proof added. Live native capability proof remains open.",
+  "cards": [
+    "P-010"
+  ],
+  "roadmap": [],
+  "evidence": [
+    ".worktrees/portable-shell-trial/proof/polkadot-host-capability/report.json"
+  ],
+  "notes": []
+}

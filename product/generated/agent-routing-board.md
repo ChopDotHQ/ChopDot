@@ -4,19 +4,28 @@
 
 | Card | Owner | Status | Next action | Human review? |
 | --- | --- | --- | --- | --- |
-| P-001 Dinner split pay-moment capture | product | ready | Open the capture flow and split the payment without starting from a blank accounting form. | before promotion |
-| P-002 No-app friend payment link | product | validation | Open the friend link and show only Leo's amount, receiver, and pay action. | yes |
-| P-003 Confirm received | product | validation | Show Mina the exact payment to confirm received. | yes |
-| P-004 Close with readable saved record | product | ready | Show what is confirmed, delayed, waived, or still open before closing. | before promotion |
+| P-001 Dinner split pay-moment capture | devinsonpena | done | Open the capture flow and split the payment without starting from a blank accounting form. | yes |
+| P-002 No-app friend payment link | product | done | Open the friend link and show only Leo's amount, receiver, and pay action. | yes |
+| P-003 Confirm received | product | done | Show Mina the exact payment to confirm received. | yes |
+| P-004 Close with readable saved record | devinsonpena | done | Show what is confirmed, delayed, waived, or still open before closing. | yes |
 | P-005 Spend Card capture path | product | discovery | Review the current Spend Card flow and identify the first dead end. | before promotion |
-| P-006 Savings circle round | product | discovery | Make the treasurer's first action obvious for one current round. | before promotion |
-| P-007 Emergency pot privacy flow | product | discovery | Show one private contribution action without exposing sensitive details. | before promotion |
+| P-006 Savings circle round | devinsonpena | done | Move to the next user journey: emergency pot privacy flow. | yes |
+| P-007 Emergency pot privacy flow | devinsonpena | done | Move to the next user journey: community fund role flow. | yes |
 | P-008 Community fund role flow | product | discovery | Show each role exactly what they can do next. | before promotion |
-| P-009 Agent wallet journey testing | quality | ready | Run agents through the app UI and record confusion, dead ends, and unsafe assumptions. | before promotion |
-| P-010 Polkadot-native session boundary | engineering | blocked | Keep native session work fail-visible and separate from normal product readiness. | before promotion |
-| P-011 Product language cleanup | product | ready | Scan normal UI for internal terms and replace them with user language. | before promotion |
-| P-012 Receipt capture without manual-first entry | product | ready | Make photo, paste, or import the default before any item editing. | before promotion |
+| P-009 Agent wallet journey testing | devinsonpena | done | Run agents through the app UI and record confusion, dead ends, and unsafe assumptions. | yes |
+| P-021 J-004 no-app friend payment link | devinsonpena | done | Move to the next cockpit card after P-021 validation. | yes |
+| P-022 Regular pot end-to-end coherence | devinsonpena | building | Fix the normal pot journey breaks found in the latest screenshot review. | before promotion |
+| P-023 PAS test wallet payment | devinsonpena | done | Keep PAS on the direct wallet and public-chain path; do not restore artifact-backed payment checks. | yes |
+| P-024 DOT and USDC wallet payment checks | devinsonpena | discovery | After the PAS wallet path passes, run separate real DOT and real testnet USDC connected-wallet checks without reusing PAS, fixtures, or prior reports. | before promotion |
+| P-025 Universal Chop Core security architecture | product/security | ready | Add a forward-only migration aligning payment states with paid and confirmed. | before promotion |
+| P-010 Polkadot-native session boundary | devinsonpena | building | Repeat the proven five-person normal-UI journey against live Product Accounts and live Statement Store when a runnable Polkadot Mobile client is available; test real payment execution as a separate evidence lane. | before promotion |
+| P-011 Product language cleanup | devinsonpena | done | Scan normal UI for internal terms and replace them with user language. | yes |
+| P-012 Receipt capture without manual-first entry | devinsonpena | done | Move to the next user journey: savings circle round. | yes |
 | P-013 Competitor and 10x benchmark | product | discovery | Compare the same dinner split, no-app pay, confirm, and close record journey against the strongest alternatives. | before promotion |
 | P-014 Product cockpit upgrade | devinsonpena | done | Generate a readable cockpit with roadmap, kanban, decisions, history, and resume. | yes |
 | P-015 Friend-pilot readiness scorecard | quality | ready | Mark each journey ready, needs work, or blocked using current proof. | before promotion |
 | P-016 Product resume for future agents | quality | ready | Generate a short handoff with thesis, active work, blockers, and next actions. | before promotion |
+| P-017 AI PM process guardrails | product | done | Run the AI PM validator before shipping AI-assisted capture work. | before promotion |
+| P-018 Normal pot expense tracking | devinsonpena | done | Open the normal pot and add one shared expense without entering a dense form. | yes |
+| P-019 Normal pot mobile and desktop polish | devinsonpena | done | Run the normal pot loop on mobile and desktop, then fix only the visual and flow mismatches. | yes |
+| P-020 Chat capture agent | product | building | Write a paid message in the chat, then review the draft before adding it. | before promotion |

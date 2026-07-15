@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-28T19-27-48-added-the-journey-by-journey-review-plan-each-chopdot-fl",
+  "timestamp": "2026-06-28T19:27:48.263Z",
+  "type": "checkpoint",
+  "summary": "Added the journey-by-journey review plan: each ChopDot flow must be clicked, screenshotted, wireframe-read, critiqued, and fixed before moving to the next journey.",
+  "cards": [
+    "P-009"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/journey-review-plan.md"
+  ],
+  "notes": []
+}

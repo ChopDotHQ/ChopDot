@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-14T16-31-11-five-person-official-polkadot-host-stress-passed-after-r",
+  "timestamp": "2026-07-14T16:31:11.952Z",
+  "type": "checkpoint",
+  "summary": "Five-person official Polkadot host stress passed after replacing shared last-write-wins session channels with append-only event publication; real UI and live network gates remain open.",
+  "cards": [
+    "P-010"
+  ],
+  "roadmap": [],
+  "evidence": [
+    ".worktrees/portable-shell-trial/proof/polkadot-host-stress/report.json"
+  ],
+  "notes": []
+}

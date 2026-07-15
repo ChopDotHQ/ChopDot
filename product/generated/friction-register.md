@@ -9,14 +9,23 @@
 | P-003 Confirm received | 3/3 | 3/3 | 3/3 | 1/1 | If external payment activity silently confirms unrelated items, this card fails. |
 | P-004 Close with readable saved record | 2/3 | 3/3 | 3/3 | 1/1 | If the saved record is technical or unclear about open items, this card fails. |
 | P-005 Spend Card capture path | 3/3 | 2/3 | 2/3 | 1/1 | If it becomes a card-management product instead of capture, this card fails. |
-| P-006 Savings circle round | 2/3 | 3/3 | 2/3 | 1/1 | If the screen feels like a lab or ledger, this card fails. |
-| P-007 Emergency pot privacy flow | 2/3 | 3/3 | 2/3 | 1/1 | If sensitive names, reasons, notes, or payment references leak into the normal record, this card fails. |
+| P-006 Savings circle round | 3/3 | 3/3 | 3/3 | 1/1 | If the screen feels like a lab or ledger, this card fails. |
+| P-007 Emergency pot privacy flow | 3/3 | 3/3 | 3/3 | 1/1 | If sensitive names, reasons, notes, or payment references leak into the normal record, this card fails. |
 | P-008 Community fund role flow | 2/3 | 3/3 | 2/3 | 1/1 | If it becomes DAO or admin-console language, this card fails. |
 | P-009 Agent wallet journey testing | 3/3 | 3/3 | 3/3 | 1/1 | If agents mutate state directly or only follow happy paths, this card fails. |
-| P-010 Polkadot-native session boundary | 1/3 | 3/3 | 1/3 | 1/1 | If infrastructure status is presented as product readiness, this card fails. |
-| P-011 Product language cleanup | 3/3 | 2/3 | 3/3 | 1/1 | If a normal screen uses internal terms, this card fails. |
-| P-012 Receipt capture without manual-first entry | 3/3 | 2/3 | 3/3 | 1/1 | If the normal path starts with item rows, this card fails. |
+| P-021 J-004 no-app friend payment link | 3/3 | 3/3 | 3/3 | 1/1 | If Leo sees organizer controls, full pot chrome, setup pressure, or more than one primary action, this card fails. |
+| P-022 Regular pot end-to-end coherence | 3/3 | 3/3 | 3/3 | 1/1 | If the pass adds modes, explanations, dashboard panels, or backend rewrites before the visible normal-pot journey works, this card fails. |
+| P-023 PAS test wallet payment | 3/3 | 3/3 | 3/3 | 1/1 | If a mismatched transfer clears the wrong share, or the UI exposes native/protocol terms, this card fails. |
+| P-024 DOT and USDC wallet payment checks | 3/3 | 3/3 | 3/3 | 1/1 | If DOT or USDC-shaped payment data clears a mismatched share, or the UI exposes technical payment wording, this card fails. |
+| P-025 Universal Chop Core security architecture | 3/3 | 3/3 | 3/3 | 1/1 | If any surface owns final truth, bypasses payment-intent matching, or can confirm/close outside its role, this card fails. |
+| P-010 Polkadot-native session boundary | 3/3 | 3/3 | 3/3 | 1/1 | If plaintext money data enters Statement Store, a host event bypasses the payment-intent boundary, or technical language reaches normal UI, this card fails. |
+| P-011 Product language cleanup | 3/3 | 3/3 | 3/3 | 1/1 | If a normal screen uses internal terms, this card fails. |
+| P-012 Receipt capture without manual-first entry | 3/3 | 3/3 | 3/3 | 1/1 | If the normal path starts with item rows, this card fails. |
 | P-013 Competitor and 10x benchmark | 2/3 | 3/3 | 2/3 | 1/1 | If this becomes generic feature comparison instead of journey comparison, this card fails. |
 | P-014 Product cockpit upgrade | 3/3 | 3/3 | 3/3 | 1/1 | If the cockpit is only a generated report page, this card fails. |
 | P-015 Friend-pilot readiness scorecard | 2/3 | 3/3 | 3/3 | 1/1 | If agent-passed gets treated as human-approved without review, this card fails. |
 | P-016 Product resume for future agents | 3/3 | 3/3 | 3/3 | 1/1 | If the resume does not state the top next action and boundaries, this card fails. |
+| P-017 AI PM process guardrails | 3/3 | 3/3 | 3/3 | 1/1 | If AI documentation exists but the process still lets high-friction AI UI ship, this card fails. |
+| P-018 Normal pot expense tracking | 3/3 | 3/3 | 3/3 | 1/1 | If the first viewport mixes expense tracking with payback planning or the add sheet feels like an accounting form, this card fails. |
+| P-019 Normal pot mobile and desktop polish | 3/3 | 3/3 | 3/3 | 1/1 | If the pass adds features, explanations, dashboard panels, or desktop-stretched mobile layouts, this card fails. |
+| P-020 Chat capture agent | 3/3 | 3/3 | 2/3 | 1/1 | If the bot silently adds expenses, sends payment links, marks paid, confirms received, or reads private chats without consent, this card fails. |

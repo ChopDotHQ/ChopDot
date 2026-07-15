@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-15T09-55-01-started-connected-wallet-pas-five-person-settlement-proo",
+  "timestamp": "2026-07-15T09:55:01.428Z",
+  "type": "claim",
+  "summary": "Started connected-wallet PAS five-person settlement proof; corrected prior report-backed completion claim.",
+  "cards": [
+    "P-023"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md"
+  ],
+  "notes": []
+}

@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-28T20-54-45-started-telegram-first-chat-capture-agent-staged-chat-me",
+  "timestamp": "2026-06-28T20:54:45.037Z",
+  "type": "checkpoint",
+  "summary": "Started Telegram-first chat capture agent; staged chat messages require /addlast before expense truth.",
+  "cards": [
+    "P-020"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "src/__tests__/chatCaptureDraft.test.ts"
+  ],
+  "notes": []
+}

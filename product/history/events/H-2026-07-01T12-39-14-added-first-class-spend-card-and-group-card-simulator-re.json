@@ -1,0 +1,16 @@
+{
+  "id": "H-2026-07-01T12-39-14-added-first-class-spend-card-and-group-card-simulator-re",
+  "timestamp": "2026-07-01T12:39:14.605Z",
+  "type": "checkpoint",
+  "summary": "Added first-class Spend Card and group-card simulator requirements to the AI Studio universal shell plan",
+  "cards": [
+    "P-005",
+    "P-013",
+    "P-025"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
+  ],
+  "notes": []
+}

@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-30T14-42-27-p-024-dot-and-usdc-wallet-payment-checks-completed-with-",
+  "timestamp": "2026-06-30T14:42:27.306Z",
+  "type": "checkpoint",
+  "summary": "P-024 DOT and USDC wallet payment checks completed with exact-share matching and failure-state screenshots",
+  "cards": [
+    "P-024"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "artifacts/chopdot-p024-wallet-payment/2026-06-30/p024-wallet-payment-1782830349578"
+  ],
+  "notes": []
+}

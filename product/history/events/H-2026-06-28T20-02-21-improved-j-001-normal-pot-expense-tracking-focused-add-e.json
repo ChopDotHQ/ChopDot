@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-28T20-02-21-improved-j-001-normal-pot-expense-tracking-focused-add-e",
+  "timestamp": "2026-06-28T20:02:21.987Z",
+  "type": "checkpoint",
+  "summary": "Improved J-001 normal pot expense tracking: focused Add Expense sheet, reduced payback timing, fresh screenshots, and passing journey review.",
+  "cards": [
+    "P-018"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/journey-reviews/J-001-normal-pot-add-and-track-expenses.md"
+  ],
+  "notes": []
+}

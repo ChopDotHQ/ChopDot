@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-06-29T08-53-31-completed-p-001-dinner-split-pay-moment-capture-from-nor",
+  "timestamp": "2026-06-29T08:53:31.442Z",
+  "type": "release",
+  "summary": "Completed P-001 dinner split pay-moment capture from normal pot entry through split-created screenshots.",
+  "cards": [
+    "P-001"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md",
+    "artifacts/chopdot-p001-capture/2026-06-29/p001-capture-2026-06-29/01-pot-capture-entry.png"
+  ],
+  "notes": []
+}

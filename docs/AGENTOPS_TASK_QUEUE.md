@@ -1,6 +1,6 @@
 # ChopDot Operator Task Queue
 
-Generated: 2026-06-27T13:11:49+00:00
+Generated: 2026-07-15T06:31:05+00:00
 Source brief: `/Users/devinsonpena/ChopDot/artifacts/qa/chopdot_daily_brief.json`
 
 ## cd-op-fix-request-payment-data-wiring-so-real-owed-amo

@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-30T18-04-35-receipt-capture-without-manual-first-entry-implementatio",
+  "timestamp": "2026-06-30T18:04:35.853Z",
+  "type": "claim",
+  "summary": "Receipt capture without manual-first entry implementation pass",
+  "cards": [
+    "P-012"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md"
+  ],
+  "notes": []
+}

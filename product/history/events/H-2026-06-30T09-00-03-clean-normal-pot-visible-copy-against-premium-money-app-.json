@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-30T09-00-03-clean-normal-pot-visible-copy-against-premium-money-app-",
+  "timestamp": "2026-06-30T09:00:03.442Z",
+  "type": "claim",
+  "summary": "Clean normal pot visible copy against premium money app reference",
+  "cards": [
+    "P-011"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md"
+  ],
+  "notes": []
+}

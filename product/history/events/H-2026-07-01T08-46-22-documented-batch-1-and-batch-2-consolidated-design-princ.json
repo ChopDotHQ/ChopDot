@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-01T08-46-22-documented-batch-1-and-batch-2-consolidated-design-princ",
+  "timestamp": "2026-07-01T08:46:22.622Z",
+  "type": "checkpoint",
+  "summary": "Documented Batch 1 and Batch 2 consolidated design principles, then reapplied them to P-007 emergency pot: focused first viewport, hidden bottom nav, quieter privacy copy, and refreshed agent screenshots.",
+  "cards": [
+    "P-007"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/design-references/chopdot-batch-1-2-consolidated-principles-2026-07-01.md"
+  ],
+  "notes": []
+}

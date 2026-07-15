@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-06-28T21-07-52-completed-p-009-normal-pot-agent-audit-and-created-p-021",
+  "timestamp": "2026-06-28T21:07:52.098Z",
+  "type": "checkpoint",
+  "summary": "Completed P-009 normal-pot agent audit and created P-021 for J-004 friend-link repair.",
+  "cards": [
+    "P-009",
+    "P-021"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/agent-reviews/P-009-normal-pot-agent-ui-audit.md"
+  ],
+  "notes": []
+}

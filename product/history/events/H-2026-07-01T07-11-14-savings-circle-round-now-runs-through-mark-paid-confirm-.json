@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-07-01T07-11-14-savings-circle-round-now-runs-through-mark-paid-confirm-",
+  "timestamp": "2026-07-01T07:11:14.003Z",
+  "type": "release",
+  "summary": "Savings circle round now runs through Mark paid, Confirm received, Record delay, payout confirmation, and Close round with screenshot evidence.",
+  "cards": [
+    "P-006"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md",
+    "product/journey-reviews/J-010-savings-circle-round.md"
+  ],
+  "notes": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-06-30T09-13-51-finished-normal-pot-visible-language-cleanup-against-pre",
+  "timestamp": "2026-06-30T09:13:51.301Z",
+  "type": "release",
+  "summary": "Finished normal-pot visible language cleanup against premium money app reference",
+  "cards": [
+    "P-011"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md",
+    "product/agent-reviews/P-011-product-language-cleanup.md"
+  ],
+  "notes": []
+}

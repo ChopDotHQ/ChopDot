@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-27T13-11-39-applied-normal-pot-lifecycle-timing-expenses-view-focuse",
+  "timestamp": "2026-06-27T13:11:39.563Z",
+  "type": "checkpoint",
+  "summary": "Applied normal-pot lifecycle timing: Expenses view focuses on adding/reviewing costs, hides suggested settlement transfers, and keeps Settle Up as a compact secondary action.",
+  "cards": [
+    "P-001"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/evidence/screenshots/normal-pot-lifecycle/02-pot-expenses-lifecycle-tight.png"
+  ],
+  "notes": []
+}

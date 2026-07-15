@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-05T09-46-16-p-022-split-rows-now-show-currency-on-remaining-open-sha",
+  "timestamp": "2026-07-05T09:46:16.435Z",
+  "type": "checkpoint",
+  "summary": "P-022 split rows now show currency on remaining open shares",
+  "cards": [
+    "P-022"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "artifacts/chopdot-p022-regular-pot/2026-07-05/p022-regular-pot-split-drift-after-1783244737/p022-regular-pot-coherence-audit.md"
+  ],
+  "notes": []
+}

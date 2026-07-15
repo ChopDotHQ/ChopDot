@@ -4,19 +4,28 @@
 
 | Card | Module | Status | Tests | Missing? |
 | --- | --- | --- | --- | --- |
-| P-001 Dinner split pay-moment capture | group-expense | ready | tests/e2e/capture-pay-confirm-link.spec.ts | no |
-| P-002 No-app friend payment link | friend-action | validation | tests/e2e/capture-pay-confirm-link.spec.ts | no |
-| P-003 Confirm received | confirmation | validation | tests/e2e/capture-pay-confirm-link.spec.ts | no |
-| P-004 Close with readable saved record | closeout | ready | tests/e2e/capture-pay-confirm-link.spec.ts | no |
+| P-001 Dinner split pay-moment capture | group-expense | done | tests/e2e/capture-pay-confirm-link.spec.ts | no |
+| P-002 No-app friend payment link | friend-action | done | tests/e2e/capture-pay-confirm-link.spec.ts | no |
+| P-003 Confirm received | confirmation | done | tests/e2e/capture-pay-confirm-link.spec.ts | no |
+| P-004 Close with readable saved record | closeout | done | tests/e2e/capture-pay-confirm-link.spec.ts | no |
 | P-005 Spend Card capture path | spend-card | discovery | tests/e2e/capture-spend-loop.spec.ts, tests/e2e/capture-wallet-pass-spend.spec.ts | no |
-| P-006 Savings circle round | savings-circle | discovery | tests/e2e/chopdot-dot-native-session.spec.ts | no |
-| P-007 Emergency pot privacy flow | emergency-pot | discovery | tests/e2e/chopdot-dot-native-session.spec.ts | no |
+| P-006 Savings circle round | savings-circle | done | tests/e2e/chopdot-dot-native-session.spec.ts, artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/p006-savings-circle-review.json | no |
+| P-007 Emergency pot privacy flow | emergency-pot | done | tests/e2e/chopdot-dot-native-session.spec.ts, artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot/p007-emergency-pot-review.json | no |
 | P-008 Community fund role flow | community-fund | discovery | tests/e2e/chopdot-dot-native-session.spec.ts | no |
-| P-009 Agent wallet journey testing | agent-testing | ready | tests/e2e/agent-wallet-pas-scenarios.spec.ts | no |
-| P-010 Polkadot-native session boundary | polkadot-native | blocked | tests/e2e/chopdot-dot-native-session.spec.ts | no |
-| P-011 Product language cleanup | language | ready | scripts/audit-components-and-structure.mjs | no |
-| P-012 Receipt capture without manual-first entry | receipt-capture | ready | tests/e2e/capture-pay-confirm-link.spec.ts | no |
+| P-009 Agent wallet journey testing | agent-testing | done | tests/e2e/agent-wallet-pas-scenarios.spec.ts | no |
+| P-021 J-004 no-app friend payment link | friend-action | done | tests/e2e/capture-pay-confirm-link.spec.ts | no |
+| P-022 Regular pot end-to-end coherence | group-expense | building | scripts/run-p022-regular-pot-coherence-audit.mjs, tests/e2e/capture-pay-confirm-link.spec.ts, tests/e2e/capture-spend-loop.spec.ts | no |
+| P-023 PAS test wallet payment | friend-action | done | .worktrees/portable-shell-trial/src/payments/pasWallet.test.ts, .worktrees/portable-shell-trial/tests/polkadot-host-wallet-settlement.spec.ts | no |
+| P-024 DOT and USDC wallet payment checks | friend-action | discovery | src/__tests__/AgentWalletPasSettlement.test.ts | no |
+| P-025 Universal Chop Core security architecture | mini-app-security | ready | npm run product:validate, backend/src/__tests__/auth.middleware.test.ts, backend/src/__tests__/actor-boundary.routes.test.ts, backend/src/__tests__/settlements.routes.test.ts, backend/src/__tests__/users.routes.test.ts, backend/src/integration/p025-actor-boundary.database.ts | no |
+| P-010 Polkadot-native session boundary | polkadot-native | building | tests/e2e/chopdot-dot-native-session.spec.ts, .worktrees/portable-shell-trial/src/environment/encryptedSession.test.ts, .worktrees/portable-shell-trial/src/environment/polkadotHostBridge.test.ts, .worktrees/portable-shell-trial/tests/polkadot-host-sim.spec.ts, .worktrees/portable-shell-trial/tests/polkadot-host-five-person-stress.spec.ts, .worktrees/portable-shell-trial/tests/polkadot-host-real-ui.spec.ts | no |
+| P-011 Product language cleanup | language | done | scripts/chopdot-product-cockpit.mjs | no |
+| P-012 Receipt capture without manual-first entry | receipt-capture | done | tests/e2e/capture-spend-loop.spec.ts, tests/e2e/capture-image-receipt-flow.spec.ts | no |
 | P-013 Competitor and 10x benchmark | research | discovery | manual-competitor-walkthrough | no |
 | P-014 Product cockpit upgrade | product-cockpit | done | npm run validate:product-cockpit | no |
 | P-015 Friend-pilot readiness scorecard | readiness | ready | npm run validate:readiness | no |
 | P-016 Product resume for future agents | agent-handoff | ready | npm run product:resume | no |
+| P-017 AI PM process guardrails | ai-product-management | done | npm run product:ai-pm:validate | no |
+| P-018 Normal pot expense tracking | group-expense | done | npm run validate:journey-reviews | no |
+| P-019 Normal pot mobile and desktop polish | group-expense | done | npm run validate:journey-reviews, npm run product:validate | no |
+| P-020 Chat capture agent | chat-capture | building | src/__tests__/chatCaptureDraft.test.ts, src/__tests__/telegramSafety.test.ts, src/bot/store/chapterStoreAdapter.test.ts | no |

@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-14T14-09-41-implemented-the-server-derived-authenticated-actor-bound",
+  "timestamp": "2026-07-14T14:09:41.508Z",
+  "type": "checkpoint",
+  "summary": "Implemented the server-derived authenticated actor boundary for Express money routes; database-backed authorization proof remains the next gate.",
+  "cards": [
+    "P-025"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "docs/security/p025-security-foundation-crosswalk-2026-07-14.md"
+  ],
+  "notes": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-06-29T10-15-40-completed-regular-pot-end-to-end-coherence-normal-expens",
+  "timestamp": "2026-06-29T10:15:40.602Z",
+  "type": "release",
+  "summary": "Completed regular pot end-to-end coherence: normal expenses survive capture, confirmed friend payments reduce matching shares, and close review matches remaining open items.",
+  "cards": [
+    "P-022"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md",
+    "artifacts/chopdot-p022-regular-pot/2026-06-29/p022-regular-pot-1782727857377/p022-regular-pot-coherence-audit.md"
+  ],
+  "notes": []
+}

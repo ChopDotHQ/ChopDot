@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-14T15-23-35-p-010-live-product-account-qr-ceremony-proven-completion",
+  "timestamp": "2026-07-14T15:23:35.294Z",
+  "type": "checkpoint",
+  "summary": "P-010 live Product Account QR ceremony proven; completion is blocked on a runnable Polkadot Mobile client, not ChopDot host integration.",
+  "cards": [
+    "P-010"
+  ],
+  "roadmap": [],
+  "evidence": [
+    ".worktrees/portable-shell-trial/proof/product-account-login-boundary-2026-07-14.md"
+  ],
+  "notes": []
+}

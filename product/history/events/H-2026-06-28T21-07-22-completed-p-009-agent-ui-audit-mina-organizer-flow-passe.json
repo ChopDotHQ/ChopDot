@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-06-28T21-07-22-completed-p-009-agent-ui-audit-mina-organizer-flow-passe",
+  "timestamp": "2026-06-28T21:07:22.869Z",
+  "type": "release",
+  "summary": "Completed P-009 agent UI audit: Mina organizer flow passes, separate friend devices need J-004 payment link repair.",
+  "cards": [
+    "P-009"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md",
+    "artifacts/chopdot-normal-pot-agents/2026-06-28/normal-pot-agent-2026-06-28/02-leo-pot-detail.png"
+  ],
+  "notes": []
+}

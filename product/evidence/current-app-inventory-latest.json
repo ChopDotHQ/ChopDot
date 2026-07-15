@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-06-24T13:27:50.525Z",
+  "generatedAt": "2026-07-15T10:38:59.215Z",
   "summary": {
-    "screenTypes": 34,
-    "routerEntries": 30,
-    "renderFunctions": 29,
-    "screenFiles": 46,
-    "tests": 68,
-    "mappedScreens": 6,
-    "orphanScreens": 40,
+    "screenTypes": 21,
+    "routerEntries": 21,
+    "renderFunctions": 20,
+    "screenFiles": 31,
+    "tests": 43,
+    "mappedScreens": 10,
+    "orphanScreens": 21,
     "referencedScreensMissing": 0,
     "referencedTestsMissing": 0
   },
@@ -17,7 +17,9 @@
       "screenType": "pots-home",
       "renderer": "renderPotsHome",
       "productCards": [
-        "P-009"
+        "P-009",
+        "P-022",
+        "P-019"
       ]
     },
     {
@@ -25,7 +27,9 @@
       "screenType": "pots-home",
       "renderer": "renderPotsHome",
       "productCards": [
-        "P-009"
+        "P-009",
+        "P-022",
+        "P-019"
       ]
     },
     {
@@ -52,7 +56,9 @@
       "renderer": "renderSpendCard",
       "productCards": [
         "P-001",
-        "P-005"
+        "P-005",
+        "P-022",
+        "P-012"
       ]
     },
     {
@@ -63,7 +69,10 @@
         "P-001",
         "P-002",
         "P-009",
-        "P-012"
+        "P-021",
+        "P-022",
+        "P-023",
+        "P-024"
       ]
     },
     {
@@ -71,13 +80,15 @@
       "screenType": "capture-confirm",
       "renderer": "renderCaptureConfirm",
       "productCards": [
-        "P-003"
+        "P-003",
+        "P-021",
+        "P-022"
       ]
     },
     {
       "route": "?cid=INVITE",
       "screenType": "import-pot",
-      "renderer": "renderImportPot",
+      "renderer": null,
       "productCards": []
     }
   ],
@@ -88,30 +99,17 @@
     "people-home",
     "you-tab",
     "settings",
-    "payment-methods",
-    "insights",
     "create-pot",
     "pot-home",
     "add-expense",
     "edit-expense",
     "expense-detail",
     "settle-selection",
-    "closeout-review",
     "settle-home",
-    "settle-cash",
-    "settle-bank",
-    "settle-dot",
     "settlement-history",
     "settlement-confirmation",
+    "closeout-review",
     "member-detail",
-    "add-contribution",
-    "withdraw-funds",
-    "checkpoint-status",
-    "request-payment",
-    "crust-storage",
-    "crust-auth-setup",
-    "import-pot",
-    "receive-qr",
     "spend-card",
     "capture-handoff",
     "capture-confirm",
@@ -164,11 +162,6 @@
       "path": "src/components/AppRouter.tsx"
     },
     {
-      "screenType": "closeout-review",
-      "renderer": "renderCloseoutReview",
-      "path": "src/components/AppRouter.tsx"
-    },
-    {
       "screenType": "spend-card",
       "renderer": "renderSpendCard",
       "path": "src/components/AppRouter.tsx"
@@ -209,18 +202,13 @@
       "path": "src/components/AppRouter.tsx"
     },
     {
+      "screenType": "closeout-review",
+      "renderer": "renderCloseoutReview",
+      "path": "src/components/AppRouter.tsx"
+    },
+    {
       "screenType": "settings",
       "renderer": "renderSettings",
-      "path": "src/components/AppRouter.tsx"
-    },
-    {
-      "screenType": "payment-methods",
-      "renderer": "renderPaymentMethods",
-      "path": "src/components/AppRouter.tsx"
-    },
-    {
-      "screenType": "insights",
-      "renderer": "renderInsights",
       "path": "src/components/AppRouter.tsx"
     },
     {
@@ -232,41 +220,6 @@
       "screenType": "create-pot",
       "renderer": "renderCreatePot",
       "path": "src/components/AppRouter.tsx"
-    },
-    {
-      "screenType": "add-contribution",
-      "renderer": "renderAddContribution",
-      "path": "src/components/AppRouter.tsx"
-    },
-    {
-      "screenType": "withdraw-funds",
-      "renderer": "renderWithdrawFunds",
-      "path": "src/components/AppRouter.tsx"
-    },
-    {
-      "screenType": "request-payment",
-      "renderer": "renderRequestPayment",
-      "path": "src/components/AppRouter.tsx"
-    },
-    {
-      "screenType": "crust-storage",
-      "renderer": "renderCrustStorage",
-      "path": "src/components/AppRouter.tsx"
-    },
-    {
-      "screenType": "crust-auth-setup",
-      "renderer": "renderCrustAuthSetup",
-      "path": "src/components/AppRouter.tsx"
-    },
-    {
-      "screenType": "receive-qr",
-      "renderer": "renderReceiveQR",
-      "path": "src/components/AppRouter.tsx"
-    },
-    {
-      "screenType": "import-pot",
-      "renderer": "renderImportPot",
-      "path": "src/components/AppRouter.tsx"
     }
   ],
   "renderFunctions": [
@@ -276,23 +229,6 @@
       "file": "src/routing/screen-props/misc-screens.tsx",
       "renderedComponents": [
         "Settings"
-      ]
-    },
-    {
-      "renderer": "renderPaymentMethods",
-      "screenType": "payment-methods",
-      "file": "src/routing/screen-props/misc-screens.tsx",
-      "renderedComponents": [
-        "PaymentMethods",
-        "PaymentMethod"
-      ]
-    },
-    {
-      "renderer": "renderInsights",
-      "screenType": "insights",
-      "file": "src/routing/screen-props/misc-screens.tsx",
-      "renderedComponents": [
-        "InsightsScreen"
       ]
     },
     {
@@ -309,62 +245,6 @@
       "file": "src/routing/screen-props/misc-screens.tsx",
       "renderedComponents": [
         "CreatePot"
-      ]
-    },
-    {
-      "renderer": "renderAddContribution",
-      "screenType": "add-contribution",
-      "file": "src/routing/screen-props/misc-screens.tsx",
-      "renderedComponents": [
-        "AddContribution"
-      ]
-    },
-    {
-      "renderer": "renderWithdrawFunds",
-      "screenType": "withdraw-funds",
-      "file": "src/routing/screen-props/misc-screens.tsx",
-      "renderedComponents": [
-        "WithdrawFunds"
-      ]
-    },
-    {
-      "renderer": "renderRequestPayment",
-      "screenType": "request-payment",
-      "file": "src/routing/screen-props/misc-screens.tsx",
-      "renderedComponents": [
-        "RequestPayment"
-      ]
-    },
-    {
-      "renderer": "renderCrustStorage",
-      "screenType": "crust-storage",
-      "file": "src/routing/screen-props/misc-screens.tsx",
-      "renderedComponents": [
-        "CrustStorage"
-      ]
-    },
-    {
-      "renderer": "renderCrustAuthSetup",
-      "screenType": "crust-auth-setup",
-      "file": "src/routing/screen-props/misc-screens.tsx",
-      "renderedComponents": [
-        "CrustAuthSetup"
-      ]
-    },
-    {
-      "renderer": "renderReceiveQR",
-      "screenType": "receive-qr",
-      "file": "src/routing/screen-props/misc-screens.tsx",
-      "renderedComponents": [
-        "ReceiveQR"
-      ]
-    },
-    {
-      "renderer": "renderImportPot",
-      "screenType": "import-pot",
-      "file": "src/routing/screen-props/misc-screens.tsx",
-      "renderedComponents": [
-        "ImportPot"
       ]
     },
     {
@@ -510,20 +390,12 @@
       "file": "src/components/screens/ActivityHome.tsx"
     },
     {
-      "component": "AddContribution",
-      "file": "src/components/screens/AddContribution.tsx"
-    },
-    {
       "component": "AddExpense",
       "file": "src/components/screens/AddExpense.tsx"
     },
     {
       "component": "AddMember",
       "file": "src/components/screens/AddMember.tsx"
-    },
-    {
-      "component": "AddPaymentMethod",
-      "file": "src/components/screens/AddPaymentMethod.tsx"
     },
     {
       "component": "AuthScreen",
@@ -550,20 +422,8 @@
       "file": "src/components/screens/CloseoutReview.tsx"
     },
     {
-      "component": "ConnectWalletScreen",
-      "file": "src/components/screens/ConnectWalletScreen.tsx"
-    },
-    {
       "component": "CreatePot",
       "file": "src/components/screens/CreatePot.tsx"
-    },
-    {
-      "component": "CrustAuthSetup",
-      "file": "src/components/screens/CrustAuthSetup.tsx"
-    },
-    {
-      "component": "CrustStorage",
-      "file": "src/components/screens/CrustStorage.tsx"
     },
     {
       "component": "ExpenseDetail",
@@ -574,14 +434,6 @@
       "file": "src/components/screens/ExpensesTab.tsx"
     },
     {
-      "component": "ImportPot",
-      "file": "src/components/screens/ImportPot.tsx"
-    },
-    {
-      "component": "InsightsScreen",
-      "file": "src/components/screens/InsightsScreen.tsx"
-    },
-    {
       "component": "MemberDetail",
       "file": "src/components/screens/MemberDetail.tsx"
     },
@@ -590,16 +442,8 @@
       "file": "src/components/screens/MembersTab.tsx"
     },
     {
-      "component": "MyQR",
-      "file": "src/components/screens/MyQR.tsx"
-    },
-    {
       "component": "NotificationCenter",
       "file": "src/components/screens/NotificationCenter.tsx"
-    },
-    {
-      "component": "PaymentMethods",
-      "file": "src/components/screens/PaymentMethods.tsx"
     },
     {
       "component": "PeopleHome",
@@ -618,24 +462,8 @@
       "file": "src/components/screens/PotsHome.tsx"
     },
     {
-      "component": "ReceiveQR",
-      "file": "src/components/screens/ReceiveQR.tsx"
-    },
-    {
-      "component": "RequestPayment",
-      "file": "src/components/screens/RequestPayment.tsx"
-    },
-    {
       "component": "ResetPasswordScreen",
       "file": "src/components/screens/ResetPasswordScreen.tsx"
-    },
-    {
-      "component": "SavingsTab",
-      "file": "src/components/screens/SavingsTab.tsx"
-    },
-    {
-      "component": "ScanQR",
-      "file": "src/components/screens/ScanQR.tsx"
     },
     {
       "component": "Settings",
@@ -678,14 +506,6 @@
       "file": "src/components/screens/SpendCardScreen.tsx"
     },
     {
-      "component": "ViewPaymentMethod",
-      "file": "src/components/screens/ViewPaymentMethod.tsx"
-    },
-    {
-      "component": "WithdrawFunds",
-      "file": "src/components/screens/WithdrawFunds.tsx"
-    },
-    {
       "component": "YouTab",
       "file": "src/components/screens/YouTab.tsx"
     }
@@ -696,15 +516,6 @@
       "file": "src/components/screens/ActivityHome.tsx",
       "screenTypes": [
         "activity-home"
-      ],
-      "productCards": [],
-      "mapped": false
-    },
-    {
-      "component": "AddContribution",
-      "file": "src/components/screens/AddContribution.tsx",
-      "screenTypes": [
-        "add-contribution"
       ],
       "productCards": [],
       "mapped": false
@@ -727,13 +538,6 @@
       "mapped": false
     },
     {
-      "component": "AddPaymentMethod",
-      "file": "src/components/screens/AddPaymentMethod.tsx",
-      "screenTypes": [],
-      "productCards": [],
-      "mapped": false
-    },
-    {
       "component": "AuthScreen",
       "file": "src/components/screens/AuthScreen.tsx",
       "screenTypes": [],
@@ -747,7 +551,9 @@
         "capture-confirm"
       ],
       "productCards": [
-        "P-003"
+        "P-003",
+        "P-021",
+        "P-022"
       ],
       "mapped": true
     },
@@ -761,7 +567,10 @@
         "P-001",
         "P-002",
         "P-009",
-        "P-012"
+        "P-021",
+        "P-022",
+        "P-023",
+        "P-024"
       ],
       "mapped": true
     },
@@ -792,40 +601,17 @@
         "closeout-review"
       ],
       "productCards": [
-        "P-004"
+        "P-004",
+        "P-022",
+        "P-019"
       ],
       "mapped": true
-    },
-    {
-      "component": "ConnectWalletScreen",
-      "file": "src/components/screens/ConnectWalletScreen.tsx",
-      "screenTypes": [],
-      "productCards": [],
-      "mapped": false
     },
     {
       "component": "CreatePot",
       "file": "src/components/screens/CreatePot.tsx",
       "screenTypes": [
         "create-pot"
-      ],
-      "productCards": [],
-      "mapped": false
-    },
-    {
-      "component": "CrustAuthSetup",
-      "file": "src/components/screens/CrustAuthSetup.tsx",
-      "screenTypes": [
-        "crust-auth-setup"
-      ],
-      "productCards": [],
-      "mapped": false
-    },
-    {
-      "component": "CrustStorage",
-      "file": "src/components/screens/CrustStorage.tsx",
-      "screenTypes": [
-        "crust-storage"
       ],
       "productCards": [],
       "mapped": false
@@ -843,26 +629,10 @@
       "component": "ExpensesTab",
       "file": "src/components/screens/ExpensesTab.tsx",
       "screenTypes": [],
-      "productCards": [],
-      "mapped": false
-    },
-    {
-      "component": "ImportPot",
-      "file": "src/components/screens/ImportPot.tsx",
-      "screenTypes": [
-        "import-pot"
+      "productCards": [
+        "P-018"
       ],
-      "productCards": [],
-      "mapped": false
-    },
-    {
-      "component": "InsightsScreen",
-      "file": "src/components/screens/InsightsScreen.tsx",
-      "screenTypes": [
-        "insights"
-      ],
-      "productCards": [],
-      "mapped": false
+      "mapped": true
     },
     {
       "component": "MemberDetail",
@@ -881,25 +651,9 @@
       "mapped": false
     },
     {
-      "component": "MyQR",
-      "file": "src/components/screens/MyQR.tsx",
-      "screenTypes": [],
-      "productCards": [],
-      "mapped": false
-    },
-    {
       "component": "NotificationCenter",
       "file": "src/components/screens/NotificationCenter.tsx",
       "screenTypes": [],
-      "productCards": [],
-      "mapped": false
-    },
-    {
-      "component": "PaymentMethods",
-      "file": "src/components/screens/PaymentMethods.tsx",
-      "screenTypes": [
-        "payment-methods"
-      ],
       "productCards": [],
       "mapped": false
     },
@@ -925,8 +679,13 @@
       "screenTypes": [
         "pot-home"
       ],
-      "productCards": [],
-      "mapped": false
+      "productCards": [
+        "P-021",
+        "P-022",
+        "P-018",
+        "P-019"
+      ],
+      "mapped": true
     },
     {
       "component": "PotsHome",
@@ -935,45 +694,15 @@
         "pots-home"
       ],
       "productCards": [
-        "P-009"
+        "P-009",
+        "P-022",
+        "P-019"
       ],
       "mapped": true
     },
     {
-      "component": "ReceiveQR",
-      "file": "src/components/screens/ReceiveQR.tsx",
-      "screenTypes": [
-        "receive-qr"
-      ],
-      "productCards": [],
-      "mapped": false
-    },
-    {
-      "component": "RequestPayment",
-      "file": "src/components/screens/RequestPayment.tsx",
-      "screenTypes": [
-        "request-payment"
-      ],
-      "productCards": [],
-      "mapped": false
-    },
-    {
       "component": "ResetPasswordScreen",
       "file": "src/components/screens/ResetPasswordScreen.tsx",
-      "screenTypes": [],
-      "productCards": [],
-      "mapped": false
-    },
-    {
-      "component": "SavingsTab",
-      "file": "src/components/screens/SavingsTab.tsx",
-      "screenTypes": [],
-      "productCards": [],
-      "mapped": false
-    },
-    {
-      "component": "ScanQR",
-      "file": "src/components/screens/ScanQR.tsx",
       "screenTypes": [],
       "productCards": [],
       "mapped": false
@@ -1000,8 +729,10 @@
       "screenTypes": [
         "settle-home"
       ],
-      "productCards": [],
-      "mapped": false
+      "productCards": [
+        "P-019"
+      ],
+      "mapped": true
     },
     {
       "component": "SettleSelection",
@@ -1009,8 +740,10 @@
       "screenTypes": [
         "settle-selection"
       ],
-      "productCards": [],
-      "mapped": false
+      "productCards": [
+        "P-019"
+      ],
+      "mapped": true
     },
     {
       "component": "SettlementConfirmation",
@@ -1059,25 +792,11 @@
       ],
       "productCards": [
         "P-001",
-        "P-005"
+        "P-005",
+        "P-022",
+        "P-012"
       ],
       "mapped": true
-    },
-    {
-      "component": "ViewPaymentMethod",
-      "file": "src/components/screens/ViewPaymentMethod.tsx",
-      "screenTypes": [],
-      "productCards": [],
-      "mapped": false
-    },
-    {
-      "component": "WithdrawFunds",
-      "file": "src/components/screens/WithdrawFunds.tsx",
-      "screenTypes": [
-        "withdraw-funds"
-      ],
-      "productCards": [],
-      "mapped": false
     },
     {
       "component": "YouTab",
@@ -1090,6 +809,11 @@
     }
   ],
   "tests": [
+    "src/__tests__/AgentWalletPasSettlement.test.ts",
+    "src/__tests__/SettlementService.test.ts",
+    "src/__tests__/chatCaptureDraft.test.ts",
+    "src/__tests__/settlementLabels.test.ts",
+    "src/__tests__/telegramSafety.test.ts",
     "src/bot/store/chapterStoreAdapter.test.ts",
     "src/chapter/chapterEngine.test.ts",
     "src/chapter/migrateChapter.test.ts",
@@ -1100,19 +824,8 @@
     "src/chopdot-dot/receiptPacket.test.ts",
     "src/chopdot-dot/simulationAgents.test.ts",
     "src/chopdot-dot/testTokenRail.test.ts",
-    "src/components/screens/SavingsRecordScreens.test.tsx",
-    "src/components/screens/SettleHome.test.ts",
-    "src/contexts/authActions.test.ts",
-    "src/hooks/__tests__/useClientDevice.test.ts",
-    "src/hooks/__tests__/useDotPrice.test.ts",
-    "src/hooks/__tests__/useFeeEstimate.test.ts",
-    "src/hooks/__tests__/useSettlementTx.test.ts",
     "src/hooks/useCaptureLinkFlow.test.tsx",
-    "src/mvp/mvpInventory.test.ts",
-    "src/routing/screen-props/misc-screens.test.ts",
-    "src/services/InviteService.test.ts",
     "src/services/auth/session-cleanup.test.ts",
-    "src/services/bridge/hyperbridge.test.ts",
     "src/services/capture/CaptureLinkService.test.ts",
     "src/services/capture/KernelBridge.test.ts",
     "src/services/capture/PaymentEvidenceAdapter.test.ts",
@@ -1121,84 +834,46 @@
     "src/services/capture/SettlementAdapterRegistry.test.ts",
     "src/services/capture/WalletPassService.test.ts",
     "src/services/capture/firmaWebhookClaim.test.ts",
-    "src/services/chain/sim.test.ts",
-    "src/services/closeout/pvmCloseout.test.ts",
-    "src/services/closeout/trackedRecovery.test.ts",
-    "src/services/data/repositories/ExpenseRepository.test.ts",
-    "src/services/data/repositories/MemberRepository.test.ts",
-    "src/services/data/repositories/PotRepository.test.ts",
-    "src/services/data/services/ActionFlows.test.ts",
-    "src/services/data/services/ExpenseService.test.ts",
-    "src/services/data/services/MajorFlows.test.ts",
-    "src/services/data/services/MemberService.test.ts",
-    "src/services/data/services/PotService.test.ts",
-    "src/services/data/services/SettlementService.test.ts",
-    "src/services/settlement/calc.test.ts",
-    "src/utils/actionRecovery.test.ts",
-    "src/utils/clipboard.test.ts",
-    "src/utils/export.test.ts",
-    "src/utils/fiatToDot.test.ts",
-    "src/utils/formatRelativeTime.test.ts",
-    "src/utils/identityResolver.test.ts",
-    "src/utils/requestPayment.test.ts",
-    "src/utils/settlements.test.ts",
     "tests/e2e/agent-wallet-pas-scenarios.spec.ts",
     "tests/e2e/capture-firma-webhook.spec.ts",
+    "tests/e2e/capture-image-receipt-flow.spec.ts",
+    "tests/e2e/capture-pas-payment-link.spec.ts",
     "tests/e2e/capture-pay-confirm-link.spec.ts",
     "tests/e2e/capture-spend-loop.spec.ts",
     "tests/e2e/capture-wallet-pass-spend.spec.ts",
+    "tests/e2e/capture_ui.spec.ts",
     "tests/e2e/chopdot-dot-a5-demo.spec.ts",
     "tests/e2e/chopdot-dot-lab.spec.ts",
     "tests/e2e/chopdot-dot-native-session.spec.ts",
     "tests/e2e/chopdot-escrow-agent-devices.spec.ts",
     "tests/e2e/chopdot-escrow-atomicity.spec.ts",
     "tests/e2e/email-auth-provider.spec.ts",
-    "tests/e2e/guest-activity-settle.spec.ts",
     "tests/e2e/host-sim/smoke.spec.ts",
     "tests/e2e/import-pot-smoke.spec.ts",
-    "tests/e2e/login-smoke.spec.ts",
-    "tests/e2e/savings-record-routes.spec.ts"
+    "tests/e2e/savings-record-routes.spec.ts",
+    "tests/e2e/take-screenshots.spec.ts"
   ],
   "orphanScreens": [
     "ActivityHome",
-    "AddContribution",
     "AddExpense",
     "AddMember",
-    "AddPaymentMethod",
     "AuthScreen",
     "ChoosePot",
-    "ConnectWalletScreen",
     "CreatePot",
-    "CrustAuthSetup",
-    "CrustStorage",
     "ExpenseDetail",
-    "ExpensesTab",
-    "ImportPot",
-    "InsightsScreen",
     "MemberDetail",
     "MembersTab",
-    "MyQR",
     "NotificationCenter",
-    "PaymentMethods",
     "PeopleHome",
     "PeopleView",
-    "PotHome",
-    "ReceiveQR",
-    "RequestPayment",
     "ResetPasswordScreen",
-    "SavingsTab",
-    "ScanQR",
     "Settings",
     "SettingsTab",
-    "SettleHome",
-    "SettleSelection",
     "SettlementConfirmation",
     "SettlementHistory",
     "SharePotSheet",
     "SignInScreen",
     "SignUpScreen",
-    "ViewPaymentMethod",
-    "WithdrawFunds",
     "YouTab"
   ],
   "referencedScreensMissing": [],

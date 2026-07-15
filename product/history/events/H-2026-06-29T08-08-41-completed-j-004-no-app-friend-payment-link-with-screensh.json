@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-06-29T08-08-41-completed-j-004-no-app-friend-payment-link-with-screensh",
+  "timestamp": "2026-06-29T08:08:41.767Z",
+  "type": "release",
+  "summary": "Completed J-004 no-app friend payment link with screenshot-backed Leo and Mina agent flow.",
+  "cards": [
+    "P-021"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md",
+    "artifacts/chopdot-p021-friend-link/2026-06-29/p021-friend-link-2026-06-29/01-leo-pay-link.png"
+  ],
+  "notes": []
+}

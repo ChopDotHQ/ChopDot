@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-06-28T20-54-17-completed-j-008-mobile-and-desktop-polish-for-the-normal",
+  "timestamp": "2026-06-28T20:54:17.611Z",
+  "type": "release",
+  "summary": "Completed J-008 mobile and desktop polish for the normal pot loop with final screenshots and journey review.",
+  "cards": [
+    "P-019"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md",
+    "product/evidence/screenshots/normal-pot-j008-layout-quality/final/desktop-02-pot-detail.png"
+  ],
+  "notes": []
+}

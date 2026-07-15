@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-30T13-21-09-p-023-pas-test-wallet-payment-completed-with-screenshots",
+  "timestamp": "2026-06-30T13:21:09.513Z",
+  "type": "checkpoint",
+  "summary": "P-023 PAS test wallet payment completed with screenshots, matcher test, and focused browser proof",
+  "cards": [
+    "P-023"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "artifacts/chopdot-p023-pas-payment/2026-06-30/p023-pas-payment-1782824214315"
+  ],
+  "notes": []
+}

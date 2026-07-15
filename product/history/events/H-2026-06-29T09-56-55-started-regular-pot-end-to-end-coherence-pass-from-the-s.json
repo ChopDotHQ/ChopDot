@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-29T09-56-55-started-regular-pot-end-to-end-coherence-pass-from-the-s",
+  "timestamp": "2026-06-29T09:56:55.426Z",
+  "type": "claim",
+  "summary": "Started regular pot end-to-end coherence pass from the S1 story map.",
+  "cards": [
+    "P-022"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/cards.md"
+  ],
+  "notes": []
+}

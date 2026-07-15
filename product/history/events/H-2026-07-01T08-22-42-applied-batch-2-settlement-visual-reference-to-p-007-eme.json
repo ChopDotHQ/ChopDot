@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-01T08-22-42-applied-batch-2-settlement-visual-reference-to-p-007-eme",
+  "timestamp": "2026-07-01T08:22:42.965Z",
+  "type": "checkpoint",
+  "summary": "Applied Batch 2 settlement visual reference to P-007 emergency pot privacy flow: centered hero state, compact detail cards, clean completion without toast overlap.",
+  "cards": [
+    "P-007"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/journey-reviews/J-011-emergency-pot-privacy-flow.md"
+  ],
+  "notes": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-07-01T12-29-48-expanded-ai-studio-universal-mini-app-shell-plan-with-cu",
+  "timestamp": "2026-07-01T12:29:48.217Z",
+  "type": "checkpoint",
+  "summary": "Expanded AI Studio universal mini-app shell plan with current product inventory, competitor floors, mini-app host requirements, treasurer closeout, and recovery prompts",
+  "cards": [
+    "P-013",
+    "P-025"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
+  ],
+  "notes": []
+}

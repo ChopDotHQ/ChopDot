@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-06-30T11-34-16-applied-s1-screenshot-review-fixes-solid-add-expense-she",
+  "timestamp": "2026-06-30T11:34:16.213Z",
+  "type": "checkpoint",
+  "summary": "Applied S1 screenshot review fixes: solid add-expense sheet, no stale split toast, bottom confirm actions, single saved-record summary.",
+  "cards": [
+    "P-022"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "artifacts/chopdot-p022-regular-pot/2026-06-30/p022-regular-pot-1782814632520/p022-regular-pot-coherence-audit.md"
+  ],
+  "notes": []
+}
