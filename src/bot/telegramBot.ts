@@ -1,6 +1,5 @@
 import { Bot, GrammyError, HttpError, InputFile } from 'grammy';
 import {
-  addExpense,
   addMember,
   buildPotStatus,
   closeChapter,
@@ -16,6 +15,19 @@ import { parseExpenseMessage } from '../chapter/parseExpense';
 import type { BaseCurrency } from '../schema/pot';
 import { FileChapterStore } from './store/fileChapterStore';
 import { ChapterStoreAdapter } from './store/chapterStoreAdapter';
+import {
+  commitChatCaptureDraft,
+  formatDraftAddedMessage,
+  formatDraftReviewMessage,
+  stageChatCaptureDraft,
+  type PendingChatCaptureDraft,
+} from './chatCaptureDraft';
+import {
+  assertLiveTelegramSafety,
+  isChatAllowed,
+  telegramSafetyOptionsFromEnv,
+  type TelegramBotSafetyOptions,
+} from './telegramSafety';
 
 const HELP_TEXT = `ChopDot chapter bot (L0)
 
@@ -25,9 +37,16 @@ const HELP_TEXT = `ChopDot chapter bot (L0)
 /paid — mark your leg paid (claim)
 /confirm — receiver confirms payment
 /linkpot <pot id> — link this chat chapter to an app pot
+/addlast — add the last chat draft after review
+/clearlast — ignore the last chat draft
 /close — export chapter JSON when all legs confirmed
 
-Or write: "I paid €120 dinner split 3"`;
+Or write: "I paid €120 dinner split 3", then review /addlast`;
+
+type TelegramReplyContext = {
+  chat?: { id: number | string };
+  reply: (text: string) => Promise<unknown>;
+};
 
 function parseCurrency(token?: string): BaseCurrency {
   const value = (token ?? 'EUR').toUpperCase();
@@ -37,19 +56,55 @@ function parseCurrency(token?: string): BaseCurrency {
   return 'EUR';
 }
 
-export function createTelegramBot(token: string, store: ChapterStoreAdapter): Bot {
+async function allowedChatId(ctx: TelegramReplyContext, options: TelegramBotSafetyOptions): Promise<string | null> {
+  const chatId = String(ctx.chat?.id ?? '');
+  if (!chatId) {
+    return null;
+  }
+  if (!isChatAllowed(chatId, options)) {
+    await ctx.reply('This chat is not enabled for this ChopDot bot.');
+    return null;
+  }
+  return chatId;
+}
+
+async function requireMutationAllowed(ctx: TelegramReplyContext, options: TelegramBotSafetyOptions): Promise<boolean> {
+  if (options.allowMutations) {
+    return true;
+  }
+  await ctx.reply(
+    'Telegram is in preview mode. Nothing changed. Set CHOPDOT_TELEGRAM_ALLOW_MUTATIONS=true for an allowlisted chat to change the pot from Telegram.',
+  );
+  return false;
+}
+
+export function createTelegramBot(
+  token: string,
+  store: ChapterStoreAdapter,
+  options: TelegramBotSafetyOptions = telegramSafetyOptionsFromEnv(),
+): Bot {
   const bot = new Bot(token);
+  const pendingChatCaptureDrafts = new Map<string, PendingChatCaptureDraft>();
 
   bot.command('start', async (ctx) => {
+    if (!(await allowedChatId(ctx, options))) {
+      return;
+    }
     await ctx.reply(HELP_TEXT);
   });
 
   bot.command('help', async (ctx) => {
+    if (!(await allowedChatId(ctx, options))) {
+      return;
+    }
     await ctx.reply(HELP_TEXT);
   });
 
   bot.command('newpot', async (ctx) => {
-    const chatId = String(ctx.chat?.id ?? '');
+    const chatId = await allowedChatId(ctx, options);
+    if (!chatId || !(await requireMutationAllowed(ctx, options))) {
+      return;
+    }
     const from = ctx.from;
     if (!from || !chatId) {
       return;
@@ -86,7 +141,10 @@ export function createTelegramBot(token: string, store: ChapterStoreAdapter): Bo
   });
 
   bot.command('join', async (ctx) => {
-    const chatId = String(ctx.chat?.id ?? '');
+    const chatId = await allowedChatId(ctx, options);
+    if (!chatId || !(await requireMutationAllowed(ctx, options))) {
+      return;
+    }
     const from = ctx.from;
     if (!from || !chatId) {
       return;
@@ -113,6 +171,9 @@ export function createTelegramBot(token: string, store: ChapterStoreAdapter): Bo
   });
 
   bot.command('status', async (ctx) => {
+    if (!(await allowedChatId(ctx, options))) {
+      return;
+    }
     const chapter = await loadOpenChapter(ctx, store);
     if (!chapter) {
       return;
@@ -122,6 +183,9 @@ export function createTelegramBot(token: string, store: ChapterStoreAdapter): Bo
   });
 
   bot.command('paid', async (ctx) => {
+    if (!(await allowedChatId(ctx, options)) || !(await requireMutationAllowed(ctx, options))) {
+      return;
+    }
     const chapter = await loadOpenChapter(ctx, store);
     const from = ctx.from;
     if (!chapter || !from) {
@@ -145,6 +209,9 @@ export function createTelegramBot(token: string, store: ChapterStoreAdapter): Bo
   });
 
   bot.command('confirm', async (ctx) => {
+    if (!(await allowedChatId(ctx, options)) || !(await requireMutationAllowed(ctx, options))) {
+      return;
+    }
     const chapter = await loadOpenChapter(ctx, store);
     const from = ctx.from;
     if (!chapter || !from) {
@@ -168,8 +235,8 @@ export function createTelegramBot(token: string, store: ChapterStoreAdapter): Bo
   });
 
   bot.command('linkpot', async (ctx) => {
-    const chatId = String(ctx.chat?.id ?? '');
-    if (!chatId) {
+    const chatId = await allowedChatId(ctx, options);
+    if (!chatId || !(await requireMutationAllowed(ctx, options))) {
       return;
     }
 
@@ -188,7 +255,57 @@ export function createTelegramBot(token: string, store: ChapterStoreAdapter): Bo
     await ctx.reply(`🔗 Linked "${linked.name}" to app pot \`${potId}\``);
   });
 
+  bot.command('addlast', async (ctx) => {
+    const chatId = await allowedChatId(ctx, options);
+    if (!chatId || !(await requireMutationAllowed(ctx, options))) {
+      return;
+    }
+    const from = ctx.from;
+    if (!chatId || !from) {
+      return;
+    }
+
+    const pending = pendingChatCaptureDrafts.get(chatId);
+    if (!pending) {
+      await ctx.reply('No draft waiting. Write something like: I paid CHF 120 dinner split 3');
+      return;
+    }
+
+    if (pending.telegramUserId !== String(from.id)) {
+      await ctx.reply('The person who sent the draft should use /addlast.');
+      return;
+    }
+
+    const chapter = await loadOpenChapter(ctx, store);
+    if (!chapter) {
+      return;
+    }
+
+    try {
+      const committed = commitChatCaptureDraft(chapter, pending);
+      await store.save(committed.chapter);
+      pendingChatCaptureDrafts.delete(chatId);
+      await ctx.reply(formatDraftAddedMessage(committed.chapter, pending));
+    } catch (error) {
+      await ctx.reply(error instanceof Error ? error.message : 'Could not add draft');
+    }
+  });
+
+  bot.command('clearlast', async (ctx) => {
+    const chatId = await allowedChatId(ctx, options);
+    if (!chatId || !pendingChatCaptureDrafts.has(chatId)) {
+      await ctx.reply('No draft waiting.');
+      return;
+    }
+
+    pendingChatCaptureDrafts.delete(chatId);
+    await ctx.reply('Draft cleared.');
+  });
+
   bot.command('close', async (ctx) => {
+    if (!(await allowedChatId(ctx, options)) || !(await requireMutationAllowed(ctx, options))) {
+      return;
+    }
     const chapter = await store.getByChatId(String(ctx.chat?.id ?? ''));
     if (!chapter) {
       await ctx.reply('No chapter in this chat.');
@@ -221,45 +338,27 @@ export function createTelegramBot(token: string, store: ChapterStoreAdapter): Bo
       return;
     }
 
-    const chatId = String(ctx.chat?.id ?? '');
+    const chatId = await allowedChatId(ctx, options);
     const from = ctx.from;
     if (!from || !chatId) {
       return;
     }
 
-    let chapter = await store.getByChatId(chatId);
+    const chapter = await store.getByChatId(chatId);
     if (!chapter) {
       await ctx.reply('No chapter — /newpot <name> first');
       return;
     }
 
-    let member = resolveMemberByTelegram(chapter, String(from.id));
-    if (!member) {
-      chapter = addMember(chapter, {
-        name: from.first_name ?? 'Member',
-        telegramUserId: String(from.id),
-      });
-      member = resolveMemberByTelegram(chapter, String(from.id));
-    }
-
-    if (!member) {
-      return;
-    }
-
-    try {
-      const updated = addExpense(chapter, {
-        paidByMemberId: member.id,
-        draft,
-        source: 'chat_nl',
-        sourceRef: String(ctx.message.message_id),
-      });
-      await store.save(updated);
-      await ctx.reply(
-        `📝 ${draft.memo} · ${draft.amount.toFixed(2)} ${updated.currency} · paid by ${member.name}\n${formatStatusText(buildPotStatus(updated))}`,
-      );
-    } catch (error) {
-      await ctx.reply(error instanceof Error ? error.message : 'Could not add expense');
-    }
+    const pending = stageChatCaptureDraft({
+      chapter,
+      draft,
+      telegramUserId: String(from.id),
+      memberName: from.first_name ?? 'Member',
+      messageId: String(ctx.message.message_id),
+    });
+    pendingChatCaptureDrafts.set(chatId, pending);
+    await ctx.reply(formatDraftReviewMessage(pending));
   });
 
   bot.catch((error) => {
@@ -279,7 +378,7 @@ export function createTelegramBot(token: string, store: ChapterStoreAdapter): Bo
 }
 
 async function loadOpenChapter(
-  ctx: { chat?: { id: number }; reply: (text: string) => Promise<unknown> },
+  ctx: TelegramReplyContext,
   store: ChapterStoreAdapter,
 ) {
   const chapter = await store.getByChatId(String(ctx.chat?.id ?? ''));
@@ -295,10 +394,12 @@ async function loadOpenChapter(
 }
 
 export async function startTelegramBot(token: string, dataDir: string): Promise<void> {
+  const options = telegramSafetyOptionsFromEnv();
+  assertLiveTelegramSafety(options);
   const fileStore = new FileChapterStore(dataDir);
   const store = new ChapterStoreAdapter(fileStore, dataDir);
   await store.init();
-  const bot = createTelegramBot(token, store);
+  const bot = createTelegramBot(token, store, options);
   console.info(`ChopDot bot starting — data dir: ${dataDir}`);
   await bot.start();
 }

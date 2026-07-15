@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { computeBalances, suggestSettlements, getMemberBalance } from '../services/settlement/calc';
 import type { Pot, Expense as PotExpense } from '../schema/pot';
 import { normalizeCurrency } from '../utils/currencyFormat';
+import { calculatePotSettlements } from '../utils/settlements';
+import { applyConfirmedLegAdjustments, type ConfirmedLegAdjustment } from '../utils/confirmedLegAdjustments';
 
 interface Member {
   id: string;
@@ -28,6 +30,7 @@ interface UsePotBalancesParams {
   currentUserId: string;
   budget?: number;
   budgetEnabled?: boolean;
+  confirmedLegs?: ConfirmedLegAdjustment[];
 }
 
 export function usePotBalances({
@@ -37,6 +40,7 @@ export function usePotBalances({
   baseCurrency,
   currentUserId,
   budget,
+  confirmedLegs = [],
 }: UsePotBalancesParams) {
   const normalizedBaseCurrency = normalizeCurrency(baseCurrency);
   const settleThreshold = 0.01;
@@ -81,40 +85,62 @@ export function usePotBalances({
   }, [expenses, members, potId, normalizedBaseCurrency]);
 
   const computedBalances = useMemo(() => computeBalances(potForCalc), [potForCalc]);
+  const potSettlements = useMemo(
+    () =>
+      applyConfirmedLegAdjustments(
+        calculatePotSettlements(potForCalc as any, currentUserId),
+        members,
+        {
+          currentUserId,
+          potName: potForCalc.name,
+          baseCurrency: normalizedBaseCurrency,
+          confirmedLegs,
+        },
+      ),
+    [potForCalc, currentUserId, members, normalizedBaseCurrency, confirmedLegs]
+  );
   const settlementSuggestions = useMemo(() => suggestSettlements(computedBalances), [computedBalances]);
-  const netBalance = getMemberBalance(computedBalances, currentUserId);
+  const legacyNetBalance = getMemberBalance(computedBalances, currentUserId);
+  const netBalance = useMemo(() => {
+    const owedToYou = potSettlements.owedToYou.reduce((sum, person) => sum + person.totalAmount, 0);
+    const youOwe = potSettlements.youOwe.reduce((sum, person) => sum + person.totalAmount, 0);
+    const net = owedToYou - youOwe;
+    return Number.isFinite(net) ? net : legacyNetBalance;
+  }, [legacyNetBalance, potSettlements.owedToYou, potSettlements.youOwe]);
 
   const budgetPercentage = budget ? Math.min((totalExpenses / budget) * 100, 100) : 0;
   const budgetRemaining = budget ? Math.max(budget - totalExpenses, 0) : 0;
   const isOverBudget = budget ? totalExpenses > budget : false;
 
   const totalOutstanding = useMemo(() => {
-    const raw = computedBalances.reduce(
-      (sum, balance) => (balance.net > settleThreshold ? sum + balance.net : sum),
+    const raw = [...potSettlements.owedToYou, ...potSettlements.youOwe].reduce(
+      (sum, person) => sum + person.totalAmount,
       0
     );
     return raw > settleThreshold ? raw : 0;
-  }, [computedBalances, settleThreshold]);
+  }, [potSettlements.owedToYou, potSettlements.youOwe, settleThreshold]);
 
   const balances = useMemo(
-    () =>
-      computedBalances
-        .filter((b) => b.memberId !== currentUserId && Math.abs(b.net) > settleThreshold)
-        .map((b) => {
-          const member = members.find((m) => m.id === b.memberId);
-          if (!member) return null;
-          return { member, balance: b.net };
-        })
-        .filter(Boolean) as { member: Member; balance: number }[],
-    [computedBalances, currentUserId, members, settleThreshold]
+    () => [
+      ...potSettlements.owedToYou.map((person) => {
+        const member = members.find((m) => m.id === person.id);
+        return member ? { member, balance: person.totalAmount } : null;
+      }),
+      ...potSettlements.youOwe.map((person) => {
+        const member = members.find((m) => m.id === person.id);
+        return member ? { member, balance: -person.totalAmount } : null;
+      }),
+    ].filter(Boolean) as { member: Member; balance: number }[],
+    [members, potSettlements.owedToYou, potSettlements.youOwe]
   );
 
   const canSettle = useMemo(
     () =>
       expenses.length > 0 &&
       (balances.some((b) => Math.abs(b.balance) > settleThreshold) ||
-        settlementSuggestions.length > 0),
-    [expenses.length, balances, settlementSuggestions.length, settleThreshold]
+        potSettlements.owedToYou.length > 0 ||
+        potSettlements.youOwe.length > 0),
+    [expenses.length, balances, potSettlements.owedToYou.length, potSettlements.youOwe.length, settleThreshold]
   );
 
   return {

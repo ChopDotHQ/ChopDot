@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 import Decimal from 'decimal.js';
-import { Info } from 'lucide-react';
 import { TopBar } from '../TopBar';
 import { SettlementSummaryCard } from '../settle/settlement-summary-card';
 import { PaymentMethodSelector } from '../settle/payment-method-selector';
@@ -13,9 +12,9 @@ export function SettleHome({
   settlements = [],
   onBack,
   onConfirm,
-  onHistory,
-  scope = 'global',
-  scopeLabel,
+  onHistory: _onHistory,
+  scope: _scope = 'global',
+  scopeLabel: _scopeLabel,
   preferredMethod,
   baseCurrency = 'USD',
   onShowToast,
@@ -59,7 +58,9 @@ export function SettleHome({
 
   const formatAmount = (amount: number): string => {
     const abs = Math.abs(amount);
-    return `$${abs.toFixed(2)}`;
+    if (baseCurrency === 'USD') return `$${abs.toFixed(2)}`;
+    if (baseCurrency === 'DOT') return `${abs.toFixed(6)} DOT`;
+    return `${baseCurrency} ${abs.toFixed(2)}`;
   };
 
   const handleConfirm = useCallback(async () => {
@@ -79,13 +80,6 @@ export function SettleHome({
     onConfirm(selectedMethod, reference);
   }, [selectedMethod, bankReference, paypalEmail, twintPhone, onConfirm]);
 
-  const normalFlowTitle = isPaying
-    ? `You need to pay ${counterparty}`
-    : `Choose how you want to collect from ${counterparty}`;
-  const normalFlowDescription = isPaying
-    ? 'Choose the payment method you want to use for this payment.'
-    : 'Pick the method to collect payment.';
-
   if (showConfirmation) {
     return (
       <CashConfirmationScreen
@@ -98,27 +92,13 @@ export function SettleHome({
   }
 
   return (
-    <div className="flex flex-col h-full pb-[68px]">
+    <div className="flex flex-col h-full">
       <TopBar
-        title="Settle Up"
+        title={isPaying ? `Pay ${counterparty}` : `Collect from ${counterparty}`}
         onBack={onBack}
-        rightAction={onHistory ? (
-          <button onClick={onHistory} className="text-label text-foreground hover:opacity-80 transition-opacity">
-            History
-          </button>
-        ) : undefined}
       />
 
-      <div className="flex-1 overflow-auto p-4 space-y-4">
-        {scopeLabel && (
-          <div className="flex items-center gap-2 px-3 py-2 bg-muted/10 rounded-lg">
-            <span className="text-caption text-secondary">
-              {scope === 'pot' ? 'Settling:' : 'Across:'}
-            </span>
-            <span className="text-caption" style={{ fontWeight: 500 }}>{scopeLabel}</span>
-          </div>
-        )}
-
+      <div className="flex-1 overflow-auto px-4 pb-8 pt-6 space-y-6">
         <SettlementSummaryCard
           settlements={settlements}
           totalAmount={totalAmount}
@@ -127,18 +107,6 @@ export function SettleHome({
           assetSymbol={baseCurrency || 'USD'}
           formatAmount={formatAmount}
         />
-
-        <div className="card p-4 space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="mt-0.5 rounded-full bg-muted/15 p-2">
-              <Info className="w-4 h-4 text-foreground" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-body font-medium">{normalFlowTitle}</p>
-              <p className="text-caption text-secondary">{normalFlowDescription}</p>
-            </div>
-          </div>
-        </div>
 
         <PaymentMethodSelector
           selectedMethod={selectedMethod}
@@ -152,80 +120,68 @@ export function SettleHome({
         />
 
         {selectedMethod === 'cash' && (
-          <div className="card p-4">
+          <div className="px-1">
             <p className="text-caption text-secondary">
               {isPaying
-                ? 'Mark this payment as cash. No additional details needed.'
-                : 'Mark this payment as collected in cash. No additional details needed.'}
+                ? 'Record this as paid in cash.'
+                : 'Record this as received in cash.'}
             </p>
           </div>
         )}
 
         {selectedMethod === 'bank' && (
-          <div className="card p-4 space-y-3">
-            <p className="text-body font-medium">Bank transfer reference</p>
+          <div className="space-y-2">
+            <p className="text-label font-semibold px-1">Bank reference</p>
             <input
               type="text"
               value={bankReference}
               onChange={(e) => setBankReference(e.target.value)}
-              placeholder="Enter payment reference (optional)"
-              className="w-full px-3 py-2 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body"
+              placeholder="Bank note or transfer id"
+              className="w-full px-4 py-4 rounded-2xl bg-white/[0.10] text-body text-foreground placeholder:text-secondary focus:outline-none focus-ring-pink shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
             />
           </div>
         )}
 
         {selectedMethod === 'paypal' && (
-          <div className="card p-4 space-y-3">
-            <p className="text-body font-medium">PayPal email</p>
+          <div className="space-y-2">
+            <p className="text-label font-semibold px-1">PayPal email optional</p>
             <input
               type="email"
               value={paypalEmail}
               onChange={(e) => setPaypalEmail(e.target.value)}
               placeholder="paypal@example.com"
-              className="w-full px-3 py-2 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body"
+              className="w-full px-4 py-4 rounded-2xl bg-white/[0.10] text-body text-foreground placeholder:text-secondary focus:outline-none focus-ring-pink shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
             />
           </div>
         )}
 
         {selectedMethod === 'twint' && (
-          <div className="card p-4 space-y-3">
-            <p className="text-body font-medium">TWINT phone number</p>
+          <div className="space-y-2">
+            <p className="text-label font-semibold px-1">TWINT phone</p>
             <input
               type="tel"
               value={twintPhone}
               onChange={(e) => setTwintPhone(e.target.value)}
               placeholder="+41 79 000 00 00"
-              className="w-full px-3 py-2 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body"
+              className="w-full px-4 py-4 rounded-2xl bg-white/[0.10] text-body text-foreground placeholder:text-secondary focus:outline-none focus-ring-pink shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
             />
           </div>
         )}
-      </div>
 
-      <SettleFooter
-        selectedMethod={selectedMethod}
-        isSimulationMode={false}
-        walletConnected={false}
-        recipientAddress={undefined}
-        showConnectWalletNotice={false}
-        isValid={true}
-        isLoading={isSettling}
-        onConfirm={handleConfirm}
-        connectExtension={undefined}
-        onShowToast={onShowToast}
-        buttonLabelOverride={
-          !isPaying
-            ? selectedMethod === 'cash'
-              ? 'Mark cash collected'
-              : selectedMethod === 'bank'
-                ? 'Mark bank transfer collected'
-                : selectedMethod === 'paypal'
-                  ? 'Mark PayPal collected'
-                  : selectedMethod === 'twint'
-                    ? 'Mark TWINT collected'
-                    : 'Mark collected'
-            : undefined
-        }
-      />
+        <SettleFooter
+          selectedMethod={selectedMethod}
+          isSimulationMode={false}
+          walletConnected={false}
+          recipientAddress={undefined}
+          showConnectWalletNotice={false}
+          isValid={true}
+          isLoading={isSettling}
+          onConfirm={handleConfirm}
+          connectExtension={undefined}
+          onShowToast={onShowToast}
+          buttonLabelOverride={isPaying ? 'Mark paid' : 'Mark received'}
+        />
+      </div>
     </div>
   );
 }

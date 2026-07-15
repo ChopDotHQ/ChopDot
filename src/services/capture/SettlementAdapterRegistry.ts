@@ -16,6 +16,7 @@ const adapters: Record<SettlementRailId, SettlementAdapter> = {
   asset_hub: new ReferenceHandoffAdapter('asset_hub'),
   coinage: new ReferenceHandoffAdapter('coinage'),
   dot: new ReferenceHandoffAdapter('dot'),
+  pas: new ReferenceHandoffAdapter('pas'),
   paypal: new ReferenceHandoffAdapter('paypal'),
   usdc: new ReferenceHandoffAdapter('usdc'),
 };

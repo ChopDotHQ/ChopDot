@@ -8,23 +8,17 @@
  *   PATCH  /api/pots/:potId/settlements/:id/pay  — mark a leg paid (payer)
  *   PATCH  /api/pots/:potId/settlements/:id/confirm — confirm receipt (receiver)
  *
- * Auth: requests must include x-user-id header (Supabase user UUID).
- * Row-level security is enforced at the DB level; the header is used for
- * event logging only in this MVP phase.
+ * Auth: requests must include a Supabase bearer access token. The server
+ * verifies the token and resolves the caller to an active pot member.
  */
 
-import { Router, Request, Response, NextFunction } from "express";
+import { Router, Request, Response, NextFunction, type RequestHandler } from "express";
 import { prisma } from "../lib/prisma";
 import type { Prisma } from "../generated/prisma";
-
-export const settlementsRouter = Router({ mergeParams: true });
+import { getAuthenticatedPrincipal, requireAuth } from "../auth/authenticate";
+import { canProposeSettlement, findActivePotMember } from "../auth/authorizePotMember";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function getUserId(req: Request): string | null {
-  const id = req.headers["x-user-id"];
-  return typeof id === "string" && id.length > 0 ? id : null;
-}
 
 function packTxHash(fields: {
   method?: string;
@@ -92,9 +86,21 @@ async function appendEvent(
 
 // ─── GET /api/pots/:potId/settlements ────────────────────────────────────────
 
+export function createSettlementsRouter(
+  authenticate: RequestHandler = requireAuth,
+): Router {
+  const settlementsRouter = Router({ mergeParams: true });
+  settlementsRouter.use(authenticate);
+
 settlementsRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { potId } = req.params as { potId: string };
+    const principal = getAuthenticatedPrincipal(res);
+    const member = await findActivePotMember(potId, principal.userId);
+    if (!member) {
+      res.status(403).json({ error: "Active pot membership required" });
+      return;
+    }
     const rows = await prisma.settlement.findMany({
       where: { potId },
       orderBy: { createdAt: "desc" },
@@ -117,11 +123,21 @@ interface ProposeLegInput {
 settlementsRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { potId } = req.params as { potId: string };
-    const actorId = getUserId(req);
+    const principal = getAuthenticatedPrincipal(res);
     const legs: ProposeLegInput[] = req.body?.legs;
 
     if (!Array.isArray(legs) || legs.length === 0) {
       res.status(400).json({ error: "legs[] required" });
+      return;
+    }
+
+    const member = await findActivePotMember(potId, principal.userId);
+    if (!member) {
+      res.status(403).json({ error: "Active pot membership required" });
+      return;
+    }
+    if (!canProposeSettlement(member, legs)) {
+      res.status(403).json({ error: "Not authorized to propose these payments" });
       return;
     }
 
@@ -158,12 +174,9 @@ settlementsRouter.post("/", async (req: Request, res: Response, next: NextFuncti
       )
     );
 
-    // Write event
-    if (actorId) {
-      await appendEvent(potId, "chapter_proposed", actorId, {
-        legIds: created.map((l) => l.id),
-      });
-    }
+    await appendEvent(potId, "chapter_proposed", principal.userId, {
+      legIds: created.map((l) => l.id),
+    });
 
     res.status(201).json(created.map(toWire));
   } catch (err) {
@@ -176,12 +189,22 @@ settlementsRouter.post("/", async (req: Request, res: Response, next: NextFuncti
 settlementsRouter.patch("/:id/pay", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { potId, id } = req.params as { potId: string; id: string };
-    const actorId = getUserId(req);
+    const principal = getAuthenticatedPrincipal(res);
     const { method, reference } = req.body ?? {};
+
+    const member = await findActivePotMember(potId, principal.userId);
+    if (!member) {
+      res.status(403).json({ error: "Active pot membership required" });
+      return;
+    }
 
     const existing = await prisma.settlement.findUnique({ where: { id } });
     if (!existing || existing.potId !== potId) {
       res.status(404).json({ error: "Settlement not found" });
+      return;
+    }
+    if (existing.fromMemberId !== member.id) {
+      res.status(403).json({ error: "Only the payer can mark this payment paid" });
       return;
     }
     if (existing.status !== "pending") {
@@ -202,9 +225,7 @@ settlementsRouter.patch("/:id/pay", async (req: Request, res: Response, next: Ne
       data: { settlementId: id, method: method ?? "cash", reference: reference ?? null },
     });
 
-    if (actorId) {
-      await appendEvent(potId, "leg_marked_paid", actorId, { legId: id, method });
-    }
+    await appendEvent(potId, "leg_marked_paid", principal.userId, { legId: id, method });
 
     res.json(toWire(updated));
   } catch (err) {
@@ -217,11 +238,21 @@ settlementsRouter.patch("/:id/pay", async (req: Request, res: Response, next: Ne
 settlementsRouter.patch("/:id/confirm", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { potId, id } = req.params as { potId: string; id: string };
-    const actorId = getUserId(req);
+    const principal = getAuthenticatedPrincipal(res);
+
+    const member = await findActivePotMember(potId, principal.userId);
+    if (!member) {
+      res.status(403).json({ error: "Active pot membership required" });
+      return;
+    }
 
     const existing = await prisma.settlement.findUnique({ where: { id } });
     if (!existing || existing.potId !== potId) {
       res.status(404).json({ error: "Settlement not found" });
+      return;
+    }
+    if (existing.toMemberId !== member.id) {
+      res.status(403).json({ error: "Only the receiver can confirm this payment" });
       return;
     }
     if (existing.status !== "paid") {
@@ -240,15 +271,14 @@ settlementsRouter.patch("/:id/confirm", async (req: Request, res: Response, next
 
     // Fire event + remaining-count check in parallel
     const [, remaining] = await Promise.all([
-      actorId ? appendEvent(potId, "leg_confirmed", actorId, { legId: id }) : Promise.resolve(),
+      appendEvent(potId, "leg_confirmed", principal.userId, { legId: id }),
       prisma.settlement.count({ where: { potId, status: { not: "confirmed" } } }),
     ]);
 
     if (remaining === 0) {
-      const closerId = actorId ?? existing.toMemberId;
       // Close event and pot status update in parallel
       await Promise.all([
-        appendEvent(potId, "chapter_closed", closerId, {}),
+        appendEvent(potId, "chapter_closed", principal.userId, {}),
         prisma.pot.update({ where: { id: potId }, data: { status: "completed" } }),
       ]);
     }
@@ -259,13 +289,28 @@ settlementsRouter.patch("/:id/confirm", async (req: Request, res: Response, next
   }
 });
 
+  return settlementsRouter;
+}
+
+export const settlementsRouter = createSettlementsRouter();
+
 // ─── GET /api/pots/:potId/events ─────────────────────────────────────────────
 
-export const potEventsRouter = Router({ mergeParams: true });
+export function createPotEventsRouter(
+  authenticate: RequestHandler = requireAuth,
+): Router {
+  const potEventsRouter = Router({ mergeParams: true });
+  potEventsRouter.use(authenticate);
 
 potEventsRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { potId } = req.params as { potId: string };
+    const principal = getAuthenticatedPrincipal(res);
+    const member = await findActivePotMember(potId, principal.userId);
+    if (!member) {
+      res.status(403).json({ error: "Active pot membership required" });
+      return;
+    }
     const events = await prisma.potEvent.findMany({
       where: { potId },
       orderBy: { createdAt: "asc" },
@@ -284,3 +329,8 @@ potEventsRouter.get("/", async (req: Request, res: Response, next: NextFunction)
     next(err);
   }
 });
+
+  return potEventsRouter;
+}
+
+export const potEventsRouter = createPotEventsRouter();

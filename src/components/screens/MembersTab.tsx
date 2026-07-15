@@ -83,7 +83,7 @@ export function MembersTab({
 
           return (
             <div key={member.id} className="relative">
-              <div className="card p-3">
+              <div className="py-2">
                 <div className="flex items-center justify-between gap-3">
                   {/* Left: Avatar + Name + Info */}
                   <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -174,7 +174,7 @@ export function MembersTab({
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setOpenMenuId(null)} />
                   <div
-                    className="absolute right-0 top-full mt-1 w-48 card p-1 z-50"
+                    className="absolute right-0 top-full mt-1 w-48 bg-card border border-border shadow-md rounded-lg p-1 z-50"
                     style={{ boxShadow: 'var(--shadow-fab)' }}
                   >
                     {canEditMember && (

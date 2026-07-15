@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { getSupabase } from '../utils/supabase-client';
+import { getApiAuthHeaders } from '../utils/apiAuthHeaders';
 
 const API_BASE =
   (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:3001';
@@ -11,13 +11,7 @@ export interface PendingActionSummary {
 }
 
 async function fetchPendingActions(userId: string): Promise<PendingActionSummary[]> {
-  const client = getSupabase();
-  const headers: HeadersInit = {};
-  if (client) {
-    const { data } = await client.auth.getSession();
-    const uid = data.session?.user?.id;
-    if (uid) headers['x-user-id'] = uid;
-  }
+  const headers = await getApiAuthHeaders();
   const res = await fetch(`${API_BASE}/api/users/${encodeURIComponent(userId)}/pending-actions`, { headers });
   if (!res.ok) throw new Error(`[usePendingActions] ${res.status}`);
   return res.json() as Promise<PendingActionSummary[]>;

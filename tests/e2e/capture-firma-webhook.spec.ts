@@ -106,10 +106,10 @@ test.describe('Capture Firma webhook claim (P2 lite C17)', () => {
     await page.reload();
     await page.getByRole('button', { name: 'Friday Crew' }).click();
     await page.getByTestId('pot-open-spend-card').click();
-    await expect(page.getByTestId('capture-chapter-status')).toContainText('Marked paid, waiting confirmation', {
+    await expect(page.getByTestId('capture-chapter-status')).toContainText('Marked paid', {
       timeout: 10_000,
     });
-    await expect(page.getByTestId('capture-group-guidance')).toContainText('Receivers should confirm only after money arrives');
+    await expect(page.getByTestId('capture-group-guidance')).toContainText('waiting for confirmation');
     await expect(page.getByTestId('capture-chapter-status')).toContainText('3 shares open', {
       timeout: 10_000,
     });

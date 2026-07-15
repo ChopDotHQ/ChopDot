@@ -2,7 +2,7 @@ export type { AppRouterProps } from '../routing/screen-props/types';
 import type { AppRouterProps } from '../routing/screen-props/types';
 
 import { renderActivityHome, renderPotsHome, renderPeopleHome, renderYouTab } from '../routing/screen-props/tab-screens';
-import { renderPotHome, renderAddExpense, renderEditExpense, renderExpenseDetail } from '../routing/screen-props/pot-screens';
+import { renderPotHome, renderAddExpense, renderEditExpense, renderExpenseDetail, renderSpendCard, renderCaptureHandoff, renderCaptureConfirm, renderCaptureLinkError, renderCloseoutReview } from '../routing/screen-props/pot-screens';
 import { renderSettleSelection, renderSettleHome, renderSettlementHistory, renderSettlementConfirmation } from '../routing/screen-props/settle-screens';
 import { renderSettings, renderMemberDetail, renderCreatePot } from '../routing/screen-props/misc-screens';
 
@@ -16,10 +16,15 @@ const screenRenderers: Record<string, (ctx: AppRouterProps) => React.ReactElemen
     "add-expense": renderAddExpense,
     "edit-expense": renderEditExpense,
     "expense-detail": renderExpenseDetail,
+    "spend-card": renderSpendCard,
+    "capture-handoff": renderCaptureHandoff,
+    "capture-confirm": renderCaptureConfirm,
+    "capture-link-error": renderCaptureLinkError,
     "settle-selection": renderSettleSelection,
     "settle-home": renderSettleHome,
     "settlement-history": renderSettlementHistory,
     "settlement-confirmation": renderSettlementConfirmation,
+    "closeout-review": renderCloseoutReview,
     "settings": renderSettings,
     "member-detail": renderMemberDetail,
     "create-pot": renderCreatePot,

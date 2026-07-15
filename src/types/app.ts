@@ -103,6 +103,17 @@ export interface Pot {
     updatedAt?: number;
     lastEditAt?: string;
     events?: PotEvent[];
+    // Chapter/Dot integration fields
+    chapterMode?: string;
+    dotChapter?: any;
+    dotActiveAgentId?: string;
+    potIntent?: string;
+    dotAgents?: any[];
+    dotRail?: any;
+    dotEvents?: any[];
+    dotReleaseTemplate?: any;
+    history?: any[];
+    closeouts?: any[];
 }
 
 export interface Settlement {
@@ -134,3 +145,8 @@ export interface Person {
     potCount: number;
     address?: string;
 }
+
+export type ChapterPotMode = any;
+export type ChapterPotAgent = any;
+export type ChapterPotEvent = any;
+export type ChapterPotReleaseTemplate = any;

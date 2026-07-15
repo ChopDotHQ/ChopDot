@@ -60,7 +60,7 @@ test.describe('Capture wallet pass spend (P2 lite C15)', () => {
 
     await page.getByRole('button', { name: 'Friday Crew' }).click();
     await page.getByTestId('pot-open-spend-card').click();
-    await expect(page.getByTestId('spend-entry-guide')).toContainText('Use at checkout');
+    await expect(page.getByTestId('spend-entry-guide')).toContainText('Split this payment');
 
     const token = await page.evaluate(() => {
       const newToken = `cap_spend_${Date.now()}`;
@@ -84,7 +84,7 @@ test.describe('Capture wallet pass spend (P2 lite C15)', () => {
 
     await page.goto(`/spend?t=${token}`);
     await expect(page.getByTestId('spend-card-screen')).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('spend-entry-guide')).toContainText('Use at checkout');
+    await expect(page.getByTestId('spend-entry-guide')).toContainText('Split this payment');
     await expect(page.getByTestId('receipt-placeholder')).toContainText('TWINT');
     await expect(page.getByTestId('spend-card-add-receipt')).toBeVisible();
   });

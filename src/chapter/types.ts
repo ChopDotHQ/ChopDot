@@ -59,6 +59,7 @@ export type SpendCardConfig = {
     | 'asset_hub'
     | 'coinage'
     | 'dot'
+    | 'pas'
     | 'usdc'
     | 'paypal'
     | 'firma';

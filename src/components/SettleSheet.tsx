@@ -1,6 +1,6 @@
 import { X, Check } from "lucide-react";
 import { useState } from "react";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 
 interface SettleSheetProps {
   personId: string;

@@ -46,7 +46,7 @@ export function CaptureShareActions({
 
   return (
     <>
-      <div className={variant === 'compact' ? 'grid grid-cols-[1fr_auto_auto] gap-2' : 'flex flex-wrap gap-2'}>
+      <div className={variant === 'compact' ? 'grid grid-cols-1 gap-2' : 'flex flex-wrap gap-2'}>
         <button
           type="button"
           className={variant === 'compact'
@@ -57,26 +57,26 @@ export function CaptureShareActions({
         >
           {variant === 'compact' ? 'Share' : 'Share link'}
         </button>
-        <button
-          type="button"
-          className={variant === 'compact'
-            ? 'px-3 py-2 rounded-xl text-caption bg-white border border-border'
-            : 'px-3 py-2 rounded-lg border border-border text-caption'}
-          data-testid="capture-copy-link"
-          onClick={() => void handleCopy()}
-        >
-          Copy
-        </button>
-        <button
-          type="button"
-          className={variant === 'compact'
-            ? 'px-3 py-2 rounded-xl text-caption bg-white border border-border'
-            : 'px-3 py-2 rounded-lg border border-border text-caption'}
-          data-testid="capture-show-qr"
-          onClick={() => setShowQr(true)}
-        >
-          QR
-        </button>
+        {variant !== 'compact' && (
+          <>
+            <button
+              type="button"
+              className="px-3 py-2 rounded-lg border border-border text-caption"
+              data-testid="capture-copy-link"
+              onClick={() => void handleCopy()}
+            >
+              Copy
+            </button>
+            <button
+              type="button"
+              className="px-3 py-2 rounded-lg border border-border text-caption"
+              data-testid="capture-show-qr"
+              onClick={() => setShowQr(true)}
+            >
+              QR
+            </button>
+          </>
+        )}
       </div>
       {showQr && (
         <CaptureQRModal

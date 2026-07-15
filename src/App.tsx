@@ -16,6 +16,8 @@ import { useTabNavigation } from './hooks/useTabNavigation';
 import { useFabState } from './hooks/useFabState';
 import { useScreenValidation } from './hooks/useScreenValidation';
 import { getInitialScreenFromLocation, useUrlSync } from './hooks/useUrlSync';
+import { useCaptureLinkFlow } from './hooks/useCaptureLinkFlow';
+import { captureLinkService } from './services/capture/CaptureLinkService';
 import { useInviteFlow } from './hooks/useInviteFlow';
 import { useDerivedData } from './hooks/useDerivedData';
 import { usePotState } from './hooks/usePotState';
@@ -27,6 +29,7 @@ import { useAppActions } from './hooks/useAppActions';
 import { usePersistedPaymentMethods } from './hooks/usePersistedPaymentMethods';
 import { ScreenErrorBoundary } from './components/ScreenErrorBoundary';
 import type { Pot } from './types/app';
+import { AmbientBackground } from './components/ui/AmbientBackground';
 
 // PaymentMethod type inline since PaymentMethods screen was removed
 export interface PaymentMethod {
@@ -84,6 +87,15 @@ function AppContent() {
 
   const potState = usePotState({ authLoading, isAuthenticated, user, isGuest, account, screen, stack, showToast });
   useEnsureUserProfile(authLoading, isAuthenticated, user?.id, userEmail);
+
+  useCaptureLinkFlow({
+    captureLinkService,
+    authLoading,
+    isAuthenticated,
+    reset,
+    setCurrentPotId: potState.setCurrentPotId,
+    showToast,
+  });
 
   const inviteFlow = useInviteFlow({
     inviteService, authLoading, isAuthenticated, userId: user?.id,
@@ -146,7 +158,7 @@ function AppContent() {
 
   if (authLoading) {
     return (
-      <div className="app-shell bg-background flex items-center justify-center">
+      <div className="app-shell flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 rounded-3xl flex items-center justify-center" style={{ background: 'var(--accent)' }}>
             <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin" />
@@ -166,7 +178,7 @@ function AppContent() {
   }
 
   return (
-    <div className="app-shell bg-background overflow-hidden">
+    <div className="app-shell overflow-hidden">
       <Suspense fallback={
         <div className="flex flex-col items-center justify-center h-full gap-3">
           <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'var(--accent)' }}>
@@ -261,6 +273,7 @@ export default function App() {
   return (
     <FeatureFlagsProvider>
       <AuthProvider>
+        <AmbientBackground />
         <AppContent />
       </AuthProvider>
     </FeatureFlagsProvider>

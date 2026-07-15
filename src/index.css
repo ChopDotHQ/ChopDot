@@ -391,6 +391,8 @@
 
   body {
     background-color: var(--background);
+    background-image: var(--bg-gradient, none);
+    background-attachment: fixed;
     color: var(--foreground);
   }
 
@@ -2813,14 +2815,19 @@
   }
 
   .bg-app {
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image: var(--bg-gradient, none);
+    background-attachment: fixed;
     color: var(--ink);
   }
 
   .card {
     background: var(--card);
+    border: 1px solid var(--border);
     border-radius: var(--r-xl);
-    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
   .hero-card {
@@ -2972,16 +2979,17 @@
 }
 
 :root {
-  --bg: #f2f2f7;
-  --card: #fff;
-  --ink: #000;
-  --muted: #8e8e93;
-  --text-secondary: #606066;
+  --bg: #09090b;
+  --bg-gradient: radial-gradient(circle at 50% 0%, rgba(230, 0, 122, 0.08) 0%, rgba(9, 9, 11, 1) 50%, rgba(9, 9, 11, 1) 100%);
+  --card: rgba(255, 255, 255, 0.03);
+  --ink: #ffffff;
+  --muted: rgba(255, 255, 255, 0.4);
+  --text-secondary: rgba(255, 255, 255, 0.6);
   --accent: #e6007a;
   --accent-orange: #ff9500;
   --success: #19c37d;
   --danger: #e5484d;
-  --border: #0000000f;
+  --border: rgba(255, 255, 255, 0.08);
   --r-lg: 12px;
   --r-xl: 16px;
   --r-2xl: 24px;
@@ -2992,7 +3000,7 @@
   --sh-l1: 0 .5px 2px #0000000a, 0 1px 2px #00000005;
   --sh-l2: 0 2px 8px #0000001a, 0 4px 12px #0000000f;
   --sh-l3: 0 4px 16px #0000001f, 0 8px 24px #00000014;
-  --shadow-card: var(--sh-l1);
+  --shadow-card: none;
   --shadow-fab: var(--sh-l2);
   --shadow-elev: var(--sh-l3);
   --text-screen-title: 17px;
@@ -3012,10 +3020,10 @@
   --foreground: var(--ink);
   --card-foreground: var(--ink);
   --muted-foreground: var(--muted);
-  --popover: #fff;
+  --popover: rgba(20, 20, 25, 0.8);
   --popover-foreground: var(--ink);
   --primary: var(--ink);
-  --primary-foreground: #fff;
+  --primary-foreground: #000;
   --secondary: #f5f5f5;
   --secondary-foreground: var(--ink);
   --accent-foreground: #fff;
@@ -3049,16 +3057,17 @@
 }
 
 .dark {
-  --bg: #000;
-  --card: #1c1c1e;
-  --ink: #fff;
-  --muted: #8e8e93;
-  --text-secondary: #aeaeb2;
-  --border: #ffffff14;
+  --bg: #09090b;
+  --bg-gradient: radial-gradient(circle at 50% 0%, rgba(230, 0, 122, 0.08) 0%, rgba(9, 9, 11, 1) 50%, rgba(9, 9, 11, 1) 100%);
+  --card: rgba(255, 255, 255, 0.03);
+  --ink: #ffffff;
+  --muted: rgba(255, 255, 255, 0.4);
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --border: rgba(255, 255, 255, 0.08);
   --sh-l1: 0 1px 3px #0006;
   --sh-l2: 0 4px 12px #00000080;
   --sh-l3: 0 6px 20px #0009;
-  --shadow-card: var(--sh-l1);
+  --shadow-card: none;
   --shadow-fab: var(--sh-l2);
   --shadow-elev: var(--sh-l3);
   --background: var(--bg);
@@ -3099,16 +3108,17 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --bg: #000;
-    --card: #1c1c1e;
-    --ink: #fff;
-    --muted: #8e8e93;
-    --text-secondary: #aeaeb2;
-    --border: #ffffff14;
+    --bg: #09090b;
+    --bg-gradient: radial-gradient(circle at 50% 0%, rgba(230, 0, 122, 0.08) 0%, rgba(9, 9, 11, 1) 50%, rgba(9, 9, 11, 1) 100%);
+    --card: rgba(255, 255, 255, 0.03);
+    --ink: #ffffff;
+    --muted: rgba(255, 255, 255, 0.4);
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --border: rgba(255, 255, 255, 0.08);
     --sh-l1: 0 1px 3px #0006;
     --sh-l2: 0 4px 12px #00000080;
     --sh-l3: 0 6px 20px #0009;
-    --shadow-card: var(--sh-l1);
+    --shadow-card: none;
     --shadow-fab: var(--sh-l2);
     --shadow-elev: var(--sh-l3);
     --background: var(--bg);

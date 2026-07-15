@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import express from 'express';
+import express, { type RequestHandler } from 'express';
 import request from 'supertest';
-import { settlementsRouter } from '../routes/settlements';
+import { createSettlementsRouter } from '../routes/settlements';
 
 // ─── Mock Prisma ──────────────────────────────────────────────────────────────
 
@@ -23,6 +23,9 @@ vi.mock('../lib/prisma', () => ({
     pot: {
       update: vi.fn(),
     },
+    potMember: {
+      findFirst: vi.fn(),
+    },
     $transaction: vi.fn(),
   },
 }));
@@ -32,10 +35,21 @@ import { prisma } from '../lib/prisma';
 
 // ─── App factory ─────────────────────────────────────────────────────────────
 
+const authenticateForRouteTests: RequestHandler = (req, res, next) => {
+  const authorization = req.header('authorization');
+  res.locals.principal = Object.freeze({
+    userId: authorization === 'Bearer bob-token' ? 'user-bob' : 'user-alice',
+  });
+  next();
+};
+
 function buildApp() {
   const app = express();
   app.use(express.json());
-  app.use('/api/pots/:potId/settlements', settlementsRouter);
+  app.use(
+    '/api/pots/:potId/settlements',
+    createSettlementsRouter(authenticateForRouteTests),
+  );
   app.use(
     (
       err: unknown,
@@ -48,6 +62,24 @@ function buildApp() {
     },
   );
   return app;
+}
+
+function mockActiveMember(
+  overrides: Partial<{
+    id: string;
+    userId: string;
+    role: string;
+  }> = {},
+) {
+  vi.mocked(prisma.potMember.findFirst).mockResolvedValue({
+    id: 'alice',
+    userId: 'user-alice',
+    potId: 'pot-abc',
+    role: 'owner',
+    status: 'active',
+    joinedAt: null,
+    ...overrides,
+  } as any);
 }
 
 // ─── Shared test data ─────────────────────────────────────────────────────────
@@ -86,6 +118,7 @@ describe('GET /api/pots/:potId/settlements', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockActiveMember();
   });
 
   it('returns 200 with an array of wire-shaped legs', async () => {
@@ -140,6 +173,7 @@ describe('POST /api/pots/:potId/settlements', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockActiveMember();
     vi.mocked(prisma.potEvent.create).mockResolvedValue({} as any);
   });
 
@@ -163,7 +197,6 @@ describe('POST /api/pots/:potId/settlements', () => {
 
     const res = await request(app)
       .post('/api/pots/pot-abc/settlements')
-      .set('x-user-id', 'user-alice')
       .send({
         legs: [{ fromMemberId: 'alice', toMemberId: 'bob', amount: 12.5, currency: 'CHF' }],
       });
@@ -174,13 +207,13 @@ describe('POST /api/pots/:potId/settlements', () => {
     expect(res.body[0].status).toBe('pending');
   });
 
-  it('writes a chapter_proposed event when x-user-id is provided', async () => {
+  it('attributes chapter_proposed to the authenticated principal', async () => {
     const createdRow = makeDbRow({ id: 'leg-new' });
     vi.mocked(prisma.$transaction).mockResolvedValueOnce([createdRow] as any);
 
     await request(app)
       .post('/api/pots/pot-abc/settlements')
-      .set('x-user-id', 'user-alice')
+      .set('x-user-id', 'forged-user')
       .send({
         legs: [{ fromMemberId: 'alice', toMemberId: 'bob', amount: 5, currency: 'CHF' }],
       });
@@ -192,7 +225,7 @@ describe('POST /api/pots/:potId/settlements', () => {
     );
   });
 
-  it('does not write an event when x-user-id header is absent', async () => {
+  it('writes an attributable event without an x-user-id header', async () => {
     vi.mocked(prisma.$transaction).mockResolvedValueOnce([makeDbRow()] as any);
 
     await request(app)
@@ -201,7 +234,11 @@ describe('POST /api/pots/:potId/settlements', () => {
         legs: [{ fromMemberId: 'alice', toMemberId: 'bob', amount: 5, currency: 'CHF' }],
       });
 
-    expect(prisma.potEvent.create).not.toHaveBeenCalled();
+    expect(prisma.potEvent.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ type: 'chapter_proposed', actorId: 'user-alice' }),
+      }),
+    );
   });
 });
 
@@ -212,6 +249,7 @@ describe('PATCH /api/pots/:potId/settlements/:id/pay', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockActiveMember();
     vi.mocked(prisma.potEvent.create).mockResolvedValue({} as any);
     vi.mocked(prisma.payment.create).mockResolvedValue({} as any);
   });
@@ -260,7 +298,6 @@ describe('PATCH /api/pots/:potId/settlements/:id/pay', () => {
 
     const res = await request(app)
       .patch('/api/pots/pot-abc/settlements/leg-1/pay')
-      .set('x-user-id', 'user-alice')
       .send({ method: 'bank', reference: 'ref-999' });
 
     expect(res.status).toBe(200);
@@ -293,6 +330,7 @@ describe('PATCH /api/pots/:potId/settlements/:id/confirm', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockActiveMember({ id: 'bob', userId: 'user-bob', role: 'member' });
     vi.mocked(prisma.potEvent.create).mockResolvedValue({} as any);
     vi.mocked(prisma.pot.update).mockResolvedValue({} as any);
   });
@@ -300,7 +338,9 @@ describe('PATCH /api/pots/:potId/settlements/:id/confirm', () => {
   it('returns 404 when the leg is not found', async () => {
     vi.mocked(prisma.settlement.findUnique).mockResolvedValueOnce(null);
 
-    const res = await request(app).patch('/api/pots/pot-abc/settlements/leg-1/confirm');
+    const res = await request(app)
+      .patch('/api/pots/pot-abc/settlements/leg-1/confirm')
+      .set('Authorization', 'Bearer bob-token');
     expect(res.status).toBe(404);
     expect(res.body.error).toBe('Settlement not found');
   });
@@ -310,7 +350,9 @@ describe('PATCH /api/pots/:potId/settlements/:id/confirm', () => {
       makeDbRow({ status: 'pending' }) as any,
     );
 
-    const res = await request(app).patch('/api/pots/pot-abc/settlements/leg-1/confirm');
+    const res = await request(app)
+      .patch('/api/pots/pot-abc/settlements/leg-1/confirm')
+      .set('Authorization', 'Bearer bob-token');
     expect(res.status).toBe(409);
     expect(res.body.error).toContain("status is 'pending'");
   });
@@ -320,7 +362,9 @@ describe('PATCH /api/pots/:potId/settlements/:id/confirm', () => {
       makeDbRow({ status: 'confirmed' }) as any,
     );
 
-    const res = await request(app).patch('/api/pots/pot-abc/settlements/leg-1/confirm');
+    const res = await request(app)
+      .patch('/api/pots/pot-abc/settlements/leg-1/confirm')
+      .set('Authorization', 'Bearer bob-token');
     expect(res.status).toBe(409);
     expect(res.body.error).toContain("status is 'confirmed'");
   });
@@ -338,7 +382,7 @@ describe('PATCH /api/pots/:potId/settlements/:id/confirm', () => {
 
     const res = await request(app)
       .patch('/api/pots/pot-abc/settlements/leg-1/confirm')
-      .set('x-user-id', 'user-bob');
+      .set('Authorization', 'Bearer bob-token');
 
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('confirmed');
@@ -354,7 +398,7 @@ describe('PATCH /api/pots/:potId/settlements/:id/confirm', () => {
 
     await request(app)
       .patch('/api/pots/pot-abc/settlements/leg-1/confirm')
-      .set('x-user-id', 'user-bob');
+      .set('Authorization', 'Bearer bob-token');
 
     expect(prisma.pot.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -381,7 +425,7 @@ describe('PATCH /api/pots/:potId/settlements/:id/confirm', () => {
 
     await request(app)
       .patch('/api/pots/pot-abc/settlements/leg-1/confirm')
-      .set('x-user-id', 'user-bob');
+      .set('Authorization', 'Bearer bob-token');
 
     expect(prisma.pot.update).not.toHaveBeenCalled();
   });

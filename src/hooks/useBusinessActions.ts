@@ -105,7 +105,8 @@ export const useBusinessActions = ({
     const baseCurrency = isBaseCurrency(rawBaseCurrency) ? rawBaseCurrency : "USD";
 
     try {
-      const chapterPot = newPot.chapterMode ? createChapterPot(newPot.chapterMode) : null;
+      const chapterMode = newPot.chapterMode;
+      const chapterPot = chapterMode ? createChapterPot(chapterMode as any) : null;
       const createDto = {
         name: newPot.name || chapterPot?.name || "Unnamed Pot",
         type: chapterPot?.type || newPot.type || "expense",
@@ -247,7 +248,6 @@ export const useBusinessActions = ({
       }
 
       replace({ type: "pot-home", potId });
-      showToast("Expense added successfully!", "success");
     } catch (error) {
       warnDev("[DataLayer] Service addExpense failed", error);
       const message = getErrorMessage(error);

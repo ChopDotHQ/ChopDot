@@ -75,21 +75,26 @@ test.describe('Capture spend loop (P1a)', () => {
     await page.waitForURL('**/pots', { timeout: 10_000 });
 
     await openCapturePot(page);
-    await expect(page.getByTestId('pot-open-spend-card')).toContainText('Use at checkout');
-    await expect(page.getByTestId('pot-open-spend-card')).toContainText('TWINT');
+    await expect(page.getByTestId('pot-open-spend-card')).toContainText('Split this payment');
+    await expect(page.getByTestId('pot-open-spend-card')).toContainText('CHF');
     await openSpendCard(page);
     await expect(page.getByTestId('spend-entry-guide')).toContainText('Friday Crew');
+    await expect(page.getByTestId('spend-entry-guide')).toContainText('Add receipt');
     await expect(page.getByTestId('receipt-placeholder')).toContainText('With Leo, Nina');
     await expect(page.getByTestId('receipt-placeholder')).toContainText('TWINT');
     await expect(page.locator('body')).not.toContainText(
       /evidence|rail|kernel|adapter|obligation|chapter|test-token|raw JSON|protocol|settlement|native|state machine/i,
     );
     await expect(page.getByTestId('spend-card-checkout-capture')).not.toBeVisible();
-    await expect(page.getByTestId('spend-card-add-receipt')).toContainText('Scan receipt');
+    await expect(page.getByTestId('spend-card-add-receipt')).toContainText('Add receipt');
+    await expect(page.getByTestId('spend-card-paste-link')).toContainText('Paste payment link');
+    await expect(page.getByTestId('spend-card-enter-total')).toContainText('Enter total instead');
+    await expect(page.getByTestId('spend-card-quick-amount')).toHaveCount(0);
+    await expect(page.getByTestId('spend-card-pay-now')).toHaveCount(0);
     await expect(page.getByTestId('receipt-item-add')).toHaveCount(0);
     await page.getByTestId('spend-card-paste-link').click();
 
-    await expect(page.getByTestId('spend-card-checkout-capture')).toContainText('Receipt or payment link');
+    await expect(page.getByTestId('spend-card-checkout-capture')).toContainText('Paste payment link');
     await page
       .getByTestId('spend-card-checkout-evidence')
       .fill('w3spay://request?amount=120&currency=CHF&merchant=Cafe%20Zola&memo=Dinner&status=failed');
@@ -109,7 +114,6 @@ test.describe('Capture spend loop (P1a)', () => {
         'Total CHF 120.00',
       ].join('\n')),
     });
-    await expect(page.getByTestId('spend-card-checkout-notice')).toContainText('Receipt read');
     await expect(page.getByTestId('spend-card-evidence-summary')).toContainText('Receipt');
     await expect(page.getByTestId('spend-card-evidence-summary')).toContainText('Zurich Trattoria');
     await expect(page.getByTestId('spend-card-evidence-summary')).toContainText('Saved');
@@ -122,15 +126,15 @@ test.describe('Capture spend loop (P1a)', () => {
     await expect(page.getByTestId('spend-card-receipt-items')).toContainText('Wine');
     await expect(page.getByTestId('receipt-item-total')).toContainText('120.00 CHF');
     await expect(page.getByTestId('spend-card-rail-choice')).toContainText('Change payment app · TWINT');
-    await expect(page.getByTestId('spend-card-pay-now')).toContainText('Send TWINT links');
+    await expect(page.getByTestId('spend-card-pay-now')).toContainText('Split this payment');
 
     await page.getByTestId('spend-card-pay-now').click();
 
-    await expect(page.getByTestId('capture-chapter-status')).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('capture-chapter-status')).toContainText('2 shares open');
-    await expect(page.getByTestId('capture-group-guidance')).toContainText('need to be marked paid');
-    await expect(page.getByTestId('capture-action-queue')).toContainText('Leo marks paid');
-    await expect(page.getByTestId('capture-action-queue')).toContainText('Mark paid tells the group');
+    await expect(page.getByTestId('spend-card-created-summary')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId('spend-card-created-summary')).toContainText('Pay links');
+    await expect(page.getByText('Leo → Mina · 40.00 CHF')).toBeVisible();
+    await expect(page.getByText('Nina → Mina · 40.00 CHF')).toBeVisible();
+    await expect(page.getByTestId('capture-chapter-status')).toHaveCount(0);
 
     await setActingMember(page, 'leo');
     await page.reload();
@@ -140,26 +144,26 @@ test.describe('Capture spend loop (P1a)', () => {
     const markPaidButton = page.locator('[data-testid$="-mark-paid"]').first();
     await expect(markPaidButton).toBeEnabled({ timeout: 10_000 });
     await markPaidButton.click();
-    await expect(page.getByTestId('capture-chapter-status')).toContainText('Marked paid, waiting confirmation');
-    await expect(page.getByTestId('capture-group-guidance')).toContainText('Receivers should confirm only after money arrives');
-    await expect(page.getByTestId('capture-action-queue')).toContainText('Receiver confirms next');
-    await expect(page.getByTestId('capture-action-queue')).toContainText('Your payment update is recorded');
-    await expect(page.getByTestId('capture-action-queue')).toContainText('Confirm received means the money arrived');
+    await expect(page.getByTestId('capture-chapter-status')).toContainText('Marked paid');
+    await expect(page.getByTestId('capture-group-guidance')).toContainText('waiting for confirmation');
+    await expect(page.getByTestId('capture-action-queue')).toContainText('Waiting to confirm');
 
     await setActingMember(page, 'owner');
     await page.reload();
     await openCapturePot(page);
+    await openSpendCard(page);
 
     const confirmButton = page.locator('button[data-testid$="-confirm"]').first();
     await expect(confirmButton).toBeEnabled({ timeout: 10_000 });
     await expect(confirmButton).toHaveText('Confirm received');
-    await expect(page.getByTestId('capture-action-queue')).toContainText('Your turn: confirm received');
-    await expect(page.getByTestId('capture-action-queue')).toContainText("Confirm only if Leo's money arrived");
+    await expect(page.getByTestId('capture-action-queue')).toContainText('Your turn');
+    await expect(page.getByTestId('capture-action-queue')).toContainText('Confirm Leo');
     await confirmButton.click();
 
-    await expect(page.getByTestId('capture-chapter-status')).toContainText('1 share open', {
+    await expect(page.getByTestId('spend-card-created-summary')).toContainText('1 open', {
       timeout: 10_000,
     });
+    await expect(page.getByTestId('capture-chapter-status')).toHaveCount(0);
 
     await setActingMember(page, 'nina');
     await page.goto('/pots');
@@ -169,7 +173,7 @@ test.describe('Capture spend loop (P1a)', () => {
     const ninaMarkPaidButton = page.locator('[data-testid$="-mark-paid"]').first();
     await expect(ninaMarkPaidButton).toBeEnabled({ timeout: 10_000 });
     await ninaMarkPaidButton.click();
-    await expect(page.getByTestId('capture-chapter-status')).toContainText('Marked paid, waiting confirmation');
+    await expect(page.getByTestId('capture-chapter-status')).toContainText('Marked paid');
 
     await setActingMember(page, 'owner');
     await page.goto('/pots');
@@ -178,10 +182,10 @@ test.describe('Capture spend loop (P1a)', () => {
 
     const ninaConfirmButton = page.locator('button[data-testid$="-confirm"]').first();
     await expect(ninaConfirmButton).toBeEnabled({ timeout: 10_000 });
-    await expect(page.getByTestId('capture-action-queue')).toContainText("Confirm only if Nina's money arrived");
+    await expect(page.getByTestId('capture-action-queue')).toContainText('Confirm Nina');
     await ninaConfirmButton.click();
 
-    await expect(page.getByTestId('capture-ready-to-close')).toContainText('ready to close', {
+    await expect(page.getByTestId('capture-ready-to-close')).toContainText('All shares confirmed', {
       timeout: 10_000,
     });
     await page.getByTestId('capture-close-record').click();

@@ -113,7 +113,7 @@ export function useChapterState({
         setLegs(updatedLegs);
 
         if (updatedLegs.every(l => l.status === 'confirmed')) {
-          onShowToast?.('Chapter closed — all payments confirmed', 'success');
+          onShowToast?.('Record saved \u2014 all payments confirmed', 'success');
         } else {
           onShowToast?.('Payment confirmed', 'success');
         }

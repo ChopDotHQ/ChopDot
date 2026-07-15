@@ -24,17 +24,16 @@ export function SettlementHandoffPanel({
   };
 
   return (
-    <div className="card p-4 space-y-3" data-testid={`handoff-panel-${handoff.railId}`}>
+    <div className="rounded-[24px] bg-white/[0.055] p-5 space-y-4 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]" data-testid={`handoff-panel-${handoff.railId}`}>
       <div>
-        <p className="text-micro text-secondary">Payment app</p>
-        <p className="text-body font-medium mt-1">{handoff.title}</p>
-        <p className="text-caption text-secondary mt-1" data-testid="handoff-status-label">
-          {handoff.statusLabel}
-        </p>
+        <p className="text-caption text-secondary">Payment app</p>
+        <p className="text-screen-title font-semibold mt-1">{handoff.title}</p>
+        {handoff.statusLabel && !/ready to pay/i.test(handoff.statusLabel) && (
+          <p className="text-caption text-secondary mt-1" data-testid="handoff-status-label">
+            {handoff.statusLabel}
+          </p>
+        )}
       </div>
-      <p className="text-caption text-secondary">
-        Copy these details into your payment app. The receiver confirms what arrived.
-      </p>
 
       {handoff.railId === 'twint' && onTwintPhoneChange && (
         <div>
@@ -44,7 +43,7 @@ export function SettlementHandoffPanel({
             value={twintPhone}
             onChange={(event) => onTwintPhoneChange(event.target.value)}
             placeholder="+41 79 123 45 67"
-            className="w-full px-3 py-2 input-field text-body"
+            className="w-full px-4 py-4 rounded-2xl bg-black/20 text-body outline-none focus-ring-pink shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
             data-testid="handoff-twint-phone"
           />
         </div>
@@ -56,11 +55,24 @@ export function SettlementHandoffPanel({
         </p>
       )}
 
+      {(handoff.railId === 'dot' || handoff.railId === 'usdc' || handoff.railId === 'pas') && (
+        <div className="rounded-2xl bg-black/20 p-4 space-y-3">
+          <div className="flex items-start gap-2">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-white text-[11px] font-semibold">1</span>
+            <p className="text-caption text-secondary">Open your wallet and approve this payment.</p>
+          </div>
+          <div className="flex items-start gap-2">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10 text-white text-[11px] font-semibold">2</span>
+            <p className="text-caption text-secondary">Return here and check that it arrived.</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2 pt-1">
         <button
           type="button"
           onClick={() => void handleCopy()}
-          className="px-3 py-2 rounded-lg bg-muted/20 text-caption hover:bg-muted/30 transition"
+          className="px-3 py-2 rounded-xl bg-white/10 text-caption hover:bg-white/15 transition"
           data-testid="handoff-copy"
         >
           {handoff.primaryActionLabel ?? 'Copy details'}
@@ -68,7 +80,7 @@ export function SettlementHandoffPanel({
         {handoff.smsHref && (
           <a
             href={handoff.smsHref}
-            className="px-3 py-2 rounded-lg bg-background border border-border text-caption hover:bg-muted/10 transition"
+            className="px-3 py-2 rounded-xl bg-white/10 text-caption hover:bg-white/15 transition"
             data-testid="handoff-sms"
           >
             Open SMS
@@ -79,7 +91,7 @@ export function SettlementHandoffPanel({
             href={handoff.deepLinkHref}
             target="_blank"
             rel="noreferrer"
-            className="px-3 py-2 rounded-lg bg-background border border-border text-caption hover:bg-muted/10 transition"
+            className="px-3 py-2 rounded-xl bg-white/10 text-caption hover:bg-white/15 transition"
             data-testid="handoff-deeplink"
           >
             {handoff.railId === 'firma' ? 'Open Firma' : 'Open payment app'}

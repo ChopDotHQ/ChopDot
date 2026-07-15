@@ -3,12 +3,13 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { settlementsRouter, potEventsRouter } from "./routes/settlements";
+import { aiRouter } from "./routes/ai";
 import { usersRouter } from "./routes/users";
 import { prisma } from "./lib/prisma";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:3000";
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:3000,http://localhost:5173";
 
 app.use(helmet());
 app.use(cors({ origin: CORS_ORIGIN.split(",").map((o) => o.trim()) }));
@@ -24,6 +25,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/api/pots/:potId/settlements", settlementsRouter);
 app.use("/api/pots/:potId/events", potEventsRouter);
+app.use("/api/pots/:potId/ai", aiRouter);
 app.use("/api/users", usersRouter);
 
 // ─── Error handler ────────────────────────────────────────────────────────────

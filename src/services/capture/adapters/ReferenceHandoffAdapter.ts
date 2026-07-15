@@ -6,8 +6,11 @@ function railLabel(railId: SettlementRailId): string {
   if (railId === 'revolut') return 'Revolut transfer';
   if (railId === 'venmo') return 'Venmo request';
   if (railId === 'cashapp') return 'Cash App request';
-  if (railId === 'asset_hub' || railId === 'dot' || railId === 'usdc') return 'Asset Hub reference';
-  if (railId === 'coinage') return 'Coinage evidence';
+  if (railId === 'dot') return 'Pay with DOT';
+  if (railId === 'usdc') return 'Pay with USDC';
+  if (railId === 'pas') return 'Pay with PAS';
+  if (railId === 'asset_hub') return 'Wallet payment';
+  if (railId === 'coinage') return 'Payment link';
   if (railId === 'paypal') return 'PayPal request';
   return 'Payment handoff';
 }
@@ -15,8 +18,11 @@ function railLabel(railId: SettlementRailId): string {
 function actionLabel(railId: SettlementRailId): string {
   if (railId === 'venmo') return 'Copy Venmo request';
   if (railId === 'cashapp') return 'Copy Cash App request';
-  if (railId === 'asset_hub' || railId === 'dot' || railId === 'usdc') return 'Copy Asset Hub reference';
-  if (railId === 'coinage') return 'Copy Coinage evidence request';
+  if (railId === 'dot') return 'Copy DOT details';
+  if (railId === 'usdc') return 'Copy USDC details';
+  if (railId === 'pas') return 'Copy PAS details';
+  if (railId === 'asset_hub') return 'Copy wallet details';
+  if (railId === 'coinage') return 'Copy payment link';
   return 'Copy payment details';
 }
 
@@ -39,8 +45,8 @@ export class ReferenceHandoffAdapter implements SettlementAdapter {
       copyText,
       reference: input.sessionRef,
       waitingMessage:
-        this.railId === 'asset_hub' || this.railId === 'dot' || this.railId === 'usdc' || this.railId === 'coinage'
-          ? 'This can support payment evidence. The group record still follows ChopDot confirmation rules.'
+        this.railId === 'asset_hub' || this.railId === 'dot' || this.railId === 'usdc' || this.railId === 'pas' || this.railId === 'coinage'
+          ? 'Pay from your wallet, then return here.'
           : 'Use your normal payment app, then return here to mark the share paid.',
       primaryActionLabel: actionLabel(this.railId),
     };

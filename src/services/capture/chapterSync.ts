@@ -32,13 +32,17 @@ function buildSpendGroup(chapter: ChapterDocument, existing: Pot): Pot['spendGro
 
 export function syncChapterToPot(chapter: ChapterDocument, existing: Pot): Pot {
   const projected = chapterToPot(chapter);
+  const projectedExpenseIds = new Set(projected.expenses.map((expense) => expense.id));
+  const preservedExpenses = (existing.expenses ?? []).filter(
+    (expense) => !projectedExpenseIds.has(expense.id),
+  );
 
   return {
     ...existing,
     name: chapter.name,
     baseCurrency: chapter.currency,
     members: projected.members,
-    expenses: projected.expenses,
+    expenses: [...preservedExpenses, ...projected.expenses],
     mode: 'auditable',
     confirmationsEnabled: true,
     spendGroup: buildSpendGroup(chapter, existing),

@@ -1,10 +1,5 @@
-import { Receipt, TrendingUp } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowRight, Check, Coins } from "lucide-react";
 import { TopBar } from "../TopBar";
-import { copyWithToast } from "../../utils/clipboard";
-import { MemberChip } from "../MemberChip";
-import { LinkButton } from "../LinkButton";
-import { useState } from "react";
 
 interface Member {
   id: string;
@@ -33,206 +28,94 @@ interface CreatePotProps {
 export function CreatePot({
   potName,
   setPotName,
-  potType,
-  setPotType,
   baseCurrency,
   setBaseCurrency,
-  members,
-  setMembers,
-  goalAmount,
-  setGoalAmount,
-  goalDescription,
-  setGoalDescription,
   onBack,
   onCreate,
 }: CreatePotProps) {
-  const [newMemberName, setNewMemberName] = useState("");
-  const [allowCashBank, setAllowCashBank] = useState(true);
-
-  const addMember = async () => {
-    if (newMemberName.trim()) {
-      setMembers([...members, {
-        id: Date.now().toString(),
-        name: newMemberName.trim(),
-        verified: false,
-      }]);
-      setNewMemberName("");
-    }
-  };
-
-  const removeMember = (id: string) => {
-    setMembers(members.filter(m => m.id !== id));
-  };
-
-  const copyInviteLink = async () => {
-    await copyWithToast("https://chopdot.app/inv/abc123", 'Invite link copied', (msg) => toast.success(msg));
-  };
-
   const isValid = potName.trim() !== "";
+  const currencyOptions = [
+    { code: "CHF", label: "Swiss Franc" },
+    { code: "USD", label: "US Dollar" },
+    { code: "EUR", label: "Euro" },
+    { code: "DOT", label: "DOT" },
+  ];
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <TopBar title="Create Pot" onBack={onBack} />
+    <div className="flex flex-col h-full bg-background relative">
+      <TopBar title="Create pot" onBack={onBack} />
       
-      <div className="flex-1 overflow-auto p-3 space-y-3 pb-[68px]">
-        {/* Pot Type Selection */}
+      <div className="flex-1 overflow-auto p-4 pb-32 space-y-5 relative animate-in fade-in duration-300">
         <div className="space-y-2">
-          <h3 className="text-micro text-secondary">Type</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setPotType("expense")}
-              className={`p-3 rounded-xl border-2 transition-all active:scale-[0.98] ${
-                potType === "expense"
-                  ? "border-[var(--accent)]"
-                  : "border-border bg-card"
-              }`}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <Receipt className="w-4 h-4" style={{ color: potType === "expense" ? "var(--accent)" : "var(--muted)" }} />
-                <p className="text-body text-foreground">Expense</p>
-              </div>
-              <p className="text-caption text-secondary text-left">
-                Track and split shared costs
-              </p>
-            </button>
-            
-            <button
-              onClick={() => setPotType("savings")}
-              className={`p-3 rounded-xl border-2 transition-all active:scale-[0.98] ${
-                potType === "savings"
-                  ? "border-[var(--success)] bg-[rgba(25,195,125,0.08)]"
-                  : "border-border bg-card"
-              }`}
-            >
-              <div className="flex items-center gap-2 mb-1">
-                <TrendingUp className="w-4 h-4" style={{ color: potType === "savings" ? "var(--success)" : "var(--muted)" }} />
-                <p className="text-body text-foreground">Savings</p>
-              </div>
-              <p className="text-caption text-secondary text-left">
-                Pool funds toward a shared goal
-              </p>
-            </button>
-          </div>
+          <p className="text-caption font-semibold" style={{ color: "var(--accent)" }}>Step 1 of 2</p>
+          <h2 className="text-h1 font-semibold text-foreground tracking-tight leading-tight">
+            Start the pot
+          </h2>
         </div>
 
-        {/* Details - Compact */}
-        <div className="space-y-2">
-          <h3 className="text-micro text-secondary">Details</h3>
-          <div>
-            <label className="text-micro text-secondary mb-1 block">
-              {potType === "savings" ? "Savings pot name" : "Pot name"}
-            </label>
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-5">
+          <div className="space-y-1.5">
+            <label className="text-label font-semibold">Pot name</label>
             <input
               value={potName}
               onChange={(e) => setPotName(e.target.value)}
-              placeholder={potType === "savings" ? "e.g., House Down Payment" : "e.g., Groceries"}
-              className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body"
+              placeholder="Zurich dinner crew"
+              className="w-full px-4 py-3 bg-card border border-border rounded-xl focus:outline-none focus:border-[var(--accent)] text-body transition-colors text-lg"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && isValid) {
+                  onCreate();
+                }
+              }}
             />
           </div>
-          
-          {/* Two-column for Currency + Settings */}
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="text-micro text-secondary mb-1 block">Currency</label>
-              <select
-                value={baseCurrency}
-                onChange={(e) => setBaseCurrency(e.target.value)}
-                className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body appearance-none"
-              >
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-                <option value="CHF">CHF</option>
-                <option value="CAD">CAD</option>
-                <option value="AUD">AUD</option>
-                <option value="JPY">JPY</option>
-              </select>
-            </div>
-            <div className="flex items-end">
-              <label className="flex items-center gap-1.5 p-1.5 card rounded-lg cursor-pointer w-full transition-all duration-200 hover:shadow-[var(--shadow-fab)] active:scale-[0.98]">
-                <input
-                  type="checkbox"
-                  checked={allowCashBank}
-                  onChange={(e) => setAllowCashBank(e.target.checked)}
-                  className="w-3.5 h-3.5"
-                />
-                <span className="text-micro">Cash/Bank</span>
-              </label>
+
+          <div className="space-y-2">
+            <label className="text-label font-semibold">Currency</label>
+            <div className="grid grid-cols-2 gap-2">
+              {currencyOptions.map((option) => {
+                const selected = baseCurrency === option.code;
+                return (
+                  <button
+                    type="button"
+                    key={option.code}
+                    onClick={() => setBaseCurrency(option.code)}
+                    className={`rounded-2xl border px-3 py-3 text-left transition-all active:scale-[0.98] ${
+                      selected
+                        ? "border-[var(--accent)] bg-[var(--accent)]/15"
+                        : "border-white/10 bg-white/[0.03]"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-label font-semibold ${selected ? "bg-[var(--accent)] text-white" : "bg-white/10 text-foreground"}`}>
+                          {option.code === "DOT" ? <Coins className="w-4 h-4" /> : option.code}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-label font-semibold truncate">{option.code}</p>
+                          <p className="text-micro text-secondary truncate">{option.label}</p>
+                        </div>
+                      </div>
+                      {selected && <Check className="w-4 h-4 shrink-0" style={{ color: "var(--accent)" }} />}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
-
-        {/* Savings-specific: Goal */}
-        {potType === "savings" && (
-          <>
-            <div>
-              <label className="text-micro text-secondary mb-1 block">Savings goal (optional)</label>
-              <input
-                type="number"
-                value={goalAmount || ""}
-                onChange={(e) => setGoalAmount(e.target.value ? parseFloat(e.target.value) : undefined)}
-                placeholder="e.g., 50000"
-                className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body"
-              />
-            </div>
-            <div>
-              <label className="text-micro text-secondary mb-1 block">What are you saving for?</label>
-              <input
-                value={goalDescription || ""}
-                onChange={(e) => setGoalDescription(e.target.value)}
-                placeholder="e.g., First home together 🏡"
-                className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body"
-              />
-            </div>
-          </>
-        )}
-
-        {/* Members - Compact */}
-        <div className="space-y-2 pt-2 border-t border-border">
-          <h3 className="text-micro text-secondary">Members</h3>
-          
-          <div className="flex flex-wrap gap-1.5">
-            {members.map((member, index) => (
-              <MemberChip
-                key={member.id}
-                name={member.name}
-                role={index === 0 ? "Owner" : undefined}
-                onRemove={index > 0 ? () => removeMember(member.id) : undefined}
-              />
-            ))}
-          </div>
-          
-          <div className="space-y-1">
-            <input
-              type="text"
-              value={newMemberName}
-              onChange={(e) => setNewMemberName(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && addMember()}
-              placeholder="Name, handle, or email"
-              className="w-full px-2 py-1.5 bg-input-background border border-border rounded-lg focus:outline-none focus-ring-pink text-body"
-            />
-            
-            <div className="flex justify-between items-center">
-              <p className="text-micro text-secondary">
-                Add now or invite later
-              </p>
-              <LinkButton onClick={copyInviteLink}>Copy link</LinkButton>
-            </div>
-          </div>
-        </div>
-
-        {/* Create Button - Inline with content */}
-        <div className="pt-2">
+        
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur border-t border-border z-10">
           <button
             onClick={onCreate}
             disabled={!isValid}
-            className={`w-full py-2.5 rounded-lg text-body transition-all duration-200 text-center ${
+            className={`w-full py-3.5 rounded-2xl text-body font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
               isValid
-                ? "card hover:shadow-[var(--shadow-fab)] active:scale-[0.98] text-foreground"
-                : "bg-muted/30 text-secondary cursor-not-allowed border border-border"
+                ? "bg-[var(--accent)] text-white active:scale-[0.98] shadow-sm"
+                : "bg-muted/30 text-secondary cursor-not-allowed"
             }`}
           >
-            Create Pot
+            Continue <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>

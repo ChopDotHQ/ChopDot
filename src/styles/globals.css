@@ -19,12 +19,12 @@
 :root {
   /* ===== PRIMARY DESIGN TOKENS (USE THESE IN CUSTOM COMPONENTS) ===== */
   
-  /* COLOR (Light mode) - Clean iOS */
-  --bg: #F2F2F7;           /* App background - iOS system gray */
-  --card: #FFFFFF;         /* Card/surface background - Pure white */
-  --ink: #000000;          /* Primary text color */
-  --muted: #8E8E93;        /* Tertiary text / placeholders - iOS secondary label gray */
-  --text-secondary: #606066;  /* Secondary text (better contrast than --muted for important labels) */
+  /* COLOR (Light mode) - PixiJS */
+  --bg: #09090b;           /* App background - Dark */
+  --card: rgba(255, 255, 255, 0.03); /* Glass surface */
+  --ink: #ffffff;          /* Primary text color */
+  --muted: rgba(255, 255, 255, 0.4);
+  --text-secondary: rgba(255, 255, 255, 0.6);
   --accent: #E6007A;       /* Polkadot pink - use sparingly for active states */
   /* Deprecated: Orange accent is now aliased to pink for a monochrome + pink scheme */
   --accent-orange: var(--accent);
@@ -32,7 +32,7 @@
   /* Money alias for financial positives (use in UI as the canonical token) */
   --money: var(--success);
   --danger: #E5484D;       /* Error/destructive states */
-  --border: rgba(0, 0, 0, 0.06);  /* Very subtle separator */
+  --border: rgba(255, 255, 255, 0.08);  /* Unified border variable */
   
   /* WHY TWO SECONDARY TEXT COLORS?
    * --muted (#8E8E93):          De-emphasized text (timestamps, hints, placeholders)
@@ -162,13 +162,13 @@
 
 /* ===== DARK MODE (Manual Toggle Support) ===== */
 .dark {
-  /* PRIMARY TOKENS (Dark mode overrides) */
-  --bg: #000000;                      /* Pure black background */
-  --card: #1C1C1E;                    /* iOS dark mode card color */
-  --ink: #FFFFFF;                     /* White text */
+  /* PRIMARY COLORS */
+  --bg: #09090b;                      /* App background */
+  --card: rgba(255, 255, 255, 0.03);  /* Glass surface */
+  --ink: #ffffff;                     /* Primary text */
   --muted: #8E8E93;                   /* Same gray as light mode */
   --text-secondary: #AEAEB2;          /* Better contrast for dark mode secondary text */
-  --border: rgba(255, 255, 255, 0.08); /* Subtle white separator */
+  --border: rgba(255, 255, 255, 0.08); /* unified border */
   
   /* SHADOW SYSTEM (Dark mode - adjusted for dark backgrounds) */
   --sh-l1: 0 1px 3px rgba(0, 0, 0, 0.4);     /* Subtle elevation */
@@ -224,13 +224,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    /* COLOR (Dark mode) */
-    --bg: #000000;
-    --card: #1C1C1E;
-    --ink: #FFFFFF;
-    --muted: #8E8E93;
-    --text-secondary: #AEAEB2;  /* NEW: Better contrast for dark mode secondary text */
+    /* PRIMARY COLORS */
+    --bg: #09090b;
+    --card: rgba(255, 255, 255, 0.03);
+    --ink: #ffffff;
     --border: rgba(255, 255, 255, 0.08);
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --muted: rgba(255, 255, 255, 0.4);
     
     /* SHADOWS (Dark mode) - Level-based system */
     --sh-l1: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -377,10 +377,49 @@
     .app-shell { width: min(640px, 95vw); }
   }
   @media (min-width: 1024px) {
-    .app-shell { width: min(720px, 92vw); }
+    .app-shell { width: min(960px, 92vw); }
   }
   @media (min-width: 1280px) {
-    .app-shell { width: min(840px, 88vw); }
+    .app-shell { width: min(1040px, 88vw); }
+  }
+
+  @media (min-width: 900px) {
+    .chopdot-tabbar-shell {
+      max-width: 360px !important;
+      bottom: 8px;
+    }
+
+    .chopdot-tabbar-panel {
+      margin-bottom: 0.5rem;
+      border-radius: var(--r-xl);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .chopdot-tabbar-items {
+      height: 56px;
+    }
+
+    .chopdot-tabbar-items button {
+      min-width: 52px;
+      min-height: 40px;
+      margin-top: 0;
+    }
+
+    .chopdot-tabbar-items svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .chopdot-tabbar-items [data-testid='bottom-tab-fab'] {
+      width: 44px;
+      height: 44px;
+      margin-top: -1.25rem;
+    }
+
+    .chopdot-tabbar-items [data-testid='bottom-tab-fab'] svg {
+      width: 20px;
+      height: 20px;
+    }
   }
   .bg-app {
     background: var(--bg);
@@ -439,15 +478,14 @@
   }
   
   /* ===== CARD UTILITIES - Ultra clean iOS style ===== */
-  /* 
-   * NO borders, minimal shadows (uses shadow system defined above)
-   * All cards use --shadow-card (sh-l1) for consistent subtle elevation
-   */
   
   .card {
-    background: var(--card);         /* Pure white (light) / #1C1C1E (dark) */
-    border-radius: var(--r-xl);      /* 16px rounded corners */
-    box-shadow: var(--shadow-card);  /* sh-l1 - subtle elevation */
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
   
   .hero-card {
@@ -954,4 +992,7 @@ html {
   background: var(--accent);
   animation: shimmer 2s ease-in-out infinite;
   border-radius: 0 var(--r-lg) var(--r-lg) 0;
+}
+body.chopdot-emergency-focus .chopdot-tabbar-shell {
+  display: none;
 }

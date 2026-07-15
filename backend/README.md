@@ -1,151 +1,98 @@
 # ChopDot Backend API
 
-Production-ready Express.js API server for ChopDot.
+Express and Prisma API for ChopDot's current settlement reference path.
 
-## Features
+This backend is **not yet production-ready shared-money authority**. It now has
+a server-derived authenticated actor boundary, but P-025 still tracks database
+policy, state-migration, command-atomicity, guest-capability, payment-intent,
+and canonical cross-host state work.
 
-- ✅ IPFS upload proxy (Crust Network integration)
-- ✅ CORS enabled
-- ✅ Security headers (Helmet)
-- ✅ Request logging (Morgan)
-- ✅ Error handling
-- ✅ Health check endpoint
+## Protected Routes
 
-## Quick Start
+- `GET /api/pots/:potId/settlements`
+- `POST /api/pots/:potId/settlements`
+- `PATCH /api/pots/:potId/settlements/:id/pay`
+- `PATCH /api/pots/:potId/settlements/:id/confirm`
+- `GET /api/pots/:potId/events`
+- `POST /api/pots/:potId/ai/parse-receipt`
+- `GET /api/users/:userId/pending-actions`
 
-### Development
+All routes above require:
 
-```bash
-cd backend
-npm install
-npm run dev
+```http
+Authorization: Bearer <supabase-access-token>
 ```
 
-Server runs on `http://localhost:3001`
+The server verifies the access token with Supabase Auth and resolves the user
+to an active pot member. `x-user-id`, URL parameters, request bodies, and host
+launch data are not identity authority.
 
-### Production
+## Environment
 
-```bash
-npm run build
-npm start
-```
-
-Or with Docker:
-
-```bash
-docker-compose up api
-```
-
-## Environment Variables
-
-Copy `.env.example` to `.env`:
+Copy the secret-free template and supply values locally or through the deploy
+environment:
 
 ```bash
 cp .env.example .env
 ```
 
-Required variables:
-- `PORT` - Server port (default: 3001)
-- `NODE_ENV` - Environment (development/production)
-- `CORS_ORIGIN` - Allowed CORS origins (comma-separated)
-- `CRUST_IPFS_API` - Crust IPFS API endpoint
-- `CRUST_IPFS_GATEWAY` - Crust IPFS gateway URL
+Required:
 
-## API Endpoints
+- `DATABASE_URL`: PostgreSQL connection used by Prisma.
+- `SUPABASE_URL`: Supabase project URL used for server-side token verification.
+- `SUPABASE_PUBLISHABLE_KEY` or `SUPABASE_ANON_KEY`: public project key sent to
+  Supabase Auth alongside the user's bearer token. Never use a service-role key
+  in the browser.
 
-### Health Check
+Optional:
 
-```
-GET /health
-```
+- `PORT`: API port, default `3001`.
+- `NODE_ENV`: `development`, `test`, or `production`.
+- `CORS_ORIGIN`: comma-separated allowed origins. Defaults only to local Vite
+  development origins.
+- `LLM_API_KEY`: reserved for the unfinished receipt-parser integration.
 
-Returns server status and uptime.
-
-### IPFS Upload
-
-```
-POST /api/ipfs/upload
-Content-Type: multipart/form-data
-Body: { file: File }
-```
-
-Uploads a file to IPFS via Crust Network.
-
-**Response:**
-```json
-{
-  "cid": "Qm...",
-  "gatewayUrl": "https://gw.crustfiles.app/ipfs/Qm...",
-  "filename": "example.json",
-  "size": 1234
-}
-```
-
-## Project Structure
-
-```
-backend/
-├── src/
-│   ├── index.ts              # Server entry point
-│   ├── routes/                # API routes
-│   │   └── ipfs.routes.ts
-│   ├── controllers/          # Route handlers
-│   │   └── ipfs.controller.ts
-│   ├── services/              # Business logic
-│   │   └── ipfs.service.ts
-│   └── middleware/            # Express middleware
-│       └── upload.middleware.ts
-├── package.json
-├── tsconfig.json
-└── Dockerfile
-```
+If Auth configuration is missing or unavailable, protected routes fail closed
+with `503`. A missing or invalid user access token returns `401`.
 
 ## Development
 
-The server uses `tsx` for development with hot reload:
-
 ```bash
+npm install
+npm run db:generate
 npm run dev
 ```
 
-## Production Deployment
+Server health is available at `GET /health`. The health route does not prove
+database, Auth, or migration readiness.
 
-1. Build the TypeScript code:
-   ```bash
-   npm run build
-   ```
+## Verification
 
-2. Start the server:
-   ```bash
-   npm start
-   ```
+```bash
+npm run type-check
+npm test
+npm run build
+```
 
-3. Or use Docker:
-   ```bash
-   docker build -t chopdot-api .
-   docker run -p 3001:3001 chopdot-api
-   ```
+The unit and HTTP integration suite mocks Prisma. The P-025 database harness
+also runs against disposable PostgreSQL. It currently passes against the
+Prisma-projected schema but fails against the migration-owned schema because
+the settlement status constraint rejects `paid`. See the database proof report
+before treating these routes as deployable shared-money authority.
 
-## Security
+## Security Boundary
 
-- Helmet.js for security headers
-- CORS configured for specific origins
-- File size limits (10MB)
-- Input validation
-- Error handling without exposing internals
+- Missing or invalid bearer token: `401`, no route mutation.
+- Missing Auth configuration or unavailable Auth service: `503`, fail closed.
+- Inactive or unrelated pot member: `403`.
+- Only the bound payer can mark paid.
+- Only the bound receiver can confirm received.
+- Pending actions are self-only.
+- Audit actors come from the verified token.
 
-## Logging
+See:
 
-All requests are logged using Morgan. Check console output for:
-- Request method and path
-- Response status
-- Response time
-
-
-
-
-
-
-
-
-
+- `docs/adr/0004-server-derived-payment-actor.md`
+- `docs/security/p025-database-backed-actor-boundary-proof-2026-07-14.md`
+- `docs/security/p025-security-foundation-crosswalk-2026-07-14.md`
+- `docs/security/universal-chop-core-security-architecture.md`

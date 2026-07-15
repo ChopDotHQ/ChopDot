@@ -211,7 +211,7 @@ export function ChapterPanel({
         }}
       >
         <div className="flex items-center justify-between">
-          <p className="text-label font-semibold">Settlement chapter</p>
+          <p className="text-label font-semibold">Payment progress</p>
           <span
             className="text-caption px-2 py-0.5 rounded-full"
             style={{
@@ -228,7 +228,7 @@ export function ChapterPanel({
             <div className="flex items-center gap-2 py-1">
               <CheckCircle className="w-5 h-5" style={{ color: 'var(--success)' }} />
               <p className="text-body" style={{ color: 'var(--success)' }}>
-                All payments confirmed — chapter closed
+                All payments confirmed — record saved
               </p>
             </div>
             {events.length > 0 && (

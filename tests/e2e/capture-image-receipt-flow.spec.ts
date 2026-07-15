@@ -77,7 +77,9 @@ test.describe('Image Receipt OCR OCR Splitting', () => {
 
     await openCapturePot(page);
     await openSpendCard(page);
-    await expect(page.getByTestId('spend-card-add-receipt')).toContainText('Scan receipt');
+    await expect(page.getByTestId('spend-card-add-receipt')).toContainText('Add receipt');
+    await expect(page.getByTestId('spend-card-quick-amount')).toHaveCount(0);
+    await expect(page.getByTestId('receipt-item-add')).toHaveCount(0);
 
     // Upload the generated receipt image
     await page.getByTestId('spend-card-receipt-file').setInputFiles(
@@ -85,9 +87,8 @@ test.describe('Image Receipt OCR OCR Splitting', () => {
     );
 
     // OCR might take a few seconds
-    await expect(page.getByTestId('spend-card-checkout-notice')).toContainText('Receipt read', { timeout: 30_000 });
-    
     // Check that OCR parsed the items successfully
+    await expect(page.getByTestId('spend-card-evidence-summary')).toBeVisible({ timeout: 30_000 });
     await expect(page.getByTestId('spend-card-evidence-summary')).toContainText('Receipt');
     await expect(page.getByTestId('spend-card-evidence-summary')).toContainText('ZURICH TRATTORIA');
     await expect(page.getByTestId('spend-card-receipt-items')).toContainText('125.00 CHF');
@@ -127,9 +128,8 @@ test.describe('Image Receipt OCR OCR Splitting', () => {
     // Send TWINT links
     await page.getByTestId('spend-card-pay-now').click();
     
-    // Wait for the chapter status
-    await expect(page.getByTestId('capture-chapter-status')).toBeVisible({ timeout: 10_000 });
-    await expect(page.getByTestId('capture-chapter-status')).toContainText('2 shares open');
+    await expect(page.getByTestId('spend-card-created-summary')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId('spend-card-created-summary')).toContainText('2 open');
     
     // Leo pays
     await setActingMember(page, 'leo');
@@ -139,7 +139,7 @@ test.describe('Image Receipt OCR OCR Splitting', () => {
     const leoMarkPaid = page.locator('[data-testid$="-mark-paid"]').first();
     await expect(leoMarkPaid).toBeEnabled({ timeout: 10_000 });
     await leoMarkPaid.click();
-    await expect(page.getByTestId('capture-chapter-status')).toContainText('waiting confirmation');
+    await expect(page.getByTestId('capture-chapter-status')).toContainText('Marked paid');
 
     // Nina pays
     await setActingMember(page, 'nina');
@@ -154,6 +154,7 @@ test.describe('Image Receipt OCR OCR Splitting', () => {
     await setActingMember(page, 'owner');
     await page.reload();
     await openCapturePot(page);
+    await openSpendCard(page);
     
     // Mina confirms Leo
     const confirmLeo = page.locator('button[data-testid$="-confirm"]').first();
@@ -166,7 +167,7 @@ test.describe('Image Receipt OCR OCR Splitting', () => {
     await confirmNina.click();
     
     // Closeout
-    await expect(page.getByTestId('capture-ready-to-close')).toContainText('ready to close', {
+    await expect(page.getByTestId('capture-ready-to-close')).toContainText('All shares confirmed', {
       timeout: 10_000,
     });
     await page.getByTestId('capture-close-record').click();

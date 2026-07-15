@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { TopBar } from '../TopBar';
 import { useData } from '../../services/data/DataContext';
 import { usePot } from '../../hooks/usePot';
-import { useChapterState } from '../../hooks/useChapterState';
+import { useCaptureChapterState } from '../../hooks/useCaptureChapterState';
 import { useSpendSession } from '../../hooks/useSpendSession';
 import { ChapterStore } from '../../services/capture/ChapterStore';
 import { commitSpendSession } from '../../services/capture/KernelBridge';
@@ -15,7 +15,6 @@ import {
 import { useCaptureActingMember } from '../../hooks/useCaptureActingMember';
 import { CaptureChapterPanel } from '../capture/CaptureChapterPanel';
 import { CaptureShareActions } from '../capture/CaptureShareActions';
-import { AddToWalletButton } from '../capture/AddToWalletButton';
 import { captureLinkService } from '../../services/capture/CaptureLinkService';
 import { buildPayShareText, encodeCaptureUrl } from '../../services/capture/QRPayloadCodec';
 import { resolvePotMember } from '../../utils/resolvePotMember';
@@ -75,7 +74,7 @@ export function SpendCardScreen({
     confirm,
     close,
     refresh,
-  } = useChapterState({
+  } = useCaptureChapterState({
     potId,
     potService,
     currentMemberId: effectiveMemberId,
@@ -88,13 +87,27 @@ export function SpendCardScreen({
     spendCardId ?? chapter?.spendCards?.[0]?.id ?? `sc_${potId}`;
 
   const defaultParticipants = useMemo(() => {
+    // If there's a spendGroup configured, it overrides the pot default
+    const groupMembers = pot?.spendGroup?.memberIds;
+    if (groupMembers?.length) {
+      return groupMembers;
+    }
+
     const allMemberIds = pot?.members.map((member) => member.id) ?? [payerMemberId];
     const card = chapter?.spendCards?.find((item) => item.id === resolvedSpendCardId);
     if (card?.recentParticipantIds?.length && card.recentParticipantIds.length > 1) {
       return card.recentParticipantIds;
     }
     return allMemberIds;
-  }, [chapter?.spendCards, resolvedSpendCardId, pot?.members, payerMemberId]);
+  }, [chapter?.spendCards, resolvedSpendCardId, pot?.members, pot?.spendGroup, payerMemberId]);
+
+  const defaultRail = useMemo(() => {
+    const pref = pot?.spendGroup?.preferredPaymentApp;
+    if (pref === 'twint' || pref === 'bank' || pref === 'wise' || pref === 'revolut' || pref === 'venmo' || pref === 'cashapp' || pref === 'outside') {
+      return pref as SpendSession['settlementRail'];
+    }
+    return undefined;
+  }, [pot?.spendGroup]);
 
   const {
     session,
@@ -117,6 +130,7 @@ export function SpendCardScreen({
     potId,
     payerMemberId,
     defaultParticipantIds: defaultParticipants,
+    defaultRail,
     currency: pot?.baseCurrency ?? 'CHF',
   });
 
@@ -131,6 +145,7 @@ export function SpendCardScreen({
   const [receiptFileName, setReceiptFileName] = useState('');
   const [receiptScanning, setReceiptScanning] = useState(false);
   const [receiptScanError, setReceiptScanError] = useState<string | null>(null);
+  const [manualEntryOpen, setManualEntryOpen] = useState(false);
   const receiptFileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -182,8 +197,8 @@ export function SpendCardScreen({
         failed: 'Needs review',
       }[paymentEvidence.status] ?? 'Saved')
     : '';
-  const capturedLabel = paymentEvidence?.kind === 'receipt' ? 'Receipt saved' : 'Payment saved';
-  const hasCaptureDraft = Boolean(paymentEvidence || receiptItems.length > 0 || amount > 0 || (memo && memo !== 'Spend'));
+  const capturedLabel = paymentEvidence?.kind === 'receipt' ? 'Receipt' : 'Payment link';
+  const hasCaptureDraft = Boolean(paymentEvidence || receiptItems.length > 0);
   const showCaptureEntry = !hasCreatedSplit && (captureEntryOpen || Boolean(checkoutError));
   const friendNames = pot?.members
     .filter((member) => member.id !== payerMemberId)
@@ -204,6 +219,17 @@ export function SpendCardScreen({
   const friendLine = friendNames
     ? `With ${friendNames}`
     : `${groupPeopleText} included`;
+  const canSplitPayment = amount > 0 && participantIds.length > 0;
+  const hasOwnCaptureAction = Boolean(status?.legs.some((leg) => (
+    (leg.state === 'open' && leg.fromMemberId === effectiveMemberId) ||
+    (leg.state === 'claimed' && leg.toMemberId === effectiveMemberId)
+  )));
+  const hasPendingConfirmation = Boolean(status?.legs.some((leg) => leg.state === 'claimed'));
+  const showStatusPanel = Boolean(
+    hasCreatedSplit &&
+    status &&
+    (hasOwnCaptureAction || hasPendingConfirmation || status.openLegCount === 0),
+  );
 
   const handleReceiptFile = async (file: File) => {
     setReceiptScanning(true);
@@ -224,13 +250,9 @@ export function SpendCardScreen({
         setAmount(scan.total);
       }
       setMemo(scan.date ? `${scan.merchantName} · ${scan.date}` : scan.merchantName);
-      setCheckoutNotice(
-        scannedItems.length > 1
-          ? 'Receipt read. Check the split before sending links.'
-          : 'Receipt read. Check the total before sending links.',
-      );
+      setCheckoutNotice('Ready to review');
       setCaptureEntryOpen(false);
-      onShowToast?.('Receipt read', 'success');
+      setManualEntryOpen(false);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Could not read the receipt';
       setReceiptScanError(message);
@@ -306,6 +328,7 @@ export function SpendCardScreen({
     setCheckoutNotice(parsed.notice);
     setPaymentEvidence(parsed.evidence);
     setCaptureEntryOpen(false);
+    setManualEntryOpen(false);
     if (parsed.suggestedAmount) {
       setAmount(parsed.suggestedAmount);
       if (!receiptItems.length) {
@@ -322,7 +345,6 @@ export function SpendCardScreen({
     if (parsed.suggestedMemo) {
       setMemo(parsed.suggestedMemo);
     }
-    onShowToast?.('Filled from receipt', parsed.evidence.status === 'unconfirmed' ? 'info' : 'success');
   };
 
   const handlePayNow = async () => {
@@ -344,7 +366,6 @@ export function SpendCardScreen({
       markCommitted(result.expenseId);
       onPotRefresh?.(potId);
       await refresh();
-      onShowToast?.('Split ready — send pay links or complete the handoff', 'success');
       await refresh();
       window.setTimeout(() => {
         document
@@ -371,7 +392,7 @@ export function SpendCardScreen({
     <div className="flex flex-col h-full bg-background overflow-y-auto" data-testid="spend-card-screen">
       <TopBar title={groupLabel} onBack={onBack} />
 
-      <div className="p-4 space-y-3 pb-8">
+      <div className="p-4 space-y-3 pb-8 w-full mx-auto" style={{ maxWidth: 560 }}>
         <input
           ref={receiptFileInputRef}
           type="file"
@@ -389,57 +410,135 @@ export function SpendCardScreen({
         <section className="space-y-3" data-testid="spend-entry-guide">
           {!hasCreatedSplit && !hasCaptureDraft && (
             <>
-              <div className="space-y-2">
-                <h1 className="text-section" style={{ fontWeight: 600 }}>{groupLabel}</h1>
+              <div className="space-y-1">
+                <p className="text-label text-secondary">{groupLabel}</p>
+                <h1 className="text-[28px] leading-tight font-semibold tracking-normal">Add receipt</h1>
               </div>
 
-              <div className="list-row p-4 space-y-3" data-testid="receipt-placeholder">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-label text-secondary">Payment</p>
-                    <p className="text-body mt-1" style={{ fontWeight: 600 }}>{friendLine}</p>
-                  </div>
-                  <p className="text-caption font-medium">{currentRailLabel}</p>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="rounded-xl bg-muted/10 px-3 py-2">
-                    <p className="text-micro text-secondary">Split</p>
-                    <p className="text-caption font-medium">Equal</p>
-                  </div>
-                  <div className="rounded-xl bg-muted/10 px-3 py-2">
-                    <p className="text-micro text-secondary">Missing</p>
-                    <p className="text-caption font-medium">Receipt or total</p>
-                  </div>
-                </div>
+              <div className="space-y-2" data-testid="receipt-placeholder">
+                <button
+                  type="button"
+                  onClick={() => receiptFileInputRef.current?.click()}
+                  disabled={receiptScanning}
+                  className="w-full rounded-2xl px-5 py-4 text-left transition-all duration-200 active:scale-[0.99] disabled:opacity-50"
+                  style={{ backgroundColor: 'var(--accent)', color: '#fff', padding: '16px 20px' }}
+                  data-testid="spend-card-add-receipt"
+                >
+                  <span className="block text-body font-semibold">
+                    {receiptScanning ? 'Reading…' : 'Add receipt'}
+                  </span>
+                  <span className="mt-1 block text-caption" style={{ color: 'rgba(255,255,255,0.72)' }}>
+                    {friendLine} · {currentRailLabel}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCaptureEntryOpen(true);
+                    setManualEntryOpen(false);
+                    setCheckoutError(null);
+                  }}
+                  className="w-full rounded-2xl px-5 py-3 text-left text-body font-semibold transition-all duration-200 active:scale-[0.99]"
+                  style={{
+                    padding: '14px 20px',
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.11), rgba(255,255,255,0.045))',
+                    boxShadow: '0 14px 34px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06)',
+                  }}
+                  data-testid="spend-card-paste-link"
+                >
+                  Paste payment link
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setManualEntryOpen((value) => !value);
+                    setCaptureEntryOpen(false);
+                    setCheckoutError(null);
+                  }}
+                  className="w-full rounded-2xl px-5 py-3 text-left text-body font-semibold transition-all duration-200 active:scale-[0.99]"
+                  style={{
+                    padding: '14px 20px',
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.11), rgba(255,255,255,0.045))',
+                    boxShadow: '0 14px 34px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06)',
+                  }}
+                  data-testid="spend-card-enter-total"
+                >
+                  Enter total instead
+                </button>
               </div>
 
-              <button
-                type="button"
-                onClick={() => receiptFileInputRef.current?.click()}
-                disabled={receiptScanning}
-                className="w-full rounded-xl py-3 text-body transition-all duration-200 active:scale-95 disabled:opacity-50"
-                style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
-                data-testid="spend-card-add-receipt"
+              {manualEntryOpen && (
+              <div
+                className="space-y-4 rounded-[24px]"
+                style={{
+                  padding: 20,
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.11), rgba(255,255,255,0.045))',
+                  boxShadow: '0 18px 44px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.06)',
+                }}
+                data-testid="spend-card-manual-total"
               >
-                {receiptScanning ? 'Reading receipt…' : 'Scan receipt'}
-              </button>
+                <div className="space-y-2">
+                  <label className="block space-y-1.5">
+                    <span className="text-caption text-secondary">Total</span>
+                    <div className="flex items-end gap-2">
+                      <input
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        value={amount || ''}
+                        onChange={(event) => setAmount(Number(event.target.value))}
+                        placeholder="0.00"
+                        className="min-w-0 flex-1 bg-transparent text-[38px] leading-none font-semibold tabular-nums outline-none"
+                        data-testid="spend-card-quick-amount"
+                      />
+                      <span className="pb-1 text-body text-secondary">{pot.baseCurrency}</span>
+                    </div>
+                  </label>
+
+                  <label className="block">
+                    <span className="sr-only">What was it for?</span>
+                    <input
+                      type="text"
+                      value={memo === 'Spend' ? '' : memo}
+                      onChange={(event) => setMemo(event.target.value)}
+                      placeholder="Dinner, taxi, tickets..."
+                      className="w-full bg-transparent text-body text-secondary outline-none"
+                      data-testid="spend-card-quick-memo"
+                    />
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between gap-4 pt-3">
+                  <div>
+                    <p className="text-caption font-medium">{friendLine}</p>
+                    <p className="text-caption text-secondary">Equal split · {currentRailLabel}</p>
+                  </div>
+                  {participantIds.length > 0 && amount > 0 && (
+                    <p className="text-caption font-semibold tabular-nums">
+                      {perPerson.toFixed(2)} each
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  disabled={!canSplitPayment || committing}
+                  onClick={() => void handlePayNow()}
+                  className="w-full rounded-xl py-3 text-body font-semibold transition-all duration-200 active:scale-95 disabled:opacity-50"
+                  style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
+                  data-testid="spend-card-pay-now"
+                >
+                  Split this payment
+                </button>
+              </div>
+              )}
               {receiptScanError && (
                 <p className="text-caption" style={{ color: 'var(--danger)' }} data-testid="spend-card-receipt-scan-error">
                   {receiptScanError}
                 </p>
               )}
-
-              <button
-                type="button"
-                onClick={() => {
-                  setCaptureEntryOpen(true);
-                  setCheckoutError(null);
-                }}
-                className="w-full py-2 text-caption font-medium text-secondary"
-                data-testid="spend-card-paste-link"
-              >
-                Paste payment link instead
-              </button>
             </>
           )}
 
@@ -458,18 +557,11 @@ export function SpendCardScreen({
           {hasCreatedSplit && (
             <div className="space-y-2">
               <p className="text-label text-secondary">
-                {recordClosed ? 'Record saved' : readyToClose ? 'Ready to close' : 'Split ready'}
+                {recordClosed ? 'Record saved' : readyToClose ? 'Ready to close' : 'Payment links'}
               </p>
               <h1 className="text-section" style={{ fontWeight: 600 }}>
-                {recordClosed || readyToClose ? 'All shares confirmed' : 'Payment links are ready'}
+                {recordClosed || readyToClose ? 'All shares confirmed' : 'Send to Leo and Nina'}
               </h1>
-              <p className="text-caption text-secondary">
-                {recordClosed
-                  ? 'This record is closed.'
-                  : readyToClose
-                    ? 'Ready to close.'
-                    : 'Waiting for friends to pay.'}
-              </p>
             </div>
           )}
         </section>
@@ -483,10 +575,10 @@ export function SpendCardScreen({
               <div>
                 <p className="text-body" style={{ fontWeight: 500 }}>
                   {recordClosed
-                    ? 'All shares are confirmed.'
+                    ? 'Saved'
                     : readyToClose
-                      ? 'Ready to close.'
-                      : 'Send pay links'}
+                      ? 'Ready to close'
+                      : 'Pay links'}
                 </p>
               </div>
               {status && status.openLegCount > 0 && (
@@ -503,17 +595,15 @@ export function SpendCardScreen({
         {showCaptureEntry && (
         <div className="space-y-3 card p-4" data-testid="spend-card-checkout-capture">
           <div>
-            <p className="text-caption font-medium">Receipt or payment link</p>
-            <p className="text-caption text-secondary mt-1">
-              Paste what you have. You can review before sending payment links.
-            </p>
+            <p className="text-body font-semibold">Paste payment link</p>
           </div>
           <label className="block space-y-1.5">
-            <span className="text-caption text-secondary">Receipt or payment link</span>
+            <span className="sr-only">Payment link</span>
             <textarea
               value={checkoutInput}
               onChange={(event) => setCheckoutInput(event.target.value)}
               rows={3}
+              placeholder="Paste link"
               className="w-full px-3 py-2 input-field text-body resize-none"
               data-testid="spend-card-checkout-evidence"
             />
@@ -524,7 +614,7 @@ export function SpendCardScreen({
             className="btn-primary w-full px-4 py-3 text-body"
             data-testid="spend-card-use-checkout-evidence"
           >
-            Review payment
+            Review split
           </button>
           {checkoutError && (
             <p className="text-caption" style={{ color: 'var(--danger)' }} data-testid="spend-card-checkout-error">
@@ -537,36 +627,6 @@ export function SpendCardScreen({
             </p>
           )}
         </div>
-        )}
-
-        {!hasCaptureDraft && !showCaptureEntry && (
-          <details className="card p-3">
-            <summary className="text-caption font-medium cursor-pointer">No receipt? Enter amount manually</summary>
-            <div className="mt-3 space-y-3">
-              <label className="block space-y-1.5">
-                <span className="text-caption text-secondary">Amount ({pot.baseCurrency})</span>
-                <input
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  value={amount || ''}
-                  onChange={(event) => setAmount(Number(event.target.value))}
-                  className="w-full px-3 py-2 input-field text-body"
-                  data-testid="spend-card-amount-fallback"
-                />
-              </label>
-              <label className="block space-y-1.5">
-                <span className="text-caption text-secondary">What was it for?</span>
-                <input
-                  type="text"
-                  value={memo}
-                  onChange={(event) => setMemo(event.target.value)}
-                  className="w-full px-3 py-2 input-field text-body"
-                  data-testid="spend-card-memo-fallback"
-                />
-              </label>
-            </div>
-          </details>
         )}
 
         {hasCaptureDraft && (
@@ -583,11 +643,6 @@ export function SpendCardScreen({
               </div>
               <p className="text-caption text-secondary pt-1">{receiptStatusLabel}</p>
             </div>
-            {checkoutNotice && !checkoutError && (
-              <p className="text-secondary" data-testid="spend-card-checkout-notice">
-                {checkoutNotice}
-              </p>
-            )}
           </div>
         )}
 
@@ -643,7 +698,7 @@ export function SpendCardScreen({
                   type="button"
                   onClick={() => setSettlementRail(rail.id)}
                   className={`px-3 py-1.5 rounded-lg text-caption flex-shrink-0 transition-colors ${
-                    settlementRail === rail.id ? 'text-white' : 'bg-white text-secondary border border-border'
+                    settlementRail === rail.id ? 'text-white' : 'bg-card text-secondary border border-border'
                   }`}
                   style={settlementRail === rail.id ? { background: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}
                   data-testid={`spend-card-rail-${rail.id}`}
@@ -781,16 +836,13 @@ export function SpendCardScreen({
           type="button"
           disabled={committing || amount <= 0 || participantIds.length === 0}
           onClick={() => void handlePayNow()}
-          className="w-full py-3 rounded-xl text-body transition-all duration-200 active:scale-95 disabled:opacity-50"
+          className="w-full py-3 rounded-xl text-body font-semibold transition-all duration-200 active:scale-95 disabled:opacity-50"
           style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
           data-testid="spend-card-pay-now"
         >
-          {settlementRail === 'twint' ? 'Send TWINT links' : 'Send payment links'}
+          Split this payment
         </button>
 
-        <p className="text-caption text-secondary" data-testid="spend-card-next-step">
-          After this, friends get one payment action. The receiver confirms what arrived, then the group can close a readable receipt.
-        </p>
           </>
         )}
           </>
@@ -798,7 +850,7 @@ export function SpendCardScreen({
 
         {hasCreatedSplit && status && status.openLegCount > 0 && chapter && (
           <div className="space-y-2">
-            <p className="text-label text-secondary px-1">Share pay links</p>
+            <p className="text-label text-secondary px-1">Send links</p>
             {status.legs
               .filter((leg) => leg.state === 'open' && legPayTokens[leg.id])
               .map((leg) => {
@@ -827,25 +879,10 @@ export function SpendCardScreen({
           </div>
         )}
 
-        {hasCreatedSplit && chapter && (
-          <details className="card p-3">
-            <summary className="text-caption font-medium cursor-pointer">Save shortcut</summary>
-            <div className="mt-3">
-              <AddToWalletButton
-                potId={potId}
-                chapterId={chapter.id}
-                spendCardId={resolvedSpendCardId}
-                payerId={effectiveMemberId}
-                label={chapter.spendCards?.find((card) => card.id === resolvedSpendCardId)?.label ?? pot.name}
-                onShowToast={onShowToast}
-              />
-            </div>
-          </details>
-        )}
       </div>
 
       <CaptureChapterPanel
-        status={hasCreatedSplit ? status : null}
+        status={showStatusPanel ? status : null}
         currentMemberId={effectiveMemberId}
         isLoading={committing}
       onMarkPaid={(legId, payerMemberId) => {

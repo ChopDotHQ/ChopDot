@@ -31,19 +31,23 @@ export function SettleFooter({
   const label = buttonLabelOverride ?? defaultLabel;
 
   return (
-    <div className="p-4 border-t border-border">
-      <button
-        onClick={onConfirm}
-        disabled={!isValid || isLoading}
-        className={`w-full py-3 rounded-xl text-body font-semibold transition-all flex items-center justify-center gap-2 ${
-          isValid && !isLoading
-            ? 'bg-[var(--accent)] text-white hover:opacity-90 active:scale-[0.98]'
-            : 'bg-muted/30 text-secondary cursor-not-allowed'
-        }`}
-      >
-        {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-        {label}
-      </button>
+    <div className="pt-2 pb-28">
+      <div className="mx-auto w-full">
+        <button
+          onClick={onConfirm}
+          disabled={!isValid || isLoading}
+          className="w-full py-3 rounded-xl text-body font-semibold transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+          style={{
+            background: isValid && !isLoading ? 'var(--accent)' : 'var(--muted)',
+            color: isValid && !isLoading ? '#fff' : 'var(--secondary)',
+            opacity: isValid && !isLoading ? 1 : 0.75,
+            cursor: isValid && !isLoading ? 'pointer' : 'not-allowed',
+          }}
+        >
+          {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+          {label}
+        </button>
+      </div>
     </div>
   );
 }

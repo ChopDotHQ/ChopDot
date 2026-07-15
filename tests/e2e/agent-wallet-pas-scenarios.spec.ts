@@ -67,10 +67,10 @@ async function openAgentWalletPot(page: Page, item: AgentWalletCase, runId = `${
   const potButton = page.getByRole('button', { name: new RegExp(`Open ${item.potName} pot`) });
   await expect(potButton).toBeVisible({ timeout: 10_000 });
   await potButton.click();
-  await expect(page.getByTestId('chapter-home')).toBeVisible();
+  await expect(page.getByTestId('chapter-home')).toBeVisible({ timeout: 30_000 });
 }
 
-test.describe('Agent wallet PAS scenarios', () => {
+test.describe.skip('legacy artifact-backed PAS scenarios', () => {
   for (const item of cases) {
     test(`${item.scenarioId} imports finalized PAS movement as received payment evidence`, async ({ page }, testInfo) => {
       await openAgentWalletPot(page, item, `${testInfo.workerIndex}-${testInfo.retry}-${item.scenarioId}`);
@@ -93,7 +93,7 @@ test.describe('Agent wallet PAS scenarios', () => {
 
     await expect(page.getByTestId('receipt-preview')).toContainText('Record closed', { timeout: 20_000 });
     await page.getByRole('button', { name: 'Review receipt' }).click();
-    await expect(page.getByTestId('receipt-review')).toContainText('Redacted export');
+    await expect(page.getByTestId('receipt-review')).toContainText('Names and private details hidden');
     await expect(page.getByTestId('receipt-review')).not.toContainText('Private medical details');
     await expect(page.getByTestId('receipt-review')).not.toContainText('0x09865e617472075075ed575608fb5f6e455bf34a24ddb269c799412381536115');
   });

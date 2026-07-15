@@ -29,7 +29,7 @@ export type SpendSession = {
   memo: string;
   paymentEvidence?: PaymentEvidenceRef;
   receiptItems?: ReceiptCaptureItem[];
-  settlementRail?: 'twint' | 'venmo' | 'cashapp' | 'bank' | 'wise' | 'revolut' | 'asset_hub' | 'coinage' | 'outside';
+  settlementRail?: 'twint' | 'venmo' | 'cashapp' | 'bank' | 'wise' | 'revolut' | 'asset_hub' | 'coinage' | 'dot' | 'pas' | 'usdc' | 'outside';
   railStatus?: CaptureRailStatus;
   status: SpendSessionStatus;
   createdAt: string;

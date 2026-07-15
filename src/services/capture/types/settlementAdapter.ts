@@ -12,6 +12,7 @@ export type SettlementRailId =
   | 'asset_hub'
   | 'coinage'
   | 'dot'
+  | 'pas'
   | 'paypal'
   | 'usdc';
 

@@ -20,13 +20,13 @@ interface UseScreenValidationParams {
 const VALID_SCREEN_TYPES = [
   'activity-home', 'pots-home', 'settlements-home', 'people-home', 'you-tab',
   'settings',
-  'create-pot', 'pot-home', 'add-expense', 'edit-expense', 'expense-detail',
-  'settle-selection', 'settle-home', 'settlement-history', 'settlement-confirmation',
+  'create-pot', 'pot-home', 'spend-card', 'capture-handoff', 'capture-confirm', 'add-expense', 'edit-expense', 'expense-detail',
+  'settle-selection', 'settle-home', 'settlement-history', 'settlement-confirmation', 'closeout-review',
   'member-detail',
 ];
 
 const POT_REQUIRED_SCREENS = [
-  'add-expense', 'edit-expense', 'expense-detail',
+  'add-expense', 'edit-expense', 'expense-detail', 'spend-card', 'capture-handoff', 'capture-confirm',
   'add-contribution', 'withdraw-funds', 'pot-home',
 ];
 

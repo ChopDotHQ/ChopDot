@@ -22,15 +22,15 @@ export function BottomTabBar({
   const { isPSA, psaStyles } = usePSAStyle();
   
   return (
-    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full z-50" style={{ maxWidth: '420px', paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <div className="chopdot-tabbar-shell absolute bottom-0 left-1/2 -translate-x-1/2 w-full z-50" style={{ maxWidth: '420px', paddingBottom: 'env(safe-area-inset-bottom)' }}>
       <div 
-        className={isPSA ? "mx-3 mb-2 rounded-2xl border shadow-[var(--shadow-card)]" : "mx-3 mb-2 rounded-2xl border border-border bg-background/80 backdrop-blur-sm shadow-[var(--shadow-card)]"}
+        className={isPSA ? "chopdot-tabbar-panel mx-3 mb-2 rounded-2xl border shadow-[var(--shadow-card)]" : "chopdot-tabbar-panel mx-3 mb-2 rounded-2xl border border-border bg-background/80 backdrop-blur-sm shadow-[var(--shadow-card)]"}
         style={isPSA ? {
           ...psaStyles.panel,
           borderColor: 'var(--border)',
         } : undefined}
       >
-        <div className="flex items-center justify-around px-2 h-[68px] relative">
+        <div className="chopdot-tabbar-items flex items-center justify-around px-2 h-[68px] relative">
         {/* Pots Tab */}
         <button
           onClick={() => {
@@ -80,6 +80,7 @@ export function BottomTabBar({
                 onFabClick();
               }}
               className="flex items-center justify-center w-14 h-14 rounded-full -mt-8 transition-all duration-200 active:scale-95"
+              data-testid="bottom-tab-fab"
               style={isPSA ? psaStyles.pinkAccentButton : { 
                 background: fabColor,
                 boxShadow: 'var(--shadow-fab)',

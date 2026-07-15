@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Receipt, CheckCircle, ArrowLeftRight, Plus, type LucideIcon } from 'lucide-react';
+import { Receipt, ArrowLeftRight, Plus, type LucideIcon } from 'lucide-react';
 import { triggerHaptic } from '../utils/haptics';
 import type { Pot } from '../types/app';
 
@@ -47,18 +47,7 @@ export function useFabState({
 
     if (screen?.type === 'pot-home') {
       const potForFab = pots.find(p => p.id === (currentPotId || screen.potId));
-      if (potForFab?.type === 'savings') {
-        return {
-          visible: true,
-          icon: CheckCircle,
-          color: 'var(--money)',
-          action: () => {
-            triggerHaptic('light');
-            setCurrentPotId(potForFab.id);
-            push({ type: 'add-contribution' });
-          },
-        };
-      }
+
       return {
         visible: true,
         icon: Receipt,

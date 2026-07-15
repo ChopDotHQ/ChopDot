@@ -8,6 +8,7 @@ type UseSpendSessionParams = {
   potId: string;
   payerMemberId: string;
   defaultParticipantIds: string[];
+  defaultRail?: SpendSession['settlementRail'];
   currency: string;
 };
 
@@ -36,6 +37,7 @@ export function useSpendSession({
   potId,
   payerMemberId,
   defaultParticipantIds,
+  defaultRail,
   currency,
 }: UseSpendSessionParams): UseSpendSessionResult {
   const [session, setSession] = useState<SpendSession | null>(() =>
@@ -46,6 +48,7 @@ export function useSpendSession({
       participantIds: defaultParticipantIds,
       amount: 0,
       currency,
+      settlementRail: defaultRail,
     }),
   );
 
@@ -58,9 +61,10 @@ export function useSpendSession({
         participantIds: defaultParticipantIds,
         amount: 0,
         currency,
+        settlementRail: defaultRail,
       }),
     );
-  }, [spendCardId, potId, payerMemberId, currency, defaultParticipantIds.join('|')]);
+  }, [spendCardId, potId, payerMemberId, currency, defaultParticipantIds.join('|'), defaultRail]);
 
   const amount = session?.amount ?? 0;
   const memo = session?.memo ?? '';

@@ -3,6 +3,7 @@ import { usePot } from './usePot';
 import { shouldPreferDLReads } from '../utils/dlReadsFlag';
 import { warnDev } from '../utils/logDev';
 import type { Pot as DataLayerPot } from '../services/data/types';
+import { createChapterPotTemplate } from '../chopdot-dot/chapterPotTemplates';
 
 interface PotDataMergeProps {
   potId?: string;
@@ -73,7 +74,36 @@ export function usePotDataMerge(props: PotDataMergeProps) {
   }, [pot?.members, props.members]);
 
   const expenses = useMemo<NormalizedExpense[]>(() => {
-    const source = pot?.expenses ?? props.expenses;
+    let source = pot?.expenses ?? props.expenses;
+
+    let obligations = pot?.dotChapter?.obligations;
+    if (!obligations && pot?.chapterMode) {
+      try {
+        const tmpl = createChapterPotTemplate(pot.chapterMode as any);
+        obligations = tmpl.chapter.obligations;
+      } catch (e) {
+        // template generation failed
+      }
+    }
+
+    if (pot?.chapterMode && obligations) {
+      const obligationExpenses = obligations.map((ob: any) => ({
+        id: ob.id,
+        amount: ob.amount,
+        currency: ob.currency,
+        paidBy: ob.fromParticipantId,
+        memo: ob.title || 'Contribution',
+        date: pot.createdAt || new Date().toISOString().slice(0, 10),
+        split: [],
+        attestations: [],
+        hasReceipt: false,
+      }));
+      // Merge them, ensuring we don't have duplicates if they somehow exist
+      const existingIds = new Set(source.map(e => e.id));
+      const uniqueObligations = obligationExpenses.filter((ob: any) => !existingIds.has(ob.id));
+      source = [...source, ...uniqueObligations];
+    }
+
     return source.map((e): NormalizedExpense => {
       const date = e.date ?? new Date().toISOString().slice(0, 10);
       const memo: string = e.memo ?? String((e as Record<string, unknown>).description ?? '');
@@ -89,7 +119,7 @@ export function usePotDataMerge(props: PotDataMergeProps) {
         hasReceipt: e.hasReceipt ?? false,
       };
     });
-  }, [pot?.expenses, props.expenses, baseCurrency]);
+  }, [pot?.expenses, props.expenses, baseCurrency, pot?.chapterMode, pot?.dotChapter]);
 
   const budget = pot?.budget ?? props.budget;
   const budgetEnabled = pot?.budgetEnabled ?? props.budgetEnabled;

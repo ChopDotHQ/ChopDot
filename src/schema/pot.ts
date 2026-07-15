@@ -59,6 +59,34 @@ export type Expense = z.infer<typeof ExpenseSchema>;
 export const PotModeSchema = z.enum(['casual', 'auditable']).default('casual');
 export type PotMode = z.infer<typeof PotModeSchema>;
 
+const PaymentAppSchema = z.enum([
+  'twint',
+  'bank',
+  'wise',
+  'revolut',
+  'venmo',
+  'cashapp',
+  'outside',
+  'asset_hub',
+  'coinage',
+  'dot',
+  'pas',
+  'paypal',
+  'usdc',
+]);
+
+export const SpendGroupSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  memberIds: z.array(z.string()).default([]),
+  defaultSplitRule: z.enum(['equal']).default('equal'),
+  preferredPaymentApp: PaymentAppSchema.default('twint'),
+  activePotId: z.string().optional(),
+  closedPotIds: z.array(z.string()).default([]),
+}).passthrough();
+
+export type SpendGroup = z.infer<typeof SpendGroupSchema>;
+
 // Commitment lifecycle status
 export const PotStatusSchema = z.enum([
   'draft',
@@ -69,21 +97,22 @@ export const PotStatusSchema = z.enum([
 ]).default('active');
 export type PotStatus = z.infer<typeof PotStatusSchema>;
 
-// Base currency type - common fiat currencies
-export type BaseCurrency = 'USD' | 'EUR' | 'GBP' | 'CHF' | 'CAD' | 'AUD' | 'JPY';
+// Base currency type - common fiat and supported wallet-test currencies
+export const BaseCurrencySchema = z.enum(['USD', 'EUR', 'GBP', 'CHF', 'CAD', 'AUD', 'JPY', 'DOT', 'USDC', 'PAS']);
+export type BaseCurrency = z.infer<typeof BaseCurrencySchema>;
 
 /**
  * Type guard to check if a string is a valid base currency
  */
 export function isBaseCurrency(currency: string): currency is BaseCurrency {
-  return ['USD', 'EUR', 'GBP', 'CHF', 'CAD', 'AUD', 'JPY'].includes(currency);
+  return BaseCurrencySchema.safeParse(currency).success;
 }
 
 export const PotSchema = z.object({
   id: z.string().min(1, 'Pot ID is required'),
   name: z.string().min(1, 'Pot name is required'),
   type: z.enum(['expense', 'savings']),
-  baseCurrency: z.enum(['USD', 'EUR', 'GBP', 'CHF', 'CAD', 'AUD', 'JPY']).default('USD'),
+  baseCurrency: BaseCurrencySchema.default('USD'),
   members: z.array(MemberSchema).min(1, 'Pot must have at least one member'),
   expenses: z.array(ExpenseSchema).default([]),
   history: z.array(z.unknown()).optional().default([]),
@@ -94,6 +123,7 @@ export const PotSchema = z.object({
   archived: z.boolean().optional().default(false),
   mode: PotModeSchema.optional().default('casual'),
   lastEditAt: z.string().optional(), // ISO date string
+  spendGroup: SpendGroupSchema.optional(),
   // Savings pot fields
   contributions: z.array(z.object({
     id: z.string(),
@@ -103,6 +133,15 @@ export const PotSchema = z.object({
   }).passthrough()).optional(),
   goalAmount: z.number().optional(),
   goalDescription: z.string().optional(),
+  // Chapter/Dot integration fields
+  chapterMode: z.string().optional(),
+  dotChapter: z.any().optional(),
+  dotActiveAgentId: z.string().optional(),
+  potIntent: z.string().optional(),
+  dotAgents: z.array(z.any()).optional(),
+  dotRail: z.any().optional(),
+  dotEvents: z.array(z.any()).optional(),
+  dotReleaseTemplate: z.any().optional(),
   // Legacy fields
   createdAt: z.union([z.number().int().nonnegative(), z.string()]).optional(),
   updatedAt: z.number().int().nonnegative().optional(),

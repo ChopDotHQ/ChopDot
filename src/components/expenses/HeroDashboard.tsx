@@ -1,5 +1,5 @@
-import { TrendingUp, TrendingDown, Plus, ArrowRight } from 'lucide-react';
-import type { Suggestion } from '../../services/settlement/calc';
+import { CheckCircle2, TrendingDown, TrendingUp, Plus } from 'lucide-react';
+import type { SettlementResult } from '../../nav';
 
 interface Member {
   id: string;
@@ -23,14 +23,19 @@ interface HeroDashboardProps {
   budgetRemaining: number;
   isOverBudget: boolean;
   balances: BalanceEntry[];
-  settlementSuggestions: Suggestion[];
+  recentSettlement?: SettlementResult;
   trackedCloseout?: unknown | null;
-  members: Member[];
+  savedRecord?: {
+    closedAt?: string;
+    annotation?: string;
+    legs?: Array<{ status: string }>;
+  } | null;
   currentUserId: string;
   canSettle: boolean;
   formatPotAmount: (value: number, withSign?: boolean) => string;
   onAddExpense: () => void;
   onSettle: () => void;
+  onCloseRecord?: () => void;
   onReopenTrackedSettlement?: () => void;
   canAddExpense?: boolean;
   addExpenseDisabledReason?: string;
@@ -46,29 +51,35 @@ export function HeroDashboard({
   budgetRemaining,
   isOverBudget,
   balances,
-  settlementSuggestions,
+  recentSettlement,
   trackedCloseout,
-  members,
+  savedRecord,
   currentUserId,
   canSettle,
   formatPotAmount,
   onAddExpense,
   onSettle,
+  onCloseRecord,
   onReopenTrackedSettlement,
   canAddExpense = true,
   addExpenseDisabledReason,
 }: HeroDashboardProps) {
+  const adjustedOutstanding = applyRecentSettlementToAmount(totalOutstanding, recentSettlement);
+  const adjustedNetBalance = applyRecentSettlementToNetBalance(netBalance, recentSettlement);
+  const adjustedBalances = applyRecentSettlementToBalances(balances, currentUserId, recentSettlement);
   const potTotalDisplay = formatPotAmount(totalExpenses);
-  const outstandingDisplay = formatPotAmount(totalOutstanding);
+  const outstandingDisplay = formatPotAmount(adjustedOutstanding);
+  const hasOpenBalance = adjustedOutstanding > 0.009;
+  const savedOpenCount = savedRecord?.legs?.filter((leg) => leg.status !== 'confirmed').length ?? 0;
 
   return (
     <div className="mx-3 mt-3">
       <div className="hero-card p-4 space-y-3">
         {/* Net Balance */}
-        <div className="text-center pb-3 border-b border-border/50">
+        <div className="text-center">
           <p className="text-caption text-secondary mb-1.5">Your net balance</p>
           <div className="flex items-center justify-center gap-2">
-            {netBalance >= 0 ? (
+            {adjustedNetBalance >= 0 ? (
               <TrendingUp className="w-5 h-5" style={{ color: 'var(--success)' }} />
             ) : (
               <TrendingDown className="w-5 h-5" style={{ color: 'var(--ink)' }} />
@@ -79,10 +90,10 @@ export function HeroDashboard({
                 fontSize: '32px',
                 fontWeight: 600,
                 lineHeight: 1.2,
-                color: netBalance >= 0 ? 'var(--success)' : 'var(--ink)',
+                color: adjustedNetBalance >= 0 ? 'var(--success)' : 'var(--ink)',
               }}
             >
-              {formatPotAmount(netBalance, true)}
+              {formatPotAmount(adjustedNetBalance, true)}
             </p>
           </div>
 
@@ -112,23 +123,79 @@ export function HeroDashboard({
             </div>
           )}
 
-          <div className="grid grid-cols-1 gap-2 pt-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-border/40 bg-muted/10 p-3 text-left">
-              <p className="text-caption text-secondary mb-1">Total pot balance</p>
-              <p className="text-xl font-semibold tabular-nums">{potTotalDisplay}</p>
-              <p className="text-micro text-secondary mt-0.5">All expenses captured here</p>
+          {recentSettlement && (
+            <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-border/40 bg-muted/10 p-3 text-left">
+              <div className="flex min-w-0 items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 shrink-0" style={{ color: 'var(--success)' }} />
+                <div className="min-w-0">
+                  <p className="text-label font-medium truncate">
+                    {recentSettlement.direction === 'owe' ? 'Payment marked' : 'Money received'}
+                  </p>
+                  <p className="text-caption text-secondary truncate">
+                    {recentSettlement.counterpartyName}
+                    {recentSettlement.savedOnDeviceOnly ? ' · saved on this device' : ''}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-label tabular-nums font-semibold">{formatPotAmount(recentSettlement.amount)}</p>
+                <p className="text-caption text-secondary">{outstandingDisplay} open</p>
+              </div>
             </div>
-            <div className="rounded-2xl border border-border/40 bg-muted/10 p-3 text-left">
-              <p className="text-caption text-secondary mb-1">Still to settle</p>
+          )}
+
+          {savedRecord && (
+            <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-border/40 bg-muted/10 p-3 text-left">
+              <div className="flex min-w-0 items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 shrink-0" style={{ color: 'var(--success)' }} />
+                <div className="min-w-0">
+                  <p className="text-label font-medium truncate">Record saved</p>
+                  <p className="text-caption text-secondary truncate">
+                    {savedOpenCount > 0 ? `${savedOpenCount} still open` : 'Ready for history'}
+                  </p>
+                </div>
+              </div>
+              <p className="text-label font-semibold whitespace-nowrap">
+                {savedOpenCount > 0 ? 'Saved' : 'Closed'}
+              </p>
+            </div>
+          )}
+
+          <div className="pt-3">
+            <button
+              onClick={onAddExpense}
+              disabled={!canAddExpense}
+              title={!canAddExpense ? addExpenseDisabledReason : undefined}
+              className="w-full py-3 rounded-[var(--r-lg)] transition-all active:scale-[0.98]"
+              style={{
+                background: canAddExpense ? 'var(--accent)' : 'var(--muted)',
+                color: canAddExpense ? '#fff' : 'var(--secondary)',
+                fontWeight: 600,
+                opacity: canAddExpense ? 1 : 0.7,
+              }}
+            >
+              <div className="flex items-center justify-center gap-1.5">
+                <Plus className="w-4 h-4" />
+                <span className="text-body">Add Expense</span>
+              </div>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 pt-2">
+            <div className="rounded-[var(--r-lg)] border border-border/40 bg-muted/10 p-3 text-left">
+              <p className="text-caption text-secondary mb-1">Total spent</p>
+              <p className="text-xl font-semibold tabular-nums">{potTotalDisplay}</p>
+            </div>
+            <div className="rounded-[var(--r-lg)] border border-border/40 bg-muted/10 p-3 text-left">
+              <p className="text-caption text-secondary mb-1">Still open</p>
               <p className="text-xl font-semibold tabular-nums">{outstandingDisplay}</p>
-              <p className="text-micro text-secondary mt-0.5">Sum of members who are owed</p>
             </div>
           </div>
         </div>
 
-        {balances.length > 0 && (
-          <div className="space-y-1.5">
-            {balances
+        {adjustedBalances.length > 0 && (
+          <div className="space-y-1.5 border-t border-border/50 pt-3">
+            {adjustedBalances
               .sort((a, b) => b.balance - a.balance)
               .map(({ member, balance }) => {
                 const displayName = getDisplayMemberName(member, currentUserId);
@@ -145,7 +212,7 @@ export function HeroDashboard({
                       {formatPotAmount(balance, true)}
                     </span>
                     <p className="text-caption text-secondary">
-                      {balance > 0 ? 'owes you' : 'you owe'}
+                      {getBalanceLabel(member, currentUserId, balance)}
                     </p>
                   </div>
                 </div>
@@ -154,13 +221,47 @@ export function HeroDashboard({
           </div>
         )}
 
-        {!trackedCloseout && (
-          <SettlementSuggestionsList
-            suggestions={settlementSuggestions}
-            members={members}
-            currentUserId={currentUserId}
-            formatPotAmount={formatPotAmount}
-          />
+        {canSettle && !trackedCloseout && !savedRecord && (
+          <div className="flex items-center justify-between gap-3 border-t border-border/50 pt-3">
+            <div className="min-w-0">
+              <p className="text-caption text-secondary">{hasOpenBalance ? 'Still open' : 'All clear'}</p>
+              <p className="text-label font-medium tabular-nums">{outstandingDisplay} open</p>
+            </div>
+            <div className="flex shrink-0 items-center gap-2">
+              {onCloseRecord && (
+                <button
+                  onClick={onCloseRecord}
+                  className="px-4 py-2 rounded-[var(--r-lg)] transition-all active:scale-[0.98] border border-border/50 bg-transparent whitespace-nowrap text-label"
+                  style={{ color: 'var(--text-secondary)', fontWeight: 600 }}
+                >
+                  Review record
+                </button>
+              )}
+              <button
+                onClick={onSettle}
+                className="px-4 py-2 rounded-[var(--r-lg)] transition-all active:scale-[0.98] border border-border/60 bg-transparent whitespace-nowrap text-label"
+                style={{ color: 'var(--ink)', fontWeight: 600 }}
+              >
+                Settle Up
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!canSettle && !trackedCloseout && !savedRecord && onCloseRecord && (
+          <div className="flex items-center justify-between gap-3 border-t border-border/50 pt-3">
+            <div className="min-w-0">
+              <p className="text-caption text-secondary">Everything looks handled</p>
+              <p className="text-label font-medium">Ready to save</p>
+            </div>
+            <button
+              onClick={onCloseRecord}
+              className="shrink-0 px-4 py-2 rounded-[var(--r-lg)] transition-all active:scale-[0.98] whitespace-nowrap text-label"
+              style={{ background: 'var(--accent)', color: '#fff', fontWeight: 600 }}
+            >
+              Close record
+            </button>
+          </div>
         )}
 
 
@@ -182,99 +283,62 @@ export function HeroDashboard({
           </div>
         )}
 
-        <div className="flex gap-2 pt-2 items-center">
-          <button
-            onClick={onAddExpense}
-            disabled={!canAddExpense}
-            title={!canAddExpense ? addExpenseDisabledReason : undefined}
-            className="flex-1 py-3 rounded-[var(--r-lg)] transition-all active:scale-[0.98]"
-            style={{
-              background: canAddExpense ? 'var(--accent)' : 'var(--muted)',
-              color: canAddExpense ? '#fff' : 'var(--secondary)',
-              fontWeight: 600,
-              opacity: canAddExpense ? 1 : 0.7,
-            }}
-          >
-            <div className="flex items-center justify-center gap-1.5">
-              <Plus className="w-4 h-4" />
-              <span className="text-body">Add Expense</span>
-            </div>
-          </button>
-          {canSettle && (
-            <button
-              onClick={onSettle}
-              className="flex-1 py-2.5 rounded-[var(--r-lg)] transition-all active:scale-[0.98] card hover:shadow-[var(--shadow-fab)]"
-              style={{ color: 'var(--ink)' }}
-            >
-              <div className="flex items-center justify-center">
-                <span className="text-body" style={{ fontWeight: 500 }}>Settle Up</span>
-              </div>
-            </button>
-          )}
-        </div>
       </div>
     </div>
   );
 }
 
-interface SettlementSuggestionsListProps {
-  suggestions: Suggestion[];
-  members: Member[];
-  currentUserId: string;
-  formatPotAmount: (value: number, withSign?: boolean) => string;
-}
-
 function getDisplayMemberName(member: Member, currentUserId: string): string {
-  if (member.id === currentUserId) {
+  if (isCurrentVisibleMember(member, currentUserId)) {
     return 'You';
   }
   return member.name?.trim() || 'Member';
 }
 
-function SettlementSuggestionsList(props: SettlementSuggestionsListProps) {
-  const { suggestions, members, currentUserId, formatPotAmount } = props;
-  if (suggestions.length === 0) return null;
-
-  return (
-    <div className="pt-3 border-t border-border/50">
-      <p className="text-caption text-secondary mb-2">Suggested settlements</p>
-      <div className="space-y-1.5">
-        {suggestions.map((suggestion, idx) => {
-          const fromMember = members.find(m => m.id === suggestion.from);
-          const toMember = members.find(m => m.id === suggestion.to);
-          if (!fromMember || !toMember) return null;
-          const fromDisplayName = getDisplayMemberName(fromMember, currentUserId);
-          const toDisplayName = getDisplayMemberName(toMember, currentUserId);
-
-          const displayAmount = formatPotAmount(suggestion.amount);
-
-          return (
-            <div
-              key={idx}
-              className="flex items-center justify-between p-3 card rounded-lg card-hover-lift transition-shadow duration-200"
-            >
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <span className="text-label truncate" style={{ fontWeight: 500 }}>
-                  {fromDisplayName}
-                </span>
-                <ArrowRight className="w-3 h-3 text-secondary flex-shrink-0" />
-                <span className="text-label truncate" style={{ fontWeight: 500 }}>
-                  {toDisplayName}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <span className="text-label tabular-nums" style={{ fontWeight: 500 }}>
-                  {displayAmount}
-                </span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <p className="text-caption text-secondary mt-2" style={{ fontSize: '10px' }}>
-        These are minimal transfers to settle all balances. Use "Settle Up" to initiate settlements.
-      </p>
-    </div>
-  );
+function getBalanceLabel(member: Member, currentUserId: string, balance: number): string {
+  if (Math.abs(balance) < 0.01) return 'settled';
+  if (isCurrentVisibleMember(member, currentUserId)) {
+    return balance > 0 ? 'you are owed' : 'you owe';
+  }
+  return balance > 0 ? 'owes you' : 'you owe';
 }
 
+function isCurrentVisibleMember(member: Member, currentUserId: string): boolean {
+  return member.id === currentUserId || member.name?.trim().toLowerCase() === 'you';
+}
+
+function applyRecentSettlementToAmount(amount: number, settlement?: SettlementResult): number {
+  if (!settlement) return amount;
+  return Math.max(0, amount - settlement.amount);
+}
+
+function applyRecentSettlementToNetBalance(netBalance: number, settlement?: SettlementResult): number {
+  if (!settlement) return netBalance;
+  if (settlement.direction === 'owed' && netBalance > 0) {
+    return Math.max(0, netBalance - settlement.amount);
+  }
+  if (settlement.direction === 'owe' && netBalance < 0) {
+    return Math.min(0, netBalance + settlement.amount);
+  }
+  return netBalance;
+}
+
+function applyRecentSettlementToBalances(
+  balances: BalanceEntry[],
+  currentUserId: string,
+  settlement?: SettlementResult,
+): BalanceEntry[] {
+  if (!settlement) return balances;
+  return balances.map((entry) => {
+    const isCurrent = isCurrentVisibleMember(entry.member, currentUserId);
+    const isCounterparty = entry.member.id === settlement.counterpartyId;
+    if (!isCurrent && !isCounterparty) return entry;
+    if (settlement.direction === 'owed' && entry.balance > 0) {
+      return { ...entry, balance: Math.max(0, entry.balance - settlement.amount) };
+    }
+    if (settlement.direction === 'owe' && entry.balance < 0) {
+      return { ...entry, balance: Math.min(0, entry.balance + settlement.amount) };
+    }
+    return entry;
+  });
+}

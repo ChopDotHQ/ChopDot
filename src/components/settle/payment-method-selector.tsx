@@ -1,8 +1,10 @@
+import { Banknote, Building2, Smartphone, Wallet } from 'lucide-react';
+
 const METHODS = [
-  { id: 'cash', label: 'Cash', emoji: '💵' },
-  { id: 'bank', label: 'Bank transfer', emoji: '🏦' },
-  { id: 'paypal', label: 'PayPal', emoji: '🅿️' },
-  { id: 'twint', label: 'TWINT', emoji: '📱' },
+  { id: 'cash', label: 'Cash', Icon: Banknote },
+  { id: 'bank', label: 'Bank transfer', Icon: Building2 },
+  { id: 'paypal', label: 'PayPal', Icon: Wallet },
+  { id: 'twint', label: 'TWINT', Icon: Smartphone },
 ] as const;
 
 interface PaymentMethodSelectorProps {
@@ -21,25 +23,45 @@ export function PaymentMethodSelector({
   onSelectMethod,
 }: PaymentMethodSelectorProps) {
   return (
-    <div className="card p-4 space-y-2">
-      <p className="text-body font-medium mb-3">Payment method</p>
-      <div className="grid grid-cols-2 gap-2">
-        {METHODS.map((m) => (
-          <button
-            key={m.id}
-            onClick={() => onSelectMethod(m.id)}
-            className={`p-3 rounded-xl border-2 text-left transition-all active:scale-[0.98] ${
-              selectedMethod === m.id
-                ? 'border-[var(--accent)] bg-[var(--accent)]/5'
-                : 'border-border bg-card hover:border-[var(--accent)]/40'
-            }`}
-          >
-            <span className="text-lg">{m.emoji}</span>
-            <p className="text-caption mt-1" style={{ fontWeight: selectedMethod === m.id ? 600 : 400 }}>
-              {m.label}
-            </p>
-          </button>
-        ))}
+    <div className="space-y-3">
+      <p className="px-1 text-label font-semibold">Choose method</p>
+      <div className="space-y-3">
+        {METHODS.map((m) => {
+          const Icon = m.Icon;
+          const selected = selectedMethod === m.id;
+          return (
+            <button
+              key={m.id}
+              onClick={() => onSelectMethod(m.id)}
+              className="w-full rounded-[22px] px-4 py-4 text-left transition-all active:scale-[0.98]"
+              style={{
+                borderRadius: 22,
+                background: selected
+                  ? 'linear-gradient(135deg, rgba(230,0,122,0.24), rgba(255,255,255,0.075))'
+                  : 'linear-gradient(135deg, rgba(255,255,255,0.11), rgba(255,255,255,0.045))',
+                boxShadow: selected
+                  ? '0 16px 42px rgba(230,0,122,0.10), inset 0 1px 0 rgba(255,255,255,0.08)'
+                  : '0 14px 34px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06)',
+              }}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${selected ? 'bg-[var(--accent)]/22' : 'bg-black/20'}`}>
+                    <Icon className="w-4 h-4" style={{ color: selected ? 'var(--accent)' : 'var(--foreground)' }} />
+                  </div>
+                  <p className="text-body" style={{ fontWeight: selected ? 700 : 600 }}>
+                    {m.label}
+                  </p>
+                </div>
+                <div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center ${selected ? 'bg-[var(--accent)]' : 'bg-white/14'}`}
+                >
+                  {selected && <span className="block w-1.5 h-1.5 rounded-full bg-white" />}
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

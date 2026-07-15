@@ -33,6 +33,13 @@ export const getInitialScreenFromLocation = (): Screen => {
     return { type: routeScreen };
   }
 
+  // Preserve capture routes without redirecting
+  if (pathname === '/pay' || pathname === '/confirm' || pathname === '/spend') {
+    // We return 'pots-home' as a placeholder. The URL will remain /pay
+    // and useCaptureLinkFlow will intercept it once auth is resolved.
+    return { type: "pots-home" };
+  }
+
   return { type: "pots-home" };
 };
 
@@ -64,21 +71,27 @@ export const useUrlSync = ({
       return;
     }
 
+    const pathname = window.location.pathname;
+    // Do not overwrite the URL if we are on a capture route
+    if (pathname === '/pay' || pathname === '/confirm' || pathname === '/spend') {
+      return;
+    }
+
     const isTabScreen = TAB_SCREEN_TYPES.some((tabScreen) => tabScreen === screen.type);
     const newPath = isTabScreen
       ? SCREEN_TO_ROUTE[screen.type as TabScreen]
       : undefined;
     if (
       newPath &&
-      window.location.pathname !== newPath &&
-      window.location.pathname !== "/"
+      pathname !== newPath &&
+      pathname !== "/"
     ) {
       if (isTabScreen && stackLength === 1) {
         window.history.replaceState({}, "", newPath);
       }
     }
 
-    if (window.location.pathname === "/" && screen.type === "pots-home") {
+    if (pathname === "/" && screen.type === "pots-home") {
       window.history.replaceState({}, "", "/pots");
     }
   }, [screen, stackLength]);

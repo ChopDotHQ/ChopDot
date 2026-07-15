@@ -19,7 +19,7 @@
  */
 
 import type { SettlementLeg, SettlementLegStatus } from "../../../types/app";
-import { getSupabase } from "../../../utils/supabase-client";
+import { getApiAuthHeaders } from "../../../utils/apiAuthHeaders";
 
 const API_BASE =
   (import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3001";
@@ -63,11 +63,7 @@ function wireToLeg(w: WireLeg): SettlementLeg {
 // ─── Auth header helper ───────────────────────────────────────────────────────
 
 async function authHeaders(): Promise<HeadersInit> {
-  const client = getSupabase();
-  if (!client) return {};
-  const { data } = await client.auth.getSession();
-  const userId = data.session?.user?.id;
-  return userId ? { "x-user-id": userId } : {};
+  return getApiAuthHeaders();
 }
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Download, Share2 } from 'lucide-react';
+import { CheckCircle2, Download, HeartHandshake, LockKeyhole, Send, Share2 } from 'lucide-react';
 import { TopBar } from '../TopBar';
 import type {
   ChapterPotAgent,
@@ -65,43 +65,11 @@ type ChapterHomeProps = {
   onShowToast?: (message: string, type?: 'success' | 'info' | 'error') => void;
 };
 
-type Tab = 'Overview' | 'People' | 'Activity' | 'Settings';
+type Tab = 'Activity' | 'People' | 'Manage';
 
-type AgentWalletPasTransfer = {
-  label: string;
-  from: string;
-  to: string;
-  amountPas: string;
-  status: 'dry_run' | 'finalized' | 'failed';
-  txHash?: string;
-  blockNumber?: number;
-  product?: {
-    productState: string;
-    clearsPayment: boolean;
-  };
-};
-
-type AgentWalletPasScenario = {
-  id: string;
-  name: string;
-  transfers: AgentWalletPasTransfer[];
-};
-
-type AgentWalletPasReport = {
-  executionMode: string;
-  network: { chainId: string };
-  scenarios: AgentWalletPasScenario[];
-};
-
-const tabs: Tab[] = ['Overview', 'People', 'Activity', 'Settings'];
+const tabs: Tab[] = ['Activity', 'People', 'Manage'];
 const accentActionStyle = { background: 'var(--accent, #e6007a)', color: '#fff' };
 const personAlias: Record<string, string> = { nina: 'nia' };
-const modeScenarioId: Partial<Record<DotChapterMode, string>> = {
-  shared_expense: 'group_expense',
-  savings_circle: 'savings_circle',
-  emergency_pot: 'emergency_pot',
-  community_fund: 'community_fund',
-};
 const agentWalletPasScenarioLabel: Partial<Record<DotChapterMode, string>> = {
   shared_expense: 'Group expense',
   savings_circle: 'Savings circle',
@@ -123,8 +91,8 @@ function buildAgentWalletPasActivityEvent(mode: DotChapterMode, sessionEvents: D
   return {
     id: `agent_wallet_pas_${clearedTransfers.length}`,
     actor: 'ChopDot',
-    label: 'PAS payments recorded',
-    detail: `${agentWalletPasScenarioLabel[mode] ?? 'Agent wallet scenario'}: ${clearedTransfers.length} finalized public-testnet transfer(s) matched the right shares.`,
+    label: 'PAS payments received',
+    detail: `${agentWalletPasScenarioLabel[mode] ?? 'Group'}: ${clearedTransfers.length} payment(s) received.`,
     kind: 'success',
   };
 }
@@ -135,15 +103,15 @@ function formatAmount(amount: number, currency: string): string {
 }
 
 function participantName(participants: DotParticipant[], id: string): string {
-  return participants.find((participant) => participant.id === id)?.name ?? id;
+  return participants.find((participant: any) => participant.id === id)?.name ?? id;
 }
 
 function participantRoles(participant?: DotParticipant): string {
-  return participant?.roles.map((role) => role.replace(/_/g, ' ')).join(' / ') ?? '';
+  return participant?.roles.map((role: any) => role.replace(/_/g, ' ')).join(' / ') ?? '';
 }
 
 function hasRole(participant: DotParticipant | undefined, roles: DotParticipant['roles']): boolean {
-  return Boolean(participant?.roles.some((role) => roles.includes(role)));
+  return Boolean(participant?.roles.some((role: any) => roles.includes(role)));
 }
 
 function deviceId(): string {
@@ -161,10 +129,6 @@ function nativePersonParam(): string | null {
   const person = new URLSearchParams(window.location.search).get('person')?.toLowerCase();
   if (!person) return null;
   return personAlias[person] ?? person;
-}
-
-function normalizeParticipantId(personId: string): string {
-  return personAlias[personId.toLowerCase()] ?? personId.toLowerCase();
 }
 
 function shareUrlForParticipant(participantId?: string): string {
@@ -272,7 +236,7 @@ function modeCopy(mode: Pot['chapterMode']) {
 
 function sumObligations(obligations: DotObligation[], states?: DotObligation['state'][]): number {
   return obligations
-    .filter((obligation) => !states || states.includes(obligation.state))
+    .filter((obligation: any) => !states || states.includes(obligation.state))
     .reduce((total, obligation) => total + obligation.amount, 0);
 }
 
@@ -297,17 +261,17 @@ function nextChapterPrompt(
   participants: DotParticipant[],
   closeReadyLabel: string,
 ): { label: string; detail: string } {
-  const claimedObligations = chapter.obligations.filter((obligation) => obligation.state === 'claimed');
+  const claimedObligations = chapter.obligations.filter((obligation: any) => obligation.state === 'claimed');
   if (claimedObligations.length) {
     const byReceiver = new Map<string, DotObligation[]>();
-    claimedObligations.forEach((obligation) => {
+    claimedObligations.forEach((obligation: any) => {
       const receiverClaims = byReceiver.get(obligation.toParticipantId) ?? [];
       receiverClaims.push(obligation);
       byReceiver.set(obligation.toParticipantId, receiverClaims);
     });
     const [receiverId, receiverClaims] = Array.from(byReceiver.entries()).sort((a, b) => b[1].length - a[1].length)[0] ?? [];
     if (receiverId && receiverClaims && receiverClaims.length > 1) {
-      const payerNames = receiverClaims.map((obligation) => participantName(participants, obligation.fromParticipantId));
+      const payerNames = receiverClaims.map((obligation: any) => participantName(participants, obligation.fromParticipantId));
       const total = receiverClaims.reduce((sum, obligation) => sum + obligation.amount, 0);
       const currency = receiverClaims[0]?.currency ?? chapterCurrency(chapter);
       return {
@@ -325,7 +289,7 @@ function nextChapterPrompt(
     }
   }
 
-  const openObligation = chapter.obligations.find((obligation) => obligation.state === 'open');
+  const openObligation = chapter.obligations.find((obligation: any) => obligation.state === 'open');
   if (openObligation) {
     return {
       label: `${participantName(participants, openObligation.fromParticipantId)} to pay`,
@@ -374,8 +338,8 @@ function readableBlockers(
   participants: DotParticipant[],
 ): string[] {
   const blockers = chapter.obligations
-    .filter((obligation) => obligation.state === 'open' || obligation.state === 'claimed')
-    .map((obligation) => {
+    .filter((obligation: any) => obligation.state === 'open' || obligation.state === 'claimed')
+    .map((obligation: any) => {
       if (obligation.state === 'claimed') {
         return `${participantName(participants, obligation.toParticipantId)} needs to confirm ${participantName(participants, obligation.fromParticipantId)}.`;
       }
@@ -454,8 +418,8 @@ function buildCloseoutReconciliation({
   closeoutReadiness: ReturnType<typeof buildDotStatus>['closeoutReadiness'];
 }): CloseoutReconciliation {
   const items: ReconciliationItem[] = [];
-  const completedTransfers = rail?.transfers.filter((transfer) => transfer.state === 'completed') ?? [];
-  const observedSubjectIds = new Set(completedTransfers.map((transfer) => transfer.subjectId));
+  const completedTransfers = rail?.transfers.filter((transfer: any) => transfer.state === 'completed') ?? [];
+  const observedSubjectIds = new Set(completedTransfers.map((transfer: any) => transfer.subjectId));
 
   for (const transfer of completedTransfers) {
     const isReleaseEvidence = transfer.subjectId.startsWith('escrow-release-');
@@ -620,7 +584,7 @@ function passiveTaskPrompt({
   }
 
   if (release?.state === 'requested') {
-    const approval = chapter.approvalRequests.find((item) => item.releaseRequestId === release.id);
+    const approval = chapter.approvalRequests.find((item: any) => item.releaseRequestId === release.id);
     const alreadyApproved = approval
       ? chapter.approvalDecisions.some(
           (decision) =>
@@ -698,9 +662,9 @@ function buildGuidedTimeline(
   chapter: DotChapter,
   release: DotReleaseRequest | undefined,
 ): { title: string; detail: string; steps: Array<TimelineStep & { state: TimelineState }> } {
-  const noOpenPayments = chapter.obligations.every((obligation) => obligation.state !== 'open');
+  const noOpenPayments = chapter.obligations.every((obligation: any) => obligation.state !== 'open');
   const paymentsHandled = chapter.obligations.every(
-    (obligation) => obligation.state === 'confirmed' || obligation.state === 'exception_recorded',
+    (obligation: any) => obligation.state === 'confirmed' || obligation.state === 'exception_recorded',
   );
   const releaseApproved = Boolean(release && ['approved', 'claimed_released', 'confirmed'].includes(release.state));
   const releaseConfirmed = release?.state === 'confirmed';
@@ -820,8 +784,8 @@ function buildModeSetup(
   releaseTemplate: ChapterPotReleaseTemplate | undefined,
 ): { title: string; detail: string; rows: ModeSetupRow[] } {
   const participants = chapter.participants;
-  const receiverIds = [...new Set(chapter.obligations.map((obligation) => obligation.toParticipantId))];
-  const payerCount = new Set(chapter.obligations.map((obligation) => obligation.fromParticipantId)).size;
+  const receiverIds = [...new Set(chapter.obligations.map((obligation: any) => obligation.toParticipantId))];
+  const payerCount = new Set(chapter.obligations.map((obligation: any) => obligation.fromParticipantId)).size;
   const firstObligation = chapter.obligations[0];
   const contributionAmount = firstObligation ? formatAmount(firstObligation.amount, firstObligation.currency) : 'Not set';
   const approverIds = releaseTemplate?.requiredApproverIds ?? [];
@@ -1134,8 +1098,8 @@ function CloseoutReconciliationPanel({ reconciliation }: { reconciliation: Close
       </div>
 
       <div className="grid grid-cols-5 gap-1.5">
-        {summary.map((item) => (
-          <div className="rounded-2xl bg-muted/10 px-2 py-2 min-w-0" data-testid={item.testId} key={item.label}>
+        {summary.map((item: any) => (
+          <div className="card px-2 py-2 min-w-0" data-testid={item.testId} key={item.label}>
             <p className="text-[10px] leading-tight text-secondary truncate">{item.label}</p>
             <p className="text-body font-semibold tabular-nums mt-0.5">{item.value}</p>
           </div>
@@ -1143,13 +1107,13 @@ function CloseoutReconciliationPanel({ reconciliation }: { reconciliation: Close
       </div>
 
       {reconciliation.evidenceWithoutConfirmation && (
-        <div className="rounded-2xl bg-muted/10 p-3">
+        <div className="card p-3">
           <p className="text-caption font-medium">Waiting on receiver</p>
         </div>
       )}
 
       <div className="divide-y divide-border" data-testid="reconciliation-items">
-        {visibleItems.map((item) => (
+        {visibleItems.map((item: any) => (
           <div className="py-2 first:pt-0 last:pb-0 flex items-start justify-between gap-3" key={item.id}>
             <div className="min-w-0">
               <p className="text-caption font-medium text-foreground">{item.label}</p>
@@ -1241,34 +1205,34 @@ function ReceiptReview({
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-2xl bg-muted/10 p-3">
+        <div className="card p-3">
           <p className="text-micro text-secondary">Confirmed</p>
           <p className="text-body font-semibold tabular-nums">
             {receipt.summary.confirmedObligationCount}/{receipt.summary.obligationCount}
           </p>
         </div>
-        <div className="rounded-2xl bg-muted/10 p-3">
+        <div className="card p-3">
           <p className="text-micro text-secondary">Releases</p>
           <p className="text-body font-semibold tabular-nums">
             {receipt.summary.confirmedReleaseCount}/{receipt.summary.releaseRequestCount}
           </p>
         </div>
-        <div className="rounded-2xl bg-muted/10 p-3">
+        <div className="card p-3">
           <p className="text-micro text-secondary">Notes</p>
           <p className="text-body font-semibold tabular-nums">{receipt.summary.exceptionCount}</p>
         </div>
-        <div className="rounded-2xl bg-muted/10 p-3">
+        <div className="card p-3">
           <p className="text-micro text-secondary">Disputes</p>
           <p className="text-body font-semibold tabular-nums">{receipt.summary.openDisputeCount}</p>
         </div>
       </div>
 
-      <div className="rounded-2xl bg-muted/10 p-3" data-testid="receipt-meaning">
+      <div className="card p-3" data-testid="receipt-meaning">
         <p className="text-micro text-secondary">Status</p>
         <p className="text-caption text-secondary mt-1">{receiptMeaning}</p>
       </div>
 
-      <div className="rounded-2xl bg-muted/10 p-3" data-testid="receipt-trust-summary">
+      <div className="card p-3" data-testid="receipt-trust-summary">
         <p className="text-micro text-secondary">Summary</p>
         <div className="pt-2 divide-y divide-border">
           {trustRows.map((row) => (
@@ -1291,7 +1255,7 @@ function ReceiptReview({
             : 'Full details for the group.'}
         </p>
         {receipt.sensitiveFieldsExcluded.length > 0 && (
-          <div className="rounded-2xl bg-muted/10 p-3">
+          <div className="card p-3">
             <p className="text-micro text-secondary">Hidden</p>
             <p className="text-caption text-secondary mt-1">{privateSummary}</p>
           </div>
@@ -1314,7 +1278,7 @@ function ReceiptReview({
           <p className="text-body font-medium">{archiveLabel}</p>
           <p className="text-caption text-secondary mt-1">{archiveDetail}</p>
         </div>
-        <div className="rounded-2xl bg-muted/10 p-3">
+        <div className="card p-3">
           <p className="text-micro text-secondary">Archive</p>
           <p className="text-caption text-secondary mt-1">{hostDetail}</p>
         </div>
@@ -1417,6 +1381,627 @@ function ContributionRow({
   );
 }
 
+type CirclePrimaryAction = {
+  label: string;
+  onClick: () => void;
+} | null;
+
+type CircleTask = {
+  label: string;
+  detail: string;
+};
+
+function CircleContributionRow({
+  obligation,
+  activeParticipant,
+  participants,
+  primaryActionSubjectId,
+  onClaim,
+  onConfirm,
+  onException,
+}: {
+  obligation: DotObligation;
+  activeParticipant: DotParticipant | undefined;
+  participants: DotParticipant[];
+  primaryActionSubjectId?: string;
+  onClaim: () => void;
+  onConfirm: () => void;
+  onException: () => void;
+}) {
+  const heroOwnsAction = primaryActionSubjectId === obligation.id;
+  const canClaim = !heroOwnsAction && obligation.state === 'open' && activeParticipant?.id === obligation.fromParticipantId;
+  const canConfirm =
+    !heroOwnsAction &&
+    obligation.state === 'claimed' &&
+    (activeParticipant?.id === obligation.toParticipantId || hasRole(activeParticipant, ['organizer', 'treasurer']));
+  const canNote = obligation.state === 'open' && hasRole(activeParticipant, ['organizer', 'treasurer']);
+  const person = participantName(participants, obligation.fromParticipantId);
+
+  return (
+    <div className="py-4 border-t border-border first:border-t-0" data-testid={`savings-contribution-${obligation.id}`}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-body font-semibold truncate">{person}</p>
+          <p className="text-caption text-secondary mt-0.5">{formatAmount(obligation.amount, obligation.currency)}</p>
+        </div>
+        <span className="text-caption px-2.5 py-1 rounded-full bg-muted/20 text-secondary whitespace-nowrap">
+          {statusLabel(obligation.state)}
+        </span>
+      </div>
+      {(canClaim || canConfirm || canNote) && (
+        <div className="flex gap-2 pt-3">
+          {canClaim && (
+            <button type="button" className="flex-1 px-3 py-2.5 rounded-xl text-body active:scale-[0.98]" style={accentActionStyle} onClick={onClaim}>
+              Mark paid
+            </button>
+          )}
+          {canConfirm && (
+            <button type="button" className="flex-1 px-3 py-2.5 rounded-xl text-body active:scale-[0.98]" style={accentActionStyle} onClick={onConfirm}>
+              Confirm received
+            </button>
+          )}
+          {canNote && (
+            <button type="button" className="flex-1 px-3 py-2.5 rounded-xl border border-border bg-card text-body active:scale-[0.98]" onClick={onException}>
+              Record delay
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SavingsCircleRoundView({
+  pot,
+  chapter,
+  release,
+  releaseTemplate,
+  activeParticipant,
+  activeTask,
+  visiblePrimaryAction,
+  primaryActionReady,
+  primaryActionSubjectId,
+  onBack,
+  onShare,
+  onClaimContribution,
+  onConfirmContribution,
+  onRecordDelay,
+  onCloseRound,
+  handledCount,
+  confirmedCount,
+  notedCount,
+  expectedAmount,
+  confirmedAmount,
+  plannedReleaseAmount,
+  currency,
+  closeoutLabel,
+}: {
+  pot: Pot;
+  chapter: DotChapter;
+  release?: DotReleaseRequest;
+  releaseTemplate?: ChapterPotReleaseTemplate;
+  activeParticipant: DotParticipant | undefined;
+  activeTask: CircleTask;
+  visiblePrimaryAction: CirclePrimaryAction;
+  primaryActionReady: boolean;
+  primaryActionSubjectId?: string;
+  onBack: () => void;
+  onShare: () => void;
+  onClaimContribution: (obligation: DotObligation) => void;
+  onConfirmContribution: (obligation: DotObligation) => void;
+  onRecordDelay: (obligation: DotObligation) => void;
+  onCloseRound: (allowOpenItems: boolean) => void;
+  handledCount: number;
+  confirmedCount: number;
+  notedCount: number;
+  expectedAmount: number;
+  confirmedAmount: number;
+  plannedReleaseAmount: number;
+  currency: string;
+  closeoutLabel: string;
+}) {
+  const payoutName = releaseTemplate ? participantName(chapter.participants, releaseTemplate.recipientId) : 'Next member';
+  const releaseStatus = release ? statusLabel(release.state) : handledCount === chapter.obligations.length ? 'Payout next' : 'Waiting';
+  const payoutAwaitingRecipient = release?.state === 'claimed_released' && activeParticipant?.id !== release.recipientId;
+  const displayTask = payoutAwaitingRecipient
+    ? {
+        label: `Waiting on ${payoutName}`,
+        detail: 'Payout recorded.',
+      }
+    : {
+        ...activeTask,
+        label: activeTask.label === 'Confirm the release' ? 'Confirm payout' : activeTask.label,
+      };
+  const displayPrimaryAction = payoutAwaitingRecipient
+    ? null
+    : visiblePrimaryAction?.label === 'Confirm received' && activeTask.label === 'Confirm the release'
+    ? { ...visiblePrimaryAction, label: 'Confirm payout' }
+    : visiblePrimaryAction;
+  const recordStatusLabel = chapter.state === 'closed'
+    ? 'Record saved'
+    : chapter.state === 'closed_with_open_items'
+      ? 'Closed with notes'
+      : payoutAwaitingRecipient
+        ? `${payoutName} confirms next`
+        : displayPrimaryAction && !displayPrimaryAction.label.startsWith('Close')
+        ? `${displayPrimaryAction.label} next`
+        : closeoutLabel;
+  const canClose =
+    chapter.state !== 'closed' &&
+    chapter.state !== 'closed_with_open_items' &&
+    displayPrimaryAction?.label.startsWith('Close') &&
+    hasRole(activeParticipant, ['organizer', 'treasurer']);
+
+  return (
+    <div className="flex flex-col h-full bg-background relative" data-testid="savings-circle-round">
+      <TopBar
+        title={pot.name}
+        onBack={onBack}
+        rightAction={
+          <button
+            className="p-2 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
+            title="Share"
+            aria-label="Share round link"
+            data-testid="chapter-share-link"
+            onClick={onShare}
+          >
+            <Share2 className="w-5 h-5" />
+          </button>
+        }
+      />
+
+      <div className="flex-1 overflow-auto px-4 pt-4 pb-28 space-y-5">
+        <section className="rounded-[1.35rem] bg-[var(--ink)] text-[var(--bg)] p-5 space-y-5 overflow-hidden">
+          <div>
+            <p className="text-micro text-white/55">Round 1 · {activeParticipant?.name ?? 'Group'}</p>
+            <h2 className="text-[34px] leading-[0.98] font-semibold mt-2 tracking-normal" data-testid="next-actor">
+              {displayTask.label}
+            </h2>
+            <p className="text-caption text-white/70 mt-3">{displayTask.detail}</p>
+          </div>
+
+          {displayPrimaryAction && (
+            <button
+              type="button"
+              className="w-full rounded-2xl py-3.5 text-body font-semibold active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100"
+              style={accentActionStyle}
+              onClick={displayPrimaryAction.onClick}
+              disabled={!primaryActionReady}
+              data-testid="savings-primary-action"
+            >
+              {displayPrimaryAction.label}
+            </button>
+          )}
+
+          <div className="h-1.5 bg-white/15 rounded-full overflow-hidden">
+            <div
+              className="h-full transition-all duration-300"
+              style={{ width: `${chapter.obligations.length ? (handledCount / chapter.obligations.length) * 100 : 0}%`, background: 'var(--accent, #e6007a)' }}
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded-2xl bg-white/8 p-3">
+              <p className="text-micro text-white/55">Total</p>
+              <p className="text-body font-semibold tabular-nums">{formatAmount(expectedAmount, currency)}</p>
+            </div>
+            <div className="rounded-2xl bg-white/8 p-3">
+              <p className="text-micro text-white/55">Confirmed</p>
+              <p className="text-body font-semibold tabular-nums">{formatAmount(confirmedAmount, currency)}</p>
+            </div>
+            <div className="rounded-2xl bg-white/8 p-3">
+              <p className="text-micro text-white/55">Payout</p>
+              <p className="text-body font-semibold tabular-nums">{formatAmount(plannedReleaseAmount, release?.currency ?? releaseTemplate?.currency ?? currency)}</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="space-y-2">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-micro text-secondary">Receives this round</p>
+              <p className="text-title font-semibold">{payoutName}</p>
+            </div>
+            <span className="text-caption px-2.5 py-1 rounded-full bg-muted/20 text-secondary whitespace-nowrap">
+              {releaseStatus}
+            </span>
+          </div>
+        </section>
+
+        <section className="card p-4" data-testid="savings-contributions">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-body font-semibold">Contributions</p>
+            <p className="text-caption text-secondary">{handledCount}/{chapter.obligations.length} handled</p>
+          </div>
+          <div className="pt-2">
+            {chapter.obligations.map((obligation) => (
+              <CircleContributionRow
+                key={obligation.id}
+                obligation={obligation}
+                activeParticipant={activeParticipant}
+                participants={chapter.participants}
+                primaryActionSubjectId={primaryActionSubjectId}
+                onClaim={() => onClaimContribution(obligation)}
+                onConfirm={() => onConfirmContribution(obligation)}
+                onException={() => onRecordDelay(obligation)}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="card p-4 space-y-3" data-testid="savings-close-state">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-body font-semibold">Round record</p>
+              <p className="text-caption text-secondary mt-0.5">
+                {confirmedCount} confirmed{notedCount ? ` · ${notedCount} delayed` : ''}
+              </p>
+            </div>
+            <span className="text-caption px-2.5 py-1 rounded-full bg-muted/20 text-secondary whitespace-nowrap">
+              {recordStatusLabel}
+            </span>
+          </div>
+          {canClose && (
+            <button
+              type="button"
+              className="w-full rounded-2xl py-3 text-body font-semibold active:scale-[0.98]"
+              style={accentActionStyle}
+              onClick={() => onCloseRound(closeoutLabel !== 'Ready to close')}
+            >
+              {closeoutLabel === 'Ready to close' ? 'Close round' : 'Close round with note'}
+            </button>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function emergencyPersonLabel(
+  participantId: string,
+  activeParticipant: DotParticipant | undefined,
+  participants: DotParticipant[],
+  role: 'contributor' | 'organizer' | 'recipient' | 'viewer' = 'contributor',
+): string {
+  if (participantId === activeParticipant?.id) return 'You';
+  if (role === 'recipient' && activeParticipant?.id !== participantId) return 'Kept private';
+  if (hasRole(activeParticipant, ['organizer', 'treasurer', 'approver'])) return participantName(participants, participantId);
+  if (role === 'organizer') return 'Organizer';
+  return 'Contributor';
+}
+
+function emergencyInitial(label: string): string {
+  const clean = label.trim();
+  if (!clean || clean.startsWith('Private')) return 'P';
+  if (clean === 'You') return 'Y';
+  return clean[0]?.toUpperCase() ?? 'P';
+}
+
+function EmergencyContributionRow({
+  obligation,
+  activeParticipant,
+  participants,
+  primaryActionSubjectId,
+  onClaim,
+  onConfirm,
+}: {
+  obligation: DotObligation;
+  activeParticipant: DotParticipant | undefined;
+  participants: DotParticipant[];
+  primaryActionSubjectId?: string;
+  onClaim: () => void;
+  onConfirm: () => void;
+}) {
+  const heroOwnsAction = primaryActionSubjectId === obligation.id;
+  const isOwnContribution = activeParticipant?.id === obligation.fromParticipantId;
+  const canClaim = !heroOwnsAction && obligation.state === 'open' && isOwnContribution;
+  const canConfirm =
+    !heroOwnsAction &&
+    obligation.state === 'claimed' &&
+    (activeParticipant?.id === obligation.toParticipantId || hasRole(activeParticipant, ['organizer', 'treasurer']));
+  const contributor = emergencyPersonLabel(obligation.fromParticipantId, activeParticipant, participants, 'contributor');
+
+  return (
+    <div className="py-3 border-t border-white/8 first:border-t-0" data-testid={`emergency-contribution-${obligation.id}`}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex items-center gap-3">
+          <span className="h-9 w-9 shrink-0 rounded-full bg-[var(--accent)]/20 text-[var(--accent)] flex items-center justify-center text-caption font-semibold">
+            {emergencyInitial(contributor)}
+          </span>
+          <span className="min-w-0">
+          <p className="text-body font-semibold truncate">{isOwnContribution ? 'Your support' : contributor}</p>
+          <p className="text-caption text-secondary mt-0.5">{formatAmount(obligation.amount, obligation.currency)}</p>
+          </span>
+        </div>
+        <span className="text-caption px-2.5 py-1 rounded-full bg-muted/20 text-secondary whitespace-nowrap">
+          {statusLabel(obligation.state)}
+        </span>
+      </div>
+      {(canClaim || canConfirm) && (
+        <div className="flex gap-2 pt-3">
+          {canClaim && (
+            <button type="button" className="flex-1 px-3 py-2.5 rounded-xl text-body active:scale-[0.98]" style={accentActionStyle} onClick={onClaim}>
+              Contribute
+            </button>
+          )}
+          {canConfirm && (
+            <button type="button" className="flex-1 px-3 py-2.5 rounded-xl text-body active:scale-[0.98]" style={accentActionStyle} onClick={onConfirm}>
+              Confirm received
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EmergencyPotPrivacyView({
+  chapter,
+  release,
+  releaseTemplate,
+  activeParticipant,
+  activeTask,
+  visiblePrimaryAction,
+  primaryActionReady,
+  primaryActionSubjectId,
+  onBack,
+  onShare,
+  onClaimContribution,
+  onConfirmContribution,
+  onClosePot,
+  handledCount,
+  confirmedCount,
+  expectedAmount,
+  confirmedAmount,
+  plannedReleaseAmount,
+  currency,
+  closeoutLabel,
+}: {
+  chapter: DotChapter;
+  release?: DotReleaseRequest;
+  releaseTemplate?: ChapterPotReleaseTemplate;
+  activeParticipant: DotParticipant | undefined;
+  activeTask: CircleTask;
+  visiblePrimaryAction: CirclePrimaryAction;
+  primaryActionReady: boolean;
+  primaryActionSubjectId?: string;
+  onBack: () => void;
+  onShare: () => void;
+  onClaimContribution: (obligation: DotObligation) => void;
+  onConfirmContribution: (obligation: DotObligation) => void;
+  onClosePot: (allowOpenItems: boolean) => void;
+  handledCount: number;
+  confirmedCount: number;
+  expectedAmount: number;
+  confirmedAmount: number;
+  plannedReleaseAmount: number;
+  currency: string;
+  closeoutLabel: string;
+}) {
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    document.body.classList.add('chopdot-emergency-focus');
+    return () => document.body.classList.remove('chopdot-emergency-focus');
+  }, []);
+
+  const recipientId = release?.recipientId ?? releaseTemplate?.recipientId;
+  const recipientLabel = recipientId
+    ? emergencyPersonLabel(recipientId, activeParticipant, chapter.participants, 'recipient')
+    : 'Kept private';
+  const primaryObligation = chapter.obligations.find((obligation) => obligation.id === primaryActionSubjectId);
+  const visibleContributions = chapter.obligations.filter(
+    (obligation) =>
+      hasRole(activeParticipant, ['organizer', 'treasurer', 'approver']) ||
+      obligation.fromParticipantId === activeParticipant?.id ||
+      obligation.toParticipantId === activeParticipant?.id,
+  );
+  const contributionCount = chapter.obligations.length;
+  const releaseState =
+    chapter.state === 'closed'
+      ? 'Saved'
+      : release
+        ? statusLabel(release.state)
+        : handledCount === contributionCount
+          ? 'Ready'
+          : 'Waiting';
+  const releaseAwaitingRecipient = release?.state === 'claimed_released' && activeParticipant?.id !== release.recipientId;
+  const displayTask = releaseAwaitingRecipient
+    ? {
+        label: 'Waiting on recipient',
+        detail: 'Release recorded.',
+      }
+    : activeTask.label === 'Mark your payment'
+      ? {
+          label: 'Contribute privately',
+          detail: activeTask.detail,
+        }
+      : activeTask.label === 'Confirm the release'
+        ? {
+            label: 'Confirm received',
+            detail: 'Confirm the support reached you.',
+          }
+        : activeTask;
+  const displayPrimaryAction = releaseAwaitingRecipient
+    ? null
+    : visiblePrimaryAction?.label === 'Mark paid'
+      ? { ...visiblePrimaryAction, label: 'Contribute' }
+      : visiblePrimaryAction?.label === 'Confirm received' && activeTask.label === 'Confirm the release'
+        ? { ...visiblePrimaryAction, label: 'Confirm received' }
+        : visiblePrimaryAction;
+  const recordStatusLabel =
+    chapter.state === 'closed'
+      ? 'Saved record'
+      : releaseAwaitingRecipient
+        ? 'Recipient confirms next'
+        : displayPrimaryAction && !displayPrimaryAction.label.startsWith('Close')
+          ? `${displayPrimaryAction.label} next`
+            : closeoutLabel === 'Ready to close'
+            ? 'Ready to save'
+            : 'Not ready';
+  const canClose =
+    chapter.state !== 'closed' &&
+    chapter.state !== 'closed_with_open_items' &&
+    !displayPrimaryAction &&
+    hasRole(activeParticipant, ['organizer', 'treasurer']);
+  const heroAmount = primaryObligation
+    ? formatAmount(primaryObligation.amount, primaryObligation.currency)
+    : displayPrimaryAction?.label?.includes('release') || displayPrimaryAction?.label?.includes('Release')
+      ? formatAmount(plannedReleaseAmount, release?.currency ?? releaseTemplate?.currency ?? currency)
+      : displayPrimaryAction?.label?.includes('Close')
+        ? formatAmount(confirmedAmount, currency)
+        : formatAmount(plannedReleaseAmount || confirmedAmount || expectedAmount, currency);
+  const primaryContributor = primaryObligation
+    ? emergencyPersonLabel(primaryObligation.fromParticipantId, activeParticipant, chapter.participants, 'contributor')
+    : null;
+  const heroDetail = primaryObligation
+    ? primaryObligation.fromParticipantId === activeParticipant?.id
+      ? `Organized by ${participantName(chapter.participants, primaryObligation.toParticipantId)}`
+      : `${primaryContributor} paid`
+    : displayPrimaryAction?.label?.includes('Close')
+      ? 'Ready to save'
+      : displayPrimaryAction?.label?.includes('release') || displayPrimaryAction?.label?.includes('Release')
+        ? recipientLabel === 'Kept private'
+          ? 'Recipient kept private'
+          : `For ${recipientLabel}`
+        : recipientLabel;
+  const heroIcon =
+    chapter.state === 'closed'
+      ? <CheckCircle2 className="w-11 h-11 text-emerald-500" />
+      : displayPrimaryAction?.label?.includes('release') || displayPrimaryAction?.label?.includes('Release')
+        ? <Send className="w-10 h-10 text-[var(--accent)]" />
+        : <HeartHandshake className="w-10 h-10 text-[var(--accent)]" />;
+
+  return (
+    <div className="flex flex-col h-full bg-[#05070a] text-white relative" data-testid="emergency-pot-flow">
+      <TopBar
+        title="Emergency pot"
+        onBack={onBack}
+        rightAction={
+          <button
+            className="p-2 hover:bg-muted/50 rounded-lg transition-all duration-200 active:scale-95"
+            title="Share"
+            aria-label="Share private link"
+            data-testid="chapter-share-link"
+            onClick={onShare}
+          >
+            <Share2 className="w-5 h-5" />
+          </button>
+        }
+      />
+
+      <div className="flex-1 overflow-auto px-4 pt-4 pb-8 space-y-4">
+        <section
+          className="bg-gradient-to-b from-[#151d23] to-[#0b1015] border border-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.45)] p-5 overflow-hidden flex flex-col justify-center"
+          style={{ borderRadius: 28, minHeight: 'calc(100svh - 132px)' }}
+        >
+          <div className="flex flex-col items-center text-center py-1">
+            <div
+              className="bg-white/7 border border-white/10 flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_18px_44px_rgba(0,0,0,0.28)]"
+              style={{ width: 82, height: 82, borderRadius: 999 }}
+            >
+              {heroIcon}
+            </div>
+            <p className="text-micro text-white/45 mt-4">Private support · {activeParticipant?.name ?? 'Group'}</p>
+            <h2 className="text-[28px] leading-[1.05] font-semibold mt-2 tracking-normal max-w-[15rem]" data-testid="next-actor">
+              {displayTask.label}
+            </h2>
+            <p className="text-[34px] leading-none font-semibold mt-4 tabular-nums">{heroAmount}</p>
+            <p className="text-caption text-white/60 mt-2">{heroDetail}</p>
+          </div>
+
+          {displayPrimaryAction && (
+            <button
+              type="button"
+              className="w-full rounded-2xl py-3.5 text-body font-semibold active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-5 shadow-[0_16px_32px_rgba(230,0,122,0.25)]"
+              style={accentActionStyle}
+              onClick={displayPrimaryAction.onClick}
+              disabled={!primaryActionReady}
+              data-testid="emergency-primary-action"
+            >
+              {displayPrimaryAction.label}
+            </button>
+          )}
+
+        </section>
+
+        <section className="bg-white/[0.055] border border-white/10 p-4 space-y-3" style={{ borderRadius: 24 }}>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-caption text-white/55">Target</p>
+            <p className="text-body font-semibold tabular-nums">{formatAmount(expectedAmount, currency)}</p>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-caption text-white/55">Raised</p>
+            <p className="text-body font-semibold text-emerald-400 tabular-nums">{formatAmount(confirmedAmount, currency)}</p>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-caption text-white/55">Release</p>
+            <p className="text-body font-semibold tabular-nums">{formatAmount(plannedReleaseAmount, release?.currency ?? releaseTemplate?.currency ?? currency)}</p>
+          </div>
+          <div className="flex items-center justify-between gap-4 pt-3 border-t border-white/10">
+            <p className="text-caption text-white/55">Recipient</p>
+            <span className="text-body font-semibold text-right">{recipientLabel}</span>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-caption text-white/55">Status</p>
+            <span className="text-caption px-2.5 py-1 rounded-full bg-white/8 text-white/70 whitespace-nowrap" data-testid="emergency-release-status">
+              {releaseState}
+            </span>
+          </div>
+        </section>
+
+        <section className="bg-white/[0.055] border border-white/10 p-4" style={{ borderRadius: 24 }} data-testid="emergency-contributions">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-body font-semibold">Support</p>
+            <p className="text-caption text-white/50">{handledCount}/{contributionCount} handled</p>
+          </div>
+          <div className="pt-2">
+            {visibleContributions.map((obligation) => (
+              <EmergencyContributionRow
+                key={obligation.id}
+                obligation={obligation}
+                activeParticipant={activeParticipant}
+                participants={chapter.participants}
+                primaryActionSubjectId={primaryActionSubjectId}
+                onClaim={() => onClaimContribution(obligation)}
+                onConfirm={() => onConfirmContribution(obligation)}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-white/[0.055] border border-white/10 p-4 space-y-3" style={{ borderRadius: 24 }} data-testid="emergency-private-record">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="h-10 w-10 shrink-0 rounded-full bg-white/7 border border-white/10 flex items-center justify-center">
+                <LockKeyhole className="h-5 w-5 text-white/70" />
+              </span>
+              <span className="min-w-0">
+              <p className="text-body font-semibold">Private record</p>
+              <p className="text-caption text-white/50 mt-0.5">
+                {confirmedCount} confirmed · private by default
+              </p>
+              </span>
+            </div>
+            <span className="text-caption px-2.5 py-1 rounded-full bg-white/8 text-white/70 whitespace-nowrap">
+              {recordStatusLabel}
+            </span>
+          </div>
+          {canClose && (
+            <button
+              type="button"
+              className="w-full rounded-2xl py-3 text-body font-semibold active:scale-[0.98]"
+              style={accentActionStyle}
+              onClick={() => onClosePot(closeoutLabel !== 'Ready to close')}
+            >
+              {closeoutLabel === 'Ready to close' ? 'Save record' : 'Save with note'}
+            </button>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}
+
 function ReleaseSection({
   release,
   template,
@@ -1482,7 +2067,7 @@ function ReleaseSection({
 }
 
 export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpdatePot, onShowToast }: ChapterHomeProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('Overview');
+  const [activeTab, setActiveTab] = useState<Tab>('Activity');
   const receiptReviewRef = useRef<HTMLDivElement | null>(null);
   const [activeAgentId, setActiveAgentId] = useState(() => {
     const participantId = nativePersonParam();
@@ -1502,7 +2087,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
   const rail = pot.dotRail;
   const releaseTemplate = pot.dotReleaseTemplate;
   const activeAgent = agents.find((agent) => agent.id === activeAgentId) ?? agents[0];
-  const activeParticipant = chapter?.participants.find((participant) => participant.id === activeAgent?.participantId);
+  const activeParticipant = chapter?.participants.find((participant: any) => participant.id === activeAgent?.participantId);
   const copy = modeCopy(pot.chapterMode);
   const status = useMemo(() => (chapter ? buildDotStatus(chapter) : null), [chapter]);
   const receipt = useMemo(
@@ -1514,8 +2099,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
     new URLSearchParams(window.location.search).get('chopdot-dot-native') === '1';
   const showDeveloperControls =
     new URLSearchParams(window.location.search).get('chopdot-dot-dev') === '1' ||
-    new URLSearchParams(window.location.search).get('chopdot-dot-lab') === '1' ||
-    (import.meta.env.DEV && !nativeSessionEnabled);
+    new URLSearchParams(window.location.search).get('chopdot-dot-lab') === '1';
   const escrowLabEnabled =
     showDeveloperControls && new URLSearchParams(window.location.search).get('chopdot-escrow-lab') === '1';
   const nativeTemplate = useMemo(
@@ -1570,7 +2154,6 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
   );
   const nativeDeviceId = useMemo(() => deviceId(), []);
   const lastNativeReplayRef = useRef('');
-  const agentWalletPasImportKeysRef = useRef(new Set<string>());
   const nativeReplayOptions = useMemo(
     () => (nativeMembershipGrants.length ? { membershipGrants: nativeMembershipGrants } : undefined),
     [nativeMembershipGrants],
@@ -1593,7 +2176,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
       receipt: receiptForPreflight,
       participantId: activeParticipant?.id ?? 'leo',
       deviceId: nativeDeviceId,
-      identityParticipantIds: nativeInitialChapter.participants.map((participant) => participant.id),
+      identityParticipantIds: nativeInitialChapter.participants.map((participant: any) => participant.id),
       membershipGrants: nativeMembershipGrants,
       requireMembershipGrant: true,
       requireDistinctParticipantSigners: true,
@@ -1619,7 +2202,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
     let cancelled = false;
     const refreshAccess = async () => {
       const localAccess = await createDemoDotInvitationAccess(nativeInitialChapter, activeParticipant?.id);
-      const expectedParticipantIds = nativeInitialChapter.participants.map((participant) => participant.id);
+      const expectedParticipantIds = nativeInitialChapter.participants.map((participant: any) => participant.id);
       const waitForStore = () => new Promise((resolve) => window.setTimeout(resolve, 150));
 
       for (let attempt = 0; attempt < 6; attempt += 1) {
@@ -1741,200 +2324,6 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
     };
   }, [events, nativeInitialChapter, nativeReplayOptions, nativeSessionAdapter, nativeSessionEnabled, nativeTemplate?.releaseTemplate, onUpdatePot, releaseTemplate]);
 
-  useEffect(() => {
-    if (!nativeSessionEnabled || !nativeInitialChapter || !nativeReplayOptions || !nativeTemplate?.releaseTemplate) return;
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const trialSessionId = params.get('agent-wallet-trial');
-    if (!trialSessionId) return;
-    const expectedScenarioId = params.get('scenario') ?? modeScenarioId[nativeInitialChapter.mode];
-    if (!expectedScenarioId) return;
-    const nativeTrialSessionId = params.get('chopdot-dot-session') ?? 'default';
-    const localKey = `chopdot_agent_wallet_pas_applied:${trialSessionId}:${nativeTrialSessionId}:${nativeInitialChapter.id}:${expectedScenarioId}`;
-    const lockKey = `${localKey}:inflight`;
-    if (window.sessionStorage.getItem(localKey) === '1') return;
-    if (agentWalletPasImportKeysRef.current.has(localKey) || window.sessionStorage.getItem(lockKey)) return;
-    agentWalletPasImportKeysRef.current.add(localKey);
-    window.sessionStorage.setItem(lockKey, String(Date.now()));
-
-    let cancelled = false;
-
-    const appendAs = async (workingChapter: DotChapter, participantId: string, action: DotSessionAction) => {
-      const signer = await nativeSignerAdapter.getSigner(participantId);
-      const sessionEvents = await nativeSessionAdapter.appendEvent(workingChapter, signer, nativeDeviceId, action, nativeReplayOptions);
-      return reduceDotSessionEvents(nativeInitialChapter, sessionEvents, nativeReplayOptions);
-    };
-
-    const importPasScenario = async () => {
-      const existingEvents = await nativeSessionAdapter.loadEvents(nativeInitialChapter.id);
-      if (existingEvents.length > 0) {
-        const existingReplay = reduceDotSessionEvents(nativeInitialChapter, existingEvents, nativeReplayOptions);
-        if (existingReplay.chapter.state === 'closed' || buildAgentWalletPasActivityEvent(nativeInitialChapter.mode, existingEvents)) {
-          window.sessionStorage.setItem(localKey, '1');
-        }
-        return;
-      }
-
-      const response = await fetch(`/__agent_wallet_trial/pas-report?sessionId=${encodeURIComponent(trialSessionId)}`);
-      if (!response.ok) return;
-      const report = (await response.json()) as AgentWalletPasReport;
-      const scenario = report.scenarios.find((item) => item.id === expectedScenarioId);
-      if (!scenario || report.executionMode !== 'executed_public_testnet_pas') return;
-
-      let replay = reduceDotSessionEvents(nativeInitialChapter, [], nativeReplayOptions);
-      const verifiedTransfers = scenario.transfers.filter(
-        (transfer) => transfer.status === 'finalized' && transfer.product?.clearsPayment === true && transfer.txHash,
-      );
-
-      for (const transfer of verifiedTransfers) {
-        const fromParticipantId = normalizeParticipantId(transfer.from);
-        const toParticipantId = normalizeParticipantId(transfer.to);
-        const obligation = replay.chapter.obligations.find(
-          (item) =>
-            item.fromParticipantId === fromParticipantId &&
-            item.toParticipantId === toParticipantId &&
-            item.state === 'open',
-        );
-
-        if (!obligation) continue;
-        replay = await appendAs(replay.chapter, fromParticipantId, {
-          type: 'claim_contribution',
-          obligationId: obligation.id,
-          note: `${transfer.label}. Public testnet PAS tx finalized and matched expected recipient and amount.`,
-          assetHubReference: {
-            subjectId: obligation.id,
-            txHash: transfer.txHash ?? '',
-            lifecycle: 'finalized',
-            amount: Number(transfer.amountPas),
-            currency: 'PAS',
-            blockNumber: transfer.blockNumber,
-          },
-        });
-        replay = await appendAs(replay.chapter, toParticipantId, {
-          type: 'confirm_contribution',
-          obligationId: obligation.id,
-        });
-      }
-
-      const closerId = replay.chapter.participants.find((participant) =>
-        participant.roles.some((role) => role === 'organizer' || role === 'treasurer'),
-      )?.id;
-      if (!closerId) return;
-
-      for (const obligation of replay.chapter.obligations) {
-        if (obligation.required && obligation.state !== 'confirmed') {
-          replay = await appendAs(replay.chapter, closerId, {
-            type: 'record_exception',
-            subjectType: 'obligation',
-            subjectId: obligation.id,
-            note: 'Agent-wallet trial recorded this item as intentionally unresolved for this scenario.',
-            visibility: 'organizer_operational',
-          });
-        }
-      }
-
-      const releaseTransfer = verifiedTransfers.find((transfer) => {
-        const fromParticipantId = normalizeParticipantId(transfer.from);
-        const toParticipantId = normalizeParticipantId(transfer.to);
-        return (
-          fromParticipantId === nativeTemplate.releaseTemplate.requesterId &&
-          toParticipantId === nativeTemplate.releaseTemplate.recipientId
-        );
-      });
-
-      if (releaseTransfer) {
-        replay = await appendAs(replay.chapter, nativeTemplate.releaseTemplate.requesterId, {
-          type: 'create_release',
-          release: nativeTemplate.releaseTemplate,
-        });
-        const releaseId = replay.chapter.releaseRequests.at(-1)?.id;
-        if (releaseId) {
-          for (const approverId of nativeTemplate.releaseTemplate.requiredApproverIds) {
-            replay = await appendAs(replay.chapter, approverId, {
-              type: 'approve_release',
-              releaseRequestId: releaseId,
-            });
-          }
-          replay = await appendAs(replay.chapter, nativeTemplate.releaseTemplate.requesterId, {
-            type: 'claim_release',
-            releaseRequestId: releaseId,
-            assetHubReference: {
-              subjectId: releaseId,
-              txHash: releaseTransfer.txHash ?? '',
-              lifecycle: 'finalized',
-              amount: Number(releaseTransfer.amountPas),
-              currency: 'PAS',
-              blockNumber: releaseTransfer.blockNumber,
-            },
-          });
-          replay = await appendAs(replay.chapter, nativeTemplate.releaseTemplate.recipientId, {
-            type: 'confirm_release',
-            releaseRequestId: releaseId,
-          });
-        }
-      }
-
-      const finalStatus = buildDotStatus(replay.chapter);
-      replay = await appendAs(replay.chapter, closerId, {
-        type: 'close_chapter',
-        allowOpenItems: finalStatus.blockers.length > 0,
-        annotation: finalStatus.blockers.length > 0 ? 'Closed with agent-wallet trial annotations.' : undefined,
-      });
-
-      if (cancelled) return;
-      const sessionEvents = await nativeSessionAdapter.loadEvents(nativeInitialChapter.id);
-      onUpdatePot({
-        dotChapter: replay.chapter,
-        dotEvents: [
-          {
-            id: `agent_wallet_pas_${sessionEvents.length + 1}`,
-            actor: 'ChopDot',
-            label: 'PAS payments recorded',
-            detail: `${scenario.name}: ${verifiedTransfers.length} finalized public-testnet transfer(s) matched the right shares.`,
-            kind: 'success',
-          },
-          ...dotSessionEventsToActivity(sessionEvents).map((event, index) => ({
-            id: `dot_native_event_${sessionEvents.length - index}`,
-            actor: 'ChopDot',
-            label: event.label,
-            detail: event.detail,
-            kind: event.kind,
-          })),
-        ],
-        dotReleaseTemplate: nativeTemplate.releaseTemplate,
-        lastEditAt: new Date().toISOString(),
-      });
-      window.sessionStorage.setItem(localKey, '1');
-      setNativeEventCount(sessionEvents.length);
-      setNativeSyncStatus('up to date');
-      onShowToast?.('PAS payments recorded', 'success');
-    };
-
-    void importPasScenario().catch((error) => {
-      setNativeSyncStatus('needs refresh');
-      setNativeHostGateIssue(error instanceof Error ? error.message : 'Agent-wallet PAS payments could not be loaded.');
-      console.error('Agent-wallet PAS payment import failed', error);
-      window.sessionStorage.removeItem(localKey);
-    }).finally(() => {
-      agentWalletPasImportKeysRef.current.delete(localKey);
-      window.sessionStorage.removeItem(lockKey);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    nativeDeviceId,
-    nativeInitialChapter,
-    nativeReplayOptions,
-    nativeSessionAdapter,
-    nativeSessionEnabled,
-    nativeSignerAdapter,
-    nativeTemplate?.releaseTemplate,
-    onShowToast,
-    onUpdatePot,
-  ]);
-
   if (!chapter || !status) {
     return (
       <div className="flex flex-col h-full bg-background">
@@ -1986,8 +2375,8 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
     Array.from(new Set([
       ...participantIds.filter((participantId): participantId is string => Boolean(participantId)),
       ...(chapter?.participants
-        .filter((participant) => hasRole(participant, ['organizer', 'treasurer']))
-        .map((participant) => participant.id) ?? []),
+        .filter((participant: any) => hasRole(participant, ['organizer', 'treasurer']))
+        .map((participant: any) => participant.id) ?? []),
     ]));
 
   const commitNativeAction = async (label: string, action: DotSessionAction, detail: string, kind: ChapterPotEvent['kind'] = 'success') => {
@@ -2011,7 +2400,9 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
       setNativeEventCount(sessionEvents.length);
       setNativeSyncStatus('up to date');
       setNativeHostGateIssue(null);
-      onShowToast?.(label, 'success');
+      if (chapter.mode !== 'savings_circle' && chapter.mode !== 'emergency_pot') {
+        onShowToast?.(label, 'success');
+      }
       return true;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Action blocked.';
@@ -2066,7 +2457,9 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
       setNativeEventCount(anchoredEvents.length);
       setNativeSyncStatus('up to date');
       setNativeHostGateIssue(null);
-      onShowToast?.('Receipt saved', 'success');
+      if (chapter.mode !== 'savings_circle' && chapter.mode !== 'emergency_pot') {
+        onShowToast?.('Receipt saved', 'success');
+      }
       return true;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Action blocked.';
@@ -2082,7 +2475,9 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
     try {
       const result = action();
       updateChapter(result.chapter, addEvent(label, detail), result.rail ?? rail);
-      onShowToast?.(label, 'success');
+      if (chapter.mode !== 'savings_circle' && chapter.mode !== 'emergency_pot') {
+        onShowToast?.(label, 'success');
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Action blocked.';
       onUpdatePot({ dotEvents: addEvent(label, message, 'blocked'), dotActiveAgentId: activeAgent?.id });
@@ -2259,7 +2654,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
   const claimRelease = () => {
     const releaseId = latestReleaseId(chapter);
     if (!releaseId) return;
-    const release = chapter.releaseRequests.find((item) => item.id === releaseId);
+    const release = chapter.releaseRequests.find((item: any) => item.id === releaseId);
     if (!release) return;
     if (nativeSessionEnabled) {
       void (async () => {
@@ -2315,16 +2710,17 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
   const confirmRelease = () => {
     const releaseId = latestReleaseId(chapter);
     if (!releaseId) return;
+    const label = copy.releaseNoun === 'payout' ? 'Payout confirmed' : 'Release confirmed';
     if (nativeSessionEnabled) {
       void commitNativeAction(
-        'Release confirmed',
+        label,
         { type: 'confirm_release', releaseRequestId: releaseId },
         `${activeAgent?.name ?? 'Member'} confirmed receipt.`,
       );
       return;
     }
     runAction(
-      'Release confirmed',
+      label,
       () => ({ chapter: confirmDotRelease(chapter, { releaseRequestId: releaseId, confirmerId: activeAgent?.participantId ?? '' }) }),
       `${activeAgent?.name ?? 'Member'} confirmed receipt.`,
     );
@@ -2410,12 +2806,12 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
   };
 
   const release = chapter.releaseRequests.at(-1);
-  const handledCount = chapter.obligations.filter((item) => item.state === 'confirmed' || item.state === 'exception_recorded').length;
-  const confirmedCount = chapter.obligations.filter((item) => item.state === 'confirmed').length;
+  const handledCount = chapter.obligations.filter((item: any) => item.state === 'confirmed' || item.state === 'exception_recorded').length;
+  const confirmedCount = chapter.obligations.filter((item: any) => item.state === 'confirmed').length;
   const currency = chapterCurrency(chapter);
   const expectedAmount = sumObligations(chapter.obligations);
   const confirmedAmount = sumObligations(chapter.obligations, ['confirmed']);
-  const notedCount = chapter.obligations.filter((item) => item.state === 'exception_recorded').length;
+  const notedCount = chapter.obligations.filter((item: any) => item.state === 'exception_recorded').length;
   const plannedReleaseAmount = releaseAmount(chapter, releaseTemplate);
   const openItems = readableBlockers(chapter, release, releaseTemplate, chapter.participants);
   const groupPrompt = nextChapterPrompt(chapter, release, releaseTemplate, chapter.participants, copy.nextReady);
@@ -2438,25 +2834,25 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
   });
   const progressPercent = chapter.obligations.length ? (handledCount / chapter.obligations.length) * 100 : 0;
   const nativeDisplaySyncStatus = nativeHostGateIssue ? 'needs refresh' : nativeSyncStatus;
-  const heldTransfers = rail?.transfers.filter((transfer) => transfer.subjectId.startsWith('escrow-') && transfer.state === 'completed') ?? [];
+  const heldTransfers = rail?.transfers.filter((transfer: any) => transfer.subjectId.startsWith('escrow-') && transfer.state === 'completed') ?? [];
   const heldAmount = heldTransfers
-    .filter((transfer) => !transfer.subjectId.startsWith('escrow-release-'))
-    .reduce((total, transfer) => total + transfer.amount, 0);
+    .filter((transfer: any) => !transfer.subjectId.startsWith('escrow-release-'))
+    .reduce((total: any, transfer: any) => total + transfer.amount, 0);
   const releaseEvidenceAmount = heldTransfers
-    .filter((transfer) => transfer.subjectId.startsWith('escrow-release-'))
-    .reduce((total, transfer) => total + transfer.amount, 0);
+    .filter((transfer: any) => transfer.subjectId.startsWith('escrow-release-'))
+    .reduce((total: any, transfer: any) => total + transfer.amount, 0);
   const activeOpenObligation = chapter.obligations.find(
-    (obligation) => obligation.state === 'open' && obligation.fromParticipantId === activeParticipant?.id,
+    (obligation: any) => obligation.state === 'open' && obligation.fromParticipantId === activeParticipant?.id,
   );
   const activeClaimedObligation = chapter.obligations.find(
-    (obligation) =>
+    (obligation: any) =>
       obligation.state === 'claimed' &&
       (obligation.toParticipantId === activeParticipant?.id || hasRole(activeParticipant, ['organizer', 'treasurer'])),
   );
   const activeWaitingObligation = chapter.obligations.find(
-    (obligation) => obligation.state === 'claimed' && obligation.fromParticipantId === activeParticipant?.id,
+    (obligation: any) => obligation.state === 'claimed' && obligation.fromParticipantId === activeParticipant?.id,
   );
-  const contributionPhaseOpen = chapter.obligations.some((obligation) => obligation.state === 'open' || obligation.state === 'claimed');
+  const contributionPhaseOpen = chapter.obligations.some((obligation: any) => obligation.state === 'open' || obligation.state === 'claimed');
   const primaryAction = (() => {
     if (
       activeClaimedObligation &&
@@ -2774,7 +3170,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
     return leftActive ? -1 : 1;
   });
   const scrollToReceiptReview = () => {
-    setActiveTab('Overview');
+    setActiveTab('Activity');
     window.setTimeout(() => {
       receiptReviewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 0);
@@ -2787,8 +3183,66 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
     }
   };
 
+  if (chapter.mode === 'savings_circle' && !showDeveloperControls) {
+    return (
+      <SavingsCircleRoundView
+        pot={pot}
+        chapter={chapter}
+        release={release}
+        releaseTemplate={releaseTemplate}
+        activeParticipant={activeParticipant}
+        activeTask={activeTask}
+        visiblePrimaryAction={visiblePrimaryAction}
+        primaryActionReady={primaryActionReady}
+        primaryActionSubjectId={activeClaimedObligation?.id ?? activeOpenObligation?.id}
+        onBack={onBack}
+        onShare={() => void copyChapterLink(activeParticipant?.id, activeParticipant?.name ?? 'Round')}
+        onClaimContribution={claimContribution}
+        onConfirmContribution={confirmContribution}
+        onRecordDelay={recordDelay}
+        onCloseRound={closeChapter}
+        handledCount={handledCount}
+        confirmedCount={confirmedCount}
+        notedCount={notedCount}
+        expectedAmount={expectedAmount}
+        confirmedAmount={confirmedAmount}
+        plannedReleaseAmount={plannedReleaseAmount}
+        currency={currency}
+        closeoutLabel={closeoutLabel}
+      />
+    );
+  }
+
+  if (chapter.mode === 'emergency_pot' && !showDeveloperControls) {
+    return (
+      <EmergencyPotPrivacyView
+        chapter={chapter}
+        release={release}
+        releaseTemplate={releaseTemplate}
+        activeParticipant={activeParticipant}
+        activeTask={activeTask}
+        visiblePrimaryAction={visiblePrimaryAction}
+        primaryActionReady={primaryActionReady}
+        primaryActionSubjectId={activeClaimedObligation?.id ?? activeOpenObligation?.id}
+        onBack={onBack}
+        onShare={() => void copyChapterLink(activeParticipant?.id, activeParticipant?.name ?? 'Emergency')}
+        onClaimContribution={claimContribution}
+        onConfirmContribution={confirmContribution}
+        onClosePot={closeChapter}
+        handledCount={handledCount}
+        confirmedCount={confirmedCount}
+        expectedAmount={expectedAmount}
+        confirmedAmount={confirmedAmount}
+        plannedReleaseAmount={plannedReleaseAmount}
+        currency={currency}
+        closeoutLabel={closeoutLabel}
+      />
+    );
+  }
+
   return (
-    <div className="flex flex-col h-full pb-[68px] bg-background" data-testid="chapter-home">
+    <>
+      <div className="flex flex-col h-full bg-background relative" data-testid="chapter-home">
       <TopBar
         title={pot.name}
         onBack={onBack}
@@ -2829,56 +3283,44 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
       </div>
 
       <div className="flex-1 overflow-auto p-4 space-y-3">
-        {activeTab === 'Overview' && (
-          <div className="space-y-3" data-testid="chapter-overview">
-            <div className="rounded-[1.35rem] bg-[var(--ink)] text-[var(--bg)] p-5 space-y-5 overflow-hidden">
-              <div>
-                <p className="text-micro text-white/55">Your step · {activeParticipant ? activeParticipant.name : copy.eyebrow}</p>
-                <h2 className="text-[32px] leading-[0.98] font-semibold mt-2 tracking-normal" data-testid="next-actor">
-                  {activeTask.label}
-                </h2>
-                <p className="text-caption text-white/70 mt-3 max-w-[30rem]">{activeTask.detail}</p>
-              </div>
-              {nativeSessionEnabled && (
-                <div className="flex items-center justify-between gap-3 rounded-2xl bg-white/10 p-3" data-testid="native-sync-status">
-                  <span className="text-caption text-secondary">Sync</span>
-                  <span className="text-caption font-semibold text-foreground">{nativeDisplaySyncStatus}</span>
-                </div>
-              )}
-              {visiblePrimaryAction && (
-                <button
-                  type="button"
-                  data-testid="guided-primary-action"
-                  className="w-full px-4 py-3 rounded-2xl text-body font-semibold active:scale-[0.98] disabled:opacity-60 disabled:active:scale-100"
-                  style={accentActionStyle}
-                  disabled={!primaryActionReady}
-                  onClick={visiblePrimaryAction.onClick}
-                >
-                  {visiblePrimaryAction.label}
-                </button>
-              )}
-              <div className="h-1.5 bg-white/15 rounded-full overflow-hidden">
-                <div className="h-full transition-all duration-300" style={{ width: `${progressPercent}%`, background: 'var(--accent, #e6007a)' }} />
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="rounded-2xl bg-white/10 p-3">
-                  <p className="text-micro text-white/55">{copy.moneyInLabel}</p>
-                  <p className="text-body font-semibold tabular-nums">{formatAmount(expectedAmount, currency)}</p>
-                </div>
-                <div className="rounded-2xl bg-white/10 p-3">
-                  <p className="text-micro text-white/55">Confirmed</p>
-                  <p className="text-body font-semibold tabular-nums">{formatAmount(confirmedAmount, currency)}</p>
-                </div>
-                <div className="rounded-2xl bg-white/10 p-3">
-                  <p className="text-micro text-white/55">{copy.moneyOutLabel}</p>
-                  <p className="text-body font-semibold tabular-nums">{formatAmount(plannedReleaseAmount, release?.currency ?? releaseTemplate?.currency ?? currency)}</p>
-                </div>
-              </div>
+        {/* Pinned Top Card */}
+        <div className="rounded-[1.35rem] bg-[var(--ink)] text-[var(--bg)] p-5 space-y-5 overflow-hidden">
+          <div>
+            <p className="text-micro text-white/55">Your step · {activeParticipant ? activeParticipant.name : copy.eyebrow}</p>
+            <h2 className="text-[32px] leading-[0.98] font-semibold mt-2 tracking-normal" data-testid="next-actor">
+              {activeTask.label}
+            </h2>
+            <p className="text-caption text-white/70 mt-3 max-w-[30rem]">{activeTask.detail}</p>
+          </div>
+          {nativeSessionEnabled && (
+            <div className="flex items-center justify-between gap-3 card p-3" data-testid="native-sync-status">
+              <span className="text-caption text-secondary">Sync</span>
+              <span className="text-caption font-semibold text-foreground">{nativeDisplaySyncStatus}</span>
             </div>
+          )}
+          {/* visiblePrimaryAction removed from here to become a FAB */}
+          <div className="h-1.5 bg-white/15 rounded-full overflow-hidden">
+            <div className="h-full transition-all duration-300" style={{ width: `${progressPercent}%`, background: 'var(--accent, #e6007a)' }} />
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="card p-3">
+              <p className="text-micro text-white/55">{copy.moneyInLabel}</p>
+              <p className="text-body font-semibold tabular-nums">{formatAmount(expectedAmount, currency)}</p>
+            </div>
+            <div className="card p-3">
+              <p className="text-micro text-white/55">Confirmed</p>
+              <p className="text-body font-semibold tabular-nums">{formatAmount(confirmedAmount, currency)}</p>
+            </div>
+            <div className="card p-3">
+              <p className="text-micro text-white/55">{copy.moneyOutLabel}</p>
+              <p className="text-body font-semibold tabular-nums">{formatAmount(plannedReleaseAmount, release?.currency ?? releaseTemplate?.currency ?? currency)}</p>
+            </div>
+          </div>
+        </div>
 
+        {activeTab === 'Activity' && (
+          <div className="space-y-3" data-testid="chapter-activity">
             <GuidedTimeline timeline={guidedTimeline} />
-            <ModeSetupCard setup={modeSetup} />
-            <ModeGuardrailCard guardrail={modeGuardrail} />
             <WaitingGuideCard guide={waitingGuide} />
             <OrganizerQueueCard items={organizerQueue} />
 
@@ -2904,26 +3346,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
               )}
             </div>
 
-            <CloseoutReconciliationPanel reconciliation={closeoutReconciliation} />
 
-            {escrowLabEnabled && (
-              <div className="card p-4 space-y-3" data-testid="escrow-status">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-body font-medium">Developer simulation only</p>
-                    <p className="text-caption text-secondary mt-1">
-                      Developer simulation. ChopDot is not holding funds, protecting funds, or guaranteeing payout. People still need to mark paid, confirm received, approve release, and close the record.
-                    </p>
-                  </div>
-                  <p className="text-body font-semibold tabular-nums" aria-label="Simulated held amount">{formatAmount(heldAmount, currency)}</p>
-                </div>
-                {releaseEvidenceAmount > 0 && (
-                  <p className="text-caption text-secondary">
-                    {formatAmount(releaseEvidenceAmount, release?.currency ?? currency)} has a simulated release reference. Receiver confirmation is still required.
-                  </p>
-                )}
-              </div>
-            )}
 
             <div className="card p-4">
               <div className="flex items-center justify-between gap-3">
@@ -2931,7 +3354,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
                 <p className="text-caption text-secondary">{confirmedCount} confirmed</p>
               </div>
               <div className="pt-2">
-                {sortedObligations.map((obligation) => (
+                {sortedObligations.map((obligation: any) => (
                   <PaymentStatusRow
                     key={obligation.id}
                     obligation={obligation}
@@ -3051,7 +3474,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
                     </div>
                   </button>
                 ))
-              : sortedParticipants.map((participant) => {
+              : sortedParticipants.map((participant: any) => {
                   const isActiveParticipant = participant.id === activeParticipant?.id;
                   return (
                   <div
@@ -3089,7 +3512,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
                 <p className="text-caption text-secondary">{handledCount}/{chapter.obligations.length} handled</p>
               </div>
               <div className="pt-2">
-                {sortedObligations.map((obligation) => (
+                {sortedObligations.map((obligation: any) => (
                   <ContributionRow
                     key={obligation.id}
                     obligation={obligation}
@@ -3105,19 +3528,32 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
           </div>
         )}
 
-        {activeTab === 'Activity' && (
-          <div className="space-y-3" data-testid="chapter-activity">
-            {events.map((event) => (
-              <div className="card p-4" key={event.id}>
-                <p className="text-body font-medium">{event.label}</p>
-                <p className="text-caption text-secondary mt-1">{event.actor}: {event.detail}</p>
-              </div>
-            ))}
-          </div>
-        )}
 
-        {activeTab === 'Settings' && (
-          <div className="space-y-3" data-testid="chapter-settings">
+
+        {activeTab === 'Manage' && (
+          <div className="space-y-3" data-testid="chapter-manage">
+            <ModeSetupCard setup={modeSetup} />
+            <ModeGuardrailCard guardrail={modeGuardrail} />
+            <CloseoutReconciliationPanel reconciliation={closeoutReconciliation} />
+
+            {escrowLabEnabled && (
+              <div className="card p-4 space-y-3" data-testid="escrow-status">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-body font-medium">Developer simulation only</p>
+                    <p className="text-caption text-secondary mt-1">
+                      Developer simulation. ChopDot is not holding funds, protecting funds, or guaranteeing payout. People still need to mark paid, confirm received, approve release, and close the record.
+                    </p>
+                  </div>
+                  <p className="text-body font-semibold tabular-nums" aria-label="Simulated held amount">{formatAmount(heldAmount, currency)}</p>
+                </div>
+                {releaseEvidenceAmount > 0 && (
+                  <p className="text-caption text-secondary">
+                    {formatAmount(releaseEvidenceAmount, release?.currency ?? currency)} has a simulated release reference. Receiver confirmation is still required.
+                  </p>
+                )}
+              </div>
+            )}
             <div className="card p-4 space-y-2">
               <p className="text-body font-medium">Privacy</p>
               <p className="text-caption text-secondary">{chapter.privacyLevel} record. Exports default to redacted.</p>
@@ -3132,7 +3568,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
                 <div className="pt-3 space-y-3 text-caption text-secondary">
                   <div data-testid="token-rail">
                     <p className="font-medium text-foreground">Token simulation</p>
-                    {rail?.transfers.length ? rail.transfers.map((transfer) => (
+                    {rail?.transfers.length ? rail.transfers.map((transfer: any) => (
                       <p key={transfer.id}>{transfer.state}: {formatAmount(transfer.amount, transfer.currency)}</p>
                     )) : <p>No local transfer records yet.</p>}
                   </div>
@@ -3141,7 +3577,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
                       <p className="font-medium text-foreground">Escrow developer checks</p>
                       <p>Developer simulation only. These actions do not hold funds, protect funds, guarantee payout, mark paid, confirm receipt, approve release, or close the record.</p>
                       <div className="flex flex-col gap-2 pt-2">
-                        {chapter.obligations.map((obligation) => (
+                        {chapter.obligations.map((obligation: any) => (
                           <button
                             key={obligation.id}
                             type="button"
@@ -3190,7 +3626,7 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
                   <div>
                     <p className="font-medium text-foreground">Adversarial actions</p>
                     <div className="flex flex-col gap-2 pt-2">
-                      {chapter.obligations.map((obligation) => (
+                      {chapter.obligations.map((obligation: any) => (
                         <button
                           key={obligation.id}
                           type="button"
@@ -3228,6 +3664,22 @@ export function ChapterHome({ pot, currentUserId: _currentUserId, onBack, onUpda
           </div>
         )}
       </div>
+
+      {/* Floating Action Button for Primary Action */}
+      {visiblePrimaryAction && (
+        <button
+          type="button"
+          data-testid="chapter-fab"
+          onClick={visiblePrimaryAction.onClick}
+          disabled={!primaryActionReady}
+          className="fixed bottom-[88px] right-6 w-[52px] h-[52px] rounded-[1.35rem] shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:active:scale-100 z-50 text-[11px] font-bold tracking-tight"
+          style={{ background: 'var(--accent, #e6007a)', color: '#fff' }}
+          aria-label={visiblePrimaryAction.label}
+        >
+          {visiblePrimaryAction.label.split(' ')[0]}
+        </button>
+      )}
     </div>
+    </>
   );
 }

@@ -44,7 +44,7 @@ export function useTabNavigation({ screen, stack, reset }: UseTabNavigationParam
   const shouldShowTabBar = useCallback((): boolean => {
     const tabBarScreens = [
       'activity-home', 'pots-home', 'settlements-home', 'people-home',
-      'you-tab', 'pot-home', 'expense-detail', 'settle-selection', 'settle-home', 'closeout-review',
+      'you-tab', 'pot-home', 'expense-detail',
     ];
     return screen ? tabBarScreens.includes(screen.type) : false;
   }, [screen]);

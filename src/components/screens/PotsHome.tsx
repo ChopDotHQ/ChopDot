@@ -11,6 +11,7 @@ import { shouldPreferDLReads } from "../../utils/dlReadsFlag";
 import { usePSAStyle } from "../../utils/usePSAStyle";
 import type { Pot as DataLayerPot } from "../../services/data/types";
 import { Skeleton } from "../Skeleton";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Pot {
   id: string;
@@ -176,22 +177,27 @@ export function PotsHome({
   const youOweTotal = youOwe.reduce((sum, p) => sum + p.totalAmount, 0);
   const owedToYouTotal = owedToYou.reduce((sum, p) => sum + p.totalAmount, 0);
   const netTotal = owedToYouTotal - youOweTotal;
+  const dashboardCurrency = useMemo(() => {
+    const currencies = Array.from(new Set(pots.map((pot) => pot.baseCurrency).filter(Boolean)));
+    return currencies.length === 1 ? currencies[0] : undefined;
+  }, [pots]);
+
+  const formatMoney = (amount: number, currency?: string, withSign: boolean = false): string => {
+    const absoluteAmount = Math.abs(amount);
+    const sign = withSign ? (amount > 0 ? '+' : amount < 0 ? '-' : '') : '';
+    if (currency === 'DOT') return `${sign}${absoluteAmount.toFixed(6)} DOT`;
+    if (!currency || currency === 'USD') return `${sign}$${absoluteAmount.toFixed(2)}`;
+    return `${sign}${currency} ${absoluteAmount.toFixed(2)}`;
+  };
 
   // Local currency formatter; keep lightweight and consistent across dashboard
   const formatCurrency = (amount: number, withSign: boolean = false): string => {
-    const absoluteAmount = Math.abs(amount);
-    const sign = withSign ? (amount > 0 ? '+' : amount < 0 ? '-' : '') : '';
-    return `${sign}$${absoluteAmount.toFixed(2)}`;
+    return formatMoney(amount, dashboardCurrency, withSign);
   };
 
   // Currency-aware formatter for pot-level amounts
   const formatPotAmount = (amount: number, currency?: string, withSign: boolean = false): string => {
-    const absoluteAmount = Math.abs(amount);
-    const sign = withSign ? (amount > 0 ? '+' : amount < 0 ? '-' : '') : '';
-    if (currency === 'DOT') {
-      return `${sign}${absoluteAmount.toFixed(6)} DOT`;
-    }
-    return `${sign}$${absoluteAmount.toFixed(2)}`;
+    return formatMoney(amount, currency, withSign);
   };
 
   // Filter and sort pots
@@ -225,7 +231,7 @@ export function PotsHome({
 
   return (
     <div
-      className={`flex flex-col h-full pb-[68px] ${isPSA ? '' : 'bg-background'}`}
+      className={`flex flex-col h-full pb-[96px] md:pb-[84px] ${isPSA ? '' : 'bg-background'}`}
       style={isPSA ? psaStyles.background : undefined}
     >
       {/* Unified Header */}
@@ -255,7 +261,7 @@ export function PotsHome({
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto pb-8">
         <div className="p-4 space-y-3">
 
           {/* Balance Summary with Privacy Toggle */}
@@ -470,7 +476,15 @@ export function PotsHome({
                 </button>
               </div>
             </div>
-            <div className="space-y-2">
+            <motion.div 
+              className="space-y-2"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
+              }}
+            >
               {potsLoading && filteredPots.length === 0 ? (
                 <div className="space-y-3 pt-3">
                   {[1, 2, 3].map((i) => (
@@ -497,7 +511,8 @@ export function PotsHome({
                 </div>
               ) : (
                 <>
-                  {filteredPots.map((pot) => {
+                  <AnimatePresence mode="popLayout">
+                    {filteredPots.map((pot) => {
                     const budgetPercentage = pot.budgetEnabled && pot.budget
                       ? Math.min((pot.totalExpenses / pot.budget) * 100, 100)
                       : 0;
@@ -506,11 +521,22 @@ export function PotsHome({
                       : false;
 
                     return (
-                      <button
+                      <motion.div
                         key={pot.id}
-                        aria-label={`Open ${pot.name} pot`}
+                        layout
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        variants={{
+                          hidden: { opacity: 0, y: 20 },
+                          visible: { opacity: 1, y: 0 }
+                        }}
+                      >
+                        <button
+                          aria-label={`Open ${pot.name} pot`}
                         onClick={() => onPotClick?.(pot.id)}
-                        className={isPSA ? `w-full p-4 ${psaClasses.card} text-left transition-all duration-200` : 'w-full p-4 card text-left card-hover-lift hover:shadow-[var(--shadow-fab)] transition-all duration-200'}
+                        className={isPSA ? `w-full p-4 ${psaClasses.card} text-left text-foreground transition-all duration-200` : 'w-full p-4 card mb-2 text-left text-foreground active:scale-[0.98] transition-all duration-200'}
                         style={isPSA ? psaStyles.card : undefined}
                         onMouseEnter={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.cardHover) : undefined}
                         onMouseLeave={isPSA ? (e) => Object.assign(e.currentTarget.style, psaStyles.card) : undefined}
@@ -616,9 +642,11 @@ export function PotsHome({
                             </div>
                           </div>
                         )}
-                      </button>
+                        </button>
+                      </motion.div>
                     );
                   })}
+                </AnimatePresence>
 
                   {/* Load More Button */}
                   {hasMore && preferDLReads && (
@@ -641,7 +669,7 @@ export function PotsHome({
                   )}
                 </>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

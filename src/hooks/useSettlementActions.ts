@@ -24,6 +24,7 @@ export type SettleHomeSettlement = {
   id: string;         // counterparty member ID
   name: string;
   totalAmount: number;
+  currency?: string;
   direction: 'owe' | 'owed';
   pots: SettlementPotBreakdown[];
 };
@@ -52,6 +53,7 @@ export const useSettlementActions = (deps: UseSettlementActionsParams) => {
       // Determine from/to based on direction
       const fromMemberId = settlement.direction === 'owe' ? currentUserId : counterpartyId;
       const toMemberId   = settlement.direction === 'owe' ? counterpartyId : currentUserId;
+      let savedOnDeviceOnly = false;
 
       // Build one leg per pot breakdown (or a single leg if no breakdown)
       const legsToCreate: Array<{
@@ -66,10 +68,10 @@ export const useSettlementActions = (deps: UseSettlementActionsParams) => {
             fromMemberId,
             toMemberId,
             amount: p.amount,
-            currency: 'USD', // baseCurrency threaded in from caller if available
+            currency: settlement.currency ?? 'USD',
           }))
         : currentPotId
-          ? [{ potId: currentPotId, fromMemberId, toMemberId, amount: settlement.totalAmount, currency: 'USD' }]
+          ? [{ potId: currentPotId, fromMemberId, toMemberId, amount: settlement.totalAmount, currency: settlement.currency ?? 'USD' }]
           : [];
 
       // Persist legs if we have a pot context
@@ -90,7 +92,7 @@ export const useSettlementActions = (deps: UseSettlementActionsParams) => {
           notifyPotRefresh();
         } catch (err) {
           console.error('[useSettlementActions] proposeChapter failed:', err);
-          showToast('Settlement recorded locally — sync will retry', 'info');
+          savedOnDeviceOnly = true;
         }
       }
 
@@ -98,14 +100,24 @@ export const useSettlementActions = (deps: UseSettlementActionsParams) => {
         counterpartyId,
         counterpartyName: settlement.name,
         amount: settlement.totalAmount,
+        currency: settlement.currency,
         method,
         ref: reference,
         direction: settlement.direction,
         scope: currentPotId ? 'pot' : 'person-all',
+        potId: currentPotId ?? undefined,
         at: Date.now(),
+        savedOnDeviceOnly,
       };
 
-      showToast('Settlement proposed — waiting for counterparty', 'success');
+      showToast(
+        savedOnDeviceOnly
+          ? 'Saved on this device'
+          : settlement.direction === 'owe'
+            ? 'Payment marked'
+            : 'Money received',
+        savedOnDeviceOnly ? 'info' : 'success',
+      );
       notifyPotRefresh();
       return result;
     },

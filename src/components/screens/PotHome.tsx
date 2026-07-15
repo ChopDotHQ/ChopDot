@@ -7,6 +7,8 @@ import { Download, Share2 } from 'lucide-react';
 import { exportPotExpensesToCSV } from '../../utils/export';
 import { triggerHaptic } from '../../utils/haptics';
 import { QuickKeypadSheet } from '../QuickKeypadSheet';
+import { CaptureDrawer } from '../expenses/CaptureDrawer';
+import { BlockerBanner } from '../expenses/BlockerBanner';
 import { useAccount } from '../../contexts/AccountContext';
 import { useData } from '../../services/data/DataContext';
 import { usePSAStyle } from '../../utils/usePSAStyle';
@@ -17,7 +19,10 @@ import { useChapterState } from '../../hooks/useChapterState';
 import { useEventFeed } from '../../hooks/useEventFeed';
 import { ChapterPanel } from '../commit/ChapterPanel';
 import type { Pot } from '../../schema/pot';
-
+import type { SettlementResult } from '../../nav';
+import type { SettlementLeg } from '../../types/app';
+import type { ConfirmedLegAdjustment } from '../../utils/confirmedLegAdjustments';
+import { experimentalPotSurfacesEnabled } from '../../utils/experimentalSurfaces';
 interface PotHomeProps {
   potId?: string;
   potType: 'expense' | 'savings';
@@ -43,6 +48,7 @@ interface PotHomeProps {
   onUpdateSettings: (settings: any) => void;
   onSettle: () => void;
   onCopyInviteLink?: () => void;
+  onOpenSpendCard?: () => void;
   onResendInvite?: (memberId: string) => void;
   onRevokeInvite?: (memberId: string) => void;
   onDeleteExpense?: (expenseId: string) => void;
@@ -59,9 +65,19 @@ interface PotHomeProps {
   onArchivePot?: () => void;
   potHistory?: Array<{ type: string; [key: string]: unknown }>;
   closeouts?: unknown[];
+  confirmedLegs?: ConfirmedLegAdjustment[];
   onUpdatePot?: (updates: { history?: unknown[]; lastCheckpoint?: unknown; lastEditAt?: string }) => void;
   onReopenTrackedSettlement?: () => void;
+  recentSettlement?: SettlementResult;
+  onCloseRecord?: () => void;
 }
+
+type NormalCloseout = {
+  id?: string;
+  closedAt?: string;
+  annotation?: string;
+  legs?: SettlementLeg[];
+};
 
 export function PotHome(props: PotHomeProps) {
   const {
@@ -75,6 +91,7 @@ export function PotHome(props: PotHomeProps) {
     onUpdateSettings,
     onSettle,
     onCopyInviteLink,
+    onOpenSpendCard,
     onResendInvite,
     onRevokeInvite,
     onDeleteExpense,
@@ -89,6 +106,10 @@ export function PotHome(props: PotHomeProps) {
     potHistory: potHistoryProp = [],
     onUpdatePot,
     checkpointConfirmations,
+    recentSettlement,
+    closeouts = [],
+    confirmedLegs = [],
+    onCloseRecord,
   } = props;
 
   const { isPSA, psaStyles, psaClasses: _psaClasses } = usePSAStyle();
@@ -112,6 +133,8 @@ export function PotHome(props: PotHomeProps) {
 
   const { potType, potName, baseCurrency, members, expenses, budget, budgetEnabled, checkpointEnabled, contributions, pot, refreshPot } = merged;
 
+  const showExperimentalSurfaces = experimentalPotSurfacesEnabled();
+
   const summary = usePotSummary({
     expenses,
     members,
@@ -132,6 +155,10 @@ export function PotHome(props: PotHomeProps) {
   const isWalletConnected = false;
   const showCheckpointSection = false;
 
+  // Closeout state
+  const chapterCompleted = chapter.chapterStatus === 'completed';
+  const canClose = showExperimentalSurfaces && chapter.legs.length > 0 && !chapterCompleted;
+
   const checkpoint = useCheckpointState({
     pot,
     potId,
@@ -148,7 +175,7 @@ export function PotHome(props: PotHomeProps) {
     refreshPot,
   });
 
-  const tabs = potType === 'savings' ? ['Members', 'Settings'] : ['Expenses', 'Members', 'Settings'];
+  const tabs = ['Expenses', 'Members', 'Settings'];
   const [activeTab, setActiveTab] = useState<string>(tabs[0] ?? 'Expenses');
   const [keypadOpen, setKeypadOpen] = useState(false);
   const canAddExpense = true;
@@ -216,7 +243,8 @@ export function PotHome(props: PotHomeProps) {
   return (
     <>
       <div
-        className={`flex flex-col h-full pb-[68px] ${isPSA ? '' : 'bg-background'}`}
+        data-testid="pot-home"
+        className={`flex flex-col h-full pb-[96px] md:pb-[84px] ${isPSA ? '' : 'bg-background'}`}
         style={isPSA ? psaStyles.background : undefined}
       >
         <TopBar
@@ -255,52 +283,84 @@ export function PotHome(props: PotHomeProps) {
           ))}
         </div>
 
-        {potType === 'expense' && (
-          <ChapterPanel
-            legs={chapter.legs}
-            chapterStatus={chapter.chapterStatus}
-            members={members}
-            currentUserId={currentUserId}
-            baseCurrency={baseCurrency}
-            onMarkPaid={chapter.markPaid}
-            onConfirmReceipt={chapter.confirmReceipt}
-            events={eventFeed.events}
-          />
-        )}
+        {/* Blocker Banner — urgent actions above tab content */}
+        <BlockerBanner
+          legs={chapter.legs}
+          members={members}
+          currentUserId={currentUserId}
+          baseCurrency={baseCurrency}
+          onMarkPaid={chapter.markPaid}
+          onConfirmReceipt={chapter.confirmReceipt}
+        />
 
-        <div className="flex-1 overflow-auto">
-          {activeTab === 'Expenses' && potType === 'expense' && (
-            <ExpensesTab
-              expenses={expenses}
-              members={members}
-              currentUserId={currentUserId}
-              baseCurrency={baseCurrency}
-              budget={budget}
-              budgetEnabled={budgetEnabled}
-              totalExpenses={summary.totalExpenses}
-              contributions={contributions}
-              potId={potId}
-              pot={pot ?? undefined}
-              potHistory={checkpoint.activeHistory}
-              onAddExpense={() => {
-                if (!canAddExpense) {
-                  onShowToast?.(addExpenseDisabledReason || 'Smart settlement has already started.', 'info');
-                  return;
-                }
-                setKeypadOpen(true);
-              }}
-              onExpenseClick={onExpenseClick}
-              onSettle={onSettle}
-              trackedCloseout={chapter.hasOpenChapter ? chapter : null}
-              onReopenTrackedSettlement={undefined}
-              canAddExpense={canAddExpense}
-              addExpenseDisabledReason={addExpenseDisabledReason}
-              onDeleteExpense={onDeleteExpense}
-              onShowToast={onShowToast}
-              onUpdatePot={onUpdatePot}
-              checkpointConfirmedCount={summary.confirmedCount}
-              checkpointTotalCount={summary.totalCount}
-            />
+        <div className="flex-1 overflow-auto pb-8">
+          {activeTab === 'Expenses' && (
+            <>
+              {showExperimentalSurfaces && (
+                <>
+                  <ChapterPanel
+                    legs={chapter.legs}
+                    chapterStatus={chapter.chapterStatus}
+                    members={members}
+                    currentUserId={currentUserId}
+                    baseCurrency={baseCurrency}
+                    onMarkPaid={chapter.markPaid}
+                    onConfirmReceipt={chapter.confirmReceipt}
+                    events={eventFeed.events}
+                  />
+
+                  {canClose && (
+                    <div className="px-4 pt-3">
+                      <button
+                        onClick={() => onShowToast?.('Record review is available in the experimental flow', 'info')}
+                        className="w-full card py-3 text-center text-caption font-medium transition-all active:scale-[0.98]"
+                        style={{ color: 'var(--success)' }}
+                        data-testid="pot-close-record"
+                      >
+                        Close record
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+
+              <ExpensesTab
+                expenses={expenses}
+                members={members}
+                currentUserId={currentUserId}
+                baseCurrency={baseCurrency}
+                budget={budget}
+                budgetEnabled={budgetEnabled}
+                totalExpenses={summary.totalExpenses}
+                contributions={contributions}
+                potId={potId}
+                pot={pot ?? undefined}
+                potHistory={checkpoint.activeHistory}
+                onAddExpense={() => {
+                  if (!canAddExpense) {
+                    onShowToast?.(addExpenseDisabledReason || 'Smart settlement has already started.', 'info');
+                    return;
+                  }
+                  setKeypadOpen(true);
+                }}
+                onExpenseClick={onExpenseClick}
+                onSettle={onSettle}
+                onOpenSpendCard={onOpenSpendCard}
+                trackedCloseout={chapter.hasOpenChapter ? chapter : null}
+                recentSettlement={recentSettlement}
+                closeouts={closeouts as NormalCloseout[]}
+                confirmedLegs={confirmedLegs}
+                onCloseRecord={onCloseRecord}
+                onReopenTrackedSettlement={undefined}
+                canAddExpense={canAddExpense}
+                addExpenseDisabledReason={addExpenseDisabledReason}
+                onDeleteExpense={onDeleteExpense}
+                onShowToast={onShowToast}
+                onUpdatePot={onUpdatePot}
+                checkpointConfirmedCount={summary.confirmedCount}
+                checkpointTotalCount={summary.totalCount}
+              />
+            </>
           )}
           {activeTab === 'Members' && (
             <MembersTab
@@ -342,7 +402,19 @@ export function PotHome(props: PotHomeProps) {
         </div>
       </div>
 
-      {potType === 'expense' && (
+      {potType === 'expense' && showExperimentalSurfaces && (
+        <CaptureDrawer
+          isOpen={keypadOpen}
+          onClose={() => setKeypadOpen(false)}
+          potId={potId || ''}
+          baseCurrency={baseCurrency}
+          members={members}
+          currentUserId={currentUserId}
+          onSave={(data) => { triggerHaptic('light'); onQuickAddSave?.(data); setKeypadOpen(false); }}
+        />
+      )}
+
+      {potType === 'expense' && !showExperimentalSurfaces && (
         <QuickKeypadSheet
           isOpen={keypadOpen}
           onClose={() => setKeypadOpen(false)}
@@ -354,6 +426,7 @@ export function PotHome(props: PotHomeProps) {
           onSave={(data) => { triggerHaptic('light'); onQuickAddSave?.(data); setKeypadOpen(false); }}
         />
       )}
+
     </>
   );
 }

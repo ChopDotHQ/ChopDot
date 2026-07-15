@@ -95,6 +95,7 @@ export function renderSettleHome(ctx: RouterContext) {
             id: p.id,
             name: p.name,
             totalAmount: Number(p.totalAmount),
+            currency: shCurrency,
             direction: "owe" as const,
             pots: p.breakdown.map(b => ({ potId: currentPotId || b.potName, potName: b.potName, amount: b.amount }))
         })),
@@ -102,6 +103,7 @@ export function renderSettleHome(ctx: RouterContext) {
             id: p.id,
             name: p.name,
             totalAmount: Number(p.totalAmount),
+            currency: shCurrency,
             direction: "owed" as const,
             pots: p.breakdown.map(b => ({ potId: currentPotId || b.potName, potName: b.potName, amount: b.amount }))
         })),
@@ -116,6 +118,7 @@ export function renderSettleHome(ctx: RouterContext) {
                 id: fallbackPerson.id,
                 name: fallbackPerson.name,
                 totalAmount: 0,
+                currency: shCurrency,
                 direction: 'owe' as const,
                 pots: [] as { potId: string; potName: string; amount: number }[],
             }];
@@ -228,6 +231,14 @@ export function renderSettlementConfirmation(ctx: RouterContext) {
             }}
             onDone={() => {
                 setSelectedCounterpartyId(null);
+                if (screen.result.potId) {
+                    reset({
+                        type: "pot-home",
+                        potId: screen.result.potId,
+                        recentSettlement: screen.result,
+                    });
+                    return;
+                }
                 reset({ type: "pots-home" });
             }}
         />

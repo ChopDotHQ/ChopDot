@@ -1,5 +1,5 @@
-import { ReactNode, useEffect, useState } from 'react';
-import { ChevronRight, Link2, Mail, ShieldCheck, UserRound, Wallet } from 'lucide-react';
+import { ReactNode, useState } from 'react';
+import { ChevronRight, Mail, UserRound, Wallet } from 'lucide-react';
 import { WalletPanel, WalletOptionProps } from '../SignInComponents';
 import type { PanelTheme, PanelMode, WalletOptionTheme } from '../SignInThemes';
 
@@ -77,68 +77,7 @@ const RowButton = ({ icon, label, onClick, disabled, panelMode, useGlassmorphism
     );
 };
 
-const EXTENSION_SOURCES: Record<string, string[]> = {
-    polkadot: ['polkadot-js', 'polkadot{.js}'],
-    subwallet: ['subwallet-js', 'subwallet'],
-    talisman: ['talisman'],
-};
 
-const getInjectedWalletSources = (): Set<string> => {
-    if (typeof window === 'undefined') return new Set();
-    const injected = (window as typeof window & { injectedWeb3?: Record<string, unknown> }).injectedWeb3 ?? {};
-    return new Set(Object.keys(injected).map((source) => source.toLowerCase()));
-};
-
-const getWalletReadiness = (option: GroupedWalletOptionProps, availableSources: Set<string>) => {
-    if (option.id === 'walletconnect') {
-        return {
-            label: 'Mobile handoff',
-            description: 'Use a mobile wallet and return after signing.',
-            className: 'bg-[var(--accent)]/10 text-[var(--accent)]',
-        };
-    }
-
-    const sources = option.id ? EXTENSION_SOURCES[option.id] : undefined;
-    if (!sources) {
-        return {
-            label: 'Optional',
-            description: 'You can continue without this.',
-            className: 'bg-muted/30 text-secondary',
-        };
-    }
-
-    const available = sources.some((source) => availableSources.has(source));
-    return available
-        ? {
-            label: 'Available',
-            description: 'Installed in this browser.',
-            className: 'bg-[var(--success)]/10 text-[var(--success)]',
-        }
-        : {
-            label: 'Setup needed',
-            description: 'Install or unlock this wallet first.',
-            className: 'bg-muted/30 text-secondary',
-        };
-};
-
-interface EntryStepProps {
-    icon: ReactNode;
-    title: string;
-    body: string;
-    subtleText: string;
-}
-
-const EntryStep = ({ icon, title, body, subtleText }: EntryStepProps) => (
-    <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[var(--accent)]/10 text-[var(--accent)]">
-            {icon}
-        </span>
-        <span className="min-w-0">
-            <span className="block text-[13px] font-semibold leading-tight">{title}</span>
-            <span className={`block text-[12px] leading-snug ${subtleText}`}>{body}</span>
-        </span>
-    </div>
-);
 
 export const WalletLoginPanel = ({
     panelTheme,
@@ -157,7 +96,6 @@ export const WalletLoginPanel = ({
     signatureWaitingBanner,
 }: WalletLoginPanelProps) => {
     const [walletsExpanded, setWalletsExpanded] = useState(false);
-    const [availableWalletSources, setAvailableWalletSources] = useState<Set<string>>(() => getInjectedWalletSources());
     const isDark = panelMode === 'dark';
 
     const socialOptions = walletOptions.filter((o) => o.group === 'social');
@@ -166,9 +104,7 @@ export const WalletLoginPanel = ({
 
     const subtleText = isDark ? 'text-white/50' : 'text-neutral-500';
 
-    useEffect(() => {
-        setAvailableWalletSources(getInjectedWalletSources());
-    }, [walletsExpanded]);
+
 
     return (
         <div className="flex-1 flex items-center justify-center px-4 py-12">
@@ -178,33 +114,6 @@ export const WalletLoginPanel = ({
                 {signatureWaitingBanner}
 
                 <WalletPanel theme={panelTheme} useGlassmorphism={useGlassmorphism} mode={panelMode}>
-                    <div className="rounded-2xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 px-4 py-3 space-y-2" data-testid="auth-entry-promise">
-                        <p className="text-[15px] font-semibold">Start with the group record, not the wallet</p>
-                        <p className={`text-[13px] leading-snug ${subtleText}`}>
-                            Use guest mode to create pots, record payments, confirm receipt, and close rounds. Connect a wallet later only when the group wants saved receipts or payment records.
-                        </p>
-                    </div>
-
-                    <div className="space-y-3" data-testid="auth-entry-steps">
-                        <EntryStep
-                            icon={<UserRound className="h-4 w-4" />}
-                            title="Starting a pot?"
-                            body="Continue as guest and set up the group record first."
-                            subtleText={subtleText}
-                        />
-                        <EntryStep
-                            icon={<Link2 className="h-4 w-4" />}
-                            title="Joining someone else's pot?"
-                            body="Open their link on your own phone or browser profile so your actions stay separate."
-                            subtleText={subtleText}
-                        />
-                        <EntryStep
-                            icon={<ShieldCheck className="h-4 w-4" />}
-                            title="Need a wallet later?"
-                            body="Connect one after the group flow makes sense."
-                            subtleText={subtleText}
-                        />
-                    </div>
 
                     <div className="space-y-2">
                         {/* Email */}
@@ -245,9 +154,6 @@ export const WalletLoginPanel = ({
                                         }`}
                                         data-testid="auth-wallet-options"
                                     >
-                                        <p className={`px-1 pb-1 text-[12px] leading-snug ${subtleText}`}>
-                                            Wallets are optional for coordination. Use them later for saved receipts or payment records.
-                                        </p>
                                         {walletOnlyOptions.map((option, index) => {
                                             const textColour = isDark ? '#FAFAF9' : '#1C1917';
                                             const bg = useGlassmorphism
@@ -256,7 +162,6 @@ export const WalletLoginPanel = ({
                                             const hoverBg = useGlassmorphism
                                                 ? (isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.7)')
                                                 : (isDark ? 'rgba(255,255,255,0.07)' : '#F0F0F0');
-                                            const readiness = getWalletReadiness(option, availableWalletSources);
 
                                             return (
                                                 <button
@@ -264,7 +169,7 @@ export const WalletLoginPanel = ({
                                                     type="button"
                                                     onClick={option.onClick}
                                                     disabled={loading || option.disabled}
-                                                    className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all duration-150 active:scale-[0.99] disabled:opacity-50 focus:outline-none"
+                                                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] font-medium transition-all duration-150 active:scale-[0.99] disabled:opacity-50 focus:outline-none"
                                                     style={{ background: bg, color: textColour }}
                                                     onMouseEnter={(e) => { e.currentTarget.style.background = hoverBg; }}
                                                     onMouseLeave={(e) => { e.currentTarget.style.background = bg; }}
@@ -274,15 +179,7 @@ export const WalletLoginPanel = ({
                                                     ) : (
                                                         <Wallet className="h-5 w-5 flex-shrink-0 opacity-40" />
                                                     )}
-                                                    <span className="flex-1 text-left">
-                                                        <span className="block">{option.title ?? ''}</span>
-                                                        <span className={`block text-[11px] leading-snug ${subtleText}`}>
-                                                            {readiness.description}
-                                                        </span>
-                                                    </span>
-                                                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${readiness.className}`}>
-                                                        {readiness.label}
-                                                    </span>
+                                                    <span className="flex-1 text-left">{option.title ?? ''}</span>
                                                 </button>
                                             );
                                         })}
@@ -314,24 +211,6 @@ export const WalletLoginPanel = ({
                         panelMode={panelMode}
                         useGlassmorphism={useGlassmorphism}
                     />
-                    <p className={`text-[12px] leading-snug ${subtleText}`} data-testid="auth-guest-boundary">
-                        Guest mode is enough for private coordination on this device. Wallets are optional for saved receipts and payment records.
-                    </p>
-
-                    <div
-                        className="rounded-2xl border border-dashed px-4 py-3 space-y-2"
-                        style={{
-                            borderColor: useGlassmorphism
-                                ? (isDark ? 'rgba(255,255,255,0.16)' : 'rgba(0,0,0,0.12)')
-                                : (isDark ? 'rgba(255,255,255,0.12)' : '#E8E8E8'),
-                        }}
-                        data-testid="auth-friend-pilot-guide"
-                    >
-                        <p className="text-[13px] font-semibold">Trying ChopDot with friends?</p>
-                        <div className={`space-y-1 text-[12px] leading-snug ${subtleText}`}>
-                            <p>Everyone starts from their own device, takes only their own action, and uses the receipt to see what the group agreed happened.</p>
-                        </div>
-                    </div>
 
                     {/* Remember me */}
                     <label className={`flex items-center justify-end gap-2 text-[13px] cursor-pointer pt-0.5 ${subtleText}`}>

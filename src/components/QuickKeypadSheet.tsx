@@ -39,6 +39,8 @@ export function QuickKeypadSheet({
     }
     return members[0]?.id ?? currentUserId;
   }, [members, currentUserId]);
+  const memberIds = useMemo(() => members.map((member) => member.id), [members]);
+  const memberKey = memberIds.join('|');
 
   const [amount, setAmount] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
@@ -46,15 +48,26 @@ export function QuickKeypadSheet({
   const [didAttemptSave, setDidAttemptSave] = useState(false);
   const hasLast = !!(lastSplit && lastSplit.length > 0);
   void hasLast;
-  const [participantIds, setParticipantIds] = useState<Set<string>>(new Set(members.map(m => m.id)));
+  const [participantIds, setParticipantIds] = useState<Set<string>>(new Set(memberIds));
   const [date, setDate] = useState<string>(() => new Date().toISOString().split('T')[0] || '');
   const [splitType, setSplitType] = useState<'equal' | 'custom' | 'shares'>('equal');
+  const [showDetails, setShowDetails] = useState(false);
   const [customPercents, setCustomPercents] = useState<Record<string, string>>(
-    Object.fromEntries(members.map(m => [m.id, '0']))
+    Object.fromEntries(memberIds.map((id) => [id, '0']))
   );
   const [shares, setShares] = useState<Record<string, string>>(
-    Object.fromEntries(members.map(m => [m.id, '1']))
+    Object.fromEntries(memberIds.map((id) => [id, '1']))
   );
+
+  useEffect(() => {
+    setParticipantIds(new Set(memberIds));
+    setCustomPercents((prev) => ({
+      ...Object.fromEntries(memberIds.map((id) => [id, prev[id] ?? '0'])),
+    }));
+    setShares((prev) => ({
+      ...Object.fromEntries(memberIds.map((id) => [id, prev[id] ?? '1'])),
+    }));
+  }, [memberKey]);
 
   const toggleMember = (id: string) => {
     const next = new Set(participantIds);
@@ -159,13 +172,23 @@ export function QuickKeypadSheet({
     }
   }, [fallbackPayerId, members, paidBy]);
 
+  const includedNames = participants.map((m) => (m.id === currentUserId ? 'You' : m.name));
+  const splitSummary =
+    splitType === 'equal'
+      ? `Split equally with ${includedNames.length} people`
+      : splitType === 'custom'
+        ? 'Custom percent split'
+        : 'Share-based split';
+  const payerName = members.find((m) => m.id === paidBy)?.name || 'You';
+  const dateLabel = formatSheetDate(date);
+
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} title={`Quick add (${baseCurrency})`}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} title="Add expense">
       <div className="space-y-4">
-        <div className="flex flex-col gap-2 mt-1">
-          <label className="text-xs text-secondary">Amount</label>
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-1.5 rounded bg-secondary text-secondary text-label">{baseCurrency}</span>
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <label className="text-caption text-secondary">Amount</label>
+          <div className="mt-2 flex items-center gap-3">
+            <span className="shrink-0 px-3 py-2 rounded-full text-label font-semibold text-white border border-[var(--accent)]/40 bg-[var(--accent)]/30">{baseCurrency}</span>
             <input
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -178,111 +201,130 @@ export function QuickKeypadSheet({
                         }
                       }}
                       placeholder={baseCurrency === 'DOT' ? '0.000000' : '0.00'}
-                      type="number"
-                      step={baseCurrency === 'DOT' ? '0.000001' : '0.01'}
-                      min={minAmount.toString()}
-              className="flex-1 px-2 py-2 input-field tabular-nums"
-              style={{ fontSize: '32px' }}
+                      type="text"
+                      inputMode="decimal"
+              className="flex-1 min-w-0 border-0 bg-transparent px-0 py-1 tabular-nums outline-none"
+              style={{ fontSize: '42px', lineHeight: 1.1, fontWeight: 600 }}
             />
           </div>
         </div>
 
-        <div>
-          <label className="text-xs text-secondary mb-1 block">Title</label>
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-2">
+          <label className="text-caption text-secondary block">What was it?</label>
           <input
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
-            placeholder="Required"
-            className="w-full px-2 py-2 input-field text-sm"
+            placeholder="Dinner, taxi, tickets"
+            className="w-full px-0 py-2 border-0 bg-transparent text-body outline-none placeholder:text-secondary"
           />
           {didAttemptSave && !memoValid && (
             <div className="mt-1 text-xs text-destructive">Title is required.</div>
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="text-xs text-secondary mb-1 block">Paid by</label>
-            <select value={paidBy} onChange={(e) => setPaidBy(e.target.value)} className="w-full px-2 py-2 input-field text-sm">
-              {members.map(m => (
-                <option key={m.id} value={m.id}>{m.id === currentUserId ? 'You' : m.name}</option>
-              ))}
-            </select>
-            {didAttemptSave && !paidByValid && (
-              <div className="mt-1 text-xs text-destructive">Select who paid.</div>
+        <button
+          type="button"
+          onClick={() => setShowDetails((value) => !value)}
+          className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4 text-left active:scale-[0.99] transition-transform"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-label font-medium truncate">{splitSummary}</p>
+              <p className="text-caption text-secondary truncate">
+                Paid by {payerName === 'You' ? 'you' : payerName} · {dateLabel}
+              </p>
+            </div>
+            <span className="text-caption text-secondary">{showDetails ? 'Hide' : 'Change'}</span>
+          </div>
+        </button>
+
+        {showDetails && (
+          <div className="space-y-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-caption text-secondary mb-1 block">Paid by</label>
+                <select value={paidBy} onChange={(e) => setPaidBy(e.target.value)} className="w-full px-2 py-2 input-field text-sm">
+                  {members.map(m => (
+                    <option key={m.id} value={m.id}>{m.id === currentUserId ? 'You' : m.name}</option>
+                  ))}
+                </select>
+                {didAttemptSave && !paidByValid && (
+                  <div className="mt-1 text-xs text-destructive">Select who paid.</div>
+                )}
+              </div>
+              <div>
+                <label className="text-caption text-secondary mb-1 block">Date</label>
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full px-2 py-2 input-field text-sm" />
+              </div>
+            </div>
+
+            <div>
+              <div className="text-caption text-secondary mb-1">Split</div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => { triggerHaptic('selection'); setSplitType('equal'); }} className={`px-2 py-1 rounded-lg text-label transition-colors active:scale-95 ${splitType==='equal' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='equal' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Equal</button>
+                <button onClick={() => { triggerHaptic('selection'); setSplitType('custom'); }} className={`px-2 py-1 rounded-lg text-label transition-colors active:scale-95 ${splitType==='custom' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='custom' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Percent</button>
+                <button onClick={() => { triggerHaptic('selection'); setSplitType('shares'); }} className={`px-2 py-1 rounded-lg text-label transition-colors active:scale-95 ${splitType==='shares' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='shares' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Shares</button>
+              </div>
+            </div>
+
+            {splitType === 'equal' && (
+              <div className="space-y-1">
+                {members.map((m) => {
+                  const isIncluded = participantIds.has(m.id);
+                  const count = Array.from(participantIds).length || 1;
+                  const perPerson = isIncluded ? (amountNum || 0) / count : 0;
+                  return (
+                    <label key={m.id} className="flex items-center gap-2 p-2 rounded-xl border border-white/10 bg-white/[0.03] cursor-pointer">
+                      <input type="checkbox" className="w-3.5 h-3.5" checked={isIncluded} onChange={() => toggleMember(m.id)} />
+                      <span className="flex-1 text-xs">{m.id === currentUserId ? 'You' : m.name}</span>
+                      {isIncluded && <span className="text-xs text-secondary tabular-nums">{perPerson.toFixed(decimals)}</span>}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+
+            {splitType === 'custom' && (
+              <div className="space-y-2">
+                {members.filter(m=>participantIds.has(m.id)).map((m)=>{
+                  const percent = parseFloat(customPercents[m.id] || '0');
+                  const memberAmount = ((amountNum||0) * percent) / 100;
+                  return (
+                    <div key={m.id} className="flex items-center gap-2">
+                      <span className="flex-1 text-xs">{m.id===currentUserId?'You':m.name}</span>
+                      <input value={customPercents[m.id]} onChange={(e)=> handleCustomPercentChange(m.id, e.target.value)} type="number" placeholder="0" className="w-14 px-1.5 py-0.5 input-field text-xs text-right" />
+                      <span className="text-xs text-secondary">%</span>
+                      <span className="text-xs text-secondary tabular-nums w-14 text-right">{memberAmount.toFixed(decimals)}</span>
+                    </div>
+                  );
+                })}
+                <p className={`text-xs ${isSplitValid ? 'text-secondary' : 'text-destructive'}`}>Total: {totalPercent.toFixed(1)}% {!isSplitValid && '(must equal 100%)'}</p>
+                {didAttemptSave && !isSplitValid && (
+                  <div className="text-xs text-destructive">Percent split must total 100%.</div>
+                )}
+              </div>
+            )}
+            {splitType === 'shares' && (
+              <div className="space-y-2">
+                {members.filter(m=>participantIds.has(m.id)).map((m)=>{
+                  const totalShares = members.filter(mm=>participantIds.has(mm.id)).reduce((sum, mm)=> sum + parseInt(shares[mm.id] || '0'), 0) || 1;
+                  const memberShares = parseInt(shares[m.id] || '0');
+                  const memberAmount = ((amountNum||0) * memberShares) / totalShares;
+                  return (
+                    <div key={m.id} className="flex items-center gap-2">
+                      <span className="flex-1 text-xs">{m.id===currentUserId?'You':m.name}</span>
+                      <input value={shares[m.id]} onChange={(e)=> handleSharesChange(m.id, e.target.value)} type="number" placeholder="1" className="w-14 px-1.5 py-0.5 input-field text-xs text-right" />
+                      <span className="text-xs text-secondary">shares</span>
+                      <span className="text-xs text-secondary tabular-nums w-14 text-right">{memberAmount.toFixed(decimals)}</span>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
-          <div>
-            <label className="text-xs text-secondary mb-1 block">Date</label>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full px-2 py-2 input-field text-sm" />
-          </div>
-        </div>
-
-        <div>
-          <div className="text-caption text-secondary mb-1">Split mode</div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => { triggerHaptic('selection'); setSplitType('equal'); }} className={`px-2 py-1 rounded-lg text-label transition-colors active:scale-95 ${splitType==='equal' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='equal' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Equal</button>
-            <button onClick={() => { triggerHaptic('selection'); setSplitType('custom'); }} className={`px-2 py-1 rounded-lg text-label transition-colors active:scale-95 ${splitType==='custom' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='custom' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Custom %</button>
-            <button onClick={() => { triggerHaptic('selection'); setSplitType('shares'); }} className={`px-2 py-1 rounded-lg text-label transition-colors active:scale-95 ${splitType==='shares' ? 'border bg-transparent' : 'bg-secondary text-secondary'}`} style={splitType==='shares' ? { color: 'var(--accent)', borderColor: 'var(--accent)' } : undefined}>Shares</button>
-          </div>
-        </div>
-
-        {splitType === 'equal' && (
-          <div className="space-y-1">
-            {members.map((m) => {
-              const isIncluded = participantIds.has(m.id);
-              const count = Array.from(participantIds).length || 1;
-              const perPerson = isIncluded ? (amountNum || 0) / count : 0;
-              return (
-                <label key={m.id} className="flex items-center gap-2 p-2 rounded-lg border border-border bg-card cursor-pointer">
-                  <input type="checkbox" className="w-3.5 h-3.5" checked={isIncluded} onChange={() => toggleMember(m.id)} />
-                  <span className="flex-1 text-xs">{m.id === currentUserId ? 'You' : m.name}</span>
-                  {isIncluded && <span className="text-xs text-secondary tabular-nums">{perPerson.toFixed(decimals)}</span>}
-                </label>
-              );
-            })}
-          </div>
         )}
 
-        {splitType === 'custom' && (
-          <div className="space-y-2">
-            {members.filter(m=>participantIds.has(m.id)).map((m)=>{
-              const percent = parseFloat(customPercents[m.id] || '0');
-              const memberAmount = ((amountNum||0) * percent) / 100;
-              return (
-                <div key={m.id} className="flex items-center gap-2">
-                  <span className="flex-1 text-xs">{m.id===currentUserId?'You':m.name}</span>
-                  <input value={customPercents[m.id]} onChange={(e)=> handleCustomPercentChange(m.id, e.target.value)} type="number" placeholder="0" className="w-14 px-1.5 py-0.5 input-field text-xs text-right" />
-                  <span className="text-xs text-secondary">%</span>
-                  <span className="text-xs text-secondary tabular-nums w-14 text-right">{memberAmount.toFixed(decimals)}</span>
-                </div>
-              );
-            })}
-            <p className={`text-xs ${isSplitValid ? 'text-secondary' : 'text-destructive'}`}>Total: {totalPercent.toFixed(1)}% {!isSplitValid && '(must equal 100%)'}</p>
-            {didAttemptSave && !isSplitValid && (
-              <div className="text-xs text-destructive">Percent split must total 100%.</div>
-            )}
-          </div>
-        )}
-        {splitType === 'shares' && (
-          <div className="space-y-2">
-            {members.filter(m=>participantIds.has(m.id)).map((m)=>{
-              const totalShares = members.filter(mm=>participantIds.has(mm.id)).reduce((sum, mm)=> sum + parseInt(shares[mm.id] || '0'), 0) || 1;
-              const memberShares = parseInt(shares[m.id] || '0');
-              const memberAmount = ((amountNum||0) * memberShares) / totalShares;
-              return (
-                <div key={m.id} className="flex items-center gap-2">
-                  <span className="flex-1 text-xs">{m.id===currentUserId?'You':m.name}</span>
-                  <input value={shares[m.id]} onChange={(e)=> handleSharesChange(m.id, e.target.value)} type="number" placeholder="1" className="w-14 px-1.5 py-0.5 input-field text-xs text-right" />
-                  <span className="text-xs text-secondary">shares</span>
-                  <span className="text-xs text-secondary tabular-nums w-14 text-right">{memberAmount.toFixed(decimals)}</span>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        <div className="pt-3 bg-card border-t border-border" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 96px)', backdropFilter: 'blur(6px)' }}>
+        <div className="pt-2" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 76px)' }}>
           <button
             onClick={() => {
               if (isValid) {
@@ -290,7 +332,7 @@ export function QuickKeypadSheet({
               }
               save();
             }}
-            className={`w-full px-4 py-3 rounded-lg btn-accent active:scale-98 transition-transform ${!isValid ? 'opacity-40' : ''}`}
+            className={`w-full px-4 py-3.5 rounded-2xl btn-accent active:scale-98 transition-transform ${!isValid ? 'opacity-40' : ''}`}
           >
             {isValid ? `Save ${baseCurrency} ${amountNum.toFixed(decimals)}` : 'Save'}
           </button>
@@ -311,4 +353,12 @@ export function QuickKeypadSheet({
       </div>
     </BottomSheet>
   );
+}
+
+function formatSheetDate(value: string): string {
+  const today = new Date().toISOString().split('T')[0];
+  if (value === today) return 'today';
+  const parsed = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }

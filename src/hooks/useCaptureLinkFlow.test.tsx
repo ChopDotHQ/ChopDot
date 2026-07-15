@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
+import { waitFor } from '@testing-library/dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { CaptureLinkService } from '../services/capture/CaptureLinkService';
 import { useCaptureLinkFlow } from './useCaptureLinkFlow';

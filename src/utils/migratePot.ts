@@ -8,6 +8,8 @@
 import { PotSchema, type Pot } from '../schema/pot';
 import { z } from 'zod';
 
+const SUPPORTED_BASE_CURRENCIES = ['USD', 'EUR', 'GBP', 'CHF', 'CAD', 'AUD', 'JPY', 'DOT', 'USDC', 'PAS'];
+
 /**
  * Migrate a single pot from old format to current format
  * 
@@ -49,7 +51,7 @@ function coerceOldPotShape(raw: unknown): unknown {
   const pot = raw as Record<string, unknown>;
 
   // Ensure baseCurrency exists (default to USD)
-  if (!pot.baseCurrency || !['USD', 'EUR', 'GBP', 'CHF', 'CAD', 'AUD', 'JPY'].includes(pot.baseCurrency as string)) {
+  if (!pot.baseCurrency || !SUPPORTED_BASE_CURRENCIES.includes(pot.baseCurrency as string)) {
     pot.baseCurrency = 'USD';
   }
 
@@ -166,4 +168,3 @@ export function needsMigration(pots: unknown[]): boolean {
     return false;
   });
 }
-

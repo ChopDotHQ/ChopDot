@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { migrateChapter } from '../../chapter/migrateChapter';
 import { useCaptureActingMember } from '../../hooks/useCaptureActingMember';
-import { useChapterState } from '../../hooks/useChapterState';
+import { useCaptureChapterState } from '../../hooks/useCaptureChapterState';
 import { useData } from '../../services/data/DataContext';
 import { usePot } from '../../hooks/usePot';
 import { CaptureChapterPanel } from './CaptureChapterPanel';
@@ -53,7 +53,7 @@ export function CapturePotHomeSection({
     }
   }, [pot?.chapter]);
 
-  const { status, isLoading, markPaid, confirm, close } = useChapterState({
+  const { status, isLoading, markPaid, confirm, close } = useCaptureChapterState({
     potId,
     potService,
     currentMemberId: actingMemberId,

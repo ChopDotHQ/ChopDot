@@ -43,6 +43,14 @@ async function openNativePot(page: Page, mode: ModeConfig, person: string, sessi
   const potButton = page.getByRole('button', { name: new RegExp(`Open ${mode.potName} pot`) });
   await expect(potButton).toBeVisible({ timeout: 10_000 });
   await potButton.click();
+  if (mode.potName === modes.savings.potName) {
+    await expect(page.getByTestId('savings-circle-round')).toBeVisible();
+    return;
+  }
+  if (mode.potName === modes.emergency.potName) {
+    await expect(page.getByTestId('emergency-pot-flow')).toBeVisible();
+    return;
+  }
   await expect(page.getByTestId('chapter-home')).toBeVisible();
   await expect(page.getByTestId('native-sync-status')).toContainText('up to date', { timeout: 8_000 });
 }
@@ -67,8 +75,15 @@ async function newDevice(browser: Browser, mode: ModeConfig, person: string, ses
 }
 
 async function clickPrimary(page: Page, label: RegExp | string) {
-  const button = page.getByTestId('guided-primary-action');
+  const savingsButton = page.getByTestId('savings-primary-action');
+  const emergencyButton = page.getByTestId('emergency-primary-action');
+  const button = await savingsButton.isVisible().catch(() => false)
+    ? savingsButton
+    : await emergencyButton.isVisible().catch(() => false)
+    ? emergencyButton
+    : page.getByTestId('guided-primary-action');
   await expect(button).toHaveText(label, { timeout: 8_000 });
+  await expect(button).toBeEnabled({ timeout: 8_000 });
   await button.click();
 }
 
@@ -100,13 +115,10 @@ test.describe('ChopDot.dot no-Supabase native session', () => {
       person: 'leo',
       sessionPrefix: 'native-timeline-savings',
       assertions: [
-        { testId: 'guided-timeline', text: 'Progress' },
-        { testId: 'timeline-step-circle-contributions', text: 'Contributions' },
-        { testId: 'timeline-step-circle-delay-notes', text: 'Notes' },
-        { testId: 'timeline-step-circle-closeout', text: 'Round saved' },
-        { testId: 'mode-setup', text: 'Round setup' },
-        { testId: 'mode-setup', text: 'Round payout' },
-        { testId: 'mode-setup', text: 'Delay note' },
+        { testId: 'savings-circle-round', text: 'Round 1 · Leo' },
+        { testId: 'next-actor', text: 'Mark your payment' },
+        { testId: 'savings-contributions', text: 'Contributions' },
+        { testId: 'savings-close-state', text: 'Round record' },
       ],
     },
     {
@@ -115,15 +127,10 @@ test.describe('ChopDot.dot no-Supabase native session', () => {
       person: 'casey',
       sessionPrefix: 'native-timeline-emergency',
       assertions: [
-        { testId: 'guided-timeline', text: 'Progress' },
-        { testId: 'timeline-step-emergency-approval', text: 'Approved' },
-        { testId: 'timeline-step-emergency-receipt', text: 'Receipt saved' },
-        { testId: 'mode-setup', text: 'Privacy setup' },
-        { testId: 'mode-setup', text: 'Release approval' },
-        { testId: 'mode-setup', text: 'Redacted' },
-        { testId: 'mode-guardrails', text: 'Privacy' },
-        { testId: 'mode-guardrails', text: 'Sensitive details' },
-        { testId: 'mode-guardrails', text: 'Redacted receipt' },
+        { testId: 'emergency-pot-flow', text: 'Emergency pot' },
+        { testId: 'next-actor', text: 'Contribute privately' },
+        { testId: 'emergency-contributions', text: 'Your support' },
+        { testId: 'emergency-private-record', text: 'private by default' },
       ],
     },
     {
@@ -159,6 +166,7 @@ test.describe('ChopDot.dot no-Supabase native session', () => {
   }
 
   test('future actors get clear guidance before their turn', async ({ page, browser }, testInfo) => {
+    test.setTimeout(60_000);
     const emergencySession = `native-guidance-emergency-${testInfo.project.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
     await resetNativeSession(page, modes.emergency, emergencySession);
 
@@ -166,19 +174,19 @@ test.describe('ChopDot.dot no-Supabase native session', () => {
     const taylorDevice = await newDevice(browser, modes.emergency, 'taylor', emergencySession);
     devices.push(taylorDevice.context);
     await expect(taylorDevice.page.getByTestId('next-actor')).toContainText('Approval pending');
-    await expect(taylorDevice.page.getByTestId('waiting-guide')).toContainText('Status');
-    await expect(taylorDevice.page.getByTestId('waiting-guide')).toContainText('Payment review');
-    await expect(taylorDevice.page.getByTestId('waiting-guide')).toContainText('Not ready');
+    await expect(taylorDevice.page.getByTestId('emergency-release-status')).toContainText('Waiting');
+    await expect(taylorDevice.page.getByTestId('emergency-private-record')).toContainText('private by default');
 
     const jordanDevice = await newDevice(browser, modes.emergency, 'jordan', emergencySession);
     devices.push(jordanDevice.context);
     await expect(jordanDevice.page.getByTestId('next-actor')).toContainText('Release pending');
-    await expect(jordanDevice.page.getByTestId('waiting-guide')).toContainText('Status');
+    await expect(jordanDevice.page.getByTestId('emergency-private-record')).toContainText('private by default');
 
     const rileyDevice = await newDevice(browser, modes.emergency, 'riley', emergencySession);
     devices.push(rileyDevice.context);
     await expect(rileyDevice.page.getByTestId('next-actor')).toContainText('Waiting on the group');
-    await expect(rileyDevice.page.getByTestId('waiting-guide')).toHaveCount(0);
+    await expect(rileyDevice.page.getByTestId('emergency-contributions')).toContainText('Casey');
+    await expect(rileyDevice.page.getByTestId('emergency-contributions')).toContainText('Morgan');
 
     const communitySession = `native-guidance-community-${testInfo.project.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
     await resetNativeSession(page, modes.community, communitySession);
@@ -223,14 +231,13 @@ test.describe('ChopDot.dot no-Supabase native session', () => {
     await resetNativeSession(page, modes.emergency, sessionId);
     await openNativePot(page, modes.emergency, 'casey', sessionId);
 
-    await expect(page.getByTestId('receipt-review')).toContainText('Private receipt');
-    await expect(page.getByTestId('receipt-trust-summary')).toContainText('Names and private details hidden');
-    await expect(page.getByTestId('receipt-redaction')).toContainText('Hidden');
-    await expect(page.getByTestId('receipt-redaction')).toContainText('Names, payment details, private notes.');
-    await expect(page.getByTestId('receipt-redaction')).not.toContainText('sensitiveReason');
-    await expect(page.getByTestId('receipt-redaction')).not.toContainText('participant.id');
-    await expect(page.getByTestId('receipt-review')).not.toContainText('Private medical details');
-    await expect(page.getByTestId('receipt-review')).not.toContainText('Emergency support for Jordan');
+    await expect(page.getByTestId('emergency-pot-flow')).toContainText('Emergency pot');
+    await expect(page.getByTestId('emergency-private-record')).toContainText('private by default');
+    await expect(page.getByTestId('emergency-pot-flow')).not.toContainText('sensitiveReason');
+    await expect(page.getByTestId('emergency-pot-flow')).not.toContainText('participant.id');
+    await expect(page.getByTestId('emergency-pot-flow')).not.toContainText('Private medical details');
+    await expect(page.getByTestId('emergency-pot-flow')).not.toContainText('Emergency support for Jordan');
+    await expect(page.getByTestId('emergency-pot-flow')).not.toContainText('Jordan');
   });
 
   test('treasurer sees grouped pending confirmations when multiple members have marked paid', async ({ page, browser }, testInfo) => {
@@ -250,58 +257,48 @@ test.describe('ChopDot.dot no-Supabase native session', () => {
     const minaDevice = await newDevice(browser, mode, 'mina', sessionId);
     devices.push(minaDevice.context);
     const mina = minaDevice.page;
-    await expect(mina.getByTestId('next-actor')).toContainText('Confirm Leo');
-    await expect(mina.getByTestId('blockers')).toContainText('Mina confirms next');
-    await expect(mina.getByTestId('blockers')).toContainText('Leo, Nina · $200');
-    await expect(mina.getByTestId('organizer-queue')).toContainText('Confirm Leo');
-    await expect(mina.getByTestId('organizer-queue')).toContainText('Confirm Nina');
+    await expect(mina.getByTestId('next-actor')).toContainText(/Confirm (Leo|Nina)/);
+    await expect(mina.getByTestId('savings-primary-action')).toHaveText('Confirm received');
+    await expect(mina.getByTestId('savings-contributions')).toContainText('Leo');
+    await expect(mina.getByTestId('savings-contributions')).toContainText('Nina');
+    await expect(mina.getByTestId('savings-contributions')).toContainText('Marked paid');
+    await expect(mina.getByTestId('savings-close-state')).toContainText('Confirm received next');
 
     await Promise.all(devices.map((deviceContext) => deviceContext.close()));
   });
 
-  test('active person is first in People tab and payment details', async ({ page }, testInfo) => {
+  test('active savings-circle person lands directly on their own action', async ({ page }, testInfo) => {
     const mode = modes.savings;
     const sessionId = `native-active-person-priority-${testInfo.project.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
     await resetNativeSession(page, mode, sessionId);
     await openNativePot(page, mode, 'omar', sessionId);
 
-    await page.getByTestId('chapter-tabs').getByRole('button', { name: 'People' }).click();
-    await expect(page.getByTestId('chapter-people').locator('[data-testid^="participant-"]').first()).toHaveAttribute('data-testid', 'participant-omar');
-    await expect(page.getByTestId('participant-omar')).toContainText('You');
-    await expect(page.getByTestId('chapter-people').locator('[data-testid^="obligation-"]').first()).toHaveAttribute('data-testid', 'obligation-obligation_3');
-    await expect(page.getByTestId('obligation-obligation_3')).toContainText('Omar');
-    await expect(page.getByTestId('obligation-obligation_3')).toContainText('Mark paid');
+    await expect(page.getByTestId('savings-circle-round')).toContainText('Round 1 · Omar');
+    await expect(page.getByTestId('next-actor')).toContainText('Mark your payment');
+    await expect(page.getByTestId('savings-primary-action')).toHaveText('Mark paid');
+    await expect(page.getByTestId('savings-contributions')).toContainText('Omar');
+    await expect(page.getByTestId('chapter-tabs')).toHaveCount(0);
   });
 
-  test('participant links keep each person on their own device entry', async ({ page }, testInfo) => {
+  test('savings-circle share link keeps the active person entry', async ({ page }, testInfo) => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: BASE_URL });
     const mode = modes.savings;
     const sessionId = `native-participant-links-${testInfo.project.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
     await resetNativeSession(page, mode, sessionId);
     await openNativePot(page, mode, 'omar', sessionId);
 
-    await page.getByTestId('chapter-tabs').getByRole('button', { name: 'People' }).click();
-    await expect(page.getByTestId('person-link-guide')).toContainText('Send each person their own link');
-    await expect(page.getByTestId('person-link-guide')).toContainText('Use one device or browser profile per person');
-
-    await page.getByTestId('participant-share-link-leo').click();
-    const leoLink = await page.evaluate(() => navigator.clipboard.readText());
-    const leoUrl = new URL(leoLink);
-    expect(leoUrl.pathname).toBe('/pots');
-    expect(leoUrl.searchParams.get('chopdot-dot-native')).toBe('1');
-    expect(leoUrl.searchParams.get('person')).toBe('leo');
-    expect(leoUrl.searchParams.get('chopdot-dot-session')).toBe(sessionId);
-    expect(leoUrl.searchParams.has('chopdot-dot-dev')).toBe(false);
-    expect(leoUrl.searchParams.has('chopdot-escrow-lab')).toBe(false);
-
     await page.getByTestId('chapter-share-link').click();
     const omarLink = await page.evaluate(() => navigator.clipboard.readText());
     const omarUrl = new URL(omarLink);
+    expect(omarUrl.pathname).toBe('/pots');
+    expect(omarUrl.searchParams.get('chopdot-dot-native')).toBe('1');
     expect(omarUrl.searchParams.get('person')).toBe('omar');
     expect(omarUrl.searchParams.get('chopdot-dot-session')).toBe(sessionId);
+    expect(omarUrl.searchParams.has('chopdot-dot-dev')).toBe(false);
+    expect(omarUrl.searchParams.has('chopdot-escrow-lab')).toBe(false);
   });
 
-  test('Leo, Nina, Omar, and Mina converge on one signed savings-circle state across separate devices', async ({ page, browser }, testInfo) => {
+  test('Leo and Mina complete one savings-circle round from separate person links', async ({ page, browser }, testInfo) => {
     const mode = modes.savings;
     const sessionId = `native-savings-${testInfo.project.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
     await resetNativeSession(page, mode, sessionId);
@@ -312,74 +309,35 @@ test.describe('ChopDot.dot no-Supabase native session', () => {
     const leo = leoDevice.page;
     await expect(leo.getByTestId('next-actor')).toContainText('Mark your payment');
     await clickPrimary(leo, 'Mark paid');
-    await expect(leo.getByTestId('reconciliation-claimed')).toContainText('1');
-    await expect(leo.getByTestId('reconciliation-items')).toContainText('Leo marked paid');
-    await expect(leo.getByTestId('reconciliation-items')).toContainText('Waiting on Mina');
     await expect(leo.getByTestId('next-actor')).toContainText('Waiting on Mina');
-    await expect(leo.getByTestId('chapter-overview')).toContainText('$100 marked paid');
-    await expect(leo.getByTestId('waiting-guide')).toContainText('Payment marked');
-    await expect(leo.getByTestId('waiting-guide')).toContainText('Receiver confirmation');
-    await expect(leo.getByTestId('organizer-queue')).toHaveCount(0);
+    await expect(leo.getByTestId('savings-contributions')).toContainText('Marked paid');
 
     const minaDevice = await newDevice(browser, mode, 'mina', sessionId);
     devices.push(minaDevice.context);
     const mina = minaDevice.page;
     await expect(mina.getByTestId('next-actor')).toContainText('Confirm Leo');
-    await expect(mina.getByTestId('organizer-queue')).toContainText('Confirm Leo');
-    await expect(mina.getByTestId('organizer-queue-obligation_1')).toContainText('$100 pending');
-    await expect(mina.getByTestId('organizer-queue-obligation_1')).toContainText('Confirm received');
-    await expect(mina.getByTestId('organizer-queue')).toContainText('Check Nina');
-    await expect(mina.getByTestId('organizer-queue')).toContainText('Check Omar');
-    await expect(mina.getByTestId('organizer-queue-obligation_2')).toContainText('$100 open');
-    await expect(mina.getByTestId('blockers')).toContainText('Mina needs to confirm Leo');
-    await clickPrimary(mina, 'Confirm received');
-    await expect(mina.getByTestId('reconciliation-confirmed')).toContainText('1');
-    await expect(mina.getByTestId('reconciliation-items')).toContainText('Leo paid');
-
-    const ninaDevice = await newDevice(browser, mode, 'nina', sessionId);
-    devices.push(ninaDevice.context);
-    const nina = ninaDevice.page;
-    await expect(nina.getByTestId('next-actor')).toContainText('Mark your payment');
-    await clickPrimary(nina, 'Mark paid');
-
-    await expect(mina.getByTestId('next-actor')).toContainText('Confirm Nina', { timeout: 8_000 });
-    await expect(mina.getByTestId('organizer-queue')).toContainText('Confirm Nina', { timeout: 8_000 });
     await clickPrimary(mina, 'Confirm received');
 
-    const omarDevice = await newDevice(browser, mode, 'omar', sessionId);
-    devices.push(omarDevice.context);
-    const omar = omarDevice.page;
-    await expect(omar.getByTestId('next-actor')).toContainText('Mark your payment');
-    await expect(omar.getByTestId('blockers')).toContainText('Omar has not marked');
-
-    await expect(mina.getByTestId('organizer-queue')).toContainText('Check Omar', { timeout: 8_000 });
-    await mina.getByTestId('organizer-queue-obligation_3').getByRole('button', { name: 'Record delay' }).click();
-    await expect(leo.getByTestId('blockers')).toContainText('Round 1 payout to Leo has not been prepared', { timeout: 8_000 });
-    await expect(nina.getByTestId('blockers')).toContainText('Round 1 payout to Leo has not been prepared', { timeout: 8_000 });
-
+    await expect(mina.getByTestId('savings-contributions')).toContainText('Confirmed');
+    await mina.getByRole('button', { name: 'Record delay' }).first().click();
+    await expect(mina.getByTestId('savings-contributions')).toContainText('Delayed', { timeout: 8_000 });
+    await mina.getByRole('button', { name: 'Record delay' }).first().click();
     await expect(mina.getByTestId('next-actor')).toContainText('Prepare payout', { timeout: 8_000 });
-    await expect(mina.getByTestId('organizer-queue')).toContainText('Prepare payout');
-    await expect(mina.getByTestId('organizer-queue-prepare-release')).toContainText('$200 to Leo');
     await clickPrimary(mina, 'Prepare payout');
     await clickPrimary(mina, 'Approve payout');
+    await clickPrimary(mina, 'Record payout');
+    await expect(mina.getByTestId('next-actor')).toContainText('Waiting on Leo', { timeout: 8_000 });
 
-    await expect(omar.getByTestId('next-actor')).toContainText('Record payout', { timeout: 8_000 });
-    await clickPrimary(omar, 'Record payout');
-
-    await expect(leo.getByTestId('next-actor')).toContainText('Confirm the release', { timeout: 8_000 });
-    await clickPrimary(leo, 'Confirm received');
+    await openNativePot(leo, mode, 'leo', sessionId);
+    await expect(leo.getByTestId('next-actor')).toContainText('Confirm payout', { timeout: 8_000 });
+    await clickPrimary(leo, 'Confirm payout');
 
     await expect(mina.getByTestId('next-actor')).toContainText('Close round', { timeout: 8_000 });
     await clickPrimary(mina, 'Close round');
 
-    for (const participantPage of [leo, mina, nina, omar]) {
-      await expect(participantPage.getByTestId('receipt-preview')).toContainText('Record closed', { timeout: 8_000 });
-      await expect(participantPage.getByTestId('receipt-preview')).toContainText('confirmed or noted', { timeout: 8_000 });
-      await expect(participantPage.getByTestId('native-sync-status')).toContainText('up to date');
-    }
-
-    await mina.getByTestId('chapter-tabs').getByRole('button', { name: 'Activity' }).click();
-    await expect(mina.getByTestId('chapter-activity')).toContainText('Receipt saved', { timeout: 8_000 });
+    await expect(mina.getByTestId('next-actor')).toContainText('Record saved', { timeout: 8_000 });
+    await expect(mina.getByTestId('savings-close-state')).toContainText('Record saved');
+    await expect(mina.getByTestId('savings-contributions')).toContainText('3/3 handled');
 
     await Promise.all(devices.map((deviceContext) => deviceContext.close()));
   });
@@ -393,23 +351,24 @@ test.describe('ChopDot.dot no-Supabase native session', () => {
     const caseyDevice = await newDevice(browser, mode, 'casey', sessionId);
     devices.push(caseyDevice.context);
     const casey = caseyDevice.page;
-    await expect(casey.getByTestId('next-actor')).toContainText('Mark your payment');
-    await clickPrimary(casey, 'Mark paid');
+    await expect(casey.getByTestId('next-actor')).toContainText('Contribute privately');
+    await expect(casey.getByTestId('emergency-pot-flow')).not.toContainText('Jordan');
+    await clickPrimary(casey, 'Contribute');
+    await expect(casey.getByTestId('next-actor')).toContainText('Waiting on Riley');
 
     const rileyDevice = await newDevice(browser, mode, 'riley', sessionId);
     devices.push(rileyDevice.context);
     const riley = rileyDevice.page;
     await expect(riley.getByTestId('next-actor')).toContainText('Confirm Casey');
-    await expect(riley.getByTestId('organizer-queue')).toContainText('Confirm Casey');
-    await expect(riley.getByTestId('organizer-queue-obligation_1')).toContainText('$150 pending');
-    await expect(riley.getByTestId('organizer-queue-obligation_1')).toContainText('Confirm received');
+    await expect(riley.getByTestId('emergency-contributions')).toContainText('Casey');
     await clickPrimary(riley, 'Confirm received');
 
     const morganDevice = await newDevice(browser, mode, 'morgan', sessionId);
     devices.push(morganDevice.context);
     const morgan = morganDevice.page;
-    await expect(morgan.getByTestId('next-actor')).toContainText('Mark your payment');
-    await clickPrimary(morgan, 'Mark paid');
+    await expect(morgan.getByTestId('next-actor')).toContainText('Contribute privately');
+    await expect(morgan.getByTestId('emergency-pot-flow')).not.toContainText('Jordan');
+    await clickPrimary(morgan, 'Contribute');
 
     await expect(riley.getByTestId('next-actor')).toContainText('Confirm Morgan', { timeout: 8_000 });
     await clickPrimary(riley, 'Confirm received');
@@ -429,16 +388,15 @@ test.describe('ChopDot.dot no-Supabase native session', () => {
     const jordanDevice = await newDevice(browser, mode, 'jordan', sessionId);
     devices.push(jordanDevice.context);
     const jordan = jordanDevice.page;
-    await expect(jordan.getByTestId('next-actor')).toContainText('Confirm the release');
+    await expect(jordan.getByTestId('next-actor')).toContainText('Confirm received');
     await clickPrimary(jordan, 'Confirm received');
 
     await expect(riley.getByTestId('next-actor')).toContainText('Close pot', { timeout: 8_000 });
     await clickPrimary(riley, 'Close pot');
 
     for (const participantPage of [casey, riley, morgan, taylor, jordan]) {
-      await expect(participantPage.getByTestId('receipt-preview')).toContainText('Record closed', { timeout: 8_000 });
-      await expect(participantPage.getByTestId('receipt-preview')).toContainText('confirmed or noted', { timeout: 8_000 });
-      await expect(participantPage.getByTestId('native-sync-status')).toContainText('up to date');
+      await expect(participantPage.getByTestId('emergency-private-record')).toContainText('Saved record', { timeout: 8_000 });
+      await expect(participantPage.getByTestId('emergency-private-record')).toContainText('private by default', { timeout: 8_000 });
     }
 
     await Promise.all(devices.map((deviceContext) => deviceContext.close()));

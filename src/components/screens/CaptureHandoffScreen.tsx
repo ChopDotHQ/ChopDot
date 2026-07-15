@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { TopBar } from '../TopBar';
 import { useData } from '../../services/data/DataContext';
 import { usePot } from '../../hooks/usePot';
-import { useChapterState } from '../../hooks/useChapterState';
+import { useCaptureChapterState } from '../../hooks/useCaptureChapterState';
 import { useCaptureActingMember } from '../../hooks/useCaptureActingMember';
 import { CaptureShareActions } from '../capture/CaptureShareActions';
 import { SettlementHandoffPanel } from '../capture/SettlementHandoffPanel';
@@ -27,6 +27,20 @@ type CaptureHandoffScreenProps = {
   onShowToast?: (message: string, type?: 'success' | 'error' | 'info') => void;
   onPotRefresh?: (potId: string) => void;
 };
+
+function chapterMemberName(
+  chapter: NonNullable<ReturnType<typeof useCaptureChapterState>['chapter']>,
+  memberId: string,
+): string {
+  return chapter.members.find((member) => member.id === memberId)?.name ?? memberId;
+}
+
+function formatShareAmount(amount: number, currency: string): string {
+  if (currency === 'DOT' || currency === 'PAS') return `${amount.toFixed(6)} ${currency}`;
+  if (currency === 'USDC') return `${amount.toFixed(2)} USDC`;
+  if (currency === 'USD') return `$${amount.toFixed(2)}`;
+  return `${currency} ${amount.toFixed(2)}`;
+}
 
 export function CaptureHandoffScreen({
   potId,
@@ -60,7 +74,7 @@ export function CaptureHandoffScreen({
 
   const effectiveMemberId = actingMemberIdOverride ?? actingMemberId;
 
-  const { chapter, status, isLoading, markPaid } = useChapterState({
+  const { chapter, status, isLoading, markPaid } = useCaptureChapterState({
     potId,
     potService,
     currentMemberId: effectiveMemberId,
@@ -69,10 +83,27 @@ export function CaptureHandoffScreen({
     onPotRefresh,
   });
 
-  const leg = useMemo(
-    () => status?.legs.find((item) => item.id === legId),
-    [status?.legs, legId],
-  );
+  const leg = useMemo(() => {
+    const openLeg = status?.legs.find((item) => item.id === legId);
+    if (openLeg) {
+      return openLeg;
+    }
+
+    const rawLeg = chapter?.legs.find((item) => item.id === legId);
+    if (!chapter || !rawLeg) {
+      return undefined;
+    }
+
+    return {
+      ...rawLeg,
+      fromName: chapterMemberName(chapter, rawLeg.fromMemberId),
+      toName: chapterMemberName(chapter, rawLeg.toMemberId),
+      nextActor: rawLeg.state === 'claimed'
+        ? chapterMemberName(chapter, rawLeg.toMemberId)
+        : chapterMemberName(chapter, rawLeg.fromMemberId),
+      nextAction: rawLeg.state === 'claimed' ? 'confirm' as const : 'pay' as const,
+    };
+  }, [chapter, status?.legs, legId]);
 
   const spendCard = chapter?.spendCards?.find(
     (card) => card.id === chapter.spendCards?.[0]?.id,
@@ -141,35 +172,30 @@ export function CaptureHandoffScreen({
         captureLinkService.consumePayToken(captureToken);
       }
       await mintConfirmShare();
-      onShowToast?.(`Marked paid — ${leg.toName} can confirm next`, 'success');
+      onShowToast?.('Marked paid', 'success');
     } catch (error) {
       onShowToast?.(error instanceof Error ? error.message : 'Failed to mark paid', 'error');
     }
   };
 
-  const topBarTitle = 'Mark payment';
+  const topBarTitle = leg ? `Pay ${leg.toName}` : 'Pay';
 
   return (
     <div className="flex flex-col h-full bg-background pb-8" data-testid="capture-handoff-screen">
       <TopBar title={topBarTitle} onBack={onBack} />
 
-      <div className="p-4 space-y-4">
+      <div className="px-4 pt-3 pb-8 space-y-5">
         {leg ? (
           <>
-            <div className="space-y-2" data-testid="capture-pay-entry-guide">
-              <div>
-                <h2 className="text-section mt-1" style={{ fontWeight: 600 }}>Pay your share</h2>
-              </div>
-              <p className="text-caption text-secondary">
-                Use your payment app, then mark paid.
+            <div
+              className="rounded-[28px] bg-[radial-gradient(circle_at_82%_18%,rgba(230,0,122,0.26),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.09),rgba(255,255,255,0.035))] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.28)] space-y-3 overflow-hidden"
+              data-testid="capture-pay-entry-guide"
+            >
+              <p className="text-caption text-secondary">{chapter?.name ?? pot?.name ?? 'ChopDot'}</p>
+              <p className="text-[40px] leading-tight font-semibold tracking-normal break-words" style={{ color: 'var(--accent)' }} data-testid="capture-handoff-leg-id">
+                {formatShareAmount(leg.amount, leg.currency)}
               </p>
-            </div>
-
-            <div className="card p-4 space-y-2">
-              <p className="text-caption text-secondary">You owe</p>
-              <p className="text-body font-medium" data-testid="capture-handoff-leg-id">
-                {leg.amount.toFixed(2)} {leg.currency} to {leg.toName}
-              </p>
+              <p className="text-body text-secondary">Pay {leg.toName}</p>
             </div>
 
             {handoff && (
@@ -187,7 +213,7 @@ export function CaptureHandoffScreen({
                 <button
                   type="button"
                   disabled={isLoading}
-                  className="w-full py-3 rounded-xl font-medium disabled:opacity-50"
+                className="w-full py-4 rounded-2xl font-semibold disabled:opacity-50"
                   style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
                   data-testid="capture-handoff-mark-paid"
                   onClick={() => void handleMarkPaid()}
@@ -226,7 +252,7 @@ export function CaptureHandoffScreen({
 
             {railId === 'firma' && leg.state === 'open' && (
               <div
-                className="rounded-xl border border-border bg-white p-3 space-y-1"
+                className="rounded-2xl bg-white/[0.055] p-3 space-y-1 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
                 data-testid="capture-firma-auto-claim-hint"
               >
                 <p className="text-caption font-medium">Payment app can only mark this paid</p>
@@ -237,20 +263,15 @@ export function CaptureHandoffScreen({
             )}
 
             {leg.state === 'claimed' && (
-              <div className="rounded-xl border border-border bg-white p-3 space-y-1" data-testid="capture-handoff-waiting-confirmation">
-                <p className="text-caption font-medium">Waiting for confirmation</p>
-                <p className="text-caption text-secondary">
-                  Paid. Waiting for {leg.toName} to confirm.
-                </p>
+              <div className="rounded-2xl bg-white/[0.055] p-4 space-y-1 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]" data-testid="capture-handoff-waiting-confirmation">
+                <p className="text-body font-medium">Marked paid</p>
+                <p className="text-caption text-secondary">{leg.toName} confirms next</p>
               </div>
             )}
 
             {leg.state === 'confirmed' && (
-              <div className="rounded-xl border border-border bg-white p-3 space-y-1" data-testid="capture-handoff-done">
+              <div className="rounded-2xl bg-white/[0.055] p-3 space-y-1 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]" data-testid="capture-handoff-done">
                 <p className="text-caption font-medium">You are done</p>
-                <p className="text-caption text-secondary">
-                  Confirmed.
-                </p>
               </div>
             )}
           </>

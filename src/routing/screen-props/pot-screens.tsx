@@ -7,6 +7,12 @@ import {
     normalizeConfirmations,
 } from "../../utils/normalization";
 import { Skeleton } from "../../components/Skeleton";
+import { experimentalPotSurfacesEnabled } from "../../utils/experimentalSurfaces";
+import { calculatePotSettlements } from "../../utils/settlements";
+import { applyConfirmedLegAdjustments, type ConfirmedLegAdjustment } from "../../utils/confirmedLegAdjustments";
+import { CloseoutReview } from "../../components/screens/CloseoutReview";
+import type { SettlementLeg } from "../../types/app";
+
 
 type RouterContext = AppRouterProps;
 
@@ -59,6 +65,11 @@ const PotHome = lazy(() =>
         default: module.PotHome,
     }))
 );
+const ChapterHome = lazy(() =>
+    import("../../components/screens/ChapterHome").then((module) => ({
+        default: module.ChapterHome,
+    }))
+);
 const AddExpense = lazy(() =>
     import("../../components/screens/AddExpense").then((module) => ({
         default: module.AddExpense,
@@ -69,13 +80,28 @@ const ExpenseDetail = lazy(() =>
         default: module.ExpenseDetail,
     }))
 );
+const SpendCardScreen = lazy(() =>
+    import("../../components/screens/SpendCardScreen").then((module) => ({
+        default: module.SpendCardScreen,
+    }))
+);
+const CaptureHandoffScreen = lazy(() =>
+    import("../../components/screens/CaptureHandoffScreen").then((module) => ({
+        default: module.CaptureHandoffScreen,
+    }))
+);
+const CaptureConfirmScreen = lazy(() =>
+    import("../../components/screens/CaptureConfirmScreen").then((module) => ({
+        default: module.CaptureConfirmScreen,
+    }))
+);
 
 export function renderPotHome(ctx: RouterContext) {
     const {
         screen,
         nav: { push, back, replace },
         data: { currentPot: pot, pots },
-        userState: { user },
+        userState: { user, isGuest },
         uiState: { invitesByPot, fabQuickAddPotId },
         actions: {
             setPots,
@@ -102,6 +128,8 @@ export function renderPotHome(ctx: RouterContext) {
     if (!pot && ctx.data.currentPotLoading) return <PotHomeLoadingSkeleton onBack={back} />;
     if (!pot) return null;
 
+
+
     const potInvites = invitesByPot[pot.id] || [];
     const pendingMemberInvites = potInvites.filter(
         (inv) => inv.status === "pending"
@@ -118,6 +146,27 @@ export function renderPotHome(ctx: RouterContext) {
     const normalizedCheckpointConfirmations = normalizeConfirmations(
         pot.currentCheckpoint?.confirmations
     );
+    const currentUserId = isGuest ? "owner" : (user?.id || "owner");
+
+    if (pot.chapterMode && experimentalPotSurfacesEnabled()) {
+        return (
+            <ChapterHome
+                pot={pot as any}
+                currentUserId={currentUserId}
+                onBack={back}
+                onUpdatePot={(updates) => {
+                    setPots((previousPots) =>
+                        previousPots.map((existingPot) =>
+                            existingPot.id === pot.id
+                                ? { ...existingPot, ...updates, lastEditAt: new Date().toISOString() }
+                                : existingPot,
+                        ),
+                    );
+                }}
+                onShowToast={showToast}
+            />
+        );
+    }
 
     return (
         <PotHome
@@ -125,7 +174,7 @@ export function renderPotHome(ctx: RouterContext) {
             potType={pot.type}
             potName={pot.name}
             baseCurrency={pot.baseCurrency}
-            currentUserId={user?.id || "owner"}
+            currentUserId={currentUserId}
             members={mergedMembers}
             expenses={normalizedExp}
             budget={pot.budget ?? undefined}
@@ -179,6 +228,11 @@ export function renderPotHome(ctx: RouterContext) {
             }}
             openQuickAdd={fabQuickAddPotId === pot.id}
             onClearQuickAdd={() => setFabQuickAddPotId(null)}
+            recentSettlement={screen.recentSettlement}
+            closeouts={(pot as any).closeouts || []}
+            confirmedLegs={((pot as any).chapter?.legs ?? []).filter(
+                (leg: ConfirmedLegAdjustment) => leg.state === 'confirmed',
+            )}
             onRemoveMember={(id) => {
                 if (!ctx.data.currentPotId) return;
                 if (id === "owner") {
@@ -195,6 +249,7 @@ export function renderPotHome(ctx: RouterContext) {
                 handleRemoveMember(ctx.data.currentPotId, id);
             }}
             onSettle={() => push({ type: "settle-selection" })}
+            onCloseRecord={() => push({ type: "closeout-review", potId: pot.id })}
             onDeletePot={() => {
                 void handleDeletePot(pot.id);
             }}
@@ -204,8 +259,155 @@ export function renderPotHome(ctx: RouterContext) {
             onLeavePot={() => {
                 void handleLeavePot(pot.id);
             }}
+            onOpenSpendCard={() => push({ type: "spend-card", potId: pot.id })}
         />
     );
+}
+
+export function renderCloseoutReview(ctx: RouterContext) {
+    const {
+        screen,
+        nav: { back, replace },
+        data: { currentPot, pots },
+        userState: { user, isGuest },
+        actions: { persistPotPartial, showToast },
+    } = ctx;
+
+    if (!screen || screen.type !== "closeout-review") return null;
+    const pot = currentPot?.id === screen.potId
+        ? currentPot
+        : pots.find((candidate) => candidate.id === screen.potId);
+    if (!pot) return null;
+
+    const members = normalizeMembers(pot.members);
+    const expenses = normalizeExpenses(pot.expenses, pot.baseCurrency);
+    const currentUserId = isGuest ? "owner" : (user?.id || "owner");
+    const legs = buildCloseRecordLegs({
+        potId: pot.id,
+        potName: pot.name,
+        members,
+        expenses,
+        baseCurrency: pot.baseCurrency,
+        currentUserId,
+        confirmedLegs: ((pot as any).chapter?.legs ?? []).filter(
+            (leg: ConfirmedLegAdjustment) => leg.state === 'confirmed',
+        ),
+    });
+
+    return (
+        <CloseoutReview
+            potName={pot.name}
+            legs={legs}
+            members={members}
+            baseCurrency={pot.baseCurrency}
+            currentUserId={currentUserId}
+            onCancel={back}
+            onClose={async (annotation) => {
+                const now = new Date().toISOString();
+                const closeout = {
+                    id: `closeout-${Date.now()}`,
+                    potId: pot.id,
+                    closedAt: now,
+                    annotation,
+                    legs,
+                };
+                const historyEntry = {
+                    id: `event-${Date.now()}`,
+                    type: "chapter_closed",
+                    actorId: currentUserId,
+                    timestamp: now,
+                    meta: {
+                        annotation,
+                        openItems: legs.filter((leg) => leg.status !== "confirmed").length,
+                    },
+                };
+                await persistPotPartial(pot.id, {
+                    closeouts: [...((pot as any).closeouts || []), closeout],
+                    history: [...((pot as any).history || []), historyEntry],
+                    lastEditAt: now,
+                });
+                showToast("Record saved", "success");
+                replace({ type: "pot-home", potId: pot.id });
+            }}
+        />
+    );
+}
+
+function buildCloseRecordLegs({
+    potId,
+    potName,
+    members,
+    expenses,
+    baseCurrency,
+    currentUserId,
+    confirmedLegs = [],
+}: {
+    potId: string;
+    potName: string;
+    members: Array<{ id: string; name: string; role?: string; status?: string }>;
+    expenses: Array<{
+        id: string;
+        amount: number;
+        currency: string;
+        paidBy: string;
+        memo: string;
+        date: string;
+        split: { memberId: string; amount: number }[];
+        attestations: string[] | Array<{ memberId: string; confirmedAt: string }>;
+        hasReceipt: boolean;
+        receiptUrl?: string;
+    }>;
+    baseCurrency: string;
+    currentUserId: string;
+    confirmedLegs?: ConfirmedLegAdjustment[];
+}): SettlementLeg[] {
+    const potForCalc = {
+        id: potId,
+        name: potName,
+        type: "expense" as const,
+        baseCurrency,
+        members: members.map((member) => ({
+            id: member.id,
+            name: member.name,
+            role: "Member" as const,
+            status: "active" as const,
+        })),
+        expenses,
+        history: [],
+        archived: false,
+    };
+    const calculated = applyConfirmedLegAdjustments(
+        calculatePotSettlements(potForCalc as any, currentUserId),
+        members,
+        {
+            currentUserId,
+            potName,
+            baseCurrency,
+            confirmedLegs,
+        },
+    );
+    const createdAt = new Date().toISOString();
+    const owedToYou = calculated.owedToYou.map((person) => ({
+        id: `close-leg-${potId}-${person.id}-to-${currentUserId}`,
+        potId,
+        fromMemberId: person.id,
+        toMemberId: currentUserId,
+        amount: person.totalAmount,
+        currency: person.breakdown[0]?.currency || baseCurrency,
+        status: "pending" as const,
+        createdAt,
+    }));
+    const youOwe = calculated.youOwe.map((person) => ({
+        id: `close-leg-${potId}-${currentUserId}-to-${person.id}`,
+        potId,
+        fromMemberId: currentUserId,
+        toMemberId: person.id,
+        amount: person.totalAmount,
+        currency: person.breakdown[0]?.currency || baseCurrency,
+        status: "pending" as const,
+        createdAt,
+    }));
+    return [...owedToYou, ...youOwe];
 }
 
 
@@ -342,5 +544,121 @@ export function renderExpenseDetail(ctx: RouterContext) {
                 showToast("Receipt link copied", "success")
             }
         />
+    );
+}
+
+export function renderSpendCard(ctx: RouterContext) {
+    const {
+        screen,
+        nav: { push, back },
+        userState: { user },
+        actions: { showToast },
+    } = ctx;
+
+    if (!screen || screen.type !== "spend-card") return null;
+    if (!("potId" in screen)) return null;
+
+    const memberId = user?.id || "owner";
+    const memberName = user?.name || "You";
+
+    return (
+        <SpendCardScreen
+            potId={screen.potId}
+            spendCardId={screen.spendCardId}
+            actingMemberIdOverride={screen.actingMemberId}
+            currentMemberId={memberId}
+            currentMemberName={memberName}
+            currentUserId={user?.id}
+            onBack={back}
+            onOpenHandoff={(legId) =>
+                push({ type: "capture-handoff", potId: screen.potId, legId })
+            }
+            onShowToast={showToast}
+        />
+    );
+}
+
+export function renderCaptureHandoff(ctx: RouterContext) {
+    const {
+        screen,
+        nav: { back },
+        userState: { user },
+        actions: { showToast },
+    } = ctx;
+
+    if (!screen || screen.type !== "capture-handoff") return null;
+    if (!("potId" in screen) || !("legId" in screen)) return null;
+
+    const memberId = user?.id || "owner";
+    const memberName = user?.name || "You";
+
+    return (
+        <CaptureHandoffScreen
+            potId={screen.potId}
+            legId={screen.legId}
+            captureToken={screen.captureToken}
+            actingMemberIdOverride={screen.actingMemberId}
+            currentMemberId={memberId}
+            currentMemberName={memberName}
+            currentUserId={user?.id}
+            onBack={back}
+            onShowToast={showToast}
+        />
+    );
+}
+
+export function renderCaptureConfirm(ctx: RouterContext) {
+    const {
+        screen,
+        nav: { back },
+        userState: { user },
+        actions: { showToast },
+    } = ctx;
+
+    if (!screen || screen.type !== "capture-confirm") return null;
+
+    const memberId = user?.id || "owner";
+    const memberName = user?.name || "You";
+
+    return (
+        <CaptureConfirmScreen
+            potId={screen.potId}
+            legId={screen.legId}
+            captureToken={screen.captureToken}
+            receiverId={screen.receiverId}
+            currentMemberId={memberId}
+            currentMemberName={memberName}
+            currentUserId={user?.id}
+            onBack={back}
+            onShowToast={showToast}
+        />
+    );
+}
+
+export function renderCaptureLinkError(ctx: RouterContext) {
+    const {
+        screen,
+        nav: { reset },
+    } = ctx;
+
+    if (!screen || screen.type !== "capture-link-error") return null;
+
+    return (
+        <div className="flex flex-col h-full bg-background p-4" data-testid="capture-link-error-screen">
+            <div className="card p-4 space-y-2 mt-8">
+                <h1 className="text-body font-semibold">Link unavailable</h1>
+                <p className="text-caption text-secondary">{screen.message}</p>
+                {screen.expectedName && (
+                    <p className="text-caption text-secondary">This link is for {screen.expectedName}.</p>
+                )}
+                <button
+                    type="button"
+                    className="w-full py-3 rounded-xl bg-accent text-white font-medium mt-2"
+                    onClick={() => reset({ type: "pots-home" })}
+                >
+                    Go to pots
+                </button>
+            </div>
+        </div>
     );
 }
