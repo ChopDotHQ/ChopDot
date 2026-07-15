@@ -10,6 +10,8 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "security:baseline": "node scripts/security-baseline.mjs",
+    "test:capture-truth": "playwright test tests/capture-truth.spec.ts --config=playwright.host-sim.config.ts",
+    "test:receipt-draft": "node --import tsx --test src/capture/receiptDraft.test.ts",
     "test:payment-intents": "node --import tsx --test server/payment-intents/*.test.ts",
     "test:host-adapter": "node --import tsx --test src/environment/*.test.ts",
     "test:wallet": "node --import tsx --test src/payments/*.test.ts",

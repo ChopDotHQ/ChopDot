@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
-import { ArrowLeft, Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 import { getCurrencySymbol, getInitials } from '../utils';
 import { useAppState } from '../state/AppStateContext';
 import { Expense, Split } from '../types';
+import {CaptureSource} from '../capture/receiptDraft';
+import {ScreenHeader} from './primitives';
 
 type SplitMethod = 'equal' | 'exact' | 'percent' | 'shares' | 'exclude';
 
@@ -10,12 +12,14 @@ export function ReviewSplit({
   groupId, 
   amount, 
   title, 
+  source,
   onBack, 
   onSave 
 }: { 
   groupId: string; 
   amount: number; 
   title: string; 
+  source: CaptureSource;
   onBack: () => void; 
   onSave: () => void;
 }) {
@@ -144,15 +148,13 @@ export function ReviewSplit({
 
   return (
     <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors h-full overflow-hidden">
-      <header className="px-6 pt-12 pb-4 flex items-center bg-white dark:bg-[#0a0a0a] border-b border-gray-100 dark:border-[#1a1a1a] shadow-sm z-10 transition-colors shrink-0">
-        <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Back">
-          <ArrowLeft className="w-5 h-5 text-gray-900 dark:text-gray-100" />
-        </button>
-        <h1 className="flex-1 text-center font-semibold text-gray-900 dark:text-white pr-7">Review Split</h1>
-      </header>
+      <ScreenHeader title="Review split" onBack={onBack} />
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6 relative">
         <div className="text-center">
+          {source === 'receipt' && (
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">From receipt</p>
+          )}
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h2>
           <div className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mt-2">
             {sym}{amount.toFixed(2)}

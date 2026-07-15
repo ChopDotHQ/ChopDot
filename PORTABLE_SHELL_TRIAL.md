@@ -12,7 +12,7 @@ small jobs, simple state, and end-to-end checks can produce a clearer product
 surface quickly.
 
 This trial tests whether that clearer shell can become a portable mini-app
-foundation before adding backend, wallet, OCR, or payment complexity.
+foundation before adding backend, wallet, external OCR, or payment complexity.
 
 ## Current Truth To Preserve
 
@@ -39,7 +39,7 @@ foundation before adding backend, wallet, OCR, or payment complexity.
 - Real auth.
 - Real payment processing.
 - Wallet signing.
-- Receipt OCR.
+- External receipt OCR or image recognition.
 - Backend persistence.
 - Cross-device sync.
 - New group-money modes.
@@ -173,6 +173,23 @@ Pause or kill this trial if:
 
 ## Current Proof
 
+### Capture Truth Correction
+
+`portable-capture-truth-correction-v2` keeps manual amount and reason entry as
+the honest normal capture surface. The app does not show receipt import, file
+selection, filenames, OCR, or extraction language.
+
+The replaceable extraction module and its unit tests remain dormant source
+infrastructure for a future privacy-reviewed provider. It is not connected to
+normal routing and is not counted as product proof.
+
+Preserved authority boundary:
+
+- `CaptureSpend` holds draft values only;
+- `ReviewSplit` remains the only normal UI that dispatches `ADD_EXPENSE`;
+- payment, closeout, host-session, wallet, and payment-intent behavior is
+  unchanged.
+
 Host governance:
 
 - human registry: `HOSTS.md`
@@ -185,10 +202,11 @@ Local web proof packet:
 - path: `proof/portable-shell-web/`
 - host profile: `web`
 - viewport: `390 x 844`
-- screenshots: `21`
+- screenshots: `24`
 - report: `proof/portable-shell-web/report.json`
 - storage: `localStorage` key `chopdot-portable-shell-state-v1`
 - result: full normal journey completed and state persisted after refresh
+- capture truth: amount and reason appear directly; no receipt promise is shown
 
 Live HTTPS web proof packet:
 
@@ -228,7 +246,7 @@ Telegram-style embedded webview proof packet:
 - path: `proof/portable-shell-telegram/`
 - host profile: `telegram`
 - viewport: `390 x 844`
-- screenshots: `21`
+- screenshots: `24`
 - report: `proof/portable-shell-telegram/report.json`
 - storage: `localStorage` key `chopdot-portable-shell-state-v1`
 - host simulation: mobile Telegram-like user agent plus `window.Telegram.WebApp`

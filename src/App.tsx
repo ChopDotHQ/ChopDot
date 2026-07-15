@@ -34,6 +34,7 @@ import {
   StandalonePayerRequest as StandalonePayerRequestData,
 } from './requestLinks';
 import { AppState } from './types';
+import {CaptureSource, ReceiptDraftStatus} from './capture/receiptDraft';
 
 type View = 
   | { name: 'welcome' }
@@ -44,8 +45,8 @@ type View =
   | { name: 'group_detail', groupId: string }
   | { name: 'close_group', groupId: string }
   | { name: 'settle_up', groupId: string }
-  | { name: 'capture_spend', groupId: string, draftAmount?: number, draftTitle?: string }
-  | { name: 'review_split', groupId: string, amount: number, title: string }
+  | { name: 'capture_spend', groupId: string, draftAmount?: number, draftTitle?: string, draftSource?: CaptureSource, draftReceiptStatus?: ReceiptDraftStatus, draftFileName?: string }
+  | { name: 'review_split', groupId: string, amount: number, title: string, source: CaptureSource, receiptStatus?: ReceiptDraftStatus, fileName?: string }
   | { name: 'request_payment', groupId: string, memberId: string }
   | { name: 'payer_view', groupId: string, memberId: string }
   | { name: 'standalone_payer_request', request: StandalonePayerRequestData, groupId: string, memberId: string }
@@ -172,19 +173,34 @@ function AppRouter() {
       groupId={view.groupId} 
       initialAmount={view.draftAmount}
       initialTitle={view.draftTitle}
+      initialSource={view.draftSource}
+      initialReceiptStatus={view.draftReceiptStatus}
+      initialFileName={view.draftFileName}
       onBack={() => setView({ name: 'group_detail', groupId: view.groupId })} 
-      onNext={(amount, title) => setView({ name: 'review_split', groupId: view.groupId, amount, title })}
+      onNext={(amount, title, context) => setView({
+        name: 'review_split',
+        groupId: view.groupId,
+        amount,
+        title,
+        source: context.source,
+        receiptStatus: context.receiptStatus,
+        fileName: context.fileName,
+      })}
     />;
   } else if (view.name === 'review_split') {
     content = <ReviewSplit
       groupId={view.groupId}
       amount={view.amount}
       title={view.title}
+      source={view.source}
       onBack={() => setView({
         name: 'capture_spend',
         groupId: view.groupId,
         draftAmount: view.amount,
-        draftTitle: view.title
+        draftTitle: view.title,
+        draftSource: view.source,
+        draftReceiptStatus: view.receiptStatus,
+        draftFileName: view.fileName,
       })}
       onSave={() => setView({ name: 'group_detail', groupId: view.groupId })}
     />;
@@ -325,7 +341,10 @@ function getBackView(view: View): View | null {
         name: 'capture_spend',
         groupId: view.groupId,
         draftAmount: view.amount,
-        draftTitle: view.title
+        draftTitle: view.title,
+        draftSource: view.source,
+        draftReceiptStatus: view.receiptStatus,
+        draftFileName: view.fileName,
       };
     case 'saved_record':
       return { name: 'home' };

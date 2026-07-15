@@ -112,6 +112,10 @@ try {
   await shot('add-spend-empty');
   await fill(/0\.00/i, '120');
   await fill(/dinner at gusto/i, 'Dinner at Gusto');
+  await app.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  });
   await shot('add-spend-filled');
   await click(/review split/i);
   await shot('review-split');
