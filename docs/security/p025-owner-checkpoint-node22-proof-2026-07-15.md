@@ -4,7 +4,7 @@ Date: 2026-07-15
 
 ## Result
 
-`READY FOR OWNER REVIEW; NOT DEPLOYED`
+`READY FOR OWNER REVIEW AS PRE-P-026 BASELINE; NOT DEPLOYED`
 
 The current shared-root product work was captured without modifying the shared
 root, the complete reviewed P-025 range was applied on top, and the combined
@@ -108,12 +108,27 @@ configuration warning and was not exercised here.
 These are owner-checkpoint promotion debts. They were reproduced before and
 after applying P-025 and are not security-checkpoint regressions.
 
-## Shared-root integrity
+## Shared-root integrity and concurrent delta
 
-At final verification, the shared root remained on the same branch and HEAD,
-and its tracked-diff SHA-256 remained:
+At checkpoint capture, the shared root remained on the same branch and HEAD,
+and its tracked-diff SHA-256 was:
 
 `dd323f1c265636abfb94ff104378b4af6394341050c24e4893ef538498a9e04f`
+
+During final verification, a parallel task added an incomplete P-026 product
+slice to the shared root:
+
+- `product/cards.md` gained `P-026 User path map and dead-end scanner`;
+- `product/user-path-map.md` appeared as one new untracked file;
+- no application, backend, migration, or P-025 security file changed;
+- shared-root cockpit validation currently fails because `DC-026` is missing;
+- P-026 also references a `ProductCockpit` screen that does not exist in the
+  current router or screen inventory.
+
+The shared root HEAD itself remained
+`12e3df1e85bcf0029d42c38f2127f01dc9f3ee55`. The owner checkpoint deliberately
+does not absorb this partial concurrent slice. It is the last internally valid,
+fully tested product snapshot immediately before P-026 began.
 
 ## Documentation impact
 
@@ -137,5 +152,8 @@ Review the three-commit owner checkpoint, then decide whether to:
 2. first split the 897-file product checkpoint into smaller owner-reviewed
    commits; or
 3. repair the unrelated Playwright/proof/wiki promotion debt before merging.
+
+The owner should also complete or revert P-026's missing decision contract and
+screen ownership before rebasing that slice onto this checkpoint.
 
 Do not deploy this branch until that owner decision is recorded.
