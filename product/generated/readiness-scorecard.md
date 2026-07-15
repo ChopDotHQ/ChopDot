@@ -10,6 +10,7 @@ Validation: 0 error(s), 10 warning(s).
 | P-002 No-app friend payment link | accepted | Open the friend link and show only Leo's amount, receiver, and pay action. |
 | P-003 Confirm received | accepted | Show Mina the exact payment to confirm received. |
 | P-004 Close with readable saved record | accepted | Show what is confirmed, delayed, waived, or still open before closing. |
+| P-026 User path map and dead-end scanner | ready | Review the highest-risk user path and identify the next dead end or missing proof. |
 | P-005 Spend Card capture path | ready | Review the current Spend Card flow and identify the first dead end. |
 | P-006 Savings circle round | accepted | Move to the next user journey: emergency pot privacy flow. |
 | P-007 Emergency pot privacy flow | accepted | Move to the next user journey: community fund role flow. |

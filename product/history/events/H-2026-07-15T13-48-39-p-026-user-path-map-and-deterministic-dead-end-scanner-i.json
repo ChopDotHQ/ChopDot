@@ -1,0 +1,14 @@
+{
+  "id": "H-2026-07-15T13-48-39-p-026-user-path-map-and-deterministic-dead-end-scanner-i",
+  "timestamp": "2026-07-15T13:48:39.486Z",
+  "type": "checkpoint",
+  "summary": "P-026 user path map and deterministic dead-end scanner integrated on canonical P-025 baseline",
+  "cards": [
+    "P-026"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/evidence/p026-user-path-scanner-proof-2026-07-15.md"
+  ],
+  "notes": []
+}

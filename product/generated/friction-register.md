@@ -8,6 +8,7 @@
 | P-002 No-app friend payment link | 3/3 | 3/3 | 3/3 | 1/1 | If Leo sees admin controls or account setup before the first low-risk action, this card fails. |
 | P-003 Confirm received | 3/3 | 3/3 | 3/3 | 1/1 | If external payment activity silently confirms unrelated items, this card fails. |
 | P-004 Close with readable saved record | 2/3 | 3/3 | 3/3 | 1/1 | If the saved record is technical or unclear about open items, this card fails. |
+| P-026 User path map and dead-end scanner | 3/3 | 3/3 | 3/3 | 1/1 | If the map becomes a pretty diagram without path ownership, proof status, dead-end checks, and cockpit routing value, this card fails. |
 | P-005 Spend Card capture path | 3/3 | 2/3 | 2/3 | 1/1 | If it becomes a card-management product instead of capture, this card fails. |
 | P-006 Savings circle round | 3/3 | 3/3 | 3/3 | 1/1 | If the screen feels like a lab or ledger, this card fails. |
 | P-007 Emergency pot privacy flow | 3/3 | 3/3 | 3/3 | 1/1 | If sensitive names, reasons, notes, or payment references leak into the normal record, this card fails. |

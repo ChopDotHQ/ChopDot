@@ -189,6 +189,61 @@ screenshot_required: "yes"
 last_touched: "2026-06-28"
 ```
 
+## P-026 - User path map and dead-end scanner
+
+```yaml
+id: "P-026"
+type: "product-system"
+title: "User path map and dead-end scanner"
+status: "building"
+scope: "Management"
+module: "product-cockpit"
+journey: "Product and engineering review the user's possible paths before adding new mini-app surfaces"
+pillar: "Management"
+priority: "high"
+evidence_quality: "partial"
+owner: "product"
+depends_on:
+  - "P-022"
+  - "P-025"
+blocker: "Twelve mapped dead ends remain open or unproven."
+decision_contract: "DC-026"
+tests:
+  - "npm run product:path-map -- validate"
+  - "npm run product:validate"
+screens: []
+evidence:
+  - "product/user-path-map.md"
+  - "product/user-path-map.mmd"
+  - "product/generated/user-path-coverage.json"
+  - "product/generated/user-path-coverage.md"
+  - "product/generated/user-path-coverage.mmd"
+  - "product/generated/user-path-coverage.html"
+  - "product/evidence/user-path-coverage-latest.json"
+  - "product/evidence/p026-user-path-scanner-proof-2026-07-15.md"
+  - "product/evidence/screenshots/user-path-coverage/p026-user-path-coverage.png"
+next_action: "Review the highest-risk user path and identify the next dead end or missing proof."
+user_story: "I am a ChopDot builder or product manager, I need to see every possible user path and outcome, so we can catch dead ends before shipping new surfaces."
+one_next_action: "Review journey map"
+friction_score: 3
+trust_score: 3
+clarity_score: 3
+language_score: 1
+total_score: 10
+why: "ChopDot is expanding across surfaces, and each new surface multiplies hidden branches unless user paths and proof gaps are visible in the cockpit."
+challenge: "If the map becomes a pretty diagram without path ownership, proof status, dead-end checks, and cockpit routing value, this card fails."
+acceptance: "The normal-pot journey has explicit action paths, resulting states, available next actions, actor maps, surface status, proof status, a validated dead-end register, and generated cockpit coverage."
+screenshot_required: "no"
+last_touched: "2026-07-15"
+```
+
+Operator notes:
+
+- This is an internal product-system artifact, not normal-user UI.
+- The source map stays manually reviewable; generated coverage is a read model.
+- The first useful question is not "is the diagram complete?" but "which path is most likely to fail next?"
+- New mini-app surfaces must reference this map before adding adapter-specific UX.
+
 ## P-005 - Spend Card capture path
 
 ```yaml

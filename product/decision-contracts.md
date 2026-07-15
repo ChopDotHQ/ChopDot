@@ -274,3 +274,19 @@ Required evidence:
 - authenticated users cannot enumerate unrelated capture links or mutate token payloads
 - replayed mark-paid and confirm-received commands create no duplicate effects
 - direct financial-table writes and atomic command gaps remain explicitly tracked
+
+## DC-026 - User path map and dead-end scanner decision
+
+Required evidence:
+
+- user path map exists at `product/user-path-map.md`
+- every mapped path names actor, entry state, action, result state, terminal status, owner card, surface status, and proof status
+- every non-terminal path lists next available actions
+- every terminal path explains why ending there is valid
+- known dead ends are registered with severity, owner card, observed surface, problem, and expected behavior
+- at least one known current dead end is mapped back to P-022
+- mini-app surfaces are represented as explicit statuses rather than assumed support
+- actor maps exist for organizer, payer, second payer, and guest paths
+- a lightweight visual graph source exists at `product/user-path-map.mmd`
+- generated coverage is reproducible and validation does not mutate tracked files
+- cockpit can answer which path is most likely to fail next and what proof is missing

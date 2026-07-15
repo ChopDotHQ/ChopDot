@@ -1,0 +1,37 @@
+flowchart TD
+  Summary["24 paths / 12 dead ends"]
+  Summary --> built_ambiguous["built_ambiguous: 2"]
+  Summary --> built_wrong_order["built_wrong_order: 3"]
+  Summary --> known_gap["known_gap: 2"]
+  Summary --> not_built["not_built: 7"]
+  Summary --> not_built_or_unproven["not_built_or_unproven: 3"]
+  Summary --> partly_mitigated_backend_unproven_ui["partly_mitigated_backend_unproven_ui: 1"]
+  Summary --> unproven["unproven: 6"]
+  not_built --> N_007["N-007: Payer cannot pay now"]
+  not_built --> N_011["N-011: Wrong amount, wrong receiver, or wrong currency"]
+  not_built --> N_013["N-013: Receiver marks not received"]
+  not_built --> N_018["N-018: Waive amount"]
+  not_built --> N_019["N-019: Mark delayed"]
+  not_built --> N_020["N-020: Payer returns after delay"]
+  built_wrong_order --> N_012["N-012: Receiver confirms payment"]
+  built_wrong_order --> N_023["N-023: Close record"]
+  classDef good fill:#e8f7ef,stroke:#1f7a45,color:#10291a;
+  classDef warn fill:#fff3d6,stroke:#b7791f,stroke-width:2px,color:#3a2600;
+  classDef bad fill:#ffe2e2,stroke:#b91c1c,stroke-width:2px,color:#3b0a0a;
+  classDef neutral fill:#f1f5f9,stroke:#64748b,color:#0f172a;
+  class Summary neutral;
+  class built_ambiguous warn;
+  class built_wrong_order bad;
+  class known_gap bad;
+  class not_built bad;
+  class not_built_or_unproven warn;
+  class partly_mitigated_backend_unproven_ui bad;
+  class unproven warn;
+  class N_007 bad;
+  class N_011 bad;
+  class N_013 bad;
+  class N_018 bad;
+  class N_019 bad;
+  class N_020 bad;
+  class N_012 bad;
+  class N_023 bad;

@@ -564,6 +564,7 @@ function renderBoard(model, validation) {
       </div>
       <div class="top-actions">
         <button class="button secondary" type="button" data-copy="npm run product:refresh">Copy refresh</button>
+        <a class="button secondary" href="./generated/user-path-coverage.html">Open path coverage</a>
         <a class="button primary" href="./generated/product-resume.md">Open resume</a>
       </div>
     </header>

@@ -1,0 +1,73 @@
+flowchart TD
+  Start["N-001 Start normal pot"] --> Capture["N-002 Add first expense"]
+  Capture --> AddMore["N-003 Add another expense"]
+  AddMore --> Review["N-004 Review or edit split"]
+  Capture --> Review
+  Review --> Request["N-005 Send payment request"]
+
+  Request --> PayerOpen["N-006 Payer opens request"]
+  PayerOpen --> CannotPay["N-007 Cannot pay now"]
+  PayerOpen --> StartPay["N-008 Start payment"]
+  PayerOpen --> MarkPaid["N-009 Mark paid / evidence observed"]
+  PayerOpen --> Partial["N-010 Partial payment"]
+
+  StartPay --> Mismatch["N-011 Wrong amount / receiver / currency"]
+  StartPay --> MarkPaid
+  Partial --> Confirm["N-012 Mina confirms received"]
+  MarkPaid --> Confirm
+  MarkPaid --> Reject["N-013 Mina marks not received"]
+
+  Request --> Forgotten["N-014 Add forgotten expense after request"]
+  Forgotten --> FollowUp["N-015 Send follow-up request"]
+  FollowUp --> Request
+
+  Review --> AddMember["N-016 Add member before request"]
+  Review --> RemoveMember["N-017 Remove member before request"]
+  AddMember --> Review
+  RemoveMember --> Review
+
+  Request --> Waive["N-018 Waive amount"]
+  Request --> Delay["N-019 Mark delayed"]
+  CannotPay --> Delay
+  Delay --> ReturnPay["N-020 Payer returns after delay"]
+  ReturnPay --> MarkPaid
+
+  Request --> Guest["N-021 Guest opens link"]
+  Guest --> PayerOpen
+
+  Request --> WrongActor["N-022 Wrong actor attempts restricted action"]
+  WrongActor --> PayerOpen
+
+  Confirm --> Resolved{"All items resolved?"}
+  Waive --> Resolved
+  Delay --> Resolved
+  Reject --> Request
+  Mismatch --> Request
+  Resolved -->|"No"| Request
+  Resolved -->|"Yes"| Close["N-023 Close record"]
+  Close --> History["N-024 Return to saved record"]
+
+  Request -. known gap .-> D001["D-001 Add expense disappears"]
+  Request -. known gap .-> D002["D-002 Premature close action"]
+  Partial -. risk .-> D003["D-003 Partial treated as full"]
+  Mismatch -. risk .-> D004["D-004 Mismatch clears share"]
+  Guest -. risk .-> D005["D-005 Guest mutates organizer state"]
+  Delay -. not built .-> D006["D-006 No delayed/waived/disputed state model"]
+  Confirm -. wrong order .-> D007["D-007 Backend auto-close before review"]
+  Close -. ambiguous .-> D008["D-008 Close with note hides unresolved money"]
+  MarkPaid -. ambiguous .-> D009["D-009 Request vs mark-paid meanings blur"]
+  Partial -. not built .-> D010["D-010 No partial-payment model"]
+  AddMember -. unproven .-> D011["D-011 Member changes after request unproven"]
+  RemoveMember -. unproven .-> D011
+  Mismatch -. lane mismatch .-> D012["D-012 Wrong-payment proof only in capture/PAS lane"]
+
+  classDef ok fill:#e8f7ef,stroke:#1f7a45,color:#10291a;
+  classDef decision fill:#e7f0ff,stroke:#2563eb,color:#0f1f44;
+  classDef gap fill:#ffe2e2,stroke:#b91c1c,stroke-width:2px,color:#3b0a0a;
+  classDef risk fill:#fff3d6,stroke:#b7791f,stroke-width:2px,color:#3a2600;
+
+  class Start,Capture,AddMore,Review,Request,PayerOpen,CannotPay,StartPay,MarkPaid,Partial,Confirm,Reject,Forgotten,FollowUp,AddMember,RemoveMember,Waive,Delay,ReturnPay,Guest,WrongActor,Close,History ok;
+  class Resolved decision;
+  class D001,D002 gap;
+  class D003,D004,D005,D008,D009,D011,D012 risk;
+  class D006,D007,D010 gap;
