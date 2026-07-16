@@ -639,7 +639,7 @@ depends_on:
   - "P-022"
   - "P-023"
   - "P-024"
-blocker: "Direct client mutation paths and non-atomic financial writes remain open."
+blocker: "Non-atomic financial writes, durable payment intents, scoped guest capabilities, and one canonical cross-host state remain open."
 decision_contract: "DC-025"
 tests:
   - "npm run product:validate"
@@ -649,6 +649,7 @@ tests:
   - "backend/src/__tests__/users.routes.test.ts"
   - "backend/src/integration/p025-migration-chain.database.ts"
   - "backend/src/integration/p025-actor-boundary.database.ts"
+  - "backend/src/integration/p025-financial-authority.database.ts"
 screens: []
 evidence:
   - "docs/security/universal-chop-core-security-architecture.md"
@@ -659,9 +660,10 @@ evidence:
   - "docs/security/p025-security-foundation-integration-manifest-2026-07-14.md"
   - "docs/security/p025-security-foundation-canonical-integration-2026-07-15.md"
   - "docs/security/p025-owner-checkpoint-node22-proof-2026-07-15.md"
+  - "docs/security/p025-financial-table-authority-lockdown-proof-2026-07-16.md"
   - "docs/adr/0004-server-derived-payment-actor.md"
   - "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
-next_action: "Inventory and close direct financial-table mutation paths."
+next_action: "Make payment-state, event, and closeout persistence atomic at the backend command boundary."
 user_story: "I am building ChopDot across mini-app environments, so I need one auditable core contract before Circles, Telegram, or other surfaces can change shared money records."
 one_next_action: "Review security boundary"
 friction_score: 3
@@ -671,9 +673,9 @@ language_score: 1
 total_score: 10
 why: "Mini-app expansion only works if every surface submits scoped actions into one trusted Chop record model."
 challenge: "If any surface owns final truth, trusts caller-supplied identity, or can confirm or close outside its role, this card fails."
-acceptance: "The architecture and executable database proofs define server-derived actors, canonical payment states, scoped capture-link access, role boundaries, replay behavior, privacy limits, deployment boundaries, and the remaining enforcement gaps."
+acceptance: "The architecture and executable database proofs define server-derived actors, canonical payment states, scoped capture-link access, role boundaries, replay behavior, direct-client financial mutation denial, privacy limits, deployment boundaries, and the remaining enforcement gaps."
 screenshot_required: "no"
-last_touched: "2026-07-15"
+last_touched: "2026-07-16"
 ```
 
 ## P-010 - Polkadot-native session boundary

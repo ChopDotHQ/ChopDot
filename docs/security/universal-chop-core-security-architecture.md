@@ -7,7 +7,7 @@ Scope: Chop Core, guest links, and future mini-app surfaces
 
 ## Implementation Status
 
-Updated: 2026-07-14
+Updated: 2026-07-16
 
 The target architecture in this document is not fully implemented.
 
@@ -20,17 +20,22 @@ Enforced at the current Express boundary:
 - pending actions are self-only;
 - settlement and closeout events use the verified actor;
 - `x-user-id` and host-provided identity hints have no authority.
+- authenticated browser roles cannot mutate settlement, payment, or event
+  tables directly; member reads remain scoped by RLS;
+- authenticated browser roles cannot directly change the backend-owned pot
+  closeout status, while ordinary group edits remain available;
+- the migration-owned normal payment vocabulary accepts `pending`, `paid`, and
+  `confirmed`, and the real migrated-database actor proof passes.
 
 Still blocking production shared-money claims:
 
 - one canonical Chop state across browser, API, Telegram, and host surfaces;
 - backend-owned durable payment intents and complete evidence matching;
-- role-scoped database mutation and capture-token privacy;
+- complete capture-token privacy and capability scope;
 - scoped, revocable guest capabilities with no confirm/close authority;
 - atomic command, audit-event, and closeout persistence;
-- one canonical state vocabulary across migrations, Prisma, routes, and clients;
-- settlement-state migration alignment and a passing database-backed actor test
-  against that migrated target schema.
+- complete exception-state vocabulary across migrations, Prisma, routes, and
+  clients.
 
 See `docs/adr/0004-server-derived-payment-actor.md` and
 `docs/security/p025-security-foundation-crosswalk-2026-07-14.md` for the

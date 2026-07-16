@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-15T12:41:13.432Z",
+  "generatedAt": "2026-07-16T12:05:26.465Z",
   "validation": {
     "errors": 0,
     "warnings": 10,
     "cards": 25,
     "decisions": 6,
     "decisionContracts": 25,
-    "history": 71,
+    "history": 72,
     "readyOrActive": 21,
     "blocked": 0
   },
@@ -378,7 +378,8 @@
         "backend/src/__tests__/settlements.routes.test.ts",
         "backend/src/__tests__/users.routes.test.ts",
         "backend/src/integration/p025-migration-chain.database.ts",
-        "backend/src/integration/p025-actor-boundary.database.ts"
+        "backend/src/integration/p025-actor-boundary.database.ts",
+        "backend/src/integration/p025-financial-authority.database.ts"
       ],
       "evidence": [
         "docs/security/universal-chop-core-security-architecture.md",
@@ -389,6 +390,7 @@
         "docs/security/p025-security-foundation-integration-manifest-2026-07-14.md",
         "docs/security/p025-security-foundation-canonical-integration-2026-07-15.md",
         "docs/security/p025-owner-checkpoint-node22-proof-2026-07-15.md",
+        "docs/security/p025-financial-table-authority-lockdown-proof-2026-07-16.md",
         "docs/adr/0004-server-derived-payment-actor.md",
         "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
       ],

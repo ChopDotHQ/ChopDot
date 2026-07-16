@@ -17,7 +17,7 @@
 | P-022 Regular pot end-to-end coherence | devinsonpena | building | Fix the normal pot journey breaks found in the latest screenshot review. | before promotion |
 | P-023 PAS test wallet payment | devinsonpena | done | Keep PAS on the direct wallet and public-chain path; do not restore artifact-backed payment checks. | yes |
 | P-024 DOT and USDC wallet payment checks | devinsonpena | discovery | After the PAS wallet path passes, run separate real DOT and real testnet USDC connected-wallet checks without reusing PAS, fixtures, or prior reports. | before promotion |
-| P-025 Universal Chop Core security architecture | product/security | building | Inventory and close direct financial-table mutation paths. | before promotion |
+| P-025 Universal Chop Core security architecture | product/security | building | Make payment-state, event, and closeout persistence atomic at the backend command boundary. | before promotion |
 | P-010 Polkadot-native session boundary | devinsonpena | building | Repeat the proven five-person normal-UI journey against live Product Accounts and live Statement Store when a runnable Polkadot Mobile client is available; test real payment execution as a separate evidence lane. | before promotion |
 | P-011 Product language cleanup | devinsonpena | done | Scan normal UI for internal terms and replace them with user language. | yes |
 | P-012 Receipt capture without manual-first entry | devinsonpena | done | Move to the next user journey: savings circle round. | yes |

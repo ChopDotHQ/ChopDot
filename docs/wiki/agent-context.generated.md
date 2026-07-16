@@ -2,7 +2,7 @@
 
 # ChopDot Agent Context
 
-Generated: 2026-07-15T10:37:45.061Z
+Generated: 2026-07-16T12:03:38.665Z
 
 Use this as a routing map. Follow links to source truth before changing code or making claims.
 

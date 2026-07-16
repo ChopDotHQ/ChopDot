@@ -2,7 +2,7 @@
 
 # ChopDot Wiki Index
 
-Generated: 2026-07-15T10:37:45.052Z
+Generated: 2026-07-16T12:03:38.660Z
 
 This index is a read model for humans and agents. Edit source pages, not this file.
 
@@ -25,7 +25,7 @@ This index is a read model for humans and agents. Edit source pages, not this fi
 | [Use Repo Native Wiki](../../docs/adr/0001-use-repo-native-wiki.md) | current | Dev | 2026-07-05 | `adr`, `wiki` | `docs/wiki/README.md` |
 | [KG Is Index Not Source Of Truth](../../docs/adr/0002-kg-is-index-not-source-of-truth.md) | current | Dev | 2026-07-05 | `adr`, `kg`, `agentops` | `docs/wiki/README.md`<br>`docs/agentops_kg_bridge.md` |
 | [Thread Imports Are Evidence Not Truth](../../docs/adr/0003-thread-imports-are-evidence-not-truth.md) | current | Dev | 2026-07-06 | `adr`, `context-intake`, `codex-thread` | `docs/wiki/08-context-intake/context-intake.md`<br>`docs/adr/0002-kg-is-index-not-source-of-truth.md` |
-| [Server-Derived Payment Actor Boundary](../../docs/adr/0004-server-derived-payment-actor.md) | current | Dev | 2026-07-14 | `adr`, `security`, `authentication`, `payment` | `docs/security/p025-security-foundation-crosswalk-2026-07-14.md`<br>`docs/security/universal-chop-core-security-architecture.md`<br>`docs/wiki/03-state-models/payment-state.md` |
+| [Server-Derived Payment Actor Boundary](../../docs/adr/0004-server-derived-payment-actor.md) | current | Dev | 2026-07-14 | `adr`, `security`, `authentication`, `payment` | `docs/security/p025-security-foundation-crosswalk-2026-07-14.md`<br>`docs/security/p025-capture-link-migration-proof-2026-07-14.md`<br>`docs/security/p025-financial-table-authority-lockdown-proof-2026-07-16.md`<br>`docs/security/universal-chop-core-security-architecture.md` |
 | [Portable Product and Native Host Boundary](../../docs/adr/0005-portable-product-native-host-boundary.md) | current | Dev | 2026-07-14 | `adr`, `polkadot-native`, `portable-shell`, `product-sdk` | `.worktrees/portable-shell-trial/HOSTS.md`<br>`.worktrees/portable-shell-trial/plans/2026-07-14-polkadot-hosted-two-person-journey-v1.md`<br>`docs/wiki/05-polkadot-native/chopdot-dot-overview.md` |
 | [Current Product State](../../docs/wiki/00-start-here/current-product-state.md) | current | Dev | 2026-07-14 | `start-here`, `status`, `routing` | `product/cards.md`<br>`product/generated/product-resume.md`<br>`product/generated/readiness-scorecard.md`<br>`product/journey-review-plan.md` |
 | [How Agents Should Work](../../docs/wiki/00-start-here/how-agents-should-work.md) | current | Dev | 2026-07-05 | `start-here`, `agents`, `workflow` | `AGENTS.md`<br>`product/story-map.md`<br>`product/cards.md`<br>`product/journey-review-plan.md` |
@@ -41,7 +41,7 @@ This index is a read model for humans and agents. Edit source pages, not this fi
 | [Settlement Journey](../../docs/wiki/02-user-journeys/settlement.md) | current | Dev | 2026-07-14 | `journeys`, `settlement` | `product/journey-reviews/J-002-normal-pot-settle-one-person.md`<br>`product/journey-reviews/J-004-no-app-friend-payment-link.md` |
 | [Spend Capture Journey](../../docs/wiki/02-user-journeys/spend-capture.md) | draft | Dev | 2026-07-14 | `journeys`, `spend-capture` | `product/journey-reviews/J-000-dinner-split-pay-moment-capture.md`<br>`product/journey-reviews/J-009-receipt-capture-without-manual-first-entry.md` |
 | [Native Session State Model](../../docs/wiki/03-state-models/native-session-state.md) | draft | Dev | 2026-07-14 | `state-model`, `polkadot-native` | `docs/wiki/05-polkadot-native/chopdot-dot-overview.md`<br>`docs/wiki/05-polkadot-native/native-boundaries.md`<br>`.cursor/rules/chopdot-dot-programme.mdc` |
-| [Payment State Model](../../docs/wiki/03-state-models/payment-state.md) | current | Dev | 2026-07-14 | `state-model`, `payment` | `product/product-principles.md`<br>`docs/wiki/02-user-journeys/settlement.md`<br>`docs/adr/0004-server-derived-payment-actor.md`<br>`docs/security/p025-database-backed-actor-boundary-proof-2026-07-14.md` |
+| [Payment State Model](../../docs/wiki/03-state-models/payment-state.md) | current | Dev | 2026-07-16 | `state-model`, `payment` | `product/product-principles.md`<br>`docs/wiki/02-user-journeys/settlement.md`<br>`docs/adr/0004-server-derived-payment-actor.md`<br>`docs/security/p025-database-backed-actor-boundary-proof-2026-07-14.md` |
 | [Pot Closeout State Model](../../docs/wiki/03-state-models/pot-closeout-state.md) | current | Dev | 2026-07-05 | `state-model`, `closeout` | `product/journey-reviews/J-003-normal-pot-close-record.md`<br>`product/product-principles.md` |
 | [Privacy State Model](../../docs/wiki/03-state-models/privacy-state.md) | current | Dev | 2026-07-05 | `state-model`, `privacy` | `product/journey-reviews/J-011-emergency-pot-privacy-flow.md`<br>`docs/security/universal-chop-core-security-architecture.md` |
 | [Batch 1 And 2 Principles](../../docs/wiki/04-design-quality/batch-1-2-principles.md) | current | Dev | 2026-07-05 | `design-quality`, `reference` | `product/design-references/chopdot-batch-1-2-consolidated-principles-2026-07-01.md` |

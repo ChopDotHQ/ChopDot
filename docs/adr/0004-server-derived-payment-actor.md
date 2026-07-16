@@ -11,10 +11,12 @@ related_code:
   - backend/src/routes/settlements.ts
   - backend/src/routes/users.ts
   - backend/src/routes/ai.ts
+  - supabase/migrations/20260716130000_financial_table_authority_lockdown.sql
   - src/utils/apiAuthHeaders.ts
 related_docs:
   - docs/security/p025-security-foundation-crosswalk-2026-07-14.md
   - docs/security/p025-capture-link-migration-proof-2026-07-14.md
+  - docs/security/p025-financial-table-authority-lockdown-proof-2026-07-16.md
   - docs/security/universal-chop-core-security-architecture.md
   - docs/wiki/03-state-models/payment-state.md
 tags:
@@ -67,6 +69,12 @@ declare who performed a money-state action.
   `503`.
 - Active membership and payer/receiver authorization failures return `403`
   before any settlement, payment, event, or closeout mutation.
+- Authenticated browser database roles have read-only member access to
+  settlements and payments and no direct mutation authority over settlements,
+  payments, or pot events. Those writes pass through the backend command layer.
+- A database guard prevents authenticated browser roles from directly setting
+  or changing the backend-owned pot closeout status without removing ordinary
+  group-edit permissions.
 - Local guest/prototype flows without a Supabase session cannot use protected
   shared-state routes. They remain local proof surfaces until an explicit guest
   capability design is implemented.
@@ -76,9 +84,9 @@ declare who performed a money-state action.
 - Token verification currently calls the Supabase Auth user endpoint on each
   protected request. A future cached JWKS verifier may reduce latency, but it
   must preserve server verification and revocation/expiry behavior.
-- This decision does not make the full P-025 architecture complete. Direct
-  database policies, guest links, command atomicity, payment-intent persistence,
-  and one canonical cross-host state remain open.
+- This decision does not make the full P-025 architecture complete. Guest
+  links, command atomicity, payment-intent persistence, exception states, and
+  one canonical cross-host state remain open.
 
 ## Verification
 
@@ -94,4 +102,6 @@ from Prisma and the applicable migration-owned schema after the forward-only
 status-alignment migration. The full repository migration chain and the bounded
 capture-link membership proof now pass on disposable PostgreSQL. See
 `docs/security/p025-settlement-state-migration-proof-2026-07-14.md` and
-`docs/security/p025-capture-link-migration-proof-2026-07-14.md`.
+`docs/security/p025-capture-link-migration-proof-2026-07-14.md`. Direct-client
+financial-table denial and preserved backend authority are proven in
+`docs/security/p025-financial-table-authority-lockdown-proof-2026-07-16.md`.

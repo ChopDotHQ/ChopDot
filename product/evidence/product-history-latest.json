@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-15T12:41:13.432Z",
-  "count": 71,
+  "generatedAt": "2026-07-16T12:05:26.465Z",
+  "count": 72,
   "events": [
     {
       "id": "H-2026-06-24-cockpit-migration-start",
@@ -1040,6 +1040,20 @@
       "roadmap": [],
       "evidence": [
         ".worktrees/portable-shell-trial/proof/polkadot-host-wallet-settlement/report.json"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-16T12-05-26-p-025-direct-settlement-payment-event-and-closeout-mutat",
+      "timestamp": "2026-07-16T12:05:26.426Z",
+      "type": "checkpoint",
+      "summary": "P-025 direct settlement, payment, event, and closeout mutation bypasses denied while backend authority and normal pot editing remain intact",
+      "cards": [
+        "P-025"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "docs/security/p025-financial-table-authority-lockdown-proof-2026-07-16.md"
       ],
       "notes": []
     }

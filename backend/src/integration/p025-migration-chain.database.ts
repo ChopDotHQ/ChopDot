@@ -33,6 +33,7 @@ const baselineCutoff = '20260416000001_settlement_idempotency.sql';
 const alignmentMigration = '20260714160000_settlement_status_alignment.sql';
 const captureSourceMigration = '20260617120000_capture_link_tokens.sql';
 const captureRepairMigration = '20260714170000_capture_link_tokens_repair.sql';
+const financialAuthorityMigration = '20260716130000_financial_table_authority_lockdown.sql';
 
 async function queryFile(client: PoolClient, filename: string) {
   const sql = await readFile(path.join(migrationsDirectory, filename), 'utf8');
@@ -468,6 +469,9 @@ async function run() {
       await queryFile(client, migration);
     }
 
+    // The authority migration is defensive and safe to re-run during recovery.
+    await queryFile(client, financialAuthorityMigration);
+
     const legacyResult = await client.query<{ status: string }>(
       'select status from public.settlements where id = $1',
       [legacyIds.settlement],
@@ -538,6 +542,7 @@ async function run() {
             tokenPayloadMutationBlocked: true,
             canonicalRuntimeStatesAcceptedByConstraint: true,
             legacySettlementStatusPreservedWithoutRewrite: true,
+            financialAuthorityMigrationRepeatPassed: true,
           },
         },
         null,

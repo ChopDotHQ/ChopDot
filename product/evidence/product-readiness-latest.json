@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-15T12:41:13.432Z",
+  "generatedAt": "2026-07-16T12:05:26.465Z",
   "validation": {
     "errors": 0,
     "warnings": 10,
     "cards": 25,
     "decisions": 6,
     "decisionContracts": 25,
-    "history": 71,
+    "history": 72,
     "readyOrActive": 21,
     "blocked": 0
   },
@@ -152,10 +152,10 @@
       "title": "Universal Chop Core security architecture",
       "status": "building",
       "readiness": "ready",
-      "reason": "Inventory and close direct financial-table mutation paths.",
+      "reason": "Make payment-state, event, and closeout persistence atomic at the backend command boundary.",
       "score": 10,
       "evidenceQuality": "strong",
-      "nextAction": "Inventory and close direct financial-table mutation paths."
+      "nextAction": "Make payment-state, event, and closeout persistence atomic at the backend command boundary."
     },
     {
       "id": "P-010",

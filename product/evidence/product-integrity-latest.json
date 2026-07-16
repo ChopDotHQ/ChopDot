@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-07-15T12:41:13.432Z",
+  "generatedAt": "2026-07-16T12:05:26.465Z",
   "source": "product/cards.md",
-  "sourceHash": "1949c6f29dcfdcc2734c22fda709831fe372dcc6e81c647c6937ff406d80bf2d",
+  "sourceHash": "d39e082db9f14e8db5b24431d5309978d4f51856deae49a077792d1af17f944f",
   "summary": {
     "errors": 0,
     "warnings": 10,
     "cards": 25,
     "decisions": 6,
     "decisionContracts": 25,
-    "history": 71,
+    "history": 72,
     "readyOrActive": 21,
     "blocked": 0
   },

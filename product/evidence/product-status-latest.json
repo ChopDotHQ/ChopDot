@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-07-15T12:41:13.432Z",
+  "generatedAt": "2026-07-16T12:05:26.465Z",
   "summary": {
     "errors": 0,
     "warnings": 10,
     "cards": 25,
     "decisions": 6,
     "decisionContracts": 25,
-    "history": 71,
+    "history": 72,
     "readyOrActive": 21,
     "blocked": 0
   },

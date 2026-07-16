@@ -15,13 +15,13 @@ ChopDot has a strong written target architecture and a useful executable
 payment-intent reference kernel. It does **not** yet have one enforced Chop Core
 at runtime.
 
-The most important contradiction is at the actor boundary. The Express API
-accepts a caller-controlled `x-user-id` header, permits mutations without that
-header, and does not enforce payer-only or receiver-only transition authority.
-The current browser sends a Supabase user id in that unsigned header rather than
-a bearer token the server verifies. Consequently, the production-shaped API
-does not satisfy the central P-025 invariant that the right authenticated actor
-must perform each money-state command.
+The original assessment found a critical actor-boundary contradiction. The
+current Express API now verifies bearer identity, enforces payer/receiver roles,
+and the database migration chain denies authenticated clients direct mutation
+of settlement, payment, and event tables. The most important remaining runtime
+contradiction is that those valid commands still persist financial state,
+payment rows, audit events, and closeout through separate non-atomic operations,
+while other product surfaces retain independent truth stores.
 
 The repository also contains multiple independent authorities: browser-local
 chapter state, the Express/Postgres settlement model, capture-link state,
@@ -32,8 +32,9 @@ current network routes or guest-link paths safe.
 
 **P-025 runtime conformance: FAIL.**
 **P-025 architecture and reference-kernel quality: PASS WITH LIMITATIONS.**
-**Real shared-money or cross-device launch: NO-GO until server-derived actor
-identity and role authorization exist.**
+**Real shared-money or cross-device launch: NO-GO until atomic command
+persistence, durable payment intents and guest capabilities, and one canonical
+cross-host state authority exist.**
 **Portable host proof with local-only state and bounded claims: acceptable as a
 prototype, not as shared payment truth.**
 
@@ -48,12 +49,13 @@ confirmation, self-only pending-action reads, and attributable audit events.
 The browser sends the access token rather than `x-user-id`; forged identity
 headers are ignored.
 
-This closes the actor-impersonation path at the Express boundary. It does not
-change the overall P-025 verdict because direct database authority, guest-link
-confirmation, non-atomic commands, state-model drift, payment-intent
-persistence, and multiple truth stores remain unresolved. The database-backed
-proof now passes against the Prisma-projected schema but fails against the
-migration-owned schema because its status constraint rejects `paid`.
+This closes the actor-impersonation path at the Express boundary. A subsequent
+2026-07-16 migration also revokes authenticated-client mutation authority from
+settlements, payments, and pot events while preserving member-scoped reads.
+The real migrated-database proof now passes the canonical normal state path and
+the payer/receiver command boundary. P-025 remains incomplete because
+guest-link confirmation, non-atomic commands, exception-state coverage,
+payment-intent persistence, and multiple truth stores remain unresolved.
 
 ## Product And Security Gate
 
@@ -138,7 +140,7 @@ One next action:
 | C-01 | One canonical Chop state | Main app can default to `LocalStorageSource`; Express/Postgres, capture-link storage, Telegram file storage, and portable reducer remain separate authorities. | **Unsafe** | Hosts can present divergent payment truth and closeout state. |
 | C-02 | Surfaces never own final truth | Architecture and portable host contract prohibit this, but browser reducers and chapter stores still perform final local transitions. | **Documented only** | UI/client compromise can become product truth within that surface. |
 | C-03 | Server-derived authenticated actor | Express verifies a Supabase bearer token and derives an immutable principal; browser API calls send the access token. Other local/host stores remain outside one canonical authority. | **Partial** | Express impersonation is blocked; cross-surface identity and canonical-state work remain. |
-| C-04 | Payer-only mark-paid authority | Express resolves active membership and requires `fromMemberId` to match the caller's member id; negative HTTP tests cover forged and wrong-role attempts. Direct table policies remain broad. | **Partial** | Route bypass is blocked, but direct database mutation must still be removed or role-scoped. |
+| C-04 | Payer-only mark-paid authority | Express resolves active membership and requires `fromMemberId` to match the caller's member id; negative HTTP tests cover forged and wrong-role attempts. Authenticated clients no longer have settlement/payment/event mutation grants. | **Enforced** | The reviewed Express/Postgres path rejects wrong-role and direct-table bypasses; other local truth stores remain outside this boundary. |
 | C-05 | Receiver-only confirmation authority | Express requires `toMemberId` to match the caller's member id and preserves paid-unconfirmed state on rejection. Capture links still substitute bearer possession for receiver identity. | **Partial** | Network route confirmation is bounded; guest-link confirmation remains unsafe. |
 | C-06 | Complete state paths | Forward migration `20260714160000_settlement_status_alignment.sql` aligns the migration-owned normal path with `pending`, `paid`, `confirmed` while preserving legacy rows. The real migrated-database actor proof passes. Delayed, waived, disputed, and other target exceptions are still not implemented. | **Partial** | The normal route path works consistently, but the broader P-025 exception model remains incomplete. |
 | C-07 | Backend-owned payment intent | Portable contract and reference kernel define it. Main Prisma schema has no PaymentIntent entity. | **Documented only** | Requests and evidence are not bound to immutable server scope. |
@@ -146,7 +148,7 @@ One next action:
 | C-09 | Scoped, revocable guest capability | Architecture specifies allowed actions, expiry, revocation, and no confirm/close. Capture tokens lack an action list and revocation field; confirm links can invoke confirmation. | **Unsafe** | A bearer capability can exceed its permitted role. |
 | C-10 | High-entropy, server-held link authority | Capture token generation uses `Math.random()` plus a timestamp and localStorage fallback. | **Unsafe** | Tokens are weaker than required and client storage can mint or alter local authority. |
 | C-11 | Role-scoped privacy | Pending actions now require authentication and the path subject must equal the verified principal. Authenticated users can still select all capture-token rows under current policy. | **Unsafe** | Pending-action enumeration is fixed, but capture-token disclosure remains. |
-| C-12 | Role-scoped database mutation | Supabase policies allow any authenticated pot member to insert, update, or delete settlement/payment rows. | **Unsafe** | Membership is treated as authority for every financial role. |
+| C-12 | Role-scoped database mutation | Migration `20260716130000_financial_table_authority_lockdown.sql` removes authenticated settlement/payment/event mutation grants and policies. A migrated-database proof verifies direct writes fail while member reads and backend commands continue. | **Enforced** | Browser membership cannot bypass backend payer/receiver checks on these financial-authority tables. Group and expense capture writes remain a separate product-data boundary. |
 | C-13 | Replay-safe commands | Reference kernel has command replay and version checks. Express has a batch idempotency key, but the key is unique per settlement while one batch writes it to multiple rows. | **Unsafe** | Multi-leg idempotent writes can violate the unique constraint or behave inconsistently. |
 | C-14 | Single-use evidence/token consumption | Local tests cover consumed and expired tokens. Remote consumption performs read then conditional update but does not verify that a row was updated. | **Partial** | Concurrent consumers may both receive a successful resolved result. |
 | C-15 | Atomic mutation and audit event | Reference kernel is atomic in memory. Express updates settlement, creates payment, appends event, counts remaining legs, and closes pot in separate operations. | **Unsafe** | Failures/races can leave state, audit history, and closeout inconsistent. |
@@ -257,7 +259,7 @@ hop today.
 | Settlement lifecycle API | HTTP under `/api/pots/:potId/settlements` | Internet/client -> Express | Verified bearer principal, active membership, payer/receiver authorization, state-order checks | `backend/src/routes/settlements.ts` |
 | Pending actions API | HTTP `/api/users/:userId/pending-actions` | Internet/client -> Express | Verified bearer principal; self-subject only; active membership query | `backend/src/routes/users.ts` |
 | AI receipt parser | HTTP pot-scoped JSON | Internet/client -> Express/LLM | Verified bearer principal and active membership; input bounds and simulated fallback remain open | `backend/src/routes/ai.ts` |
-| Supabase financial tables | Authenticated Supabase client | Browser -> Postgres RLS | Pot membership, not payer/receiver role | `supabase/migrations/20260101100000_member_policies_financial_tables.sql` |
+| Supabase financial tables | Authenticated Supabase client | Browser -> Postgres RLS | Member-scoped settlement/payment reads; no direct settlement/payment/event mutation grant | `supabase/migrations/20260716130000_financial_table_authority_lockdown.sql` |
 | Capture and confirm links | URL token plus local/remote resolution | Bearer link -> browser/Supabase | Expiry and consumed flag; weak actor binding | `src/services/capture/CaptureLinkService.ts` |
 | Telegram chat bot | Telegram update | Telegram -> bot process | Chat allowlist, mutation flag, Telegram sender id | `src/bot/telegramSafety.ts`, `src/bot/telegramBot.ts` |
 | Telegram Mini App | WebView launch and `initDataUnsafe` | Telegram host -> browser | Display hint only; no server verification | Portable `src/environment/index.ts` |
@@ -319,18 +321,20 @@ Impact: High; token payload confidentiality and financial integrity.
    predicate or targets another pot where policy permits.
 2. Before the capture-link migration repair, its select policy used `true`,
    exposing all rows to authenticated users.
-3. Any pot member can still update/delete settlement and payment rows under the
-   current membership-only policies.
+3. Before the 2026-07-16 authority migration, any pot member could update or
+   delete settlement and payment rows under membership-only policies.
 
 Existing control: capture-link rows are now creator/active-member scoped,
 unrelated enumeration is denied, and authenticated updates are limited to
 `consumed_at`.
-Gap: direct settlement/payment table policies still lack role or subject scope,
-and token consumption is not full guest-capability or payment-authority proof.
+Gap: direct settlement/payment/event mutation is now denied to authenticated
+clients. Token consumption is still not full guest-capability or
+payment-authority proof.
 Detection: monitor broad selects and direct table mutations outside command
 procedures.
-Mitigation: revoke direct financial table mutation from clients and expose
-role-checked transactional commands only.
+Mitigation status: **implemented for settlement, payment, and event tables**.
+Role-checked backend commands remain the only reviewed mutation path. Capture
+token capability scope remains separate unfinished work.
 
 ### TM-004: Runtime fails because route states conflict with database constraint
 

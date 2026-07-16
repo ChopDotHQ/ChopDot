@@ -266,6 +266,38 @@ async function run() {
     ],
   );
 
+  const ninaPaid = await request(app)
+    .patch(`/api/pots/${ids.potA}/settlements/${ids.ninaSettlement}/pay`)
+    .set('Authorization', 'Bearer nina-token')
+    .send({ method: 'cash', reference: 'p025-closeout-proof' });
+  assert.equal(ninaPaid.status, 200);
+  assert.equal(await settlementStatus(ids.ninaSettlement), 'paid');
+
+  const ninaConfirmed = await request(app)
+    .patch(`/api/pots/${ids.potA}/settlements/${ids.ninaSettlement}/confirm`)
+    .set('Authorization', 'Bearer mina-token');
+  assert.equal(ninaConfirmed.status, 200);
+  assert.equal(await settlementStatus(ids.ninaSettlement), 'confirmed');
+
+  const closedPot = await prisma.pot.findUniqueOrThrow({ where: { id: ids.potA } });
+  assert.equal(closedPot.status, 'completed');
+  assert.equal(await prisma.payment.count({ where: { settlementId: ids.ninaSettlement } }), 1);
+
+  const closedEvents = await prisma.potEvent.findMany({
+    where: { potId: ids.potA },
+    orderBy: { createdAt: 'asc' },
+  });
+  assert.deepEqual(
+    closedEvents.map((event) => [event.type, event.actorId]),
+    [
+      ['leg_marked_paid', ids.leoUser],
+      ['leg_confirmed', ids.minaUser],
+      ['leg_marked_paid', ids.ninaUser],
+      ['leg_confirmed', ids.minaUser],
+      ['chapter_closed', ids.minaUser],
+    ],
+  );
+
   console.log(
     JSON.stringify(
       {
@@ -281,6 +313,7 @@ async function run() {
           receiverConfirmed: true,
           unrelatedShareRemainedOpen: true,
           auditActorsMatchedVerifiedUsers: true,
+          backendClosedOnlyAfterAllSharesConfirmed: true,
         },
       },
       null,
