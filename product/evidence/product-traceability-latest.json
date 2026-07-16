@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-16T12:05:26.465Z",
+  "generatedAt": "2026-07-16T12:26:30.841Z",
   "validation": {
     "errors": 0,
     "warnings": 10,
-    "cards": 25,
+    "cards": 26,
     "decisions": 6,
-    "decisionContracts": 25,
-    "history": 72,
-    "readyOrActive": 21,
+    "decisionContracts": 26,
+    "history": 75,
+    "readyOrActive": 22,
     "blocked": 0
   },
   "appInventory": {
@@ -107,6 +107,41 @@
         "product/evidence/screenshots/normal-pot-j003-close-record/mobile-04-saved-record.png"
       ],
       "decisionContract": "DC-004"
+    },
+    {
+      "card": "P-026",
+      "title": "Product behavior map and routing system",
+      "journey": "Product and engineering use one proof map to exclude owned work and select the highest-risk unowned journey",
+      "scope": "Management",
+      "module": "product-cockpit",
+      "screens": [
+        "product/generated/product-behavior-dashboard.html",
+        "product/generated/product-routing-queue.md"
+      ],
+      "mappedAppScreens": [],
+      "tests": [
+        "npm run product:behavior-map -- validate",
+        "npm run product:validate"
+      ],
+      "evidence": [
+        "product/path-model.yaml",
+        "product/user-path-map.md",
+        "product/user-path-map.mmd",
+        "product/generated/product-behavior-map.json",
+        "product/generated/product-behavior-map.md",
+        "product/generated/product-routing-queue.json",
+        "product/generated/product-routing-queue.md",
+        "product/generated/product-journey-map.html",
+        "product/generated/product-service-blueprint.html",
+        "product/generated/product-state-transition-map.mmd",
+        "product/generated/product-traceability-matrix.md",
+        "product/generated/product-behavior-dashboard.html",
+        "product/generated/user-path-coverage.json",
+        "product/generated/user-path-coverage.html",
+        "product/evidence/p026-proof-routing-baseline-2026-07-16.md",
+        "product/evidence/p025-p026-canonical-integration-2026-07-16.md"
+      ],
+      "decisionContract": "DC-026"
     },
     {
       "card": "P-005",
@@ -391,6 +426,7 @@
         "docs/security/p025-security-foundation-canonical-integration-2026-07-15.md",
         "docs/security/p025-owner-checkpoint-node22-proof-2026-07-15.md",
         "docs/security/p025-financial-table-authority-lockdown-proof-2026-07-16.md",
+        "product/evidence/p025-p026-canonical-integration-2026-07-16.md",
         "docs/adr/0004-server-derived-payment-actor.md",
         "product/design-references/ai-studio-universal-miniapp-shell-plan-2026-07-01.md"
       ],

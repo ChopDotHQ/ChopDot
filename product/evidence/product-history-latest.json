@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-16T12:05:26.465Z",
-  "count": 72,
+  "generatedAt": "2026-07-16T12:26:30.841Z",
+  "count": 75,
   "events": [
     {
       "id": "H-2026-06-24-cockpit-migration-start",
@@ -1044,6 +1044,34 @@
       "notes": []
     },
     {
+      "id": "H-2026-07-15T13-48-39-p-026-user-path-map-and-deterministic-dead-end-scanner-i",
+      "timestamp": "2026-07-15T13:48:39.486Z",
+      "type": "checkpoint",
+      "summary": "P-026 user path map and deterministic dead-end scanner integrated on canonical P-025 baseline",
+      "cards": [
+        "P-026"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/evidence/p026-user-path-scanner-proof-2026-07-15.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-16T10-51-39-p-026-now-separates-portable-proof-from-canonical-web-ex",
+      "timestamp": "2026-07-16T10:51:39.490Z",
+      "type": "checkpoint",
+      "summary": "P-026 now separates portable proof from canonical web, excludes active lanes, records external blockers, and routes N-007 as the single next unowned journey.",
+      "cards": [
+        "P-026"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/generated/product-routing-queue.json"
+      ],
+      "notes": []
+    },
+    {
       "id": "H-2026-07-16T12-05-26-p-025-direct-settlement-payment-event-and-closeout-mutat",
       "timestamp": "2026-07-16T12:05:26.426Z",
       "type": "checkpoint",
@@ -1054,6 +1082,21 @@
       "roadmap": [],
       "evidence": [
         "docs/security/p025-financial-table-authority-lockdown-proof-2026-07-16.md"
+      ],
+      "notes": []
+    },
+    {
+      "id": "H-2026-07-16T12-26-30-integrated-p-025-authority-lockdown-and-p-026-behavior-m",
+      "timestamp": "2026-07-16T12:26:30.828Z",
+      "type": "checkpoint",
+      "summary": "Integrated P-025 authority lockdown and P-026 behavior-map stack on one canonical review branch",
+      "cards": [
+        "P-025",
+        "P-026"
+      ],
+      "roadmap": [],
+      "evidence": [
+        "product/evidence/p025-p026-canonical-integration-2026-07-16.md"
       ],
       "notes": []
     }

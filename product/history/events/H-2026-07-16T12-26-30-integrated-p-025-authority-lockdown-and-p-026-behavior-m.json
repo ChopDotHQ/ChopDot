@@ -1,0 +1,15 @@
+{
+  "id": "H-2026-07-16T12-26-30-integrated-p-025-authority-lockdown-and-p-026-behavior-m",
+  "timestamp": "2026-07-16T12:26:30.828Z",
+  "type": "checkpoint",
+  "summary": "Integrated P-025 authority lockdown and P-026 behavior-map stack on one canonical review branch",
+  "cards": [
+    "P-025",
+    "P-026"
+  ],
+  "roadmap": [],
+  "evidence": [
+    "product/evidence/p025-p026-canonical-integration-2026-07-16.md"
+  ],
+  "notes": []
+}

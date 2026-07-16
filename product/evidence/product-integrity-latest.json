@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-07-16T12:05:26.465Z",
+  "generatedAt": "2026-07-16T12:26:30.841Z",
   "source": "product/cards.md",
-  "sourceHash": "d39e082db9f14e8db5b24431d5309978d4f51856deae49a077792d1af17f944f",
+  "sourceHash": "dd92eb1d438fe466c434c48841100e23f5fa5cd7bb6915aa46b05e5426770e7d",
   "summary": {
     "errors": 0,
     "warnings": 10,
-    "cards": 25,
+    "cards": 26,
     "decisions": 6,
-    "decisionContracts": 25,
-    "history": 72,
-    "readyOrActive": 21,
+    "decisionContracts": 26,
+    "history": 75,
+    "readyOrActive": 22,
     "blocked": 0
   },
   "issues": [

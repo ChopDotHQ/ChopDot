@@ -2,7 +2,7 @@
 
 # ChopDot Agent Context
 
-Generated: 2026-07-16T12:03:38.665Z
+Generated: 2026-07-16T12:18:48.344Z
 
 Use this as a routing map. Follow links to source truth before changing code or making claims.
 
@@ -66,6 +66,7 @@ Use this as a routing map. Follow links to source truth before changing code or 
 - `docs/wiki/06-agentops/build-loop.md` — Agent Build Loop (current)
 - `docs/wiki/06-agentops/failure-modes.md` — Agent Failure Modes (current)
 - `docs/wiki/06-agentops/review-loop.md` — Agent Review Loop (current)
+- `docs/wiki/06-agentops/user-path-coverage.md` — User Path Coverage (current)
 
 ### Quality
 

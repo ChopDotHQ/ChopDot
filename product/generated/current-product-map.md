@@ -6,7 +6,7 @@
 
 - Cards: 26
 - Decisions: 6
-- History events: 73
+- History events: 75
 - Validation: 0 error(s), 10 warning(s)
 
 ## Cards

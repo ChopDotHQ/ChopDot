@@ -2,7 +2,7 @@
 
 # ChopDot Wiki Index
 
-Generated: 2026-07-16T12:03:38.660Z
+Generated: 2026-07-16T12:18:48.343Z
 
 This index is a read model for humans and agents. Edit source pages, not this file.
 
@@ -56,6 +56,7 @@ This index is a read model for humans and agents. Edit source pages, not this fi
 | [Agent Build Loop](../../docs/wiki/06-agentops/build-loop.md) | current | Dev | 2026-07-06 | `agentops`, `build-loop` | `AGENTS.md`<br>`product/journey-review-plan.md`<br>`docs/CHOPDOT_OPERATING_LOOPS.md`<br>`docs/wiki/08-context-intake/context-intake.md` |
 | [Agent Failure Modes](../../docs/wiki/06-agentops/failure-modes.md) | current | Dev | 2026-07-05 | `agentops`, `failure-modes` | `docs/AGENT_DOCTRINE_FEEDBACK.md`<br>`product/ai-manager/ai-product-management-adoption.md` |
 | [Agent Review Loop](../../docs/wiki/06-agentops/review-loop.md) | current | Dev | 2026-07-05 | `agentops`, `review-loop` | `product/journey-review-plan.md`<br>`product/agent-reviews/P-009-normal-pot-agent-ui-audit.md` |
+| [User Path Coverage](../../docs/wiki/06-agentops/user-path-coverage.md) | current | Dev | 2026-07-16 | `agentops`, `product-cockpit`, `user-path-map` | `product/user-path-map.md`<br>`product/user-path-map.mmd`<br>`product/generated/product-routing-queue.md`<br>`product/cards.md` |
 | [Hard Path QA](../../docs/wiki/07-quality/hard-path-qa.md) | current | Dev | 2026-07-05 | `quality`, `qa` | `product/product-principles.md`<br>`product/journey-review-plan.md` |
 | [Release Checklist](../../docs/wiki/07-quality/release-checklist.md) | draft | Dev | 2026-07-05 | `quality`, `release` | `product/generated/readiness-scorecard.md`<br>`product/board-policy.md` |
 | [Testing Strategy](../../docs/wiki/07-quality/testing-strategy.md) | current | Dev | 2026-07-05 | `quality`, `testing` | `product/journey-review-plan.md`<br>`product/generated/feature-to-test-coverage.md` |

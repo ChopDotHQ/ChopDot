@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-16T11:53:55.675Z",
+  "generatedAt": "2026-07-16T12:26:28.991Z",
   "singleNextUnowned": {
     "id": "N-007",
     "title": "Payer cannot pay now",
@@ -940,8 +940,8 @@
       },
       "freshness": {
         "status": "fresh",
-        "checkedAt": "2026-07-16T11:53:55.675Z",
-        "ageHours": 0,
+        "checkedAt": "2026-07-16T12:26:28.991Z",
+        "ageHours": 0.5,
         "maxAgeHours": 168
       }
     },
@@ -982,8 +982,8 @@
       },
       "freshness": {
         "status": "fresh",
-        "checkedAt": "2026-07-16T11:53:55.675Z",
-        "ageHours": 11.9,
+        "checkedAt": "2026-07-16T12:26:28.991Z",
+        "ageHours": 12.4,
         "maxAgeHours": 168
       }
     },
@@ -1009,8 +1009,8 @@
       },
       "freshness": {
         "status": "fresh",
-        "checkedAt": "2026-07-16T11:53:55.675Z",
-        "ageHours": 11.9,
+        "checkedAt": "2026-07-16T12:26:28.991Z",
+        "ageHours": 12.4,
         "maxAgeHours": 168
       }
     }
@@ -1096,7 +1096,7 @@
     }
   ],
   "validation": {
-    "generatedAt": "2026-07-16T11:53:55.675Z",
+    "generatedAt": "2026-07-16T12:26:28.991Z",
     "summary": {
       "errors": 0,
       "warnings": 0

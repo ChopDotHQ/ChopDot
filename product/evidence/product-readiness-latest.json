@@ -1,18 +1,18 @@
 {
-  "generatedAt": "2026-07-16T12:05:26.465Z",
+  "generatedAt": "2026-07-16T12:26:30.841Z",
   "validation": {
     "errors": 0,
     "warnings": 10,
-    "cards": 25,
+    "cards": 26,
     "decisions": 6,
-    "decisionContracts": 25,
-    "history": 72,
-    "readyOrActive": 21,
+    "decisionContracts": 26,
+    "history": 75,
+    "readyOrActive": 22,
     "blocked": 0
   },
   "summary": {
-    "cards": 25,
-    "activeOrReady": 21,
+    "cards": 26,
+    "activeOrReady": 22,
     "blocked": 0,
     "readyForPilot": 15
   },
@@ -56,6 +56,16 @@
       "score": 9,
       "evidenceQuality": "strong",
       "nextAction": "Show what is confirmed, delayed, waived, or still open before closing."
+    },
+    {
+      "id": "P-026",
+      "title": "Product behavior map and routing system",
+      "status": "building",
+      "readiness": "ready",
+      "reason": "Route N-007 Payer cannot pay now to an implementation owner; do not implement it in P-026.",
+      "score": 10,
+      "evidenceQuality": "strong",
+      "nextAction": "Route N-007 Payer cannot pay now to an implementation owner; do not implement it in P-026."
     },
     {
       "id": "P-005",
