@@ -22,6 +22,18 @@ P-026 permission to edit another lane's worktree or implementation surface.
 - Stale ownership is quarantined as `stale_owner` until explicit release or
   reassignment is recorded.
 
+## Programme A viewport proof checkpoint
+
+- Commit: `e8505cb test(dot-host): validate focused input viewport proof`
+- Owner location: `/Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial`
+- Evidence: `proof/dot-host-focused-input-viewport-2026-07-16.md`
+- Report: `proof/portable-shell-dot-host/report.json`
+- Accepted scope: live 22-step `.dot` journey, reload persistence, focused
+  amount/title entry within the 390x844 viewport, screenshot validation, and
+  missing-host-paint rejection.
+- Boundary: this evidence changes no product or money semantics and does not
+  promote portable-shell files into P-026.
+
 ## Evidence policy
 
 External worktree evidence remains at its owner location. P-026 stores stable

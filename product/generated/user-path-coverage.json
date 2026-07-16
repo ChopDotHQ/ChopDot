@@ -1840,19 +1840,20 @@
       ],
       "note": "Programme A owns portable-shell behavior and host proof. P-026 consumes its evidence only.",
       "checkpoint": {
-        "recordedAt": "2026-07-16T00:00:00Z",
+        "recordedAt": "2026-07-16T11:53:55.455Z",
         "sourceThread": "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e",
         "evidenceRefs": [
           "EV-PORTABLE-85BE5AF",
-          "EV-LANE-SYNC-20260716"
+          "EV-LANE-SYNC-20260716",
+          "EV-PORTABLE-E8505CB"
         ],
         "scopeLock": "portable-shell-and-host-proof-only",
         "releasePolicy": "explicit_owner_release_or_coordination_reassignment"
       },
       "freshness": {
         "status": "fresh",
-        "checkedAt": "2026-07-16T11:48:42.644Z",
-        "ageHours": 11.8,
+        "checkedAt": "2026-07-16T11:53:55.675Z",
+        "ageHours": 0,
         "maxAgeHours": 168
       }
     },
@@ -1893,8 +1894,8 @@
       },
       "freshness": {
         "status": "fresh",
-        "checkedAt": "2026-07-16T11:48:42.644Z",
-        "ageHours": 11.8,
+        "checkedAt": "2026-07-16T11:53:55.675Z",
+        "ageHours": 11.9,
         "maxAgeHours": 168
       }
     },
@@ -1920,8 +1921,8 @@
       },
       "freshness": {
         "status": "fresh",
-        "checkedAt": "2026-07-16T11:48:42.644Z",
-        "ageHours": 11.8,
+        "checkedAt": "2026-07-16T11:53:55.675Z",
+        "ageHours": 11.9,
         "maxAgeHours": 168
       }
     }
@@ -1979,6 +1980,21 @@
         "P-025 retains canonical-root integration ownership until its baseline promotion decision completes.",
         "P-026 owns map-and-route coordination only and does not implement N-007."
       ]
+    },
+    {
+      "id": "EV-PORTABLE-E8505CB",
+      "type": "live_dot_focused_input_viewport_proof",
+      "commit": "e8505cb",
+      "location": "/Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/proof/dot-host-focused-input-viewport-2026-07-16.md",
+      "acceptedClaims": [
+        "The live 22-step .dot journey passes with reload persistence.",
+        "Focused amount and title entry keeps the iframe and Review split within the 390x844 viewport.",
+        "The proof runner validates viewport screenshots and rejects missing host paint."
+      ],
+      "excludedClaims": [
+        "Any product or money semantic changed.",
+        "Portable-shell source is promoted into P-026 or canonical-root product code."
+      ]
     }
   ],
   "routingContract": {
@@ -1994,7 +2010,7 @@
     "duplicateWorkRule": "Paths marked active_elsewhere or stale_owner are excluded from this task's recommendation queue.",
     "stopCondition": "P-026 maps and routes the next journey; it does not implement that journey."
   },
-  "generatedAt": "2026-07-16T11:48:42.644Z",
+  "generatedAt": "2026-07-16T11:53:55.675Z",
   "paths": [
     {
       "id": "N-001",
@@ -6167,7 +6183,7 @@
     ]
   },
   "validation": {
-    "generatedAt": "2026-07-16T11:48:42.644Z",
+    "generatedAt": "2026-07-16T11:53:55.675Z",
     "summary": {
       "errors": 0,
       "warnings": 0
