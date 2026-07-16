@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:p026-routing": "node scripts/test-p026-routing.mjs",
     "test:watch": "vitest",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",

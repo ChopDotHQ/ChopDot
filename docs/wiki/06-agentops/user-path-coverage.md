@@ -57,6 +57,7 @@ This is an internal product/operator artifact. It is not normal-user UI.
 npm run product:path-map
 npm run product:behavior-map -- validate
 npm run product:p026:validate
+npm run test:p026-routing
 npm run product:refresh
 npm run product:validate
 ```
@@ -90,6 +91,10 @@ An expired checkpoint changes owned paths to `stale_owner`. That is a
 quarantine state, not an ownership release: the paths remain excluded from the
 unowned recommendation queue until the owner explicitly releases them or a
 coordination decision reassigns them.
+
+An ownership release is append-only lane metadata under `releases` and SHALL
+name the path, decision ID, decision timestamp, and supporting evidence. Merely
+deleting a checkpoint or allowing it to expire cannot release a path.
 
 ## Review question
 

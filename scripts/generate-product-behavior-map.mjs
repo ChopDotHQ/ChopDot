@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const repoRoot = process.cwd();
 const sourcePath = resolve(repoRoot, 'product/path-model.yaml');
@@ -15,7 +16,7 @@ if (!validCommands.has(command)) {
   process.exit(1);
 }
 
-main();
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
 
 function main() {
   mkdirSync(generatedDir, { recursive: true });
@@ -42,8 +43,13 @@ function enrichModel(model) {
   const generatedAt = new Date().toISOString();
   const activeLanes = (model.activeLanes ?? []).map((lane) => enrichLane(lane, model.coordinationContract, generatedAt));
   const activeLaneByPath = new Map();
+  const releasedLaneByPath = new Map();
   for (const lane of activeLanes) {
-    for (const pathId of lane.paths ?? []) activeLaneByPath.set(pathId, lane);
+    const releasedPathIds = new Set((lane.releases ?? []).map((release) => release.pathId));
+    for (const release of lane.releases ?? []) releasedLaneByPath.set(release.pathId, lane);
+    for (const pathId of lane.paths ?? []) {
+      if (!releasedPathIds.has(pathId)) activeLaneByPath.set(pathId, lane);
+    }
   }
   const journeys = model.journeys ?? [];
   const allPaths = journeys.flatMap((journey) => (journey.paths ?? []).map((path) => ({ ...path, journeyId: journey.id, journeyTitle: journey.title })));
@@ -57,15 +63,20 @@ function enrichModel(model) {
   }
   const paths = allPaths.map((path) => {
     const activeLane = activeLaneByPath.get(path.id);
-    const laneStatus = activeLane?.freshness.status === 'stale'
-      ? model.coordinationContract?.stalePathStatus ?? 'stale_owner'
-      : path.laneStatus ?? 'unowned';
+    const releasedLane = releasedLaneByPath.get(path.id);
+    const laneStatus = releasedLane
+      ? 'unowned'
+      : activeLane?.freshness.status === 'stale'
+        ? model.coordinationContract?.stalePathStatus ?? 'stale_owner'
+        : activeLane
+          ? activeLane.status
+          : path.laneStatus ?? 'unowned';
     return {
       ...path,
       deadEnds: (deadEndsByPath.get(path.id) ?? []).map((deadEnd) => deadEnd.id),
       risk: chooseRisk(deadEndsByPath.get(path.id) ?? []),
       laneStatus,
-      recommendedForThisThread: laneStatus === 'unowned' && path.recommendedForThisThread !== false,
+      recommendedForThisThread: laneStatus === 'unowned' && (releasedLane ? true : path.recommendedForThisThread !== false),
       activeOwner: activeLane ? {
         card: activeLane.card,
         lane: activeLane.id,
@@ -246,7 +257,18 @@ function validate(model) {
     }
     if (lane.freshness?.status === 'missing_or_invalid') addIssue('error', lane.id, 'invalid-lane-freshness', `${lane.id} has no parseable checkpoint timestamp.`);
     if (lane.freshness?.status === 'stale') addIssue('warning', lane.id, 'stale-lane-owner', `${lane.id} is stale and remains quarantined; its paths are not unowned or recommendable.`);
+    const releasedPathIds = new Set();
+    for (const release of lane.releases ?? []) {
+      if (!release.pathId || !release.decidedAt || !release.decisionId) addIssue('error', lane.id, 'incomplete-ownership-release', `${lane.id} has an incomplete ownership release.`);
+      if (!(lane.paths ?? []).includes(release.pathId)) addIssue('error', lane.id, 'release-outside-lane', `${lane.id} cannot release ${release.pathId} because the lane does not own it.`);
+      if (releasedPathIds.has(release.pathId)) addIssue('error', lane.id, 'duplicate-ownership-release', `${lane.id} releases ${release.pathId} more than once.`);
+      releasedPathIds.add(release.pathId);
+      for (const evidenceRef of release.evidenceRefs ?? []) {
+        if (!proofBaselineIds.has(evidenceRef)) addIssue('error', lane.id, 'unknown-release-evidence', `${lane.id} release ${release.decisionId} references unknown evidence ${evidenceRef}.`);
+      }
+    }
     for (const pathId of lane.paths ?? []) {
+      if (releasedPathIds.has(pathId)) continue;
       if (!pathIds.has(pathId)) addIssue('error', lane.id, 'unknown-active-lane-path', `${lane.id} references unknown path ${pathId}.`);
       if (assignedPaths.has(pathId)) addIssue('error', lane.id, 'duplicate-active-lane-path', `${pathId} is assigned to both ${assignedPaths.get(pathId)} and ${lane.id}.`);
       assignedPaths.set(pathId, lane.id);
@@ -521,3 +543,5 @@ function printSummary(model, validation) {
   console.log('routing queue: product/generated/product-routing-queue.md');
   for (const issue of validation.issues) console.log(`${issue.severity.toUpperCase()} ${issue.subject}/${issue.code}: ${issue.message}`);
 }
+
+export { enrichModel, validate };

@@ -60,9 +60,9 @@
 
 | Lane | Card | Status | Freshness | Age / max hours | Source | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| programme-a-portable-shell-host-proof | P-022 | active_elsewhere | fresh | 11.4 / 168 | codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e | EV-PORTABLE-85BE5AF, EV-LANE-SYNC-20260716 |
-| p025-canonical-integration | P-025 | active_elsewhere | fresh | 11.4 / 168 | codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572 | EV-LANE-SYNC-20260716 |
-| p026-proof-map-routing | P-026 | owned_here | fresh | 11.4 / 168 | codex://threads/019f17aa-0547-7f53-907d-624cc443a64c | EV-LANE-SYNC-20260716 |
+| programme-a-portable-shell-host-proof | P-022 | active_elsewhere | fresh | 11.8 / 168 | codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e | EV-PORTABLE-85BE5AF, EV-LANE-SYNC-20260716 |
+| p025-canonical-integration | P-025 | active_elsewhere | fresh | 11.8 / 168 | codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572 | EV-LANE-SYNC-20260716 |
+| p026-proof-map-routing | P-026 | owned_here | fresh | 11.8 / 168 | codex://threads/019f17aa-0547-7f53-907d-624cc443a64c | EV-LANE-SYNC-20260716 |
 
 ## Proof baselines
 
