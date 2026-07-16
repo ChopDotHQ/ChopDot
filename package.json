@@ -13,6 +13,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "product:behavior-map": "node scripts/generate-product-behavior-map.mjs",
     "product:path-map": "node scripts/generate-product-behavior-map.mjs",
+    "product:p026:validate": "node scripts/generate-product-behavior-map.mjs validate",
     "product:refresh": "npm run product:path-map -- refresh && node scripts/chopdot-product-cockpit.mjs refresh",
     "product:validate": "npm run product:path-map -- validate && node scripts/chopdot-product-cockpit.mjs validate && node scripts/validate-journey-reviews.mjs && npm run wiki:validate",
     "product:query": "node scripts/chopdot-product-cockpit.mjs query",

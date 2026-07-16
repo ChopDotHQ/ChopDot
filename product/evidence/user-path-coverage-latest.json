@@ -1,5 +1,5 @@
 {
-  "version": "2.1",
+  "version": "2.2",
   "name": "ChopDot product behavior, proof, and routing map",
   "purpose": "One structured source for user behavior, surface-scoped proof, lane ownership, duplicate-work exclusion, and the next highest-risk unowned journey.",
   "statusVocabulary": {
@@ -1803,6 +1803,7 @@
     "status": [
       "proven",
       "active_elsewhere",
+      "stale_owner",
       "blocked_external",
       "unowned",
       "deferred",
@@ -1810,7 +1811,17 @@
       "owned_here",
       "done"
     ],
-    "rule": "Every path has one routing category. Only unowned paths may be recommended for this task; proof remains surface-scoped."
+    "rule": "Every path has one routing category. Only unowned paths may be recommended for this task; stale ownership remains quarantined until an explicit release or reassignment; proof remains surface-scoped."
+  },
+  "coordinationContract": {
+    "defaultMaxAgeHours": 168,
+    "checkpointRequiredForStatuses": [
+      "active_elsewhere",
+      "owned_here"
+    ],
+    "stalePathStatus": "stale_owner",
+    "stalePathRule": "A stale checkpoint never makes a path unowned. It remains excluded until the recorded owner releases it or a coordination decision reassigns it.",
+    "evidenceReferencePolicy": "Evidence from another worktree is registry metadata and read-only. P-026 validation does not require copying external proof artifacts into this sparse worktree."
   },
   "activeLanes": [
     {
@@ -1827,7 +1838,23 @@
       "deadEnds": [
         "D-001"
       ],
-      "note": "Programme A owns portable-shell behavior and host proof. P-026 consumes its evidence only."
+      "note": "Programme A owns portable-shell behavior and host proof. P-026 consumes its evidence only.",
+      "checkpoint": {
+        "recordedAt": "2026-07-16T00:00:00Z",
+        "sourceThread": "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e",
+        "evidenceRefs": [
+          "EV-PORTABLE-85BE5AF",
+          "EV-LANE-SYNC-20260716"
+        ],
+        "scopeLock": "portable-shell-and-host-proof-only",
+        "releasePolicy": "explicit_owner_release_or_coordination_reassignment"
+      },
+      "freshness": {
+        "status": "fresh",
+        "checkedAt": "2026-07-16T11:24:29.328Z",
+        "ageHours": 11.4,
+        "maxAgeHours": 168
+      }
     },
     {
       "id": "p025-canonical-integration",
@@ -1854,17 +1881,49 @@
         "D-010",
         "D-012"
       ],
-      "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+      "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation.",
+      "checkpoint": {
+        "recordedAt": "2026-07-16T00:00:00Z",
+        "sourceThread": "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572",
+        "evidenceRefs": [
+          "EV-LANE-SYNC-20260716"
+        ],
+        "scopeLock": "canonical-root-and-p025-integration-only",
+        "releasePolicy": "canonical_baseline_promotion_decision_then_explicit_release"
+      },
+      "freshness": {
+        "status": "fresh",
+        "checkedAt": "2026-07-16T11:24:29.328Z",
+        "ageHours": 11.4,
+        "maxAgeHours": 168
+      }
     },
     {
       "id": "p026-proof-map-routing",
       "status": "owned_here",
       "card": "P-026",
       "worktree": "/Users/devinsonpena/ChopDot/.worktrees/p026-user-path-scanner",
-      "threads": [],
+      "threads": [
+        "codex://threads/019f17aa-0547-7f53-907d-624cc443a64c"
+      ],
       "paths": [],
       "deadEnds": [],
-      "note": "This task owns structured proof mapping, generated queues, lane exclusions, and unowned-next routing only."
+      "note": "This task owns structured proof mapping, generated queues, lane exclusions, and unowned-next routing only.",
+      "checkpoint": {
+        "recordedAt": "2026-07-16T00:00:00Z",
+        "sourceThread": "codex://threads/019f17aa-0547-7f53-907d-624cc443a64c",
+        "evidenceRefs": [
+          "EV-LANE-SYNC-20260716"
+        ],
+        "scopeLock": "proof-map-routing-and-coordination-only",
+        "releasePolicy": "explicit_owner_release_or_coordination_reassignment"
+      },
+      "freshness": {
+        "status": "fresh",
+        "checkedAt": "2026-07-16T11:24:29.328Z",
+        "ageHours": 11.4,
+        "maxAgeHours": 168
+      }
     }
   ],
   "proofBaselines": [
@@ -1910,21 +1969,32 @@
         "Legacy/root D-019 as a portable-shell defect.",
         "Any product implementation change from the dirty root."
       ]
+    },
+    {
+      "id": "EV-LANE-SYNC-20260716",
+      "type": "coordination_checkpoint_registry",
+      "location": "product/evidence/p026-lane-coordination-checkpoints-2026-07-16.md",
+      "acceptedClaims": [
+        "Programme A retains portable-shell and host-proof ownership.",
+        "P-025 retains canonical-root integration ownership until its baseline promotion decision completes.",
+        "P-026 owns map-and-route coordination only and does not implement N-007."
+      ]
     }
   ],
   "routingContract": {
     "categories": [
       "proven",
       "active_elsewhere",
+      "stale_owner",
       "blocked_external",
       "highest_risk_unowned"
     ],
     "singleNextUnownedPath": "N-007",
     "proofScopeRule": "Proof is surface-scoped. Portable-shell evidence never promotes canonical/root web automatically.",
-    "duplicateWorkRule": "Paths marked active_elsewhere are excluded from this task's recommendation queue.",
+    "duplicateWorkRule": "Paths marked active_elsewhere or stale_owner are excluded from this task's recommendation queue.",
     "stopCondition": "P-026 maps and routes the next journey; it does not implement that journey."
   },
-  "generatedAt": "2026-07-16T10:51:16.829Z",
+  "generatedAt": "2026-07-16T11:24:29.328Z",
   "paths": [
     {
       "id": "N-001",
@@ -4910,6 +4980,7 @@
           "risk": "unreviewed"
         }
       ],
+      "staleOwners": [],
       "blockedExternal": [
         {
           "id": "N-008",
@@ -6096,7 +6167,7 @@
     ]
   },
   "validation": {
-    "generatedAt": "2026-07-16T10:51:16.829Z",
+    "generatedAt": "2026-07-16T11:24:29.328Z",
     "summary": {
       "errors": 0,
       "warnings": 0

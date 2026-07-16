@@ -47,6 +47,11 @@
 | N-021 Guest opens link | normal-pot | guest | portable_proven_canonical_active | strong_portable_host | unreviewed | active_elsewhere |
 | N-022 Wrong actor attempts restricted action | normal-pot | guest | partly_mitigated_backend_unproven_ui | partial | unreviewed | active_elsewhere |
 
+## Stale owner - quarantined, do not reassign
+
+| Path | Journey | Actor | Implementation | Proof | Risk | Lane |
+| --- | --- | --- | --- | --- | --- | --- |
+
 ## Blocked external
 
 | Path | Journey | Actor | Implementation | Proof | Risk | Lane |

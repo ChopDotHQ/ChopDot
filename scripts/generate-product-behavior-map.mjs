@@ -39,6 +39,12 @@ function readModel() {
 }
 
 function enrichModel(model) {
+  const generatedAt = new Date().toISOString();
+  const activeLanes = (model.activeLanes ?? []).map((lane) => enrichLane(lane, model.coordinationContract, generatedAt));
+  const activeLaneByPath = new Map();
+  for (const lane of activeLanes) {
+    for (const pathId of lane.paths ?? []) activeLaneByPath.set(pathId, lane);
+  }
   const journeys = model.journeys ?? [];
   const allPaths = journeys.flatMap((journey) => (journey.paths ?? []).map((path) => ({ ...path, journeyId: journey.id, journeyTitle: journey.title })));
   const deadEnds = model.deadEnds ?? [];
@@ -49,15 +55,45 @@ function enrichModel(model) {
       deadEndsByPath.get(pathId).push(deadEnd);
     }
   }
-  const paths = allPaths.map((path) => ({
-    ...path,
-    deadEnds: (deadEndsByPath.get(path.id) ?? []).map((deadEnd) => deadEnd.id),
-    risk: chooseRisk(deadEndsByPath.get(path.id) ?? []),
-    laneStatus: path.laneStatus ?? 'unowned',
-    recommendedForThisThread: path.recommendedForThisThread ?? path.laneStatus !== 'active_elsewhere',
-  }));
-  const summary = buildSummary(model, paths, deadEnds);
-  return { ...model, generatedAt: new Date().toISOString(), paths, summary };
+  const paths = allPaths.map((path) => {
+    const activeLane = activeLaneByPath.get(path.id);
+    const laneStatus = activeLane?.freshness.status === 'stale'
+      ? model.coordinationContract?.stalePathStatus ?? 'stale_owner'
+      : path.laneStatus ?? 'unowned';
+    return {
+      ...path,
+      deadEnds: (deadEndsByPath.get(path.id) ?? []).map((deadEnd) => deadEnd.id),
+      risk: chooseRisk(deadEndsByPath.get(path.id) ?? []),
+      laneStatus,
+      recommendedForThisThread: laneStatus === 'unowned' && path.recommendedForThisThread !== false,
+      activeOwner: activeLane ? {
+        card: activeLane.card,
+        lane: activeLane.id,
+        threads: activeLane.threads ?? [],
+        note: path.activeOwner?.note ?? activeLane.note,
+      } : path.activeOwner,
+    };
+  });
+  const enrichedModel = { ...model, generatedAt, activeLanes };
+  const summary = buildSummary(enrichedModel, paths, deadEnds);
+  return { ...enrichedModel, paths, summary };
+}
+
+function enrichLane(lane, contract = {}, generatedAt) {
+  const maxAgeHours = lane.checkpoint?.maxAgeHours ?? contract.defaultMaxAgeHours ?? 168;
+  const checkpointMs = Date.parse(lane.checkpoint?.recordedAt ?? '');
+  const generatedMs = Date.parse(generatedAt);
+  const ageHours = Number.isFinite(checkpointMs) ? Math.max(0, (generatedMs - checkpointMs) / 3_600_000) : null;
+  const status = ageHours === null ? 'missing_or_invalid' : ageHours > maxAgeHours ? 'stale' : 'fresh';
+  return {
+    ...lane,
+    freshness: {
+      status,
+      checkedAt: generatedAt,
+      ageHours: ageHours === null ? null : Math.round(ageHours * 10) / 10,
+      maxAgeHours,
+    },
+  };
 }
 
 
@@ -69,6 +105,7 @@ function buildSummary(model, paths, deadEnds) {
     || ['known_gap', 'not_built', 'built_wrong_order', 'built_ambiguous', 'not_built_or_unproven'].includes(path.implementationStatus);
   const proven = paths.filter((path) => path.laneStatus === 'proven').sort((a, b) => String(a.id).localeCompare(String(b.id)));
   const activeElsewhere = paths.filter((path) => path.laneStatus === 'active_elsewhere').sort(compareRecommendation);
+  const staleOwners = paths.filter((path) => path.laneStatus === 'stale_owner').sort(compareRecommendation);
   const blockedExternal = paths.filter((path) => path.laneStatus === 'blocked_external').sort(compareRecommendation);
   const highestRiskUnowned = paths
     .filter((path) => path.laneStatus === 'unowned')
@@ -76,7 +113,7 @@ function buildSummary(model, paths, deadEnds) {
     .filter(isRiskCandidate)
     .sort(compareRecommendation)
     .slice(0, 12);
-  const queue = { proven, activeElsewhere, blockedExternal, highestRiskUnowned };
+  const queue = { proven, activeElsewhere, staleOwners, blockedExternal, highestRiskUnowned };
   return {
     journeys: journeys.length,
     futureJourneys: futureJourneys.length,
@@ -161,6 +198,7 @@ function validate(model) {
   const pillarIds = new Set((model.pillars ?? []).map((pillar) => pillar.id));
   const surfaceIds = new Set((model.surfaces ?? []).map((surface) => surface.id));
   const validLaneStatuses = new Set(model.laneVocabulary?.status ?? []);
+  const proofBaselineIds = new Set((model.proofBaselines ?? []).map((baseline) => baseline.id));
   const pathIds = new Set();
   const deadEndIds = new Set((model.deadEnds ?? []).map((deadEnd) => deadEnd.id));
 
@@ -182,7 +220,7 @@ function validate(model) {
     }
     if (!validLaneStatuses.has(path.laneStatus)) addIssue('error', path.id, 'unknown-lane-status', `${path.id} uses unknown lane status ${path.laneStatus}.`);
     if (path.laneStatus !== 'unowned' && path.recommendedForThisThread !== false) addIssue('error', path.id, 'unsafe-recommendation', `${path.id} is ${path.laneStatus} but remains recommended.`);
-    if (path.laneStatus === 'active_elsewhere' && !path.activeOwner?.lane) addIssue('error', path.id, 'missing-active-owner', `${path.id} is active elsewhere without an owner lane.`);
+    if (['active_elsewhere', 'stale_owner'].includes(path.laneStatus) && !path.activeOwner?.lane) addIssue('error', path.id, 'missing-active-owner', `${path.id} is owner-controlled without an owner lane.`);
     if (path.laneStatus === 'blocked_external' && !path.blocker?.reason) addIssue('error', path.id, 'missing-external-blocker', `${path.id} is externally blocked without a reason.`);
     if (path.laneStatus === 'proven' && !(path.evidenceRefs ?? []).length) addIssue('error', path.id, 'missing-proven-evidence', `${path.id} is proven without evidence refs.`);
   }
@@ -199,6 +237,15 @@ function validate(model) {
   const assignedPaths = new Map();
   for (const lane of model.activeLanes ?? []) {
     if (!lane.id || !lane.status || !lane.card) addIssue('error', lane.id || 'lane', 'incomplete-active-lane', 'Active lane is missing id, status, or card.');
+    const checkpointRequired = (model.coordinationContract?.checkpointRequiredForStatuses ?? []).includes(lane.status);
+    if (checkpointRequired && !lane.checkpoint?.recordedAt) addIssue('error', lane.id, 'missing-lane-checkpoint', `${lane.id} requires a recorded checkpoint.`);
+    if (checkpointRequired && !lane.checkpoint?.sourceThread) addIssue('error', lane.id, 'missing-checkpoint-source', `${lane.id} requires a source thread.`);
+    if (checkpointRequired && !lane.checkpoint?.releasePolicy) addIssue('error', lane.id, 'missing-release-policy', `${lane.id} requires an explicit release policy.`);
+    for (const evidenceRef of lane.checkpoint?.evidenceRefs ?? []) {
+      if (!proofBaselineIds.has(evidenceRef)) addIssue('error', lane.id, 'unknown-checkpoint-evidence', `${lane.id} references unknown checkpoint evidence ${evidenceRef}.`);
+    }
+    if (lane.freshness?.status === 'missing_or_invalid') addIssue('error', lane.id, 'invalid-lane-freshness', `${lane.id} has no parseable checkpoint timestamp.`);
+    if (lane.freshness?.status === 'stale') addIssue('warning', lane.id, 'stale-lane-owner', `${lane.id} is stale and remains quarantined; its paths are not unowned or recommendable.`);
     for (const pathId of lane.paths ?? []) {
       if (!pathIds.has(pathId)) addIssue('error', lane.id, 'unknown-active-lane-path', `${lane.id} references unknown path ${pathId}.`);
       if (assignedPaths.has(pathId)) addIssue('error', lane.id, 'duplicate-active-lane-path', `${pathId} is assigned to both ${assignedPaths.get(pathId)} and ${lane.id}.`);
@@ -237,6 +284,7 @@ function writeOutputs(model, validation) {
     singleNextUnowned: model.summary.singleNextUnowned,
     queue: model.summary.queue,
     activeLanes: model.activeLanes,
+    coordinationContract: model.coordinationContract,
     proofBaselines: model.proofBaselines,
     validation,
   }, null, 2) + '\n';
@@ -267,6 +315,7 @@ function renderRoutingQueueMarkdown(model, validation) {
   for (const [label, key] of [
     ['Proven', 'proven'],
     ['Active elsewhere - do not duplicate', 'activeElsewhere'],
+    ['Stale owner - quarantined, do not reassign', 'staleOwners'],
     ['Blocked external', 'blockedExternal'],
     ['Highest-risk unowned', 'highestRiskUnowned'],
   ]) {
@@ -274,13 +323,19 @@ function renderRoutingQueueMarkdown(model, validation) {
     lines.push('| Path | Journey | Implementation | Proof | Risk | Lane | Evidence/owner |');
     lines.push('| --- | --- | --- | --- | --- | --- | --- |');
     for (const path of model.summary.queue[key]) {
-      const evidenceOrOwner = path.laneStatus === 'active_elsewhere'
+      const evidenceOrOwner = ['active_elsewhere', 'stale_owner'].includes(path.laneStatus)
         ? `${path.activeOwner?.lane ?? ''} ${(path.activeOwner?.threads ?? []).join(', ')}`
         : path.laneStatus === 'blocked_external'
           ? path.blocker?.reason ?? ''
           : (path.evidenceRefs ?? []).join(', ');
       lines.push(`| ${path.id} ${pipe(path.title)} | ${path.journeyId} | ${path.implementationStatus} | ${path.proofStatus} | ${path.risk} | ${path.laneStatus} | ${pipe(evidenceOrOwner)} |`);
     }
+  }
+  lines.push('', '## Lane checkpoints', '');
+  lines.push('| Lane | Card | Status | Freshness | Age / max hours | Source | Evidence |');
+  lines.push('| --- | --- | --- | --- | --- | --- | --- |');
+  for (const lane of model.activeLanes ?? []) {
+    lines.push(`| ${lane.id} | ${lane.card} | ${lane.status} | ${lane.freshness?.status ?? 'unknown'} | ${lane.freshness?.ageHours ?? 'n/a'} / ${lane.freshness?.maxAgeHours ?? 'n/a'} | ${pipe(lane.checkpoint?.sourceThread)} | ${pipe((lane.checkpoint?.evidenceRefs ?? []).join(', '))} |`);
   }
   lines.push('', '## Proof baselines', '');
   for (const baseline of model.proofBaselines ?? []) lines.push(`- ${baseline.id}: ${baseline.type} ${baseline.commit ?? baseline.location ?? ''}`);
@@ -304,6 +359,7 @@ function renderBehaviorMarkdown(model, validation) {
   for (const [label, key] of [
     ['Proven', 'proven'],
     ['Active elsewhere - do not duplicate', 'activeElsewhere'],
+    ['Stale owner - quarantined, do not reassign', 'staleOwners'],
     ['Blocked external', 'blockedExternal'],
     ['Highest-risk unowned', 'highestRiskUnowned'],
   ]) {
@@ -391,6 +447,10 @@ function renderDashboardHtml(model, validation) {
     ${table(model.summary.queue.proven.map((path) => ({ path: `${path.id} ${path.title}`, journey: path.journeyId, proof: path.proofStatus, scope: path.proofScope, evidence: (path.evidenceRefs ?? []).join(', ') })), ['path', 'journey', 'proof', 'scope', 'evidence'])}
     <h2>Active elsewhere - do not duplicate</h2>
     ${table(model.summary.queue.activeElsewhere.map((path) => ({ path: `${path.id} ${path.title}`, journey: path.journeyId, lane: path.activeOwner?.lane, ownerCard: path.activeOwner?.card, threads: (path.activeOwner?.threads ?? []).join(', ') })), ['path', 'journey', 'lane', 'ownerCard', 'threads'])}
+    <h2>Stale owner - quarantined, do not reassign</h2>
+    ${table(model.summary.queue.staleOwners.map((path) => ({ path: `${path.id} ${path.title}`, journey: path.journeyId, lane: path.activeOwner?.lane, ownerCard: path.activeOwner?.card, threads: (path.activeOwner?.threads ?? []).join(', ') })), ['path', 'journey', 'lane', 'ownerCard', 'threads'])}
+    <h2>Lane checkpoints</h2>
+    ${table((model.activeLanes ?? []).map((lane) => ({ lane: lane.id, card: lane.card, status: lane.status, freshness: lane.freshness?.status, ageHours: lane.freshness?.ageHours, maxAgeHours: lane.freshness?.maxAgeHours, source: lane.checkpoint?.sourceThread })), ['lane', 'card', 'status', 'freshness', 'ageHours', 'maxAgeHours', 'source'])}
     <h2>Blocked external</h2>
     ${table(model.summary.queue.blockedExternal.map((path) => ({ path: `${path.id} ${path.title}`, journey: path.journeyId, blocker: path.blocker?.reason, evidence: (path.evidenceRefs ?? []).join(', ') })), ['path', 'journey', 'blocker', 'evidence'])}
     <h2>Highest-risk unowned</h2>
@@ -451,6 +511,7 @@ function printSummary(model, validation) {
   console.log(`dead ends: ${model.summary.deadEnds}`);
   console.log(`proven: ${model.summary.queue.proven.length}`);
   console.log(`active elsewhere: ${model.summary.queue.activeElsewhere.length}`);
+  console.log(`stale owners: ${model.summary.queue.staleOwners.length}`);
   console.log(`blocked external: ${model.summary.queue.blockedExternal.length}`);
   console.log(`highest-risk unowned: ${model.summary.queue.highestRiskUnowned.length}`);
   console.log(`single next unowned: ${model.summary.singleNextUnowned?.id ?? 'none'}`);

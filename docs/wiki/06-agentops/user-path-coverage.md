@@ -2,7 +2,7 @@
 title: User Path Coverage
 status: current
 owner: Dev
-last_reviewed: 2026-07-15
+last_reviewed: 2026-07-16
 review_frequency: weekly
 source_of_truth: false
 related_code:
@@ -56,6 +56,7 @@ This is an internal product/operator artifact. It is not normal-user UI.
 ```bash
 npm run product:path-map
 npm run product:behavior-map -- validate
+npm run product:p026:validate
 npm run product:refresh
 npm run product:validate
 ```
@@ -67,6 +68,10 @@ the product cockpit.
 surface, evidence, blocker, recommendation, and active-lane invariants; use
 `refresh` to rewrite read models deliberately.
 
+`npm run product:p026:validate` is the sparse-worktree-safe P-026 gate. It
+validates the structured behavior map and coordination registry without
+requiring external proof artifacts to be copied from their owner worktrees.
+
 ## Operating rule
 
 When proof or ownership changes, update the structured model with:
@@ -76,9 +81,15 @@ When proof or ownership changes, update the structured model with:
 - surface status
 - evidence links
 - lane status and active owner
+- owner checkpoint, evidence refs, release policy, and freshness window
 - any dead-end register changes
 
 Then run the product refresh so the coverage view updates from source.
+
+An expired checkpoint changes owned paths to `stale_owner`. That is a
+quarantine state, not an ownership release: the paths remain excluded from the
+unowned recommendation queue until the owner explicitly releases them or a
+coordination decision reassigns them.
 
 ## Review question
 

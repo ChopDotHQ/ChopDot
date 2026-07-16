@@ -33,6 +33,11 @@
 | N-021 Guest opens link | normal-pot | portable_proven_canonical_active | strong_portable_host | unreviewed | active_elsewhere | p025-canonical-integration codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572 |
 | N-022 Wrong actor attempts restricted action | normal-pot | partly_mitigated_backend_unproven_ui | partial | unreviewed | active_elsewhere | p025-canonical-integration codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572 |
 
+## Stale owner - quarantined, do not reassign
+
+| Path | Journey | Implementation | Proof | Risk | Lane | Evidence/owner |
+| --- | --- | --- | --- | --- | --- | --- |
+
 ## Blocked external
 
 | Path | Journey | Implementation | Proof | Risk | Lane | Evidence/owner |
@@ -51,8 +56,17 @@
 | N-016 Add member before or around request | normal-pot | not_built_or_unproven | missing | high | unowned |  |
 | N-017 Remove member before or around request | normal-pot | not_built_or_unproven | missing | high | unowned |  |
 
+## Lane checkpoints
+
+| Lane | Card | Status | Freshness | Age / max hours | Source | Evidence |
+| --- | --- | --- | --- | --- | --- | --- |
+| programme-a-portable-shell-host-proof | P-022 | active_elsewhere | fresh | 11.4 / 168 | codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e | EV-PORTABLE-85BE5AF, EV-LANE-SYNC-20260716 |
+| p025-canonical-integration | P-025 | active_elsewhere | fresh | 11.4 / 168 | codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572 | EV-LANE-SYNC-20260716 |
+| p026-proof-map-routing | P-026 | owned_here | fresh | 11.4 / 168 | codex://threads/019f17aa-0547-7f53-907d-624cc443a64c | EV-LANE-SYNC-20260716 |
+
 ## Proof baselines
 
 - EV-PORTABLE-07936CD: portable_shell_source_and_local_proof 07936cde23a4de5aa1779c17616897021792a41c
 - EV-PORTABLE-85BE5AF: live_portable_host_proof 85be5af
 - EV-LEGACY-ROOT-REFERENCE: read_only_reference /Users/devinsonpena/ChopDot
+- EV-LANE-SYNC-20260716: coordination_checkpoint_registry product/evidence/p026-lane-coordination-checkpoints-2026-07-16.md
