@@ -1,0 +1,1927 @@
+{
+  "version": "2.1",
+  "name": "ChopDot product behavior, proof, and routing map",
+  "purpose": "One structured source for user behavior, surface-scoped proof, lane ownership, duplicate-work exclusion, and the next highest-risk unowned journey.",
+  "statusVocabulary": {
+    "implementation": [
+      "built",
+      "unproven",
+      "not_built",
+      "known_gap",
+      "built_wrong_order",
+      "built_ambiguous",
+      "lane_mismatch",
+      "not_built_or_unproven",
+      "partly_mitigated_backend_unproven_ui"
+    ],
+    "proof": [
+      "missing",
+      "partial",
+      "reviewed",
+      "automated",
+      "strong"
+    ],
+    "surface": [
+      "works",
+      "known_gap",
+      "unknown",
+      "not_started",
+      "not_applicable",
+      "partial"
+    ]
+  },
+  "pillars": [
+    {
+      "id": "catch",
+      "title": "Catch",
+      "summary": "Capture the money moment without forcing manual accounting first."
+    },
+    {
+      "id": "management",
+      "title": "Management",
+      "summary": "Keep group state, roles, and next actions honest."
+    },
+    {
+      "id": "payout",
+      "title": "Payout",
+      "summary": "Help the right person pay the right amount by the right rail."
+    },
+    {
+      "id": "history",
+      "title": "History",
+      "summary": "Close only with a readable saved record."
+    }
+  ],
+  "surfaces": [
+    {
+      "id": "web",
+      "title": "Canonical/root web",
+      "role": "Canonical integration surface; portable proof does not automatically promote this surface."
+    },
+    {
+      "id": "portable_web",
+      "title": "Portable web shell",
+      "role": "Track 1 portable-shell baseline exercised independently from canonical/root web."
+    },
+    {
+      "id": "telegram",
+      "title": "Telegram mini-app",
+      "role": "portable shell distribution surface"
+    },
+    {
+      "id": "dot_paseo",
+      "title": ".dot Paseo",
+      "role": "Polkadot host and native-capability proof surface"
+    },
+    {
+      "id": "circles_gnosis",
+      "title": "Circles/Gnosis",
+      "role": "future CRC and community-money adapter"
+    }
+  ],
+  "actors": [
+    {
+      "id": "mina",
+      "title": "Mina",
+      "role": "organizer_receiver",
+      "coreQuestions": [
+        "What happened?",
+        "Who owes what?",
+        "Who needs my action?",
+        "Can this close safely?"
+      ]
+    },
+    {
+      "id": "leo",
+      "title": "Leo",
+      "role": "payer",
+      "coreQuestions": [
+        "Who am I paying?",
+        "How much do I owe?",
+        "Am I done or waiting for Mina?"
+      ]
+    },
+    {
+      "id": "nina",
+      "title": "Nina",
+      "role": "second_payer",
+      "coreQuestions": [
+        "What is my amount?",
+        "What is my action?",
+        "What group context do I need?"
+      ]
+    },
+    {
+      "id": "guest",
+      "title": "Guest",
+      "role": "no_app_payer",
+      "coreQuestions": [
+        "Is this for me?",
+        "What can I do without installing the app?",
+        "What can I not do?"
+      ]
+    }
+  ],
+  "states": [
+    {
+      "id": "no_group",
+      "group": "entry",
+      "title": "No group",
+      "meaning": "No Chop exists yet."
+    },
+    {
+      "id": "group_open_empty",
+      "group": "catch",
+      "title": "Open empty group",
+      "meaning": "A group exists but no money moment is captured."
+    },
+    {
+      "id": "group_open_expense_captured",
+      "group": "catch",
+      "title": "Expense captured",
+      "meaning": "At least one expense exists and the group can still change."
+    },
+    {
+      "id": "split_review",
+      "group": "management",
+      "title": "Split review",
+      "meaning": "Mina is checking who owes what before a request."
+    },
+    {
+      "id": "payment_request_sent",
+      "group": "payout",
+      "title": "Payment request sent",
+      "meaning": "A request snapshot was shared. It is not a lock."
+    },
+    {
+      "id": "payer_viewing_amount_due",
+      "group": "payout",
+      "title": "Payer viewing amount due",
+      "meaning": "Payer sees amount, receiver, and next action."
+    },
+    {
+      "id": "payment_started",
+      "group": "payout",
+      "title": "Payment started",
+      "meaning": "A payment path started but is not settled."
+    },
+    {
+      "id": "payment_pending_receiver_confirmation",
+      "group": "management",
+      "title": "Waiting for receiver confirmation",
+      "meaning": "Payer acted or evidence exists; receiver has not confirmed."
+    },
+    {
+      "id": "payment_confirmed",
+      "group": "management",
+      "title": "Payment confirmed",
+      "meaning": "Receiver confirmed the exact item."
+    },
+    {
+      "id": "partial",
+      "group": "management",
+      "title": "Partial payment",
+      "meaning": "Only part of an obligation has arrived."
+    },
+    {
+      "id": "delayed",
+      "group": "management",
+      "title": "Delayed",
+      "meaning": "Item is intentionally deferred."
+    },
+    {
+      "id": "waived",
+      "group": "management",
+      "title": "Waived",
+      "meaning": "Receiver/organizer intentionally forgave the amount."
+    },
+    {
+      "id": "disputed",
+      "group": "management",
+      "title": "Disputed",
+      "meaning": "Amount, payer, receiver, or evidence is contested."
+    },
+    {
+      "id": "group_open_new_balance",
+      "group": "management",
+      "title": "New open balance",
+      "meaning": "Group changed after a request, requiring review/follow-up."
+    },
+    {
+      "id": "all_items_resolved",
+      "group": "history",
+      "title": "All items resolved",
+      "meaning": "Every item is confirmed, delayed, waived, or annotated."
+    },
+    {
+      "id": "record_saved",
+      "group": "history",
+      "title": "Record saved",
+      "meaning": "The group has closed into readable history."
+    }
+  ],
+  "journeys": [
+    {
+      "id": "normal-pot",
+      "title": "Normal pot",
+      "pillarSequence": [
+        "catch",
+        "management",
+        "payout",
+        "history"
+      ],
+      "scenario": "Mina captures a shared money moment, requests payment, tracks what remains open, confirms what arrived, and closes with a readable saved record.",
+      "status": "building",
+      "ownerCard": "P-026",
+      "paths": [
+        {
+          "id": "N-001",
+          "title": "Start normal pot",
+          "actor": "mina",
+          "pillar": "catch",
+          "entryState": "no_group",
+          "action": "start_group",
+          "resultState": "group_open_empty",
+          "terminal": false,
+          "ownerCards": [
+            "P-022",
+            "P-001"
+          ],
+          "implementationStatus": "built_portable_shell",
+          "proofStatus": "strong_portable_host",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "works",
+            "telegram": "works",
+            "dot_paseo": "works",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "proven",
+          "recommendedForThisThread": false,
+          "evidenceRefs": [
+            "EV-PORTABLE-07936CD",
+            "EV-PORTABLE-85BE5AF"
+          ],
+          "proofScope": "portable_shell_only"
+        },
+        {
+          "id": "N-002",
+          "title": "Add first expense",
+          "actor": "mina",
+          "pillar": "catch",
+          "entryState": "group_open_empty",
+          "action": "add_first_expense",
+          "resultState": "group_open_expense_captured",
+          "terminal": false,
+          "ownerCards": [
+            "P-022",
+            "P-001"
+          ],
+          "implementationStatus": "built_portable_shell",
+          "proofStatus": "strong_portable_host",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "works",
+            "telegram": "works",
+            "dot_paseo": "works",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "proven",
+          "recommendedForThisThread": false,
+          "evidenceRefs": [
+            "EV-PORTABLE-07936CD",
+            "EV-PORTABLE-85BE5AF"
+          ],
+          "proofScope": "portable_shell_only"
+        },
+        {
+          "id": "N-003",
+          "title": "Add another expense before request",
+          "actor": "mina",
+          "pillar": "catch",
+          "entryState": "group_open_expense_captured",
+          "action": "add_another_expense_before_request",
+          "resultState": "group_open_expense_captured",
+          "terminal": false,
+          "ownerCards": [
+            "P-022",
+            "P-001"
+          ],
+          "implementationStatus": "unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "unowned",
+          "recommendedForThisThread": true
+        },
+        {
+          "id": "N-004",
+          "title": "Review or edit split",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "group_open_expense_captured",
+          "action": "review_or_edit_split",
+          "resultState": "split_review",
+          "terminal": false,
+          "ownerCards": [
+            "P-022"
+          ],
+          "implementationStatus": "built_portable_shell",
+          "proofStatus": "strong_portable_host",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "works",
+            "telegram": "works",
+            "dot_paseo": "works",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "proven",
+          "recommendedForThisThread": false,
+          "evidenceRefs": [
+            "EV-PORTABLE-07936CD",
+            "EV-PORTABLE-85BE5AF"
+          ],
+          "proofScope": "portable_shell_only"
+        },
+        {
+          "id": "N-005",
+          "title": "Send payment request",
+          "actor": "mina",
+          "pillar": "payout",
+          "entryState": "split_review",
+          "action": "send_payment_request",
+          "resultState": "payment_request_sent",
+          "terminal": false,
+          "ownerCards": [
+            "P-022",
+            "P-002"
+          ],
+          "implementationStatus": "built_portable_shell",
+          "proofStatus": "strong_portable_host",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "works",
+            "telegram": "works",
+            "dot_paseo": "works",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "proven",
+          "recommendedForThisThread": false,
+          "evidenceRefs": [
+            "EV-PORTABLE-07936CD",
+            "EV-PORTABLE-85BE5AF"
+          ],
+          "proofScope": "portable_shell_only"
+        },
+        {
+          "id": "N-006",
+          "title": "Payer opens request",
+          "actor": "leo",
+          "pillar": "payout",
+          "entryState": "payment_request_sent",
+          "action": "open_payment_request",
+          "resultState": "payer_viewing_amount_due",
+          "terminal": false,
+          "ownerCards": [
+            "P-002",
+            "P-022"
+          ],
+          "implementationStatus": "built_portable_shell",
+          "proofStatus": "strong_portable_host",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "works",
+            "telegram": "works",
+            "dot_paseo": "works",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "proven",
+          "recommendedForThisThread": false,
+          "evidenceRefs": [
+            "EV-PORTABLE-07936CD",
+            "EV-PORTABLE-85BE5AF"
+          ],
+          "proofScope": "portable_shell_only"
+        },
+        {
+          "id": "N-007",
+          "title": "Payer cannot pay now",
+          "actor": "leo",
+          "pillar": "management",
+          "entryState": "payer_viewing_amount_due",
+          "action": "cannot_pay_now",
+          "resultState": "delayed",
+          "terminal": false,
+          "ownerCards": [
+            "P-002",
+            "P-004",
+            "P-022"
+          ],
+          "implementationStatus": "not_built",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "unowned",
+          "recommendedForThisThread": true,
+          "routePriority": 1,
+          "routingNote": "Single next unowned product journey after active-lane and external-blocker exclusions."
+        },
+        {
+          "id": "N-008",
+          "title": "Payer starts native/app payment",
+          "actor": "leo",
+          "pillar": "payout",
+          "entryState": "payer_viewing_amount_due",
+          "action": "start_payment",
+          "resultState": "payment_started",
+          "terminal": false,
+          "ownerCards": [
+            "P-002",
+            "P-023",
+            "P-024",
+            "P-025"
+          ],
+          "implementationStatus": "partial_portable_external_gate",
+          "proofStatus": "partial",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "partial",
+            "telegram": "not_applicable",
+            "dot_paseo": "partial",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "blocked_external",
+          "recommendedForThisThread": false,
+          "blocker": {
+            "kind": "external",
+            "reason": "Live Product Account login and live-device native convergence require a runnable external client and host capability.",
+            "evidenceRefs": [
+              "EV-PORTABLE-85BE5AF"
+            ]
+          },
+          "evidenceRefs": [
+            "EV-PORTABLE-85BE5AF"
+          ]
+        },
+        {
+          "id": "N-009",
+          "title": "Payer marks paid or evidence observed",
+          "actor": "leo",
+          "pillar": "payout",
+          "entryState": "payer_viewing_amount_due",
+          "action": "pay_or_mark_paid",
+          "resultState": "payment_pending_receiver_confirmation",
+          "terminal": false,
+          "ownerCards": [
+            "P-002",
+            "P-003",
+            "P-025"
+          ],
+          "implementationStatus": "portable_proven_canonical_active",
+          "proofStatus": "strong_portable_host",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "works",
+            "telegram": "works",
+            "dot_paseo": "works",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "active_elsewhere",
+          "recommendedForThisThread": false,
+          "activeOwner": {
+            "card": "P-025",
+            "lane": "p025-canonical-integration",
+            "threads": [
+              "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+            ],
+            "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+          },
+          "evidenceRefs": [
+            "EV-PORTABLE-07936CD",
+            "EV-PORTABLE-85BE5AF"
+          ],
+          "proofScope": "portable_shell_only"
+        },
+        {
+          "id": "N-010",
+          "title": "Partial payment",
+          "actor": "leo",
+          "pillar": "management",
+          "entryState": "payer_viewing_amount_due",
+          "action": "pay_partial_amount",
+          "resultState": "partial",
+          "terminal": false,
+          "ownerCards": [
+            "P-002",
+            "P-003",
+            "P-025"
+          ],
+          "implementationStatus": "not_built",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "active_elsewhere",
+          "recommendedForThisThread": false,
+          "activeOwner": {
+            "card": "P-025",
+            "lane": "p025-canonical-integration",
+            "threads": [
+              "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+            ],
+            "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+          }
+        },
+        {
+          "id": "N-011",
+          "title": "Wrong amount, receiver, or currency",
+          "actor": "leo",
+          "pillar": "management",
+          "entryState": "payment_started",
+          "action": "submit_mismatched_payment",
+          "resultState": "disputed",
+          "terminal": false,
+          "ownerCards": [
+            "P-003",
+            "P-023",
+            "P-024",
+            "P-025"
+          ],
+          "implementationStatus": "lane_mismatch",
+          "proofStatus": "partial",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "active_elsewhere",
+          "recommendedForThisThread": false,
+          "activeOwner": {
+            "card": "P-025",
+            "lane": "p025-canonical-integration",
+            "threads": [
+              "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+            ],
+            "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+          }
+        },
+        {
+          "id": "N-012",
+          "title": "Receiver confirms payment",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "payment_pending_receiver_confirmation",
+          "action": "confirm_received",
+          "resultState": "payment_confirmed",
+          "terminal": false,
+          "ownerCards": [
+            "P-003",
+            "P-004",
+            "P-025"
+          ],
+          "implementationStatus": "portable_proven_canonical_active",
+          "proofStatus": "strong_portable_host",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "works",
+            "telegram": "works",
+            "dot_paseo": "works",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "active_elsewhere",
+          "recommendedForThisThread": false,
+          "activeOwner": {
+            "card": "P-025",
+            "lane": "p025-canonical-integration",
+            "threads": [
+              "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+            ],
+            "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+          },
+          "evidenceRefs": [
+            "EV-PORTABLE-07936CD",
+            "EV-PORTABLE-85BE5AF"
+          ],
+          "proofScope": "portable_shell_only"
+        },
+        {
+          "id": "N-013",
+          "title": "Receiver marks not received",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "payment_pending_receiver_confirmation",
+          "action": "mark_not_received",
+          "resultState": "disputed",
+          "terminal": false,
+          "ownerCards": [
+            "P-003",
+            "P-022",
+            "P-025"
+          ],
+          "implementationStatus": "not_built",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "active_elsewhere",
+          "recommendedForThisThread": false,
+          "activeOwner": {
+            "card": "P-025",
+            "lane": "p025-canonical-integration",
+            "threads": [
+              "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+            ],
+            "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+          }
+        },
+        {
+          "id": "N-014",
+          "title": "Add forgotten expense after request sent",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "payment_request_sent",
+          "action": "add_forgotten_expense",
+          "resultState": "group_open_new_balance",
+          "terminal": false,
+          "ownerCards": [
+            "P-022",
+            "P-003",
+            "P-004"
+          ],
+          "implementationStatus": "known_gap",
+          "proofStatus": "partial",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "known_gap",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "active_elsewhere",
+          "recommendedForThisThread": false,
+          "activeOwner": {
+            "card": "P-022",
+            "lane": "programme-a-portable-shell-host-proof",
+            "threads": [
+              "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e"
+            ],
+            "note": "Programme A owns portable-shell behavior and host proof. P-026 consumes its evidence only."
+          },
+          "evidenceRefs": [
+            "EV-PORTABLE-07936CD"
+          ],
+          "proofScope": "portable_local_regression_only"
+        },
+        {
+          "id": "N-015",
+          "title": "Send follow-up request after balance changes",
+          "actor": "mina",
+          "pillar": "payout",
+          "entryState": "group_open_new_balance",
+          "action": "send_follow_up_request",
+          "resultState": "payment_request_sent",
+          "terminal": false,
+          "ownerCards": [
+            "P-022",
+            "P-002",
+            "P-025"
+          ],
+          "implementationStatus": "not_built_or_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "unowned",
+          "recommendedForThisThread": true,
+          "routePriority": 5
+        },
+        {
+          "id": "N-016",
+          "title": "Add member before or around request",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "split_review",
+          "action": "add_member",
+          "resultState": "split_review",
+          "terminal": false,
+          "ownerCards": [
+            "P-022"
+          ],
+          "implementationStatus": "not_built_or_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "unowned",
+          "recommendedForThisThread": true,
+          "routePriority": 6
+        },
+        {
+          "id": "N-017",
+          "title": "Remove member before or around request",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "split_review",
+          "action": "remove_member",
+          "resultState": "split_review",
+          "terminal": false,
+          "ownerCards": [
+            "P-022"
+          ],
+          "implementationStatus": "not_built_or_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "unowned",
+          "recommendedForThisThread": true,
+          "routePriority": 7
+        },
+        {
+          "id": "N-018",
+          "title": "Waive amount",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "payment_request_sent",
+          "action": "waive_amount",
+          "resultState": "waived",
+          "terminal": false,
+          "ownerCards": [
+            "P-004",
+            "P-022"
+          ],
+          "implementationStatus": "not_built",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "unowned",
+          "recommendedForThisThread": true,
+          "routePriority": 2
+        },
+        {
+          "id": "N-019",
+          "title": "Mark delayed",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "payment_request_sent",
+          "action": "mark_delayed",
+          "resultState": "delayed",
+          "terminal": false,
+          "ownerCards": [
+            "P-004",
+            "P-022"
+          ],
+          "implementationStatus": "not_built",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "unowned",
+          "recommendedForThisThread": true,
+          "routePriority": 3
+        },
+        {
+          "id": "N-020",
+          "title": "Payer returns after delay",
+          "actor": "leo",
+          "pillar": "payout",
+          "entryState": "delayed",
+          "action": "return_and_pay",
+          "resultState": "payment_pending_receiver_confirmation",
+          "terminal": false,
+          "ownerCards": [
+            "P-002",
+            "P-003",
+            "P-022"
+          ],
+          "implementationStatus": "not_built",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "unowned",
+          "recommendedForThisThread": true,
+          "routePriority": 4
+        },
+        {
+          "id": "N-021",
+          "title": "Guest opens link",
+          "actor": "guest",
+          "pillar": "payout",
+          "entryState": "payment_request_sent",
+          "action": "open_guest_link",
+          "resultState": "payer_viewing_amount_due",
+          "terminal": false,
+          "ownerCards": [
+            "P-002",
+            "P-025"
+          ],
+          "implementationStatus": "portable_proven_canonical_active",
+          "proofStatus": "strong_portable_host",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "works",
+            "telegram": "works",
+            "dot_paseo": "works",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "active_elsewhere",
+          "recommendedForThisThread": false,
+          "activeOwner": {
+            "card": "P-025",
+            "lane": "p025-canonical-integration",
+            "threads": [
+              "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+            ],
+            "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+          },
+          "evidenceRefs": [
+            "EV-PORTABLE-07936CD",
+            "EV-PORTABLE-85BE5AF"
+          ],
+          "proofScope": "portable_shell_only"
+        },
+        {
+          "id": "N-022",
+          "title": "Wrong actor attempts restricted action",
+          "actor": "guest",
+          "pillar": "management",
+          "entryState": "payment_request_sent",
+          "action": "attempt_restricted_action",
+          "resultState": "payment_request_sent",
+          "terminal": false,
+          "ownerCards": [
+            "P-025"
+          ],
+          "implementationStatus": "partly_mitigated_backend_unproven_ui",
+          "proofStatus": "partial",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "unknown",
+            "telegram": "unknown",
+            "dot_paseo": "unknown",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "active_elsewhere",
+          "recommendedForThisThread": false,
+          "activeOwner": {
+            "card": "P-025",
+            "lane": "p025-canonical-integration",
+            "threads": [
+              "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+            ],
+            "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+          }
+        },
+        {
+          "id": "N-023",
+          "title": "Close record",
+          "actor": "mina",
+          "pillar": "history",
+          "entryState": "all_items_resolved",
+          "action": "close_record",
+          "resultState": "record_saved",
+          "terminal": true,
+          "ownerCards": [
+            "P-004",
+            "P-022"
+          ],
+          "implementationStatus": "portable_proven_canonical_active",
+          "proofStatus": "strong_portable_host",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "works",
+            "telegram": "works",
+            "dot_paseo": "works",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "active_elsewhere",
+          "recommendedForThisThread": false,
+          "activeOwner": {
+            "card": "P-025",
+            "lane": "p025-canonical-integration",
+            "threads": [
+              "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+            ],
+            "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+          },
+          "evidenceRefs": [
+            "EV-PORTABLE-07936CD",
+            "EV-PORTABLE-85BE5AF"
+          ],
+          "proofScope": "portable_shell_only"
+        },
+        {
+          "id": "N-024",
+          "title": "Return to saved record",
+          "actor": "mina",
+          "pillar": "history",
+          "entryState": "record_saved",
+          "action": "return_to_history",
+          "resultState": "record_saved",
+          "terminal": true,
+          "ownerCards": [
+            "P-004"
+          ],
+          "implementationStatus": "portable_proven_canonical_active",
+          "proofStatus": "strong_portable_host",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "works",
+            "telegram": "works",
+            "dot_paseo": "works",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "active_elsewhere",
+          "recommendedForThisThread": false,
+          "activeOwner": {
+            "card": "P-025",
+            "lane": "p025-canonical-integration",
+            "threads": [
+              "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+            ],
+            "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+          },
+          "evidenceRefs": [
+            "EV-PORTABLE-07936CD",
+            "EV-PORTABLE-85BE5AF"
+          ],
+          "proofScope": "portable_shell_only"
+        }
+      ]
+    },
+    {
+      "id": "receipt-capture",
+      "title": "Receipt and spend capture",
+      "status": "deferred_not_current_portable_baseline",
+      "ownerCard": "P-027",
+      "paths": [
+        {
+          "id": "C-001",
+          "title": "Start capture from paid moment",
+          "actor": "mina",
+          "pillar": "catch",
+          "entryState": "no_group",
+          "action": "start_capture_from_paid_moment",
+          "resultState": "group_open_empty",
+          "terminal": false,
+          "ownerCards": [
+            "P-001",
+            "P-012",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-002",
+          "title": "Capture receipt photo",
+          "actor": "mina",
+          "pillar": "catch",
+          "entryState": "group_open_empty",
+          "action": "capture_receipt_photo",
+          "resultState": "group_open_expense_captured",
+          "terminal": false,
+          "ownerCards": [
+            "P-001",
+            "P-012",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-003",
+          "title": "Receipt OCR fails",
+          "actor": "mina",
+          "pillar": "catch",
+          "entryState": "group_open_empty",
+          "action": "receipt_ocr_fails",
+          "resultState": "group_open_empty",
+          "terminal": false,
+          "ownerCards": [
+            "P-012",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-004",
+          "title": "Review extracted amount and merchant",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "group_open_expense_captured",
+          "action": "review_extracted_amount_and_merchant",
+          "resultState": "split_review",
+          "terminal": false,
+          "ownerCards": [
+            "P-001",
+            "P-012",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-005",
+          "title": "Correct wrong extraction before request",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "split_review",
+          "action": "correct_wrong_extraction_before_request",
+          "resultState": "split_review",
+          "terminal": false,
+          "ownerCards": [
+            "P-012",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-006",
+          "title": "Spend card transaction arrives first",
+          "actor": "mina",
+          "pillar": "catch",
+          "entryState": "no_group",
+          "action": "spend_card_transaction_arrives_first",
+          "resultState": "group_open_expense_captured",
+          "terminal": false,
+          "ownerCards": [
+            "P-005",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-007",
+          "title": "Receipt arrives after spend transaction",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "group_open_expense_captured",
+          "action": "attach_receipt_after_spend_transaction",
+          "resultState": "group_open_expense_captured",
+          "terminal": false,
+          "ownerCards": [
+            "P-005",
+            "P-012",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-008",
+          "title": "Receipt amount conflicts with spend amount",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "group_open_expense_captured",
+          "action": "resolve_receipt_spend_amount_conflict",
+          "resultState": "disputed",
+          "terminal": false,
+          "ownerCards": [
+            "P-005",
+            "P-012",
+            "P-025",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-009",
+          "title": "Duplicate receipt detected",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "group_open_expense_captured",
+          "action": "detect_duplicate_receipt",
+          "resultState": "group_open_expense_captured",
+          "terminal": false,
+          "ownerCards": [
+            "P-012",
+            "P-025",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-010",
+          "title": "Itemized split from receipt",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "split_review",
+          "action": "assign_receipt_items_to_members",
+          "resultState": "split_review",
+          "terminal": false,
+          "ownerCards": [
+            "P-001",
+            "P-012",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-011",
+          "title": "Tip tax or service charge split",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "split_review",
+          "action": "split_tip_tax_service_charge",
+          "resultState": "split_review",
+          "terminal": false,
+          "ownerCards": [
+            "P-001",
+            "P-012",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-012",
+          "title": "Send request from reviewed capture",
+          "actor": "mina",
+          "pillar": "payout",
+          "entryState": "split_review",
+          "action": "send_request_from_reviewed_capture",
+          "resultState": "payment_request_sent",
+          "terminal": false,
+          "ownerCards": [
+            "P-002",
+            "P-022",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-013",
+          "title": "Add receipt after request sent",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "payment_request_sent",
+          "action": "add_receipt_after_request_sent",
+          "resultState": "group_open_new_balance",
+          "terminal": false,
+          "ownerCards": [
+            "P-012",
+            "P-022",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-014",
+          "title": "Payer disputes receipt item",
+          "actor": "leo",
+          "pillar": "management",
+          "entryState": "payer_viewing_amount_due",
+          "action": "dispute_receipt_item",
+          "resultState": "disputed",
+          "terminal": false,
+          "ownerCards": [
+            "P-002",
+            "P-012",
+            "P-025",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-015",
+          "title": "Capture contains private or sensitive item",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "group_open_expense_captured",
+          "action": "redact_sensitive_capture_detail",
+          "resultState": "split_review",
+          "terminal": false,
+          "ownerCards": [
+            "P-012",
+            "P-025",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-016",
+          "title": "Offline capture later syncs",
+          "actor": "mina",
+          "pillar": "catch",
+          "entryState": "group_open_empty",
+          "action": "capture_offline_then_sync",
+          "resultState": "group_open_expense_captured",
+          "terminal": false,
+          "ownerCards": [
+            "P-001",
+            "P-012",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-017",
+          "title": "Spend reversal or refund after request",
+          "actor": "mina",
+          "pillar": "management",
+          "entryState": "payment_request_sent",
+          "action": "handle_spend_reversal_or_refund",
+          "resultState": "group_open_new_balance",
+          "terminal": false,
+          "ownerCards": [
+            "P-005",
+            "P-022",
+            "P-025",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        },
+        {
+          "id": "C-018",
+          "title": "Capture closes through normal confirmation and history",
+          "actor": "mina",
+          "pillar": "history",
+          "entryState": "all_items_resolved",
+          "action": "close_capture_record",
+          "resultState": "record_saved",
+          "terminal": true,
+          "ownerCards": [
+            "P-004",
+            "P-022",
+            "P-027"
+          ],
+          "implementationStatus": "deferred_unproven",
+          "proofStatus": "missing",
+          "surfaces": {
+            "web": "unknown",
+            "portable_web": "not_started",
+            "telegram": "not_started",
+            "dot_paseo": "not_started",
+            "circles_gnosis": "not_started"
+          },
+          "laneStatus": "deferred",
+          "recommendedForThisThread": false,
+          "routingNote": "Receipt/OCR is not current portable product proof; legacy-root proof was intentionally not promoted."
+        }
+      ],
+      "pillarSequence": [
+        "catch",
+        "management",
+        "payout",
+        "history"
+      ],
+      "scenario": "Mina pays or receives a spend signal, ChopDot captures the money moment, Mina reviews it, the group split is created, requests are sent, payments are confirmed, and the record closes without losing receipt truth."
+    },
+    {
+      "id": "spend-card",
+      "title": "Spend card capture",
+      "status": "future_map_needed",
+      "ownerCard": "P-005",
+      "paths": []
+    },
+    {
+      "id": "savings-circle",
+      "title": "Savings circle",
+      "status": "future_map_needed",
+      "ownerCard": "P-006",
+      "paths": []
+    },
+    {
+      "id": "community-fund",
+      "title": "Community fund",
+      "status": "future_map_needed",
+      "ownerCard": "P-008",
+      "paths": []
+    },
+    {
+      "id": "emergency-pot",
+      "title": "Emergency/private help pot",
+      "status": "future_map_needed",
+      "ownerCard": "P-007",
+      "paths": []
+    }
+  ],
+  "deadEnds": [
+    {
+      "id": "D-001",
+      "title": "Request sent removes correction path",
+      "paths": [
+        "N-014"
+      ],
+      "severity": "high",
+      "status": "known_gap",
+      "ownerCard": "P-022",
+      "problem": "After Mina sends a payment request, she can lose the ability to add a forgotten expense.",
+      "expected": "The group remains open and Add expense remains available until the record is closed.",
+      "laneStatus": "active_elsewhere",
+      "recommendedForThisThread": false,
+      "activeOwner": {
+        "card": "P-022",
+        "lane": "programme-a-portable-shell-host-proof",
+        "threads": [
+          "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e"
+        ],
+        "note": "Programme A owns portable-shell behavior and host proof. P-026 consumes its evidence only."
+      }
+    },
+    {
+      "id": "D-002",
+      "title": "Premature close action",
+      "paths": [
+        "N-005"
+      ],
+      "severity": "high",
+      "status": "portable_resolved_canonical_unproven",
+      "ownerCard": "P-022",
+      "problem": "Finish/close can appear while money is still owed.",
+      "expected": "Close appears only when required items are resolved or explicitly classified.",
+      "laneStatus": "active_elsewhere",
+      "recommendedForThisThread": false,
+      "activeOwner": {
+        "card": "P-025",
+        "lane": "p025-canonical-integration",
+        "threads": [
+          "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+        ],
+        "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+      },
+      "evidenceRefs": [
+        "EV-PORTABLE-85BE5AF"
+      ]
+    },
+    {
+      "id": "D-006",
+      "title": "Normal settlement state model cannot express off-happy states",
+      "paths": [
+        "N-007",
+        "N-011",
+        "N-013",
+        "N-018",
+        "N-019",
+        "N-020"
+      ],
+      "severity": "critical",
+      "status": "not_built",
+      "ownerCard": "P-025",
+      "problem": "Normal settlement supports pending, paid, confirmed only.",
+      "expected": "Normal obligations support delayed, waived, disputed, rejected, expired, duplicate, and wrong-payment paths or explicit fallbacks.",
+      "laneStatus": "mixed",
+      "recommendedForThisThread": true
+    },
+    {
+      "id": "D-007",
+      "title": "Backend confirmation can auto-close before readable closeout",
+      "paths": [
+        "N-012",
+        "N-023",
+        "N-024"
+      ],
+      "severity": "critical",
+      "status": "portable_resolved_canonical_active",
+      "ownerCard": "P-004",
+      "problem": "Final confirmation can mark the pot completed before user-visible closeout review.",
+      "expected": "Confirmation moves to all_items_resolved; close record remains a separate review action.",
+      "laneStatus": "active_elsewhere",
+      "recommendedForThisThread": false,
+      "activeOwner": {
+        "card": "P-025",
+        "lane": "p025-canonical-integration",
+        "threads": [
+          "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+        ],
+        "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+      },
+      "evidenceRefs": [
+        "EV-PORTABLE-85BE5AF"
+      ]
+    },
+    {
+      "id": "D-008",
+      "title": "Close with note can hide unresolved money",
+      "paths": [
+        "N-018",
+        "N-019",
+        "N-023",
+        "N-024"
+      ],
+      "severity": "high",
+      "status": "built_ambiguous",
+      "ownerCard": "P-004",
+      "problem": "Freeform note can substitute for explicit delayed, waived, disputed, or unresolved classification.",
+      "expected": "Each open item has a visible resolution type before saved history.",
+      "laneStatus": "mixed",
+      "recommendedForThisThread": true
+    },
+    {
+      "id": "D-009",
+      "title": "Settle flow blurs request and mark-paid meanings",
+      "paths": [
+        "N-005",
+        "N-008",
+        "N-009"
+      ],
+      "severity": "high",
+      "status": "built_ambiguous",
+      "ownerCard": "P-002",
+      "problem": "SettleHome says Mark paid/received while creating pending settlement legs.",
+      "expected": "Request/propose, mark paid, receiver confirm, and close are separate states.",
+      "laneStatus": "mixed",
+      "recommendedForThisThread": false
+    },
+    {
+      "id": "D-010",
+      "title": "Partial payment has no normal-pot representation",
+      "paths": [
+        "N-010"
+      ],
+      "severity": "high",
+      "status": "not_built",
+      "ownerCard": "P-025",
+      "problem": "No first-class partial amount, remaining balance, or partial confirmation state exists in normal settlement.",
+      "expected": "Partial payment confirms only received amount and leaves remainder open, delayed, or waived.",
+      "laneStatus": "active_elsewhere",
+      "recommendedForThisThread": false,
+      "activeOwner": {
+        "card": "P-025",
+        "lane": "p025-canonical-integration",
+        "threads": [
+          "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+        ],
+        "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+      }
+    },
+    {
+      "id": "D-011",
+      "title": "Member changes after request are unproven",
+      "paths": [
+        "N-016",
+        "N-017",
+        "N-015"
+      ],
+      "severity": "high",
+      "status": "not_built_or_unproven",
+      "ownerCard": "P-022",
+      "problem": "Membership changes after requests or settlement legs exist are not mapped/proven.",
+      "expected": "Member changes create safe review/follow-up states without mutating sent requests or orphaning obligations.",
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true
+    },
+    {
+      "id": "D-012",
+      "title": "Wrong-payment proof is lane-specific",
+      "paths": [
+        "N-011"
+      ],
+      "severity": "high",
+      "status": "lane_mismatch",
+      "ownerCard": "P-025",
+      "problem": "Wrong-currency/missing-funds proof exists in capture/PAS lane but not normal settlement lane.",
+      "expected": "Normal settlement has its own negative-path proof.",
+      "laneStatus": "active_elsewhere",
+      "recommendedForThisThread": false,
+      "activeOwner": {
+        "card": "P-025",
+        "lane": "p025-canonical-integration",
+        "threads": [
+          "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+        ],
+        "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+      }
+    },
+    {
+      "id": "D-013",
+      "title": "Receipt capture can create unreviewed wrong truth",
+      "paths": [
+        "C-003",
+        "C-004",
+        "C-005"
+      ],
+      "severity": "critical",
+      "status": "legacy_root_reference_only",
+      "ownerCard": "P-012",
+      "problem": "OCR or extraction can fail or hallucinate, and the current behavior model has no proven user review/correction proof for capture truth.",
+      "expected": "Capture output is always draft until Mina reviews amount, merchant, payer, split, and receipt confidence.",
+      "laneStatus": "deferred",
+      "recommendedForThisThread": false
+    },
+    {
+      "id": "D-014",
+      "title": "Receipt and spend amount mismatch has no resolution path",
+      "paths": [
+        "C-008"
+      ],
+      "severity": "critical",
+      "status": "deferred_unproven",
+      "ownerCard": "P-005",
+      "problem": "A receipt amount can conflict with a spend-card/payment amount without a mapped resolution state.",
+      "expected": "Mismatch becomes an explicit review/dispute state and cannot send payment requests until resolved or annotated.",
+      "laneStatus": "deferred",
+      "recommendedForThisThread": false
+    },
+    {
+      "id": "D-015",
+      "title": "Duplicate receipt can double-charge group",
+      "paths": [
+        "C-009"
+      ],
+      "severity": "high",
+      "status": "deferred_unproven",
+      "ownerCard": "P-012",
+      "problem": "The capture map has no proven duplicate-detection path for re-uploaded receipts or repeated spend imports.",
+      "expected": "Duplicate capture is detected or shown as a possible duplicate before it affects balances.",
+      "laneStatus": "deferred",
+      "recommendedForThisThread": false
+    },
+    {
+      "id": "D-016",
+      "title": "Sensitive receipt details can leak to payers",
+      "paths": [
+        "C-015"
+      ],
+      "severity": "high",
+      "status": "deferred_unproven",
+      "ownerCard": "P-025",
+      "problem": "Receipt capture can include private items, addresses, card fragments, or sensitive merchant details without a mapped redaction/share boundary.",
+      "expected": "Mina can review/redact what payers see; saved record separates private proof from shared explanation.",
+      "laneStatus": "deferred",
+      "recommendedForThisThread": false
+    },
+    {
+      "id": "D-017",
+      "title": "Spend reversal after request can leave stale obligations",
+      "paths": [
+        "C-017"
+      ],
+      "severity": "critical",
+      "status": "deferred_unproven",
+      "ownerCard": "P-005",
+      "problem": "A card reversal/refund after requests are sent can leave stale or wrong payment obligations.",
+      "expected": "Reversal creates a new open-balance review and follow-up request path without mutating already-sent requests silently.",
+      "laneStatus": "deferred",
+      "recommendedForThisThread": false
+    },
+    {
+      "id": "D-018",
+      "title": "Capture-to-close inherits normal closeout order bug",
+      "paths": [
+        "C-018"
+      ],
+      "severity": "critical",
+      "status": "deferred_unproven",
+      "ownerCard": "P-004",
+      "problem": "Capture journeys still depend on the normal closeout ordering issue where confirmation can precede readable closeout review.",
+      "expected": "Capture closes only after all items are resolved and Mina reviews the saved record.",
+      "laneStatus": "deferred",
+      "recommendedForThisThread": false
+    }
+  ],
+  "laneVocabulary": {
+    "status": [
+      "proven",
+      "active_elsewhere",
+      "blocked_external",
+      "unowned",
+      "deferred",
+      "mixed",
+      "owned_here",
+      "done"
+    ],
+    "rule": "Every path has one routing category. Only unowned paths may be recommended for this task; proof remains surface-scoped."
+  },
+  "activeLanes": [
+    {
+      "id": "programme-a-portable-shell-host-proof",
+      "status": "active_elsewhere",
+      "card": "P-022",
+      "worktree": "/Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial",
+      "threads": [
+        "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e"
+      ],
+      "paths": [
+        "N-014"
+      ],
+      "deadEnds": [
+        "D-001"
+      ],
+      "note": "Programme A owns portable-shell behavior and host proof. P-026 consumes its evidence only."
+    },
+    {
+      "id": "p025-canonical-integration",
+      "status": "active_elsewhere",
+      "card": "P-025",
+      "worktree": "/Users/devinsonpena/ChopDot",
+      "threads": [
+        "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+      ],
+      "paths": [
+        "N-009",
+        "N-010",
+        "N-011",
+        "N-012",
+        "N-013",
+        "N-021",
+        "N-022",
+        "N-023",
+        "N-024"
+      ],
+      "deadEnds": [
+        "D-002",
+        "D-007",
+        "D-010",
+        "D-012"
+      ],
+      "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+    },
+    {
+      "id": "p026-proof-map-routing",
+      "status": "owned_here",
+      "card": "P-026",
+      "worktree": "/Users/devinsonpena/ChopDot/.worktrees/p026-user-path-scanner",
+      "threads": [],
+      "paths": [],
+      "deadEnds": [],
+      "note": "This task owns structured proof mapping, generated queues, lane exclusions, and unowned-next routing only."
+    }
+  ],
+  "proofBaselines": [
+    {
+      "id": "EV-PORTABLE-07936CD",
+      "type": "portable_shell_source_and_local_proof",
+      "commit": "07936cde23a4de5aa1779c17616897021792a41c",
+      "acceptedClaims": [
+        "Manual amount and reason are the honest normal capture path.",
+        "ReviewSplit is the only normal screen that saves the spend.",
+        "Draft values survive back navigation.",
+        "Portable web and Telegram local journeys remained green."
+      ],
+      "excludedClaims": [
+        "The superseded receipt/OCR candidate is current product proof.",
+        "Legacy/root receipt UI behavior is portable-shell behavior."
+      ]
+    },
+    {
+      "id": "EV-PORTABLE-85BE5AF",
+      "type": "live_portable_host_proof",
+      "commit": "85be5af",
+      "acceptedClaims": [
+        "Live Paseo .dot host journey passed with 22 screenshots and reload persistence.",
+        "Live HTTPS Telegram-profile journey passed with 24 screenshots and a standalone payer packet.",
+        "Spend review, request, payer action, receiver confirmation, explicit finish, saved summary, and persisted return were exercised."
+      ],
+      "limitations": [
+        "No completed live Product Account login.",
+        "No live Statement Store convergence.",
+        "Telegram proof used the host profile and HTTPS deployment, not a real Telegram client session."
+      ]
+    },
+    {
+      "id": "EV-LEGACY-ROOT-REFERENCE",
+      "type": "read_only_reference",
+      "location": "/Users/devinsonpena/ChopDot",
+      "acceptedClaims": [
+        "The structured behavior-map architecture and generated rollup views are reusable P-026 machinery."
+      ],
+      "excludedClaims": [
+        "Legacy/root C-003, C-004, and C-005 proof promotion.",
+        "Legacy/root D-019 as a portable-shell defect.",
+        "Any product implementation change from the dirty root."
+      ]
+    }
+  ],
+  "routingContract": {
+    "categories": [
+      "proven",
+      "active_elsewhere",
+      "blocked_external",
+      "highest_risk_unowned"
+    ],
+    "singleNextUnownedPath": "N-007",
+    "proofScopeRule": "Proof is surface-scoped. Portable-shell evidence never promotes canonical/root web automatically.",
+    "duplicateWorkRule": "Paths marked active_elsewhere are excluded from this task's recommendation queue.",
+    "stopCondition": "P-026 maps and routes the next journey; it does not implement that journey."
+  }
+}

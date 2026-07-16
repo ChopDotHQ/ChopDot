@@ -1,0 +1,1021 @@
+{
+  "generatedAt": "2026-07-16T10:51:16.829Z",
+  "singleNextUnowned": {
+    "id": "N-007",
+    "title": "Payer cannot pay now",
+    "actor": "leo",
+    "pillar": "management",
+    "entryState": "payer_viewing_amount_due",
+    "action": "cannot_pay_now",
+    "resultState": "delayed",
+    "terminal": false,
+    "ownerCards": [
+      "P-002",
+      "P-004",
+      "P-022"
+    ],
+    "implementationStatus": "not_built",
+    "proofStatus": "missing",
+    "surfaces": {
+      "web": "unknown",
+      "portable_web": "unknown",
+      "telegram": "unknown",
+      "dot_paseo": "unknown",
+      "circles_gnosis": "not_started"
+    },
+    "laneStatus": "unowned",
+    "recommendedForThisThread": true,
+    "routePriority": 1,
+    "routingNote": "Single next unowned product journey after active-lane and external-blocker exclusions.",
+    "journeyId": "normal-pot",
+    "journeyTitle": "Normal pot",
+    "deadEnds": [
+      "D-006"
+    ],
+    "risk": "critical"
+  },
+  "queue": {
+    "proven": [
+      {
+        "id": "N-001",
+        "title": "Start normal pot",
+        "actor": "mina",
+        "pillar": "catch",
+        "entryState": "no_group",
+        "action": "start_group",
+        "resultState": "group_open_empty",
+        "terminal": false,
+        "ownerCards": [
+          "P-022",
+          "P-001"
+        ],
+        "implementationStatus": "built_portable_shell",
+        "proofStatus": "strong_portable_host",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "works",
+          "telegram": "works",
+          "dot_paseo": "works",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "proven",
+        "recommendedForThisThread": false,
+        "evidenceRefs": [
+          "EV-PORTABLE-07936CD",
+          "EV-PORTABLE-85BE5AF"
+        ],
+        "proofScope": "portable_shell_only",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [],
+        "risk": "unreviewed"
+      },
+      {
+        "id": "N-002",
+        "title": "Add first expense",
+        "actor": "mina",
+        "pillar": "catch",
+        "entryState": "group_open_empty",
+        "action": "add_first_expense",
+        "resultState": "group_open_expense_captured",
+        "terminal": false,
+        "ownerCards": [
+          "P-022",
+          "P-001"
+        ],
+        "implementationStatus": "built_portable_shell",
+        "proofStatus": "strong_portable_host",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "works",
+          "telegram": "works",
+          "dot_paseo": "works",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "proven",
+        "recommendedForThisThread": false,
+        "evidenceRefs": [
+          "EV-PORTABLE-07936CD",
+          "EV-PORTABLE-85BE5AF"
+        ],
+        "proofScope": "portable_shell_only",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [],
+        "risk": "unreviewed"
+      },
+      {
+        "id": "N-004",
+        "title": "Review or edit split",
+        "actor": "mina",
+        "pillar": "management",
+        "entryState": "group_open_expense_captured",
+        "action": "review_or_edit_split",
+        "resultState": "split_review",
+        "terminal": false,
+        "ownerCards": [
+          "P-022"
+        ],
+        "implementationStatus": "built_portable_shell",
+        "proofStatus": "strong_portable_host",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "works",
+          "telegram": "works",
+          "dot_paseo": "works",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "proven",
+        "recommendedForThisThread": false,
+        "evidenceRefs": [
+          "EV-PORTABLE-07936CD",
+          "EV-PORTABLE-85BE5AF"
+        ],
+        "proofScope": "portable_shell_only",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [],
+        "risk": "unreviewed"
+      },
+      {
+        "id": "N-005",
+        "title": "Send payment request",
+        "actor": "mina",
+        "pillar": "payout",
+        "entryState": "split_review",
+        "action": "send_payment_request",
+        "resultState": "payment_request_sent",
+        "terminal": false,
+        "ownerCards": [
+          "P-022",
+          "P-002"
+        ],
+        "implementationStatus": "built_portable_shell",
+        "proofStatus": "strong_portable_host",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "works",
+          "telegram": "works",
+          "dot_paseo": "works",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "proven",
+        "recommendedForThisThread": false,
+        "evidenceRefs": [
+          "EV-PORTABLE-07936CD",
+          "EV-PORTABLE-85BE5AF"
+        ],
+        "proofScope": "portable_shell_only",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-002",
+          "D-009"
+        ],
+        "risk": "high"
+      },
+      {
+        "id": "N-006",
+        "title": "Payer opens request",
+        "actor": "leo",
+        "pillar": "payout",
+        "entryState": "payment_request_sent",
+        "action": "open_payment_request",
+        "resultState": "payer_viewing_amount_due",
+        "terminal": false,
+        "ownerCards": [
+          "P-002",
+          "P-022"
+        ],
+        "implementationStatus": "built_portable_shell",
+        "proofStatus": "strong_portable_host",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "works",
+          "telegram": "works",
+          "dot_paseo": "works",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "proven",
+        "recommendedForThisThread": false,
+        "evidenceRefs": [
+          "EV-PORTABLE-07936CD",
+          "EV-PORTABLE-85BE5AF"
+        ],
+        "proofScope": "portable_shell_only",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [],
+        "risk": "unreviewed"
+      }
+    ],
+    "activeElsewhere": [
+      {
+        "id": "N-013",
+        "title": "Receiver marks not received",
+        "actor": "mina",
+        "pillar": "management",
+        "entryState": "payment_pending_receiver_confirmation",
+        "action": "mark_not_received",
+        "resultState": "disputed",
+        "terminal": false,
+        "ownerCards": [
+          "P-003",
+          "P-022",
+          "P-025"
+        ],
+        "implementationStatus": "not_built",
+        "proofStatus": "missing",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "unknown",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "active_elsewhere",
+        "recommendedForThisThread": false,
+        "activeOwner": {
+          "card": "P-025",
+          "lane": "p025-canonical-integration",
+          "threads": [
+            "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+          ],
+          "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+        },
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-006"
+        ],
+        "risk": "critical"
+      },
+      {
+        "id": "N-011",
+        "title": "Wrong amount, receiver, or currency",
+        "actor": "leo",
+        "pillar": "management",
+        "entryState": "payment_started",
+        "action": "submit_mismatched_payment",
+        "resultState": "disputed",
+        "terminal": false,
+        "ownerCards": [
+          "P-003",
+          "P-023",
+          "P-024",
+          "P-025"
+        ],
+        "implementationStatus": "lane_mismatch",
+        "proofStatus": "partial",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "unknown",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "active_elsewhere",
+        "recommendedForThisThread": false,
+        "activeOwner": {
+          "card": "P-025",
+          "lane": "p025-canonical-integration",
+          "threads": [
+            "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+          ],
+          "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+        },
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-006",
+          "D-012"
+        ],
+        "risk": "critical"
+      },
+      {
+        "id": "N-012",
+        "title": "Receiver confirms payment",
+        "actor": "mina",
+        "pillar": "management",
+        "entryState": "payment_pending_receiver_confirmation",
+        "action": "confirm_received",
+        "resultState": "payment_confirmed",
+        "terminal": false,
+        "ownerCards": [
+          "P-003",
+          "P-004",
+          "P-025"
+        ],
+        "implementationStatus": "portable_proven_canonical_active",
+        "proofStatus": "strong_portable_host",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "works",
+          "telegram": "works",
+          "dot_paseo": "works",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "active_elsewhere",
+        "recommendedForThisThread": false,
+        "activeOwner": {
+          "card": "P-025",
+          "lane": "p025-canonical-integration",
+          "threads": [
+            "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+          ],
+          "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+        },
+        "evidenceRefs": [
+          "EV-PORTABLE-07936CD",
+          "EV-PORTABLE-85BE5AF"
+        ],
+        "proofScope": "portable_shell_only",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-007"
+        ],
+        "risk": "critical"
+      },
+      {
+        "id": "N-023",
+        "title": "Close record",
+        "actor": "mina",
+        "pillar": "history",
+        "entryState": "all_items_resolved",
+        "action": "close_record",
+        "resultState": "record_saved",
+        "terminal": true,
+        "ownerCards": [
+          "P-004",
+          "P-022"
+        ],
+        "implementationStatus": "portable_proven_canonical_active",
+        "proofStatus": "strong_portable_host",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "works",
+          "telegram": "works",
+          "dot_paseo": "works",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "active_elsewhere",
+        "recommendedForThisThread": false,
+        "activeOwner": {
+          "card": "P-025",
+          "lane": "p025-canonical-integration",
+          "threads": [
+            "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+          ],
+          "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+        },
+        "evidenceRefs": [
+          "EV-PORTABLE-07936CD",
+          "EV-PORTABLE-85BE5AF"
+        ],
+        "proofScope": "portable_shell_only",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-007",
+          "D-008"
+        ],
+        "risk": "critical"
+      },
+      {
+        "id": "N-024",
+        "title": "Return to saved record",
+        "actor": "mina",
+        "pillar": "history",
+        "entryState": "record_saved",
+        "action": "return_to_history",
+        "resultState": "record_saved",
+        "terminal": true,
+        "ownerCards": [
+          "P-004"
+        ],
+        "implementationStatus": "portable_proven_canonical_active",
+        "proofStatus": "strong_portable_host",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "works",
+          "telegram": "works",
+          "dot_paseo": "works",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "active_elsewhere",
+        "recommendedForThisThread": false,
+        "activeOwner": {
+          "card": "P-025",
+          "lane": "p025-canonical-integration",
+          "threads": [
+            "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+          ],
+          "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+        },
+        "evidenceRefs": [
+          "EV-PORTABLE-07936CD",
+          "EV-PORTABLE-85BE5AF"
+        ],
+        "proofScope": "portable_shell_only",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-007",
+          "D-008"
+        ],
+        "risk": "critical"
+      },
+      {
+        "id": "N-014",
+        "title": "Add forgotten expense after request sent",
+        "actor": "mina",
+        "pillar": "management",
+        "entryState": "payment_request_sent",
+        "action": "add_forgotten_expense",
+        "resultState": "group_open_new_balance",
+        "terminal": false,
+        "ownerCards": [
+          "P-022",
+          "P-003",
+          "P-004"
+        ],
+        "implementationStatus": "known_gap",
+        "proofStatus": "partial",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "known_gap",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "active_elsewhere",
+        "recommendedForThisThread": false,
+        "activeOwner": {
+          "card": "P-022",
+          "lane": "programme-a-portable-shell-host-proof",
+          "threads": [
+            "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e"
+          ],
+          "note": "Programme A owns portable-shell behavior and host proof. P-026 consumes its evidence only."
+        },
+        "evidenceRefs": [
+          "EV-PORTABLE-07936CD"
+        ],
+        "proofScope": "portable_local_regression_only",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-001"
+        ],
+        "risk": "high"
+      },
+      {
+        "id": "N-010",
+        "title": "Partial payment",
+        "actor": "leo",
+        "pillar": "management",
+        "entryState": "payer_viewing_amount_due",
+        "action": "pay_partial_amount",
+        "resultState": "partial",
+        "terminal": false,
+        "ownerCards": [
+          "P-002",
+          "P-003",
+          "P-025"
+        ],
+        "implementationStatus": "not_built",
+        "proofStatus": "missing",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "unknown",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "active_elsewhere",
+        "recommendedForThisThread": false,
+        "activeOwner": {
+          "card": "P-025",
+          "lane": "p025-canonical-integration",
+          "threads": [
+            "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+          ],
+          "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+        },
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-010"
+        ],
+        "risk": "high"
+      },
+      {
+        "id": "N-009",
+        "title": "Payer marks paid or evidence observed",
+        "actor": "leo",
+        "pillar": "payout",
+        "entryState": "payer_viewing_amount_due",
+        "action": "pay_or_mark_paid",
+        "resultState": "payment_pending_receiver_confirmation",
+        "terminal": false,
+        "ownerCards": [
+          "P-002",
+          "P-003",
+          "P-025"
+        ],
+        "implementationStatus": "portable_proven_canonical_active",
+        "proofStatus": "strong_portable_host",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "works",
+          "telegram": "works",
+          "dot_paseo": "works",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "active_elsewhere",
+        "recommendedForThisThread": false,
+        "activeOwner": {
+          "card": "P-025",
+          "lane": "p025-canonical-integration",
+          "threads": [
+            "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+          ],
+          "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+        },
+        "evidenceRefs": [
+          "EV-PORTABLE-07936CD",
+          "EV-PORTABLE-85BE5AF"
+        ],
+        "proofScope": "portable_shell_only",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-009"
+        ],
+        "risk": "high"
+      },
+      {
+        "id": "N-021",
+        "title": "Guest opens link",
+        "actor": "guest",
+        "pillar": "payout",
+        "entryState": "payment_request_sent",
+        "action": "open_guest_link",
+        "resultState": "payer_viewing_amount_due",
+        "terminal": false,
+        "ownerCards": [
+          "P-002",
+          "P-025"
+        ],
+        "implementationStatus": "portable_proven_canonical_active",
+        "proofStatus": "strong_portable_host",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "works",
+          "telegram": "works",
+          "dot_paseo": "works",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "active_elsewhere",
+        "recommendedForThisThread": false,
+        "activeOwner": {
+          "card": "P-025",
+          "lane": "p025-canonical-integration",
+          "threads": [
+            "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+          ],
+          "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+        },
+        "evidenceRefs": [
+          "EV-PORTABLE-07936CD",
+          "EV-PORTABLE-85BE5AF"
+        ],
+        "proofScope": "portable_shell_only",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [],
+        "risk": "unreviewed"
+      },
+      {
+        "id": "N-022",
+        "title": "Wrong actor attempts restricted action",
+        "actor": "guest",
+        "pillar": "management",
+        "entryState": "payment_request_sent",
+        "action": "attempt_restricted_action",
+        "resultState": "payment_request_sent",
+        "terminal": false,
+        "ownerCards": [
+          "P-025"
+        ],
+        "implementationStatus": "partly_mitigated_backend_unproven_ui",
+        "proofStatus": "partial",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "unknown",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "active_elsewhere",
+        "recommendedForThisThread": false,
+        "activeOwner": {
+          "card": "P-025",
+          "lane": "p025-canonical-integration",
+          "threads": [
+            "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+          ],
+          "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+        },
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [],
+        "risk": "unreviewed"
+      }
+    ],
+    "blockedExternal": [
+      {
+        "id": "N-008",
+        "title": "Payer starts native/app payment",
+        "actor": "leo",
+        "pillar": "payout",
+        "entryState": "payer_viewing_amount_due",
+        "action": "start_payment",
+        "resultState": "payment_started",
+        "terminal": false,
+        "ownerCards": [
+          "P-002",
+          "P-023",
+          "P-024",
+          "P-025"
+        ],
+        "implementationStatus": "partial_portable_external_gate",
+        "proofStatus": "partial",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "partial",
+          "telegram": "not_applicable",
+          "dot_paseo": "partial",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "blocked_external",
+        "recommendedForThisThread": false,
+        "blocker": {
+          "kind": "external",
+          "reason": "Live Product Account login and live-device native convergence require a runnable external client and host capability.",
+          "evidenceRefs": [
+            "EV-PORTABLE-85BE5AF"
+          ]
+        },
+        "evidenceRefs": [
+          "EV-PORTABLE-85BE5AF"
+        ],
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-009"
+        ],
+        "risk": "high"
+      }
+    ],
+    "highestRiskUnowned": [
+      {
+        "id": "N-007",
+        "title": "Payer cannot pay now",
+        "actor": "leo",
+        "pillar": "management",
+        "entryState": "payer_viewing_amount_due",
+        "action": "cannot_pay_now",
+        "resultState": "delayed",
+        "terminal": false,
+        "ownerCards": [
+          "P-002",
+          "P-004",
+          "P-022"
+        ],
+        "implementationStatus": "not_built",
+        "proofStatus": "missing",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "unknown",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "unowned",
+        "recommendedForThisThread": true,
+        "routePriority": 1,
+        "routingNote": "Single next unowned product journey after active-lane and external-blocker exclusions.",
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-006"
+        ],
+        "risk": "critical"
+      },
+      {
+        "id": "N-018",
+        "title": "Waive amount",
+        "actor": "mina",
+        "pillar": "management",
+        "entryState": "payment_request_sent",
+        "action": "waive_amount",
+        "resultState": "waived",
+        "terminal": false,
+        "ownerCards": [
+          "P-004",
+          "P-022"
+        ],
+        "implementationStatus": "not_built",
+        "proofStatus": "missing",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "unknown",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "unowned",
+        "recommendedForThisThread": true,
+        "routePriority": 2,
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-006",
+          "D-008"
+        ],
+        "risk": "critical"
+      },
+      {
+        "id": "N-019",
+        "title": "Mark delayed",
+        "actor": "mina",
+        "pillar": "management",
+        "entryState": "payment_request_sent",
+        "action": "mark_delayed",
+        "resultState": "delayed",
+        "terminal": false,
+        "ownerCards": [
+          "P-004",
+          "P-022"
+        ],
+        "implementationStatus": "not_built",
+        "proofStatus": "missing",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "unknown",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "unowned",
+        "recommendedForThisThread": true,
+        "routePriority": 3,
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-006",
+          "D-008"
+        ],
+        "risk": "critical"
+      },
+      {
+        "id": "N-020",
+        "title": "Payer returns after delay",
+        "actor": "leo",
+        "pillar": "payout",
+        "entryState": "delayed",
+        "action": "return_and_pay",
+        "resultState": "payment_pending_receiver_confirmation",
+        "terminal": false,
+        "ownerCards": [
+          "P-002",
+          "P-003",
+          "P-022"
+        ],
+        "implementationStatus": "not_built",
+        "proofStatus": "missing",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "unknown",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "unowned",
+        "recommendedForThisThread": true,
+        "routePriority": 4,
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-006"
+        ],
+        "risk": "critical"
+      },
+      {
+        "id": "N-015",
+        "title": "Send follow-up request after balance changes",
+        "actor": "mina",
+        "pillar": "payout",
+        "entryState": "group_open_new_balance",
+        "action": "send_follow_up_request",
+        "resultState": "payment_request_sent",
+        "terminal": false,
+        "ownerCards": [
+          "P-022",
+          "P-002",
+          "P-025"
+        ],
+        "implementationStatus": "not_built_or_unproven",
+        "proofStatus": "missing",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "unknown",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "unowned",
+        "recommendedForThisThread": true,
+        "routePriority": 5,
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-011"
+        ],
+        "risk": "high"
+      },
+      {
+        "id": "N-016",
+        "title": "Add member before or around request",
+        "actor": "mina",
+        "pillar": "management",
+        "entryState": "split_review",
+        "action": "add_member",
+        "resultState": "split_review",
+        "terminal": false,
+        "ownerCards": [
+          "P-022"
+        ],
+        "implementationStatus": "not_built_or_unproven",
+        "proofStatus": "missing",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "unknown",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "unowned",
+        "recommendedForThisThread": true,
+        "routePriority": 6,
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-011"
+        ],
+        "risk": "high"
+      },
+      {
+        "id": "N-017",
+        "title": "Remove member before or around request",
+        "actor": "mina",
+        "pillar": "management",
+        "entryState": "split_review",
+        "action": "remove_member",
+        "resultState": "split_review",
+        "terminal": false,
+        "ownerCards": [
+          "P-022"
+        ],
+        "implementationStatus": "not_built_or_unproven",
+        "proofStatus": "missing",
+        "surfaces": {
+          "web": "unknown",
+          "portable_web": "unknown",
+          "telegram": "unknown",
+          "dot_paseo": "unknown",
+          "circles_gnosis": "not_started"
+        },
+        "laneStatus": "unowned",
+        "recommendedForThisThread": true,
+        "routePriority": 7,
+        "journeyId": "normal-pot",
+        "journeyTitle": "Normal pot",
+        "deadEnds": [
+          "D-011"
+        ],
+        "risk": "high"
+      }
+    ]
+  },
+  "activeLanes": [
+    {
+      "id": "programme-a-portable-shell-host-proof",
+      "status": "active_elsewhere",
+      "card": "P-022",
+      "worktree": "/Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial",
+      "threads": [
+        "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e"
+      ],
+      "paths": [
+        "N-014"
+      ],
+      "deadEnds": [
+        "D-001"
+      ],
+      "note": "Programme A owns portable-shell behavior and host proof. P-026 consumes its evidence only."
+    },
+    {
+      "id": "p025-canonical-integration",
+      "status": "active_elsewhere",
+      "card": "P-025",
+      "worktree": "/Users/devinsonpena/ChopDot",
+      "threads": [
+        "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+      ],
+      "paths": [
+        "N-009",
+        "N-010",
+        "N-011",
+        "N-012",
+        "N-013",
+        "N-021",
+        "N-022",
+        "N-023",
+        "N-024"
+      ],
+      "deadEnds": [
+        "D-002",
+        "D-007",
+        "D-010",
+        "D-012"
+      ],
+      "note": "P-025 owns canonical integration, payment authority, actor authority, and security reconciliation."
+    },
+    {
+      "id": "p026-proof-map-routing",
+      "status": "owned_here",
+      "card": "P-026",
+      "worktree": "/Users/devinsonpena/ChopDot/.worktrees/p026-user-path-scanner",
+      "threads": [],
+      "paths": [],
+      "deadEnds": [],
+      "note": "This task owns structured proof mapping, generated queues, lane exclusions, and unowned-next routing only."
+    }
+  ],
+  "proofBaselines": [
+    {
+      "id": "EV-PORTABLE-07936CD",
+      "type": "portable_shell_source_and_local_proof",
+      "commit": "07936cde23a4de5aa1779c17616897021792a41c",
+      "acceptedClaims": [
+        "Manual amount and reason are the honest normal capture path.",
+        "ReviewSplit is the only normal screen that saves the spend.",
+        "Draft values survive back navigation.",
+        "Portable web and Telegram local journeys remained green."
+      ],
+      "excludedClaims": [
+        "The superseded receipt/OCR candidate is current product proof.",
+        "Legacy/root receipt UI behavior is portable-shell behavior."
+      ]
+    },
+    {
+      "id": "EV-PORTABLE-85BE5AF",
+      "type": "live_portable_host_proof",
+      "commit": "85be5af",
+      "acceptedClaims": [
+        "Live Paseo .dot host journey passed with 22 screenshots and reload persistence.",
+        "Live HTTPS Telegram-profile journey passed with 24 screenshots and a standalone payer packet.",
+        "Spend review, request, payer action, receiver confirmation, explicit finish, saved summary, and persisted return were exercised."
+      ],
+      "limitations": [
+        "No completed live Product Account login.",
+        "No live Statement Store convergence.",
+        "Telegram proof used the host profile and HTTPS deployment, not a real Telegram client session."
+      ]
+    },
+    {
+      "id": "EV-LEGACY-ROOT-REFERENCE",
+      "type": "read_only_reference",
+      "location": "/Users/devinsonpena/ChopDot",
+      "acceptedClaims": [
+        "The structured behavior-map architecture and generated rollup views are reusable P-026 machinery."
+      ],
+      "excludedClaims": [
+        "Legacy/root C-003, C-004, and C-005 proof promotion.",
+        "Legacy/root D-019 as a portable-shell defect.",
+        "Any product implementation change from the dirty root."
+      ]
+    }
+  ],
+  "validation": {
+    "generatedAt": "2026-07-16T10:51:16.829Z",
+    "summary": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "issues": []
+  }
+}

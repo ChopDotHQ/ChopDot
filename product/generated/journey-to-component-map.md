@@ -8,7 +8,7 @@
 | P-002 No-app friend payment link | Leo receives a link and pays Mina back | CaptureHandoffScreen | tests/e2e/capture-pay-confirm-link.spec.ts | DC-002 |
 | P-003 Confirm received | Mina confirms money arrived | CaptureConfirmScreen | tests/e2e/capture-pay-confirm-link.spec.ts | DC-003 |
 | P-004 Close with readable saved record | The dinner group closes the record | CloseoutReview | tests/e2e/capture-pay-confirm-link.spec.ts | DC-004 |
-| P-026 User path map and dead-end scanner | Product and engineering review the user's possible paths before adding new mini-app surfaces |  | npm run product:path-map -- validate, npm run product:validate | DC-026 |
+| P-026 Product behavior map and routing system | Product and engineering use one proof map to exclude owned work and select the highest-risk unowned journey | product/generated/product-behavior-dashboard.html, product/generated/product-routing-queue.md | npm run product:behavior-map -- validate, npm run product:validate | DC-026 |
 | P-005 Spend Card capture path | Mina pays with a card and captures the split | SpendCardScreen | tests/e2e/capture-spend-loop.spec.ts, tests/e2e/capture-wallet-pass-spend.spec.ts | DC-005 |
 | P-006 Savings circle round | Mina runs a Friday savings circle | ChapterHome | tests/e2e/chopdot-dot-native-session.spec.ts, artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/p006-savings-circle-review.json | DC-006 |
 | P-007 Emergency pot privacy flow | A group coordinates private emergency help | ChapterHome | tests/e2e/chopdot-dot-native-session.spec.ts, artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot/p007-emergency-pot-review.json | DC-007 |

@@ -8,7 +8,7 @@
 | P-002 No-app friend payment link | friend-action | done | tests/e2e/capture-pay-confirm-link.spec.ts | no |
 | P-003 Confirm received | confirmation | done | tests/e2e/capture-pay-confirm-link.spec.ts | no |
 | P-004 Close with readable saved record | closeout | done | tests/e2e/capture-pay-confirm-link.spec.ts | no |
-| P-026 User path map and dead-end scanner | product-cockpit | building | npm run product:path-map -- validate, npm run product:validate | no |
+| P-026 Product behavior map and routing system | product-cockpit | building | npm run product:behavior-map -- validate, npm run product:validate | no |
 | P-005 Spend Card capture path | spend-card | discovery | tests/e2e/capture-spend-loop.spec.ts, tests/e2e/capture-wallet-pass-spend.spec.ts | no |
 | P-006 Savings circle round | savings-circle | done | tests/e2e/chopdot-dot-native-session.spec.ts, artifacts/chopdot-p006-savings-circle/2026-07-01/p006-savings-circle/p006-savings-circle-review.json | no |
 | P-007 Emergency pot privacy flow | emergency-pot | done | tests/e2e/chopdot-dot-native-session.spec.ts, artifacts/chopdot-p007-emergency-pot/2026-07-01/p007-emergency-pot/p007-emergency-pot-review.json | no |

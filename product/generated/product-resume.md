@@ -17,7 +17,7 @@ ChopDot should help groups capture money moments, make the next action obvious, 
 ## Top Work
 
 - P-022 Regular pot end-to-end coherence: Review journey (building, 10/10)
-- P-026 User path map and dead-end scanner: Review journey map (building, 10/10)
+- P-026 Product behavior map and routing system: Review routing queue (building, 10/10)
 - P-015 Friend-pilot readiness scorecard: Review readiness (ready, 9/10)
 - P-020 Chat capture agent: /addlast (building, 9/10)
 - P-010 Polkadot-native session boundary: Prove the live connection (building, 10/10)

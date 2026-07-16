@@ -189,60 +189,69 @@ screenshot_required: "yes"
 last_touched: "2026-06-28"
 ```
 
-## P-026 - User path map and dead-end scanner
+## P-026 - Product behavior map and routing system
 
 ```yaml
 id: "P-026"
 type: "product-system"
-title: "User path map and dead-end scanner"
+title: "Product behavior map and routing system"
 status: "building"
 scope: "Management"
 module: "product-cockpit"
-journey: "Product and engineering review the user's possible paths before adding new mini-app surfaces"
+journey: "Product and engineering use one proof map to exclude owned work and select the highest-risk unowned journey"
 pillar: "Management"
 priority: "high"
-evidence_quality: "partial"
+evidence_quality: "strong"
 owner: "product"
 depends_on:
   - "P-022"
   - "P-025"
-blocker: "Twelve mapped dead ends remain open or unproven."
+blocker: "none"
 decision_contract: "DC-026"
 tests:
-  - "npm run product:path-map -- validate"
+  - "npm run product:behavior-map -- validate"
   - "npm run product:validate"
-screens: []
+screens:
+  - "product/generated/product-behavior-dashboard.html"
+  - "product/generated/product-routing-queue.md"
 evidence:
+  - "product/path-model.yaml"
   - "product/user-path-map.md"
   - "product/user-path-map.mmd"
+  - "product/generated/product-behavior-map.json"
+  - "product/generated/product-behavior-map.md"
+  - "product/generated/product-routing-queue.json"
+  - "product/generated/product-routing-queue.md"
+  - "product/generated/product-journey-map.html"
+  - "product/generated/product-service-blueprint.html"
+  - "product/generated/product-state-transition-map.mmd"
+  - "product/generated/product-traceability-matrix.md"
+  - "product/generated/product-behavior-dashboard.html"
   - "product/generated/user-path-coverage.json"
-  - "product/generated/user-path-coverage.md"
-  - "product/generated/user-path-coverage.mmd"
   - "product/generated/user-path-coverage.html"
-  - "product/evidence/user-path-coverage-latest.json"
-  - "product/evidence/p026-user-path-scanner-proof-2026-07-15.md"
-  - "product/evidence/screenshots/user-path-coverage/p026-user-path-coverage.png"
-next_action: "Review the highest-risk user path and identify the next dead end or missing proof."
+  - "product/evidence/p026-proof-routing-baseline-2026-07-16.md"
+next_action: "Route N-007 Payer cannot pay now to an implementation owner; do not implement it in P-026."
 user_story: "I am a ChopDot builder or product manager, I need to see every possible user path and outcome, so we can catch dead ends before shipping new surfaces."
-one_next_action: "Review journey map"
+one_next_action: "Review routing queue"
 friction_score: 3
 trust_score: 3
 clarity_score: 3
 language_score: 1
 total_score: 10
-why: "ChopDot is expanding across surfaces, and each new surface multiplies hidden branches unless user paths and proof gaps are visible in the cockpit."
-challenge: "If the map becomes a pretty diagram without path ownership, proof status, dead-end checks, and cockpit routing value, this card fails."
-acceptance: "The normal-pot journey has explicit action paths, resulting states, available next actions, actor maps, surface status, proof status, a validated dead-end register, and generated cockpit coverage."
+why: "Parallel ChopDot tasks need one durable surface that separates proven paths, active ownership, external blockers, and genuinely unowned work."
+challenge: "If portable proof leaks into canonical/root status, active paths are recommended twice, or the queue cannot name one unowned journey, this card fails."
+acceptance: "The structured map distinguishes canonical web from portable web, records proof refs, validates lane ownership, generates proven/active/blocked/unowned queues, and names exactly one next unowned journey."
 screenshot_required: "no"
-last_touched: "2026-07-15"
+last_touched: "2026-07-16"
 ```
 
 Operator notes:
 
 - This is an internal product-system artifact, not normal-user UI.
-- The source map stays manually reviewable; generated coverage is a read model.
-- The first useful question is not "is the diagram complete?" but "which path is most likely to fail next?"
-- New mini-app surfaces must reference this map before adding adapter-specific UX.
+- The structured source is `product/path-model.yaml`; generated coverage is a read model.
+- Portable proof is surface-scoped and never promotes canonical/root web automatically.
+- Active-lane paths are excluded from this task's recommendation queue.
+- The first useful question is "what is proven, owned elsewhere, externally blocked, or truly unowned?"
 
 ## P-005 - Spend Card capture path
 

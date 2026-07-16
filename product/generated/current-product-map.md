@@ -6,7 +6,7 @@
 
 - Cards: 26
 - Decisions: 6
-- History events: 72
+- History events: 73
 - Validation: 0 error(s), 10 warning(s)
 
 ## Cards
@@ -17,7 +17,7 @@
 | P-002 No-app friend payment link | done | Payout | 10/10 | Pay Mina | partial |
 | P-003 Confirm received | done | Management | 10/10 | Confirm received | partial |
 | P-004 Close with readable saved record | done | History | 9/10 | Close record | strong |
-| P-026 User path map and dead-end scanner | building | Management | 10/10 | Review journey map | partial |
+| P-026 Product behavior map and routing system | building | Management | 10/10 | Review routing queue | strong |
 | P-005 Spend Card capture path | discovery | Catch | 8/10 | Split this spend | thin |
 | P-006 Savings circle round | done | Management | 10/10 | Confirm received | strong |
 | P-007 Emergency pot privacy flow | done | Management | 10/10 | Contribute | strong |

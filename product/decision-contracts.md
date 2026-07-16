@@ -275,10 +275,11 @@ Required evidence:
 - replayed mark-paid and confirm-received commands create no duplicate effects
 - direct financial-table writes and atomic command gaps remain explicitly tracked
 
-## DC-026 - User path map and dead-end scanner decision
+## DC-026 - Product behavior map and routing system decision
 
 Required evidence:
 
+- structured behavior model exists at `product/path-model.yaml`
 - user path map exists at `product/user-path-map.md`
 - every mapped path names actor, entry state, action, result state, terminal status, owner card, surface status, and proof status
 - every non-terminal path lists next available actions
@@ -288,5 +289,11 @@ Required evidence:
 - mini-app surfaces are represented as explicit statuses rather than assumed support
 - actor maps exist for organizer, payer, second payer, and guest paths
 - a lightweight visual graph source exists at `product/user-path-map.mmd`
-- generated coverage is reproducible and validation does not mutate tracked files
-- cockpit can answer which path is most likely to fail next and what proof is missing
+- generated journey map, service blueprint, state-transition map, traceability matrix, behavior dashboard, and routing queue exist under `product/generated/`
+- the routing queue separates proven, active elsewhere, blocked external, and highest-risk unowned paths
+- portable web and canonical/root web are distinct proof surfaces
+- active lanes name owner card, worktree, task/thread, paths, dead ends, and a do-not-duplicate note
+- portable commits `07936cd` and `85be5af` are ingested as scoped evidence rather than product code
+- legacy-root receipt proof and D-019 are not promoted into portable truth
+- validation is read-only and fails on unknown lanes, duplicate ownership, unsafe recommendations, missing blockers, or proven paths without evidence
+- cockpit can answer which single unowned journey is next after routing exclusions
