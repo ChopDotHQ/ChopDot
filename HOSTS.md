@@ -195,7 +195,7 @@ Current proof:
 - storage finalization tx: `0xd3ae1d3351368741a3e15901b78782c996be7c428667e8edb274ee8f2d0af29e`
 - contenthash tx: `0xb66490089c0e79f7fbbefba77e3bfd4aaf418ab5d1e50d076468cc27e02f0d17`
 - app subname contenthash tx: `0x92f355538b979c599865990fac02f4d08155273b765257b6a7a78e57c2b132be`
-- latest complete live report: passed on 2026-07-15 against the capture-truth CID;
+- latest complete live report: passed on 2026-07-16 against the capture-truth CID;
 - evidence: `proof/portable-shell-dot-host/report.json` plus screenshots `01`
   through `22`.
 - capture truth evidence:
@@ -269,10 +269,14 @@ Known limitations:
   sandbox warning. Cross-origin isolation prevents the same-origin escape case
   in the observed deployment, but the host sandbox policy remains an external
   configuration boundary to monitor.
-- During the focused amount/title frame, automated `.dot` screenshots can show
-  a temporary black host-owned area above the app. The form and bottom action
-  remain usable, and normal host chrome returns on the review screen. Treat
-  this as a host viewport/chrome polish item, not hidden product completion.
+- `proof/dot-host-focused-input-viewport-2026-07-16.md` records the focused
+  input diagnosis. The wrapper remained at `844px`, the app iframe remained at
+  `y=56px` with `788px` height, and `Review split` remained inside the visible
+  browser viewport. The proof runner now dismisses focus, resets both scroll
+  layers, and uses a viewport capture for `.dot`; the focused Add spend frame
+  is complete. Chromium can still intermittently omit only the host-owned
+  `56px` bar in automated screenshots after unrelated route transitions. That
+  is a capture-compositor limitation, not observed ChopDot displacement.
 
 ## Adding A New Mini-App Host
 

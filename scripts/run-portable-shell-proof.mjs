@@ -33,6 +33,8 @@ const server = process.env.PROOF_URL ? null : spawn(
 let browser = null;
 const consoleEvents = [];
 const screenshots = [];
+const dotHostScreenshotDiagnostics = [];
+let focusedInputViewport = null;
 
 try {
   if (server) {
@@ -80,7 +82,26 @@ try {
   const shot = async (name) => {
     const file = `${String(screenshots.length + 1).padStart(2, '0')}-${name}.png`;
     const fullPath = path.join(outDir, file);
-    await page.screenshot({ path: fullPath, fullPage: true });
+    if (hostProfile === 'dot-host') {
+      await dismissDotHostNotifications(page);
+    }
+    await stabilizeDotHostCapture(page, app, hostProfile);
+    if (hostProfile === 'dot-host') {
+      const captured = await capturePaintedDotHostViewport(page);
+      await writeFile(fullPath, captured.buffer);
+      dotHostScreenshotDiagnostics.push({
+        file,
+        attempts: captured.attempts,
+        hostBarLuminance: captured.hostBarLuminance,
+      });
+    } else {
+      await page.screenshot({
+        path: fullPath,
+        fullPage: true,
+        animations: 'allow',
+        caret: 'hide',
+      });
+    }
     screenshots.push(file);
   };
   const click = async (name) => {
@@ -116,6 +137,9 @@ try {
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   });
+  if (hostProfile === 'dot-host') {
+    focusedInputViewport = await stabilizeAndAssertDotHostViewport(page, app);
+  }
   await shot('add-spend-filled');
   await click(/review split/i);
   await shot('review-split');
@@ -261,6 +285,10 @@ try {
     baseUrl: redactProofUrl(baseUrl, true),
     hostProfile,
     viewport: getHostContextOptions(hostProfile).viewport,
+    screenshotMode: hostProfile === 'dot-host'
+      ? 'validated_viewport_after_focus_and_scroll_reset'
+      : 'full_page',
+    dotHostScreenshotDiagnostics,
     capabilityMatrix,
     hostCallLog: {
       beforeReload: hostCallLogBeforeReload,
@@ -271,6 +299,7 @@ try {
     directPayerUrl: directPayerUrl ? redactUrlOrigin(directPayerUrl) : null,
     standalonePacketUrl: directPayerUrl ? redactUrlOrigin(directPayerUrl) : null,
     standalonePacketProof: Boolean(directPayerUrl),
+    focusedInputViewport,
     storageSnapshot,
     finalText: text,
     consoleEvents,
@@ -292,6 +321,7 @@ try {
     hostProfile,
     viewport: getHostContextOptions(hostProfile).viewport,
     screenshots,
+    dotHostScreenshotDiagnostics,
     consoleEvents,
     failure,
     failedAt: new Date().toISOString(),
@@ -514,6 +544,136 @@ async function dismissDotHostNotifications(page) {
   for (let index = 0; index < count; index += 1) {
     await dismissButtons.nth(index).click({ timeout: 2_000 }).catch(() => {});
   }
+}
+
+async function stabilizeDotHostCapture(page, app, profile) {
+  if (profile !== 'dot-host') {
+    return;
+  }
+
+  await app.evaluate(async () => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    await new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+  });
+  await page.evaluate(async () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    await new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+  });
+  await page.waitForTimeout(500);
+}
+
+async function readDotHostViewportState(page, app) {
+  const frameElement = await app.frameElement();
+  const frameBounds = await frameElement.boundingBox();
+  const outer = await page.evaluate(() => ({
+    scrollY: window.scrollY,
+    innerHeight: window.innerHeight,
+    visualViewportHeight: window.visualViewport?.height ?? null,
+  }));
+  const inner = await app.evaluate(() => ({
+    scrollY: window.scrollY,
+    innerHeight: window.innerHeight,
+    visualViewportHeight: window.visualViewport?.height ?? null,
+  }));
+  const reviewSplitBounds = await app.getByRole('button', { name: /review split/i }).boundingBox();
+
+  return {
+    outer,
+    inner,
+    frameBounds,
+    reviewSplitBounds,
+  };
+}
+
+async function stabilizeAndAssertDotHostViewport(page, app) {
+  const beforeOuterRepaint = await readDotHostViewportState(page, app);
+  await stabilizeDotHostCapture(page, app, 'dot-host');
+  const afterOuterRepaint = await readDotHostViewportState(page, app);
+  const { outer, inner, frameBounds, reviewSplitBounds } = afterOuterRepaint;
+
+  if (outer.scrollY !== 0 || inner.scrollY !== 0) {
+    throw new Error(
+      `Focused input left the .dot viewport scrolled: outer=${outer.scrollY}, inner=${inner.scrollY}`,
+    );
+  }
+  if (!frameBounds || frameBounds.y < 0 || frameBounds.y > 100) {
+    throw new Error(`Focused input displaced the .dot app frame: ${JSON.stringify(frameBounds)}`);
+  }
+  if (frameBounds.y + frameBounds.height < outer.innerHeight - 1) {
+    throw new Error(
+      `Focused input left the .dot app frame short of the viewport: ${JSON.stringify(frameBounds)}`,
+    );
+  }
+  if (
+    !reviewSplitBounds ||
+    reviewSplitBounds.y < frameBounds.y ||
+    reviewSplitBounds.y + reviewSplitBounds.height > outer.innerHeight
+  ) {
+    throw new Error(
+      `Review split was not reachable after focused input: ${JSON.stringify(reviewSplitBounds)}`,
+    );
+  }
+
+  return {
+    beforeOuterRepaint,
+    afterOuterRepaint,
+    stable: true,
+  };
+}
+
+async function capturePaintedDotHostViewport(page) {
+  let lastBuffer = null;
+  let lastHostBarLuminance = null;
+
+  for (let attempt = 1; attempt <= 4; attempt += 1) {
+    const buffer = await page.screenshot({
+      fullPage: false,
+      animations: 'disabled',
+      caret: 'hide',
+    });
+    const hostBarLuminance = await measureDotHostBarLuminance(page, buffer);
+    lastBuffer = buffer;
+    lastHostBarLuminance = hostBarLuminance;
+
+    if (hostBarLuminance >= 120) {
+      return { buffer, attempts: attempt, hostBarLuminance };
+    }
+
+    await page.waitForTimeout(100);
+  }
+
+  throw new Error(
+    `The .dot screenshot compositor omitted the host bar after 4 attempts: ` +
+    `luminance=${lastHostBarLuminance}, bytes=${lastBuffer?.length ?? 0}`,
+  );
+}
+
+async function measureDotHostBarLuminance(page, buffer) {
+  return page.evaluate(async (dataUrl) => {
+    const response = await fetch(dataUrl);
+    const bitmap = await createImageBitmap(await response.blob());
+    const sampleHeight = Math.min(56, bitmap.height);
+    const sampleStartX = Math.floor(bitmap.width * 0.18);
+    const sampleWidth = Math.max(1, bitmap.width - (sampleStartX * 2));
+    const canvas = new OffscreenCanvas(sampleWidth, sampleHeight);
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    if (!context) {
+      throw new Error('Could not inspect the .dot screenshot host bar.');
+    }
+    context.drawImage(bitmap, -sampleStartX, 0);
+    const pixels = context.getImageData(0, 0, sampleWidth, sampleHeight).data;
+    let luminance = 0;
+    for (let index = 0; index < pixels.length; index += 4) {
+      luminance += (pixels[index] + pixels[index + 1] + pixels[index + 2]) / 3;
+    }
+    bitmap.close();
+    return Math.round(luminance / (pixels.length / 4));
+  }, `data:image/png;base64,${buffer.toString('base64')}`);
 }
 
 async function waitForServer(url, child) {

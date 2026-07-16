@@ -5,6 +5,119 @@
     "width": 390,
     "height": 844
   },
+  "screenshotMode": "validated_viewport_after_focus_and_scroll_reset",
+  "dotHostScreenshotDiagnostics": [
+    {
+      "file": "01-first-run.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "02-guest-setup.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "03-empty-home.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "04-create-group-empty.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "05-create-group-filled.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "06-group-before-spend.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "07-add-spend-empty.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "08-add-spend-filled.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "09-review-split.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "10-add-spend-after-back.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "11-open-balances.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "12-settle-up.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "13-settle-up-request-sent.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "14-payment-request.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "15-needs-confirm.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "16-after-confirm-leo.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "17-payment-request-nina.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "18-after-confirm-nina.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "19-finish-group.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "20-group-summary.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "21-history-home.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    },
+    {
+      "file": "22-after-refresh-persisted.png",
+      "attempts": 1,
+      "hostBarLuminance": 232
+    }
+  ],
   "capabilityMatrix": {
     "hostProfile": "dot-host",
     "viewport": {
@@ -69,6 +182,57 @@
   "directPayerUrl": null,
   "standalonePacketUrl": null,
   "standalonePacketProof": false,
+  "focusedInputViewport": {
+    "beforeOuterRepaint": {
+      "outer": {
+        "scrollY": 0,
+        "innerHeight": 844,
+        "visualViewportHeight": 844
+      },
+      "inner": {
+        "scrollY": 0,
+        "innerHeight": 788,
+        "visualViewportHeight": 788
+      },
+      "frameBounds": {
+        "x": 0,
+        "y": 56,
+        "width": 390,
+        "height": 788
+      },
+      "reviewSplitBounds": {
+        "x": 24,
+        "y": 764,
+        "width": 342,
+        "height": 56
+      }
+    },
+    "afterOuterRepaint": {
+      "outer": {
+        "scrollY": 0,
+        "innerHeight": 844,
+        "visualViewportHeight": 844
+      },
+      "inner": {
+        "scrollY": 0,
+        "innerHeight": 788,
+        "visualViewportHeight": 788
+      },
+      "frameBounds": {
+        "x": 0,
+        "y": 56,
+        "width": 390,
+        "height": 788
+      },
+      "reviewSplitBounds": {
+        "x": 24,
+        "y": 764,
+        "width": 342,
+        "height": 56
+      }
+    },
+    "stable": true
+  },
   "storageSnapshot": {
     "hasPersistedState": true,
     "keys": [
