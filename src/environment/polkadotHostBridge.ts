@@ -1,4 +1,4 @@
-import type {AccountsProvider, PaymentManager, PaymentStatus, PreimageManager} from '@parity/product-sdk-host';
+import type {AccountsProvider, HostPaymentStatusSubscribeItem, PaymentManager, PreimageManager} from '@parity/product-sdk-host';
 import type {ReceivedStatement, StatementStoreClient, Unsubscribable} from '@parity/product-sdk-statement-store';
 import {accountIdFromBytes} from '@parity/product-sdk-address';
 import {
@@ -44,8 +44,17 @@ export interface RedactedReceiptPacket {
 
 export interface ObservedHostPayment {
   requestId: string;
-  status: PaymentStatus;
+  // product-sdk-host >=0.12 dropped the `PaymentStatus` alias in favour of the
+  // truapi tagged union: {tag: 'Processing' | 'Completed' | 'Failed'}.
+  status: HostPaymentStatusSubscribeItem;
   authority: 'observed_only';
+}
+
+// Duplicated from hostSessionSync.publicKeyHex rather than imported: that module
+// imports PolkadotHostBridge, so sharing the helper would create a cycle. The
+// literal return type is required by the host SDK's HexString parameters.
+function bytesToHex(bytes: Uint8Array): `0x${string}` {
+  return `0x${Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('')}`;
 }
 
 type ResultAsyncLike<T> = {
@@ -228,7 +237,11 @@ export class PolkadotHostBridge {
         assertEncryptedSessionPacket(packet);
         // Session events are append-only. A shared channel would apply
         // last-write-wins semantics and suppress concurrent participant events.
-        return client.publish(packet, {topic2: topic, decryptionKey, ttlSeconds: 300});
+        //
+        // statement-store >=0.5 resolves to Result<void, StatementStoreError>.
+        // Collapse it here so the rest of the shell keeps its boolean contract.
+        const result = await client.publish(packet, {topic2: topic, decryptionKey, ttlSeconds: 300});
+        return result.ok;
       },
       close: () => {
         subscription.unsubscribe();
@@ -251,7 +264,8 @@ export class PolkadotHostBridge {
     const sdk = await this.sdkLoader();
     const manager = await sdk.getPaymentManager();
     if (!manager) throw new Error('Host payments are unavailable.');
-    const {id} = await manager.requestPayment(amount, destination);
+    // product-sdk-host >=0.12 takes the destination as a hex string, not raw bytes.
+    const {id} = await manager.requestPayment(amount, bytesToHex(destination));
     const subscription = manager.subscribePaymentStatus(id, status => {
       onStatus({requestId: id, status, authority: 'observed_only'});
     });

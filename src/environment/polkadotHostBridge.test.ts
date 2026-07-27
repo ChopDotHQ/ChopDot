@@ -76,7 +76,7 @@ test('completed host payment remains observed only', async () => {
     getPaymentManager: async () => ({
       requestPayment: async () => ({id: 'payment-1'}),
       subscribePaymentStatus: (_id, callback) => {
-        callback({type: 'completed'});
+        callback({tag: 'Completed'});
         return {unsubscribe() {}, onInterrupt() {}} as never;
       },
     }),
@@ -84,9 +84,9 @@ test('completed host payment remains observed only', async () => {
   await new PolkadotHostBridge({sdkLoader: async () => sdk}).requestPayment({
     amount: 10n,
     destination: new Uint8Array(32),
-    onStatus: payment => observed.push(`${payment.status.type}:${payment.authority}`),
+    onStatus: payment => observed.push(`${payment.status.tag}:${payment.authority}`),
   });
-  assert.deepEqual(observed, ['completed:observed_only']);
+  assert.deepEqual(observed, ['Completed:observed_only']);
 });
 
 test('shared session publishes append-only events without a last-write-wins channel', async () => {

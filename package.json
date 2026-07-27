@@ -30,8 +30,8 @@
   },
   "dependencies": {
     "@parity/product-sdk-address": "0.1.1",
-    "@parity/product-sdk-host": "0.11.0",
-    "@parity/product-sdk-statement-store": "0.4.10",
+    "@parity/product-sdk-host": "0.14.1",
+    "@parity/product-sdk-statement-store": "0.6.2",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
     "lucide-react": "^0.546.0",
