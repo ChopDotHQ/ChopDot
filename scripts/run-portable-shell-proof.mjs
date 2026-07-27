@@ -16,6 +16,14 @@ const defaultOutDir = hostProfile === 'web'
 const outDir = process.env.PROOF_OUT || defaultOutDir;
 const chromePath = process.env.CHROME_PATH || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
+// Outbound-network probe target. Defaults to the JSON-RPC endpoint the shell
+// already depends on (see src/payments/pasWallet.ts) so the probe measures a
+// real dependency rather than an arbitrary host. Override to test any backend,
+// e.g. NETWORK_PROBE_URL=https://api.example.com/health.
+const networkProbeUrl = process.env.NETWORK_PROBE_URL
+  || 'https://services.polkadothub-rpc.com/testnet';
+const networkProbeTimeoutMs = Number(process.env.NETWORK_PROBE_TIMEOUT_MS || 8000);
+
 if (hostProfile === 'dot-host' && !process.env.PROOF_URL) {
   throw new Error(
     'The .dot proof requires a wrapped PROOF_URL; a direct localhost app has no host iframe.',
@@ -221,7 +229,62 @@ try {
     hasPersistedState: Boolean(window.localStorage.getItem('chopdot-portable-shell-state-v1')),
     keys: Object.keys(window.localStorage).sort(),
   }));
-  const capabilityMatrix = await app.evaluate((profile) => {
+  const capabilityMatrix = await app.evaluate(async ({profile, probeUrl, probeTimeoutMs}) => {
+    // Outbound HTTPS probe, run from inside the host frame. Any HTTP response —
+    // including 4xx/5xx — proves the request left the sandbox; only a thrown
+    // error (CSP refusal, DNS failure, abort) means outbound egress is blocked.
+    async function probeOutboundNetwork() {
+      const startedAt = Date.now();
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), probeTimeoutMs);
+      // A CSP refusal and a plain network failure both surface as
+      // "TypeError: Failed to fetch", so listen for the violation event to tell
+      // them apart. Without this the probe cannot answer *why* egress failed.
+      const violations = [];
+      const onViolation = (event) => {
+        violations.push({
+          blockedURI: event.blockedURI,
+          violatedDirective: event.violatedDirective || event.effectiveDirective,
+          originalPolicy: typeof event.originalPolicy === 'string' ? event.originalPolicy.slice(0, 300) : null,
+        });
+      };
+      document.addEventListener('securitypolicyviolation', onViolation);
+      try {
+        const response = await fetch(probeUrl, {
+          method: 'POST',
+          headers: {'content-type': 'application/json'},
+          body: JSON.stringify({jsonrpc: '2.0', id: 'capability-probe', method: 'eth_chainId', params: []}),
+          signal: controller.signal,
+        });
+        return {
+          target: probeUrl,
+          outboundFetchReachable: true,
+          httpStatus: response.status,
+          durationMs: Date.now() - startedAt,
+          blockedByCsp: false,
+          cspViolations: violations,
+          failure: null,
+        };
+      } catch (error) {
+        // Give a violation event queued by the failed fetch a chance to land.
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        return {
+          target: probeUrl,
+          outboundFetchReachable: false,
+          httpStatus: null,
+          durationMs: Date.now() - startedAt,
+          blockedByCsp: violations.length > 0,
+          cspViolations: violations,
+          failure: `${error?.name ?? 'Error'}: ${error?.message ?? String(error)}`,
+        };
+      } finally {
+        clearTimeout(timer);
+        document.removeEventListener('securitypolicyviolation', onViolation);
+      }
+    }
+
+    const network = await probeOutboundNetwork();
+
     let canUseLocalStorage = false;
     try {
       window.localStorage.setItem('__chopdot_capability_test__', '1');
@@ -277,8 +340,9 @@ try {
       telegramViewportStableHeight: window.Telegram?.WebApp?.viewportStableHeight ?? null,
       insideDotHostWrapper: profile === 'dot-host' && window.self !== window.top,
       appUrl: window.location.href,
+      network,
     };
-  }, hostProfile);
+  }, {profile: hostProfile, probeUrl: networkProbeUrl, probeTimeoutMs: networkProbeTimeoutMs});
   const hostCallLogAfterReload = await app.evaluate(() => window.__chopdotTelegramProof?.calls ?? []);
 
   const report = {
