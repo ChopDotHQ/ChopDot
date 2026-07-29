@@ -1,5 +1,6 @@
 import { AppState, User, Group, Expense, Split, SavedRecord, PaymentMethod, WalletPaymentReceipt } from '../types';
 import {normalizeEvmAddress, pasToBaseUnits, POLKADOT_HUB_TESTNET_CHAIN_ID} from '../payments/pasWallet';
+import type { GroupInvitePacket } from '../requestLinks.ts';
 
 export const createCleanState = (): AppState => ({
   mode: 'clean',
@@ -30,6 +31,7 @@ export type Action =
   | { type: 'ADD_USER'; payload: { user: User } }
   | { type: 'SET_WALLET_ADDRESS'; payload: { userId: string; walletAddress: string } }
   | { type: 'CREATE_GROUP'; payload: { group: Group } }
+  | { type: 'ACCEPT_GROUP_INVITE'; payload: { invite: GroupInvitePacket } }
   | { type: 'ADD_EXPENSE'; payload: { expense: Expense; splits: Split[] } }
   | { type: 'SEND_REQUEST'; payload: { splitId: string; requestId?: string; expiresAt?: string } }
   | { type: 'MARK_PAID'; payload: { splitId: string; userId: string } }
@@ -97,6 +99,79 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         groups: { ...state.groups, [action.payload.group.id]: action.payload.group }
       };
+    case 'ACCEPT_GROUP_INVITE': {
+      // A shared snapshot, not authority. Local truth always wins: anything we
+      // already hold is left untouched, so a link can never rewrite our own
+      // record of who owes what. See SECURITY_FOUNDATION.md.
+      const { invite } = action.payload;
+
+      const users = { ...state.users };
+      invite.members.forEach(m => {
+        if (!users[m.id]) users[m.id] = { id: m.id, name: m.name };
+      });
+
+      // Claim our place in the roster. The inviter generated ids for everyone,
+      // so a joining device that named itself "Leo" must adopt the roster's Leo
+      // id — otherwise its splits reference a member it is not, and it sees two
+      // Leos. Matching by normalized name is the same convention CreateGroup
+      // already uses when a friend name matches an existing user.
+      let currentUserId = state.currentUserId;
+      const myName = currentUserId ? state.users[currentUserId]?.name : undefined;
+      const claimed = myName
+        ? invite.members.find(m => normalizeInviteName(m.name) === normalizeInviteName(myName))
+        : undefined;
+
+      if (claimed && currentUserId && claimed.id !== currentUserId) {
+        delete users[currentUserId];
+        currentUserId = claimed.id;
+      }
+
+      const memberIds = invite.members.map(m => m.id);
+      if (currentUserId && !memberIds.includes(currentUserId)) {
+        // Joined under a name nobody listed: join as an additional member
+        // rather than silently becoming a spectator.
+        memberIds.push(currentUserId);
+      }
+
+      const groups = { ...state.groups };
+      if (!groups[invite.groupId]) {
+        groups[invite.groupId] = {
+          id: invite.groupId,
+          name: invite.groupName,
+          memberIds,
+        };
+      }
+
+      const expenses = { ...state.expenses };
+      invite.expenses.forEach(e => {
+        if (!expenses[e.id]) {
+          expenses[e.id] = {
+            id: e.id,
+            groupId: invite.groupId,
+            description: e.description,
+            amount: e.amount,
+            currency: e.currency,
+            paidByUserId: e.paidByUserId,
+            date: e.date,
+          };
+        }
+      });
+
+      const splits = { ...state.splits };
+      invite.splits.forEach(sp => {
+        if (!splits[sp.id]) {
+          splits[sp.id] = {
+            id: sp.id,
+            expenseId: sp.expenseId,
+            userId: sp.userId,
+            amount: sp.amount,
+            status: sp.status,
+          };
+        }
+      });
+
+      return { ...state, currentUserId, users, groups, expenses, splits };
+    }
     case 'ADD_EXPENSE': {
       const { expense, splits } = action.payload;
       const newSplits = { ...state.splits };
@@ -278,3 +353,7 @@ export const getSavedRecordSummary = (state: AppState, recordId: string) => {
     open: record.openAmount
   };
 };
+
+function normalizeInviteName(value: string): string {
+  return value.trim().replace(/\s+/gu, ' ').toLocaleLowerCase();
+}

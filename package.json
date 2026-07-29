@@ -26,7 +26,9 @@
     "hosts:matrix": "node -e \"const fs=require('fs'); const m=JSON.parse(fs.readFileSync('proof/host-matrix.json','utf8')); console.log(JSON.stringify(m.hosts,null,2));\"",
     "proof:web": "node scripts/run-portable-shell-proof.mjs",
     "proof:telegram": "HOST_PROFILE=telegram node scripts/run-portable-shell-proof.mjs",
-    "proof:dot-host": "HOST_PROFILE=dot-host node scripts/run-portable-shell-proof.mjs"
+    "proof:dot-host": "HOST_PROFILE=dot-host node scripts/run-portable-shell-proof.mjs",
+    "test:group-invite": "node --import tsx --test src/groupInvite.test.ts",
+    "proof:group-invite": "node scripts/run-group-invite-proof.mjs"
   },
   "dependencies": {
     "@parity/product-sdk-address": "0.1.1",

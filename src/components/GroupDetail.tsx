@@ -1,4 +1,4 @@
-import { Users } from 'lucide-react';
+import { Share2, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useAppState } from '../state/AppStateContext';
 import { getGroupTotal, getMemberBalance, getOpenSplits } from '../state/store';
@@ -9,6 +9,8 @@ import { Screen, ScreenHeader, ScreenContent, BottomAction, Button, MoneyAmount,
 
 
 import { getInitials } from '../utils';
+import { buildGroupInviteUrl } from '../requestLinks';
+import { shareOrCopyText } from '../environment';
 
 export function GroupDetail({ 
   groupId, 
@@ -26,8 +28,32 @@ export function GroupDetail({
   const { state, dispatch } = useAppState();
   const group = state.groups[groupId];
   const [showConfirmMenu, setShowConfirmMenu] = useState(false);
+  const [inviteStatus, setInviteStatus] = useState<'idle' | 'shared' | 'copied' | 'too_big'>('idle');
   
   if (!group) return null;
+
+  const handleInvite = async () => {
+    if (!state.currentUserId) return;
+
+    const built = buildGroupInviteUrl(
+      { group, users: state.users, expenses: state.expenses, splits: state.splits, currency: state.currency },
+      state.currentUserId,
+    );
+
+    if (!built.ok) {
+      // Honest failure: this group no longer fits in a link. That ceiling is the
+      // real limit of link-carried sharing, not a bug to hide.
+      setInviteStatus('too_big');
+      return;
+    }
+
+    const result = await shareOrCopyText({
+      title: `Join ${group.name} on ChopDot`,
+      text: `${state.users[state.currentUserId]?.name ?? 'Someone'} invited you to ${group.name}.`,
+      url: built.url,
+    });
+    setInviteStatus(result === 'shared' ? 'shared' : 'copied');
+  };
 
   const groupExpenses = (Object.values(state.expenses) as Expense[]).filter(e => e.groupId === groupId);
   const totalSpend = getGroupTotal(state, groupId);
@@ -81,17 +107,38 @@ export function GroupDetail({
         title={group.name} 
         onBack={onBack} 
         rightAction={
-          <div className="flex -space-x-2">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleInvite}
+              aria-label="Invite people to this group"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
+            <div className="flex -space-x-2">
             {members.slice(0, 3).map((m, i) => (
               <div key={m.id} className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-800 border-2 border-white dark:border-[#0a0a0a] flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300 z-10 transition-colors relative" style={{ zIndex: 10 - i }}>
                 {getInitials(m.name)}
               </div>
             ))}
+            </div>
           </div>
         }
       />
 
       <ScreenContent className="p-6 space-y-6">
+        {inviteStatus !== 'idle' && (
+          <p
+            role="status"
+            className="text-sm text-center text-gray-500 dark:text-gray-400"
+          >
+            {inviteStatus === 'shared' && 'Invite shared.'}
+            {inviteStatus === 'copied' && 'Invite link copied — send it to the group.'}
+            {inviteStatus === 'too_big' && 'This group has too much history to share by link. Add people earlier, or settle and close it first.'}
+          </p>
+        )}
+
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors flex flex-col items-center justify-center min-h-[140px]">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total spend</p>
           <div className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -129,7 +176,8 @@ export function GroupDetail({
                     : memberIsCurrentUser ? 'Ready to pay' : 'Request sent'
                   : null;
 
-              return (
+
+  return (
                 <div key={member.id} className="flex flex-col p-3 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-black/5 dark:border-white/5 transition-colors">
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300 mr-3 shrink-0 transition-colors">

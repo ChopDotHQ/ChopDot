@@ -28,6 +28,7 @@ import { StandalonePayerRequest } from './components/StandalonePayerRequest';
 import { Home as HomeIcon, Users, Settings as SettingsIcon, History as HistoryIcon, Wallet } from 'lucide-react';
 import { configureHostBackButton, initializeHostEnvironment } from './environment';
 import {
+  parseGroupInvite,
   parsePayerMarkedPaidUpdate,
   parsePayerRequestRoute,
   parseStandalonePayerRequest,
@@ -86,10 +87,16 @@ function AppRouter() {
       return { name: 'welcome' };
     }
 
+    const invite = parseGroupInvite();
+    if (invite && state.groups[invite.groupId]) {
+      return { name: 'group_detail', groupId: invite.groupId };
+    }
+
     return { name: 'home' };
   };
   const [view, setView] = useState<View>(getEntryView);
   const appliedPayerUpdates = useRef(new Set<string>());
+  const appliedInvites = useRef(new Set<string>());
 
   const isDev = new URLSearchParams(window.location.search).get("dev") === "1";
   const backView = getBackView(view);
@@ -112,6 +119,20 @@ function AppRouter() {
     });
     setView({ name: 'group_detail', groupId: returnedUpdate.groupId });
   }, [dispatch, state]);
+
+  // Apply an incoming group invite once we have a local identity to attach it
+  // to. Guest setup runs first, so a fresh device joins after naming itself.
+  useEffect(() => {
+    if (!state.currentUserId) return;
+    const invite = parseGroupInvite();
+    if (!invite || appliedInvites.current.has(invite.groupId)) return;
+
+    appliedInvites.current.add(invite.groupId);
+    if (!state.groups[invite.groupId]) {
+      dispatch({ type: 'ACCEPT_GROUP_INVITE', payload: { invite } });
+    }
+    setView({ name: 'group_detail', groupId: invite.groupId });
+  }, [dispatch, state.currentUserId, state.groups]);
 
   useEffect(() => {
     if (parsePayerMarkedPaidUpdate()) return;
