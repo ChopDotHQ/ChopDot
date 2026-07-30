@@ -30,7 +30,8 @@
     "test:group-invite": "node --import tsx --test src/groupInvite.test.ts",
     "proof:group-invite": "node scripts/run-group-invite-proof.mjs",
     "proof:agent-settlement": "node --import tsx scripts/run-agent-settlement-proof.mjs",
-    "proof:full-loop": "node --import tsx scripts/run-full-loop-proof.mjs"
+    "proof:full-loop": "node --import tsx scripts/run-full-loop-proof.mjs",
+    "test:statement-budget": "playwright test tests/statement-store-notification-budget.spec.ts --config=playwright.host-sim.config.ts"
   },
   "dependencies": {
     "@parity/product-sdk-address": "0.1.1",
