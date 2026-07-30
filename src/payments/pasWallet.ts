@@ -23,8 +23,13 @@ declare global {
 }
 
 export function pasToBaseUnits(amount: number | string): string {
+  // Never route a float through toFixed(18): it exposes binary representation
+  // error, so 0.615 becomes "0.614999999999999991" and an exact on-chain match
+  // is rejected as a different amount. String() gives the shortest round-trip
+  // decimal instead. Exponential forms (1e-7) fail the guard below, which is
+  // the right outcome for a payment amount.
   const source = typeof amount === 'number'
-    ? amount.toFixed(18).replace(/0+$/u, '').replace(/\.$/u, '')
+    ? String(amount)
     : amount.trim();
   if (!/^\d+(?:\.\d{1,18})?$/u.test(source)) {
     throw new Error('Enter a valid PAS amount.');

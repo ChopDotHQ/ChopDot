@@ -28,7 +28,8 @@
     "proof:telegram": "HOST_PROFILE=telegram node scripts/run-portable-shell-proof.mjs",
     "proof:dot-host": "HOST_PROFILE=dot-host node scripts/run-portable-shell-proof.mjs",
     "test:group-invite": "node --import tsx --test src/groupInvite.test.ts",
-    "proof:group-invite": "node scripts/run-group-invite-proof.mjs"
+    "proof:group-invite": "node scripts/run-group-invite-proof.mjs",
+    "proof:agent-settlement": "node --import tsx scripts/run-agent-settlement-proof.mjs"
   },
   "dependencies": {
     "@parity/product-sdk-address": "0.1.1",

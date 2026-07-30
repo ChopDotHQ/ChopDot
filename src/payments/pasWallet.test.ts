@@ -103,3 +103,32 @@ function mockRpc(transaction: {from: string; to: string; value: string}): typeof
     });
   }) as typeof fetch;
 }
+
+test('pasToBaseUnits survives float amounts that toFixed(18) would corrupt', () => {
+  // Regression: 0.615 previously became 614999999999999991, so a legitimate
+  // exact-match payment was rejected as "a different amount". Found by moving
+  // real PAS on chain, not by unit tests.
+  const cases: Array<[number, string]> = [
+    [0.615, '615000000000000000'],
+    [0.1, '100000000000000000'],
+    [0.3, '300000000000000000'],
+    [1.1, '1100000000000000000'],
+    [2.675, '2675000000000000000'],
+    [0.07, '70000000000000000'],
+    [61.5, '61500000000000000000'],
+    [1, '1000000000000000000'],
+  ];
+  for (const [amount, expected] of cases) {
+    assert.equal(pasToBaseUnits(amount), expected, `pasToBaseUnits(${amount})`);
+  }
+});
+
+test('pasToBaseUnits still accepts decimal strings verbatim', () => {
+  assert.equal(pasToBaseUnits('0.615'), '615000000000000000');
+  assert.equal(pasToBaseUnits('12'), '12000000000000000000');
+});
+
+test('pasToBaseUnits rejects amounts it cannot represent as a decimal', () => {
+  assert.throws(() => pasToBaseUnits(1e-7), /valid PAS amount/);
+  assert.throws(() => pasToBaseUnits(-1), /valid PAS amount/);
+});
