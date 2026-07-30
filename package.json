@@ -31,7 +31,8 @@
     "proof:group-invite": "node scripts/run-group-invite-proof.mjs",
     "proof:agent-settlement": "node --import tsx scripts/run-agent-settlement-proof.mjs",
     "proof:full-loop": "node --import tsx scripts/run-full-loop-proof.mjs",
-    "test:statement-budget": "playwright test tests/statement-store-notification-budget.spec.ts --config=playwright.host-sim.config.ts"
+    "test:statement-budget": "playwright test tests/statement-store-notification-budget.spec.ts --config=playwright.host-sim.config.ts",
+    "spike:nostr-delivery": "node scripts/spike-nostr-delivery.mjs"
   },
   "dependencies": {
     "@parity/product-sdk-address": "0.1.1",
@@ -56,6 +57,7 @@
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
-    "vite": "^6.2.3"
+    "vite": "^6.2.3",
+    "nostr-tools": "^2.24.1"
   }
 }
