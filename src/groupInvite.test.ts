@@ -161,3 +161,53 @@ test('dot-host invites use the public host, not the sandbox origin', () => {
   assert.equal(url.hostname, 'chopdot-shell-proof.paseo.li');
   assert.equal(url.searchParams.get('chainBackend'), 'rpc-gateway');
 });
+
+test('the invite carries the group currency so amounts are not relabelled', () => {
+  // Regression: a joining device showed "$0.61" for what the inviter recorded as
+  // "PAS 0.61", and the wallet payment path (PAS-only) became unreachable.
+  // Found by running the full loop, not by unit tests.
+  const src = source({ currency: 'PAS' });
+  const { parsed } = roundTrip(src);
+  assert.ok(parsed);
+  assert.equal(parsed.currency, 'PAS');
+});
+
+test('an invite with a nonsense currency is rejected', () => {
+  const built = buildGroupInviteUrl(source(), 'mina', HREF);
+  if (!built.ok) throw new Error('unreachable');
+  const packet = new URL(built.url).searchParams.get('joinGroup')!;
+  const decoded = JSON.parse(Buffer.from(packet, 'base64url').toString('utf8'));
+  decoded.currency = 'DOLLARS';
+  const tampered = Buffer.from(JSON.stringify(decoded), 'utf8').toString('base64url');
+  assert.equal(parseGroupInvite(`?joinGroup=${tampered}`), null);
+});
+
+test('the invite carries public wallet addresses so a joiner can pay by wallet', () => {
+  // Regression: Leo joined, tapped Pay, and got "Mina needs to connect a wallet
+  // first" — she had, but his copy of her had no address. RECORD_MATCHED_PAYMENT
+  // also checks receiver.walletAddress, so confirmation was impossible.
+  const src = source();
+  src.users.mina.walletAddress = '0x7f7Ce4722c61C6616f5C47E905f42A1D02f18b3A';
+  const { parsed } = roundTrip(src);
+  assert.ok(parsed);
+  const mina = parsed.members.find(m => m.id === 'mina');
+  assert.equal(mina?.walletAddress, '0x7f7ce4722c61c6616f5c47e905f42a1d02f18b3a');
+});
+
+test('members without a wallet stay wallet-less rather than gaining a blank one', () => {
+  const { parsed } = roundTrip(source());
+  assert.ok(parsed);
+  assert.equal(parsed.members.every(m => m.walletAddress === undefined), true);
+});
+
+test('a malformed wallet address rejects the whole invite', () => {
+  const src = source();
+  src.users.mina.walletAddress = '0x7f7Ce4722c61C6616f5C47E905f42A1D02f18b3A';
+  const built = buildGroupInviteUrl(src, 'mina', HREF);
+  if (!built.ok) throw new Error('unreachable');
+  const packet = new URL(built.url).searchParams.get('joinGroup')!;
+  const decoded = JSON.parse(Buffer.from(packet, 'base64url').toString('utf8'));
+  decoded.members.find((m: {id: string}) => m.id === 'mina').walletAddress = '0xnope';
+  const tampered = Buffer.from(JSON.stringify(decoded), 'utf8').toString('base64url');
+  assert.equal(parseGroupInvite(`?joinGroup=${tampered}`), null);
+});

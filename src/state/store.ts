@@ -107,7 +107,11 @@ export function reducer(state: AppState, action: Action): AppState {
 
       const users = { ...state.users };
       invite.members.forEach(m => {
-        if (!users[m.id]) users[m.id] = { id: m.id, name: m.name };
+        if (!users[m.id]) {
+          users[m.id] = m.walletAddress
+            ? { id: m.id, name: m.name, walletAddress: m.walletAddress }
+            : { id: m.id, name: m.name };
+        }
       });
 
       // Claim our place in the roster. The inviter generated ids for everyone,
@@ -170,7 +174,12 @@ export function reducer(state: AppState, action: Action): AppState {
         }
       });
 
-      return { ...state, currentUserId, users, groups, expenses, splits };
+      // Adopt the group's currency so amounts are not relabelled on arrival.
+      // Only when we have no groups of our own yet, so joining never rewrites
+      // an existing local preference.
+      const currency = Object.keys(state.groups).length === 0 ? invite.currency : state.currency;
+
+      return { ...state, currentUserId, currency, users, groups, expenses, splits };
     }
     case 'ADD_EXPENSE': {
       const { expense, splits } = action.payload;

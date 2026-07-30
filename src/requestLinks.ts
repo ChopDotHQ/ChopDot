@@ -30,6 +30,13 @@ export type PayerMarkedPaidUpdate = {
 export type GroupInviteMember = {
   id: string;
   name: string;
+  /**
+   * Public receiving address, carried so a joining device can pay by wallet and
+   * so RECORD_MATCHED_PAYMENT can check the receiver. Same shape and validation
+   * as `StandalonePayerRequest.recipientWalletAddress`. A receiving address is
+   * public by nature; no key material travels.
+   */
+  walletAddress?: string;
 };
 
 export type GroupInviteExpense = {
@@ -70,6 +77,13 @@ export type GroupInvitePacket = {
   action: 'group_invite';
   groupId: string;
   groupName: string;
+  /**
+   * The group's currency. Without this a joining device relabels every amount
+   * in its own default — "PAS 0.61" arrives as "$0.61" — and the wallet payment
+   * path, which requires PAS, becomes unreachable. Currency is part of the
+   * exact-match rule, so it must travel with the amounts.
+   */
+  currency: string;
   invitedBy: string;
   members: GroupInviteMember[];
   expenses: GroupInviteExpense[];
@@ -203,7 +217,7 @@ export function parsePayerMarkedPaidUpdate(search = window.location.search): Pay
 
 export type GroupInviteSource = {
   group: { id: string; name: string; memberIds: string[] };
-  users: Record<string, { id: string; name: string }>;
+  users: Record<string, { id: string; name: string; walletAddress?: string }>;
   expenses: Record<string, { id: string; groupId: string; description: string; amount: number; currency?: string; paidByUserId: string; date: string }>;
   splits: Record<string, { id: string; expenseId: string; userId: string; amount: number; status: string }>;
   currency: string;
@@ -228,8 +242,12 @@ export function buildGroupInviteUrl(
 ): GroupInviteBuildResult {
   const members = source.group.memberIds
     .map((id) => source.users[id])
-    .filter((u): u is { id: string; name: string } => Boolean(u))
-    .map((u) => ({ id: u.id, name: normalizeText(u.name, MAX_TEXT_LENGTH) }));
+    .filter((u): u is { id: string; name: string; walletAddress?: string } => Boolean(u))
+    .map((u) => {
+      const member: GroupInviteMember = { id: u.id, name: normalizeText(u.name, MAX_TEXT_LENGTH) };
+      if (u.walletAddress) member.walletAddress = u.walletAddress.trim().toLowerCase();
+      return member;
+    });
 
   if (members.length > MAX_INVITE_MEMBERS) return { ok: false, reason: 'too_many_members' };
 
@@ -245,6 +263,7 @@ export function buildGroupInviteUrl(
     action: 'group_invite',
     groupId: source.group.id,
     groupName: normalizeText(source.group.name, MAX_TEXT_LENGTH),
+    currency: source.currency.trim().toUpperCase(),
     invitedBy: invitedByUserId,
     members,
     expenses: expenses.map((e) => ({
@@ -289,6 +308,7 @@ export function parseGroupInvite(search = window.location.search): GroupInvitePa
     parsed.action !== 'group_invite' ||
     typeof parsed.groupId !== 'string' ||
     typeof parsed.groupName !== 'string' ||
+    typeof parsed.currency !== 'string' ||
     typeof parsed.invitedBy !== 'string' ||
     !Array.isArray(parsed.members) ||
     !Array.isArray(parsed.expenses) ||
@@ -309,8 +329,9 @@ export function parseGroupInvite(search = window.location.search): GroupInvitePa
 
   const groupId = normalizeText(parsed.groupId, MAX_REQUEST_ID_LENGTH);
   const groupName = normalizeText(parsed.groupName, MAX_TEXT_LENGTH);
+  const currency = parsed.currency.trim().toUpperCase();
   const invitedBy = normalizeText(parsed.invitedBy, MAX_REQUEST_ID_LENGTH);
-  if (!groupId || !groupName || !invitedBy) return null;
+  if (!groupId || !groupName || !invitedBy || !/^[A-Z]{3}$/.test(currency)) return null;
 
   const members: GroupInviteMember[] = [];
   for (const raw of parsed.members.slice(0, MAX_INVITE_MEMBERS)) {
@@ -318,7 +339,15 @@ export function parseGroupInvite(search = window.location.search): GroupInvitePa
     const id = normalizeText(raw.id, MAX_REQUEST_ID_LENGTH);
     const name = normalizeText(raw.name, MAX_TEXT_LENGTH);
     if (!id || !name) return null;
-    members.push({ id, name });
+
+    const member: GroupInviteMember = { id, name };
+    if (raw.walletAddress !== undefined) {
+      if (typeof raw.walletAddress !== 'string') return null;
+      const addr = raw.walletAddress.trim().toLowerCase();
+      if (!/^0x[0-9a-f]{40}$/u.test(addr)) return null;
+      member.walletAddress = addr;
+    }
+    members.push(member);
   }
   if (!members.some((m) => m.id === invitedBy)) return null;
 
@@ -404,6 +433,7 @@ export function parseGroupInvite(search = window.location.search): GroupInvitePa
     action: 'group_invite',
     groupId,
     groupName,
+    currency,
     invitedBy,
     members,
     expenses,
