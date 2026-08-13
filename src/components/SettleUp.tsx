@@ -9,7 +9,6 @@ import {appStorage} from '../environment';
 import { buildPayerRequestUrl } from '../requestLinks';
 import {connectPasWallet} from '../payments/pasWallet';
 import {
-  createLiveGroupSession,
   createMemberCapability,
   derivePayerSessionConfig,
   hashMemberCapability,
@@ -85,13 +84,6 @@ export function SettleUp({
     const requestId = `req-${crypto.randomUUID()}`;
     const createdAt = new Date();
     const expiresAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000).toISOString();
-    const liveSession = group.liveSession ?? createLiveGroupSession();
-    if (!group.liveSession) {
-      dispatch({
-        type: 'SET_GROUP_LIVE_SESSION',
-        payload: {groupId, roomId: liveSession.roomId, secret: liveSession.secret},
-      });
-    }
     const memberCapability = createMemberCapability();
     const capabilityHash = await hashMemberCapability(memberCapability);
     const requestedSplits = getOpenSplits(state, groupId).filter(

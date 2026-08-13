@@ -16,7 +16,9 @@ const CHAIN_ID_HEX = '0x190f1b41';
 const sessionSecret = 'DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD';
 const sessionRoom = `friday-crew-wallet-${Date.now()}`;
 const sessionQuery = `chopSession=${sessionRoom}&chopKey=${sessionSecret}`;
-const productUrl = `http://127.0.0.1:4177/?${sessionQuery}`;
+// Raw room secrets exist only in the local simulator harness. Production and
+// user-facing routes must use scoped capabilities instead.
+const productUrl = `http://127.0.0.1:4177/?developerChecks=1&${sessionQuery}`;
 const proofDirectory = path.resolve('proof/polkadot-host-wallet-settlement');
 const storageKey = 'chopdot-portable-shell-state-v1';
 const walletFile = path.resolve('../..', '.local-private/agent-wallet-trials/agent-wallet-trial-2026-06-22/wallets.private.json');
@@ -248,7 +250,7 @@ async function openParticipant(
     });
   });
   const page = await context.newPage();
-  await page.goto(`${server.url}?${sessionQuery}`);
+  await page.goto(`${server.url}?developerChecks=1&${sessionQuery}`);
   await expect.poll(() => page.evaluate(() => window.__TEST_HOST__.getConnectionStatus())).toBe('connected');
   await expect(page.locator('iframe')).toHaveCount(1);
   const frame = page.frames().find(candidate => candidate !== page.mainFrame());

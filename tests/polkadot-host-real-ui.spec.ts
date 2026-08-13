@@ -13,7 +13,9 @@ import type {AppState} from '../src/types.ts';
 const sessionSecret = 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC';
 const sessionRoom = 'friday-crew-real-ui-five';
 const sessionQuery = `chopSession=${sessionRoom}&chopKey=${sessionSecret}`;
-const productUrl = `http://127.0.0.1:4177/?${sessionQuery}`;
+// Raw room secrets exist only in the local simulator harness. Production and
+// user-facing routes must use scoped capabilities instead.
+const productUrl = `http://127.0.0.1:4177/?developerChecks=1&${sessionQuery}`;
 const proofDirectory = path.resolve('proof/polkadot-host-real-ui');
 const storageKey = 'chopdot-portable-shell-state-v1';
 
@@ -51,7 +53,7 @@ async function openParticipant(browser: Browser, definition: Definition): Promis
     networks: [PASEO_ASSET_HUB],
   });
   const page = await browser.newPage({viewport: {width: 430, height: 932}});
-  await page.goto(`${server.url}?${sessionQuery}`);
+  await page.goto(`${server.url}?developerChecks=1&${sessionQuery}`);
   await expect.poll(() => page.evaluate(() => window.__TEST_HOST__.getConnectionStatus())).toBe('connected');
   await expect(page.locator('iframe')).toHaveCount(1);
   const frame = page.frames().find(candidate => candidate !== page.mainFrame());
