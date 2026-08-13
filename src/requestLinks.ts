@@ -14,17 +14,13 @@ export type StandalonePayerRequest = {
   recipientWalletAddress?: string;
   createdAt: string;
   expiresAt: string;
-};
-
-export type PayerMarkedPaidUpdate = {
-  action: 'marked_paid';
-  requestId: string;
-  groupId: string;
-  memberId: string;
-  amount: number;
-  currency: string;
-  createdAt: string;
-  expiresAt: string;
+  live: {
+    roomId: string;
+    secret: string;
+    memberCapability: string;
+    authority: 'native' | 'offline';
+    requesterPublicKeyHex?: string;
+  };
 };
 
 export type GroupInviteMember = {
@@ -95,7 +91,6 @@ export type GroupInvitePacket = {
 const GROUP_PARAM = 'payGroupId';
 const MEMBER_PARAM = 'payMemberId';
 const REQUEST_PARAM = 'payRequest';
-const UPDATE_PARAM = 'payUpdate';
 const MAX_PACKET_LENGTH = 2200;
 const MAX_TEXT_LENGTH = 80;
 const MAX_REQUEST_ID_LENGTH = 140;
@@ -123,29 +118,6 @@ export function buildPayerRequestUrl(
   return url.toString();
 }
 
-export function buildPayerMarkedPaidReturnUrl(
-  groupId: string,
-  memberId: string,
-  request: StandalonePayerRequest,
-  currentHref = window.location.href,
-): string {
-  const url = getPublicShareUrl(currentHref);
-  url.searchParams.set(GROUP_PARAM, groupId);
-  url.searchParams.set(MEMBER_PARAM, memberId);
-  url.searchParams.set(UPDATE_PARAM, encodePacket({
-    action: 'marked_paid',
-    requestId: request.requestId,
-    groupId,
-    memberId,
-    amount: request.amount,
-    currency: request.currency,
-    createdAt: new Date().toISOString(),
-    expiresAt: request.expiresAt,
-  } satisfies PayerMarkedPaidUpdate));
-  url.hash = '';
-  return url.toString();
-}
-
 export function parsePayerRequestRoute(search = window.location.search): PayerRequestRoute | null {
   const params = new URLSearchParams(search);
   const groupId = params.get(GROUP_PARAM);
@@ -165,54 +137,6 @@ export function parseStandalonePayerRequest(search = window.location.search): St
   }
 
   return decodeRequestPacket(packet);
-}
-
-export function parsePayerMarkedPaidUpdate(search = window.location.search): PayerMarkedPaidUpdate | null {
-  const packet = new URLSearchParams(search).get(UPDATE_PARAM);
-  if (!packet || packet.length > MAX_PACKET_LENGTH) return null;
-
-  const parsed = decodePacket<Partial<PayerMarkedPaidUpdate>>(packet);
-  if (
-    !parsed ||
-    parsed.action !== 'marked_paid' ||
-    typeof parsed.requestId !== 'string' ||
-    typeof parsed.groupId !== 'string' ||
-    typeof parsed.memberId !== 'string' ||
-    typeof parsed.amount !== 'number' ||
-    typeof parsed.currency !== 'string' ||
-    typeof parsed.createdAt !== 'string' ||
-    typeof parsed.expiresAt !== 'string'
-  ) {
-    return null;
-  }
-
-  const normalized: PayerMarkedPaidUpdate = {
-    action: 'marked_paid',
-    requestId: normalizeText(parsed.requestId, MAX_REQUEST_ID_LENGTH),
-    groupId: normalizeText(parsed.groupId, MAX_REQUEST_ID_LENGTH),
-    memberId: normalizeText(parsed.memberId, MAX_REQUEST_ID_LENGTH),
-    amount: parsed.amount,
-    currency: parsed.currency.trim().toUpperCase(),
-    createdAt: parsed.createdAt,
-    expiresAt: parsed.expiresAt,
-  };
-
-  if (
-    !normalized.requestId ||
-    !normalized.groupId ||
-    !normalized.memberId ||
-    !Number.isFinite(normalized.amount) ||
-    normalized.amount <= 0 ||
-    normalized.amount > MAX_AMOUNT ||
-    !/^[A-Z]{3}$/.test(normalized.currency) ||
-    Number.isNaN(Date.parse(normalized.createdAt)) ||
-    Number.isNaN(Date.parse(normalized.expiresAt)) ||
-    Date.parse(normalized.expiresAt) <= Date.now()
-  ) {
-    return null;
-  }
-
-  return normalized;
 }
 
 export type GroupInviteSource = {
@@ -485,7 +409,13 @@ function decodeRequestPacket(packet: string): StandalonePayerRequest | null {
       typeof parsed.amount !== 'number' ||
       typeof parsed.currency !== 'string' ||
       typeof parsed.paymentMethodLabel !== 'string' ||
-      typeof parsed.createdAt !== 'string'
+      typeof parsed.createdAt !== 'string' ||
+      !parsed.live ||
+      typeof parsed.live.roomId !== 'string' ||
+      typeof parsed.live.secret !== 'string' ||
+      typeof parsed.live.memberCapability !== 'string' ||
+      (parsed.live.authority !== 'native' && parsed.live.authority !== 'offline') ||
+      (parsed.live.requesterPublicKeyHex !== undefined && typeof parsed.live.requesterPublicKeyHex !== 'string')
     ) {
       return null;
     }
@@ -505,6 +435,15 @@ function decodeRequestPacket(packet: string): StandalonePayerRequest | null {
       expiresAt: typeof parsed.expiresAt === 'string'
         ? parsed.expiresAt
         : new Date(Date.parse(parsed.createdAt) + 24 * 60 * 60 * 1000).toISOString(),
+      live: {
+        roomId: normalizeText(parsed.live.roomId, MAX_REQUEST_ID_LENGTH),
+        secret: parsed.live.secret.trim(),
+        memberCapability: parsed.live.memberCapability.trim(),
+        authority: parsed.live.authority,
+        requesterPublicKeyHex: typeof parsed.live.requesterPublicKeyHex === 'string'
+          ? normalizeHex32(parsed.live.requesterPublicKeyHex)
+          : undefined,
+      },
     };
 
     if (
@@ -520,6 +459,11 @@ function decodeRequestPacket(packet: string): StandalonePayerRequest | null {
       Number.isNaN(Date.parse(normalized.createdAt)) ||
       Number.isNaN(Date.parse(normalized.expiresAt)) ||
       Date.parse(normalized.expiresAt) <= Date.now()
+      || !normalized.live.roomId
+      || !/^[A-Za-z0-9_-]{20,160}$/u.test(normalized.live.secret)
+      || !/^[A-Za-z0-9_-]{20,160}$/u.test(normalized.live.memberCapability)
+      || (normalized.live.authority === 'native' && !normalized.live.requesterPublicKeyHex)
+      || (normalized.live.requesterPublicKeyHex !== undefined && !/^0x[0-9a-f]{64}$/u.test(normalized.live.requesterPublicKeyHex))
       || (normalized.recipientWalletAddress !== undefined && !/^0x[0-9a-f]{40}$/u.test(normalized.recipientWalletAddress))
     ) {
       return null;
@@ -531,19 +475,26 @@ function decodeRequestPacket(packet: string): StandalonePayerRequest | null {
   }
 }
 
+function normalizeHex32(value: string): string {
+  const normalized = value.toLowerCase().replace(/^0x/u, '');
+  return /^[0-9a-f]{64}$/u.test(normalized) ? `0x${normalized}` : '';
+}
+
 function getPublicShareUrl(currentHref: string): URL {
   const current = new URL(currentHref);
   const url = new URL(currentHref);
 
-  if (url.hostname.endsWith('.app.paseo.li')) {
-    url.hostname = url.hostname.replace(/\.app\.paseo\.li$/u, '.paseo.li');
+  if (url.hostname.endsWith('.app.paseo.li') || url.hostname.endsWith('.app.dev-dot.li')) {
+    url.hostname = url.hostname
+      .replace(/\.app\.paseo\.li$/u, '.paseo.li')
+      .replace(/\.app\.dev-dot\.li$/u, '.dev-dot.li');
     url.pathname = '/';
     const chainBackend = current.searchParams.get('chainBackend') ?? 'rpc-gateway';
     url.search = '';
     url.searchParams.set('chainBackend', chainBackend);
   }
 
-  for (const key of [GROUP_PARAM, MEMBER_PARAM, REQUEST_PARAM, UPDATE_PARAM, INVITE_PARAM, 'cid', 'v']) {
+  for (const key of [GROUP_PARAM, MEMBER_PARAM, REQUEST_PARAM, INVITE_PARAM, 'payUpdate', 'cid', 'v']) {
     url.searchParams.delete(key);
   }
   return url;

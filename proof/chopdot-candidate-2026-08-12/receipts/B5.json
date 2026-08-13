@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 2,
+  "batch": "B5",
+  "deliveryTrainId": "chopdot-functional-candidate-2026-08-12",
+  "runStartedAt": "2026-08-13T11:56:03Z",
+  "runCompletedAt": "2026-08-13T11:56:58Z",
+  "candidate": {
+    "id": "b5-2026-08-13",
+    "head": "81e56801a059253ca3daf667251239d4776e96f4",
+    "tree": "6b92e3217621c565b3daf0801dfc1a8693ede3101197a8cb78d4c1c6363d0317",
+    "packageLockSha256": "27dc2921197845c57dbba6556dde28892eef098acd591e3542b30315245a1c6c",
+    "snapshotAt": "2026-08-13T11:56:00Z",
+    "clean": false
+  },
+  "controls": [
+    {"id":"B5-ONE-ACTION","lane":"local","status":"PASS","evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"B5-HONEST-PREVIEW","lane":"local","status":"PASS","evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"B5-THREE-SECOND","lane":"local","status":"PASS","evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"B5-LIFECYCLE-CARDS","lane":"local","status":"PASS","evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"B5-REAL-JOURNEY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"B5-INFRA-INVISIBLE","lane":"local","status":"PASS","evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"B5-RESPONSIVE","lane":"local","status":"PASS","evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"B5-ACCESSIBLE","lane":"local","status":"PASS","evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"B5-HARD-STATES","lane":"local","status":"PASS","evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"B5-SCREENSHOT-REVIEW","lane":"local","status":"PASS","evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"B5-LIVE-ENTRY","lane":"live","status":"BLOCKED","evidence":[]},
+    {"id":"B5-LIVE-DEVICE-VIEWPORTS","lane":"live","status":"BLOCKED","evidence":[]}
+  ],
+  "commands": [
+    {"id":"b5-visual","lane":"local","command":"npx playwright test tests/showcase-entrance.spec.ts tests/candidate-batch5-lifecycle-card.spec.ts --config=playwright.host-sim.config.ts --workers=1","exitCode":0,"evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"b5-a11y","lane":"local","command":"npx playwright test tests/candidate-batch5-accessibility.spec.ts --config=playwright.host-sim.config.ts --workers=1","exitCode":0,"evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"b5-comprehension","lane":"local","command":"node proof/chopdot-candidate-2026-08-12/verify-comprehension-evidence.mjs","exitCode":0,"evidence":[{"path":"test-results/b5-2026-08-13/B5-EVIDENCE.md","sha256":"43887dae2dafabb773542837b682943a383f8589471a459e46f9853748fd2df9","capturedAt":"2026-08-13T11:56:58Z"}]},
+    {"id":"b5-live-visual","lane":"live","command":"npx playwright test tests/candidate-batch5-live-visual.spec.ts --config=playwright.live-dot.config.ts --workers=1","exitCode":1,"evidence":[]}
+  ],
+  "liveEnvironmentVerified": false,
+  "actionTimeApproval": false
+}

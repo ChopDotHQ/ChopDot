@@ -227,7 +227,7 @@ test('five hosted people converge under concurrent encrypted group activity', as
     for (const participant of payingParticipants) {
       await expect.poll(() => participant.frame.evaluate(
         () => window.__CHOPDOT_HOST_ACTIONS__!.observedPayments(),
-      )).toContainEqual(expect.objectContaining({authority: 'observed_only', status: {type: 'completed'}}));
+      )).toContainEqual(expect.objectContaining({authority: 'observed_only', status: {tag: 'Completed'}}));
       expect(await participant.page.evaluate(() => window.__TEST_HOST__.getPaymentLog().length)).toBe(1);
     }
     expect(await participants[0].page.evaluate(() => window.__TEST_HOST__.getPaymentLog().length)).toBe(0);

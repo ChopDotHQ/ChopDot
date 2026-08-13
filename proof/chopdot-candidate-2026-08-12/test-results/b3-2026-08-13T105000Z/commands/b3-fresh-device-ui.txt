@@ -1,0 +1,5 @@
+Command: npx playwright test tests/candidate-batch3-fresh-device-recovery.spec.ts --config=playwright.host-sim.config.ts --workers=1
+Captured: 2026-08-13T10:55:25Z
+Result: PASS
+Tests: 3 passed, 0 failed
+Coverage: isolated Leo and Nina fresh profiles; full browser-context restart; no local group snapshot; exact CHF 120 closed record; visible Review this spend action at 1280x720 and 390x844; wrong account; malformed recovery route; plain user language.

@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 2,
+  "batch": "B4",
+  "deliveryTrainId": "chopdot-functional-candidate-2026-08-12",
+  "runStartedAt": "2026-08-13T11:15:00Z",
+  "runCompletedAt": "2026-08-13T11:24:00Z",
+  "candidate": {
+    "id": "b4-2026-08-13T111500Z",
+    "head": "81e56801a059253ca3daf667251239d4776e96f4",
+    "tree": "33312b5bdfa50fa322a6be46bd6223157ab4122f24eb864f7b0483d4a2841dce",
+    "packageLockSha256": "27dc2921197845c57dbba6556dde28892eef098acd591e3542b30315245a1c6c",
+    "snapshotAt": "2026-08-13T11:14:30Z",
+    "clean": false
+  },
+  "controls": [
+    {
+      "id": "B4-CATCH",
+      "lane": "local",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "B4-MANAGEMENT",
+      "lane": "local",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "B4-PAYOUT",
+      "lane": "local",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "B4-HISTORY",
+      "lane": "local",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "B4-MAIN-APP-INHERITANCE",
+      "lane": "local",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "B4-ONE-CHOP-AUTHORITY",
+      "lane": "local",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "B4-MONEY-STATE",
+      "lane": "local",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "B4-PAYMENT-INSTRUMENT-SEPARATION",
+      "lane": "local",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "B4-MIXED-THREE-PERSON",
+      "lane": "local",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "B4-OFFLINE-RECONNECT",
+      "lane": "local",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "B4-CLOSE-IMMUTABLE",
+      "lane": "local",
+      "status": "PASS",
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "B4-LIVE-FULL-LOOP",
+      "lane": "live",
+      "status": "BLOCKED",
+      "evidence": []
+    },
+    {
+      "id": "B4-LIVE-PAYMENT-REFERENCE",
+      "lane": "live",
+      "status": "BLOCKED",
+      "evidence": []
+    }
+  ],
+  "commands": [
+    {
+      "id": "b4-journey-domain",
+      "lane": "local",
+      "command": "node --import tsx --test src/journey/dinnerJourney.test.ts",
+      "exitCode": 0,
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "b4-authority",
+      "lane": "local",
+      "command": "node --import tsx --test src/environment/*.test.ts src/state/store.test.ts src/requestLinks.test.ts src/groupInvite.test.ts src/payments/*.test.ts",
+      "exitCode": 0,
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "b4-full-loop",
+      "lane": "local",
+      "command": "npx playwright test tests/candidate-batch4-full-loop.spec.ts --config=playwright.host-sim.config.ts --workers=1",
+      "exitCode": 0,
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "b4-inheritance",
+      "lane": "local",
+      "command": "node proof/chopdot-candidate-2026-08-12/verify-capability-inheritance.mjs",
+      "exitCode": 0,
+      "evidence": [
+        {
+          "path": "test-results/b4-2026-08-13T111500Z/B4-EVIDENCE.md",
+          "sha256": "a6e5ee136f4a3c4da181c280740d5b0aa496c466e10e05825deaca801809b84a",
+          "capturedAt": "2026-08-13T11:24:00Z"
+        }
+      ]
+    },
+    {
+      "id": "b4-live-loop",
+      "lane": "live",
+      "command": "npx playwright test tests/candidate-batch4-live-full-loop.spec.ts --config=playwright.live-dot.config.ts --workers=1",
+      "exitCode": 1,
+      "evidence": []
+    }
+  ],
+  "liveEnvironmentVerified": false,
+  "actionTimeApproval": false
+}

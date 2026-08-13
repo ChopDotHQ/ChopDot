@@ -12,6 +12,12 @@ export interface Group {
   id: string;
   name: string;
   memberIds: string[];
+  liveSession?: {
+    roomId: string;
+    secret: string;
+  };
+  closedRecordId?: string;
+  closedAt?: string;
 }
 
 export interface Expense {
@@ -32,6 +38,9 @@ export interface Split {
   status: PaymentStatus;
   requestId?: string;
   requestExpiresAt?: string;
+  requestCapabilityHash?: string;
+  requestEntryCapability?: string;
+  requestCreatedAt?: string;
   walletPayment?: WalletPaymentReceipt;
 }
 

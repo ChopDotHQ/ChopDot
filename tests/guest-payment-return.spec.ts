@@ -2,9 +2,9 @@ import {expect, test} from '@playwright/test';
 import {mkdir} from 'node:fs/promises';
 import path from 'node:path';
 
-const proofDirectory = path.resolve('proof/guest-payment-return');
+const proofDirectory = path.resolve('proof/guest-payment-offline');
 
-test('Leo opens a fresh-device link and returns a scoped paid update to Mina', async ({browser}) => {
+test('Leo keeps one scoped paid action pending when the live host is unavailable', async ({browser}) => {
   await mkdir(proofDirectory, {recursive: true});
   const minaContext = await browser.newContext({viewport: {width: 430, height: 932}});
   const leoContext = await browser.newContext({viewport: {width: 430, height: 932}});
@@ -26,6 +26,7 @@ test('Leo opens a fresh-device link and returns a scoped paid update to Mina', a
     await mina.getByRole('button', {name: 'Add friend'}).click();
     await mina.getByRole('button', {name: 'Create group'}).click();
     await mina.getByRole('button', {name: 'Add spend'}).click();
+    await mina.getByRole('button', {name: 'Enter amount instead'}).click();
     await mina.getByPlaceholder('0.00').fill('30');
     await mina.getByPlaceholder('e.g. Dinner at Gusto').fill('Dinner');
     await mina.getByRole('button', {name: 'Review split'}).click();
@@ -36,7 +37,6 @@ test('Leo opens a fresh-device link and returns a scoped paid update to Mina', a
     const payerUrl = await capturedShareUrl(mina);
     expect(new URL(payerUrl).searchParams.get('payRequest')).toBeTruthy();
 
-    await installShareCapture(leo);
     await leo.goto(payerUrl);
     await expect(leo.getByRole('heading', {name: 'Pay Mina', level: 2})).toBeVisible();
     await expect(leo.getByText('$15.00', {exact: true})).toBeVisible();
@@ -46,24 +46,21 @@ test('Leo opens a fresh-device link and returns a scoped paid update to Mina', a
     await leo.locator('#root').screenshot({path: path.join(proofDirectory, '01-leo-fresh-device-request.png')});
 
     await leo.getByRole('button', {name: 'I paid Mina'}).click();
-    await expect(leo.getByRole('heading', {name: 'Marked as paid', level: 2})).toBeVisible();
-    await expect(leo.getByText('Update sent to Mina', {exact: true})).toBeVisible();
-    const paidUpdateUrl = await capturedShareUrl(leo);
-    expect(new URL(paidUpdateUrl).searchParams.get('payUpdate')).toBeTruthy();
-    await leo.locator('#root').screenshot({path: path.join(proofDirectory, '02-leo-update-sent.png')});
+    await expect(leo.getByRole('heading', {name: `Couldn't update the group`, level: 2})).toBeVisible();
+    await expect(leo.getByText(`Your payment hasn't been marked yet.`, {exact: true})).toBeVisible();
+    await expect(leo.getByText('Try again when you are ready.', {exact: true})).toBeVisible();
+    await expect(leo.getByRole('button', {name: 'Try again'})).toBeVisible();
+    expect(new URL(leo.url()).searchParams.has('payUpdate')).toBe(false);
+    await leo.locator('#root').screenshot({path: path.join(proofDirectory, '02-leo-pending.png')});
 
     await expect(mina.getByText('Link shared', {exact: true})).toBeVisible();
     await expect(mina.getByRole('button', {name: 'Confirm received from Leo'})).toHaveCount(0);
-    await mina.goto(paidUpdateUrl);
-    await expect(mina.getByRole('heading', {name: 'Friday Crew'})).toBeVisible();
-    await expect(mina.getByText('Needs confirm', {exact: true})).toBeVisible();
-    await expect(mina.getByRole('button', {name: 'Confirm received from Leo'})).toBeVisible();
-    await mina.locator('#root').screenshot({path: path.join(proofDirectory, '03-mina-needs-confirm.png')});
+    await mina.locator('#root').screenshot({path: path.join(proofDirectory, '03-mina-still-waiting.png')});
 
-    await mina.getByRole('button', {name: 'Confirm received from Leo'}).click();
-    await expect(mina.getByText('Settled', {exact: true})).toHaveCount(2);
-    await expect(mina.getByRole('button', {name: 'Finish group'})).toBeVisible();
-    await mina.locator('#root').screenshot({path: path.join(proofDirectory, '04-mina-confirmed.png')});
+    await leo.reload();
+    await expect(leo.getByRole('heading', {name: `Couldn't update the group`, level: 2})).toBeVisible();
+    await expect(leo.getByRole('button', {name: 'I paid Mina'})).toHaveCount(0);
+    await expect(leo.getByRole('button', {name: 'Try again'})).toBeVisible();
   } finally {
     await minaContext.close();
     await leoContext.close();
@@ -83,6 +80,9 @@ async function installShareCapture(page: import('@playwright/test').Page): Promi
 }
 
 async function capturedShareUrl(page: import('@playwright/test').Page): Promise<string> {
+  await expect.poll(() => page.evaluate(() => (
+    (window as Window & {__CHOPDOT_CAPTURED_SHARE__?: ShareData}).__CHOPDOT_CAPTURED_SHARE__?.url ?? ''
+  ))).not.toBe('');
   return page.evaluate(() => {
     const value = (window as Window & {__CHOPDOT_CAPTURED_SHARE__?: ShareData}).__CHOPDOT_CAPTURED_SHARE__?.url;
     if (!value) throw new Error('Expected ChopDot to share a URL.');

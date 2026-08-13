@@ -114,6 +114,7 @@ test('five people pay PAS from their own wallet through the visible hosted app',
     await relayUntilQuiet(participants);
 
     await mina.frame.getByRole('button', {name: 'Add spend'}).click();
+    await mina.frame.getByRole('button', {name: 'Enter amount instead'}).click();
     await mina.frame.getByPlaceholder('0.00').fill('0.05');
     await mina.frame.getByPlaceholder('e.g. Dinner at Gusto').fill('Dinner in Zurich');
     await mina.frame.getByRole('button', {name: 'Review split'}).click();
@@ -336,11 +337,21 @@ async function openCapturedPayerLink(mina: Participant, payer: Participant, inde
 function sharedProjection(state: PortableState) {
   return {
     users: Object.values(state.users).sort((a, b) => a.id.localeCompare(b.id)),
-    groups: Object.values(state.groups).sort((a, b) => a.id.localeCompare(b.id)),
+    groups: Object.values(state.groups)
+      .map(group => omitLocalField(group, 'liveSession'))
+      .sort((a, b) => a.id.localeCompare(b.id)),
     expenses: Object.values(state.expenses).sort((a, b) => a.id.localeCompare(b.id)),
-    splits: Object.values(state.splits).sort((a, b) => a.id.localeCompare(b.id)),
+    splits: Object.values(state.splits)
+      .map(split => omitLocalField(split, 'requestEntryCapability'))
+      .sort((a, b) => a.id.localeCompare(b.id)),
     savedRecords: Object.values(state.savedRecords).sort((a, b) => a.id.localeCompare(b.id)),
   };
+}
+
+function omitLocalField<T extends {id: string}>(value: T, field: string): T {
+  const shared = {...value} as T & Record<string, unknown>;
+  delete shared[field];
+  return shared;
 }
 
 async function loadWalletProfiles(): Promise<WalletProfile[]> {

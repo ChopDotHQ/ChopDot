@@ -1,6 +1,20 @@
 import type {AppState} from '../types.ts';
 import type {Action} from '../state/store.ts';
 import {decryptSessionValue, encryptSessionValue, type EncryptedSessionPacket} from './encryptedSession.ts';
+import {
+  assertPayerMarkedPaidEnvelope,
+  assertReceiptConfirmedEnvelope,
+  fromPayerMarkedPaidWire,
+  fromReceiptConfirmedWire,
+  isPayerMarkedPaidEnvelope,
+  isReceiptConfirmedEnvelope,
+  isReceiptConfirmedNotice,
+  toPayerMarkedPaidWire,
+  toReceiptConfirmedWire,
+  type PayerMarkedPaidEnvelope,
+  type ReceiptConfirmedEnvelope,
+  type ReceiptConfirmedNotice,
+} from './livePayerSync.ts';
 import {PolkadotHostBridge, type PolkadotHostIdentity} from './polkadotHostBridge.ts';
 
 const SESSION_PARAM = 'chopSession';
@@ -28,6 +42,8 @@ export interface SharedActionEnvelope {
   action: SharedAction;
 }
 
+export type HostSessionEnvelope = SharedActionEnvelope | PayerMarkedPaidEnvelope | ReceiptConfirmedEnvelope | ReceiptConfirmedNotice;
+
 export interface HostSessionConfig {
   roomId: string;
   secret: string;
@@ -43,7 +59,10 @@ export type AuthorityDecision = 'apply' | 'defer' | 'reject';
 
 export interface HostSessionConnection {
   participant: HostParticipant;
-  publish(envelope: SharedActionEnvelope): Promise<boolean>;
+  preparePublish(): Promise<boolean>;
+  signBytes(data: Uint8Array): Promise<Uint8Array>;
+  refreshPublishTransport(): Promise<void>;
+  publish(envelope: HostSessionEnvelope): Promise<boolean>;
   close(): void;
 }
 
@@ -55,8 +74,28 @@ interface EncryptedActionChunk {
   part: string;
 }
 
+interface CompactPaymentChunk {
+  v: 1;
+  k: 'x';
+  e: string;
+  i: number;
+  n: number;
+  p: string;
+}
+
+interface CompactRegistration {
+  v: 1;
+  k: 'r';
+  e: string;
+  p: string;
+  n: string;
+  t: string;
+  w?: string;
+}
+
 const CHUNK_TEXT_LENGTH = 120;
 const MAX_CHUNKS = 64;
+const COMPACT_PAYMENT_PART_LENGTH = 190;
 
 export function parseHostSessionConfig(search = window.location.search): HostSessionConfig | null {
   const params = new URLSearchParams(search);
@@ -114,6 +153,19 @@ export function assertSharedActionEnvelope(value: unknown): asserts value is Sha
     throw new Error('Invalid shared action envelope.');
   }
   if (!isRuntimeSharedAction(value.action)) throw new Error('Unsupported shared action.');
+}
+
+export function assertHostSessionEnvelope(value: unknown): asserts value is HostSessionEnvelope {
+  if (isRecord(value) && value.kind === 'chopdot-payer-marked-paid') {
+    assertPayerMarkedPaidEnvelope(value);
+    return;
+  }
+  if (isRecord(value) && value.kind === 'chopdot-receipt-confirmed') {
+    assertReceiptConfirmedEnvelope(value);
+    return;
+  }
+  if (isReceiptConfirmedNotice(value)) return;
+  assertSharedActionEnvelope(value);
 }
 
 export function signerMatchesEnvelope(
@@ -224,13 +276,28 @@ export function authorizeSharedAction(state: AppState, envelope: SharedActionEnv
   return groupExpenses.some(expense => expense.paidByUserId === actorUserId) ? 'apply' : 'reject';
 }
 
+export function compactPaymentEventChunks(
+  envelope: PayerMarkedPaidEnvelope,
+): CompactPaymentChunk[] {
+  const wire = toPayerMarkedPaidWire(envelope);
+  const serialized = JSON.stringify(wire);
+  const parts = Array.from(
+    {length: Math.ceil(serialized.length / COMPACT_PAYMENT_PART_LENGTH)},
+    (_, index) => serialized.slice(index * COMPACT_PAYMENT_PART_LENGTH, (index + 1) * COMPACT_PAYMENT_PART_LENGTH),
+  );
+  if (parts.length === 0 || parts.length > 4) {
+    throw new Error('Payment event exceeds the compact session size limit.');
+  }
+  return parts.map((part, index) => ({v: 1, k: 'x', e: envelope.eventId, i: index, n: parts.length, p: part}));
+}
+
 export async function connectHostSession({
   config,
   onEnvelope,
   bridge = new PolkadotHostBridge(),
 }: {
   config: HostSessionConfig;
-  onEnvelope: (envelope: SharedActionEnvelope, signerHex?: string) => void;
+  onEnvelope: (envelope: HostSessionEnvelope, signerHex?: string) => void;
   bridge?: PolkadotHostBridge;
 }): Promise<HostSessionConnection> {
   const identity: PolkadotHostIdentity = await bridge.requestIdentity();
@@ -241,15 +308,50 @@ export async function connectHostSession({
     username: identity.username,
   };
   const chunkBuffers = new Map<string, {total: number; parts: Map<number, string>}>();
-  const channel = await bridge.openSessionChannel({
+  const compactPaymentBuffers = new Map<string, {total: number; parts: Map<number, string>}>();
+  const openChannel = () => bridge.openSessionChannel({
     identity,
     groupId: config.roomId,
     secret: config.secret,
     onPacket: (packet: EncryptedSessionPacket, signerHex?: string) => {
       void decryptSessionValue<unknown>(config.secret, packet)
         .then(value => {
+          const payerEnvelope = fromPayerMarkedPaidWire(value);
+          if (payerEnvelope) {
+            onEnvelope(payerEnvelope, signerHex);
+            return;
+          }
+          const confirmationEnvelope = fromReceiptConfirmedWire(value);
+          if (confirmationEnvelope) {
+            onEnvelope(confirmationEnvelope, signerHex);
+            return;
+          }
+          const registrationEnvelope = fromCompactRegistration(value);
+          if (registrationEnvelope) {
+            onEnvelope(registrationEnvelope, signerHex);
+            return;
+          }
+          if (isCompactPaymentChunk(value)) {
+            const signer = signerHex?.toLowerCase() ?? 'missing-signer';
+            const bufferKey = `${signer}:${value.e}`;
+            const buffer = compactPaymentBuffers.get(bufferKey) ?? {total: value.n, parts: new Map<number, string>()};
+            if (buffer.total !== value.n) {
+              compactPaymentBuffers.delete(bufferKey);
+              return;
+            }
+            buffer.parts.set(value.i, value.p);
+            compactPaymentBuffers.set(bufferKey, buffer);
+            if (buffer.parts.size !== buffer.total) return;
+            const serialized = Array.from({length: buffer.total}, (_, index) => buffer.parts.get(index) ?? '').join('');
+            compactPaymentBuffers.delete(bufferKey);
+            const wire = JSON.parse(serialized) as unknown;
+            const compactEnvelope = fromPayerMarkedPaidWire(wire);
+            if (!compactEnvelope) throw new Error('Invalid compact payment event.');
+            onEnvelope(compactEnvelope, signerHex);
+            return;
+          }
           if (!isEncryptedActionChunk(value)) {
-            assertSharedActionEnvelope(value);
+            assertHostSessionEnvelope(value);
             onEnvelope(value, signerHex);
             return;
           }
@@ -268,16 +370,61 @@ export async function connectHostSession({
           const serialized = Array.from({length: buffer.total}, (_, index) => buffer.parts.get(index) ?? '').join('');
           chunkBuffers.delete(bufferKey);
           const envelope = JSON.parse(serialized) as unknown;
-          assertSharedActionEnvelope(envelope);
+          assertHostSessionEnvelope(envelope);
           onEnvelope(envelope, signerHex);
         })
         .catch(() => undefined);
     },
   });
+  let channel = await openChannel();
+  let closed = false;
 
   return {
     participant,
+    preparePublish: () => channel.preparePublish(),
+    signBytes: async data => {
+      if (!identity.signBytes) throw new Error('Product-account signing is unavailable.');
+      return identity.signBytes(data);
+    },
+    refreshPublishTransport: async () => {
+      if (closed) throw new Error('Shared session is closed.');
+      // Polkadot Desktop may replace its host transport while a remote account
+      // signature modal is open. Retire the pre-sign channel before opening its
+      // replacement: each channel owns a Statement Store subscription, and
+      // overlapping both can exceed the host connection's subscription cap.
+      const previous = channel;
+      try {
+        previous.close();
+      } catch {
+        // The whole purpose of this refresh is to recover from an already
+        // disposed host transport. Opening the replacement remains safe.
+      }
+      channel = await openChannel();
+    },
     publish: async envelope => {
+      if (isReceiptConfirmedEnvelope(envelope)) {
+        const packet = await encryptSessionValue(config.secret, toReceiptConfirmedWire(envelope));
+        return channel.publish(packet, `receipt/${envelope.requestId}`);
+      }
+      if (isPayerMarkedPaidEnvelope(envelope)) {
+        const chunks = compactPaymentEventChunks(envelope);
+        const results = await Promise.all(chunks.map(async (chunk, index) => {
+          const packet = await encryptSessionValue(config.secret, chunk);
+          return channel.publish(packet, `payment/${envelope.eventId}/${index}`);
+        }));
+        return results.every(Boolean);
+      }
+      if (isReceiptConfirmedNotice(envelope)) {
+        throw new Error('A received confirmation notice cannot be republished.');
+      }
+      if (isSelfRegistrationEnvelope(envelope)) {
+        // Registration is a deterministic actor binding for this session, not
+        // an append-only money transition. Keep it in one encrypted,
+        // replaceable statement so chunk overhead cannot consume the retained
+        // user budget before ordinary group actions are sent.
+        const packet = await encryptSessionValue(config.secret, toCompactRegistration(envelope));
+        return channel.publish(packet, `registration/${envelope.actorUserId}`);
+      }
       const serialized = JSON.stringify(envelope);
       const parts = Array.from(
         {length: Math.ceil(serialized.length / CHUNK_TEXT_LENGTH)},
@@ -298,7 +445,78 @@ export async function connectHostSession({
       }));
       return results.every(Boolean);
     },
-    close: () => channel.close(),
+    close: () => {
+      if (closed) return;
+      closed = true;
+      try {
+        channel.close();
+      } catch {
+        // Host teardown is best effort. Delivery truth is the persisted outbox,
+        // not whether an obsolete subscription accepted unsubscribe().
+      }
+    },
+  };
+}
+
+function isSelfRegistrationEnvelope(envelope: SharedActionEnvelope): boolean {
+  if (envelope.action.type !== 'ADD_USER') return false;
+  const {user} = envelope.action.payload;
+  return user.id === envelope.actorUserId
+    && participantIdFromPublicKey(envelope.actorPublicKeyHex) === envelope.actorUserId
+    && Boolean(user.accountPublicKeyHex)
+    && normalizePublicKey(user.accountPublicKeyHex!) === normalizePublicKey(envelope.actorPublicKeyHex);
+}
+
+function toCompactRegistration(envelope: SharedActionEnvelope): CompactRegistration {
+  if (!isSelfRegistrationEnvelope(envelope) || envelope.action.type !== 'ADD_USER') {
+    throw new Error('Only self registration can use the compact registration wire.');
+  }
+  const {user} = envelope.action.payload;
+  return {
+    v: 1,
+    k: 'r',
+    e: envelope.eventId,
+    p: normalizePublicKey(envelope.actorPublicKeyHex).slice(2),
+    n: user.name,
+    t: envelope.occurredAt,
+    ...(user.walletAddress ? {w: user.walletAddress} : {}),
+  };
+}
+
+function fromCompactRegistration(value: unknown): SharedActionEnvelope | null {
+  if (
+    !isRecord(value)
+    || value.v !== 1
+    || value.k !== 'r'
+    || typeof value.e !== 'string'
+    || !value.e
+    || typeof value.p !== 'string'
+    || typeof value.n !== 'string'
+    || !value.n.trim()
+    || typeof value.t !== 'string'
+    || Number.isNaN(Date.parse(value.t))
+    || (value.w !== undefined && typeof value.w !== 'string')
+  ) return null;
+  const actorPublicKeyHex = normalizePublicKey(value.p);
+  if (!actorPublicKeyHex) return null;
+  const actorUserId = participantIdFromPublicKey(actorPublicKeyHex);
+  return {
+    v: 1,
+    eventId: value.e,
+    actorUserId,
+    actorPublicKeyHex,
+    occurredAt: value.t,
+    action: {
+      type: 'ADD_USER',
+      payload: {
+        user: {
+          id: actorUserId,
+          name: value.n,
+          accountPublicKeyHex: actorPublicKeyHex,
+          ...(value.w ? {walletAddress: value.w} : {}),
+        },
+      },
+    },
   };
 }
 
@@ -324,6 +542,21 @@ function isEncryptedActionChunk(value: unknown): value is EncryptedActionChunk {
     && value.index < value.total
     && typeof value.part === 'string'
     && value.part.length <= CHUNK_TEXT_LENGTH;
+}
+
+function isCompactPaymentChunk(value: unknown): value is CompactPaymentChunk {
+  return isRecord(value)
+    && value.v === 1
+    && value.k === 'x'
+    && typeof value.e === 'string'
+    && Number.isInteger(value.i)
+    && Number.isInteger(value.n)
+    && value.i >= 0
+    && value.n > 0
+    && value.n <= 4
+    && value.i < value.n
+    && typeof value.p === 'string'
+    && value.p.length <= COMPACT_PAYMENT_PART_LENGTH;
 }
 
 function isRuntimeSharedAction(value: Record<string, any>): value is SharedAction {

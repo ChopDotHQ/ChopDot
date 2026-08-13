@@ -29,6 +29,10 @@ export function CloseGroup({
   const openAmount = openSplits.reduce((sum, s) => sum + s.amount, 0);
 
   const handleFinish = () => {
+    if (group.closedRecordId) {
+      onFinish(group.closedRecordId);
+      return;
+    }
     const recordId = `sr-${Date.now()}`;
     dispatch({ type: 'SAVE_RECORD', payload: { recordId, groupId, savedAt: new Date().toISOString() } });
     onFinish(recordId);
@@ -69,8 +73,8 @@ export function CloseGroup({
       </ScreenContent>
 
       <BottomAction>
-        <Button onClick={handleFinish} fullWidth>
-          Finish and save summary
+        <Button onClick={handleFinish} fullWidth disabled={openAmount > 0}>
+          {group.closedRecordId ? 'View saved summary' : 'Finish and save summary'}
         </Button>
       </BottomAction>
     </Screen>

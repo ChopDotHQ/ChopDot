@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AppStateProvider, useAppState } from './state/AppStateContext';
 import { Welcome } from './components/Welcome';
 import { GuestSetup } from './components/GuestSetup';
@@ -25,17 +25,34 @@ import { History } from './components/History';
 import { Settings } from './components/Settings';
 import { StyleGuide } from './components/dev/StyleGuide';
 import { StandalonePayerRequest } from './components/StandalonePayerRequest';
+import {
+  MembershipBootstrapEntry,
+  type MembershipBootstrapEntryDependencies,
+} from './components/membership/MembershipBootstrapEntry';
+import {
+  LimitedNoAppActionEntry,
+  type LimitedNoAppActionEntryDependencies,
+} from './components/membership/LimitedNoAppActionEntry';
+import {BoundedEntryUnavailable} from './components/membership/BoundedEntryUnavailable';
+import {
+  MembershipOrganizerEntry,
+  type MembershipOrganizerEntryAdapter,
+} from './components/membership/MembershipOrganizerEntry';
 import { Home as HomeIcon, Users, Settings as SettingsIcon, History as HistoryIcon, Wallet } from 'lucide-react';
 import { configureHostBackButton, initializeHostEnvironment } from './environment';
 import {
-  parseGroupInvite,
-  parsePayerMarkedPaidUpdate,
   parsePayerRequestRoute,
   parseStandalonePayerRequest,
   StandalonePayerRequest as StandalonePayerRequestData,
 } from './requestLinks';
+import { bootstrapFromUrl, type RecipientBoundBootstrapV1 } from './membership/recipientBoundBootstrap';
+import {limitedNoAppActionFromUrl} from './membership/limitedNoAppActionLink';
+import type {SignedLimitedNoAppActionV1} from './membership/limitedNoAppAction';
 import { AppState } from './types';
 import {CaptureSource, ReceiptDraftStatus} from './capture/receiptDraft';
+import {GroupRecoveryEntry, type GroupRecoveryEntryDependencies} from './components/recovery/GroupRecoveryEntry';
+import {recoveryGroupFromUrl} from './recovery/recoveryLink';
+import {DinnerJourneyEntry, type DinnerJourneyEntryDependencies} from './components/journey/DinnerJourneyEntry';
 
 type View = 
   | { name: 'welcome' }
@@ -51,6 +68,12 @@ type View =
   | { name: 'request_payment', groupId: string, memberId: string }
   | { name: 'payer_view', groupId: string, memberId: string }
   | { name: 'standalone_payer_request', request: StandalonePayerRequestData, groupId: string, memberId: string }
+  | { name: 'membership_bootstrap', bootstrap: RecipientBoundBootstrapV1 }
+  | { name: 'limited_no_app_action', request: SignedLimitedNoAppActionV1 }
+  | { name: 'bounded_entry_unavailable', kind: 'invitation' | 'request' | 'group' }
+  | { name: 'membership_organizer' }
+  | { name: 'group_recovery', groupId: string }
+  | { name: 'dinner_journey' }
   | { name: 'saved_record', recordId: string }
   | { name: 'profile' }
   | { name: 'friends' }
@@ -59,14 +82,17 @@ type View =
   | { name: 'settings' }
   | { name: 'style_guide' };
 
-function AppRouter() {
+export interface AppDependencies {
+  membershipBootstrapEntry?: MembershipBootstrapEntryDependencies;
+  limitedNoAppAction?: LimitedNoAppActionEntryDependencies;
+  membershipOrganizerEntry?: MembershipOrganizerEntryAdapter;
+  groupRecovery?: GroupRecoveryEntryDependencies;
+  dinnerJourney?: DinnerJourneyEntryDependencies;
+}
+
+function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
   const { state, dispatch } = useAppState();
   const getEntryView = (): View => {
-    const returnedUpdate = getReturnedPayerUpdate(state);
-    if (returnedUpdate) {
-      return { name: 'group_detail', groupId: returnedUpdate.groupId };
-    }
-
     const payerRoute = getPayerRequestEntryView(state);
     if (payerRoute) {
       return payerRoute;
@@ -87,16 +113,28 @@ function AppRouter() {
       return { name: 'welcome' };
     }
 
-    const invite = parseGroupInvite();
-    if (invite && state.groups[invite.groupId]) {
-      return { name: 'group_detail', groupId: invite.groupId };
+    const recoveryGroupId = parseRecoveryEntry();
+    if (recoveryGroupId) return {name: 'group_recovery', groupId: recoveryGroupId};
+
+    const limitedRequest = parseLimitedNoAppActionEntry();
+    if (limitedRequest) return {name: 'limited_no_app_action', request: limitedRequest};
+
+    const bootstrap = parseMembershipBootstrapEntry();
+    if (bootstrap) return { name: 'membership_bootstrap', bootstrap };
+
+    if (window.location.hash.includes('chopdot-action=')) {
+      return {name: 'bounded_entry_unavailable', kind: 'request'};
+    }
+    if (window.location.hash.includes('chopdot-invite=')) {
+      return {name: 'bounded_entry_unavailable', kind: 'invitation'};
+    }
+    if (window.location.hash.includes('chopdot-recover=')) {
+      return {name: 'bounded_entry_unavailable', kind: 'group'};
     }
 
     return { name: 'home' };
   };
   const [view, setView] = useState<View>(getEntryView);
-  const appliedPayerUpdates = useRef(new Set<string>());
-  const appliedInvites = useRef(new Set<string>());
 
   const isDev = new URLSearchParams(window.location.search).get("dev") === "1";
   const backView = getBackView(view);
@@ -110,37 +148,29 @@ function AppRouter() {
   }, [view]);
 
   useEffect(() => {
-    const returnedUpdate = getReturnedPayerUpdate(state);
-    if (!returnedUpdate || appliedPayerUpdates.current.has(returnedUpdate.requestId)) return;
-
-    appliedPayerUpdates.current.add(returnedUpdate.requestId);
-    returnedUpdate.splitIds.forEach(splitId => {
-      dispatch({ type: 'MARK_PAID', payload: { splitId, userId: returnedUpdate.memberId } });
-    });
-    setView({ name: 'group_detail', groupId: returnedUpdate.groupId });
-  }, [dispatch, state]);
-
-  // Apply an incoming group invite once we have a local identity to attach it
-  // to. Guest setup runs first, so a fresh device joins after naming itself.
-  useEffect(() => {
-    if (!state.currentUserId) return;
-    const invite = parseGroupInvite();
-    if (!invite || appliedInvites.current.has(invite.groupId)) return;
-
-    appliedInvites.current.add(invite.groupId);
-    if (!state.groups[invite.groupId]) {
-      dispatch({ type: 'ACCEPT_GROUP_INVITE', payload: { invite } });
-    }
-    setView({ name: 'group_detail', groupId: invite.groupId });
-  }, [dispatch, state.currentUserId, state.groups]);
+    const followBoundedEntryNavigation = () => setView(getEntryView());
+    window.addEventListener('hashchange', followBoundedEntryNavigation);
+    return () => window.removeEventListener('hashchange', followBoundedEntryNavigation);
+  }, [state.currentUserId]);
 
   useEffect(() => {
-    if (parsePayerMarkedPaidUpdate()) return;
     const payerView = getPayerRequestEntryView(state);
     if (!payerView || payerView.name !== 'payer_view') return;
     if (view.name === 'payer_view' && view.groupId === payerView.groupId && view.memberId === payerView.memberId) return;
     setView(payerView);
   }, [state.groups, state.users, state.expenses, state.splits, view]);
+
+  useEffect(() => {
+    const adapter = dependencies?.membershipOrganizerEntry;
+    if (!adapter) return;
+    const showAcceptedInvitation = () => {
+      if (['ready_to_invite', 'ready_to_grant'].includes(adapter.getStatus())) {
+        setView({name: 'membership_organizer'});
+      }
+    };
+    showAcceptedInvitation();
+    return adapter.subscribe(showAcceptedInvitation);
+  }, [dependencies?.membershipOrganizerEntry]);
 
   if (view.name === 'state_proof') {
     if (!isDev) return <Home onGoToStateProof={() => setView({ name: 'home' })} onStartGroup={() => setView({ name: 'home' })} onGoToGroup={() => setView({ name: 'home' })} onGoToProfile={() => setView({ name: 'home' })} />;
@@ -157,11 +187,35 @@ function AppRouter() {
     );
   }
 
+  if (view.name === 'membership_bootstrap') {
+    return <MembershipBootstrapEntry bootstrap={view.bootstrap} onClose={() => setView({name: 'home'})} dependencies={dependencies?.membershipBootstrapEntry} />;
+  }
+
+  if (view.name === 'group_recovery') {
+    return <GroupRecoveryEntry groupId={view.groupId} dependencies={dependencies?.groupRecovery} onClose={() => setView({name: 'home'})} />;
+  }
+
+  if (view.name === 'dinner_journey') {
+    return <DinnerJourneyEntry dependencies={dependencies?.dinnerJourney} onClose={() => setView({name: 'welcome'})} />;
+  }
+
+  if (view.name === 'limited_no_app_action') {
+    return <LimitedNoAppActionEntry request={view.request} onClose={() => setView({name: 'home'})} dependencies={dependencies?.limitedNoAppAction} />;
+  }
+
+  if (view.name === 'bounded_entry_unavailable') {
+    return <BoundedEntryUnavailable kind={view.kind} onClose={() => setView({name: 'home'})} />;
+  }
+
+  if (view.name === 'membership_organizer' && dependencies?.membershipOrganizerEntry) {
+    return <MembershipOrganizerEntry adapter={dependencies.membershipOrganizerEntry} onClose={() => setView({name: 'home'})} />;
+  }
+
   if (!state.currentUserId) {
     if (view.name === 'guest_setup') {
       return <GuestSetup onBack={() => setView({ name: 'welcome' })} onComplete={() => setView({ name: 'home' })} />;
     }
-    return <Welcome onGuest={() => setView({ name: 'guest_setup' })} />;
+    return <Welcome onGuest={() => setView(dependencies?.dinnerJourney ? {name: 'dinner_journey'} : { name: 'guest_setup' })} />;
   }
 
   let content;
@@ -180,7 +234,6 @@ function AppRouter() {
     content = <SettleUp
       groupId={view.groupId}
       onBack={() => setView({ name: 'group_detail', groupId: view.groupId })}
-      onOpenPayerView={(memberId) => setView({ name: 'payer_view', groupId: view.groupId, memberId })}
       onFinishGroup={() => setView({ name: 'close_group', groupId: view.groupId })}
     />;
   } else if (view.name === 'close_group') {
@@ -311,7 +364,7 @@ function AppRouter() {
   );
 }
 
-function ThemedLayout() {
+function ThemedLayout({dependencies}: {dependencies?: AppDependencies}) {
   const { state } = useAppState();
 
   useEffect(() => {
@@ -329,8 +382,8 @@ function ThemedLayout() {
 
   return (
     <div className={`min-h-[100dvh] ${state.theme === 'dark' ? 'dark bg-gray-900' : 'bg-gray-50'} flex items-center justify-center sm:py-10 transition-colors`}>
-      <div className={`w-full h-[100dvh] sm:h-[800px] sm:max-w-[375px] ${state.theme === 'dark' ? 'bg-gray-950 border-gray-900' : 'bg-gray-50 border-gray-200'} sm:rounded-3xl sm:shadow-2xl overflow-hidden relative flex flex-col font-sans sm:border transition-colors`}>
-        <AppRouter />
+      <div className={`app-shell-frame w-full sm:max-w-[375px] ${state.theme === 'dark' ? 'bg-gray-950 border-gray-900' : 'bg-gray-50 border-gray-200'} sm:rounded-3xl sm:shadow-2xl overflow-hidden relative flex flex-col font-sans sm:border transition-colors`}>
+        <AppRouter dependencies={dependencies} />
       </div>
     </div>
   );
@@ -356,6 +409,12 @@ function getBackView(view: View): View | null {
     case 'payer_view':
       return { name: 'group_detail', groupId: view.groupId };
     case 'standalone_payer_request':
+    case 'membership_bootstrap':
+    case 'limited_no_app_action':
+    case 'bounded_entry_unavailable':
+    case 'membership_organizer':
+    case 'group_recovery':
+    case 'dinner_journey':
       return null;
     case 'review_split':
       return {
@@ -408,51 +467,37 @@ function hasKnownLocalPayerRoute(state: AppState): boolean {
   return Boolean(route && state.groups[route.groupId] && state.users[route.memberId]);
 }
 
-function getReturnedPayerUpdate(state: AppState): {
-  requestId: string;
-  groupId: string;
-  memberId: string;
-  splitIds: string[];
-} | null {
-  const route = parsePayerRequestRoute();
-  const update = parsePayerMarkedPaidUpdate();
-  if (
-    !route ||
-    !update ||
-    route.groupId !== update.groupId ||
-    route.memberId !== update.memberId ||
-    !state.currentUserId ||
-    !state.groups[route.groupId] ||
-    !state.users[route.memberId]
-  ) {
+function parseMembershipBootstrapEntry(): RecipientBoundBootstrapV1 | null {
+  if (!window.location.hash.includes('chopdot-invite=')) return null;
+  try {
+    return bootstrapFromUrl(window.location.href);
+  } catch {
     return null;
   }
-
-  const matchingSplits = Object.values(state.splits).filter(split => {
-    const expense = state.expenses[split.expenseId];
-    return split.userId === route.memberId
-      && split.status === 'request_sent'
-      && split.requestId === update.requestId
-      && split.requestExpiresAt === update.expiresAt
-      && expense?.groupId === route.groupId
-      && expense.paidByUserId === state.currentUserId
-      && (expense.currency ?? state.currency) === update.currency;
-  });
-  const matchingAmount = matchingSplits.reduce((sum, split) => sum + split.amount, 0);
-  if (matchingSplits.length === 0 || Math.abs(matchingAmount - update.amount) > 0.005) return null;
-
-  return {
-    requestId: update.requestId,
-    groupId: route.groupId,
-    memberId: route.memberId,
-    splitIds: matchingSplits.map(split => split.id),
-  };
 }
 
-export default function App() {
+function parseLimitedNoAppActionEntry(): SignedLimitedNoAppActionV1 | null {
+  if (!window.location.hash.includes('chopdot-action=')) return null;
+  try {
+    return limitedNoAppActionFromUrl(window.location.href);
+  } catch {
+    return null;
+  }
+}
+
+function parseRecoveryEntry(): string | null {
+  if (!window.location.hash.includes('chopdot-recover=')) return null;
+  try {
+    return recoveryGroupFromUrl(window.location.href);
+  } catch {
+    return null;
+  }
+}
+
+export default function App({dependencies}: {dependencies?: AppDependencies} = {}) {
   return (
     <AppStateProvider>
-      <ThemedLayout />
+      <ThemedLayout dependencies={dependencies} />
     </AppStateProvider>
   );
 }

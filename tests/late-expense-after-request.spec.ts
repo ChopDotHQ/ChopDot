@@ -27,6 +27,7 @@ test('Mina can add a forgotten expense after sending Leo a request', async ({pag
   await page.getByRole('button', {name: 'Create group'}).click();
 
   await page.getByRole('button', {name: 'Add spend'}).click();
+  await page.getByRole('button', {name: 'Enter amount instead'}).click();
   await page.getByPlaceholder('0.00').fill('10');
   await page.getByPlaceholder('e.g. Dinner at Gusto').fill('Coffee');
   await page.getByRole('button', {name: 'Review split'}).click();
@@ -48,6 +49,7 @@ test('Mina can add a forgotten expense after sending Leo a request', async ({pag
   });
 
   await page.getByTestId('group-add-expense').click();
+  await page.getByRole('button', {name: 'Enter amount instead'}).click();
   await page.getByPlaceholder('0.00').fill('10');
   await page.getByPlaceholder('e.g. Dinner at Gusto').fill('Taxi');
   await page.getByRole('button', {name: 'Review split'}).click();

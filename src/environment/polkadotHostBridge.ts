@@ -1,4 +1,11 @@
-import type {AccountsProvider, HostPaymentStatusSubscribeItem, PaymentManager, PreimageManager} from '@parity/product-sdk-host';
+import type {
+  AccountsProvider,
+  AllocatableResource,
+  AllocationOutcome,
+  HostPaymentStatusSubscribeItem,
+  PaymentManager,
+  PreimageManager,
+} from '@parity/product-sdk-host';
 import type {ReceivedStatement, StatementStoreClient, Unsubscribable} from '@parity/product-sdk-statement-store';
 import {accountIdFromBytes} from '@parity/product-sdk-address';
 import {
@@ -30,6 +37,7 @@ export interface PolkadotHostIdentity {
   productId: string;
   publicKey: Uint8Array;
   accountId: [string, number];
+  signBytes?(data: Uint8Array): Promise<Uint8Array>;
 }
 
 export interface RedactedReceiptPacket {
@@ -67,7 +75,9 @@ type ProductAccount = {
   derivationIndex: number;
 };
 
-type AccountsProviderLike = Pick<AccountsProvider, 'requestLogin' | 'getUserId' | 'getProductAccount'>;
+type AccountsProviderLike = Pick<AccountsProvider, 'requestLogin' | 'getUserId' | 'getProductAccount'> & {
+  getProductAccountSigner?(account: ProductAccount): {signBytes(data: Uint8Array): Promise<Uint8Array>};
+};
 type PaymentManagerLike = Pick<PaymentManager, 'requestPayment' | 'subscribePaymentStatus'>;
 type PreimageManagerLike = Pick<PreimageManager, 'submit'>;
 
@@ -77,7 +87,32 @@ export interface HostSdkFacade {
   getPaymentManager(): Promise<PaymentManagerLike | null>;
   getPreimageManager(): Promise<PreimageManagerLike | null>;
   getStatementStore(): Promise<unknown | null>;
+  requestResourceAllocation(resources: AllocatableResource[]): Promise<HostSdkResult<AllocationOutcome[]>>;
+  deriveEntropy(context: Uint8Array): Promise<HostSdkResult<Uint8Array>>;
   createStatementStoreClient(appName: string): StatementStoreClient;
+}
+
+type HostSdkResult<T> = {ok: true; value: T} | {ok: false; error: unknown};
+
+const FALLBACK_PRODUCT_ID = 'chopdot-shell-proof.dot';
+const identityRequests = new Map<string, Promise<PolkadotHostIdentity>>();
+
+export function inferPolkadotProductId(hostname?: string): string {
+  const currentHostname = hostname ?? (typeof window === 'undefined' ? '' : window.location.hostname);
+  const normalized = currentHostname.trim().toLowerCase().replace(/\.$/u, '');
+  const devnetSuffixes = ['.app.dev-dot.li', '.dev-dot.li', '.app.paseo.li', '.paseo.li'];
+
+  for (const suffix of devnetSuffixes) {
+    if (normalized.endsWith(suffix)) {
+      const label = normalized.slice(0, -suffix.length);
+      return label && /^[a-z0-9-]+$/u.test(label) ? `${label}.dot` : FALLBACK_PRODUCT_ID;
+    }
+  }
+
+  const nativeHostname = normalized.startsWith('app.') ? normalized.slice(4) : normalized;
+  return /^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.dot$/u.test(nativeHostname)
+    ? nativeHostname
+    : FALLBACK_PRODUCT_ID;
 }
 
 async function loadOfficialSdk(): Promise<HostSdkFacade> {
@@ -92,6 +127,12 @@ async function loadOfficialSdk(): Promise<HostSdkFacade> {
     getPaymentManager: host.getPaymentManager,
     getPreimageManager: host.getPreimageManager,
     getStatementStore: host.getStatementStore,
+    requestResourceAllocation: host.requestResourceAllocation,
+    deriveEntropy: async context => {
+      const result = await host.deriveEntropy(context);
+      if (result.ok) return {ok: true, value: result.value};
+      return {ok: false, error: 'Host entropy derivation failed.'};
+    },
     createStatementStoreClient: appName => new statements.StatementStoreClient({appName, defaultTtlSeconds: 300}),
   };
 }
@@ -114,7 +155,7 @@ export class PolkadotHostBridge {
   private readonly sdkLoader: () => Promise<HostSdkFacade>;
 
   constructor({
-    productId = 'chopdot-shell-proof.dot',
+    productId = inferPolkadotProductId(),
     sdkLoader = loadOfficialSdk,
   }: {productId?: string; sdkLoader?: () => Promise<HostSdkFacade>} = {}) {
     this.productId = productId;
@@ -178,6 +219,34 @@ export class PolkadotHostBridge {
   }
 
   async requestIdentity(): Promise<PolkadotHostIdentity> {
+    const inFlight = identityRequests.get(this.productId);
+    if (inFlight) return inFlight;
+    const request = this.requestIdentityOnce();
+    identityRequests.set(this.productId, request);
+    try {
+      return await request;
+    } finally {
+      if (identityRequests.get(this.productId) === request) identityRequests.delete(this.productId);
+    }
+  }
+
+  /**
+   * Returns deterministic, account-bound recovery material from the host.
+   * The host keeps the account secret; ChopDot supplies only a domain-separated
+   * public context and fails closed when the capability is unavailable.
+   */
+  async deriveAccountEntropy(context: Uint8Array): Promise<Uint8Array> {
+    if (context.byteLength === 0) throw new Error('Account recovery context is required.');
+    const sdk = await this.sdkLoader();
+    if (!(await sdk.isInsideContainer())) throw new Error('Account recovery is unavailable.');
+    const result = await sdk.deriveEntropy(new Uint8Array(context));
+    if (!result.ok || result.value.byteLength < 32) {
+      throw new Error('Account recovery is unavailable.');
+    }
+    return new Uint8Array(result.value);
+  }
+
+  private async requestIdentityOnce(): Promise<PolkadotHostIdentity> {
     const sdk = await this.sdkLoader();
     if (!(await sdk.isInsideContainer())) throw new Error('Polkadot host is unavailable.');
     const accounts = await sdk.getAccountsProvider();
@@ -200,6 +269,10 @@ export class PolkadotHostBridge {
       productId: this.productId,
       publicKey: account.value.publicKey,
       accountId: [accountIdFromBytes(account.value.publicKey, prefix), prefix],
+      signBytes: async data => {
+        if (!accounts.getProductAccountSigner) throw new Error('Product-account signing is unavailable.');
+        return accounts.getProductAccountSigner(account.value).signBytes(data);
+      },
     };
   }
 
@@ -214,13 +287,24 @@ export class PolkadotHostBridge {
     secret: string;
     onPacket: (packet: EncryptedSessionPacket, signerHex?: string) => void;
   }): Promise<{
-    publish(packet: EncryptedSessionPacket): Promise<boolean>;
+    preparePublish(): Promise<boolean>;
+    publish(packet: EncryptedSessionPacket, channelName?: string): Promise<boolean>;
     close(): void;
   }> {
     const sdk = await this.sdkLoader();
     if (!(await sdk.getStatementStore())) throw new Error('Shared session is unavailable.');
     const client = sdk.createStatementStoreClient('chopdot-shell-proof');
     await client.connect({mode: 'host', accountId: identity.accountId});
+    let allocationRequest: Promise<boolean> | null = null;
+
+    const ensureStatementStoreAllowance = async (): Promise<boolean> => {
+      allocationRequest ??= sdk.requestResourceAllocation([
+        {tag: 'StatementStoreAllowance', value: undefined},
+      ]).then(result => result.ok && result.value[0] === 'Allocated');
+      const allocated = await allocationRequest;
+      if (!allocated) allocationRequest = null;
+      return allocated;
+    };
 
     const topic = await sessionRoutingName(groupId, secret);
     const decryptionKey = await sessionRoutingKey(groupId, secret);
@@ -233,14 +317,22 @@ export class PolkadotHostBridge {
     );
 
     return {
-      publish: async packet => {
+      preparePublish: ensureStatementStoreAllowance,
+      publish: async (packet, channelName) => {
         assertEncryptedSessionPacket(packet);
-        // Session events are append-only. A shared channel would apply
-        // last-write-wins semantics and suppress concurrent participant events.
+        if (!(await ensureStatementStoreAllowance())) return false;
+        // Ordinary session events remain append-only. A caller may opt into a
+        // request-scoped channel for deterministic compact chunks so retries
+        // replace the same chunk instead of consuming the per-user quota twice.
         //
         // statement-store >=0.5 resolves to Result<void, StatementStoreError>.
         // Collapse it here so the rest of the shell keeps its boolean contract.
-        const result = await client.publish(packet, {topic2: topic, decryptionKey, ttlSeconds: 300});
+        const result = await client.publish(packet, {
+          ...(channelName ? {channel: channelName} : {}),
+          topic2: topic,
+          decryptionKey,
+          ttlSeconds: 300,
+        });
         return result.ok;
       },
       close: () => {

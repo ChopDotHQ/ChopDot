@@ -8,12 +8,25 @@ export function CreateGroup({ onBack, onCreated }: { onBack: () => void, onCreat
   const [groupName, setGroupName] = useState('');
   const [friendName, setFriendName] = useState('');
   const [friends, setFriends] = useState<{name: string, tempId: string}[]>([]);
+  const [friendError, setFriendError] = useState('');
+
+  const addFriend = () => {
+    const name = friendName.trim();
+    if (!name) return;
+    const duplicate = normalizeName(state.users[state.currentUserId!]?.name ?? '') === normalizeName(name)
+      || friends.some(friend => normalizeName(friend.name) === normalizeName(name));
+    if (duplicate) {
+      setFriendError(`${name} is already in this group.`);
+      return;
+    }
+    setFriends([...friends, {name, tempId: crypto.randomUUID()}]);
+    setFriendName('');
+    setFriendError('');
+  };
 
   const handleAddFriend = (e: FormEvent) => {
     e.preventDefault();
-    if (!friendName.trim()) return;
-    setFriends([...friends, { name: friendName.trim(), tempId: crypto.randomUUID() }]);
-    setFriendName('');
+    addFriend();
   };
 
   const removeFriend = (tempId: string) => {
@@ -101,14 +114,14 @@ export function CreateGroup({ onBack, onCreated }: { onBack: () => void, onCreat
               type="text"
               placeholder="Add friend by name"
               value={friendName}
-              onChange={(e) => setFriendName(e.target.value)}
+              onChange={(e) => {
+                setFriendName(e.target.value);
+                setFriendError('');
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  if (friendName.trim()) {
-                    setFriends([...friends, { name: friendName.trim(), tempId: crypto.randomUUID() }]);
-                    setFriendName('');
-                  }
+                  addFriend();
                 }
               }}
               className="flex-1 text-base border border-gray-200 dark:border-gray-700 rounded-l-xl py-3 px-4 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm"
@@ -123,6 +136,7 @@ export function CreateGroup({ onBack, onCreated }: { onBack: () => void, onCreat
               Add
             </button>
           </form>
+          {friendError && <p role="alert" className="mt-2 text-sm font-medium text-red-600 dark:text-red-400">{friendError}</p>}
         </div>
       </div>
 

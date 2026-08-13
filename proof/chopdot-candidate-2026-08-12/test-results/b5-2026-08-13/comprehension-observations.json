@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "journey": "Mina reviews one CHF 120 dinner, Leo and Nina act, Mina confirms and saves one record.",
+  "oneNextAction": "Review this spend",
+  "previewLabelVisible": true,
+  "previewCreatedMoneyState": false,
+  "lifecycleStates": [
+    "payment_requested",
+    "marked_paid",
+    "needs_confirmation",
+    "sending",
+    "ready_to_close",
+    "closed"
+  ],
+  "amount": "CHF 120.00",
+  "members": [
+    "Mina",
+    "Leo",
+    "Nina"
+  ],
+  "closedEventCount": 1,
+  "infrastructureLanguageVisible": false,
+  "viewports": [
+    "1280x720",
+    "390x844"
+  ],
+  "screenshotCount": 9
+}

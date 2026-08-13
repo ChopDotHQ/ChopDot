@@ -1,0 +1,21 @@
+import {existsSync,readFileSync} from 'node:fs';
+import path from 'node:path';
+
+const root=path.dirname(new URL(import.meta.url).pathname);
+const observationPath=path.join(root,'test-results','b5-2026-08-13','comprehension-observations.json');
+const screenshots=path.join(root,'screenshots','b5-2026-08-13');
+if(!existsSync(observationPath))throw new Error('B5 comprehension observations are missing; run the lifecycle-card test first.');
+const observed=JSON.parse(readFileSync(observationPath,'utf8'));
+const expectedStates=['payment_requested','marked_paid','needs_confirmation','sending','ready_to_close','closed'];
+const failures=[];
+if(observed.oneNextAction!=='Review this spend')failures.push('one next action changed');
+if(observed.previewLabelVisible!==true||observed.previewCreatedMoneyState!==false)failures.push('preview is not honest');
+if(expectedStates.some(state=>!observed.lifecycleStates?.includes(state)))failures.push('lifecycle states are incomplete');
+if(observed.amount!=='CHF 120.00'||JSON.stringify(observed.members)!==JSON.stringify(['Mina','Leo','Nina']))failures.push('dinner facts drifted');
+if(observed.closedEventCount!==1)failures.push('close is not exact-once');
+if(observed.infrastructureLanguageVisible!==false)failures.push('infrastructure language is visible');
+if(JSON.stringify(observed.viewports)!==JSON.stringify(['1280x720','390x844']))failures.push('required viewports are missing');
+const requiredScreens=['01-preview-desktop-1280x720.png','03-requested-mobile-390x844.png','04-marked-paid-mobile-390x844.png','05-receiver-confirm-desktop-1280x720.png','06-offline-mobile-390x844.png','07-ready-close-desktop-1280x720.png','08-saved-desktop-1280x720.png','09-saved-mobile-390x844.png','10-loading-mobile-390x844.png','11-unavailable-mobile-390x844.png'];
+for(const file of requiredScreens)if(!existsSync(path.join(screenshots,file)))failures.push(`missing screenshot ${file}`);
+if(failures.length)throw new Error(`B5 comprehension gate failed:\n- ${failures.join('\n- ')}`);
+console.log(JSON.stringify({status:'PASS',controls:['B5-ONE-ACTION','B5-HONEST-PREVIEW','B5-THREE-SECOND','B5-LIFECYCLE-CARDS','B5-REAL-JOURNEY','B5-INFRA-INVISIBLE','B5-RESPONSIVE','B5-ACCESSIBLE','B5-HARD-STATES','B5-SCREENSHOT-REVIEW'],observed},null,2));

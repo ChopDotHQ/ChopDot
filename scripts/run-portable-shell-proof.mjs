@@ -588,6 +588,7 @@ async function waitForDotHostAppFrame(page) {
       return (
         /\.app\.paseo\.li/i.test(url) ||
         /\.app\.dot\.li/i.test(url) ||
+        /\.app\.dev-dot\.li/i.test(url) ||
         /ipfs/i.test(url)
       );
     });

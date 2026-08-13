@@ -12,3 +12,28 @@ body {
   background-color: #f3f4f6; /* bg-gray-100 */
 }
 
+.app-shell-frame {
+  height: 100dvh;
+}
+
+:focus-visible {
+  outline: 3px solid #e6007a;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (min-width: 640px) {
+  .app-shell-frame {
+    height: min(800px, calc(100dvh - 100px));
+  }
+}

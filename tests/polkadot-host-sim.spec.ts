@@ -94,7 +94,7 @@ test('two hosted people converge through ciphertext and keep host money authorit
     expect(paymentLog[0].amount).toBe(40_000_000n);
     await alice.page.evaluate(id => window.__TEST_HOST__.simulatePaymentStatus(id, {tag: 'Completed'}), paymentId);
     await expect.poll(() => aliceFrame.evaluate(() => window.__CHOPDOT_HOST_ACTIONS__!.observedPayments())).toContainEqual(
-      expect.objectContaining({requestId: paymentId, authority: 'observed_only', status: {type: 'completed'}}),
+      expect.objectContaining({requestId: paymentId, authority: 'observed_only', status: {tag: 'Completed'}}),
     );
 
     const receipt = {

@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 2,
+  "programme": "Six-batch ChopDot delivery sequence",
+  "sequence": ["B1", "B2", "B3", "B4", "B5", "B6"],
+  "evidencePolicy": {
+    "statuses": ["PASS", "PARTIAL", "BLOCKED"],
+    "freshRoots": ["test-results", "screenshots", "artifact"],
+    "stableDeliveryTrainRequired": true,
+    "intermediateSourceSnapshotsMayChange": true,
+    "b6FinalFingerprintReproofRequired": true,
+    "oldProofReuseAllowed": false,
+    "localEvidenceCanSatisfyLiveLane": false
+  },
+  "gates": [
+    {
+      "id": "B1",
+      "title": "Existing-contact invitation",
+      "predecessor": null,
+      "localControls": [
+        "B1-G0-STABLE-IDENTITY", "B1-G0-HOST-HELD-SIGNING", "B1-CONTACT-ACCOUNT-BINDING",
+        "B1-ORGANIZER-SIGNED-INVITE", "B1-SELECTED-ROOM-DELIVERY", "B1-PENDING-NOT-MEMBER",
+        "B1-EXPLICIT-ACCEPT-DECLINE-UI", "B1-INVITEE-SIGNED-DECISION", "B1-PROTECTED-GRANT",
+        "B1-ADVERSARIAL-AUTHORITY", "B1-DURABLE-DELIVERY", "B1-ISOLATED-HOST-SIM"
+      ],
+      "liveControls": [
+        "B1-LIVE-CONTACT-LOOKUP", "B1-LIVE-CHAT-DELIVERY", "B1-LIVE-TWO-PRODUCT-ACCOUNTS"
+      ],
+      "localCommands": [
+        {"id": "b1-membership-foundation", "command": "node --import tsx --test src/membership/membershipLifecycle.test.ts src/membership/signedMembershipEvents.test.ts src/membership/signedMembershipJournal.test.ts src/membership/chatInvitationTransport.test.ts src/membership/membershipDeliveryOutbox.test.ts"},
+        {"id": "b1-coordinator", "command": "node --import tsx --test src/membership/trustedContactInvitationCoordinator.test.ts"},
+        {"id": "b1-ui-sim", "command": "npx playwright test tests/membership-invitation-ui.spec.ts --config=playwright.host-sim.config.ts --workers=1"},
+        {"id": "b1-secret-boundary", "command": "node --import tsx --test src/membership/groupKeyHandoff.test.ts"}
+      ],
+      "liveCommands": [
+        {"id": "b1-live-contact", "command": "npx playwright test tests/candidate-batch1-live-existing-contact.spec.ts --config=playwright.live-dot.config.ts --workers=1"}
+      ]
+    },
+    {
+      "id": "B2",
+      "title": "Link, QR, and limited no-app entry",
+      "predecessor": "B1",
+      "localControls": [
+        "B2-ONE-MEMBERSHIP-MODEL", "B2-LINK", "B2-QR-PARITY", "B2-LIMITED-NO-APP",
+        "B2-TRANSPORT-NOT-AUTHORITY", "B2-LEGACY-SNAPSHOT-RETIRED", "B2-EXPLICIT-CONSENT", "B2-FORWARD-WRONG-PERSON",
+        "B2-EXPIRY-REVOKE-REPLAY", "B2-NO-SECRET-OR-HISTORY", "B2-MONEY-STATE-NON-AUTHORITY",
+        "B2-DUPLICATE-IDENTITY", "B2-ISOLATED-MIXED-UI", "B2-PLAIN-USER-LANGUAGE"
+      ],
+      "liveControls": ["B2-LIVE-PUBLIC-ROUTES", "B2-LIVE-MIXED-DELIVERY"],
+      "localCommands": [
+        {"id": "b2-membership-regression", "command": "node --import tsx --test src/membership/*.test.ts"},
+        {"id": "b2-entry-domain", "command": "node --import tsx --test src/membership/recipientBoundBootstrap.test.ts src/membership/recipientBoundBootstrapCoordinator.test.ts"},
+        {"id": "b2-limited-no-app-domain", "command": "node --import tsx --test src/membership/limitedNoAppAction.test.ts src/membership/limitedNoAppActionLink.test.ts src/membership/limitedNoAppActionService.test.ts"},
+        {"id": "b2-request-link-regression", "command": "node --import tsx --test src/requestLinks.test.ts"},
+        {"id": "b2-preview-ui", "command": "npx playwright test tests/membership-bootstrap-ui.spec.ts --config=playwright.host-sim.config.ts --workers=1"},
+        {"id": "b2-router-retirement", "command": "npx playwright test tests/candidate-batch2-router-retirement.spec.ts --config=playwright.host-sim.config.ts --workers=1"},
+        {"id": "b2-mixed-ui", "command": "npx playwright test tests/candidate-batch2-actual-participation.spec.ts --config=playwright.host-sim.config.ts --workers=1"},
+        {"id": "b2-limited-actual-ui", "command": "npx playwright test tests/candidate-batch2-limited-actual-route.spec.ts --config=playwright.host-sim.config.ts --workers=1"}
+      ],
+      "liveCommands": [
+        {"id": "b2-live-public", "command": "npx playwright test tests/candidate-batch2-live-public-entry.spec.ts --config=playwright.live-dot.config.ts --workers=1"}
+      ]
+    },
+    {
+      "id": "B3",
+      "title": "Beyond-window recovery",
+      "predecessor": "B2",
+      "localControls": [
+        "B3-M0-EXACT-MONEY", "B3-M0-CONSERVATION", "B3-M0-CURRENCY-ISOLATION",
+        "B3-M0-CANONICAL-EVENT", "B3-M0-CAUSAL-CONFLICT", "B3-M0-CORRECTION-REVERSAL",
+        "B3-M0-MIGRATION-QUARANTINE", "B3-M0-PRIVACY-EXPORT", "B3-M0-CAPACITY-COST",
+        "B3-M0-NON-CUSTODIAL",
+        "B3-G0-ACCOUNT-BOUND-RECOVERY", "B3-G0-KEY-ROTATION", "B3-CHECKPOINT-V1",
+        "B3-CHECKPOINT-AUTHORITY", "B3-VALIDATION", "B3-PERSISTENCE", "B3-REPLAY",
+        "B3-COMPACTION", "B3-ARCHIVE-SEAM", "B3-LOCATOR-DISCOVERY", "B3-BEYOND-300S",
+        "B3-OUTBOX-INBOX", "B3-IMMUTABLE-CLOSE", "B3-PLAIN-LANGUAGE"
+      ],
+      "liveControls": ["B3-LIVE-HOST-ENTROPY", "B3-LIVE-LOCATOR", "B3-LIVE-BEYOND-300S"],
+      "localCommands": [
+        {"id": "b3-money-foundation", "command": "node --import tsx --test tests/candidate-batch3-money-foundation.test.ts tests/candidate-batch3-money-migration.test.ts tests/candidate-batch3-money-convergence.test.ts"},
+        {"id": "b3-recovery", "command": "node --import tsx --test tests/candidate-batch3-recovery.test.ts"},
+        {"id": "b3-fresh-device-ui", "command": "npx playwright test tests/candidate-batch3-fresh-device-recovery.spec.ts --config=playwright.host-sim.config.ts --workers=1"},
+        {"id": "b3-secret-boundary", "command": "node --import tsx --test tests/candidate-batch3-secret-boundary.test.ts"}
+      ],
+      "liveCommands": [
+        {"id": "b3-live-recovery", "command": "npx playwright test tests/candidate-batch3-live-recovery.spec.ts --config=playwright.live-dot.config.ts --workers=1"}
+      ]
+    },
+    {
+      "id": "B4",
+      "title": "Full loop and capability inheritance",
+      "predecessor": "B3",
+      "localControls": [
+        "B4-CATCH", "B4-MANAGEMENT", "B4-PAYOUT", "B4-HISTORY", "B4-MAIN-APP-INHERITANCE",
+        "B4-ONE-CHOP-AUTHORITY", "B4-MONEY-STATE", "B4-PAYMENT-INSTRUMENT-SEPARATION",
+        "B4-MIXED-THREE-PERSON", "B4-OFFLINE-RECONNECT", "B4-CLOSE-IMMUTABLE"
+      ],
+      "liveControls": ["B4-LIVE-FULL-LOOP", "B4-LIVE-PAYMENT-REFERENCE"],
+      "localCommands": [
+        {"id": "b4-journey-domain", "command": "node --import tsx --test src/journey/dinnerJourney.test.ts"},
+        {"id": "b4-authority", "command": "node --import tsx --test src/environment/*.test.ts src/state/store.test.ts src/requestLinks.test.ts src/groupInvite.test.ts src/payments/*.test.ts"},
+        {"id": "b4-full-loop", "command": "npx playwright test tests/candidate-batch4-full-loop.spec.ts --config=playwright.host-sim.config.ts --workers=1"},
+        {"id": "b4-inheritance", "command": "node proof/chopdot-candidate-2026-08-12/verify-capability-inheritance.mjs"}
+      ],
+      "liveCommands": [
+        {"id": "b4-live-loop", "command": "npx playwright test tests/candidate-batch4-live-full-loop.spec.ts --config=playwright.live-dot.config.ts --workers=1"}
+      ]
+    },
+    {
+      "id": "B5",
+      "title": "UX and spending-group cards",
+      "predecessor": "B4",
+      "localControls": [
+        "B5-ONE-ACTION", "B5-HONEST-PREVIEW", "B5-THREE-SECOND", "B5-LIFECYCLE-CARDS",
+        "B5-REAL-JOURNEY", "B5-INFRA-INVISIBLE", "B5-RESPONSIVE", "B5-ACCESSIBLE",
+        "B5-HARD-STATES", "B5-SCREENSHOT-REVIEW"
+      ],
+      "liveControls": ["B5-LIVE-ENTRY", "B5-LIVE-DEVICE-VIEWPORTS"],
+      "localCommands": [
+        {"id": "b5-visual", "command": "npx playwright test tests/showcase-entrance.spec.ts tests/candidate-batch5-lifecycle-card.spec.ts --config=playwright.host-sim.config.ts --workers=1"},
+        {"id": "b5-a11y", "command": "npx playwright test tests/candidate-batch5-accessibility.spec.ts --config=playwright.host-sim.config.ts --workers=1"},
+        {"id": "b5-comprehension", "command": "node proof/chopdot-candidate-2026-08-12/verify-comprehension-evidence.mjs"}
+      ],
+      "liveCommands": [
+        {"id": "b5-live-visual", "command": "npx playwright test tests/candidate-batch5-live-visual.spec.ts --config=playwright.live-dot.config.ts --workers=1"}
+      ]
+    },
+    {
+      "id": "B6",
+      "title": "Freeze, prove, and separately approve release",
+      "predecessor": "B5",
+      "localControls": [
+        "B6-G0-IAC-MATRIX", "B6-FROZEN-SOURCE", "B6-BUILD-IDENTITY", "B6-TSC-BUILD",
+        "B6-AUTHORITY-SUITE", "B6-HOST-SIM", "B6-ISOLATED-PARTICIPANTS", "B6-ADVERSARIAL",
+        "B6-PAYLOAD", "B6-SECRET-HYGIENE", "B6-VISIBLE-QA", "B6-EVIDENCE-INDEX",
+        "B6-CANDIDATE-READY-LOCAL"
+      ],
+      "liveControls": [
+        "B6-DESKTOP-READINESS", "B6-ALLOWANCE", "B6-THREE-LIVE-ACCOUNTS",
+        "B6-LIVE-BEYOND-300S", "B6-PUBLIC-URL", "B6-ACTION-TIME-APPROVAL"
+      ],
+      "localCommands": [
+        {"id": "b6-clean-source", "command": "test -z \"$(git status --porcelain)\""},
+        {"id": "b6-static", "command": "npm run lint && npm run security:baseline && npm run build"},
+        {"id": "b6-host-regression", "command": "npm run test:host-sim && npm run test:host-ui && npm run test:live-payer-sync && npm run test:statement-budget && npm run test:session-quota"},
+        {"id": "b6-artifact", "command": "node proof/chopdot-candidate-2026-08-12/verify-artifact-manifest.mjs"}
+      ],
+      "liveCommands": [
+        {"id": "b6-readiness", "command": "npx playwright test tests/native-host-readiness.spec.ts --config=playwright.live-dot.config.ts --workers=1"},
+        {"id": "b6-live-proof", "command": "npx playwright test tests/candidate-batch6-live-proof.spec.ts --config=playwright.live-dot.config.ts --workers=1"},
+        {"id": "b6-public-verify", "command": "npm run verify:dot-host"}
+      ]
+    }
+  ]
+}

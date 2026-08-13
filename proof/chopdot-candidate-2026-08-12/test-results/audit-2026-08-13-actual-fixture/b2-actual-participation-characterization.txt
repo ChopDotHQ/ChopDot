@@ -1,0 +1,95 @@
+
+Running 3 tests using 1 worker
+
+
+(node:16851) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/3] tests/candidate-batch2-actual-participation.spec.ts:13:1 › actual App keeps Nina waiting across restart and joins only after Mina delivers access
+  1) tests/candidate-batch2-actual-participation.spec.ts:13:1 › actual App keeps Nina waiting across restart and joins only after Mina delivers access 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Waiting for the organizer' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByRole('heading', { name: 'Waiting for the organizer' })
+
+
+      100 |
+      101 | async function expectWaiting(page: Page) {
+    > 102 |   await expect(page.getByRole('heading', {name: 'Waiting for the organizer'})).toBeVisible();
+          |                                                                                ^
+      103 |   await expect(page.getByText('You are not in this group until the organizer finishes adding you.')).toBeVisible();
+      104 |   await expect(page.getByRole('heading', {name: /joined/iu})).toHaveCount(0);
+      105 | }
+        at expectWaiting (/Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/tests/candidate-batch2-actual-participation.spec.ts:102:80)
+        at /Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/tests/candidate-batch2-actual-participation.spec.ts:20:11
+
+    Error Context: test-results/candidate-batch2-actual-pa-40163--after-Mina-delivers-access/error-context.md
+
+
+
+(node:16993) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[2/3] tests/candidate-batch2-actual-participation.spec.ts:41:1 › actual App QR decision remains explicit on mobile and signed decline never joins
+  2) tests/candidate-batch2-actual-participation.spec.ts:41:1 › actual App QR decision remains explicit on mobile and signed decline never joins 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Invite declined' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByRole('heading', { name: 'Invite declined' })
+
+
+      48 |
+      49 |     await actors.nina.getByRole('button', {name: 'Decline'}).click();
+    > 50 |     await expect(actors.nina.getByRole('heading', {name: 'Invite declined'})).toBeVisible();
+         |                                                                               ^
+      51 |     await expect(actors.nina.getByText('You were not added to this group.')).toBeVisible();
+      52 |     await expect(actors.nina.getByRole('heading', {name: /joined/iu})).toHaveCount(0);
+      53 |     const [decline] = await takeNinaOutbound(actors.nina);
+        at /Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/tests/candidate-batch2-actual-participation.spec.ts:50:79
+
+    Error Context: test-results/candidate-batch2-actual-pa-3feb5--signed-decline-never-joins/error-context.md
+
+
+
+(node:17064) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[3/3] tests/candidate-batch2-actual-participation.spec.ts:61:1 › actual App invitation surfaces contain no internal language
+  3) tests/candidate-batch2-actual-participation.spec.ts:61:1 › actual App invitation surfaces contain no internal language 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:4177/tests/fixtures/candidate-batch2-mina-actor.html
+    Call log:
+      - navigating to "http://127.0.0.1:4177/tests/fixtures/candidate-batch2-mina-actor.html", waiting until "load"
+
+
+      74 |   const mina = await minaContext.newPage();
+      75 |   const nina = await ninaContext.newPage();
+    > 76 |   await mina.goto(minaEntry);
+         |              ^
+      77 |   await expect(mina.getByText('Mina actor ready')).toBeVisible();
+      78 |   const invitation = await mina.evaluate(
+      79 |     input => window.__B2_MINA__!.createInvitation(input),
+        at openActors (/Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/tests/candidate-batch2-actual-participation.spec.ts:76:14)
+        at /Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/tests/candidate-batch2-actual-participation.spec.ts:62:18
+
+    Error Context: test-results/candidate-batch2-actual-pa-841d7-ontain-no-internal-language/error-context.md
+
+
+  3 failed
+    tests/candidate-batch2-actual-participation.spec.ts:13:1 › actual App keeps Nina waiting across restart and joins only after Mina delivers access 
+    tests/candidate-batch2-actual-participation.spec.ts:41:1 › actual App QR decision remains explicit on mobile and signed decline never joins 
+    tests/candidate-batch2-actual-participation.spec.ts:61:1 › actual App invitation surfaces contain no internal language 

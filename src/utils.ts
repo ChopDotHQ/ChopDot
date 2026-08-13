@@ -1,5 +1,6 @@
 export function getCurrencySymbol(code: string): string {
   switch (code) {
+    case 'CHF': return 'CHF ';
     case 'EUR': return '€';
     case 'GBP': return '£';
     case 'USD': return '$';

@@ -6,6 +6,7 @@ import {
   type PolkadotHostIdentity,
   type RedactedReceiptPacket,
 } from './polkadotHostBridge.ts';
+import {runNativeHostReadinessCheck, type NativeHostReadinessReport} from './nativeHostReadiness.ts';
 
 interface HostDeveloperIdentity {
   username: string;
@@ -14,6 +15,7 @@ interface HostDeveloperIdentity {
 }
 
 interface HostDeveloperActions {
+  checkNativeHostReadiness(timeoutMs?: number): Promise<NativeHostReadinessReport>;
   requestIdentity(): Promise<HostDeveloperIdentity>;
   connectSession(groupId: string, secret: string): Promise<void>;
   publishSessionValue(value: unknown): Promise<boolean>;
@@ -45,6 +47,9 @@ function exposeDeveloperActions(bridge: PolkadotHostBridge): HostDeveloperAction
   const observed: ObservedHostPayment[] = [];
 
   return {
+    checkNativeHostReadiness(timeoutMs) {
+      return runNativeHostReadinessCheck(bridge, timeoutMs === undefined ? {} : {timeoutMs});
+    },
     async requestIdentity() {
       identity = await bridge.requestIdentity();
       return {username: identity.username, productId: identity.productId, accountId: identity.accountId};

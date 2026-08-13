@@ -1,0 +1,14 @@
+✔ link and QR use the same canonical account-bound bootstrap URL (55.259333ms)
+✔ wrong recipient, signed-route tamper, expiry, and unsupported payload data fail closed (15.287333ms)
+✔ bootstrap admits only account-bound join-link or QR membership invitations (2.335584ms)
+✔ Mina can mix an existing-contact invite with one Nina link/QR bootstrap without sharing group state (163.372083ms)
+✔ forwarding, duplicate route or identity, and limited no-app bootstrap fail closed (28.115625ms)
+✔ fresh recipient requires an external matching organizer trust root (19.794083ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 768.395

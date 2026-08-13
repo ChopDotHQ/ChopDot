@@ -4,6 +4,7 @@ import {createCleanState, reducer, type Action} from '../state/store.ts';
 import type {AppState, Expense, Group, Split, User} from '../types.ts';
 import {
   authorizeSharedAction,
+  connectHostSession,
   createSharedEnvelope,
   isSharedAction,
   participantIdFromPublicKey,
@@ -133,4 +134,85 @@ test('device-local actions never enter the shared action stream', () => {
   assert.equal(isSharedAction({type: 'SET_THEME', payload: {theme: 'dark'}}), false);
   assert.equal(isSharedAction({type: 'SET_CURRENCY', payload: {currency: 'CHF'}}), false);
   assert.equal(isSharedAction({type: 'MARK_PAID', payload: {splitId: 's-leo', userId: leoId}}), true);
+});
+
+test('post-sign refresh retires the old subscription before opening its replacement', async () => {
+  const calls: string[] = [];
+  let channelNumber = 0;
+  let openChannels = 0;
+  const bridge = {
+    requestIdentity: async () => ({
+      username: 'payer',
+      productId: 'app.chopdotproof02.dot',
+      publicKey: new Uint8Array(32).fill(7),
+      accountId: ['unused', 42] as [string, number],
+      signBytes: async () => new Uint8Array(64).fill(9),
+    }),
+    openSessionChannel: async () => {
+      const id = ++channelNumber;
+      calls.push(`open:${id}`);
+      openChannels += 1;
+      assert.equal(openChannels, 1, 'refresh must not overlap Statement Store subscriptions');
+      let channelClosed = false;
+      return {
+        preparePublish: async () => true,
+        publish: async () => true,
+        close: () => {
+          if (channelClosed) return;
+          channelClosed = true;
+          openChannels -= 1;
+          calls.push(`close:${id}`);
+        },
+      };
+    },
+  };
+
+  const connection = await connectHostSession({
+    config: {roomId: 'room-1', secret: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'},
+    onEnvelope: () => undefined,
+    bridge: bridge as never,
+  });
+  await connection.refreshPublishTransport();
+  connection.close();
+
+  assert.deepEqual(calls, ['open:1', 'close:1', 'open:2', 'close:2']);
+});
+
+test('self registration uses one replaceable compact statement and reconstructs the actor envelope', async () => {
+  let channelName = '';
+  let received: SharedActionEnvelope | undefined;
+  const signerHex = `0x${'44'.repeat(32)}`;
+  const bridge = {
+    requestIdentity: async () => ({
+      username: 'mina',
+      productId: 'chopdot-shell-proof.dot',
+      publicKey: new Uint8Array(32).fill(7),
+      accountId: ['unused', 42] as [string, number],
+    }),
+    openSessionChannel: async ({onPacket}: {onPacket: (packet: never, signer?: string) => void}) => ({
+      preparePublish: async () => true,
+      publish: async (packet: never, name?: string) => {
+        channelName = name ?? '';
+        onPacket(packet, signerHex);
+        return true;
+      },
+      close: () => undefined,
+    }),
+  };
+  const connection = await connectHostSession({
+    config: {roomId: 'compact-registration', secret: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'},
+    onEnvelope: envelope => { if ('action' in envelope) received = envelope; },
+    bridge: bridge as never,
+  });
+  const user = {
+    id: connection.participant.userId,
+    name: 'Mina',
+    accountPublicKeyHex: connection.participant.publicKeyHex,
+  };
+  await connection.publish(createSharedEnvelope({type: 'ADD_USER', payload: {user}}, connection.participant));
+  await new Promise(resolve => setTimeout(resolve, 10));
+
+  assert.equal(channelName, `registration/${connection.participant.userId}`);
+  assert.equal(received?.action.type, 'ADD_USER');
+  assert.deepEqual(received?.action.type === 'ADD_USER' ? received.action.payload.user : undefined, user);
 });

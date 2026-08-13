@@ -1,6 +1,5 @@
 import { AppState, User, Group, Expense, Split, SavedRecord, PaymentMethod, WalletPaymentReceipt } from '../types';
 import {normalizeEvmAddress, pasToBaseUnits, POLKADOT_HUB_TESTNET_CHAIN_ID} from '../payments/pasWallet';
-import type { GroupInvitePacket } from '../requestLinks.ts';
 
 export const createCleanState = (): AppState => ({
   mode: 'clean',
@@ -29,11 +28,14 @@ export type Action =
   | { type: 'LOAD_DEMO' }
   | { type: 'SET_CURRENT_USER'; payload: { userId: string } }
   | { type: 'ADD_USER'; payload: { user: User } }
+  | { type: 'MIGRATE_CURRENT_USER_IDENTITY'; payload: { fromUserId: string; toUserId: string; accountPublicKeyHex: string } }
   | { type: 'SET_WALLET_ADDRESS'; payload: { userId: string; walletAddress: string } }
+  | { type: 'BIND_USER_IDENTITY'; payload: { userId: string; accountPublicKeyHex: string; statementSignerHex: string } }
   | { type: 'CREATE_GROUP'; payload: { group: Group } }
-  | { type: 'ACCEPT_GROUP_INVITE'; payload: { invite: GroupInvitePacket } }
+  | { type: 'SET_GROUP_LIVE_SESSION'; payload: { groupId: string; roomId: string; secret: string } }
   | { type: 'ADD_EXPENSE'; payload: { expense: Expense; splits: Split[] } }
-  | { type: 'SEND_REQUEST'; payload: { splitId: string; requestId?: string; expiresAt?: string } }
+  | { type: 'SEND_REQUEST'; payload: { splitId: string; requestId?: string; createdAt?: string; expiresAt?: string; capabilityHash?: string } }
+  | { type: 'SET_REQUEST_ENTRY'; payload: { splitId: string; memberCapability: string; createdAt: string } }
   | { type: 'MARK_PAID'; payload: { splitId: string; userId: string } }
   | { type: 'CONFIRM_RECEIVED'; payload: { splitId: string; currentUserId: string } }
   | { type: 'RECORD_MATCHED_PAYMENT'; payload: { splitId: string; userId: string; receiverUserId: string; receipt: WalletPaymentReceipt } }
@@ -80,6 +82,55 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         users: { ...state.users, [action.payload.user.id]: action.payload.user }
       };
+    case 'MIGRATE_CURRENT_USER_IDENTITY': {
+      const {fromUserId} = action.payload;
+      const toUserId = action.payload.toUserId.trim();
+      const accountPublicKeyHex = normalizeKey(action.payload.accountPublicKeyHex);
+      const source = state.users[fromUserId];
+      if (
+        !source
+        || state.currentUserId !== fromUserId
+        || !toUserId
+        || !accountPublicKeyHex
+        || (source.accountPublicKeyHex && normalizeKey(source.accountPublicKeyHex) !== accountPublicKeyHex)
+        || (fromUserId !== toUserId && Boolean(state.users[toUserId]))
+      ) return state;
+
+      if (fromUserId === toUserId && normalizeKey(source.accountPublicKeyHex ?? '') === accountPublicKeyHex) {
+        return state;
+      }
+
+      const remapUserId = (userId: string) => userId === fromUserId ? toUserId : userId;
+      const users = {...state.users};
+      delete users[fromUserId];
+      users[toUserId] = {...source, id: toUserId, accountPublicKeyHex};
+
+      return {
+        ...state,
+        currentUserId: toUserId,
+        users,
+        groups: Object.fromEntries(Object.entries(state.groups).map(([groupId, group]) => [
+          groupId,
+          {...group, memberIds: Array.from(new Set(group.memberIds.map(remapUserId)))},
+        ])),
+        expenses: Object.fromEntries(Object.entries(state.expenses).map(([expenseId, expense]) => [
+          expenseId,
+          {...expense, paidByUserId: remapUserId(expense.paidByUserId)},
+        ])),
+        splits: Object.fromEntries(Object.entries(state.splits).map(([splitId, split]) => [
+          splitId,
+          {...split, userId: remapUserId(split.userId)},
+        ])),
+        paymentMethods: Object.fromEntries(Object.entries(state.paymentMethods).map(([methodId, method]) => [
+          methodId,
+          {...method, userId: remapUserId(method.userId)},
+        ])),
+        savedRecords: Object.fromEntries(Object.entries(state.savedRecords).map(([recordId, record]) => [
+          recordId,
+          {...record, splits: record.splits.map(split => ({...split, userId: remapUserId(split.userId)}))},
+        ])),
+      };
+    }
     case 'SET_WALLET_ADDRESS': {
       const user = state.users[action.payload.userId];
       if (!user) return state;
@@ -94,95 +145,48 @@ export function reducer(state: AppState, action: Action): AppState {
         users: {...state.users, [user.id]: {...user, walletAddress}},
       };
     }
+    case 'BIND_USER_IDENTITY': {
+      const user = state.users[action.payload.userId];
+      if (!user) return state;
+      const accountPublicKeyHex = normalizeKey(action.payload.accountPublicKeyHex);
+      const statementSignerHex = normalizeKey(action.payload.statementSignerHex);
+      if (!accountPublicKeyHex || !statementSignerHex) return state;
+      if (user.accountPublicKeyHex && normalizeKey(user.accountPublicKeyHex) !== accountPublicKeyHex) return state;
+      if (user.statementSignerHex && normalizeKey(user.statementSignerHex) !== statementSignerHex) return state;
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          [user.id]: {...user, accountPublicKeyHex, statementSignerHex},
+        },
+      };
+    }
     case 'CREATE_GROUP':
       return {
         ...state,
         groups: { ...state.groups, [action.payload.group.id]: action.payload.group }
       };
-    case 'ACCEPT_GROUP_INVITE': {
-      // A shared snapshot, not authority. Local truth always wins: anything we
-      // already hold is left untouched, so a link can never rewrite our own
-      // record of who owes what. See SECURITY_FOUNDATION.md.
-      const { invite } = action.payload;
-
-      const users = { ...state.users };
-      invite.members.forEach(m => {
-        if (!users[m.id]) {
-          users[m.id] = m.walletAddress
-            ? { id: m.id, name: m.name, walletAddress: m.walletAddress }
-            : { id: m.id, name: m.name };
-        }
-      });
-
-      // Claim our place in the roster. The inviter generated ids for everyone,
-      // so a joining device that named itself "Leo" must adopt the roster's Leo
-      // id — otherwise its splits reference a member it is not, and it sees two
-      // Leos. Matching by normalized name is the same convention CreateGroup
-      // already uses when a friend name matches an existing user.
-      let currentUserId = state.currentUserId;
-      const myName = currentUserId ? state.users[currentUserId]?.name : undefined;
-      const claimed = myName
-        ? invite.members.find(m => normalizeInviteName(m.name) === normalizeInviteName(myName))
-        : undefined;
-
-      if (claimed && currentUserId && claimed.id !== currentUserId) {
-        delete users[currentUserId];
-        currentUserId = claimed.id;
-      }
-
-      const memberIds = invite.members.map(m => m.id);
-      if (currentUserId && !memberIds.includes(currentUserId)) {
-        // Joined under a name nobody listed: join as an additional member
-        // rather than silently becoming a spectator.
-        memberIds.push(currentUserId);
-      }
-
-      const groups = { ...state.groups };
-      if (!groups[invite.groupId]) {
-        groups[invite.groupId] = {
-          id: invite.groupId,
-          name: invite.groupName,
-          memberIds,
-        };
-      }
-
-      const expenses = { ...state.expenses };
-      invite.expenses.forEach(e => {
-        if (!expenses[e.id]) {
-          expenses[e.id] = {
-            id: e.id,
-            groupId: invite.groupId,
-            description: e.description,
-            amount: e.amount,
-            currency: e.currency,
-            paidByUserId: e.paidByUserId,
-            date: e.date,
-          };
-        }
-      });
-
-      const splits = { ...state.splits };
-      invite.splits.forEach(sp => {
-        if (!splits[sp.id]) {
-          splits[sp.id] = {
-            id: sp.id,
-            expenseId: sp.expenseId,
-            userId: sp.userId,
-            amount: sp.amount,
-            status: sp.status,
-          };
-        }
-      });
-
-      // Adopt the group's currency so amounts are not relabelled on arrival.
-      // Only when we have no groups of our own yet, so joining never rewrites
-      // an existing local preference.
-      const currency = Object.keys(state.groups).length === 0 ? invite.currency : state.currency;
-
-      return { ...state, currentUserId, currency, users, groups, expenses, splits };
+    case 'SET_GROUP_LIVE_SESSION': {
+      const group = state.groups[action.payload.groupId];
+      if (!group || group.liveSession) return state;
+      if (!action.payload.roomId.trim() || !action.payload.secret.trim()) return state;
+      return {
+        ...state,
+        groups: {
+          ...state.groups,
+          [group.id]: {
+            ...group,
+            liveSession: {
+              roomId: action.payload.roomId.trim(),
+              secret: action.payload.secret.trim(),
+            },
+          },
+        },
+      };
     }
     case 'ADD_EXPENSE': {
       const { expense, splits } = action.payload;
+      if (!state.groups[expense.groupId] || state.groups[expense.groupId].closedRecordId) return state;
       const newSplits = { ...state.splits };
       splits.forEach(s => newSplits[s.id] = s);
       return {
@@ -194,6 +198,8 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'SEND_REQUEST': {
       const split = state.splits[action.payload.splitId];
       if (!split || !['open', 'request_sent'].includes(split.status)) return state;
+      const expense = state.expenses[split.expenseId];
+      if (!expense || state.groups[expense.groupId]?.closedRecordId) return state;
       return {
         ...state,
         splits: {
@@ -202,9 +208,27 @@ export function reducer(state: AppState, action: Action): AppState {
             ...split,
             status: 'request_sent',
             requestId: action.payload.requestId ?? split.requestId,
+            requestCreatedAt: action.payload.createdAt ?? split.requestCreatedAt,
             requestExpiresAt: action.payload.expiresAt ?? split.requestExpiresAt,
+            requestCapabilityHash: action.payload.capabilityHash ?? split.requestCapabilityHash,
           }
         }
+      };
+    }
+    case 'SET_REQUEST_ENTRY': {
+      const split = state.splits[action.payload.splitId];
+      if (!split || split.status !== 'request_sent') return state;
+      if (!action.payload.memberCapability.trim() || Number.isNaN(Date.parse(action.payload.createdAt))) return state;
+      return {
+        ...state,
+        splits: {
+          ...state.splits,
+          [split.id]: {
+            ...split,
+            requestEntryCapability: action.payload.memberCapability,
+            requestCreatedAt: action.payload.createdAt,
+          },
+        },
       };
     }
     case 'MARK_PAID': {
@@ -264,9 +288,12 @@ export function reducer(state: AppState, action: Action): AppState {
     }
     case 'SAVE_RECORD': {
       const { recordId, groupId, savedAt } = action.payload;
+      const group = state.groups[groupId];
+      if (!group || group.closedRecordId) return state;
       const groupExpenses = Object.values(state.expenses).filter(e => e.groupId === groupId);
       const expenseIds = groupExpenses.map(e => e.id);
       const groupSplits = Object.values(state.splits).filter(s => expenseIds.includes(s.expenseId));
+      if (groupExpenses.length === 0 || groupSplits.some(split => split.status !== 'confirmed')) return state;
       
       const totalAmount = groupSplits.reduce((sum, s) => sum + s.amount, 0);
       const openAmount = groupSplits
@@ -279,11 +306,15 @@ export function reducer(state: AppState, action: Action): AppState {
         dateSaved: savedAt ?? new Date().toISOString(),
         totalAmount,
         openAmount,
-        splits: groupSplits
+        splits: groupSplits.map(({requestEntryCapability: _requestEntryCapability, ...split}) => split)
       };
 
       return {
         ...state,
+        groups: {
+          ...state.groups,
+          [groupId]: {...group, closedRecordId: record.id, closedAt: record.dateSaved},
+        },
         savedRecords: {
           ...state.savedRecords,
           [record.id]: record
@@ -363,6 +394,7 @@ export const getSavedRecordSummary = (state: AppState, recordId: string) => {
   };
 };
 
-function normalizeInviteName(value: string): string {
-  return value.trim().replace(/\s+/gu, ' ').toLocaleLowerCase();
+function normalizeKey(value: string): string {
+  const normalized = value.toLowerCase().replace(/^0x/u, '');
+  return /^[0-9a-f]{64}$/u.test(normalized) ? `0x${normalized}` : '';
 }

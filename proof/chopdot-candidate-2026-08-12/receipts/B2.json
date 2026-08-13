@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 2,
+  "batch": "B2",
+  "deliveryTrainId": "chopdot-functional-candidate-2026-08-12",
+  "runStartedAt": "2026-08-13T07:48:00Z",
+  "runCompletedAt": "2026-08-13T07:50:41Z",
+  "candidate": {
+    "id": "b2-2026-08-13T074800Z",
+    "head": "81e56801a059253ca3daf667251239d4776e96f4",
+    "tree": "fa24ce640b9ad27e455b3f3f9ca5a3ed10d908c0c7f43ab2344bee1922321a6d",
+    "packageLockSha256": "27dc2921197845c57dbba6556dde28892eef098acd591e3542b30315245a1c6c",
+    "snapshotAt": "2026-08-13T07:47:30Z",
+    "clean": false
+  },
+  "controls": [
+    {"id":"B2-ONE-MEMBERSHIP-MODEL","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-LINK","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-QR-PARITY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-LIMITED-NO-APP","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-TRANSPORT-NOT-AUTHORITY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-LEGACY-SNAPSHOT-RETIRED","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-EXPLICIT-CONSENT","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-FORWARD-WRONG-PERSON","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-EXPIRY-REVOKE-REPLAY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-NO-SECRET-OR-HISTORY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-MONEY-STATE-NON-AUTHORITY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-DUPLICATE-IDENTITY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-ISOLATED-MIXED-UI","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-PLAIN-USER-LANGUAGE","lane":"local","status":"PASS","evidence":[{"path":"test-results/b2-2026-08-13T074800Z/B2-EVIDENCE.md","sha256":"e464f55e399fe9c9dab4c431a6b2cf34e9f07907b4607ff1a485e8bc081ccd7b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"B2-LIVE-PUBLIC-ROUTES","lane":"live","status":"BLOCKED","evidence":[]},
+    {"id":"B2-LIVE-MIXED-DELIVERY","lane":"live","status":"BLOCKED","evidence":[]}
+  ],
+  "commands": [
+    {"id":"b2-membership-regression","lane":"local","command":"node --import tsx --test src/membership/*.test.ts","exitCode":0,"evidence":[{"path":"test-results/b2-2026-08-13T074800Z/commands/b2-membership-regression.txt","sha256":"784256a18ced3ad5af541e07272d1b04541d16272e9ee91c0bc0aebab156d038","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"b2-entry-domain","lane":"local","command":"node --import tsx --test src/membership/recipientBoundBootstrap.test.ts src/membership/recipientBoundBootstrapCoordinator.test.ts","exitCode":0,"evidence":[{"path":"test-results/b2-2026-08-13T074800Z/commands/b2-entry-domain.txt","sha256":"d3b2c52e2f35f58f0a3cea2cd9e59dddebbccd25dcb3c31fde7386a411ace06a","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"b2-limited-no-app-domain","lane":"local","command":"node --import tsx --test src/membership/limitedNoAppAction.test.ts src/membership/limitedNoAppActionLink.test.ts src/membership/limitedNoAppActionService.test.ts","exitCode":0,"evidence":[{"path":"test-results/b2-2026-08-13T074800Z/commands/b2-limited-no-app-domain.txt","sha256":"2bff9263f17193ccd49d725bcff43ca0b1d86a09d329f2304ca67883efa8c42c","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"b2-request-link-regression","lane":"local","command":"node --import tsx --test src/requestLinks.test.ts","exitCode":0,"evidence":[{"path":"test-results/b2-2026-08-13T074800Z/commands/b2-request-link-regression.txt","sha256":"afb0305e9b53fca4d472d36a46593b535ea2314b2521183d13b8309a6b2e3611","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"b2-preview-ui","lane":"local","command":"npx playwright test tests/membership-bootstrap-ui.spec.ts --config=playwright.host-sim.config.ts --workers=1","exitCode":0,"evidence":[{"path":"test-results/b2-2026-08-13T074800Z/commands/b2-preview-ui.txt","sha256":"4d32d59edebcdf987e2ab6b942e6d40c47b90251e2b204cce705c7ecf692a59b","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"b2-router-retirement","lane":"local","command":"npx playwright test tests/candidate-batch2-router-retirement.spec.ts --config=playwright.host-sim.config.ts --workers=1","exitCode":0,"evidence":[{"path":"test-results/b2-2026-08-13T074800Z/commands/b2-router-retirement.txt","sha256":"528b5058804e507e83b4990e7df337244cfe4a341d997e8bb33845cf19d33c05","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"b2-mixed-ui","lane":"local","command":"npx playwright test tests/candidate-batch2-actual-participation.spec.ts --config=playwright.host-sim.config.ts --workers=1","exitCode":0,"evidence":[{"path":"test-results/b2-2026-08-13T074800Z/commands/b2-mixed-ui.txt","sha256":"038aac1fac6a0261ea8143188d4c187663cb19d51d2a9f46f9324571f2ce6559","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"b2-limited-actual-ui","lane":"local","command":"npx playwright test tests/candidate-batch2-limited-actual-route.spec.ts --config=playwright.host-sim.config.ts --workers=1","exitCode":0,"evidence":[{"path":"test-results/b2-2026-08-13T074800Z/commands/b2-limited-actual-ui.txt","sha256":"1d2e0c0bad50a0cfec4656199fbfe9089701c0b222b6f9bb393c48289715a697","capturedAt":"2026-08-13T07:50:41Z"}]},
+    {"id":"b2-live-public","lane":"live","command":"npx playwright test tests/candidate-batch2-live-public-entry.spec.ts --config=playwright.live-dot.config.ts --workers=1","exitCode":1,"evidence":[]}
+  ],
+  "liveEnvironmentVerified": false,
+  "actionTimeApproval": false
+}

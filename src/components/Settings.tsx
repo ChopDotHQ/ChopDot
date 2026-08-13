@@ -9,6 +9,7 @@ export function Settings({ onBack, onGoToStyleGuide, onGoToStateProof }: { onBac
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const currencies = [
+    { code: 'CHF', symbol: 'CHF', label: 'CHF' },
     { code: 'USD', symbol: '$', label: 'USD ($)' },
     { code: 'EUR', symbol: '€', label: 'EUR (€)' },
     { code: 'GBP', symbol: '£', label: 'GBP (£)' },

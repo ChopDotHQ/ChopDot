@@ -2,10 +2,11 @@ import {expect, test, type FrameLocator, type Page} from '@playwright/test';
 import {mkdir, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 
-const liveUrl = 'https://chopdot-shell-proof.paseo.li/?chainBackend=rpc-gateway';
-const proofDirectory = path.resolve('proof/guest-payment-return-live-dot');
+const liveUrl = process.env.CHOPDOT_LIVE_URL
+  ?? 'https://chopdot-shell-proof.paseo.li/?chainBackend=rpc-gateway';
+const proofDirectory = path.resolve(process.env.CHOPDOT_LIVE_PROOF_DIR ?? 'proof/guest-payment-live-sync-dot');
 
-test('fresh-device payer returns a scoped update through the live dot host', async ({browser}) => {
+test('fresh-device payer synchronizes a scoped action through the live dot host', async ({browser}) => {
   await mkdir(proofDirectory, {recursive: true});
   const minaContext = await browser.newContext({viewport: {width: 430, height: 932}});
   const leoContext = await browser.newContext({viewport: {width: 430, height: 932}});
@@ -34,11 +35,11 @@ test('fresh-device payer returns a scoped update through the live dot host', asy
     await minaApp.getByRole('button', {name: 'Send link to Leo'}).click();
 
     const payerUrl = await capturedShareUrl(minaApp);
-    expect(new URL(payerUrl).hostname).toBe('chopdot-shell-proof.paseo.li');
+    expect(new URL(payerUrl).hostname).toBe(new URL(liveUrl).hostname);
     expect(new URL(payerUrl).searchParams.get('payRequest')).toBeTruthy();
+    expect(new URL(payerUrl).searchParams.has('payUpdate')).toBe(false);
     await mina.screenshot({path: path.join(proofDirectory, '01-mina-request-sent.png')});
 
-    await installShareCapture(leo);
     await openHostedApp(leo, payerUrl);
     const leoApp = hostedApp(leo);
     await expect(leoApp.getByRole('heading', {name: 'Pay Mina', level: 2})).toBeVisible();
@@ -51,29 +52,25 @@ test('fresh-device payer returns a scoped update through the live dot host', asy
 
     await leoApp.getByRole('button', {name: 'I paid Mina'}).click();
     await expect(leoApp.getByRole('heading', {name: 'Marked as paid', level: 2})).toBeVisible();
-    await expect(leoApp.getByText('Update sent to Mina', {exact: true})).toBeVisible();
-    const paidUpdateUrl = await capturedShareUrl(leoApp);
-    expect(new URL(paidUpdateUrl).hostname).toBe('chopdot-shell-proof.paseo.li');
-    expect(new URL(paidUpdateUrl).searchParams.get('payUpdate')).toBeTruthy();
-    await leo.screenshot({path: path.join(proofDirectory, '03-leo-update-sent.png')});
+    await expect(leoApp.getByText('Mina has been notified', {exact: true})).toBeVisible();
+    expect(new URL(leo.url()).searchParams.has('payUpdate')).toBe(false);
+    await leo.screenshot({path: path.join(proofDirectory, '03-leo-delivered.png')});
 
-    await openHostedApp(mina, paidUpdateUrl);
-    const returnedMinaApp = hostedApp(mina);
-    await expect(returnedMinaApp.getByRole('heading', {name: 'Friday Crew Live'})).toBeVisible();
-    await expect(returnedMinaApp.getByText('Needs confirm', {exact: true})).toBeVisible();
-    await expect(returnedMinaApp.getByRole('button', {name: 'Confirm received from Leo'})).toBeVisible();
+    await expect(minaApp.getByRole('heading', {name: 'Friday Crew Live'})).toBeVisible();
+    await expect(minaApp.getByText('Needs confirm', {exact: true})).toBeVisible({timeout: 20_000});
+    await expect(minaApp.getByRole('button', {name: 'Confirm received from Leo'})).toBeVisible();
     await mina.screenshot({path: path.join(proofDirectory, '04-mina-needs-confirm.png')});
 
-    await returnedMinaApp.getByRole('button', {name: 'Confirm received from Leo'}).click();
-    await expect(returnedMinaApp.getByText('Settled', {exact: true})).toHaveCount(2);
-    await expect(returnedMinaApp.getByText('Mina (You)', {exact: true})).toBeVisible();
-    await expect(returnedMinaApp.getByText('Leo', {exact: true})).toBeVisible();
-    await expect(returnedMinaApp.getByRole('button', {name: 'Finish group'})).toBeVisible();
+    await minaApp.getByRole('button', {name: 'Confirm received from Leo'}).click();
+    await expect(minaApp.getByText('Settled', {exact: true})).toHaveCount(2);
+    await expect(minaApp.getByText('Mina (You)', {exact: true})).toBeVisible();
+    await expect(minaApp.getByText('Leo', {exact: true})).toBeVisible();
+    await expect(minaApp.getByRole('button', {name: 'Finish group'})).toBeVisible();
     await mina.screenshot({path: path.join(proofDirectory, '05-mina-confirmed.png')});
     await writeFile(
       path.join(proofDirectory, 'report.json'),
       `${JSON.stringify({
-        proof: 'dot-host-guest-payment-return',
+        proof: 'dot-host-guest-payment-live-sync',
         status: 'passed',
         liveUrl,
         capturedAt: new Date().toISOString(),
@@ -82,14 +79,14 @@ test('fresh-device payer returns a scoped update through the live dot host', asy
           'fresh payer context opened the public dot-host payment link',
           'payer saw one exact amount and one mark-paid action',
           'payer could not confirm receipt or open organizer setup',
-          'payer returned a scoped expiring update link',
-          'receiver state changed only after opening the exact returned update',
+          'payer published one scoped expiring action without a return link',
+          'receiver state changed automatically in the already-open group',
           'receiver confirmation settled only the matching share',
         ],
         screenshots: [
           '01-mina-request-sent.png',
           '02-leo-payment-request.png',
-          '03-leo-update-sent.png',
+          '03-leo-delivered.png',
           '04-mina-needs-confirm.png',
           '05-mina-confirmed.png',
         ],

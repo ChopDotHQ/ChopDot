@@ -194,18 +194,18 @@ export function getTelegramUserDisplayName(): string | null {
   return name || user.username || null;
 }
 
-export async function copyText(text: string): Promise<'copied' | 'ready'> {
+export async function copyText(text: string): Promise<'copied' | 'unavailable'> {
   const capabilities = getEnvironmentCapabilities();
 
   if (!capabilities.canUseClipboard) {
-    return 'ready';
+    return 'unavailable';
   }
 
   try {
     await navigator.clipboard.writeText(text);
     return 'copied';
   } catch {
-    return 'ready';
+    return 'unavailable';
   }
 }
 
@@ -217,7 +217,7 @@ export async function shareOrCopyText({
   title: string;
   text: string;
   url: string;
-}): Promise<'shared' | 'copied' | 'ready'> {
+}): Promise<'shared' | 'copied' | 'unavailable'> {
   const capabilities = getEnvironmentCapabilities();
 
   if (capabilities.canUseShareSheet) {

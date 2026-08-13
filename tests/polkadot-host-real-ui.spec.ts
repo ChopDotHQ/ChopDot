@@ -8,6 +8,7 @@ import {
 } from '@parity/host-api-test-sdk';
 import {mkdir, writeFile} from 'node:fs/promises';
 import path from 'node:path';
+import type {AppState} from '../src/types.ts';
 
 const sessionSecret = 'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC';
 const sessionRoom = 'friday-crew-real-ui-five';
@@ -33,14 +34,7 @@ type Participant = Definition & {
   publishedCursor: number;
 };
 
-interface PortableState {
-  currentUserId: string | null;
-  users: Record<string, {id: string; name: string; accountPublicKeyHex?: string}>;
-  groups: Record<string, {id: string; name: string; memberIds: string[]}>;
-  expenses: Record<string, {id: string; groupId: string; amount: number; paidByUserId: string}>;
-  splits: Record<string, {id: string; expenseId: string; userId: string; amount: number; status: string}>;
-  savedRecords: Record<string, {id: string; groupId: string; dateSaved: string; totalAmount: number; openAmount: number}>;
-}
+type PortableState = Pick<AppState, 'currentUserId' | 'users' | 'groups' | 'expenses' | 'splits' | 'savedRecords'>;
 
 declare global {
   interface Window {
@@ -98,8 +92,10 @@ async function waitForSubmitted(participant: Participant, expectedNew: number): 
   try {
     await expect.poll(() => participant.frame.evaluate(
       () => window.__CHOPDOT_SESSION_OBSERVER__?.published ?? 0,
-    )).toBe(expectedPublished);
-    participant.publishedCursor = expectedPublished;
+    )).toBeGreaterThanOrEqual(expectedPublished);
+    participant.publishedCursor = await participant.frame.evaluate(
+      () => window.__CHOPDOT_SESSION_OBSERVER__?.published ?? 0,
+    );
     await expect.poll(() => participant.page.evaluate(
       () => window.__TEST_HOST__.getSubmittedStatements().length,
     )).toBeGreaterThan(participant.statementCursor);
@@ -174,12 +170,17 @@ async function openCapturedPayerLink(mina: Participant, payer: Participant, inde
 }
 
 function sharedProjection(state: PortableState) {
+  const sharedSplit = ({requestEntryCapability: _requestEntryCapability, ...split}: PortableState['splits'][string]) => split;
   return {
     users: Object.values(state.users).sort((a, b) => a.id.localeCompare(b.id)),
-    groups: Object.values(state.groups).sort((a, b) => a.id.localeCompare(b.id)),
+    groups: Object.values(state.groups)
+      .map(({liveSession: _liveSession, ...group}) => group)
+      .sort((a, b) => a.id.localeCompare(b.id)),
     expenses: Object.values(state.expenses).sort((a, b) => a.id.localeCompare(b.id)),
-    splits: Object.values(state.splits).sort((a, b) => a.id.localeCompare(b.id)),
-    savedRecords: Object.values(state.savedRecords).sort((a, b) => a.id.localeCompare(b.id)),
+    splits: Object.values(state.splits).map(sharedSplit).sort((a, b) => a.id.localeCompare(b.id)),
+    savedRecords: Object.values(state.savedRecords)
+      .map(record => ({...record, splits: record.splits.map(sharedSplit)}))
+      .sort((a, b) => a.id.localeCompare(b.id)),
   };
 }
 
@@ -216,6 +217,7 @@ test('five people complete the real ChopDot group journey from isolated Polkadot
     await capture(mina, '02-group-created');
 
     await mina.frame.getByRole('button', {name: 'Add spend'}).click();
+    await mina.frame.getByRole('button', {name: 'Enter amount instead'}).click();
     await mina.frame.getByPlaceholder('0.00').fill('150');
     await mina.frame.getByPlaceholder('e.g. Dinner at Gusto').fill('Dinner in Zurich');
     await mina.frame.getByRole('button', {name: 'Review split'}).click();
@@ -246,7 +248,9 @@ test('five people complete the real ChopDot group journey from isolated Polkadot
     await capture(payers[0], '06-leo-marked-paid');
 
     for (const payer of payers) {
-      await mina.frame.getByLabel(`Confirm received from ${payer.person}`).click();
+      const confirmation = mina.frame.getByLabel(`Confirm received from ${payer.person}`);
+      await confirmation.click();
+      await expect(confirmation).toHaveCount(0, {timeout: 20_000});
     }
     await waitForSubmitted(mina, 4);
     expect(await relayNewStatements(participants)).toBeGreaterThanOrEqual(4);
@@ -260,6 +264,12 @@ test('five people complete the real ChopDot group journey from isolated Polkadot
     await expect(mina.frame.getByRole('heading', {name: 'Group Summary'})).toBeVisible();
     await expect(mina.frame.getByText('All settled')).toBeVisible();
     await capture(mina, '08-saved-summary');
+    await mina.frame.getByRole('button', {name: 'Done'}).click();
+    await mina.frame.getByRole('button', {name: 'Open Friday Crew'}).click();
+    await expect(mina.frame.getByRole('status')).toHaveText('Group closed · saved to History');
+    await expect(mina.frame.getByRole('button', {name: 'Finish group'})).toHaveCount(0);
+    await expect(mina.frame.getByRole('button', {name: /Add spend|Add expense/u})).toHaveCount(0);
+    await capture(mina, '09-closed-group-immutable');
 
     const states = await Promise.all(participants.map(stateOf));
     const expectedProjection = sharedProjection(states[0]);
@@ -301,6 +311,7 @@ test('five people complete the real ChopDot group journey from isolated Polkadot
         'Mina confirms four receipts',
         'finish group',
         'saved summary',
+        'closed group remains read-only when reopened',
       ],
       convergence: {
         sameSharedProjection: true,

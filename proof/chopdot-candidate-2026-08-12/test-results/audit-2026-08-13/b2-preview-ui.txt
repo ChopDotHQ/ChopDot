@@ -1,0 +1,44 @@
+
+[WebServer] (node:11190) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 6 tests using 1 worker
+
+
+(node:11203) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/6] tests/candidate-batch2-link-qr-no-app.spec.ts:10:1 › Nina enters by link and is not joined until Mina grants
+[2/6] tests/candidate-batch2-link-qr-no-app.spec.ts:29:1 › QR enters the same explicit Nina decision on mobile
+[3/6] tests/candidate-batch2-link-qr-no-app.spec.ts:41:1 › a forwarded invite fails safely for the wrong person
+[4/6] tests/candidate-batch2-link-qr-no-app.spec.ts:51:1 › an expired invite names the result and offers no stale acceptance
+  1) tests/candidate-batch2-link-qr-no-app.spec.ts:51:1 › an expired invite names the result and offers no stale acceptance 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Matcher error: received value must be a number or bigint
+
+    Received has value: undefined
+
+      105 |   const [brandBox, labelBox, headingBox] = await Promise.all([brand.boundingBox(), label.boundingBox(), heading.boundingBox()]);
+      106 |   for (const box of [brandBox, labelBox, headingBox]) {
+    > 107 |     expect(box?.x).toBeGreaterThanOrEqual(0);
+          |                    ^
+      108 |     expect(box?.y).toBeGreaterThanOrEqual(0);
+      109 |     expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(page.viewportSize()?.width ?? 0);
+      110 |     expect((box?.y ?? 0) + (box?.height ?? 0)).toBeLessThanOrEqual(page.viewportSize()?.height ?? 0);
+        at expectHeaderAndTitleInsideViewport (/Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/tests/candidate-batch2-link-qr-no-app.spec.ts:107:20)
+        at /Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/tests/candidate-batch2-link-qr-no-app.spec.ts:57:3
+
+    Error Context: test-results/membership-bootstrap-ui-an-7d372--offers-no-stale-acceptance/error-context.md
+
+
+
+(node:11265) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[5/6] tests/candidate-batch2-link-qr-no-app.spec.ts:61:1 › limited no-app entry opens one dinner action without membership
+[6/6] tests/candidate-batch2-link-qr-no-app.spec.ts:75:1 › bootstrap screens avoid infrastructure language
+  1 failed
+    tests/candidate-batch2-link-qr-no-app.spec.ts:51:1 › an expired invite names the result and offers no stale acceptance 
+  5 passed (8.1s)
