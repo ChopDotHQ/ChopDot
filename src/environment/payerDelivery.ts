@@ -2,6 +2,7 @@ import {connectHostSession} from './hostSessionSync.ts';
 import {
   createPayerMarkedPaidEnvelope,
   createReceiptConfirmedEnvelope,
+  derivePayerSessionConfig,
   isReceiptConfirmedNotice,
   paymentEventSigningBytes,
   signatureToBase64Url,
@@ -127,8 +128,9 @@ export async function observeReceiptConfirmation({
   onError(reason: unknown): void;
 }) {
   const seen = new Set<string>();
+  const config = await derivePayerSessionConfig(request.requestId, request.live.memberCapability);
   return connectHostSession({
-    config: {roomId: request.live.roomId, secret: request.live.secret},
+    config,
     onEnvelope: (envelope, signerHex) => {
       if (!isReceiptConfirmedNotice(envelope) || seen.has(envelope.requestId)) return;
       seen.add(envelope.requestId);

@@ -15,6 +15,12 @@ const forbiddenPatterns = [
   { label: 'string setInterval', regex: /setInterval\s*\(\s*['"`]/ },
   { label: 'postMessage', regex: /postMessage\s*\(/ },
   { label: 'client secret env', regex: /\b(?:GEMINI_API_KEY|SECRET|PRIVATE_KEY|CLIENT_SECRET|BOT_TOKEN|PASSWORD)\s*=/ },
+  { label: 'PEM private key', regex: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/ },
+  { label: 'AWS access key', regex: /\b(?:AKIA|ASIA)[A-Z0-9]{16}\b/ },
+  { label: 'GitHub access token', regex: /\bgh[pousr]_[A-Za-z0-9]{30,}\b/ },
+  { label: 'Stripe secret key', regex: /\bsk_(?:live|test)_[A-Za-z0-9]{20,}\b/ },
+  { label: 'Slack token', regex: /\bxox[baprs]-[A-Za-z0-9-]{20,}\b/ },
+  { label: 'production deterministic signer', regex: /\b(?:sr25519PairFromSeed|naclKeypairFromSeed|addFromSeed)\s*\(/, productionOnly: true },
 ];
 
 const files = [];
@@ -30,6 +36,7 @@ for (const file of files) {
   const lines = text.split(/\r?\n/);
   lines.forEach((line, index) => {
     for (const pattern of forbiddenPatterns) {
+      if (pattern.productionOnly && /(?:^|\.)test\.[cm]?[jt]sx?$/u.test(file)) continue;
       if (pattern.regex.test(line)) {
         findings.push(`${path.relative(root, file)}:${index + 1} ${pattern.label}`);
       }

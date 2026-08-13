@@ -466,6 +466,23 @@ export function createMemberCapability(): string {
   return randomBase64Url(32);
 }
 
+export async function derivePayerSessionConfig(
+  requestId: string,
+  memberCapability: string,
+): Promise<{roomId: string; secret: string}> {
+  if (!requestId.trim() || !/^[A-Za-z0-9_-]{20,160}$/u.test(memberCapability)) {
+    throw new Error('The payment request capability is invalid.');
+  }
+  const material = new TextEncoder().encode(
+    `chopdot-payer-session-v1\0${requestId}\0${memberCapability}`,
+  );
+  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', material));
+  return {
+    roomId: `payer-${requestId}`,
+    secret: bytesToBase64Url(digest),
+  };
+}
+
 export class PayerActionOutbox {
   constructor(private readonly storage: KeyValueStorage, private readonly storageKey = OUTBOX_KEY) {}
 

@@ -2,8 +2,23 @@ node_modules/
 build/
 dist/
 coverage/
+test-results/
+playwright-report/
 .DS_Store
 *.log
 .env*
 !.env.example
 .vercel
+
+# Batch 6 evidence is generated against the frozen source commit and kept
+# outside that commit so the candidate fingerprint remains exact and clean.
+proof/chopdot-candidate-2026-08-12/test-results/chopdot-b6-*/
+proof/chopdot-candidate-2026-08-12/screenshots/chopdot-b6-*/
+proof/chopdot-candidate-2026-08-12/artifact/chopdot-b6-*/
+proof/chopdot-candidate-2026-08-12/receipts/final/chopdot-b6-*/
+proof/chopdot-candidate-2026-08-12/receipts/B6.json
+
+# Focused host proofs write these reports during exact-candidate reruns. The
+# final Batch 6 runner hashes and copies them into the candidate evidence pack.
+proof/guest-payment-offline/
+proof/live-payer-sync/

@@ -15,8 +15,6 @@ export type StandalonePayerRequest = {
   createdAt: string;
   expiresAt: string;
   live: {
-    roomId: string;
-    secret: string;
     memberCapability: string;
     authority: 'native' | 'offline';
     requesterPublicKeyHex?: string;
@@ -411,9 +409,9 @@ function decodeRequestPacket(packet: string): StandalonePayerRequest | null {
       typeof parsed.paymentMethodLabel !== 'string' ||
       typeof parsed.createdAt !== 'string' ||
       !parsed.live ||
-      typeof parsed.live.roomId !== 'string' ||
-      typeof parsed.live.secret !== 'string' ||
       typeof parsed.live.memberCapability !== 'string' ||
+      Object.hasOwn(parsed.live, 'roomId') ||
+      Object.hasOwn(parsed.live, 'secret') ||
       (parsed.live.authority !== 'native' && parsed.live.authority !== 'offline') ||
       (parsed.live.requesterPublicKeyHex !== undefined && typeof parsed.live.requesterPublicKeyHex !== 'string')
     ) {
@@ -436,8 +434,6 @@ function decodeRequestPacket(packet: string): StandalonePayerRequest | null {
         ? parsed.expiresAt
         : new Date(Date.parse(parsed.createdAt) + 24 * 60 * 60 * 1000).toISOString(),
       live: {
-        roomId: normalizeText(parsed.live.roomId, MAX_REQUEST_ID_LENGTH),
-        secret: parsed.live.secret.trim(),
         memberCapability: parsed.live.memberCapability.trim(),
         authority: parsed.live.authority,
         requesterPublicKeyHex: typeof parsed.live.requesterPublicKeyHex === 'string'
@@ -459,8 +455,6 @@ function decodeRequestPacket(packet: string): StandalonePayerRequest | null {
       Number.isNaN(Date.parse(normalized.createdAt)) ||
       Number.isNaN(Date.parse(normalized.expiresAt)) ||
       Date.parse(normalized.expiresAt) <= Date.now()
-      || !normalized.live.roomId
-      || !/^[A-Za-z0-9_-]{20,160}$/u.test(normalized.live.secret)
       || !/^[A-Za-z0-9_-]{20,160}$/u.test(normalized.live.memberCapability)
       || (normalized.live.authority === 'native' && !normalized.live.requesterPublicKeyHex)
       || (normalized.live.requesterPublicKeyHex !== undefined && !/^0x[0-9a-f]{64}$/u.test(normalized.live.requesterPublicKeyHex))

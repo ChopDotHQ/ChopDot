@@ -11,6 +11,7 @@ import {connectPasWallet} from '../payments/pasWallet';
 import {
   createLiveGroupSession,
   createMemberCapability,
+  derivePayerSessionConfig,
   hashMemberCapability,
   receiptConfirmationEventId,
   ReceiptConfirmationOutbox,
@@ -109,7 +110,6 @@ export function SettleUp({
       requestId,
       createdAt: createdAt.toISOString(),
       expiresAt,
-      liveSession,
       memberCapability,
     });
   };
@@ -122,7 +122,6 @@ export function SettleUp({
     requestId,
     createdAt,
     expiresAt,
-    liveSession,
     memberCapability,
   }: {
     memberId: string;
@@ -132,7 +131,6 @@ export function SettleUp({
     requestId: string;
     createdAt: string;
     expiresAt: string;
-    liveSession: {roomId: string; secret: string};
     memberCapability: string;
   }) => {
     setRequestError('');
@@ -165,7 +163,6 @@ export function SettleUp({
       createdAt,
       expiresAt,
       live: {
-        ...liveSession,
         memberCapability,
         authority,
         ...(requesterPublicKeyHex ? {requesterPublicKeyHex} : {}),
@@ -193,7 +190,6 @@ export function SettleUp({
       !first?.requestId ||
       !first.requestExpiresAt ||
       !first.requestEntryCapability ||
-      !group.liveSession ||
       !state.currentUserId
     ) return;
     if (markedSplits.some(split => (
@@ -207,6 +203,7 @@ export function SettleUp({
 
     const storageKey = `chopdot-receipt-confirmation-outbox-v1:${first.requestId}`;
     const outbox = new ReceiptConfirmationOutbox(appStorage, storageKey);
+    const requestSession = await derivePayerSessionConfig(first.requestId, first.requestEntryCapability);
     outbox.enqueue({
       eventId: receiptConfirmationEventId(first.requestId),
       requestId: first.requestId,
@@ -215,8 +212,8 @@ export function SettleUp({
       amount: markedSplits.reduce((sum, split) => sum + split.amount, 0),
       currency,
       memberCapability: first.requestEntryCapability,
-      roomId: group.liveSession.roomId,
-      secret: group.liveSession.secret,
+      roomId: requestSession.roomId,
+      secret: requestSession.secret,
       occurredAt: new Date().toISOString(),
       expiresAt: first.requestExpiresAt,
     });
@@ -248,7 +245,7 @@ export function SettleUp({
       && candidate.requestCreatedAt
       && candidate.requestEntryCapability,
     );
-    if (!split?.requestId || !split.requestExpiresAt || !split.requestCreatedAt || !split.requestEntryCapability || !group.liveSession) return;
+    if (!split?.requestId || !split.requestExpiresAt || !split.requestCreatedAt || !split.requestEntryCapability) return;
     await shareRequestLink({
       memberId,
       amount,
@@ -257,7 +254,6 @@ export function SettleUp({
       requestId: split.requestId,
       createdAt: split.requestCreatedAt,
       expiresAt: split.requestExpiresAt,
-      liveSession: group.liveSession,
       memberCapability: split.requestEntryCapability,
     });
   };

@@ -1,7 +1,7 @@
 import { CircleAlert, Check } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { appStorage } from '../environment';
-import {PayerActionOutbox} from '../environment/livePayerSync';
+import {derivePayerSessionConfig, PayerActionOutbox} from '../environment/livePayerSync';
 import {observeReceiptConfirmation, publishPendingPayerAction} from '../environment/payerDelivery';
 import { getInitials } from '../utils';
 import { StandalonePayerRequest as StandalonePayerRequestData } from '../requestLinks';
@@ -34,6 +34,7 @@ export function StandalonePayerRequest({
       return;
     }
     setDeliveryStatus('sending');
+    const requestSession = await derivePayerSessionConfig(request.requestId, request.live.memberCapability);
     outbox.enqueue({
       eventId: `paid-${crypto.randomUUID()}`,
       requestId: request.requestId,
@@ -42,8 +43,8 @@ export function StandalonePayerRequest({
       amount: request.amount,
       currency: request.currency,
       memberCapability: request.live.memberCapability,
-      roomId: request.live.roomId,
-      secret: request.live.secret,
+      roomId: requestSession.roomId,
+      secret: requestSession.secret,
       occurredAt: new Date().toISOString(),
       expiresAt: request.expiresAt,
     });

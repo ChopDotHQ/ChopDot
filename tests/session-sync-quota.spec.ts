@@ -1,5 +1,10 @@
 import {expect, test, type Browser, type Page} from '@playwright/test';
 import {createTestHostServer, PASEO_ASSET_HUB, type TestHostAPI, type TestHostServer} from '@parity/host-api-test-sdk';
+import {
+  compactSharedActionChunks,
+  participantIdFromPublicKey,
+  type SharedActionEnvelope,
+} from '../src/environment/hostSessionSync';
 
 const productUrl = 'http://127.0.0.1:4177/?developerChecks=1';
 const MAX_USER_TOTAL = 1024;
@@ -34,35 +39,32 @@ test('what one real ADD_EXPENSE costs on the statement store', async ({browser})
     await frame.evaluate(() => window.__CHOPDOT_HOST_ACTIONS__!.requestIdentity());
     await frame.evaluate(() => window.__CHOPDOT_HOST_ACTIONS__!.connectSession('friday-crew', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'));
 
-    // Reproduce hostSessionSync's real publish: serialize the envelope, split at
-    // CHUNK_TEXT_LENGTH=120, wrap each part in an EncryptedActionChunk, publish
-    // each separately. The developer hook does one raw publish and does not
-    // chunk, so measuring through it understates the real cost.
-    const CHUNK_TEXT_LENGTH = 120;
-    const envelope = {
+    // Reproduce hostSessionSync's compact production wire. The developer hook
+    // encrypts one value at a time, so publish the exact compact chunks here.
+    const actorPublicKeyHex = '0x' + 'a1b2c3d4'.repeat(8);
+    const actorUserId = participantIdFromPublicKey(actorPublicKeyHex);
+    const expenseId = crypto.randomUUID();
+    const envelope: SharedActionEnvelope = {
       v: 1,
       eventId: crypto.randomUUID(),
-      actorUserId: crypto.randomUUID(),
-      actorPublicKeyHex: '0x' + 'a1b2c3d4'.repeat(8),
+      actorUserId,
+      actorPublicKeyHex,
       occurredAt: new Date().toISOString(),
       action: {
         type: 'ADD_EXPENSE',
         payload: {
-          expense: {id: crypto.randomUUID(), groupId: crypto.randomUUID(), description: 'Dinner at La Cabrera',
-            amount: 184.5, currency: 'PAS', paidByUserId: crypto.randomUUID(), date: new Date().toISOString()},
-          splits: Array.from({length: 3}, () => ({id: crypto.randomUUID(), expenseId: crypto.randomUUID(),
-            userId: crypto.randomUUID(), amount: 61.5, status: 'open'})),
+          expense: {id: expenseId, groupId: crypto.randomUUID(), description: 'Dinner at La Cabrera',
+            amount: 184.5, currency: 'PAS', paidByUserId: actorUserId, date: new Date().toISOString()},
+          splits: Array.from({length: 3}, (_, index) => ({id: crypto.randomUUID(), expenseId,
+            userId: index === 0 ? actorUserId : crypto.randomUUID(), amount: 61.5, status: 'open'})),
         },
       },
     };
-    const serialized = JSON.stringify(envelope);
-    const parts = Array.from({length: Math.ceil(serialized.length / CHUNK_TEXT_LENGTH)},
-      (_, i) => serialized.slice(i * CHUNK_TEXT_LENGTH, (i + 1) * CHUNK_TEXT_LENGTH));
+    const chunks = await compactSharedActionChunks(envelope);
 
     const before = await a.page.evaluate(() => window.__TEST_HOST__.getSubmittedStatements().length);
     let allAccepted = true;
-    for (const [index, part] of parts.entries()) {
-      const chunk = {kind: 'chopdot-action-chunk', messageId: envelope.eventId, index, total: parts.length, part};
+    for (const chunk of chunks) {
       const ok = await frame.evaluate(v => window.__CHOPDOT_HOST_ACTIONS__!.publishSessionValue(v), chunk);
       if (!ok) allAccepted = false;
     }
@@ -72,13 +74,18 @@ test('what one real ADD_EXPENSE costs on the statement store', async ({browser})
     const wire = produced.map(dataBytes).reduce((x, y) => x + y, 0);
 
     console.log('\n--- one ADD_EXPENSE (3 splits) through the REAL chunked path ---');
-    console.log(`envelope serialized  ${serialized.length} B`);
-    console.log(`chunks               ${parts.length}  (CHUNK_TEXT_LENGTH ${CHUNK_TEXT_LENGTH})`);
+    console.log(`envelope serialized  ${JSON.stringify(envelope).length} B`);
+    console.log(`compact chunks       ${chunks.length}`);
     console.log(`statements emitted   ${produced.length}`);
     console.log(`every chunk accepted ${allAccepted}`);
     console.log(`total wire bytes     ${wire}`);
     console.log(`MAX_USER_TOTAL       ${MAX_USER_TOTAL}`);
     console.log(`verdict              ${wire <= MAX_USER_TOTAL ? 'FITS' : `EXCEEDS by ${(wire / MAX_USER_TOTAL).toFixed(1)}x`}`);
+
+    expect(allAccepted).toBe(true);
+    expect(produced.length).toBe(chunks.length);
+    expect(Math.max(...produced.map(dataBytes))).toBeLessThanOrEqual(512);
+    expect(wire).toBeLessThanOrEqual(MAX_USER_TOTAL);
 
   } finally {
     await a.server.close();

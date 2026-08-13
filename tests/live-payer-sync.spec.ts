@@ -101,7 +101,10 @@ test('Leo marks paid once and Mina updates automatically without a return link',
     expect(payerParams.has('payUpdate')).toBe(false);
     await mina.frame.getByRole('button', {name: 'Share link again with Leo'}).click();
     await expect.poll(() => mina.frame.evaluate(() => window.__CHOPDOT_CAPTURED_SHARE__?.url ?? '')).toBe(payerUrl);
-    await expect.poll(() => mina.frame.evaluate(() => window.__CHOPDOT_SESSION_OBSERVER__?.status)).toBe('ready');
+    await expect.poll(() => mina.frame.evaluate(() => {
+      const observer = window.__CHOPDOT_SESSION_OBSERVER__;
+      return observer?.status === 'error' ? `error:${observer.lastError ?? 'unknown'}` : observer?.status;
+    })).toBe('ready');
 
     const payerHostUrl = new URL(leo.server.url);
     payerHostUrl.search = payerParams.toString();

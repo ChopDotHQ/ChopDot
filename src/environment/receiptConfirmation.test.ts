@@ -5,6 +5,7 @@ import type {StandalonePayerRequest} from '../requestLinks.ts';
 import {decryptSessionValue, encryptSessionValue} from './encryptedSession.ts';
 import {
   createReceiptConfirmedEnvelope,
+  derivePayerSessionConfig,
   paymentEventSigningBytes,
   ReceiptConfirmationOutbox,
   toReceiptConfirmedWire,
@@ -27,8 +28,6 @@ const request: StandalonePayerRequest = {
   createdAt: '2026-08-09T18:00:00.000Z',
   expiresAt: '2099-08-10T18:00:00.987Z',
   live: {
-    roomId: 'room-zurich',
-    secret: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     memberCapability: capability,
     authority: 'native',
     requesterPublicKeyHex: '',
@@ -105,16 +104,18 @@ test('four compact confirmation notices fit one organizer Statement Store budget
     requestId: envelope.requestId,
     actorSignature: envelope.actorSignature,
   });
-  const packet = await encryptSessionValue(request.live.secret, wire);
+  const session = await derivePayerSessionConfig(request.requestId, request.live.memberCapability);
+  const packet = await encryptSessionValue(session.secret, wire);
   const size = new TextEncoder().encode(JSON.stringify(packet)).byteLength;
   assert.ok(size <= 256);
   assert.ok(size * 4 <= 1024);
-  assert.deepEqual(fromReceiptConfirmedWire(await decryptSessionValue(request.live.secret, packet)), fromReceiptConfirmedWire(wire));
+  assert.deepEqual(fromReceiptConfirmedWire(await decryptSessionValue(session.secret, packet)), fromReceiptConfirmedWire(wire));
 });
 
 test('organizer confirmation outbox retains one stable event through failure', async () => {
   const storage = memoryStorage();
   const outbox = new ReceiptConfirmationOutbox(storage);
+  const session = await derivePayerSessionConfig(request.requestId, request.live.memberCapability);
   const pending = outbox.enqueue({
     eventId: 'confirm-stable',
     requestId: request.requestId,
@@ -123,8 +124,8 @@ test('organizer confirmation outbox retains one stable event through failure', a
     amount: 60,
     currency: 'CHF',
     memberCapability: capability,
-    roomId: request.live.roomId,
-    secret: request.live.secret,
+    roomId: session.roomId,
+    secret: session.secret,
     occurredAt: '2026-08-09T18:06:00.000Z',
     expiresAt: request.expiresAt,
   });

@@ -5,10 +5,14 @@ import type {AppState, Expense, Group, Split, User} from '../types.ts';
 import {
   authorizeSharedAction,
   connectHostSession,
+  compactSharedActionChunks,
+  decodeCompactSessionNotification,
+  encodeCompactSessionNotification,
   createSharedEnvelope,
   isSharedAction,
   participantIdFromPublicKey,
   signerMatchesEnvelope,
+  sharedActionFromCompactChunks,
   type HostParticipant,
   type SharedActionEnvelope,
 } from './hostSessionSync.ts';
@@ -134,6 +138,49 @@ test('device-local actions never enter the shared action stream', () => {
   assert.equal(isSharedAction({type: 'SET_THEME', payload: {theme: 'dark'}}), false);
   assert.equal(isSharedAction({type: 'SET_CURRENCY', payload: {currency: 'CHF'}}), false);
   assert.equal(isSharedAction({type: 'MARK_PAID', payload: {splitId: 's-leo', userId: leoId}}), true);
+});
+
+test('large shared actions use a bounded compact wire and round-trip exactly', async () => {
+  const expenseId = crypto.randomUUID();
+  const action: Action = {
+    type: 'ADD_EXPENSE',
+    payload: {
+      expense: {
+        id: expenseId,
+        groupId: crypto.randomUUID(),
+        description: 'Dinner at La Cabrera',
+        amount: 184.5,
+        paidByUserId: minaId,
+        date: '2026-08-13T18:00:00.000Z',
+      },
+      splits: Array.from({length: 3}, (_, index) => ({
+        id: crypto.randomUUID(),
+        expenseId,
+        userId: index === 0 ? minaId : crypto.randomUUID(),
+        amount: 61.5,
+        status: 'open' as const,
+      })),
+    },
+  };
+  const original = envelope(action, mina);
+  const chunks = await compactSharedActionChunks(original);
+  assert.ok(chunks.length <= 4);
+  assert.deepEqual(await sharedActionFromCompactChunks([...chunks].reverse()), original);
+});
+
+test('latest-status notifications use a compact reversible wire', () => {
+  const notification = {
+    v: 1 as const,
+    g: crypto.randomUUID(),
+    u: crypto.randomUUID(),
+    c: 3,
+    s: crypto.randomUUID(),
+    t: 1_786_642_400,
+  };
+  const wire = encodeCompactSessionNotification(notification);
+  assert.ok(new TextEncoder().encode(wire).length < 100);
+  assert.deepEqual(decodeCompactSessionNotification(wire), notification);
+  assert.equal(decodeCompactSessionNotification(`${wire}x`), null);
 });
 
 test('post-sign refresh retires the old subscription before opening its replacement', async () => {

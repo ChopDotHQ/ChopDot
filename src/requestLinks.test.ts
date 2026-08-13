@@ -17,8 +17,6 @@ const request: StandalonePayerRequest = {
   createdAt: '2099-07-15T10:00:00.000Z',
   expiresAt: '2099-07-16T10:00:00.000Z',
   live: {
-    roomId: 'group-friday-crew',
-    secret: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     memberCapability: 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
     authority: 'native',
     requesterPublicKeyHex: `0x${'11'.repeat(32)}`,
@@ -46,8 +44,6 @@ test('payer packets reject a missing or malformed requester product account', ()
   const missing = {
     ...request,
     live: {
-      roomId: request.live.roomId,
-      secret: request.live.secret,
       memberCapability: request.live.memberCapability,
       authority: 'native',
     },
@@ -68,6 +64,19 @@ test('payer packets reject a missing or malformed requester product account', ()
   };
   const malformedUrl = new URL(buildPayerRequestUrl('group-123', 'leo-123', malformed, 'https://example.com/'));
   assert.equal(parseStandalonePayerRequest(malformedUrl.search), null);
+});
+
+test('payer packets reject a reusable transport secret carried by the URL', () => {
+  const unsafe = {
+    ...request,
+    live: {
+      ...request.live,
+      roomId: 'group-friday-crew',
+      secret: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    },
+  };
+  const url = new URL(buildPayerRequestUrl('group-123', 'leo-123', unsafe as never, 'https://example.com/'));
+  assert.equal(parseStandalonePayerRequest(url.search), null);
 });
 
 test('products devnet request links use the supported wrapper instead of the app sandbox', () => {

@@ -7,6 +7,11 @@ import {
 } from '@parity/host-api-test-sdk';
 import {mkdir, writeFile} from 'node:fs/promises';
 import path from 'node:path';
+import {
+  decodeCompactSessionNotification,
+  encodeCompactSessionNotification,
+  type CompactSessionNotification,
+} from '../src/environment/hostSessionSync';
 
 /**
  * G4 spike, notification scope only.
@@ -29,7 +34,11 @@ const MAX_STATEMENT_SIZE = 512;
 const MAX_USER_TOTAL = 1024;
 
 const productUrl = 'http://127.0.0.1:4177/?developerChecks=1';
-const proofDirectory = path.resolve('proof/statement-notification-budget');
+const proofFile = path.resolve(
+  process.env.CHOPDOT_STATEMENT_BUDGET_REPORT
+    ?? 'proof/statement-notification-budget/report.json',
+);
+const proofDirectory = path.dirname(proofFile);
 const sessionSecret = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 const groupId = 'friday-crew';
 
@@ -103,10 +112,18 @@ test('a ChopDot paid-notification fits the Statement Store budget', async ({brow
     // Compact "latest status" for one member: version, group, actor, action
     // code, split, epoch seconds. Ids are 22-char base64url of 16 raw bytes.
     const id = () => Buffer.from(crypto.randomUUID().replace(/-/g, ''), 'hex').toString('base64url');
-    const notification = {v: 1, g: id(), u: id(), c: 3, s: id(), t: Math.floor(Date.now() / 1000)};
+    const notification: CompactSessionNotification = {
+      v: 1,
+      g: id(),
+      u: id(),
+      c: 3,
+      s: id(),
+      t: Math.floor(Date.now() / 1000),
+    };
+    const compactNotification = encodeCompactSessionNotification(notification);
 
     expect(await aliceFrame.evaluate(
-      value => window.__CHOPDOT_HOST_ACTIONS__!.publishSessionValue(value), notification,
+      value => window.__CHOPDOT_HOST_ACTIONS__!.publishSessionValue(value), compactNotification,
     )).toBe(true);
 
     await expect.poll(() => alice.page.evaluate(() => window.__TEST_HOST__.getSubmittedStatements().length)).toBe(1);
@@ -123,7 +140,7 @@ test('a ChopDot paid-notification fits the Statement Store budget', async ({brow
     for (let i = 0; i < 4; i++) {
       await aliceFrame.evaluate(
         value => window.__CHOPDOT_HOST_ACTIONS__!.publishSessionValue(value),
-        {...notification, c: 4 + i, t: Math.floor(Date.now() / 1000) + i},
+        encodeCompactSessionNotification({...notification, c: 4 + i, t: Math.floor(Date.now() / 1000) + i}),
       );
       await expect.poll(() => alice.page.evaluate(() => window.__TEST_HOST__.getSubmittedStatements().length)).toBe(i + 2);
       const all = await alice.page.evaluate(() => window.__TEST_HOST__.getSubmittedStatements().map(s => s.statement));
@@ -135,13 +152,15 @@ test('a ChopDot paid-notification fits the Statement Store budget', async ({brow
 
     // Delivery still works for the notification shape.
     await bob.page.evaluate(s => window.__TEST_HOST__.injectStatement(s), first);
-    await expect.poll(() => bobFrame.evaluate(() => window.__CHOPDOT_HOST_ACTIONS__!.receivedSessionValues()))
-      .toContainEqual(notification);
+    await expect.poll(async () => {
+      const values = await bobFrame.evaluate(() => window.__CHOPDOT_HOST_ACTIONS__!.receivedSessionValues());
+      return values.map(decodeCompactSessionNotification).filter(Boolean);
+    }).toContainEqual(notification);
 
     const report = {
       generatedAt: new Date().toISOString(),
       limits: {MAX_STATEMENT_SIZE, MAX_USER_TOTAL},
-      notificationPayloadBytes: Buffer.byteLength(JSON.stringify(notification), 'utf8'),
+      notificationPayloadBytes: Buffer.byteLength(compactNotification, 'utf8'),
       encryptedDataPayloadBytes: oneStatement,
       fitsSingleStatement: oneStatement <= MAX_STATEMENT_SIZE,
       concurrentStatementsPerUser: fitsPerUser,
@@ -151,7 +170,7 @@ test('a ChopDot paid-notification fits the Statement Store budget', async ({brow
       deliveredToSecondAccount: true,
       note: 'Host simulation. Not a substitute for a real Polkadot host container, and the sim does not enforce MAX_USER_TOTAL — the per-user figure is derived from measured size, not observed rejection.',
     };
-    await writeFile(path.join(proofDirectory, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
+    await writeFile(proofFile, `${JSON.stringify(report, null, 2)}\n`);
 
     console.log('\n--- statement store notification budget ---');
     console.log(`payload (plain)        ${report.notificationPayloadBytes} B`);
@@ -162,6 +181,7 @@ test('a ChopDot paid-notification fits the Statement Store budget', async ({brow
     console.log(`delivered to bob       yes`);
 
     expect(oneStatement).toBeLessThanOrEqual(MAX_STATEMENT_SIZE);
+    expect(cumulative).toBeLessThanOrEqual(MAX_USER_TOTAL);
   } finally {
     await alice.server.close();
     await bob.server.close();

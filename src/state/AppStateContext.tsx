@@ -21,6 +21,7 @@ import {
   isPayerMarkedPaidEnvelope,
   isReceiptConfirmedEnvelope,
   isReceiptConfirmedNotice,
+  derivePayerSessionConfig,
   validatePayerMarkedPaidEnvelope,
 } from '../environment/livePayerSync';
 import {
@@ -264,6 +265,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const liveGroupSessionFingerprint = Object.values(state.groups)
     .flatMap(group => group.liveSession ? [`${group.id}:${group.liveSession.roomId}:${group.liveSession.secret}`] : [])
+    .concat(Object.values(state.splits).flatMap(split => (
+      split.requestId && split.requestEntryCapability && split.requestExpiresAt
+        ? [`request:${split.requestId}:${split.requestEntryCapability}:${split.requestExpiresAt}`]
+        : []
+    )))
     .sort()
     .join('|');
 
@@ -466,15 +472,27 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const queryConfig = parseHostSessionConfig();
     const queryKey = queryConfig ? `${queryConfig.roomId}:${queryConfig.secret}` : '';
-    const sessions = Object.values(stateRef.current.groups)
-      .flatMap(group => group.liveSession ? [{groupId: group.id, ...group.liveSession}] : [])
+    const groupSessions = Object.values(stateRef.current.groups)
+      .flatMap(group => group.liveSession ? [{groupId: group.id, kind: 'group' as const, ...group.liveSession}] : [])
       .filter(session => `${session.roomId}:${session.secret}` !== queryKey);
-    if (sessions.length === 0) return;
+    const requestSessions = Object.values(stateRef.current.splits)
+      .filter(split => split.requestId && split.requestEntryCapability && split.requestExpiresAt)
+      .map(split => ({
+        requestId: split.requestId!,
+        memberCapability: split.requestEntryCapability!,
+        expiresAt: split.requestExpiresAt!,
+      }));
+    if (groupSessions.length === 0 && requestSessions.length === 0) return;
 
     let cancelled = false;
     setSessionStatus('connecting');
     updateObserver({status: 'connecting'});
-    void Promise.all(sessions.map(async session => {
+    void Promise.all(requestSessions.map(async request => ({
+      groupId: `request:${request.requestId}`,
+      kind: 'request' as const,
+      ...await derivePayerSessionConfig(request.requestId, request.memberCapability),
+    }))).then(derived => [...groupSessions, ...derived])
+      .then(sessions => Promise.all(sessions.map(async session => {
       const key = `${session.roomId}:${session.secret}`;
       if (liveGroupConnectionsRef.current.has(key)) return;
       const connection = await connectHostSession({
@@ -488,8 +506,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       liveGroupConnectionsRef.current.set(key, connection);
       participantRef.current = connection.participant;
       setHostParticipant(current => current ?? connection.participant);
-      await ensureParticipantIdentity(connection.participant, session);
-    }))
+      if (session.kind === 'group') await ensureParticipantIdentity(connection.participant, session);
+      })))
       .then(() => {
         if (cancelled) return;
         setSessionStatus('ready');
