@@ -1,12 +1,12 @@
 # ChopDot v1 Completion — Canonical Execution Board
 
 > Branch: `chatgpt/chopdot-v1-completion`  
-> Purpose: build a consumer-grade ChopDot foundation in small, reviewable slices while newer local/Codex work remains unreconciled.  
-> Rule: update this file after every slice. No slice begins from chat memory alone.
+> Purpose: build a consumer-grade ChopDot foundation in small reviewable slices while current local/Codex source is unreconciled.  
+> Rule: update this board after every slice. No implementation starts from chat memory alone.
 
-## Mandatory startup context
+## Mandatory context
 
-Read, in order:
+Read before each slice:
 
 1. this board
 2. `docs/PRODUCT_EXPERIENCE.md`
@@ -20,198 +20,144 @@ Read, in order:
 
 For Polkadot/data work also read `docs/research/RESEARCH-001_PARITY_REFERENCE_ARCHITECTURE.md`, `SECURITY_FOUNDATION.md`, `PAYMENT_INTENT_CONTRACT.md`, `PAYMENT_INTENT_SERVICE_FOUNDATION.md`, `HOSTS.md`, and `PORTABLE_SHELL_TRIAL.md`.
 
-## Mission
+## Mission / target journey
 
 ```text
-enter ChopDot
-→ establish local/Polkadot identity
-→ add/invite people
-→ create group
-→ add/correct expense
-→ review balances
-→ request settlement
-→ settle via cash / external rail / native Polkadot / USDC when genuinely supported
-→ receiver confirms under current policy
-→ inspect durable explainable history
+local or Polkadot identity
+→ people + group
+→ expense
+→ safe edit/correction
+→ balances
+→ request one creditor at a time
+→ cash / external / native Polkadot / USDC when genuinely supported
+→ receiver confirmation under current policy
+→ explainable activity history
+→ restart/recover same truth
 ```
 
-Polkadot should improve authority, payment, proof and portability without leaking protocol complexity into ordinary consumer UX.
+Polkadot should improve authority, payment, proof and portability without exposing protocol complexity to ordinary users.
 
-## Baseline + accepted architecture
-
-Known DevNet deployment: `chopdotproof02.dot`, known version context `0.5.6`. This branch started from `codex/portable-shell-trial`; current deployed/local Codex work is not yet reconciled.
-
-Current pushed runtime remains local reducer/AppState → local KV. Production target:
+## Accepted architecture
 
 ```text
 Polkadot App/Host — identity + product account + approval/signing
         ↓
-ChopDot client — UI + drafts/cache
+ChopDot client — UI + local drafts/cache
         ↓ authorized/idempotent commands
 ChopDot service
         ↓
 Postgres — canonical shared operational truth + audit events
         ↙                         ↘
 Polkadot chain                Statement Store
-chain facts/finality          optional tiny wakeup hints
+chain facts/finality          optional wakeup/version hint
         ↓
 Bulletin/Cloud Storage — optional encrypted artifacts
 ```
 
-Authority rules: Postgres owns ChopDot shared application truth; Polkadot owns actual chain facts; Host/App owns user-side product-account/signing authority; Statement Store is never the ledger; backend never stores user private keys.
+Current pushed shell still uses local reducer/AppState → local KV. Postgres/shared mode is the accepted target, not an implemented claim.
+
+Authority rules: chain facts come from chain; shared app truth comes from ChopDot service/DB; Host/App owns user-side product account/signing authority; private keys never enter ChopDot; Statement Store is never the ledger.
 
 ## Non-negotiable product/financial rules
 
-- Money truth beats convenience.
-- Confirmed history is append-only; corrections create new truth.
-- Crypto is a rail, not a product mode.
-- Names are presentation, never identity keys.
-- Payer attestation/verified evidence → `marked_paid`; receiver confirmation → `confirmed` under current v1 policy.
-- Manually entered destinations are not equivalent to host-authenticated identity.
-- PAS DevNet proof is never called DOT production proof.
-- SS58 formatting is presentation; authenticated 32-byte product public key is identity truth.
-- One settlement action pays one creditor at a time; unrelated obligations are never bundled under one receiver.
-- No fake sync, fake asset registration or fake chain capability.
+- money truth beats convenience;
+- confirmed history is append-only;
+- payer attestation/verified evidence → `marked_paid`; receiver confirmation → `confirmed`;
+- crypto is a rail, not a separate product mode;
+- names are presentation, not identity;
+- manually entered destinations are not host-authenticated identity;
+- PAS DevNet proof is never called DOT production proof;
+- authenticated 32-byte product public key is identity truth; SS58 is network presentation;
+- one settlement action pays one creditor at a time;
+- no fake sync, asset registration, account recovery or chain capability;
+- failures must leave financial truth unchanged or explicitly recoverable.
 
-## Platform blockers
+## Current blockers / debt
 
-- `BLOCKER-POLKADOT-001`: real Desktop Statement Store allowance, upstream issue `paritytech/polkadot-desktop-community#29`. Shared correctness must not depend on it.
-- Current Product SDK chain preset supports Paseo; Polkadot mainnet preset is currently planned/not executable in the reviewed SDK line.
-- No verified Paseo USDC asset registration/id has been established in this build.
+Canonical debt register: `docs/FOUNDATION_DEBT.md`.
 
-## Status discipline
+Major items:
+
+- `DEBT-MONEY-001`: local canonical money still uses JS `number`;
+- `DEBT-PERSIST-001`: no explicit schema-version migration chain;
+- `DEBT-SECURITY-001`: legacy `RECORD_MATCHED_PAYMENT` still direct-confirms internally; live code no longer uses it;
+- `DEBT-SYNC-001`: new parallel-branch mutations/evidence/identity remain local-only until canonical backend authority exists;
+- `DEBT-POLKADOT-IDENTITY-001`: exact deployed Product SDK `productId`/derived account needs real-host reconciliation;
+- `DEBT-POLKADOT-SDK-001`: Product SDK package-family install/type/build/host compatibility needs verification;
+- Statement Store real-host allowance remains upstream-blocked (`paritytech/polkadot-desktop-community#29`);
+- Product SDK reviewed chain preset supports Paseo; Polkadot preset is currently planned;
+- no verified current Paseo USDC registration/id has been established.
+
+## Status definitions
 
 - `TODO`
 - `BUILDING`
 - `BLOCKED`
-- `READY_FOR_CODEX_VERIFY`
-- `DONE`
+- `READY_FOR_CODEX_VERIFY`: implementation/tests written; runtime evidence not executed here
+- `DONE`: required quality evidence + current-source reconciliation complete
 
-`READY_FOR_CODEX_VERIFY` means implementation/tests exist but required local typecheck/build/runtime/device evidence has not been executed. Runtime `DONE` also requires reconciliation against the true current source.
+Unexecuted tests are always labelled WRITTEN / NOT EXECUTED HERE.
 
-## Build queue
+## Queue / status
 
-| Slice | Status | Canonical outcome / next evidence |
+| Slice | Status | Reference / outcome |
 |---|---|---|
-| FOUNDATION-000 | DONE | canonical execution process |
+| FOUNDATION-000 | DONE | canonical build process |
 | FOUNDATION-001 | DONE | product/security/architecture/engineering/quality guardrails |
 | RESEARCH-001 | DONE | first-party Parity architecture review |
-| DATA-001 | DONE (design) | accepted hybrid Postgres + Polkadot architecture |
-| MONEY-001 | READY_FOR_CODEX_VERIFY | expense list/detail/edit/delete before payment activity |
-| MONEY-002 | READY_FOR_CODEX_VERIFY | stale-request replacement + additive correction/refund semantics |
-| DATA-002 | TODO / RECONCILE CURRENT SOURCE FIRST | integer money + explicit persistence migrations |
-| GROUP-001 | READY_FOR_CODEX_VERIFY | rename/add/remove active members with unresolved-obligation safety |
-| PEOPLE-001 | READY_FOR_CODEX_VERIFY | person detail + reusable receive preferences; no manual wallet trust expansion |
-| BACKEND-001 | TODO / RECONCILE CURRENT SOURCE FIRST | shared service + Postgres foundation |
-| BACKEND-002 | TODO | obligations + durable payment intents + concurrency/idempotency |
-| SETTLEMENT-001 | READY_FOR_CODEX_VERIFY | common rail/evidence lifecycle; verified EVM evidence waits for receiver |
-| SETTLEMENT-002 | READY_FOR_CODEX_VERIFY | cash/manual acknowledgement + undo + persistent settlement audit |
-| POLKADOT-001 | READY_FOR_CODEX_VERIFY | host-authenticated product identity + capability-aware Profile |
-| POLKADOT-002 | READY_FOR_CODEX_VERIFY | native PAS/Paseo transaction adapter; production DOT unclaimed |
-| POLKADOT-003 | READY_FOR_CODEX_VERIFY / LIVE EXECUTION BLOCKED | verified USDC metadata/evidence/executor seam; no fake Paseo/mainnet execution |
-| HISTORY-001 | READY_FOR_CODEX_VERIFY | real activity timeline + finished-group archive |
-| IDENTITY-001 | TODO | profile lifecycle/recovery/rebinding |
-| QUALITY-001 | TODO | validation + failure/recovery pass |
-| QUALITY-002 | TODO | 320/375/390px + accessibility + consumer polish |
-| SYNC-001 | TODO / PARTIALLY PLATFORM-BLOCKED | canonical API reconciliation first; Statement Store optional wakeup |
-| BULLETIN-001 | TODO / OPTIONAL | encrypted artifact policy only if it adds user value |
-| RELEASE-001 | TODO | full acceptance journey + deployment evidence |
+| DATA-001 | DONE (design) | hybrid Postgres + Polkadot target |
+| MONEY-001 | READY_FOR_CODEX_VERIFY | expense inspection/edit/delete before activity |
+| MONEY-002 | READY_FOR_CODEX_VERIFY | stale-request replacement + additive corrections/refunds |
+| DATA-002 | TODO / RECONCILE FIRST | integer money + persistence migrations |
+| GROUP-001 | READY_FOR_CODEX_VERIFY | group/member management with unresolved-obligation safety |
+| PEOPLE-001 | READY_FOR_CODEX_VERIFY | reusable people + receive preferences |
+| BACKEND-001 | TODO / RECONCILE FIRST | shared service + Postgres |
+| BACKEND-002 | TODO | obligations + durable payment intents |
+| SETTLEMENT-001 | READY_FOR_CODEX_VERIFY | common rail/evidence lifecycle |
+| SETTLEMENT-002 | READY_FOR_CODEX_VERIFY | reversible manual acknowledgement + audit |
+| POLKADOT-001 | READY_FOR_CODEX_VERIFY | host-authenticated product identity |
+| POLKADOT-002 | READY_FOR_CODEX_VERIFY | native PAS/Paseo Product SDK transaction adapter |
+| POLKADOT-003 | READY_FOR_CODEX_VERIFY / EXECUTION BLOCKED | USDC config/evidence/executor seam; no fake live execution |
+| HISTORY-001 | READY_FOR_CODEX_VERIFY | real money timeline + past-group archive |
+| IDENTITY-001 | READY_FOR_CODEX_VERIFY | honest local profile lifecycle + Polkadot/recovery distinction |
+| QUALITY-001 | TODO — NEXT | validation + error/recovery pass |
+| QUALITY-002 | TODO | mobile/accessibility/consumer polish |
+| SYNC-001 | TODO / PARTIALLY PLATFORM-BLOCKED | API correctness first; Statement Store optional wakeup |
+| BULLETIN-001 | TODO / OPTIONAL | encrypted artifact policy only if useful |
+| RELEASE-001 | TODO | full acceptance journey + deployment proof |
 
-## Key implemented slice references
+## Important completed-slice details
 
-### MONEY-001 / MONEY-002
+Full implementation/acceptance details live in the corresponding preflight docs. Key current facts:
 
-Expense inspection/edit/delete is available before payment activity. Once requests/payments exist, controlled correction preserves evidence, replaces stale requests and creates additive adjustment/refund truth. See corresponding preflights and reducer tests.
+- MONEY-001/002 preserve financial history rather than rewriting paid truth.
+- GROUP-001 blocks member removal on raw unresolved obligations, including zero-net-but-unsettled cases.
+- PEOPLE-001 does not allow arbitrary friend wallet text to become trusted settlement authority.
+- SETTLEMENT-001/002 unify rail semantics; manual Undo is blocked after chain evidence/receiver confirmation.
+- POLKADOT-001 stores explicit hostIdentity provenance and never stores private keys.
+- POLKADOT-002 uses Product SDK signer + chain client + `Balances.transfer_keep_alive` + finalized evidence for PAS DevNet; production DOT remains unclaimed.
+- POLKADOT-003 knows verified mainnet USDC metadata (asset 1337, six decimals) but keeps execution disabled because current reviewed Product SDK mainnet preset is unavailable and Paseo USDC is unverified.
+- HISTORY-001 journals stable expense/request/archive events and renders correction/settlement events in human language; legacy SEND_REQUEST timestamp is local observation time until backend commands provide canonical event time.
+- IDENTITY-001 removes fake login choices, gives one real local onboarding path, validates/normalizes names, saves profile edits intentionally, and states that Polkadot identity reconnect does not yet restore groups/history on another device.
 
-### GROUP-001 / PEOPLE-001
+## Next slice: QUALITY-001
 
-Active group membership can be managed without deleting historical attribution. Removal is blocked by raw unresolved obligations even when net balance is zero. People have reusable receive preferences; wallet/account references are not promoted to verified authority by local editing.
+Goal: audit forms, destructive actions, capability failures, payment failures, loading/retry states, back/cancel behavior, and restart resilience. Fix real failure modes first; do not mix visual polish into this slice unless required for recovery clarity.
 
-### SETTLEMENT-001 / SETTLEMENT-002
+## Reconciliation protocol
 
-All rails share the same conceptual lifecycle. Manual payments can be undone only before receiver confirmation. Verified chain evidence is persisted, cannot use manual Undo and still does not equal receiver confirmation. Legacy `RECORD_MATCHED_PAYMENT` direct-confirm remains debt and must not be reused.
-
-### POLKADOT-001
-
-`User.hostIdentity` stores exact host username, product id, authenticated product public key/account id/prefix and bind time. Profile can explicitly Connect Polkadot. Private keys never enter ChopDot. Product-id derivation still requires real-host reconciliation.
-
-### POLKADOT-002
-
-Native DevNet settlement uses Product SDK signer/chain/tx primitives rather than PaymentManager:
-
-```text
-SignerManager.connect
-→ getProductAccount(productId, 0)
-→ verify signer public key against stored binding
-→ getChainAPI('paseo')
-→ Balances.transfer_keep_alive
-→ submitAndWatch(finalized)
-→ NativePolkadotPaymentReceipt
-→ exact validation
-→ marked_paid
-→ receiver confirms
-```
-
-DevNet is PAS / Paseo / 10 decimals. DOT production execution is not claimed. `npm run test:native-payment` exists.
-
-### POLKADOT-003
-
-Verified mainnet metadata: Polkadot Hub USDC asset `1337`, six decimals. Current reviewed Product SDK does not expose the Polkadot preset and no verified Paseo USDC registration is known, so live execution is deliberately blocked.
-
-Implemented safe seam:
-
-- `PolkadotAssetConfig` with explicit verified/execution flags;
-- mainnet USDC config metadata but execution disabled;
-- Paseo USDC config with `assetId: null`, unverified and disabled;
-- exact 6-decimal conversion;
-- authenticated payer/receiver/product-id checks;
-- public-key-derived network address plan;
-- `PolkadotAssetTransferExecutor` dependency boundary;
-- `PolkadotAssetPaymentReceipt` + exact matcher;
-- tests rejecting metadata/asset/receiver/amount tampering;
-- no user-facing Pay USDC button until capability is real.
-
-Preflight: `docs/slices/POLKADOT-003_PREFLIGHT.md`.
-
-### HISTORY-001
-
-History now shows Recent activity first and Past groups second. It consumes correction + settlement events and additionally journals stable `expense_added`, `request_sent` (only with stable request id), and `group_saved` events. Unknown internal events are hidden. Payment copy distinguishes acknowledgement/evidence from receiver confirmation. `npm run test:history` exists.
-
-Preflight: `docs/slices/HISTORY-001_PREFLIGHT.md`.
-
-## Current foundation debt
-
-Canonical: `docs/FOUNDATION_DEBT.md`.
-
-- `DEBT-MONEY-001` — local canonical money still uses JS `number`.
-- `DEBT-SECURITY-001` — legacy direct-confirm reducer action remains internally.
-- `DEBT-PERSIST-001` — no explicit schema-version migration chain.
-- `DEBT-SYNC-001` — new mutation/evidence/identity authority intentionally local-only on this branch.
-- `DEBT-POLKADOT-IDENTITY-001` — exact deployed Product SDK product id/account derivation requires real-host proof.
-- `DEBT-POLKADOT-SDK-001` — Product SDK package family compatibility requires install/type/build/host regression verification.
-- HISTORY limitation — legacy SEND_REQUEST lacks canonical `occurredAt`; local activity uses observation time until backend commands own canonical timestamps.
-
-## Next build decision
-
-Next unblocked product slice: **IDENTITY-001 — Profile lifecycle + recovery/rebinding**.
-
-Do not start DATA-002/BACKEND-001 until current source is reconciled. Do not enable USDC execution until verified network/asset capability exists.
-
-## Codex reconciliation protocol
-
-When current source is available:
+When current local/deployed source becomes available:
 
 1. identify exact commit producing current `.dot` build;
 2. compare with this branch, never blindly merge;
 3. keep stronger implementation per slice and cherry-pick modular commits;
-4. reconcile Product SDK `productId` and package family;
-5. remove/rewrite legacy wallet direct-confirm semantics;
-6. run lint/typecheck + relevant unit tests + production build;
-7. run host simulation;
-8. run real device/chain proof for identity/native payment;
-9. run mobile/accessibility acceptance;
-10. deploy only after release gate and record version/CID/domain/evidence.
+4. reconcile Product SDK product id and package family;
+5. remove/rewrite legacy direct-confirm behavior;
+6. run lint/typecheck + all relevant unit tests + production build;
+7. run host simulation and real host/device/chain proofs where applicable;
+8. run mobile/accessibility acceptance;
+9. deploy only after release gate; record version/CID/domain/evidence.
 
 ## Anti-AI-slop check
 
-Before accepting any work: real user action? clear authority? deterministic money state? recoverable failure? human copy? no invented platform capability? no unnecessary architecture? testable? understandable from repo without chat? If any critical answer is no, stop.
+For every change: real user action? clear authority? deterministic money state? recoverable failure? human copy? no invented capability? no unnecessary architecture? deterministic tests? understandable from repo without chat? If any critical answer is no, stop.
