@@ -1,4 +1,4 @@
-import { Check, ExternalLink, Wallet } from 'lucide-react';
+import { Check, ExternalLink, Undo2, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { useAppState } from '../state/AppStateContext';
 import { getInitials } from '../utils';
@@ -11,7 +11,7 @@ import {
   waitForMatchingPasPayment,
 } from '../payments/pasWallet';
 
-type PaymentStep = 'ready' | 'waiting' | 'received';
+type PaymentStep = 'ready' | 'waiting' | 'manual_marked' | 'received';
 
 export function PayerView({
   groupId,
@@ -58,7 +58,14 @@ export function PayerView({
     reqSplits.forEach(split => {
       dispatch({type: 'MARK_PAID', payload: {splitId: split.id, userId: memberId}});
     });
-    onPaid();
+    setStep('manual_marked');
+  };
+
+  const handleUndoPaid = () => {
+    memberSplits.filter(split => split.status === 'marked_paid' && !split.walletPayment).forEach(split => {
+      dispatch({type: 'RETRACT_MARK_PAID', payload: {splitId: split.id, userId: memberId}});
+    });
+    setStep('ready');
   };
 
   const handleWalletPayment = async () => {
@@ -90,7 +97,6 @@ export function PayerView({
 
       // A verified chain transaction is strong payment evidence, but under the
       // current ChopDot contract it does not replace receiver acknowledgement.
-      // Keep the split in the same marked-paid lifecycle as cash/external rails.
       dispatch({type: 'MARK_PAID', payload: {splitId: reqSplits[0].id, userId: memberId}});
       setPayment(receipt);
       setStep('received');
@@ -99,6 +105,43 @@ export function PayerView({
       setStep('ready');
     }
   };
+
+  if (step === 'manual_marked') {
+    const markedAmount = memberSplits
+      .filter(split => split.status === 'marked_paid' && !split.walletPayment)
+      .reduce((sum, split) => sum + split.amount, 0);
+    return (
+      <Screen>
+        <ScreenHeader title="Marked as paid" onBack={onBack} />
+        <ScreenContent className="p-6 flex flex-col items-center justify-center text-center space-y-6 pb-28">
+          <div className="w-24 h-24 rounded-full bg-green-50 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400">
+            <Check className="w-11 h-11" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Marked as paid</h2>
+            <p className="text-gray-500 dark:text-gray-400 font-medium mt-2">
+              Waiting for {requester.name} to confirm receipt.
+            </p>
+          </div>
+          <div className="w-full bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 text-left">
+            <div className="text-3xl text-gray-900 dark:text-white"><MoneyAmount amount={markedAmount} currency={currency} /></div>
+            <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">To {requester.name} · {paymentMethod}</div>
+          </div>
+          <button
+            type="button"
+            onClick={handleUndoPaid}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300"
+          >
+            <Undo2 className="w-4 h-4" />
+            I didn't pay yet — undo
+          </button>
+        </ScreenContent>
+        <BottomAction>
+          <Button variant="primary" fullWidth onClick={onPaid} className="h-14 text-lg shadow-sm">Back to group</Button>
+        </BottomAction>
+      </Screen>
+    );
+  }
 
   if (step === 'received' && payment) {
     return (
