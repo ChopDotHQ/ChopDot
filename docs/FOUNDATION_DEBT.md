@@ -4,11 +4,11 @@ Status: active
 Owner: product + engineering + security
 Source: `docs/slices/MONEY-001_PREFLIGHT.md`
 
-This register contains pre-existing architectural debt discovered while dry-running the first implementation slice. These items must not be hidden inside unrelated feature work.
+This register contains architectural debt that must not be hidden inside unrelated feature work.
 
 ## DEBT-MONEY-001 — Local canonical money uses JavaScript `number`
 
-**Status:** OPEN / RECONCILE WITH v0.5.6 FIRST
+**Status:** OPEN / RECONCILE CURRENT SOURCE FIRST
 
 Current state:
 
@@ -22,9 +22,7 @@ Risk:
 
 Rule:
 
-- do not silently migrate this inside unrelated slices;
-- do not introduce new money models that worsen the inconsistency;
-- when v0.5.6 source is available, decide whether the local ledger should migrate to integer canonical units in a dedicated migration slice.
+- migrate only in dedicated DATA-002 work with schema/version tests.
 
 ## DEBT-SECURITY-001 — Legacy matched-wallet reducer action directly confirms payment
 
@@ -32,31 +30,18 @@ Rule:
 
 Current state:
 
-- the live PAS payer flow no longer dispatches `RECORD_MATCHED_PAYMENT`;
-- after exact finalized chain evidence it now dispatches the local `RECORD_VERIFIED_CHAIN_PAYMENT` path, which independently checks expected network/from/to/amount, rejects duplicate transaction hashes, persists the receipt on the exact split, and leaves the split `marked_paid`;
-- receiver confirmation therefore remains the final user-facing ChopDot transition;
-- `src/settlement/settlement.ts` defines rail-independent settlement/evidence contracts around `awaiting_receiver_confirmation`;
-- `src/settlement/localSettlementAudit.ts` journals payer attestation, verified chain evidence, retraction, and receiver confirmation;
-- the legacy `RECORD_MATCHED_PAYMENT` branch in `src/state/store.ts` still sets a matching split directly to `confirmed`;
-- the old wallet reducer test still documents that legacy behavior;
-- `HOSTS.md` also contains historical direct-confirm wording.
+- live PAS flow uses local `RECORD_VERIFIED_CHAIN_PAYMENT`, checks expected network/from/to/amount, rejects duplicate hashes, persists evidence, and leaves the split `marked_paid`;
+- receiver confirmation remains final in the live product path;
+- the legacy `RECORD_MATCHED_PAYMENT` branch in `src/state/store.ts` still direct-confirms;
+- old wallet tests/docs still describe that legacy behavior.
 
 Risk:
 
-- the live path is conservative and now preserves evidence across reloads, but an old internal action still has a conflicting definition of `confirmed` and must not become reachable again accidentally.
-
-Current v1 guardrail:
-
-- chain evidence can prove/substantiate payment but receiver confirmation remains final unless the canonical contract is deliberately amended after threat-model review;
-- new runtime code must not call the legacy direct-confirm action;
-- manual Undo must never retract a split carrying chain evidence.
+- an old internal action still has a conflicting meaning of `confirmed`.
 
 Rule:
 
-- during Codex/local reconciliation, rewrite or remove `RECORD_MATCHED_PAYMENT` so it follows the same verified-evidence + `marked_paid` semantics or delegates to the canonical settlement path;
-- update the wallet reducer test and historical host documentation in the same reviewed change;
-- run wallet, state, host-wallet, and settlement tests before marking this debt resolved;
-- do not extend DOT/USDC execution on top of the legacy direct-confirm action.
+- remove/rewrite the legacy action during Codex/current-source reconciliation and run wallet/state/host-wallet/settlement tests before resolving.
 
 ## DEBT-PERSIST-001 — Persistence has no explicit schema migration chain
 
@@ -65,56 +50,81 @@ Rule:
 Current state:
 
 - state is stored under `chopdot-portable-shell-state-v1`;
-- reload shallow-merges parsed data into a clean state;
-- no explicit persisted `schemaVersion` or ordered migration functions exist.
+- reload shallow-merges parsed state;
+- no persisted `schemaVersion` or ordered migration functions exist.
 
 Risk:
 
-- future persisted-shape changes can silently misinterpret or discard historical money state.
+- future shape changes can silently misinterpret historical financial state.
 
 Rule:
 
-- local product slices may proceed only when persisted-shape changes are additive/backward-compatible;
-- before a feature introduces incompatible persisted shapes, add explicit schema versioning, migration tests, and safe corruption handling.
+- additive compatible fields only until DATA-002 adds explicit migration/version handling.
 
-## DEBT-SYNC-001 — Edit/delete shared authority is intentionally undefined
+## DEBT-SYNC-001 — Local mutation authority is intentionally not shared
 
-**Status:** BLOCKED / DEFER TO v0.5.6 + SYNC RECONCILIATION
+**Status:** BLOCKED / DEFER TO CURRENT-SOURCE + SYNC RECONCILIATION
 
 Current state:
 
-- `hostSessionSync.ts` has an explicit allowlist/authority model for shared actions;
-- the real Statement Store allowance path is blocked upstream;
-- the newer v0.5.6 source is not yet available in GitHub.
+- the old host session transport has an explicit allowlist/authority model;
+- real Statement Store allowance remains blocked upstream;
+- current shared backend authority is not implemented on this branch.
+
+Local-only parallel-branch actions currently include:
+
+- expense edit/correction/delete;
+- group management;
+- person preferences;
+- settlement undo / verified-chain evidence wrapper;
+- Polkadot host identity bind/unbind.
 
 Risk:
 
-- adding local mutation actions to shared transport now could create inconsistent cross-device authority and merge conflicts.
+- publishing these through the old transport without a reviewed authority model could create inconsistent cross-device truth.
 
 Rule:
 
-- keep parallel-branch edit/correction/group/person preference/settlement-undo changes local-only;
 - do not claim cross-device propagation;
-- revisit when v0.5.6 is reconciled and `SYNC-001` is unblocked/defined.
+- canonical shared mutations will move behind BACKEND command authorization/reconciliation.
 
-## DEBT-PRODUCT-001 — Group screen lacked an expense inspection surface
+## DEBT-PRODUCT-001 — Group screen lacked expense inspection
 
 **Status:** RESOLVED ON PARALLEL BRANCH / VERIFY WITH CODEX
 
+MONEY-001 added expense list/detail. Runtime reconciliation remains before DONE.
+
+## DEBT-POLKADOT-IDENTITY-001 — Product id / product-account derivation must be reconciled
+
+**Status:** OPEN / MUST RESOLVE BEFORE POLKADOT-001 DONE OR POLKADOT-002 TRUSTS THE BINDING
+
 Current state:
 
-- MONEY-001 added a concise tappable expense list to Group Detail and an expense detail surface.
+- `PolkadotHostBridge.requestIdentity()` requests `getProductAccount(this.productId, 0)`;
+- the bridge default remains `chopdot-shell-proof.dot`, inherited from the proven portable-shell path;
+- the known deployed product/domain is `chopdotproof02.dot`, but the exact current host registration / derivation input has not been verified in this connected environment;
+- POLKADOT-001 now records the exact `productId`, host username, product-account public key/account id, prefix and binding timestamp returned by the host;
+- changing the product id can derive a different product account, so it must never be changed speculatively.
 
-Remaining requirement:
+Risk:
 
-- reconcile and verify against the true current source before marking the runtime slice `DONE`.
+- silently changing the product id could bind ChopDot to a different product-derived account and make later settlement/authorization assumptions wrong.
+
+Rule:
+
+1. identify the exact Product SDK product id used by the current deployed/current-source ChopDot;
+2. exercise `getProductAccount(productId, 0)` on the real current host;
+3. compare it with any existing product-account evidence;
+4. only then decide whether the bridge default needs migration;
+5. if changed, migrate identity bindings explicitly rather than silently overwriting them;
+6. POLKADOT-002/003 must not treat the local host binding as production authority until this is resolved.
 
 ## Debt handling rule
 
 For every debt item:
 
 1. keep it separate from unrelated feature commits;
-2. resolve or explicitly defer it before a dependent slice proceeds;
+2. resolve or explicitly defer it before dependent work proceeds;
 3. update the execution board when status changes;
 4. preserve evidence/tests for the decision;
-5. reconcile against the true v0.5.6 source before declaring resolved.
+5. reconcile against the true current source before declaring resolved.
