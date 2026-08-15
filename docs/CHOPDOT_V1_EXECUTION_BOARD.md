@@ -120,8 +120,8 @@ Unexecuted tests are always labelled WRITTEN / NOT EXECUTED HERE.
 | POLKADOT-003 | READY_FOR_CODEX_VERIFY / EXECUTION BLOCKED | USDC config/evidence/executor seam; no fake live execution |
 | HISTORY-001 | READY_FOR_CODEX_VERIFY | real money timeline + past-group archive |
 | IDENTITY-001 | READY_FOR_CODEX_VERIFY | honest local profile lifecycle + Polkadot/recovery distinction |
-| QUALITY-001 | TODO — NEXT | validation + error/recovery pass |
-| QUALITY-002 | TODO | mobile/accessibility/consumer polish |
+| QUALITY-001 | READY_FOR_CODEX_VERIFY | strict financial inputs + truthful scoped payment requests + recovery errors |
+| QUALITY-002 | TODO — NEXT | mobile/accessibility/consumer polish |
 | SYNC-001 | TODO / PARTIALLY PLATFORM-BLOCKED | API correctness first; Statement Store optional wakeup |
 | BULLETIN-001 | TODO / OPTIONAL | encrypted artifact policy only if useful |
 | RELEASE-001 | TODO | full acceptance journey + deployment proof |
@@ -139,10 +139,11 @@ Full implementation/acceptance details live in the corresponding preflight docs.
 - POLKADOT-003 knows verified mainnet USDC metadata (asset 1337, six decimals) but keeps execution disabled because current reviewed Product SDK mainnet preset is unavailable and Paseo USDC is unverified.
 - HISTORY-001 journals stable expense/request/archive events and renders correction/settlement events in human language; legacy SEND_REQUEST timestamp is local observation time until backend commands provide canonical event time.
 - IDENTITY-001 removes fake login choices, gives one real local onboarding path, validates/normalizes names, saves profile edits intentionally, and states that Polkadot identity reconnect does not yet restore groups/history on another device.
+- QUALITY-001 rejects partial/exponent/negative financial input, validates split rules at explicit asset precision, uses UUID-grade local entity IDs, and turns Request Payment into a real one-payer/one-receiver/one-currency expiring share/copy action that fails closed when delivery is unavailable.
 
-## Next slice: QUALITY-001
+## Next slice: QUALITY-002
 
-Goal: audit forms, destructive actions, capability failures, payment failures, loading/retry states, back/cancel behavior, and restart resilience. Fix real failure modes first; do not mix visual polish into this slice unless required for recovery clarity.
+Goal: mobile/accessibility/consumer polish over the now safer flows. Audit focus order: touch targets and keyboard/focus behavior, safe-area/viewport handling, screen-reader labels/status messaging, loading/disabled feedback, long-name/large-amount layout, and consistency of consumer copy. Do not reopen money authority or protocol architecture unless the polish audit exposes a real correctness issue.
 
 ## Reconciliation protocol
 
