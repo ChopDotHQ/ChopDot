@@ -1,119 +1,131 @@
-import { useState, FormEvent, KeyboardEvent } from 'react';
-import { Copy, Users, Check } from 'lucide-react';
-import { useAppState } from '../state/AppStateContext';
-import { User } from '../types';
-import { Screen, ScreenHeader, ScreenContent, PersonRow, EmptyState, Button } from './primitives';
-import { copyText } from '../environment';
+import {useMemo, useState, FormEvent, KeyboardEvent} from 'react';
+import {ChevronRight, Users} from 'lucide-react';
+import {useAppState} from '../state/AppStateContext';
+import {User} from '../types';
+import {getSharedGroups, getUserPaymentMethods, receiveMethodLabel} from '../people/people';
+import {Screen, ScreenHeader, ScreenContent, EmptyState, Button} from './primitives';
+import {FriendDetail} from './FriendDetail';
+import {getInitials} from '../utils';
 
-export function Friends({ onBack }: { onBack: () => void }) {
-  const { state, dispatch } = useAppState();
+export function Friends({onBack}: {onBack: () => void}) {
+  const {state, dispatch} = useAppState();
   const [newFriendName, setNewFriendName] = useState('');
   const [error, setError] = useState('');
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  
-  const friends = (Object.values(state.users) as User[]).filter(u => u.id !== state.currentUserId);
+  const [selectedFriendId, setSelectedFriendId] = useState<string | null>(null);
 
-  const handleAddFriend = (e?: FormEvent | KeyboardEvent) => {
-    if (e) e.preventDefault();
-    
-    const nameToadd = newFriendName.trim();
-    if (!nameToadd) return;
-    
-    if (friends.some(f => f.name.toLowerCase() === nameToadd.toLowerCase())) {
-      setError(`${nameToadd} is already in your friends list.`);
+  const friends = useMemo(
+    () => (Object.values(state.users) as User[])
+      .filter(user => user.id !== state.currentUserId)
+      .sort((a, b) => a.name.localeCompare(b.name)),
+    [state.users, state.currentUserId],
+  );
+
+  if (selectedFriendId) {
+    return <FriendDetail friendId={selectedFriendId} onBack={() => setSelectedFriendId(null)} />;
+  }
+
+  const handleAddFriend = (event?: FormEvent | KeyboardEvent) => {
+    if (event) event.preventDefault();
+    const nameToAdd = newFriendName.trim();
+    if (!nameToAdd) return;
+
+    if (friends.some(friend => normalizeName(friend.name) === normalizeName(nameToAdd))) {
+      setError(`${nameToAdd} is already in your people list.`);
       return;
     }
-    
+
     setError('');
-    dispatch({ 
-      type: 'ADD_USER', 
-      payload: { user: { id: `u-${Date.now() + Math.random().toString(36).substring(7)}`, name: nameToadd } } 
+    dispatch({
+      type: 'ADD_USER',
+      payload: {user: {id: `u-${crypto.randomUUID()}`, name: nameToAdd}},
     });
     setNewFriendName('');
   };
 
-  const handleCopyInvite = async (friend: User) => {
-    const text = `Join me on ChopDot: ${friend.name}`;
-    const result = await copyText(text);
-    setCopiedId(result === 'copied' ? friend.id : `fallback-${friend.id}`);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
   return (
     <Screen>
-      <ScreenHeader title="Friends" onBack={onBack} />
-      
+      <ScreenHeader title="People" onBack={onBack} />
+
       <ScreenContent className="p-6 space-y-6">
         <form onSubmit={handleAddFriend} className="flex flex-col space-y-2">
           <div className="flex space-x-2">
-            <input 
-              type="text" 
-              placeholder="Friend's name"
+            <input
+              type="text"
+              placeholder="Add someone by name"
               value={newFriendName}
-              onChange={e => {
-                setNewFriendName(e.target.value);
+              onChange={event => {
+                setNewFriendName(event.target.value);
                 if (error) setError('');
               }}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleAddFriend(e);
+              onKeyDown={event => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  handleAddFriend(event);
                 }
               }}
-              className="flex-1 p-3 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 transition-colors shadow-sm"
+              className="flex-1 min-w-0 p-3 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 transition-colors shadow-sm"
+              aria-label="Person name"
             />
-            <Button 
+            <Button
               type="submit"
               disabled={!newFriendName.trim()}
               className="px-6"
-              aria-label="Add friend"
+              aria-label="Add person"
             >
               Add
             </Button>
           </div>
-          {error && <p className="text-sm text-orange-600 px-4">{error}</p>}
+          {error && <p role="alert" className="text-sm text-orange-600 px-4">{error}</p>}
         </form>
 
-        <div className="space-y-3">
-          {friends.length === 0 ? (
-            <EmptyState 
-              icon={<Users className="w-12 h-12" />}
-              title="No friends yet"
-              description="Add your first friend above to start splitting expenses."
-            />
-          ) : (
-            <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 transition-colors space-y-2">
-              {friends.map(friend => (
-                <PersonRow 
-                  key={friend.id} 
-                  name={friend.name}
-                  rightElement={
-                    <button 
-                      onClick={() => handleCopyInvite(friend)}
-                      className={`transition-colors p-2 flex items-center space-x-1 ${copiedId === friend.id || copiedId === ('fallback-' + friend.id) ? 'text-green-600' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`} 
-                      aria-label="Copy invite link"
-                    >
-                      {copiedId === friend.id ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          <span className="text-xs font-medium">Copied</span>
-                        </>
-                      ) : copiedId === `fallback-${friend.id}` ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          <span className="text-xs font-medium">Invite ready</span>
-                        </>
-                      ) : (
-                        <Copy className="w-4 h-4" />
-                      )}
-                    </button>
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        {friends.length === 0 ? (
+          <EmptyState
+            icon={<Users className="w-12 h-12" />}
+            title="No people yet"
+            description="Add someone once, then reuse them across groups and payment requests."
+          />
+        ) : (
+          <div className="overflow-hidden rounded-3xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
+            {friends.map(friend => {
+              const sharedGroups = state.currentUserId ? getSharedGroups(state, state.currentUserId, friend.id) : [];
+              const methods = getUserPaymentMethods(state, friend.id);
+              const preferred = friend.preferredPaymentMethodId
+                ? state.paymentMethods[friend.preferredPaymentMethodId]
+                : undefined;
+              const subtitleParts: string[] = [];
+              if (sharedGroups.length > 0) subtitleParts.push(`${sharedGroups.length} shared ${sharedGroups.length === 1 ? 'group' : 'groups'}`);
+              if (preferred) subtitleParts.push(receiveMethodLabel(preferred.type));
+              else if (methods.length > 0) subtitleParts.push(`${methods.length} receive ${methods.length === 1 ? 'method' : 'methods'}`);
+              if (friend.walletAddress || friend.accountPublicKeyHex) subtitleParts.push('Polkadot reference');
+
+              return (
+                <button
+                  key={friend.id}
+                  type="button"
+                  onClick={() => setSelectedFriendId(friend.id)}
+                  className="w-full flex items-center gap-3 p-4 text-left active:bg-gray-50 dark:active:bg-gray-800"
+                  data-testid={`person-row-${friend.id}`}
+                >
+                  <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-sm font-semibold text-gray-700 dark:text-gray-300 shrink-0">
+                    {getInitials(friend.name)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">{friend.name}</p>
+                    <p className="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400">
+                      {subtitleParts.length > 0 ? subtitleParts.join(' · ') : 'No details saved yet'}
+                    </p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
+                </button>
+              );
+            })}
+          </div>
+        )}
       </ScreenContent>
     </Screen>
   );
+}
+
+function normalizeName(value: string): string {
+  return value.trim().replace(/\s+/gu, ' ').toLocaleLowerCase();
 }
