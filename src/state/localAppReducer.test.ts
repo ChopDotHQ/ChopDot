@@ -37,4 +37,23 @@ test('verified chain evidence and manual retraction stay local-only', () => {
       },
     },
   }), true);
+  assert.equal(isLocalOnlyAppAction({
+    type: 'RECORD_VERIFIED_NATIVE_PAYMENT',
+    payload: {
+      splitId: 's1',
+      userId: 'dev',
+      receiverUserId: 'jean',
+      receipt: {
+        network: 'paseo',
+        asset: 'PAS',
+        txHash: `0x${'aa'.repeat(32)}`,
+        senderAccountId: '1sender',
+        recipientAccountId: '1receiver',
+        amountBaseUnits: '1',
+        blockHash: `0x${'bb'.repeat(32)}`,
+        blockNumber: '1',
+        finalizedAt: '2026-08-15T20:00:00.000Z',
+      },
+    },
+  }), true);
 });
