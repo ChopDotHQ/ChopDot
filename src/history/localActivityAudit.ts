@@ -1,7 +1,12 @@
 import type {ActivityEvent, AppState} from '../types';
 import type {Action} from '../state/store';
 
-export function appendStableActivityForAction(before: AppState, after: AppState, action: Action): AppState {
+export function appendStableActivityForAction(
+  before: AppState,
+  after: AppState,
+  action: Action,
+  now: () => string = () => new Date().toISOString(),
+): AppState {
   if (after === before) return after;
 
   if (action.type === 'ADD_EXPENSE') {
@@ -31,7 +36,7 @@ export function appendStableActivityForAction(before: AppState, after: AppState,
     return appendOnce(after, {
       id: `request:sent:${requestId}`,
       type: 'request_sent',
-      timestamp: new Date().toISOString(),
+      timestamp: now(),
       details: {
         requestId,
         splitId: split.id,
@@ -68,8 +73,5 @@ export function appendStableActivityForAction(before: AppState, after: AppState,
 
 function appendOnce(state: AppState, event: ActivityEvent): AppState {
   if (state.activityEvents[event.id]) return state;
-  return {
-    ...state,
-    activityEvents: {...state.activityEvents, [event.id]: event},
-  };
+  return {...state, activityEvents: {...state.activityEvents, [event.id]: event}};
 }
