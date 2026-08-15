@@ -15,6 +15,8 @@
     "test:payment-intents": "node --import tsx --test server/payment-intents/*.test.ts",
     "test:host-adapter": "node --import tsx --test src/environment/*.test.ts",
     "test:wallet": "node --import tsx --test src/payments/*.test.ts",
+    "test:people": "node --import tsx --test src/people/*.test.ts",
+    "test:group-safety": "node --import tsx --test src/groups/*.test.ts",
     "test:host-sim": "playwright test tests/polkadot-host-sim.spec.ts --config=playwright.host-sim.config.ts",
     "test:host-stress": "playwright test tests/polkadot-host-five-person-stress.spec.ts --config=playwright.host-sim.config.ts",
     "test:host-ui": "playwright test tests/polkadot-host-real-ui.spec.ts --config=playwright.host-sim.config.ts",
