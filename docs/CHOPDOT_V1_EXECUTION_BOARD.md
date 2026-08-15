@@ -402,10 +402,6 @@ Implementation is deliberately deferred until the true v0.5.6 source is reconcil
 
 **Status:** `READY_FOR_CODEX_VERIFY`
 
-Preflight:
-
-- `docs/slices/MONEY-001_PREFLIGHT.md`
-
 Implemented on this branch:
 
 - concise expense list in Group Detail;
@@ -429,29 +425,23 @@ Tests are written but not executed in this connected environment. Required G2 lo
 
 **Status:** `READY_FOR_CODEX_VERIFY`
 
-Preflight:
-
-- `docs/slices/MONEY-002_PREFLIGHT.md`
-
 Implemented on this branch:
 
 - `CORRECT_EXPENSE` command with correction-id idempotency;
 - request-only correction invalidates the old request scope and issues a fresh request id for still-owed requested participants;
 - removing a requested participant leaves no live stale request;
 - payment-active correction preserves original expense/payment evidence and creates explicit forward/refund adjustment records;
-- mixed state (one participant paid, another still requested) invalidates the remaining stale request without mutating paid evidence;
+- mixed state invalidates remaining stale requests without mutating paid evidence;
 - payer changes are rejected after request/payment activity in this local-shell implementation;
 - adjustment entries are read-only historical records;
-- effective group spend applies forward/refund adjustment direction instead of double-counting adjustment records;
-- Expense Detail offers a consumer-facing **Correct expense** flow with explicit consequence messaging;
-- reducer tests cover request replacement/removal, overpayment refunds, underpayment additions, mixed-state invalidation, idempotency, payer-change rejection and effective totals.
+- effective group spend applies forward/refund adjustment direction;
+- Expense Detail offers a consumer-facing **Correct expense** flow with consequence messaging.
 
 Current limitation:
 
-- local shell does not yet have the mature obligation/payment-intent database model, so this is a conservative compatibility implementation;
 - tests are **WRITTEN / NOT EXECUTED HERE**;
 - no repository CI workflow exists on this branch;
-- `npm run lint`, state tests, production build and mobile/runtime flow must pass before `DONE`.
+- local verification is still required before `DONE`.
 
 ---
 
@@ -482,16 +472,29 @@ Do not hide this migration inside unrelated expense UX work.
 
 ### GROUP-001 — Group editing + member safety
 
-**Status:** `TODO`
+**Status:** `READY_FOR_CODEX_VERIFY`
 
-Scope:
+Preflight:
 
-- rename group;
-- add member;
-- remove member only when safe;
-- block unsafe removal with unresolved obligations;
-- preserve historical attribution if a person leaves;
-- group archive/finish semantics.
+- `docs/slices/GROUP-001_PREFLIGHT.md`
+
+Implemented on this branch:
+
+- unobtrusive Manage Group entry point from Group Detail;
+- rename group with normalized non-empty name;
+- add a person by name and reuse an existing known user where names match;
+- remove an eligible person from the active roster only;
+- preserve former-member `User`, expense, and split history;
+- block removal whenever raw unresolved obligations involve that person, even when derived net balance is zero;
+- block self-removal in this first slice;
+- plain-language blocked-removal messaging;
+- pure group-safety helper module and invariant tests.
+
+Current limitation:
+
+- local updates persist through the existing prototype `CREATE_GROUP` state action; canonical owner/admin authorization belongs to BACKEND/POLKADOT shared-mode work;
+- dedicated archive/ownership-transfer semantics remain deferred;
+- tests are **WRITTEN / NOT EXECUTED HERE** and require Codex/local G2 verification.
 
 ---
 
@@ -823,7 +826,7 @@ Current important items:
 - `DEBT-MONEY-001` — current local money uses JS `number`; dedicated migration required.
 - `DEBT-SECURITY-001` — current matched-wallet runtime directly confirms, conflicting with conservative canonical contract.
 - `DEBT-PERSIST-001` — local persistence lacks explicit schema migration chain.
-- `DEBT-SYNC-001` — current edit/correction/delete shared authority is undefined on old portable transport.
+- `DEBT-SYNC-001` — current edit/correction/delete/group shared authority is undefined on old portable transport.
 - `DEBT-PRODUCT-001` — **resolved on this branch by MONEY-001:** Group Detail now exposes expense inspection.
 
 Debt is not silently fixed inside unrelated slices.
@@ -865,6 +868,7 @@ When the real v0.5.6 source is pushed:
 | 2026-08-15 | DATA-001 | DONE (design only) | `3f6d66f9`, ADR update `f3f4a8ad` | G0 architecture review | Shared source-of-truth boundaries accepted; no backend implementation claim |
 | 2026-08-15 | MONEY-001 | READY_FOR_CODEX_VERIFY | `b0e795ec`, `61bacc9f`, `97d2717a`, `3af74311` | G2 code/tests written, runtime unverified | Expense list/detail/edit/delete foundation; no shared mutation claim |
 | 2026-08-15 | MONEY-002 | READY_FOR_CODEX_VERIFY | `5259ee3`, `73a2efa`, `184341f`, `82e5064`, `690a4d8`, `a8a2175`, `6bad422`, `b7208d3`, `1fcbe32` | G2 code/tests written, runtime unverified | Safe stale-request replacement + additive correction/refund model + consumer correction UX |
+| 2026-08-15 | GROUP-001 | READY_FOR_CODEX_VERIFY | `44a6e71`, `4d73a12`, `0a0a9f9`, `a1099ac`, `4214804`, `5f78fd9` | G2 code/tests written, runtime unverified | Rename/add/remove active roster with raw-obligation safety and preserved history |
 
 ---
 
