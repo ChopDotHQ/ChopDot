@@ -1,3 +1,4 @@
+import {accountIdFromBytes} from '@parity/product-sdk-address';
 import type {NativePolkadotPaymentReceipt, User} from '../types';
 
 export interface NativeAssetConfig {
@@ -23,6 +24,7 @@ export const POLKADOT_NATIVE_CONFIG: NativeAssetConfig = {
 
 export interface NativePaymentPlan {
   productId: string;
+  senderPublicKeyHex: `0x${string}`;
   senderAccountId: string;
   recipientAccountId: string;
   amountBaseUnits: string;
@@ -58,10 +60,13 @@ export function buildNativePaymentPlan({
     throw new Error('The two Polkadot identities use different ChopDot product accounts.');
   }
 
+  const senderPublicKey = publicKeyBytes(payer.hostIdentity.accountPublicKeyHex);
+  const recipientPublicKey = publicKeyBytes(receiver.hostIdentity.accountPublicKeyHex);
   return {
     productId: payer.hostIdentity.productId,
-    senderAccountId: payer.hostIdentity.accountId,
-    recipientAccountId: receiver.hostIdentity.accountId,
+    senderPublicKeyHex: payer.hostIdentity.accountPublicKeyHex,
+    senderAccountId: accountIdFromBytes(senderPublicKey, config.ss58Prefix),
+    recipientAccountId: accountIdFromBytes(recipientPublicKey, config.ss58Prefix),
     amountBaseUnits: nativeAmountToBaseUnits(amount, config.decimals),
     config,
   };
@@ -86,7 +91,7 @@ export async function executeNativePolkadotPayment(plan: NativePaymentPlan): Pro
     const productResult = await manager.getProductAccount(plan.productId, 0);
     if (!productResult.ok) throw new Error(productResult.error.message);
     const productAccount = productResult.value;
-    if (productAccount.address !== plan.senderAccountId) {
+    if (publicKeyHex(productAccount.publicKey) !== plan.senderPublicKeyHex.toLowerCase()) {
       throw new Error('The active Polkadot product account does not match the connected ChopDot identity.');
     }
 
@@ -127,4 +132,15 @@ export function nativeReceiptMatchesPlan(receipt: NativePolkadotPaymentReceipt, 
     && /^0x[0-9a-f]+$/iu.test(receipt.txHash)
     && /^0x[0-9a-f]+$/iu.test(receipt.blockHash)
     && /^\d+$/u.test(receipt.blockNumber);
+}
+
+function publicKeyBytes(value: `0x${string}`): Uint8Array {
+  const normalized = value.slice(2).toLowerCase();
+  if (!/^[0-9a-f]{64}$/u.test(normalized)) throw new Error('The authenticated product public key is invalid.');
+  return Uint8Array.from(normalized.match(/.{2}/gu) ?? [], byte => Number.parseInt(byte, 16));
+}
+
+function publicKeyHex(value: Uint8Array): string {
+  if (value.byteLength !== 32) throw new Error('The active product public key is invalid.');
+  return `0x${Array.from(value, byte => byte.toString(16).padStart(2, '0')).join('')}`;
 }
