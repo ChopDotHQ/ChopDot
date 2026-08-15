@@ -1,12 +1,14 @@
-import type {AppState, ActivityEvent} from '../types';
+import type {AppState, ActivityEvent, WalletPaymentReceipt} from '../types';
 import {reducer, type Action} from '../state/store';
+import {normalizeEvmAddress, pasToBaseUnits, POLKADOT_HUB_TESTNET_CHAIN_ID} from '../payments/pasWallet';
 
 export type LocalSettlementAction =
   | Action
-  | {type: 'RETRACT_MARK_PAID'; payload: {splitId: string; userId: string}};
+  | {type: 'RETRACT_MARK_PAID'; payload: {splitId: string; userId: string}}
+  | {type: 'RECORD_VERIFIED_CHAIN_PAYMENT'; payload: {splitId: string; userId: string; receiverUserId: string; receipt: WalletPaymentReceipt}};
 
-export function isLocalOnlySettlementAction(action: LocalSettlementAction): action is Extract<LocalSettlementAction, {type: 'RETRACT_MARK_PAID'}> {
-  return action.type === 'RETRACT_MARK_PAID';
+export function isLocalOnlySettlementAction(action: LocalSettlementAction): action is Exclude<LocalSettlementAction, Action> {
+  return action.type === 'RETRACT_MARK_PAID' || action.type === 'RECORD_VERIFIED_CHAIN_PAYMENT';
 }
 
 export function reduceWithSettlementAudit(
@@ -14,6 +16,45 @@ export function reduceWithSettlementAudit(
   action: LocalSettlementAction,
   now: () => string = () => new Date().toISOString(),
 ): AppState {
+  if (action.type === 'RECORD_VERIFIED_CHAIN_PAYMENT') {
+    const {splitId, userId, receiverUserId, receipt} = action.payload;
+    const split = state.splits[splitId];
+    const expense = split ? state.expenses[split.expenseId] : undefined;
+    const payer = state.users[userId];
+    const receiver = state.users[receiverUserId];
+    if (!split || !expense || split.status !== 'request_sent' || split.userId !== userId || expense.paidByUserId !== receiverUserId) return state;
+    if (!payer?.walletAddress || !receiver?.walletAddress) return state;
+    if (receipt.chainId.toLowerCase() !== POLKADOT_HUB_TESTNET_CHAIN_ID) return state;
+    try {
+      if (normalizeEvmAddress(receipt.from) !== normalizeEvmAddress(payer.walletAddress)) return state;
+      if (normalizeEvmAddress(receipt.to) !== normalizeEvmAddress(receiver.walletAddress)) return state;
+      if (receipt.amountBaseUnits !== pasToBaseUnits(split.amount)) return state;
+    } catch {
+      return state;
+    }
+    if (Object.values(state.splits).some(item => item.id !== splitId && item.walletPayment?.txHash === receipt.txHash)) return state;
+
+    const nextState: AppState = {
+      ...state,
+      splits: {
+        ...state.splits,
+        [split.id]: {...split, status: 'marked_paid', walletPayment: receipt},
+      },
+    };
+    return appendSettlementEvent(nextState, {
+      type: 'payment_marked_paid',
+      splitId: split.id,
+      expenseId: split.expenseId,
+      payerUserId: split.userId,
+      receiverUserId: expense.paidByUserId,
+      amount: split.amount,
+      currency: expense.currency ?? state.currency,
+      requestId: split.requestId,
+      timestamp: now(),
+      evidence: {kind: 'chain_transaction', txHash: receipt.txHash, chainId: receipt.chainId},
+    });
+  }
+
   if (action.type === 'RETRACT_MARK_PAID') {
     const split = state.splits[action.payload.splitId];
     if (!split || split.userId !== action.payload.userId || split.status !== 'marked_paid' || split.walletPayment) {
@@ -61,6 +102,7 @@ export function reduceWithSettlementAudit(
         currency: expense.currency ?? next.currency,
         requestId: beforeSplit.requestId,
         timestamp: now(),
+        evidence: {kind: 'payer_attestation'},
       });
     }
   }
@@ -106,6 +148,7 @@ function appendSettlementEvent(
     currency: string;
     requestId?: string;
     timestamp: string;
+    evidence?: {kind: 'payer_attestation'} | {kind: 'chain_transaction'; txHash: string; chainId: string};
   },
 ): AppState {
   const prefix = `settlement:${input.type}:${input.splitId}:`;
@@ -123,6 +166,7 @@ function appendSettlementEvent(
       amount: input.amount,
       currency: input.currency,
       requestId: input.requestId,
+      evidence: input.evidence,
     },
   };
   return {
