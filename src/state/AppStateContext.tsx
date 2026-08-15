@@ -18,7 +18,7 @@ import {
   isLocalOnlySettlementAction,
   reduceWithSettlementAudit,
   type LocalSettlementAction,
-} from '../settlements/localSettlementAudit';
+} from '../settlement/localSettlementAudit';
 
 type SessionStatus = 'off' | 'connecting' | 'ready' | 'error';
 
