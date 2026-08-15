@@ -18,6 +18,7 @@
     "test:people": "node --import tsx --test src/people/*.test.ts",
     "test:group-safety": "node --import tsx --test src/groups/*.test.ts",
     "test:settlement": "node --import tsx --test src/settlement/*.test.ts",
+    "test:identity": "node --import tsx --test src/identity/*.test.ts",
     "test:host-sim": "playwright test tests/polkadot-host-sim.spec.ts --config=playwright.host-sim.config.ts",
     "test:host-stress": "playwright test tests/polkadot-host-five-person-stress.spec.ts --config=playwright.host-sim.config.ts",
     "test:host-ui": "playwright test tests/polkadot-host-real-ui.spec.ts --config=playwright.host-sim.config.ts",
