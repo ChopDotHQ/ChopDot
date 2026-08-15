@@ -22,6 +22,9 @@ export interface Expense {
   currency?: string;
   paidByUserId: string; // The organizer
   date: string;
+  kind?: 'expense' | 'adjustment';
+  relatedExpenseId?: string;
+  correctionId?: string;
 }
 
 export interface Split {
