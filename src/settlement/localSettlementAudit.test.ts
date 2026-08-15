@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {createCleanState, reducer} from '../state/store.ts';
 import type {Expense, Group, Split, User} from '../types.ts';
+import {pasToBaseUnits, POLKADOT_HUB_TESTNET_CHAIN_ID} from '../payments/pasWallet.ts';
 import {reduceWithSettlementAudit} from './localSettlementAudit.ts';
 
 function fixture() {
@@ -36,6 +37,7 @@ test('mark paid appends audit event but does not confirm', () => {
   assert.equal(events[0].type, 'payment_marked_paid');
   assert.equal(events[0].details.amount, 50);
   assert.equal(events[0].details.receiverUserId, 'dev');
+  assert.equal(events[0].details.evidence.kind, 'payer_attestation');
 });
 
 test('payer can retract marked paid before confirmation', () => {
@@ -68,23 +70,80 @@ test('confirmed payment cannot be retracted', () => {
   assert.equal(state, before);
 });
 
-test('wallet-evidenced payment cannot use manual retract', () => {
+test('verified chain payment persists exact evidence and still waits for receiver confirmation', () => {
+  const devAddress = '0x1111111111111111111111111111111111111111';
+  const jeanAddress = '0x2222222222222222222222222222222222222222';
   let state = fixture();
   state = {
     ...state,
+    users: {
+      ...state.users,
+      dev: {...state.users.dev, walletAddress: devAddress},
+      jean: {...state.users.jean, walletAddress: jeanAddress},
+    },
+    expenses: {
+      ...state.expenses,
+      e1: {...state.expenses.e1, amount: 1, currency: 'PAS'},
+    },
     splits: {
       ...state.splits,
-      's-jean': {
-        ...state.splits['s-jean'],
-        status: 'marked_paid',
-        walletPayment: {
-          txHash: '0xabc', chainId: '0x1', from: '0x1', to: '0x2', amountBaseUnits: '50', blockNumber: '1', confirmedAt: '2026-08-15T20:00:00.000Z',
-        },
-      },
+      's-dev': {...state.splits['s-dev'], amount: 0.5},
+      's-jean': {...state.splits['s-jean'], amount: 0.5},
     },
   };
-  const before = state;
+  const receipt = {
+    txHash: `0x${'ab'.repeat(32)}`,
+    chainId: POLKADOT_HUB_TESTNET_CHAIN_ID,
+    from: jeanAddress,
+    to: devAddress,
+    amountBaseUnits: pasToBaseUnits(0.5),
+    blockNumber: '0x10',
+    confirmedAt: '2026-08-15T20:00:00.000Z',
+  };
+  state = reduceWithSettlementAudit(state, {
+    type: 'RECORD_VERIFIED_CHAIN_PAYMENT',
+    payload: {splitId: 's-jean', userId: 'jean', receiverUserId: 'dev', receipt},
+  });
+  assert.equal(state.splits['s-jean'].status, 'marked_paid');
+  assert.equal(state.splits['s-jean'].walletPayment?.txHash, receipt.txHash);
+  assert.equal(Object.values(state.activityEvents).at(-1)?.details.evidence.kind, 'chain_transaction');
+
+  const beforeUndo = state;
   state = reduceWithSettlementAudit(state, {type: 'RETRACT_MARK_PAID', payload: {splitId: 's-jean', userId: 'jean'}});
+  assert.equal(state, beforeUndo);
+});
+
+test('duplicate chain transaction cannot be attached to another split', () => {
+  const devAddress = '0x1111111111111111111111111111111111111111';
+  const jeanAddress = '0x2222222222222222222222222222222222222222';
+  let state = fixture();
+  state = {
+    ...state,
+    users: {
+      ...state.users,
+      dev: {...state.users.dev, walletAddress: devAddress},
+      jean: {...state.users.jean, walletAddress: jeanAddress},
+    },
+    expenses: {...state.expenses, e1: {...state.expenses.e1, amount: 1, currency: 'PAS'}},
+    splits: {
+      ...state.splits,
+      's-dev': {...state.splits['s-dev'], amount: 0.5},
+      's-jean': {...state.splits['s-jean'], amount: 0.5},
+      's-jean-2': {id: 's-jean-2', expenseId: 'e1', userId: 'jean', amount: 0.5, status: 'request_sent', requestId: 'req-2'},
+    },
+  };
+  const receipt = {
+    txHash: `0x${'cd'.repeat(32)}`,
+    chainId: POLKADOT_HUB_TESTNET_CHAIN_ID,
+    from: jeanAddress,
+    to: devAddress,
+    amountBaseUnits: pasToBaseUnits(0.5),
+    blockNumber: '0x11',
+    confirmedAt: '2026-08-15T20:00:00.000Z',
+  };
+  state = reduceWithSettlementAudit(state, {type: 'RECORD_VERIFIED_CHAIN_PAYMENT', payload: {splitId: 's-jean', userId: 'jean', receiverUserId: 'dev', receipt}});
+  const before = state;
+  state = reduceWithSettlementAudit(state, {type: 'RECORD_VERIFIED_CHAIN_PAYMENT', payload: {splitId: 's-jean-2', userId: 'jean', receiverUserId: 'dev', receipt}});
   assert.equal(state, before);
 });
 
