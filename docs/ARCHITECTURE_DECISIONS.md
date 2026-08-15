@@ -298,6 +298,181 @@ This completion branch was created from an older GitHub-visible baseline. When t
 
 ---
 
+## ADR-019 — PostgreSQL is the canonical shared operational datastore
+
+Status: accepted design / implementation pending
+
+Decision:
+
+When ChopDot activates true multi-user shared mode, PostgreSQL will hold the canonical operational application state for relational/private/mutable data such as:
+
+- groups and membership;
+- expenses and splits;
+- obligations;
+- payment intents and settlement workflow state;
+- payment preferences/references;
+- idempotency/version records;
+- append-only activity/audit events.
+
+Why:
+
+- ChopDot needs indexed relational queries, transactional multi-record updates, authorization, pagination, idempotency, concurrency/version checks, retry state, and durable shared coordination;
+- Parity's current Polkadot App backend itself uses PostgreSQL as its only multi-instance coordination point while keeping user signing on-device;
+- neither Statement Store nor Bulletin/Cloud Storage is presented by Product SDK as a relational application database.
+
+Canonical reference: `docs/DATA_ARCHITECTURE.md` and `docs/research/RESEARCH-001_PARITY_REFERENCE_ARCHITECTURE.md`.
+
+---
+
+## ADR-020 — The backend never owns user private signing keys
+
+Status: accepted
+
+Decision:
+
+- user seed phrases/private account keys remain in the Polkadot App/wallet/device authority boundary;
+- ChopDot service stores public identity/account references and verified session/authorization state only;
+- chain-signing requests route through supported Product SDK/Host/App signer capabilities;
+- no backend convenience feature may introduce custodial user-key storage without a wholly separate architecture/security decision.
+
+The exact login/session proof protocol must be verified against the current Product SDK rather than invented from generic wallet-login patterns.
+
+---
+
+## ADR-021 — Statement Store is an optional wakeup/invalidation transport
+
+Status: accepted design / real activation currently blocked
+
+Decision:
+
+In shared mode, Statement Store may carry tiny signals such as:
+
+```text
+group_changed { groupId, version }
+request_changed { intentId, version }
+settlement_changed { settlementId, version }
+```
+
+Receiving a signal causes the client to fetch/validate canonical state. Missing, duplicate, stale, or out-of-order signals must not lose or corrupt financial truth.
+
+Statement Store is therefore not:
+
+- the database;
+- the complete event log;
+- the only synchronization mechanism;
+- sufficient authority to settle money.
+
+This refines ADR-007 with the first-party Product SDK model and preserves the real-host blocker in ADR-008.
+
+---
+
+## ADR-022 — Bulletin/Cloud Storage stores content-addressed artifacts, not relational state
+
+Status: accepted design
+
+Decision:
+
+Use Bulletin/Product SDK Cloud Storage only when CID-addressed artifact storage creates clear value, for example:
+
+- encrypted receipts;
+- closed-group exports;
+- settlement evidence bundles;
+- audit snapshots;
+- product/static release artifacts.
+
+Do not use it as the operational query store for expenses, memberships, obligations, or settlement workflow.
+
+Financial/personal artifacts must not be uploaded in plaintext by default. Any such use requires explicit encryption, key-sharing, access, retention, and renewal policy.
+
+---
+
+## ADR-023 — Polkadot is canonical for on-chain settlement facts
+
+Status: accepted design
+
+Decision:
+
+For DOT/USDC/other supported chain settlement, the chain is canonical for:
+
+- transaction existence;
+- sender and receiver;
+- asset and base-unit amount;
+- network/genesis context;
+- block inclusion/finality;
+- contract state where deliberately used.
+
+Postgres stores a verified application projection/reference so ChopDot can query and explain the result, but it must not invent or override chain finality.
+
+How verified evidence advances a payment intent remains governed by ADR-011 and `PAYMENT_INTENT_CONTRACT.md`.
+
+---
+
+## ADR-024 — Local Product SDK storage is cache/draft/offline state, not shared authority
+
+Status: accepted design
+
+Decision:
+
+Product SDK/host/browser local KV may store:
+
+- drafts;
+- UI preferences;
+- offline/read cache;
+- migration checkpoints;
+- potentially queued commands with stable IDs/expected versions.
+
+It may not independently claim that a shared expense, request, cash confirmation, or chain settlement succeeded.
+
+Offline queued financial commands must reconcile against canonical server versions and may require human conflict resolution rather than last-write-wins.
+
+---
+
+## ADR-025 — Shared financial mutations pass through a trusted command boundary
+
+Status: accepted design / implementation pending
+
+Decision:
+
+The production client does not write canonical financial tables directly.
+
+A shared state-changing command must:
+
+1. authenticate/bind the actor;
+2. authorize the actor for the exact command and scope;
+3. validate expected state/version/idempotency;
+4. run pure domain decision logic;
+5. commit all affected current-state rows and audit events transactionally where possible;
+6. return a canonical projection.
+
+External wallet/chain interactions use an explicit attempt/reconciliation state machine rather than keeping a DB transaction open across signing/network waits.
+
+If Supabase/Postgres is selected as infrastructure, browser-side table writes/RLS do not replace this domain command boundary; RLS remains defense-in-depth.
+
+---
+
+## ADR-026 — Backend complexity must stay proportional to ChopDot
+
+Status: accepted
+
+Decision:
+
+Borrow Parity's architectural discipline, not its organizational scale.
+
+A v1 backend may use PostgreSQL + TypeScript + Drizzle and a small HTTP framework, but ChopDot should not copy Effect-TS, multiple daemons, leader election, or other infrastructure unless a named requirement justifies them.
+
+The preferred pattern is:
+
+```text
+pure domain module
++ thin command/query/API layer
++ transactional repository
++ Polkadot adapters
+```
+
+Framework choice remains replaceable infrastructure, not product truth.
+
+---
+
 ## Decision Change Protocol
 
 If a slice requires reversing an accepted ADR:
