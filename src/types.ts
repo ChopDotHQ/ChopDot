@@ -6,6 +6,7 @@ export interface User {
   accountPublicKeyHex?: string;
   statementSignerHex?: string;
   walletAddress?: string;
+  preferredPaymentMethodId?: string;
 }
 
 export interface Group {
