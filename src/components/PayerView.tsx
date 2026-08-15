@@ -95,9 +95,17 @@ export function PayerView({
         amount: amountOwed,
       });
 
-      // A verified chain transaction is strong payment evidence, but under the
-      // current ChopDot contract it does not replace receiver acknowledgement.
-      dispatch({type: 'MARK_PAID', payload: {splitId: reqSplits[0].id, userId: memberId}});
+      // Persist the exact verified receipt while keeping application settlement
+      // pending receiver acknowledgement under the current ChopDot policy.
+      dispatch({
+        type: 'RECORD_VERIFIED_CHAIN_PAYMENT',
+        payload: {
+          splitId: reqSplits[0].id,
+          userId: memberId,
+          receiverUserId: requester.id,
+          receipt,
+        },
+      });
       setPayment(receipt);
       setStep('received');
     } catch (reason) {
