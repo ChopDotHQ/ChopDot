@@ -400,57 +400,58 @@ Implementation is deliberately deferred until the true v0.5.6 source is reconcil
 
 ### MONEY-001 — Expense detail + edit + delete foundation
 
-**Status:** `TODO`
+**Status:** `READY_FOR_CODEX_VERIFY`
 
 Preflight:
 
 - `docs/slices/MONEY-001_PREFLIGHT.md`
 
-Goal: existing expenses must be inspectable and correctable.
+Implemented on this branch:
 
-Safe first-slice boundary on this parallel branch:
+- concise expense list in Group Detail;
+- expense detail surface;
+- edit amount/description/date/payer/participants/split before payment activity;
+- delete unsettled/open expense;
+- atomic replacement validation;
+- deterministic balance recalculation;
+- reducer tests for correction, payer change, participant removal, invalid split, deletion and duplicate protection;
+- edit/delete remains local-only and is not published through the blocked shared-session transport.
 
-- display a concise expense list in Group Detail;
-- open an expense detail surface;
-- edit amount/description/date/payer/participants/split while all affected splits are `open`;
-- delete an unsettled/open expense;
-- validate atomically;
-- recalculate balances deterministically;
-- preserve current persistence shape;
-- do not publish UPDATE/DELETE through the blocked shared-session transport yet.
+Safety boundary:
 
-Critical cases:
+- `request_sent`, `marked_paid`, or `confirmed` counterparty activity refuses ordinary edit/delete and routes to MONEY-002.
 
-1. `$600 → $500` before any request: balances recalculate.
-2. Change payer before request: obligations/balances reverse correctly.
-3. Remove participant before request: split recalculates correctly.
-4. Delete unsettled expense: balances return to prior truth.
-5. Invalid split cannot save.
-6. `request_sent`, `marked_paid`, or `confirmed` expense refuses silent edit/delete and routes future work to MONEY-002.
-
-Required evidence: G2 local-flow gate; expected to finish `READY_FOR_CODEX_VERIFY` until locally executed/reconciled.
+Tests are written but not executed in this connected environment. Required G2 local-flow evidence still needs Codex/local verification against the true current source.
 
 ---
 
 ### MONEY-002 — Safe correction after request/settlement
 
-**Status:** `TODO`
+**Status:** `READY_FOR_CODEX_VERIFY`
 
-Goal: editing remains safe after money activity has started.
+Preflight:
 
-Scope:
+- `docs/slices/MONEY-002_PREFLIGHT.md`
 
-- stale request detection;
-- cancel/reissue affected request;
-- preserve marked-paid and confirmed evidence;
-- create adjustment/refund obligation after settlement;
-- explicit user messaging before consequential correction.
+Implemented on this branch:
 
-Critical cases:
+- `CORRECT_EXPENSE` command with correction-id idempotency;
+- request-only correction invalidates the old request scope and issues a fresh request id for still-owed requested participants;
+- removing a requested participant leaves no live stale request;
+- payment-active correction preserves original expense/payment evidence and creates explicit forward/refund adjustment records;
+- mixed state (one participant paid, another still requested) invalidates the remaining stale request without mutating paid evidence;
+- payer changes are rejected after request/payment activity in this local-shell implementation;
+- adjustment entries are read-only historical records;
+- effective group spend applies forward/refund adjustment direction instead of double-counting adjustment records;
+- Expense Detail offers a consumer-facing **Correct expense** flow with explicit consequence messaging;
+- reducer tests cover request replacement/removal, overpayment refunds, underpayment additions, mixed-state invalidation, idempotency, payer-change rejection and effective totals.
 
-1. Jeanine requested `$300`; corrected debt is `$250` -> old request cannot remain live at `$300`.
-2. Jeanine already paid `$300`; correct obligation is `$250` -> preserve payment history and create `$50` reverse/adjustment obligation.
-3. Settled expense cannot be silently deleted.
+Current limitation:
+
+- local shell does not yet have the mature obligation/payment-intent database model, so this is a conservative compatibility implementation;
+- tests are **WRITTEN / NOT EXECUTED HERE**;
+- no repository CI workflow exists on this branch;
+- `npm run lint`, state tests, production build and mobile/runtime flow must pass before `DONE`.
 
 ---
 
@@ -822,8 +823,8 @@ Current important items:
 - `DEBT-MONEY-001` — current local money uses JS `number`; dedicated migration required.
 - `DEBT-SECURITY-001` — current matched-wallet runtime directly confirms, conflicting with conservative canonical contract.
 - `DEBT-PERSIST-001` — local persistence lacks explicit schema migration chain.
-- `DEBT-SYNC-001` — current edit/delete shared authority is undefined on old portable transport.
-- `DEBT-PRODUCT-001` — Group Detail lacks expense inspection entry point; required by MONEY-001.
+- `DEBT-SYNC-001` — current edit/correction/delete shared authority is undefined on old portable transport.
+- `DEBT-PRODUCT-001` — **resolved on this branch by MONEY-001:** Group Detail now exposes expense inspection.
 
 Debt is not silently fixed inside unrelated slices.
 
@@ -862,6 +863,8 @@ When the real v0.5.6 source is pushed:
 | 2026-08-15 | Foundation debt register | DONE | `b84ec02e` | G0 | Explicit debt prevents opportunistic hidden fixes |
 | 2026-08-15 | RESEARCH-001 | DONE | `2b1e8a7a` | First-party Parity source review | Hybrid Postgres + Polkadot pattern supported |
 | 2026-08-15 | DATA-001 | DONE (design only) | `3f6d66f9`, ADR update `f3f4a8ad` | G0 architecture review | Shared source-of-truth boundaries accepted; no backend implementation claim |
+| 2026-08-15 | MONEY-001 | READY_FOR_CODEX_VERIFY | `b0e795ec`, `61bacc9f`, `97d2717a`, `3af74311` | G2 code/tests written, runtime unverified | Expense list/detail/edit/delete foundation; no shared mutation claim |
+| 2026-08-15 | MONEY-002 | READY_FOR_CODEX_VERIFY | `5259ee3`, `73a2efa`, `184341f`, `82e5064`, `690a4d8`, `a8a2175`, `6bad422`, `b7208d3`, `1fcbe32` | G2 code/tests written, runtime unverified | Safe stale-request replacement + additive correction/refund model + consumer correction UX |
 
 ---
 
