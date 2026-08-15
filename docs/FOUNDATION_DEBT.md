@@ -32,24 +32,28 @@ Rule:
 
 Current state:
 
-- the live PAS payer flow no longer dispatches `RECORD_MATCHED_PAYMENT`; after exact finalized chain evidence it now dispatches `MARK_PAID`, so receiver confirmation remains the final user-facing ChopDot transition;
-- `src/settlement/settlement.ts` now defines rail-independent settlement/evidence contracts around `awaiting_receiver_confirmation`;
+- the live PAS payer flow no longer dispatches `RECORD_MATCHED_PAYMENT`;
+- after exact finalized chain evidence it now dispatches the local `RECORD_VERIFIED_CHAIN_PAYMENT` path, which independently checks expected network/from/to/amount, rejects duplicate transaction hashes, persists the receipt on the exact split, and leaves the split `marked_paid`;
+- receiver confirmation therefore remains the final user-facing ChopDot transition;
+- `src/settlement/settlement.ts` defines rail-independent settlement/evidence contracts around `awaiting_receiver_confirmation`;
+- `src/settlement/localSettlementAudit.ts` journals payer attestation, verified chain evidence, retraction, and receiver confirmation;
 - the legacy `RECORD_MATCHED_PAYMENT` branch in `src/state/store.ts` still sets a matching split directly to `confirmed`;
 - the old wallet reducer test still documents that legacy behavior;
 - `HOSTS.md` also contains historical direct-confirm wording.
 
 Risk:
 
-- the live path is conservative, but an old internal action still has a conflicting definition of `confirmed` and must not become reachable again accidentally.
+- the live path is conservative and now preserves evidence across reloads, but an old internal action still has a conflicting definition of `confirmed` and must not become reachable again accidentally.
 
 Current v1 guardrail:
 
 - chain evidence can prove/substantiate payment but receiver confirmation remains final unless the canonical contract is deliberately amended after threat-model review;
-- new runtime code must not call the legacy direct-confirm action.
+- new runtime code must not call the legacy direct-confirm action;
+- manual Undo must never retract a split carrying chain evidence.
 
 Rule:
 
-- during Codex/local reconciliation, rewrite or remove `RECORD_MATCHED_PAYMENT` so it attaches verified evidence and leaves the split `marked_paid`;
+- during Codex/local reconciliation, rewrite or remove `RECORD_MATCHED_PAYMENT` so it follows the same verified-evidence + `marked_paid` semantics or delegates to the canonical settlement path;
 - update the wallet reducer test and historical host documentation in the same reviewed change;
 - run wallet, state, host-wallet, and settlement tests before marking this debt resolved;
 - do not extend DOT/USDC execution on top of the legacy direct-confirm action.
@@ -89,7 +93,7 @@ Risk:
 
 Rule:
 
-- keep parallel-branch edit/correction/group/person preference changes local-only;
+- keep parallel-branch edit/correction/group/person preference/settlement-undo changes local-only;
 - do not claim cross-device propagation;
 - revisit when v0.5.6 is reconciled and `SYNC-001` is unblocked/defined.
 
