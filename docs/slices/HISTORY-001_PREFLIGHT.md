@@ -1,15 +1,28 @@
 # HISTORY-001 Preflight — Real money activity history
 
-Status: BUILDING
+Status: READY_FOR_CODEX_VERIFY
 Branch: `chatgpt/chopdot-v1-completion`
 
 ## User goal
 
-History should answer “what happened with my money?” rather than only showing archived/finished groups. A user should be able to understand requests, corrections, payment acknowledgements and confirmations without reconstructing state from balances.
+History should answer “what happened with my money?” rather than only showing archived groups. Users should understand requests, corrections, payment acknowledgements and confirmations without reconstructing balances mentally.
 
-## Existing evidence
+## Audit principles
 
-Already emitted on this branch:
+1. Events append only after a real state transition succeeds.
+2. Stable action/entity ids prevent duplicate one-time/request history.
+3. History never changes financial truth.
+4. Payer acknowledgement/evidence is visually and verbally distinct from receiver confirmation.
+5. Cash acknowledgement is not described as proof that cash physically moved.
+6. Chain evidence is described as transaction evidence, not final ChopDot confirmation.
+7. Missing historical entities degrade gracefully.
+8. Consumer copy never exposes reducer/event jargon.
+9. Finished-group summaries remain available below activity.
+10. No synthetic historical backfill is invented.
+
+## Implemented events
+
+Existing correction/settlement events consumed:
 
 - `payment_marked_paid`
 - `payment_marked_paid_retracted`
@@ -17,86 +30,115 @@ Already emitted on this branch:
 - `request_invalidated`
 - `expense_correction_recorded`
 
-Existing finished-group `SavedRecord` summaries remain useful but are not an activity ledger.
+New stable local audit events:
 
-Missing high-value events that can be added safely without changing persisted entity shapes:
+- `expense_added` with id `expense:add:{expenseId}`;
+- `request_sent` with id `request:sent:{requestId}` when a real stable request id exists;
+- `group_saved` with id `group:saved:{recordId}`.
 
-- `expense_added`
-- `request_sent`
-- `group_saved`
+Ordinary pre-payment UPDATE_EXPENSE/DELETE_EXPENSE actions still lack explicit command ids/occurredAt metadata, so this slice does not fabricate durable edit/delete timeline entries. MONEY-002 corrections already carry stable correction ids and remain auditable.
 
-Ordinary pre-payment `UPDATE_EXPENSE` does not currently carry an explicit occurrence/idempotency timestamp/id. Rather than invent unreliable history identifiers, this slice will leave its detailed journaling to a future command/backend model. MONEY-002 corrections already have explicit correction ids and are auditable.
+## Implementation
 
-## Audit rules
+### `src/history/localActivityAudit.ts`
 
-1. History events append only after the underlying state transition actually succeeds.
-2. Replayed actions must not duplicate stable one-time/request events.
-3. History never changes financial truth.
-4. Payment wording distinguishes payer acknowledgement/evidence from receiver confirmation.
-5. Cash payer acknowledgement is not described as bank/chain proof.
-6. Chain evidence may show a transaction reference but does not imply ChopDot receiver confirmation.
-7. Missing/deleted historical entities degrade gracefully; History must not crash because an expense/member is no longer active.
-8. Consumer copy uses people, amounts and actions—not reducer/event jargon.
-9. Finished-group summaries remain available as archive records below activity.
-10. Do not fabricate events for actions that were never journaled historically.
+- wraps successful legacy actions after canonical reducer/settlement processing;
+- appends stable events only when the action actually produced the required resulting state;
+- never overwrites an existing event id;
+- request events require a stable request id;
+- request event time on this local prototype is observation time because the legacy `SEND_REQUEST` action does not carry a canonical `occurredAt` field.
 
-## Event identity
+Future BACKEND command/event persistence must own canonical multi-device event timestamps.
 
-Use deterministic IDs where natural stable identifiers exist:
+### `src/state/localAppReducer.ts`
+
+The reducer pipeline now composes:
 
 ```text
-expense:add:{expenseId}
-request:sent:{requestId}
-group:saved:{recordId}
+identity local actions
+or
+financial reducer
+→ settlement evidence/audit
+→ stable product activity audit
 ```
 
-Corrections/settlements keep their existing event IDs.
+Local-only identity/chain-evidence actions remain outside the legacy shared publisher.
 
-If a request action has no request id, do not create a durable request event in this slice rather than generating an unstable fake id.
+### `src/history/historyPresentation.ts`
 
-## Implementation shape
+Pure projection translates known audit events into consumer rows with:
 
-- `src/history/localActivityAudit.ts`
-  - wrap successful legacy actions after the settlement reducer;
-  - append only stable event types;
-  - never overwrite an existing event id.
-- compose audit wrapper in `src/state/localAppReducer.ts`.
-- `src/history/historyPresentation.ts`
-  - pure event-to-consumer-row projection;
-  - resolve people/group/expense names from current state where possible;
-  - safe fallbacks when entities are absent.
-- rebuild `History.tsx`:
-  - Recent activity timeline first;
-  - finished-group archive second;
-  - readable timestamps/amounts/status cues;
-  - empty state reflects both activity and archive.
-- deterministic tests for event creation/idempotency and presentation.
+- person names where available;
+- safe `Someone` fallbacks;
+- group/expense context;
+- amount/currency;
+- neutral/warning/positive semantic tone;
+- newest-first ordering;
+- unknown internal event types filtered out rather than leaked to UI.
 
-## Acceptance cases
+### `History.tsx`
 
-1. Adding an expense produces one durable `expense_added` event.
-2. Replaying the same expense id does not duplicate history.
-3. Sending a request with a stable request id produces one `request_sent` event.
-4. Replayed same request id does not duplicate history.
-5. Saving a group snapshot produces one `group_saved` event.
-6. Failed/no-op actions do not emit history.
-7. Existing settlement events render payer/receiver/amount correctly.
-8. `payment_marked_paid` copy says marked/sent, not receiver-confirmed.
-9. `payment_confirmed` clearly identifies receiver confirmation.
-10. Correction events remain visible with human wording.
-11. Missing historical user/expense/group records do not crash the timeline.
-12. Saved group summaries remain openable.
-13. Timeline is newest-first.
-14. No fake historical backfill is generated.
+The old archive-only screen is replaced by:
+
+1. **Recent activity** — a simple chronological money story;
+2. **Past groups** — saved group summaries remain openable.
+
+Important copy examples:
+
+```text
+Jean marked payment sent to Dev
+Waiting for receiver confirmation
+
+Dev confirmed payment from Jean
+
+Payment request updated
+
+Expense corrected · Dinner
+```
+
+This preserves the trust distinction between “payer says/evidence shows payment” and “receiver confirmed it.”
+
+## Product correction made immediately before this slice
+
+PayerView previously aggregated all a member's requested splits even when they were owed to different people. It now settles one creditor at a time, so history and payments cannot combine unrelated receiver obligations under one label.
+
+## Tests written
+
+`src/history/localActivityAudit.test.ts`:
+
+- stable expense event;
+- expense replay idempotency;
+- stable request event;
+- request replay idempotency;
+- no fabricated request event without request id;
+- invalid/no-op action produces no history;
+- group archive event.
+
+`src/history/historyPresentation.test.ts`:
+
+- acknowledgement does not claim confirmation;
+- receiver confirmation explicit;
+- chain evidence labelled while still pending confirmation;
+- missing historical entities safe;
+- internal events hidden;
+- newest-first sorting.
+
+Verification command:
+
+```text
+npm run test:history
+```
+
+Tests are WRITTEN / NOT EXECUTED HERE.
 
 ## Deferred
 
-- full backend append-only event persistence — BACKEND-001/002;
-- pre-payment edit/delete command history with stable command ids — backend/domain follow-up;
-- cross-device canonical event merge — SYNC/BACKEND;
-- filtering/search/export — later product scope;
-- rich chain explorer links per native/asset evidence — after verified network explorer configuration.
+- canonical backend append-only event persistence — BACKEND-001/002;
+- stable command ids/timestamps for ordinary pre-payment edit/delete — backend/domain follow-up;
+- canonical cross-device event merge — SYNC/BACKEND;
+- filtering/search/export;
+- verified network explorer links for all chain evidence.
 
 ## Quality status
 
-Required: G2 code/tests + mobile/reload verification before DONE.
+G2 code/test artifacts exist. Required before DONE: typecheck, history tests, build, restart persistence and 320/375/390px timeline review against the reconciled current source.
