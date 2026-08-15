@@ -169,13 +169,13 @@ A payer action alone cannot settle the receiver's ledger.
 
 ---
 
-## ADR-011 — Verified chain settlement may use stronger evidence
+## ADR-011 — Verified chain settlement provides strong evidence, not auto-confirmation in current v1
 
-Status: provisional until adapter policy is implemented and verified
+Status: accepted for current v1; future auto-confirm remains a deliberate contract change
 
 Decision:
 
-A finalized on-chain transfer may confirm an exact obligation only if the adapter can independently match:
+A signed/finalized on-chain transfer may move an exact obligation to `submitted`/`marked_paid` only when the adapter independently matches:
 
 - payer;
 - receiver;
@@ -185,7 +185,17 @@ A finalized on-chain transfer may confirm an exact obligation only if the adapte
 - live intent/scope;
 - transaction finality.
 
-If any field is uncertain, fall back to `submitted`/`marked_paid` and receiver confirmation.
+Under the current `PAYMENT_INTENT_CONTRACT.md`, evidence does not independently produce `confirmed`; receiver confirmation remains the final transition.
+
+A future direct auto-confirm policy is allowed only after:
+
+1. threat-model review;
+2. explicit amendment of `PAYMENT_INTENT_CONTRACT.md`;
+3. explicit amendment of `SECURITY_FOUNDATION.md`;
+4. adapter tests proving exact-match and finality behavior;
+5. real-host/live-chain evidence.
+
+This deliberately chooses the stricter existing contract over older wording in `HOSTS.md` until that historical inconsistency is reconciled.
 
 ---
 
