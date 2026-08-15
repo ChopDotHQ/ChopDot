@@ -294,3 +294,166 @@ test('repeating the same valid edit does not create duplicate split records', ()
   assert.equal(Object.values(twice.splits).filter(split => split.expenseId === 'hotel').length, 2);
   assert.deepEqual(twice.splits, once.splits);
 });
+
+test('a request-only correction invalidates the old request and reissues the corrected amount', () => {
+  const base = editableExpenseFixture();
+  const requested = reducer(base, {
+    type: 'SEND_REQUEST',
+    payload: {splitId: 'hotel-leo', requestId: 'request-old', expiresAt: '2026-08-20T00:00:00.000Z'},
+  });
+  const corrected = reducer(requested, {
+    type: 'CORRECT_EXPENSE',
+    payload: {
+      correctionId: 'corr-request-1',
+      occurredAt: '2026-08-15T20:00:00.000Z',
+      expense: {...requested.expenses.hotel, amount: 550},
+      splits: [
+        {id: 'hotel-mina-v2', expenseId: 'hotel', userId: 'mina', amount: 200, status: 'confirmed'},
+        {id: 'hotel-leo-v2', expenseId: 'hotel', userId: 'leo', amount: 150, status: 'open'},
+        {id: 'hotel-nina-v2', expenseId: 'hotel', userId: 'nina', amount: 200, status: 'open'},
+      ],
+      replacementRequests: {
+        leo: {requestId: 'request-new', expiresAt: '2026-08-21T00:00:00.000Z'},
+      },
+    },
+  });
+
+  assert.equal(corrected.expenses.hotel.amount, 550);
+  assert.equal(corrected.splits['hotel-leo'], undefined);
+  assert.equal(corrected.splits['hotel-leo-v2'].amount, 150);
+  assert.equal(corrected.splits['hotel-leo-v2'].status, 'request_sent');
+  assert.equal(corrected.splits['hotel-leo-v2'].requestId, 'request-new');
+  assert.equal(corrected.activityEvents['correction:corr-request-1:request:hotel-leo'].details.oldRequestId, 'request-old');
+  assert.equal(corrected.activityEvents['correction:corr-request-1:request:hotel-leo'].details.replacementAmount, 150);
+  assert.equal(getGroupTotal(corrected, 'trip'), 550);
+});
+
+test('a request-only correction can remove a participant without leaving its old request live', () => {
+  const base = editableExpenseFixture();
+  const requested = reducer(base, {
+    type: 'SEND_REQUEST',
+    payload: {splitId: 'hotel-leo', requestId: 'request-remove'},
+  });
+  const corrected = reducer(requested, {
+    type: 'CORRECT_EXPENSE',
+    payload: {
+      correctionId: 'corr-remove-1',
+      occurredAt: '2026-08-15T20:05:00.000Z',
+      expense: {...requested.expenses.hotel, amount: 400},
+      splits: [
+        {id: 'hotel-mina-v2', expenseId: 'hotel', userId: 'mina', amount: 200, status: 'confirmed'},
+        {id: 'hotel-nina-v2', expenseId: 'hotel', userId: 'nina', amount: 200, status: 'open'},
+      ],
+    },
+  });
+
+  assert.equal(Object.values(corrected.splits).some(split => split.userId === 'leo' && split.expenseId === 'hotel'), false);
+  assert.equal(corrected.activityEvents['correction:corr-remove-1:request:hotel-leo'].details.replacementRequestId, undefined);
+  assert.equal(corrected.activityEvents['correction:corr-remove-1:request:hotel-leo'].details.replacementAmount, 0);
+});
+
+test('confirmed overpayment is preserved and creates a reverse refund adjustment', () => {
+  const base = editableExpenseFixture();
+  const requested = reducer(base, {type: 'SEND_REQUEST', payload: {splitId: 'hotel-leo', requestId: 'paid-300'}});
+  const marked = reducer(requested, {type: 'MARK_PAID', payload: {splitId: 'hotel-leo', userId: 'leo'}});
+  const confirmed = reducer(marked, {
+    type: 'CONFIRM_RECEIVED',
+    payload: {splitId: 'hotel-leo', currentUserId: 'mina'},
+  });
+  const corrected = reducer(confirmed, {
+    type: 'CORRECT_EXPENSE',
+    payload: {
+      correctionId: 'corr-refund-1',
+      occurredAt: '2026-08-15T20:10:00.000Z',
+      expense: {...confirmed.expenses.hotel, amount: 550},
+      splits: [
+        {id: 'hotel-mina-corrected', expenseId: 'hotel', userId: 'mina', amount: 200, status: 'confirmed'},
+        {id: 'hotel-leo-corrected', expenseId: 'hotel', userId: 'leo', amount: 150, status: 'open'},
+        {id: 'hotel-nina-corrected', expenseId: 'hotel', userId: 'nina', amount: 200, status: 'open'},
+      ],
+    },
+  });
+
+  assert.equal(corrected.expenses.hotel.amount, 600);
+  assert.equal(corrected.splits['hotel-leo'].amount, 200);
+  assert.equal(corrected.splits['hotel-leo'].status, 'confirmed');
+  const adjustment = corrected.expenses['corr-refund-1-adjustment-leo'];
+  assert.equal(adjustment.kind, 'adjustment');
+  assert.equal(adjustment.relatedExpenseId, 'hotel');
+  assert.equal(adjustment.amount, 50);
+  assert.equal(adjustment.paidByUserId, 'leo');
+  assert.equal(corrected.splits['corr-refund-1-adjustment-leo-mina'].amount, 50);
+  assert.equal(corrected.splits['corr-refund-1-adjustment-leo-mina'].status, 'open');
+  assert.equal(getMemberBalance(corrected, 'trip', 'mina'), -50);
+  assert.equal(getMemberBalance(corrected, 'trip', 'leo'), 50);
+  assert.equal(getGroupTotal(corrected, 'trip'), 600);
+});
+
+test('confirmed underpayment creates only the additional forward adjustment', () => {
+  const base = editableExpenseFixture();
+  const requested = reducer(base, {type: 'SEND_REQUEST', payload: {splitId: 'hotel-leo'}});
+  const marked = reducer(requested, {type: 'MARK_PAID', payload: {splitId: 'hotel-leo', userId: 'leo'}});
+  const confirmed = reducer(marked, {
+    type: 'CONFIRM_RECEIVED',
+    payload: {splitId: 'hotel-leo', currentUserId: 'mina'},
+  });
+  const corrected = reducer(confirmed, {
+    type: 'CORRECT_EXPENSE',
+    payload: {
+      correctionId: 'corr-extra-1',
+      occurredAt: '2026-08-15T20:15:00.000Z',
+      expense: {...confirmed.expenses.hotel, amount: 650},
+      splits: [
+        {id: 'hotel-mina-corrected', expenseId: 'hotel', userId: 'mina', amount: 200, status: 'confirmed'},
+        {id: 'hotel-leo-corrected', expenseId: 'hotel', userId: 'leo', amount: 250, status: 'open'},
+        {id: 'hotel-nina-corrected', expenseId: 'hotel', userId: 'nina', amount: 200, status: 'open'},
+      ],
+    },
+  });
+
+  const adjustment = corrected.expenses['corr-extra-1-adjustment-leo'];
+  assert.equal(adjustment.amount, 50);
+  assert.equal(adjustment.paidByUserId, 'mina');
+  assert.equal(corrected.splits['corr-extra-1-adjustment-leo-leo'].amount, 50);
+  assert.equal(getMemberBalance(corrected, 'trip', 'leo'), -50);
+  assert.equal(getMemberBalance(corrected, 'trip', 'mina'), 250);
+  assert.equal(getGroupTotal(corrected, 'trip'), 600);
+});
+
+test('correction ids are idempotent and payer changes after activity are rejected', () => {
+  const base = editableExpenseFixture();
+  const requested = reducer(base, {type: 'SEND_REQUEST', payload: {splitId: 'hotel-leo', requestId: 'request-a'}});
+  const action = {
+    type: 'CORRECT_EXPENSE' as const,
+    payload: {
+      correctionId: 'corr-idempotent',
+      occurredAt: '2026-08-15T20:20:00.000Z',
+      expense: {...requested.expenses.hotel, amount: 550},
+      splits: [
+        {id: 'hotel-mina-v2', expenseId: 'hotel', userId: 'mina', amount: 200, status: 'confirmed' as const},
+        {id: 'hotel-leo-v2', expenseId: 'hotel', userId: 'leo', amount: 150, status: 'open' as const},
+        {id: 'hotel-nina-v2', expenseId: 'hotel', userId: 'nina', amount: 200, status: 'open' as const},
+      ],
+      replacementRequests: {leo: {requestId: 'request-b'}},
+    },
+  };
+  const once = reducer(requested, action);
+  const twice = reducer(once, action);
+  assert.deepEqual(twice, once);
+
+  const payerChange = reducer(requested, {
+    type: 'CORRECT_EXPENSE',
+    payload: {
+      correctionId: 'corr-payer-change',
+      occurredAt: '2026-08-15T20:25:00.000Z',
+      expense: {...requested.expenses.hotel, paidByUserId: 'leo'},
+      splits: [
+        {id: 'hotel-mina-v3', expenseId: 'hotel', userId: 'mina', amount: 200, status: 'open'},
+        {id: 'hotel-leo-v3', expenseId: 'hotel', userId: 'leo', amount: 200, status: 'confirmed'},
+        {id: 'hotel-nina-v3', expenseId: 'hotel', userId: 'nina', amount: 200, status: 'open'},
+      ],
+      replacementRequests: {leo: {requestId: 'request-c'}},
+    },
+  });
+  assert.equal(payerChange, requested);
+});
