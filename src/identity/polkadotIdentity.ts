@@ -31,7 +31,7 @@ export function reduceIdentityAction(state: AppState, action: LocalIdentityActio
 
   if (action.type === 'UNBIND_POLKADOT_HOST_IDENTITY') {
     if (!user.hostIdentity) return state;
-    const {hostIdentity: _removed, ...rest} = user;
+    const {hostIdentity: _removed, accountPublicKeyHex: _compatKey, ...rest} = user;
     const nextUser: User = {...rest};
     return {...state, users: {...state.users, [user.id]: nextUser}};
   }
