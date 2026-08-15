@@ -71,6 +71,19 @@ export interface NativePolkadotPaymentReceipt {
   finalizedAt: string;
 }
 
+export interface PolkadotAssetPaymentReceipt {
+  network: string;
+  assetId: string;
+  symbol: string;
+  txHash: string;
+  senderAccountId: string;
+  recipientAccountId: string;
+  amountBaseUnits: string;
+  blockHash: string;
+  blockNumber: string;
+  finalizedAt: string;
+}
+
 export interface PaymentMethod {
   id: string;
   userId: string;
