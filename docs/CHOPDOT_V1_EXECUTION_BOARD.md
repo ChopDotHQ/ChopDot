@@ -573,36 +573,56 @@ Scope:
 
 ### SETTLEMENT-001 — Unified settlement domain + adapters
 
-**Status:** `TODO`
+**Status:** `READY_FOR_CODEX_VERIFY`
 
-Goal: introduce one settlement interface for all payment methods.
+Preflight:
 
-Scope:
+- `docs/slices/SETTLEMENT-001_PREFLIGHT.md`
 
-- common settlement result/state shape;
-- cash adapter;
-- bank/external adapter contract;
-- payment-link adapter contract;
-- DOT adapter contract;
-- USDC adapter contract;
-- evidence model;
-- failure/retry/idempotency semantics.
+Implemented on this branch:
 
-No UI-specific branching in core financial logic.
+- rail-independent settlement/evidence contract for cash, bank transfer, payment link, Polkadot native asset, and Polkadot USDC;
+- current v1 policy encoded as evidence -> `awaiting_receiver_confirmation`, not automatic application finality;
+- live PAS payer UX no longer claims a verified transaction is already settled;
+- verified PAS evidence is now persisted on the exact split through the canonical local settlement wrapper, with exact network/from/to/amount checks and duplicate transaction-hash rejection;
+- chain-evidenced split remains `marked_paid` until receiver confirmation;
+- manual Undo is blocked when chain evidence exists;
+- explicit `npm run test:settlement` command covers settlement-domain and local settlement-audit tests.
+
+Current limitation:
+
+- legacy `RECORD_MATCHED_PAYMENT` in `src/state/store.ts` still direct-confirms and must be removed/reconciled by Codex under `DEBT-SECURITY-001`;
+- DOT/USDC production execution remains separate `POLKADOT-002/003` work;
+- tests are **WRITTEN / NOT EXECUTED HERE** and require local G2 verification.
 
 ---
 
 ### SETTLEMENT-002 — Cash settlement complete
 
-**Status:** `TODO`
+**Status:** `READY_FOR_CODEX_VERIFY`
 
-Scope:
+Preflight:
 
-- mark cash paid;
-- receiver confirmation;
-- cancel/retry before confirmation;
-- durable history;
-- no wallet prompts.
+- `docs/slices/SETTLEMENT-002_PREFLIGHT.md`
+
+Implemented on this branch:
+
+- payer attestation keeps manual rails at `marked_paid` until receiver confirmation;
+- `PayerView` now shows a `Marked as paid` success state rather than immediately navigating away;
+- payer can use `I didn't pay yet — undo` before receiver confirmation;
+- local retraction restores the exact split to `request_sent` without changing amount/expense/request scope;
+- confirmed payments and chain-evidenced payments cannot use the manual Undo path;
+- successful mark-paid, retraction, and receiver confirmation append persistent local `ActivityEvent` records;
+- activity records include split/expense/payer/receiver/amount/currency/request metadata and evidence class where relevant;
+- invalid/no-op transitions do not append false audit events;
+- existing receiver-confirm controls inherit audit journaling without a separate UI fork;
+- settlement modules are consolidated under `src/settlement/`.
+
+Current limitation:
+
+- activity events are locally durable through existing AppState persistence but global consumer timeline rendering remains `HISTORY-001`;
+- local undo is intentionally not added to the old shared-session protocol;
+- restart persistence, mobile flow, typecheck/build and tests are **NOT EXECUTED HERE** and require Codex/local G2 verification.
 
 ---
 
@@ -841,9 +861,9 @@ Canonical register:
 Current important items:
 
 - `DEBT-MONEY-001` — current local money uses JS `number`; dedicated migration required.
-- `DEBT-SECURITY-001` — current matched-wallet runtime directly confirms, conflicting with conservative canonical contract.
+- `DEBT-SECURITY-001` — live settlement is conservative and persists verified chain evidence, but the legacy direct-confirm reducer action remains and must be reconciled.
 - `DEBT-PERSIST-001` — local persistence lacks explicit schema migration chain.
-- `DEBT-SYNC-001` — current edit/correction/delete/group/people shared authority is undefined on old portable transport.
+- `DEBT-SYNC-001` — current edit/correction/delete/group/people/settlement-undo shared authority is undefined on old portable transport.
 - `DEBT-PRODUCT-001` — **resolved on this branch by MONEY-001:** Group Detail now exposes expense inspection.
 
 Debt is not silently fixed inside unrelated slices.
@@ -887,6 +907,8 @@ When the real v0.5.6 source is pushed:
 | 2026-08-15 | MONEY-002 | READY_FOR_CODEX_VERIFY | `5259ee3`, `73a2efa`, `184341f`, `82e5064`, `690a4d8`, `a8a2175`, `6bad422`, `b7208d3`, `1fcbe32` | G2 code/tests written, runtime unverified | Safe stale-request replacement + additive correction/refund model + consumer correction UX |
 | 2026-08-15 | GROUP-001 | READY_FOR_CODEX_VERIFY | `44a6e71`, `4d73a12`, `0a0a9f9`, `a1099ac`, `4214804`, `5f78fd9` | G2 code/tests written, runtime unverified | Rename/add/remove active roster with raw-obligation safety and preserved history |
 | 2026-08-15 | PEOPLE-001 | READY_FOR_CODEX_VERIFY | `49b5365`, `8e4ff34`, `63b7691`, `69c573f`, `29c92cf`, `cee340e`, `9e6142e`, `0df4c76` | G2 code/tests written, runtime unverified | Reusable person detail, local receive preferences, read-only identity references, no manual wallet-address trust expansion |
+| 2026-08-15 | SETTLEMENT-001 | READY_FOR_CODEX_VERIFY | `f0313f7`, `13a8f21`, `dd88699`, `acbd8cb`, `4a39ee8`, `68ff700`, `8a00a88` + evidence-persistence follow-up `fdc99ab`, `0c3d568` | G2 code/tests written, runtime unverified | Unified rail/evidence contract; live PAS waits for receiver confirmation and persists exact verified receipt |
+| 2026-08-15 | SETTLEMENT-002 | READY_FOR_CODEX_VERIFY | `679eb8e`, `a2cda10`, `8789573`, `181b6bd`, `0dd67de`, module-path cleanup, `04d1cdf`, `0f3828a` | G2 code/tests written, runtime unverified | Reversible manual paid acknowledgement + persistent local audit journal; chain evidence protected from manual undo |
 
 ---
 
