@@ -33,6 +33,8 @@ export type Action =
   | { type: 'CREATE_GROUP'; payload: { group: Group } }
   | { type: 'ACCEPT_GROUP_INVITE'; payload: { invite: GroupInvitePacket } }
   | { type: 'ADD_EXPENSE'; payload: { expense: Expense; splits: Split[] } }
+  | { type: 'UPDATE_EXPENSE'; payload: { expense: Expense; splits: Split[] } }
+  | { type: 'DELETE_EXPENSE'; payload: { expenseId: string } }
   | { type: 'SEND_REQUEST'; payload: { splitId: string; requestId?: string; expiresAt?: string } }
   | { type: 'MARK_PAID'; payload: { splitId: string; userId: string } }
   | { type: 'CONFIRM_RECEIVED'; payload: { splitId: string; currentUserId: string } }
@@ -190,6 +192,38 @@ export function reducer(state: AppState, action: Action): AppState {
         expenses: { ...state.expenses, [expense.id]: expense },
         splits: newSplits
       };
+    }
+    case 'UPDATE_EXPENSE': {
+      const {expense, splits} = action.payload;
+      const existingExpense = state.expenses[expense.id];
+      if (!existingExpense || existingExpense.groupId !== expense.groupId) return state;
+      if (!isExpenseLocallyEditable(state, existingExpense)) return state;
+      if (!isValidExpenseReplacement(state, expense, splits)) return state;
+
+      const nextSplits = Object.fromEntries(
+        Object.entries(state.splits).filter(([, split]) => split.expenseId !== expense.id),
+      ) as Record<string, Split>;
+      splits.forEach(split => {
+        nextSplits[split.id] = split;
+      });
+
+      return {
+        ...state,
+        expenses: {...state.expenses, [expense.id]: expense},
+        splits: nextSplits,
+      };
+    }
+    case 'DELETE_EXPENSE': {
+      const expense = state.expenses[action.payload.expenseId];
+      if (!expense || !isExpenseLocallyEditable(state, expense)) return state;
+
+      const nextExpenses = {...state.expenses};
+      delete nextExpenses[expense.id];
+      const nextSplits = Object.fromEntries(
+        Object.entries(state.splits).filter(([, split]) => split.expenseId !== expense.id),
+      ) as Record<string, Split>;
+
+      return {...state, expenses: nextExpenses, splits: nextSplits};
     }
     case 'SEND_REQUEST': {
       const split = state.splits[action.payload.splitId];
@@ -362,6 +396,47 @@ export const getSavedRecordSummary = (state: AppState, recordId: string) => {
     open: record.openAmount
   };
 };
+
+function isExpenseLocallyEditable(state: AppState, expense: Expense): boolean {
+  const existingSplits = Object.values(state.splits).filter(split => split.expenseId === expense.id);
+  return existingSplits.every(split => {
+    if (split.userId === expense.paidByUserId) {
+      // Existing data models the payer's own allocation as `confirmed` even
+      // though no payment occurred. Treat that self-share as bookkeeping.
+      return split.status === 'open' || split.status === 'confirmed';
+    }
+    return split.status === 'open';
+  });
+}
+
+function isValidExpenseReplacement(state: AppState, expense: Expense, splits: Split[]): boolean {
+  const group = state.groups[expense.groupId];
+  if (!group || !group.memberIds.includes(expense.paidByUserId)) return false;
+  if (!state.users[expense.paidByUserId]) return false;
+  if (!Number.isFinite(expense.amount) || expense.amount <= 0) return false;
+  if (splits.length === 0) return false;
+
+  const splitIds = new Set<string>();
+  const participantIds = new Set<string>();
+  let splitTotal = 0;
+
+  for (const split of splits) {
+    if (split.expenseId !== expense.id) return false;
+    if (!Number.isFinite(split.amount) || split.amount < 0) return false;
+    if (!state.users[split.userId] || !group.memberIds.includes(split.userId)) return false;
+    if (splitIds.has(split.id) || participantIds.has(split.userId)) return false;
+    if (split.userId === expense.paidByUserId) {
+      if (!['open', 'confirmed'].includes(split.status)) return false;
+    } else if (split.status !== 'open') {
+      return false;
+    }
+    splitIds.add(split.id);
+    participantIds.add(split.userId);
+    splitTotal += split.amount;
+  }
+
+  return Math.abs(splitTotal - expense.amount) < 1e-9;
+}
 
 function normalizeInviteName(value: string): string {
   return value.trim().replace(/\s+/gu, ' ').toLocaleLowerCase();
