@@ -49,6 +49,16 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Synchronize dependency lock
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
+      - name: Upload synchronized lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-002-lockfile
+          path: package-lock.json
+          retention-days: 3
+
       - name: Install dependencies
         run: npm ci
 
