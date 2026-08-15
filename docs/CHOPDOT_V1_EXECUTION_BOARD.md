@@ -500,16 +500,33 @@ Current limitation:
 
 ### PEOPLE-001 — Friends + reusable payment preferences
 
-**Status:** `TODO`
+**Status:** `READY_FOR_CODEX_VERIFY`
 
-Scope:
+Preflight:
 
-- friend detail;
-- reusable display name;
-- identity/address references where available;
-- preferred receive methods;
-- Polkadot identity/QR seam where host supports it;
-- avoid social-network scope creep.
+- `docs/slices/PEOPLE-001_PREFLIGHT.md`
+
+Implemented on this branch:
+
+- lightweight Friends list now opens a reusable Person Detail surface;
+- active groups shared with the current user are shown without inventing pairwise accounting;
+- existing wallet/account/statement identity references are visible but read-only and explicitly not verified by this local screen;
+- bank-transfer instructions, payment links, and cash can be saved as reusable per-person `PaymentMethod` records;
+- stable `receive:{userId}:{type}` ids make re-saving a method update the same record instead of duplicating it;
+- each `User` may store an optional preferred receive-method id;
+- preferred selection is guarded to methods belonging to that same person;
+- conventional instructions are labeled local/unverified and do not mutate or prove settlement;
+- manual friend wallet-address editing is deliberately absent to avoid turning arbitrary local input into a settlement destination;
+- generic non-scoped copy-invite clutter was removed from Friends; group invitations remain in group context;
+- pure people-domain helpers and deterministic tests were added;
+- explicit `test:people` and `test:group-safety` scripts were added for verification.
+
+Current limitation:
+
+- cryptographic person/address binding and QR/account exchange remain `POLKADOT-001`;
+- saved receive preferences are local convenience data until shared backend/sync exists;
+- preferred receive method is not yet settlement execution routing;
+- tests are **WRITTEN / NOT EXECUTED HERE** and require Codex/local G2 verification.
 
 ---
 
@@ -826,7 +843,7 @@ Current important items:
 - `DEBT-MONEY-001` — current local money uses JS `number`; dedicated migration required.
 - `DEBT-SECURITY-001` — current matched-wallet runtime directly confirms, conflicting with conservative canonical contract.
 - `DEBT-PERSIST-001` — local persistence lacks explicit schema migration chain.
-- `DEBT-SYNC-001` — current edit/correction/delete/group shared authority is undefined on old portable transport.
+- `DEBT-SYNC-001` — current edit/correction/delete/group/people shared authority is undefined on old portable transport.
 - `DEBT-PRODUCT-001` — **resolved on this branch by MONEY-001:** Group Detail now exposes expense inspection.
 
 Debt is not silently fixed inside unrelated slices.
@@ -869,6 +886,7 @@ When the real v0.5.6 source is pushed:
 | 2026-08-15 | MONEY-001 | READY_FOR_CODEX_VERIFY | `b0e795ec`, `61bacc9f`, `97d2717a`, `3af74311` | G2 code/tests written, runtime unverified | Expense list/detail/edit/delete foundation; no shared mutation claim |
 | 2026-08-15 | MONEY-002 | READY_FOR_CODEX_VERIFY | `5259ee3`, `73a2efa`, `184341f`, `82e5064`, `690a4d8`, `a8a2175`, `6bad422`, `b7208d3`, `1fcbe32` | G2 code/tests written, runtime unverified | Safe stale-request replacement + additive correction/refund model + consumer correction UX |
 | 2026-08-15 | GROUP-001 | READY_FOR_CODEX_VERIFY | `44a6e71`, `4d73a12`, `0a0a9f9`, `a1099ac`, `4214804`, `5f78fd9` | G2 code/tests written, runtime unverified | Rename/add/remove active roster with raw-obligation safety and preserved history |
+| 2026-08-15 | PEOPLE-001 | READY_FOR_CODEX_VERIFY | `49b5365`, `8e4ff34`, `63b7691`, `69c573f`, `29c92cf`, `cee340e`, `9e6142e`, `0df4c76` | G2 code/tests written, runtime unverified | Reusable person detail, local receive preferences, read-only identity references, no manual wallet-address trust expansion |
 
 ---
 
