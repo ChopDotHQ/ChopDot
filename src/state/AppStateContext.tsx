@@ -1,8 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useReducer, useRef, useState, ReactNode, Dispatch } from 'react';
-import { Action } from './store';
 import { AppState } from '../types';
 import {verifyPasPaymentReceipt} from '../payments/pasWallet';
-import { createCleanState, reducer } from './store';
+import { createCleanState } from './store';
 import { appStorage } from '../environment';
 import {
   authorizeSharedAction,
@@ -15,12 +14,17 @@ import {
   type HostSessionConnection,
   type SharedActionEnvelope,
 } from '../environment/hostSessionSync';
+import {
+  isLocalOnlySettlementAction,
+  reduceWithSettlementAudit,
+  type LocalSettlementAction,
+} from '../settlements/localSettlementAudit';
 
 type SessionStatus = 'off' | 'connecting' | 'ready' | 'error';
 
 interface AppStateContextValue {
   state: AppState;
-  dispatch: Dispatch<Action>;
+  dispatch: Dispatch<LocalSettlementAction>;
   hostParticipant: HostParticipant | null;
   sessionStatus: SessionStatus;
 }
@@ -44,7 +48,7 @@ declare global {
 }
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
-  const [state, baseDispatch] = useReducer(reducer, undefined, loadInitialState);
+  const [state, baseDispatch] = useReducer(reduceWithSettlementAudit, undefined, loadInitialState);
   const [hostParticipant, setHostParticipant] = useState<HostParticipant | null>(null);
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>('off');
   const stateRef = useRef(state);
@@ -59,8 +63,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     window.__CHOPDOT_SESSION_OBSERVER__ = {...observerRef.current};
   }, []);
 
-  const apply = useCallback((action: Action) => {
-    stateRef.current = reducer(stateRef.current, action);
+  const apply = useCallback((action: LocalSettlementAction) => {
+    stateRef.current = reduceWithSettlementAudit(stateRef.current, action);
     baseDispatch(action);
   }, []);
 
@@ -166,7 +170,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       });
   }, [receiveVerifiedEnvelope, updateObserver]);
 
-  const dispatch = useCallback<Dispatch<Action>>((action) => {
+  const dispatch = useCallback<Dispatch<LocalSettlementAction>>((action) => {
+    if (isLocalOnlySettlementAction(action)) {
+      apply(action);
+      return;
+    }
+
     const connection = connectionRef.current;
     if (!connection || !isSharedAction(action)) {
       apply(action);
