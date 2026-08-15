@@ -15,16 +15,16 @@ import {
   type SharedActionEnvelope,
 } from '../environment/hostSessionSync';
 import {
-  isLocalOnlySettlementAction,
-  reduceWithSettlementAudit,
-  type LocalSettlementAction,
-} from '../settlement/localSettlementAudit';
+  isLocalOnlyAppAction,
+  reduceLocalAppState,
+  type LocalAppAction,
+} from './localAppReducer';
 
 type SessionStatus = 'off' | 'connecting' | 'ready' | 'error';
 
 interface AppStateContextValue {
   state: AppState;
-  dispatch: Dispatch<LocalSettlementAction>;
+  dispatch: Dispatch<LocalAppAction>;
   hostParticipant: HostParticipant | null;
   sessionStatus: SessionStatus;
 }
@@ -48,7 +48,7 @@ declare global {
 }
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
-  const [state, baseDispatch] = useReducer(reduceWithSettlementAudit, undefined, loadInitialState);
+  const [state, baseDispatch] = useReducer(reduceLocalAppState, undefined, loadInitialState);
   const [hostParticipant, setHostParticipant] = useState<HostParticipant | null>(null);
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>('off');
   const stateRef = useRef(state);
@@ -63,8 +63,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     window.__CHOPDOT_SESSION_OBSERVER__ = {...observerRef.current};
   }, []);
 
-  const apply = useCallback((action: LocalSettlementAction) => {
-    stateRef.current = reduceWithSettlementAudit(stateRef.current, action);
+  const apply = useCallback((action: LocalAppAction) => {
+    stateRef.current = reduceLocalAppState(stateRef.current, action);
     baseDispatch(action);
   }, []);
 
@@ -170,8 +170,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       });
   }, [receiveVerifiedEnvelope, updateObserver]);
 
-  const dispatch = useCallback<Dispatch<LocalSettlementAction>>((action) => {
-    if (isLocalOnlySettlementAction(action)) {
+  const dispatch = useCallback<Dispatch<LocalAppAction>>((action) => {
+    if (isLocalOnlyAppAction(action)) {
       apply(action);
       return;
     }
