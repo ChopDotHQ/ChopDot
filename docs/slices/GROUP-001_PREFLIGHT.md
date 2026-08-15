@@ -1,6 +1,6 @@
 # GROUP-001 Preflight — Group editing + member safety
 
-Status: BUILDING
+Status: READY_FOR_CODEX_VERIFY
 Branch: `chatgpt/chopdot-v1-completion`
 
 ## User goal
@@ -40,16 +40,26 @@ This rule intentionally checks raw obligations, not only derived net balance.
 
 ## UI behavior
 
-Group Detail gets one unobtrusive settings/manage entry point.
+Group Detail now has one unobtrusive manage/settings entry point.
 
 Manage group allows:
 
 - rename group;
 - add a person by name;
+- reuse an existing known person by normalized name;
 - remove eligible active members;
 - show a plain-language reason when removal is blocked: `Settle this person's open money first.`
 
-A former member should disappear from the active member roster but continue to appear on historical expense details where relevant.
+A former member disappears from the active member roster but remains in `users`, expenses, splits, and historical expense rendering.
+
+## Implementation
+
+- `src/groups/groupSafety.ts` owns removal/rename/add safety helpers.
+- `src/groups/groupSafety.test.ts` covers the key financial invariants.
+- `src/components/GroupSettings.tsx` provides the consumer-facing manage flow.
+- `src/components/GroupDetail.tsx` exposes the settings entry point.
+
+The current local shell persists the updated `Group` through the existing `CREATE_GROUP` state action. That action is still a prototype persistence primitive, not a claim that canonical shared group authorization exists. Backend owner/admin authorization remains future shared-mode work.
 
 ## Deferred
 
@@ -57,6 +67,7 @@ A former member should disappear from the active member roster but continue to a
 - Cross-device propagation — SYNC-001.
 - Dedicated archived-group schema — current Close Group / SavedRecord behavior remains the existing finish mechanism until its lifecycle is reconciled with the current source.
 - Deleting people globally — out of scope; historical attribution must remain intact.
+- Self-leave/ownership-transfer behavior — requires explicit role/authority design.
 
 ## Acceptance cases
 
@@ -75,4 +86,4 @@ A former member should disappear from the active member roster but continue to a
 
 Required gate: G2 local-flow evidence.
 
-Tests can be written/reviewed here but cannot be claimed as executed until Codex/local runtime runs typecheck, state tests, production build, and mobile flow.
+Implementation and tests are **WRITTEN / NOT EXECUTED HERE**. Codex/local runtime still needs to run typecheck, `groupSafety.test.ts`, broader state tests, production build, and mobile flow before this becomes `DONE`.
