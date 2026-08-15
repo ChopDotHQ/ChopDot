@@ -87,15 +87,11 @@ export function PayerView({
         to: requester.walletAddress,
         amount: amountOwed,
       });
-      dispatch({
-        type: 'RECORD_MATCHED_PAYMENT',
-        payload: {
-          splitId: reqSplits[0].id,
-          userId: memberId,
-          receiverUserId: requester.id,
-          receipt,
-        },
-      });
+
+      // A verified chain transaction is strong payment evidence, but under the
+      // current ChopDot contract it does not replace receiver acknowledgement.
+      // Keep the split in the same marked-paid lifecycle as cash/external rails.
+      dispatch({type: 'MARK_PAID', payload: {splitId: reqSplits[0].id, userId: memberId}});
       setPayment(receipt);
       setStep('received');
     } catch (reason) {
@@ -107,14 +103,16 @@ export function PayerView({
   if (step === 'received' && payment) {
     return (
       <Screen>
-        <ScreenHeader title="Payment received" onBack={onBack} />
+        <ScreenHeader title="Payment sent" onBack={onBack} />
         <ScreenContent className="p-6 flex flex-col items-center justify-center text-center space-y-6 pb-24">
           <div className="w-24 h-24 rounded-full bg-green-50 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400">
             <Check className="w-11 h-11" />
           </div>
           <div>
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Payment received</h2>
-            <p className="text-gray-500 dark:text-gray-400 font-medium mt-2">Your share is settled.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Payment sent</h2>
+            <p className="text-gray-500 dark:text-gray-400 font-medium mt-2">
+              Waiting for {requester.name} to confirm receipt.
+            </p>
           </div>
           <div className="w-full bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 text-left">
             <div className="text-3xl text-gray-900 dark:text-white"><MoneyAmount amount={displayedAmount} currency="PAS" /></div>
