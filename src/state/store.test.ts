@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {createCleanState, getGroupTotal, getMemberBalance, reducer} from './store';
-import type {Expense, Split} from '../types';
+import type {AppState, Expense, Split} from '../types';
 
 test('a late expense stays separate from an already-sent payment request', () => {
   let state = createCleanState();
@@ -120,4 +120,177 @@ test('a returned payer action can only advance its bound request', () => {
     payload: {splitId: 'dinner-leo', userId: 'leo'},
   });
   assert.equal(replay, marked);
+});
+
+function editableExpenseFixture(): AppState {
+  let state = createCleanState();
+  for (const user of [
+    {id: 'mina', name: 'Mina'},
+    {id: 'leo', name: 'Leo'},
+    {id: 'nina', name: 'Nina'},
+  ]) {
+    state = reducer(state, {type: 'ADD_USER', payload: {user}});
+  }
+  state = reducer(state, {type: 'SET_CURRENT_USER', payload: {userId: 'mina'}});
+  state = reducer(state, {
+    type: 'CREATE_GROUP',
+    payload: {group: {id: 'trip', name: 'Trip', memberIds: ['mina', 'leo', 'nina']}},
+  });
+  return reducer(state, {
+    type: 'ADD_EXPENSE',
+    payload: {
+      expense: {
+        id: 'hotel',
+        groupId: 'trip',
+        description: 'Hotel',
+        amount: 600,
+        currency: 'USD',
+        paidByUserId: 'mina',
+        date: '2026-08-15T10:00:00.000Z',
+      },
+      splits: [
+        {id: 'hotel-mina', expenseId: 'hotel', userId: 'mina', amount: 200, status: 'confirmed'},
+        {id: 'hotel-leo', expenseId: 'hotel', userId: 'leo', amount: 200, status: 'open'},
+        {id: 'hotel-nina', expenseId: 'hotel', userId: 'nina', amount: 200, status: 'open'},
+      ],
+    },
+  });
+}
+
+test('editing an open expense atomically replaces the expense and its split set', () => {
+  const state = editableExpenseFixture();
+  const updated = reducer(state, {
+    type: 'UPDATE_EXPENSE',
+    payload: {
+      expense: {...state.expenses.hotel, amount: 500, description: 'Hotel corrected'},
+      splits: [
+        {id: 'hotel-mina-v2', expenseId: 'hotel', userId: 'mina', amount: 250, status: 'confirmed'},
+        {id: 'hotel-leo-v2', expenseId: 'hotel', userId: 'leo', amount: 250, status: 'open'},
+      ],
+    },
+  });
+
+  assert.equal(updated.expenses.hotel.amount, 500);
+  assert.equal(updated.expenses.hotel.description, 'Hotel corrected');
+  assert.equal(getGroupTotal(updated, 'trip'), 500);
+  assert.equal(getMemberBalance(updated, 'trip', 'leo'), -250);
+  assert.equal(updated.splits['hotel-nina'], undefined);
+  assert.deepEqual(
+    Object.values(updated.splits).filter(split => split.expenseId === 'hotel').map(split => split.id).sort(),
+    ['hotel-leo-v2', 'hotel-mina-v2'],
+  );
+});
+
+test('changing payer reverses the debt direction deterministically', () => {
+  const state = editableExpenseFixture();
+  const updated = reducer(state, {
+    type: 'UPDATE_EXPENSE',
+    payload: {
+      expense: {...state.expenses.hotel, paidByUserId: 'leo'},
+      splits: [
+        {id: 'hotel-mina-v2', expenseId: 'hotel', userId: 'mina', amount: 200, status: 'open'},
+        {id: 'hotel-leo-v2', expenseId: 'hotel', userId: 'leo', amount: 200, status: 'confirmed'},
+        {id: 'hotel-nina-v2', expenseId: 'hotel', userId: 'nina', amount: 200, status: 'open'},
+      ],
+    },
+  });
+
+  assert.equal(getMemberBalance(updated, 'trip', 'mina'), -200);
+  assert.equal(getMemberBalance(updated, 'trip', 'leo'), 400);
+  assert.equal(getMemberBalance(updated, 'trip', 'nina'), -200);
+});
+
+test('an invalid replacement is rejected without changing financial truth', () => {
+  const state = editableExpenseFixture();
+  const updated = reducer(state, {
+    type: 'UPDATE_EXPENSE',
+    payload: {
+      expense: {...state.expenses.hotel, amount: 500},
+      splits: [
+        {id: 'hotel-mina-v2', expenseId: 'hotel', userId: 'mina', amount: 250, status: 'confirmed'},
+        {id: 'hotel-leo-v2', expenseId: 'hotel', userId: 'leo', amount: 200, status: 'open'},
+      ],
+    },
+  });
+
+  assert.equal(updated, state);
+  assert.equal(getGroupTotal(updated, 'trip'), 600);
+});
+
+test('duplicate participants in a replacement are rejected', () => {
+  const state = editableExpenseFixture();
+  const updated = reducer(state, {
+    type: 'UPDATE_EXPENSE',
+    payload: {
+      expense: state.expenses.hotel,
+      splits: [
+        {id: 'a', expenseId: 'hotel', userId: 'mina', amount: 300, status: 'confirmed'},
+        {id: 'b', expenseId: 'hotel', userId: 'mina', amount: 300, status: 'confirmed'},
+      ],
+    },
+  });
+
+  assert.equal(updated, state);
+});
+
+test('deleting an editable expense removes the expense and every associated split', () => {
+  const state = editableExpenseFixture();
+  const updated = reducer(state, {type: 'DELETE_EXPENSE', payload: {expenseId: 'hotel'}});
+
+  assert.equal(updated.expenses.hotel, undefined);
+  assert.equal(Object.values(updated.splits).filter(split => split.expenseId === 'hotel').length, 0);
+  assert.equal(getGroupTotal(updated, 'trip'), 0);
+  assert.equal(getMemberBalance(updated, 'trip', 'leo'), 0);
+});
+
+test('request activity blocks expense update and delete in MONEY-001', () => {
+  const base = editableExpenseFixture();
+  const requested = reducer(base, {type: 'SEND_REQUEST', payload: {splitId: 'hotel-leo'}});
+
+  const attemptedUpdate = reducer(requested, {
+    type: 'UPDATE_EXPENSE',
+    payload: {
+      expense: {...requested.expenses.hotel, amount: 500},
+      splits: [
+        {id: 'hotel-mina-v2', expenseId: 'hotel', userId: 'mina', amount: 250, status: 'confirmed'},
+        {id: 'hotel-leo-v2', expenseId: 'hotel', userId: 'leo', amount: 250, status: 'open'},
+      ],
+    },
+  });
+  const attemptedDelete = reducer(requested, {type: 'DELETE_EXPENSE', payload: {expenseId: 'hotel'}});
+
+  assert.equal(attemptedUpdate, requested);
+  assert.equal(attemptedDelete, requested);
+});
+
+test('marked-paid and confirmed counterparty splits block correction', () => {
+  const base = editableExpenseFixture();
+  const requested = reducer(base, {type: 'SEND_REQUEST', payload: {splitId: 'hotel-leo'}});
+  const marked = reducer(requested, {type: 'MARK_PAID', payload: {splitId: 'hotel-leo', userId: 'leo'}});
+  const confirmed = reducer(marked, {
+    type: 'CONFIRM_RECEIVED',
+    payload: {splitId: 'hotel-leo', currentUserId: 'mina'},
+  });
+
+  assert.equal(reducer(marked, {type: 'DELETE_EXPENSE', payload: {expenseId: 'hotel'}}), marked);
+  assert.equal(reducer(confirmed, {type: 'DELETE_EXPENSE', payload: {expenseId: 'hotel'}}), confirmed);
+});
+
+test('repeating the same valid edit does not create duplicate split records', () => {
+  const state = editableExpenseFixture();
+  const action = {
+    type: 'UPDATE_EXPENSE' as const,
+    payload: {
+      expense: {...state.expenses.hotel, amount: 500},
+      splits: [
+        {id: 'hotel-mina-v2', expenseId: 'hotel', userId: 'mina', amount: 250, status: 'confirmed' as const},
+        {id: 'hotel-leo-v2', expenseId: 'hotel', userId: 'leo', amount: 250, status: 'open' as const},
+      ],
+    },
+  };
+
+  const once = reducer(state, action);
+  const twice = reducer(once, action);
+  assert.equal(Object.values(twice.splits).filter(split => split.expenseId === 'hotel').length, 2);
+  assert.deepEqual(twice.splits, once.splits);
 });
