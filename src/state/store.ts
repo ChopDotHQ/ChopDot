@@ -35,6 +35,16 @@ export type Action =
   | { type: 'ADD_EXPENSE'; payload: { expense: Expense; splits: Split[] } }
   | { type: 'UPDATE_EXPENSE'; payload: { expense: Expense; splits: Split[] } }
   | { type: 'DELETE_EXPENSE'; payload: { expenseId: string } }
+  | {
+      type: 'CORRECT_EXPENSE';
+      payload: {
+        expense: Expense;
+        splits: Split[];
+        correctionId: string;
+        occurredAt: string;
+        replacementRequests?: Record<string, {requestId: string; expiresAt?: string}>;
+      };
+    }
   | { type: 'SEND_REQUEST'; payload: { splitId: string; requestId?: string; expiresAt?: string } }
   | { type: 'MARK_PAID'; payload: { splitId: string; userId: string } }
   | { type: 'CONFIRM_RECEIVED'; payload: { splitId: string; currentUserId: string } }
@@ -116,11 +126,6 @@ export function reducer(state: AppState, action: Action): AppState {
         }
       });
 
-      // Claim our place in the roster. The inviter generated ids for everyone,
-      // so a joining device that named itself "Leo" must adopt the roster's Leo
-      // id — otherwise its splits reference a member it is not, and it sees two
-      // Leos. Matching by normalized name is the same convention CreateGroup
-      // already uses when a friend name matches an existing user.
       let currentUserId = state.currentUserId;
       const myName = currentUserId ? state.users[currentUserId]?.name : undefined;
       const claimed = myName
@@ -134,8 +139,6 @@ export function reducer(state: AppState, action: Action): AppState {
 
       const memberIds = invite.members.map(m => m.id);
       if (currentUserId && !memberIds.includes(currentUserId)) {
-        // Joined under a name nobody listed: join as an additional member
-        // rather than silently becoming a spectator.
         memberIds.push(currentUserId);
       }
 
@@ -176,9 +179,6 @@ export function reducer(state: AppState, action: Action): AppState {
         }
       });
 
-      // Adopt the group's currency so amounts are not relabelled on arrival.
-      // Only when we have no groups of our own yet, so joining never rewrites
-      // an existing local preference.
       const currency = Object.keys(state.groups).length === 0 ? invite.currency : state.currency;
 
       return { ...state, currentUserId, currency, users, groups, expenses, splits };
@@ -225,6 +225,183 @@ export function reducer(state: AppState, action: Action): AppState {
 
       return {...state, expenses: nextExpenses, splits: nextSplits};
     }
+    case 'CORRECT_EXPENSE': {
+      const {expense, splits, correctionId, occurredAt, replacementRequests = {}} = action.payload;
+      const existingExpense = state.expenses[expense.id];
+      if (!existingExpense || existingExpense.kind === 'adjustment') return state;
+      if (existingExpense.groupId !== expense.groupId) return state;
+      if (!correctionId || state.activityEvents[`correction:${correctionId}`]) return state;
+      if (!isValidCorrectionSnapshot(state, expense, splits)) return state;
+
+      const existingSplits = Object.values(state.splits).filter(split => split.expenseId === existingExpense.id);
+      const counterpartySplits = existingSplits.filter(split => split.userId !== existingExpense.paidByUserId);
+      const hasPaymentActivity = counterpartySplits.some(
+        split => split.status === 'marked_paid' || split.status === 'confirmed' || Boolean(split.walletPayment),
+      );
+      const requestedSplits = counterpartySplits.filter(split => split.status === 'request_sent');
+
+      if (!hasPaymentActivity && requestedSplits.length === 0) return state;
+      if (expense.paidByUserId !== existingExpense.paidByUserId) return state;
+
+      if (!hasPaymentActivity) {
+        // Sent request scope is immutable. Every still-owed requested participant
+        // must receive a fresh request id; otherwise the correction is rejected.
+        const proposedByUser = new Map(splits.map(split => [split.userId, split]));
+        for (const requested of requestedSplits) {
+          const proposed = proposedByUser.get(requested.userId);
+          if (proposed && proposed.amount > 0) {
+            const replacement = replacementRequests[requested.userId];
+            if (!replacement?.requestId || replacement.requestId === requested.requestId) return state;
+          }
+        }
+
+        const nextSplits = Object.fromEntries(
+          Object.entries(state.splits).filter(([, split]) => split.expenseId !== expense.id),
+        ) as Record<string, Split>;
+        for (const proposed of splits) {
+          const wasRequested = requestedSplits.some(split => split.userId === proposed.userId);
+          const replacement = replacementRequests[proposed.userId];
+          const isSelf = proposed.userId === expense.paidByUserId;
+          nextSplits[proposed.id] = {
+            ...proposed,
+            status: isSelf ? 'confirmed' : wasRequested && proposed.amount > 0 ? 'request_sent' : 'open',
+            requestId: !isSelf && wasRequested && proposed.amount > 0 ? replacement?.requestId : undefined,
+            requestExpiresAt: !isSelf && wasRequested && proposed.amount > 0 ? replacement?.expiresAt : undefined,
+            walletPayment: undefined,
+          };
+        }
+
+        const nextEvents = {...state.activityEvents};
+        for (const requested of requestedSplits) {
+          nextEvents[`correction:${correctionId}:request:${requested.id}`] = {
+            id: `correction:${correctionId}:request:${requested.id}`,
+            type: 'request_invalidated',
+            timestamp: occurredAt,
+            details: {
+              correctionId,
+              expenseId: existingExpense.id,
+              splitId: requested.id,
+              userId: requested.userId,
+              oldRequestId: requested.requestId,
+              oldAmount: requested.amount,
+              replacementRequestId: replacementRequests[requested.userId]?.requestId,
+              replacementAmount: proposedByUser.get(requested.userId)?.amount ?? 0,
+            },
+          };
+        }
+        nextEvents[`correction:${correctionId}`] = {
+          id: `correction:${correctionId}`,
+          type: 'expense_correction_recorded',
+          timestamp: occurredAt,
+          details: {correctionId, expenseId: existingExpense.id, mode: 'request_replaced'},
+        };
+
+        return {
+          ...state,
+          expenses: {...state.expenses, [expense.id]: expense},
+          splits: nextSplits,
+          activityEvents: nextEvents,
+        };
+      }
+
+      // Once payment activity exists, history is immutable. Preserve the exact
+      // original records and express only the financial delta as adjustments.
+      const oldByUser = new Map(existingSplits.map(split => [split.userId, split.amount]));
+      const newByUser = new Map(splits.map(split => [split.userId, split.amount]));
+      const participantIds = new Set([...oldByUser.keys(), ...newByUser.keys()]);
+      participantIds.delete(existingExpense.paidByUserId);
+
+      const nextExpenses = {...state.expenses};
+      const nextSplits = {...state.splits};
+      const adjustmentIds: string[] = [];
+
+      for (const userId of participantIds) {
+        const delta = (newByUser.get(userId) ?? 0) - (oldByUser.get(userId) ?? 0);
+        if (Math.abs(delta) < 1e-9) continue;
+        const adjustmentId = `${correctionId}-adjustment-${userId}`;
+        if (nextExpenses[adjustmentId]) return state;
+        adjustmentIds.push(adjustmentId);
+
+        if (delta > 0) {
+          nextExpenses[adjustmentId] = {
+            id: adjustmentId,
+            groupId: existingExpense.groupId,
+            description: `Adjustment · ${existingExpense.description}`,
+            amount: delta,
+            currency: existingExpense.currency,
+            paidByUserId: existingExpense.paidByUserId,
+            date: occurredAt,
+            kind: 'adjustment',
+            relatedExpenseId: existingExpense.id,
+            correctionId,
+          };
+          nextSplits[`${adjustmentId}-self`] = {
+            id: `${adjustmentId}-self`,
+            expenseId: adjustmentId,
+            userId: existingExpense.paidByUserId,
+            amount: 0,
+            status: 'confirmed',
+          };
+          nextSplits[`${adjustmentId}-${userId}`] = {
+            id: `${adjustmentId}-${userId}`,
+            expenseId: adjustmentId,
+            userId,
+            amount: delta,
+            status: 'open',
+          };
+        } else {
+          const refundAmount = Math.abs(delta);
+          nextExpenses[adjustmentId] = {
+            id: adjustmentId,
+            groupId: existingExpense.groupId,
+            description: `Refund adjustment · ${existingExpense.description}`,
+            amount: refundAmount,
+            currency: existingExpense.currency,
+            paidByUserId: userId,
+            date: occurredAt,
+            kind: 'adjustment',
+            relatedExpenseId: existingExpense.id,
+            correctionId,
+          };
+          nextSplits[`${adjustmentId}-self`] = {
+            id: `${adjustmentId}-self`,
+            expenseId: adjustmentId,
+            userId,
+            amount: 0,
+            status: 'confirmed',
+          };
+          nextSplits[`${adjustmentId}-${existingExpense.paidByUserId}`] = {
+            id: `${adjustmentId}-${existingExpense.paidByUserId}`,
+            expenseId: adjustmentId,
+            userId: existingExpense.paidByUserId,
+            amount: refundAmount,
+            status: 'open',
+          };
+        }
+      }
+
+      return {
+        ...state,
+        expenses: nextExpenses,
+        splits: nextSplits,
+        activityEvents: {
+          ...state.activityEvents,
+          [`correction:${correctionId}`]: {
+            id: `correction:${correctionId}`,
+            type: 'expense_correction_recorded',
+            timestamp: occurredAt,
+            details: {
+              correctionId,
+              expenseId: existingExpense.id,
+              mode: 'adjustment',
+              correctedExpense: expense,
+              correctedSplits: splits.map(split => ({userId: split.userId, amount: split.amount})),
+              adjustmentIds,
+            },
+          },
+        },
+      };
+    }
     case 'SEND_REQUEST': {
       const split = state.splits[action.payload.splitId];
       if (!split || !['open', 'request_sent'].includes(split.status)) return state;
@@ -244,8 +421,6 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'MARK_PAID': {
       const { splitId, userId } = action.payload;
       const split = state.splits[splitId];
-      // Law: Leo/Nina can only mark their own payment as paid.
-      // Mina cannot mark Leo/Nina as paid.
       if (!split || split.userId !== userId || split.status !== 'request_sent') return state;
       return {
         ...state,
@@ -260,8 +435,6 @@ export function reducer(state: AppState, action: Action): AppState {
       const split = state.splits[splitId];
       if (!split) return state;
       const expense = state.expenses[split.expenseId];
-      // Law: Leo/Nina cannot confirm received money for Mina.
-      // Only the organizer (expense.paidByUserId) can confirm receipt.
       if (!expense || expense.paidByUserId !== currentUserId || split.status !== 'marked_paid') return state;
       return {
         ...state,
@@ -329,11 +502,9 @@ export function reducer(state: AppState, action: Action): AppState {
   }
 }
 
-// Pure selector functions
-
 export const getGroupTotal = (state: AppState, groupId: string): number => {
   return Object.values(state.expenses)
-    .filter(e => e.groupId === groupId)
+    .filter(e => e.groupId === groupId && e.kind !== 'adjustment')
     .reduce((sum, e) => sum + e.amount, 0);
 };
 
@@ -344,7 +515,6 @@ export const getMemberBalance = (state: AppState, groupId: string, userId: strin
 
   let balance = 0;
   
-  // What user owes others (not confirmed yet)
   groupSplits.filter(s => s.userId === userId && s.status !== 'confirmed').forEach(s => {
     const expense = groupExpenses.find(e => e.id === s.expenseId);
     if (expense && expense.paidByUserId !== userId) {
@@ -352,7 +522,6 @@ export const getMemberBalance = (state: AppState, groupId: string, userId: strin
     }
   });
 
-  // What others owe user (not confirmed yet)
   groupExpenses.filter(e => e.paidByUserId === userId).forEach(e => {
     const owedToUserSplits = groupSplits.filter(s => s.expenseId === e.id && s.userId !== userId && s.status !== 'confirmed');
     balance += owedToUserSplits.reduce((sum, s) => sum + s.amount, 0);
@@ -364,14 +533,12 @@ export const getMemberBalance = (state: AppState, groupId: string, userId: strin
 export const getNetPosition = (state: AppState, userId: string): number => {
   let netPosition = 0;
 
-  // What user is owed (others owe user)
   Object.values(state.expenses).filter(e => e.paidByUserId === userId).forEach(e => {
     Object.values(state.splits).filter(s => s.expenseId === e.id && s.userId !== userId && s.status !== 'confirmed').forEach(s => {
       netPosition += s.amount;
     });
   });
 
-  // What user owes (user owes others)
   Object.values(state.splits).filter(s => s.userId === userId && s.status !== 'confirmed').forEach(s => {
     const expense = state.expenses[s.expenseId];
     if (expense && expense.paidByUserId !== userId) {
@@ -401,8 +568,6 @@ function isExpenseLocallyEditable(state: AppState, expense: Expense): boolean {
   const existingSplits = Object.values(state.splits).filter(split => split.expenseId === expense.id);
   return existingSplits.every(split => {
     if (split.userId === expense.paidByUserId) {
-      // Existing data models the payer's own allocation as `confirmed` even
-      // though no payment occurred. Treat that self-share as bookkeeping.
       return split.status === 'open' || split.status === 'confirmed';
     }
     return split.status === 'open';
@@ -410,6 +575,16 @@ function isExpenseLocallyEditable(state: AppState, expense: Expense): boolean {
 }
 
 function isValidExpenseReplacement(state: AppState, expense: Expense, splits: Split[]): boolean {
+  if (!isValidCorrectionSnapshot(state, expense, splits)) return false;
+  return splits.every(split => {
+    if (split.userId === expense.paidByUserId) {
+      return split.status === 'open' || split.status === 'confirmed';
+    }
+    return split.status === 'open';
+  });
+}
+
+function isValidCorrectionSnapshot(state: AppState, expense: Expense, splits: Split[]): boolean {
   const group = state.groups[expense.groupId];
   if (!group || !group.memberIds.includes(expense.paidByUserId)) return false;
   if (!state.users[expense.paidByUserId]) return false;
@@ -425,11 +600,6 @@ function isValidExpenseReplacement(state: AppState, expense: Expense, splits: Sp
     if (!Number.isFinite(split.amount) || split.amount < 0) return false;
     if (!state.users[split.userId] || !group.memberIds.includes(split.userId)) return false;
     if (splitIds.has(split.id) || participantIds.has(split.userId)) return false;
-    if (split.userId === expense.paidByUserId) {
-      if (!['open', 'confirmed'].includes(split.status)) return false;
-    } else if (split.status !== 'open') {
-      return false;
-    }
     splitIds.add(split.id);
     participantIds.add(split.userId);
     splitTotal += split.amount;
