@@ -46,6 +46,7 @@ export interface Split {
   requestId?: string;
   requestExpiresAt?: string;
   walletPayment?: WalletPaymentReceipt;
+  nativePayment?: NativePolkadotPaymentReceipt;
 }
 
 export interface WalletPaymentReceipt {
@@ -56,6 +57,18 @@ export interface WalletPaymentReceipt {
   amountBaseUnits: string;
   blockNumber: string;
   confirmedAt: string;
+}
+
+export interface NativePolkadotPaymentReceipt {
+  network: string;
+  asset: string;
+  txHash: string;
+  senderAccountId: string;
+  recipientAccountId: string;
+  amountBaseUnits: string;
+  blockHash: string;
+  blockNumber: string;
+  finalizedAt: string;
 }
 
 export interface PaymentMethod {
