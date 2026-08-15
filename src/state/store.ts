@@ -112,11 +112,7 @@ export function reducer(state: AppState, action: Action): AppState {
         groups: { ...state.groups, [action.payload.group.id]: action.payload.group }
       };
     case 'ACCEPT_GROUP_INVITE': {
-      // A shared snapshot, not authority. Local truth always wins: anything we
-      // already hold is left untouched, so a link can never rewrite our own
-      // record of who owes what. See SECURITY_FOUNDATION.md.
       const { invite } = action.payload;
-
       const users = { ...state.users };
       invite.members.forEach(m => {
         if (!users[m.id]) {
@@ -144,11 +140,7 @@ export function reducer(state: AppState, action: Action): AppState {
 
       const groups = { ...state.groups };
       if (!groups[invite.groupId]) {
-        groups[invite.groupId] = {
-          id: invite.groupId,
-          name: invite.groupName,
-          memberIds,
-        };
+        groups[invite.groupId] = {id: invite.groupId, name: invite.groupName, memberIds};
       }
 
       const expenses = { ...state.expenses };
@@ -180,18 +172,13 @@ export function reducer(state: AppState, action: Action): AppState {
       });
 
       const currency = Object.keys(state.groups).length === 0 ? invite.currency : state.currency;
-
       return { ...state, currentUserId, currency, users, groups, expenses, splits };
     }
     case 'ADD_EXPENSE': {
       const { expense, splits } = action.payload;
       const newSplits = { ...state.splits };
       splits.forEach(s => newSplits[s.id] = s);
-      return {
-        ...state,
-        expenses: { ...state.expenses, [expense.id]: expense },
-        splits: newSplits
-      };
+      return {...state, expenses: { ...state.expenses, [expense.id]: expense }, splits: newSplits};
     }
     case 'UPDATE_EXPENSE': {
       const {expense, splits} = action.payload;
@@ -203,26 +190,18 @@ export function reducer(state: AppState, action: Action): AppState {
       const nextSplits = Object.fromEntries(
         Object.entries(state.splits).filter(([, split]) => split.expenseId !== expense.id),
       ) as Record<string, Split>;
-      splits.forEach(split => {
-        nextSplits[split.id] = split;
-      });
+      splits.forEach(split => { nextSplits[split.id] = split; });
 
-      return {
-        ...state,
-        expenses: {...state.expenses, [expense.id]: expense},
-        splits: nextSplits,
-      };
+      return {...state, expenses: {...state.expenses, [expense.id]: expense}, splits: nextSplits};
     }
     case 'DELETE_EXPENSE': {
       const expense = state.expenses[action.payload.expenseId];
       if (!expense || !isExpenseLocallyEditable(state, expense)) return state;
-
       const nextExpenses = {...state.expenses};
       delete nextExpenses[expense.id];
       const nextSplits = Object.fromEntries(
         Object.entries(state.splits).filter(([, split]) => split.expenseId !== expense.id),
       ) as Record<string, Split>;
-
       return {...state, expenses: nextExpenses, splits: nextSplits};
     }
     case 'CORRECT_EXPENSE': {
@@ -244,8 +223,6 @@ export function reducer(state: AppState, action: Action): AppState {
       if (expense.paidByUserId !== existingExpense.paidByUserId) return state;
 
       if (!hasPaymentActivity) {
-        // Sent request scope is immutable. Every still-owed requested participant
-        // must receive a fresh request id; otherwise the correction is rejected.
         const proposedByUser = new Map(splits.map(split => [split.userId, split]));
         for (const requested of requestedSplits) {
           const proposed = proposedByUser.get(requested.userId);
@@ -304,8 +281,6 @@ export function reducer(state: AppState, action: Action): AppState {
         };
       }
 
-      // Once payment activity exists, history is immutable. Preserve the exact
-      // original records and express only the financial delta as adjustments.
       const oldByUser = new Map(existingSplits.map(split => [split.userId, split.amount]));
       const newByUser = new Map(splits.map(split => [split.userId, split.amount]));
       const participantIds = new Set([...oldByUser.keys(), ...newByUser.keys()]);
@@ -313,7 +288,35 @@ export function reducer(state: AppState, action: Action): AppState {
 
       const nextExpenses = {...state.expenses};
       const nextSplits = {...state.splits};
+      const nextEvents = {...state.activityEvents};
       const adjustmentIds: string[] = [];
+
+      // Payment evidence is immutable, but live request scope is cancellable.
+      // Clear any still-live request on this expense and record why it became stale.
+      for (const requested of requestedSplits) {
+        nextSplits[requested.id] = {
+          ...requested,
+          status: 'open',
+          requestId: undefined,
+          requestExpiresAt: undefined,
+        };
+        nextEvents[`correction:${correctionId}:request:${requested.id}`] = {
+          id: `correction:${correctionId}:request:${requested.id}`,
+          type: 'request_invalidated',
+          timestamp: occurredAt,
+          details: {
+            correctionId,
+            expenseId: existingExpense.id,
+            splitId: requested.id,
+            userId: requested.userId,
+            oldRequestId: requested.requestId,
+            oldAmount: requested.amount,
+            replacementRequestId: undefined,
+            replacementAmount: newByUser.get(requested.userId) ?? 0,
+            reason: 'payment_active_correction',
+          },
+        };
+      }
 
       for (const userId of participantIds) {
         const delta = (newByUser.get(userId) ?? 0) - (oldByUser.get(userId) ?? 0);
@@ -336,18 +339,12 @@ export function reducer(state: AppState, action: Action): AppState {
             correctionId,
           };
           nextSplits[`${adjustmentId}-self`] = {
-            id: `${adjustmentId}-self`,
-            expenseId: adjustmentId,
-            userId: existingExpense.paidByUserId,
-            amount: 0,
-            status: 'confirmed',
+            id: `${adjustmentId}-self`, expenseId: adjustmentId,
+            userId: existingExpense.paidByUserId, amount: 0, status: 'confirmed',
           };
           nextSplits[`${adjustmentId}-${userId}`] = {
-            id: `${adjustmentId}-${userId}`,
-            expenseId: adjustmentId,
-            userId,
-            amount: delta,
-            status: 'open',
+            id: `${adjustmentId}-${userId}`, expenseId: adjustmentId,
+            userId, amount: delta, status: 'open',
           };
         } else {
           const refundAmount = Math.abs(delta);
@@ -364,43 +361,32 @@ export function reducer(state: AppState, action: Action): AppState {
             correctionId,
           };
           nextSplits[`${adjustmentId}-self`] = {
-            id: `${adjustmentId}-self`,
-            expenseId: adjustmentId,
-            userId,
-            amount: 0,
-            status: 'confirmed',
+            id: `${adjustmentId}-self`, expenseId: adjustmentId,
+            userId, amount: 0, status: 'confirmed',
           };
           nextSplits[`${adjustmentId}-${existingExpense.paidByUserId}`] = {
             id: `${adjustmentId}-${existingExpense.paidByUserId}`,
-            expenseId: adjustmentId,
-            userId: existingExpense.paidByUserId,
-            amount: refundAmount,
-            status: 'open',
+            expenseId: adjustmentId, userId: existingExpense.paidByUserId,
+            amount: refundAmount, status: 'open',
           };
         }
       }
 
-      return {
-        ...state,
-        expenses: nextExpenses,
-        splits: nextSplits,
-        activityEvents: {
-          ...state.activityEvents,
-          [`correction:${correctionId}`]: {
-            id: `correction:${correctionId}`,
-            type: 'expense_correction_recorded',
-            timestamp: occurredAt,
-            details: {
-              correctionId,
-              expenseId: existingExpense.id,
-              mode: 'adjustment',
-              correctedExpense: expense,
-              correctedSplits: splits.map(split => ({userId: split.userId, amount: split.amount})),
-              adjustmentIds,
-            },
-          },
+      nextEvents[`correction:${correctionId}`] = {
+        id: `correction:${correctionId}`,
+        type: 'expense_correction_recorded',
+        timestamp: occurredAt,
+        details: {
+          correctionId,
+          expenseId: existingExpense.id,
+          mode: 'adjustment',
+          correctedExpense: expense,
+          correctedSplits: splits.map(split => ({userId: split.userId, amount: split.amount})),
+          adjustmentIds,
         },
       };
+
+      return {...state, expenses: nextExpenses, splits: nextSplits, activityEvents: nextEvents};
     }
     case 'SEND_REQUEST': {
       const split = state.splits[action.payload.splitId];
@@ -422,13 +408,7 @@ export function reducer(state: AppState, action: Action): AppState {
       const { splitId, userId } = action.payload;
       const split = state.splits[splitId];
       if (!split || split.userId !== userId || split.status !== 'request_sent') return state;
-      return {
-        ...state,
-        splits: {
-          ...state.splits,
-          [split.id]: { ...split, status: 'marked_paid' }
-        }
-      };
+      return {...state, splits: {...state.splits, [split.id]: { ...split, status: 'marked_paid' }}};
     }
     case 'CONFIRM_RECEIVED': {
       const { splitId, currentUserId } = action.payload;
@@ -436,13 +416,7 @@ export function reducer(state: AppState, action: Action): AppState {
       if (!split) return state;
       const expense = state.expenses[split.expenseId];
       if (!expense || expense.paidByUserId !== currentUserId || split.status !== 'marked_paid') return state;
-      return {
-        ...state,
-        splits: {
-          ...state.splits,
-          [split.id]: { ...split, status: 'confirmed' }
-        }
-      };
+      return {...state, splits: {...state.splits, [split.id]: { ...split, status: 'confirmed' }}};
     }
     case 'RECORD_MATCHED_PAYMENT': {
       const {splitId, userId, receiverUserId, receipt} = action.payload;
@@ -461,41 +435,20 @@ export function reducer(state: AppState, action: Action): AppState {
         return state;
       }
       if (Object.values(state.splits).some(item => item.id !== splitId && item.walletPayment?.txHash === receipt.txHash)) return state;
-      return {
-        ...state,
-        splits: {
-          ...state.splits,
-          [split.id]: {...split, status: 'confirmed', walletPayment: receipt},
-        },
-      };
+      return {...state, splits: {...state.splits, [split.id]: {...split, status: 'confirmed', walletPayment: receipt}}};
     }
     case 'SAVE_RECORD': {
       const { recordId, groupId, savedAt } = action.payload;
       const groupExpenses = Object.values(state.expenses).filter(e => e.groupId === groupId);
       const expenseIds = groupExpenses.map(e => e.id);
       const groupSplits = Object.values(state.splits).filter(s => expenseIds.includes(s.expenseId));
-      
       const totalAmount = groupSplits.reduce((sum, s) => sum + s.amount, 0);
-      const openAmount = groupSplits
-        .filter(s => s.status !== 'confirmed')
-        .reduce((sum, s) => sum + s.amount, 0);
-
+      const openAmount = groupSplits.filter(s => s.status !== 'confirmed').reduce((sum, s) => sum + s.amount, 0);
       const record: SavedRecord = {
-        id: recordId,
-        groupId,
-        dateSaved: savedAt ?? new Date().toISOString(),
-        totalAmount,
-        openAmount,
-        splits: groupSplits
+        id: recordId, groupId, dateSaved: savedAt ?? new Date().toISOString(),
+        totalAmount, openAmount, splits: groupSplits
       };
-
-      return {
-        ...state,
-        savedRecords: {
-          ...state.savedRecords,
-          [record.id]: record
-        }
-      };
+      return {...state, savedRecords: {...state.savedRecords, [record.id]: record}};
     }
     default:
       return state;
@@ -512,40 +465,31 @@ export const getMemberBalance = (state: AppState, groupId: string, userId: strin
   const groupExpenses = Object.values(state.expenses).filter(e => e.groupId === groupId);
   const expenseIds = groupExpenses.map(e => e.id);
   const groupSplits = Object.values(state.splits).filter(s => expenseIds.includes(s.expenseId));
-
   let balance = 0;
-  
+
   groupSplits.filter(s => s.userId === userId && s.status !== 'confirmed').forEach(s => {
     const expense = groupExpenses.find(e => e.id === s.expenseId);
-    if (expense && expense.paidByUserId !== userId) {
-      balance -= s.amount;
-    }
+    if (expense && expense.paidByUserId !== userId) balance -= s.amount;
   });
 
   groupExpenses.filter(e => e.paidByUserId === userId).forEach(e => {
     const owedToUserSplits = groupSplits.filter(s => s.expenseId === e.id && s.userId !== userId && s.status !== 'confirmed');
     balance += owedToUserSplits.reduce((sum, s) => sum + s.amount, 0);
   });
-
   return balance;
 };
 
 export const getNetPosition = (state: AppState, userId: string): number => {
   let netPosition = 0;
-
   Object.values(state.expenses).filter(e => e.paidByUserId === userId).forEach(e => {
     Object.values(state.splits).filter(s => s.expenseId === e.id && s.userId !== userId && s.status !== 'confirmed').forEach(s => {
       netPosition += s.amount;
     });
   });
-
   Object.values(state.splits).filter(s => s.userId === userId && s.status !== 'confirmed').forEach(s => {
     const expense = state.expenses[s.expenseId];
-    if (expense && expense.paidByUserId !== userId) {
-      netPosition -= s.amount;
-    }
+    if (expense && expense.paidByUserId !== userId) netPosition -= s.amount;
   });
-
   return netPosition;
 };
 
@@ -558,18 +502,13 @@ export const getOpenSplits = (state: AppState, groupId: string): Split[] => {
 export const getSavedRecordSummary = (state: AppState, recordId: string) => {
   const record = state.savedRecords[recordId];
   if (!record) return null;
-  return {
-    total: record.totalAmount,
-    open: record.openAmount
-  };
+  return {total: record.totalAmount, open: record.openAmount};
 };
 
 function isExpenseLocallyEditable(state: AppState, expense: Expense): boolean {
   const existingSplits = Object.values(state.splits).filter(split => split.expenseId === expense.id);
   return existingSplits.every(split => {
-    if (split.userId === expense.paidByUserId) {
-      return split.status === 'open' || split.status === 'confirmed';
-    }
+    if (split.userId === expense.paidByUserId) return split.status === 'open' || split.status === 'confirmed';
     return split.status === 'open';
   });
 }
@@ -577,9 +516,7 @@ function isExpenseLocallyEditable(state: AppState, expense: Expense): boolean {
 function isValidExpenseReplacement(state: AppState, expense: Expense, splits: Split[]): boolean {
   if (!isValidCorrectionSnapshot(state, expense, splits)) return false;
   return splits.every(split => {
-    if (split.userId === expense.paidByUserId) {
-      return split.status === 'open' || split.status === 'confirmed';
-    }
+    if (split.userId === expense.paidByUserId) return split.status === 'open' || split.status === 'confirmed';
     return split.status === 'open';
   });
 }
@@ -594,7 +531,6 @@ function isValidCorrectionSnapshot(state: AppState, expense: Expense, splits: Sp
   const splitIds = new Set<string>();
   const participantIds = new Set<string>();
   let splitTotal = 0;
-
   for (const split of splits) {
     if (split.expenseId !== expense.id) return false;
     if (!Number.isFinite(split.amount) || split.amount < 0) return false;
@@ -604,7 +540,6 @@ function isValidCorrectionSnapshot(state: AppState, expense: Expense, splits: Sp
     participantIds.add(split.userId);
     splitTotal += split.amount;
   }
-
   return Math.abs(splitTotal - expense.amount) < 1e-9;
 }
 
