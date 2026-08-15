@@ -8,7 +8,7 @@ import {
   PASEO_NATIVE_CONFIG,
 } from './polkadotNative.ts';
 
-function hostUser(id: string, name: string, accountId: string): User {
+function hostUser(id: string, name: string, byte: string): User {
   return {
     id,
     name,
@@ -16,9 +16,9 @@ function hostUser(id: string, name: string, accountId: string): User {
       source: 'polkadot_host',
       username: `${name.toLowerCase()}.dot`,
       productId: 'chopdot-shell-proof.dot',
-      accountPublicKeyHex: `0x${'11'.repeat(32)}`,
-      accountId,
-      addressPrefix: 0,
+      accountPublicKeyHex: `0x${byte.repeat(32)}` as `0x${string}`,
+      accountId: `generic-${id}`,
+      addressPrefix: 42,
       boundAt: '2026-08-15T20:00:00.000Z',
     },
   };
@@ -35,50 +35,52 @@ test('native amount rejects excess precision', () => {
 });
 
 test('plan requires host-authenticated payer and receiver', () => {
-  const payer = hostUser('payer', 'Payer', '1payer');
+  const payer = hostUser('payer', 'Payer', '11');
   const receiver: User = {id: 'receiver', name: 'Receiver'};
   assert.throws(() => buildNativePaymentPlan({payer, receiver, amount: 1, currency: 'PAS', config: PASEO_NATIVE_CONFIG}));
 });
 
 test('plan rejects an asset mismatch rather than treating PAS as DOT', () => {
-  const payer = hostUser('payer', 'Payer', '1payer');
-  const receiver = hostUser('receiver', 'Receiver', '1receiver');
+  const payer = hostUser('payer', 'Payer', '11');
+  const receiver = hostUser('receiver', 'Receiver', '22');
   assert.throws(() => buildNativePaymentPlan({payer, receiver, amount: 1, currency: 'DOT', config: PASEO_NATIVE_CONFIG}));
 });
 
 test('plan rejects different product-account namespaces', () => {
-  const payer = hostUser('payer', 'Payer', '1payer');
-  const receiver = hostUser('receiver', 'Receiver', '1receiver');
+  const payer = hostUser('payer', 'Payer', '11');
+  const receiver = hostUser('receiver', 'Receiver', '22');
   receiver.hostIdentity = {...receiver.hostIdentity!, productId: 'other.dot'};
   assert.throws(() => buildNativePaymentPlan({payer, receiver, amount: 1, currency: 'PAS', config: PASEO_NATIVE_CONFIG}));
 });
 
-test('valid plan uses authenticated account ids and exact base units', () => {
-  const payer = hostUser('payer', 'Payer', '1payer');
-  const receiver = hostUser('receiver', 'Receiver', '1receiver');
+test('valid plan derives chain-specific addresses from authenticated public keys', () => {
+  const payer = hostUser('payer', 'Payer', '11');
+  const receiver = hostUser('receiver', 'Receiver', '22');
   const plan = buildNativePaymentPlan({payer, receiver, amount: '2.5', currency: 'PAS', config: PASEO_NATIVE_CONFIG});
-  assert.equal(plan.senderAccountId, '1payer');
-  assert.equal(plan.recipientAccountId, '1receiver');
+  assert.match(plan.senderAccountId, /^1/u);
+  assert.match(plan.recipientAccountId, /^1/u);
+  assert.notEqual(plan.senderAccountId, plan.recipientAccountId);
+  assert.equal(plan.senderPublicKeyHex, payer.hostIdentity!.accountPublicKeyHex);
   assert.equal(plan.amountBaseUnits, '25000000000');
 });
 
 test('receipt matching rejects altered settlement evidence', () => {
-  const payer = hostUser('payer', 'Payer', '1payer');
-  const receiver = hostUser('receiver', 'Receiver', '1receiver');
+  const payer = hostUser('payer', 'Payer', '11');
+  const receiver = hostUser('receiver', 'Receiver', '22');
   const plan = buildNativePaymentPlan({payer, receiver, amount: '2.5', currency: 'PAS', config: PASEO_NATIVE_CONFIG});
   const receipt: NativePolkadotPaymentReceipt = {
     network: 'paseo',
     asset: 'PAS',
     txHash: `0x${'ab'.repeat(32)}`,
-    senderAccountId: '1payer',
-    recipientAccountId: '1receiver',
+    senderAccountId: plan.senderAccountId,
+    recipientAccountId: plan.recipientAccountId,
     amountBaseUnits: '25000000000',
     blockHash: `0x${'cd'.repeat(32)}`,
     blockNumber: '42',
     finalizedAt: '2026-08-15T20:01:00.000Z',
   };
   assert.equal(nativeReceiptMatchesPlan(receipt, plan), true);
-  assert.equal(nativeReceiptMatchesPlan({...receipt, recipientAccountId: '1attacker'}, plan), false);
+  assert.equal(nativeReceiptMatchesPlan({...receipt, recipientAccountId: plan.senderAccountId}, plan), false);
   assert.equal(nativeReceiptMatchesPlan({...receipt, amountBaseUnits: '1'}, plan), false);
   assert.equal(nativeReceiptMatchesPlan({...receipt, asset: 'DOT'}, plan), false);
 });
