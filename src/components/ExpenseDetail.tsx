@@ -1,6 +1,6 @@
 import {useMemo, useState} from 'react';
 import {useAppState} from '../state/AppStateContext';
-import type {Split} from '../types';
+import type {Expense, Split} from '../types';
 import {BottomAction, Button, MoneyAmount, Screen, ScreenContent, ScreenHeader} from './primitives';
 
 export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: () => void}) {
@@ -12,6 +12,7 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
     [state.splits, expenseId],
   );
   const [editing, setEditing] = useState(false);
+  const [correcting, setCorrecting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [description, setDescription] = useState(expense?.description ?? '');
   const [amount, setAmount] = useState(expense ? String(expense.amount) : '');
@@ -21,18 +22,31 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
     Object.fromEntries(existingSplits.map(split => [split.userId, String(split.amount)])),
   );
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   if (!expense || !group) return null;
 
   const participants = group.memberIds
     .map(userId => state.users[userId])
     .filter(Boolean);
-  const isEditable = existingSplits.every(split =>
+  const isAdjustment = expense.kind === 'adjustment';
+  const isEditable = !isAdjustment && existingSplits.every(split =>
     split.userId === expense.paidByUserId
       ? (split.status === 'open' || split.status === 'confirmed') && !split.walletPayment
       : split.status === 'open',
   );
+  const hasPaymentActivity = existingSplits.some(split =>
+    split.userId !== expense.paidByUserId
+    && (split.status === 'marked_paid' || split.status === 'confirmed' || Boolean(split.walletPayment)),
+  );
   const payer = state.users[expense.paidByUserId];
+  const correctionEvents = Object.values(state.activityEvents).filter(event =>
+    event.type === 'expense_correction_recorded' && event.details?.expenseId === expense.id,
+  );
+  const relatedAdjustments = (Object.values(state.expenses) as Expense[]).filter(item =>
+    item.kind === 'adjustment' && item.relatedExpenseId === expense.id,
+  );
+  const formOpen = editing || correcting;
 
   const resetDraft = () => {
     setDescription(expense.description);
@@ -41,6 +55,12 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
     setDate(expense.date.slice(0, 10));
     setSplitAmounts(Object.fromEntries(existingSplits.map(split => [split.userId, String(split.amount)])));
     setError(null);
+  };
+
+  const closeForm = () => {
+    resetDraft();
+    setEditing(false);
+    setCorrecting(false);
   };
 
   const toggleParticipant = (userId: string) => {
@@ -68,6 +88,10 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
       setError('Choose who paid.');
       return;
     }
+    if (correcting && paidByUserId !== expense.paidByUserId) {
+      setError('Who paid cannot change after a request or payment has started.');
+      return;
+    }
 
     const selected = Object.entries(splitAmounts);
     if (selected.length === 0) {
@@ -86,6 +110,13 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
       return;
     }
 
+    const nextExpense: Expense = {
+      ...expense,
+      description: description.trim(),
+      amount: parsedAmount,
+      paidByUserId,
+      date: date ? `${date}T12:00:00.000Z` : expense.date,
+    };
     const nextSplits: Split[] = parsedSplits.map(split => {
       const existing = existingSplits.find(item => item.userId === split.userId);
       return {
@@ -97,34 +128,52 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
       };
     });
 
-    dispatch({
-      type: 'UPDATE_EXPENSE',
-      payload: {
-        expense: {
-          ...expense,
-          description: description.trim(),
-          amount: parsedAmount,
-          paidByUserId,
-          date: date ? `${date}T12:00:00.000Z` : expense.date,
+    if (correcting) {
+      const correctionId = makeId('correction');
+      const replacementRequests: Record<string, {requestId: string}> = {};
+      for (const split of existingSplits) {
+        const proposed = nextSplits.find(item => item.userId === split.userId);
+        if (split.status === 'request_sent' && proposed && proposed.amount > 0 && !hasPaymentActivity) {
+          replacementRequests[split.userId] = {requestId: makeId('request')};
+        }
+      }
+      dispatch({
+        type: 'CORRECT_EXPENSE',
+        payload: {
+          expense: nextExpense,
+          splits: nextSplits,
+          correctionId,
+          occurredAt: new Date().toISOString(),
+          replacementRequests,
         },
-        splits: nextSplits,
-      },
-    });
-    setEditing(false);
+      });
+      setNotice(
+        hasPaymentActivity
+          ? 'Correction recorded. Existing payment history was preserved and any difference is shown as an adjustment.'
+          : 'Correction recorded. The previous request was replaced with the corrected amount.',
+      );
+      setCorrecting(false);
+    } else {
+      dispatch({type: 'UPDATE_EXPENSE', payload: {expense: nextExpense, splits: nextSplits}});
+      setEditing(false);
+      setNotice('Expense updated.');
+    }
     setError(null);
   };
 
-  if (editing) {
+  if (formOpen) {
     return (
       <Screen>
-        <ScreenHeader
-          title="Edit expense"
-          onBack={() => {
-            resetDraft();
-            setEditing(false);
-          }}
-        />
+        <ScreenHeader title={correcting ? 'Correct expense' : 'Edit expense'} onBack={closeForm} />
         <ScreenContent className="p-6 space-y-5">
+          {correcting && (
+            <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/30 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+              {hasPaymentActivity
+                ? 'Payment activity already exists. ChopDot will keep that history and create an adjustment for any difference.'
+                : 'A payment request is already live. Saving will invalidate that request and replace it with the corrected amount.'}
+            </div>
+          )}
+
           <Field label="Description">
             <input
               value={description}
@@ -146,10 +195,12 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
             <select
               value={paidByUserId}
               onChange={event => setPaidByUserId(event.target.value)}
-              className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-pink-500"
+              disabled={correcting}
+              className="w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-60"
             >
               {participants.map(user => <option key={user.id} value={user.id}>{user.name}</option>)}
             </select>
+            {correcting && <p className="text-xs text-gray-500 dark:text-gray-400">Who paid is locked once payment activity starts.</p>}
           </Field>
 
           <Field label="Date">
@@ -195,17 +246,8 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
           {error && <p role="alert" className="text-sm font-medium text-red-600">{error}</p>}
         </ScreenContent>
         <BottomAction>
-          <Button onClick={handleSave} fullWidth>Save changes</Button>
-          <Button
-            variant="muted"
-            onClick={() => {
-              resetDraft();
-              setEditing(false);
-            }}
-            fullWidth
-          >
-            Cancel
-          </Button>
+          <Button onClick={handleSave} fullWidth>{correcting ? 'Record correction' : 'Save changes'}</Button>
+          <Button variant="muted" onClick={closeForm} fullWidth>Cancel</Button>
         </BottomAction>
       </Screen>
     );
@@ -213,17 +255,24 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
 
   return (
     <Screen>
-      <ScreenHeader title="Expense" onBack={onBack} />
+      <ScreenHeader title={isAdjustment ? 'Adjustment' : 'Expense'} onBack={onBack} />
       <ScreenContent className="p-6 space-y-5">
+        {notice && (
+          <p role="status" className="rounded-2xl bg-green-50 dark:bg-green-950/30 px-4 py-3 text-sm text-green-800 dark:text-green-200">
+            {notice}
+          </p>
+        )}
+
         <div className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-6 text-center shadow-sm">
           <p className="text-sm text-gray-500 dark:text-gray-400">{expense.description}</p>
           <div className="mt-1 text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
             <MoneyAmount amount={expense.amount} currency={expense.currency ?? state.currency} />
           </div>
+          {isAdjustment && <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-300">Correction adjustment · historical record</p>}
         </div>
 
         <div className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 space-y-4 shadow-sm">
-          <DetailRow label="Paid by" value={payer?.name ?? 'Unknown'} />
+          <DetailRow label={isAdjustment ? 'Credited by' : 'Paid by'} value={payer?.name ?? 'Unknown'} />
           <DetailRow label="Date" value={new Date(expense.date).toLocaleDateString()} />
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Split</p>
@@ -240,9 +289,28 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
           </div>
         </div>
 
-        {!isEditable && (
+        {!isAdjustment && !isEditable && (
           <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/30 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
-            This expense already has payment activity. Its history is locked; a correction must preserve that activity.
+            This expense already has payment activity. You can still correct it, but ChopDot will preserve the existing request/payment history.
+          </div>
+        )}
+
+        {correctionEvents.length > 0 && (
+          <div className="rounded-3xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 space-y-2 shadow-sm">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">Corrections</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {correctionEvents.length === 1 ? '1 correction recorded.' : `${correctionEvents.length} corrections recorded.`} Original payment history is preserved.
+            </p>
+            {relatedAdjustments.length > 0 && (
+              <div className="pt-2 space-y-2">
+                {relatedAdjustments.map(adjustment => (
+                  <div key={adjustment.id} className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-300">{adjustment.description}</span>
+                    <span className="font-semibold text-gray-900 dark:text-white"><MoneyAmount amount={adjustment.amount} currency={adjustment.currency ?? state.currency} /></span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -251,13 +319,7 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
             <p className="font-semibold text-gray-900 dark:text-white">Delete this expense?</p>
             <p className="text-sm text-gray-500 dark:text-gray-400">This removes the expense and its open shares from the group.</p>
             <div className="flex gap-2">
-              <Button
-                variant="secondary"
-                onClick={() => setConfirmDelete(false)}
-                fullWidth
-              >
-                Keep it
-              </Button>
+              <Button variant="secondary" onClick={() => setConfirmDelete(false)} fullWidth>Keep it</Button>
               <button
                 type="button"
                 onClick={() => {
@@ -285,8 +347,21 @@ export function ExpenseDetail({expenseId, onBack}: {expenseId: string; onBack: (
           </button>
         </BottomAction>
       )}
+
+      {!isAdjustment && !isEditable && (
+        <BottomAction>
+          <Button onClick={() => setCorrecting(true)} fullWidth>Correct expense</Button>
+        </BottomAction>
+      )}
     </Screen>
   );
+}
+
+function makeId(prefix: string): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `${prefix}-${crypto.randomUUID()}`;
+  }
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
 function Field({label, children}: {label: string; children: React.ReactNode}) {
