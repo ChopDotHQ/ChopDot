@@ -24,18 +24,21 @@ interface ScreenHeaderProps {
 
 export function ScreenHeader({ title, onBack, rightAction, className = '' }: ScreenHeaderProps) {
   return (
-    <header className={`px-6 pt-12 pb-4 flex items-center bg-white dark:bg-[#0a0a0a] border-b border-gray-100 dark:border-[#1a1a1a] shadow-sm z-10 transition-colors shrink-0 ${className}`}>
-      <div className="w-10 flex shrink-0">
+    <header
+      className={`px-6 pb-4 flex items-center bg-white dark:bg-[#0a0a0a] border-b border-gray-100 dark:border-[#1a1a1a] shadow-sm z-10 transition-colors shrink-0 ${className}`}
+      style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
+    >
+      <div className="w-11 flex shrink-0">
         {onBack && (
           <Button variant="icon" onClick={onBack} className="-ml-2" aria-label="Back">
-            <ArrowLeft className="w-5 h-5 text-gray-900 dark:text-gray-100" />
+            <ArrowLeft className="w-5 h-5 text-gray-900 dark:text-gray-100" aria-hidden="true" />
           </Button>
         )}
       </div>
       <h1 className="flex-1 text-center font-semibold text-gray-900 dark:text-white truncate px-2">
         {title}
       </h1>
-      <div className="w-10 flex shrink-0 justify-end">
+      <div className="w-11 flex shrink-0 justify-end">
         {rightAction}
       </div>
     </header>
@@ -49,8 +52,8 @@ interface ScreenContentProps {
 
 export function ScreenContent({ children, className = '' }: ScreenContentProps) {
   return (
-    <div className={`flex-1 overflow-y-auto ${className}`}>
+    <main className={`flex-1 overflow-y-auto overscroll-contain ${className}`}>
       {children}
-    </div>
+    </main>
   );
 }
