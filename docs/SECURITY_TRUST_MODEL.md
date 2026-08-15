@@ -103,6 +103,8 @@ Examples:
 
 These may prove specific facts when cryptographically or independently verified, but must be matched to the exact live intent/obligation before changing financial state.
 
+Under the current v1 payment contract, matched payment evidence may support `marked_paid`/`submitted`, but it does not independently produce `confirmed`.
+
 ### Tier 3 — Canonical shared authority
 
 Future cross-device shared mutation must be performed by an authenticated, authorized, idempotent command boundary as specified in `PAYMENT_INTENT_CONTRACT.md`.
@@ -114,7 +116,7 @@ The current portable shell does not yet have this production authority.
 1. `request_sent` is not payment.
 2. `marked_paid` is not receiver confirmation.
 3. Manual/external payments require receiver confirmation.
-4. A chain settlement may auto-confirm only if policy explicitly allows it and exact payer, receiver, amount, asset, network, scope, and finality all match.
+4. **Current v1 policy:** chain evidence may prove/match a payment and move it to `marked_paid`/`submitted`, but does not auto-confirm. Direct chain-evidence confirmation requires a deliberate future amendment to `PAYMENT_INTENT_CONTRACT.md` and `SECURITY_FOUNDATION.md` after threat-model review.
 5. Confirmed settlement history is append-only.
 6. A changed obligation invalidates/replaces the old request scope; old requests cannot silently mutate the new debt.
 7. One evidence item may satisfy at most one live intent.
@@ -134,7 +136,7 @@ Required defense:
 
 - no confirmation from URL/local packet alone;
 - exact live-request matching;
-- receiver authority or verified chain evidence required.
+- receiver authority required for confirmation under current v1 policy.
 
 ### Replay of stale request
 
@@ -164,7 +166,7 @@ Required defense:
 
 - bind reviewed recipient to payment intent;
 - show truncated human-verifiable recipient identity/address at review;
-- verify returned transaction destination before acceptance.
+- verify returned transaction destination before accepting it as matched evidence.
 
 ### Wrong asset / network
 
@@ -225,7 +227,7 @@ After submission:
 submitted != confirmed
 ```
 
-Confirmation policy must be defined by the adapter and backed by evidence.
+Under current v1 policy, a verified/finalized transaction may supply strong matched evidence and move the obligation to `marked_paid`/`submitted`; receiver confirmation remains the final transition. Any future auto-confirm policy must first change the canonical payment/security contracts explicitly.
 
 ## Secure Failure Behavior
 
@@ -265,4 +267,6 @@ Do not duplicate or weaken these existing boundaries:
 - `PAYMENT_INTENT_SERVICE_FOUNDATION.md`
 - `HOSTS.md`
 
-If this file conflicts with those contracts, stop the slice and resolve the architecture explicitly before implementation.
+Known historical inconsistency: `HOSTS.md` contains older wording that permits an exactly matched finalized wallet transfer to confirm directly, while the current payment-intent/security contracts require receiver confirmation. The v1 completion track follows the stricter payment-intent contract until that older host wording is deliberately reconciled.
+
+If this file conflicts with the canonical payment/security contracts, stop the slice and resolve the architecture explicitly before implementation.
