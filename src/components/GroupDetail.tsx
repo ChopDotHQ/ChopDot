@@ -1,10 +1,11 @@
-import { Share2, Users } from 'lucide-react';
+import { Settings, Share2, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useAppState } from '../state/AppStateContext';
 import { getGroupTotal, getMemberBalance, getOpenSplits } from '../state/store';
 import { Expense, Split } from '../types';
 import { Screen, ScreenHeader, ScreenContent, BottomAction, Button, MoneyAmount, EmptyState } from './primitives';
 import { ExpenseDetail } from './ExpenseDetail';
+import { GroupSettings } from './GroupSettings';
 import { getInitials } from '../utils';
 import { buildGroupInviteUrl } from '../requestLinks';
 import { shareOrCopyText } from '../environment';
@@ -27,8 +28,13 @@ export function GroupDetail({
   const [showConfirmMenu, setShowConfirmMenu] = useState(false);
   const [inviteStatus, setInviteStatus] = useState<'idle' | 'shared' | 'copied' | 'too_big'>('idle');
   const [selectedExpenseId, setSelectedExpenseId] = useState<string | null>(null);
+  const [showGroupSettings, setShowGroupSettings] = useState(false);
   
   if (!group) return null;
+
+  if (showGroupSettings) {
+    return <GroupSettings groupId={groupId} onBack={() => setShowGroupSettings(false)} />;
+  }
 
   if (selectedExpenseId) {
     return <ExpenseDetail expenseId={selectedExpenseId} onBack={() => setSelectedExpenseId(null)} />;
@@ -43,8 +49,6 @@ export function GroupDetail({
     );
 
     if (!built.ok) {
-      // Honest failure: this group no longer fits in a link. That ceiling is the
-      // real limit of link-carried sharing, not a bug to hide.
       setInviteStatus('too_big');
       return;
     }
@@ -61,7 +65,6 @@ export function GroupDetail({
     .filter(e => e.groupId === groupId)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const totalSpend = getGroupTotal(state, groupId);
-
   const members = group.memberIds.map(id => state.users[id]).filter(Boolean);
   
   const myMarkedSplits = (Object.values(state.splits) as Split[]).filter(
@@ -69,7 +72,6 @@ export function GroupDetail({
     state.expenses[s.expenseId]?.groupId === groupId && 
     state.expenses[s.expenseId]?.paidByUserId === state.currentUserId
   );
-  
   const needsConfirm = myMarkedSplits.length > 0;
   const usersNeedingConfirm = Array.from(new Set(myMarkedSplits.map(s => s.userId))).map(id => state.users[id]);
   const confirmText = usersNeedingConfirm.length === 1 ? `Confirm received from ${usersNeedingConfirm[0]?.name}` : 'Confirm received';
@@ -111,7 +113,7 @@ export function GroupDetail({
         title={group.name} 
         onBack={onBack} 
         rightAction={
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleInvite}
@@ -120,12 +122,20 @@ export function GroupDetail({
             >
               <Share2 className="w-4 h-4" />
             </button>
+            <button
+              type="button"
+              onClick={() => setShowGroupSettings(true)}
+              aria-label="Manage group"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
             <div className="flex -space-x-2">
-            {members.slice(0, 3).map((m, i) => (
-              <div key={m.id} className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-800 border-2 border-white dark:border-[#0a0a0a] flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300 z-10 transition-colors relative" style={{ zIndex: 10 - i }}>
-                {getInitials(m.name)}
-              </div>
-            ))}
+              {members.slice(0, 3).map((m, i) => (
+                <div key={m.id} className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-800 border-2 border-white dark:border-[#0a0a0a] flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300 z-10 transition-colors relative" style={{ zIndex: 10 - i }}>
+                  {getInitials(m.name)}
+                </div>
+              ))}
             </div>
           </div>
         }
@@ -133,10 +143,7 @@ export function GroupDetail({
 
       <ScreenContent className="p-6 space-y-6">
         {inviteStatus !== 'idle' && (
-          <p
-            role="status"
-            className="text-sm text-center text-gray-500 dark:text-gray-400"
-          >
+          <p role="status" className="text-sm text-center text-gray-500 dark:text-gray-400">
             {inviteStatus === 'shared' && 'Invite shared.'}
             {inviteStatus === 'copied' && 'Invite link copied — send it to the group.'}
             {inviteStatus === 'too_big' && 'This group has too much history to share by link. Add people earlier, or settle and close it first.'}
@@ -233,16 +240,12 @@ export function GroupDetail({
           </section>
         )}
 
-        {groupExpenses.length === 0 && (
-          <EmptyState title="No spend yet" />
-        )}
+        {groupExpenses.length === 0 && <EmptyState title="No spend yet" />}
       </ScreenContent>
 
       <BottomAction>
         {groupExpenses.length === 0 ? (
-          <Button onClick={onAddSpend} fullWidth>
-            Add spend
-          </Button>
+          <Button onClick={onAddSpend} fullWidth>Add spend</Button>
         ) : needsConfirm ? (
           <Button
             variant="success"
@@ -264,38 +267,22 @@ export function GroupDetail({
             Request <MoneyAmount amount={myNewOpenAmount} currency={state.currency} /> more
           </Button>
         ) : hasOpenBalances && mySentRequestSplits.length > 0 ? (
-          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400" data-testid="group-request-waiting">
-            {sentRequestWaitText}
-          </div>
+          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400" data-testid="group-request-waiting">{sentRequestWaitText}</div>
         ) : hasOpenBalances && currentUserMarkedPaid ? (
-          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">
-            Waiting for {currentReceiverName ?? 'confirmation'}
-          </div>
+          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">Waiting for {currentReceiverName ?? 'confirmation'}</div>
         ) : hasOpenBalances && currentUserRequestSent ? (
-          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">
-            Payment requested
-          </div>
+          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">Payment requested</div>
         ) : hasOpenBalances && currentUserBalance > 0 ? (
-          <Button onClick={onGoToSettleUp} fullWidth data-testid="group-settle-up">
-            Settle up
-          </Button>
+          <Button onClick={onGoToSettleUp} fullWidth data-testid="group-settle-up">Settle up</Button>
         ) : hasOpenBalances ? (
-          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">
-            Waiting on the group
-          </div>
+          <div className="w-full py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400">Waiting on the group</div>
         ) : canFinish ? (
-          <Button onClick={onCloseGroup} fullWidth>
-            Finish group
-          </Button>
+          <Button onClick={onCloseGroup} fullWidth>Finish group</Button>
         ) : (
-          <div className="w-full py-3 text-center text-sm font-semibold text-green-600">
-            Settled
-          </div>
+          <div className="w-full py-3 text-center text-sm font-semibold text-green-600">Settled</div>
         )}
         {groupExpenses.length > 0 && (
-          <Button variant="muted" onClick={onAddSpend} fullWidth data-testid="group-add-expense">
-            Add expense
-          </Button>
+          <Button variant="muted" onClick={onAddSpend} fullWidth data-testid="group-add-expense">Add expense</Button>
         )}
       </BottomAction>
 
@@ -311,9 +298,7 @@ export function GroupDetail({
                     myMarkedSplits.filter(s => s.userId === u.id).forEach(s => {
                       dispatch({ type: 'CONFIRM_RECEIVED', payload: { splitId: s.id, currentUserId: state.currentUserId! } });
                     });
-                    if (usersNeedingConfirm.length <= 1) {
-                      setShowConfirmMenu(false);
-                    }
+                    if (usersNeedingConfirm.length <= 1) setShowConfirmMenu(false);
                   }}
                   className="w-full p-4 rounded-xl border border-gray-200 dark:border-gray-700 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
@@ -322,13 +307,7 @@ export function GroupDetail({
                 </button>
               ))}
             </div>
-            <Button 
-              variant="secondary"
-              fullWidth
-              onClick={() => setShowConfirmMenu(false)}
-            >
-              Cancel
-            </Button>
+            <Button variant="secondary" fullWidth onClick={() => setShowConfirmMenu(false)}>Cancel</Button>
           </div>
         </div>
       )}
