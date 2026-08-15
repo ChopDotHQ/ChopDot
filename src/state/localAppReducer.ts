@@ -1,5 +1,6 @@
 import type {AppState} from '../types';
 import type {Action} from './store';
+import {appendStableActivityForAction} from '../history/localActivityAudit';
 import {
   isLocalOnlyIdentityAction,
   reduceIdentityAction,
@@ -20,5 +21,7 @@ export function isLocalOnlyAppAction(action: LocalAppAction): action is LocalOnl
 
 export function reduceLocalAppState(state: AppState, action: LocalAppAction): AppState {
   if (isLocalOnlyIdentityAction(action)) return reduceIdentityAction(state, action);
-  return reduceWithSettlementAudit(state, action);
+  const next = reduceWithSettlementAudit(state, action);
+  if (isLocalOnlySettlementAction(action)) return next;
+  return appendStableActivityForAction(state, next, action);
 }
