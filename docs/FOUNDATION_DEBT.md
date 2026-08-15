@@ -22,32 +22,37 @@ Risk:
 
 Rule:
 
-- do not silently migrate this inside `MONEY-001`;
+- do not silently migrate this inside unrelated slices;
 - do not introduce new money models that worsen the inconsistency;
 - when v0.5.6 source is available, decide whether the local ledger should migrate to integer canonical units in a dedicated migration slice.
 
-## DEBT-SECURITY-001 — Existing matched-wallet path directly confirms payment
+## DEBT-SECURITY-001 — Legacy matched-wallet reducer action directly confirms payment
 
-**Status:** OPEN / SECURITY RECONCILIATION REQUIRED BEFORE DOT/USDC EXPANSION
+**Status:** PARTIALLY MITIGATED / CODEX RECONCILIATION REQUIRED
 
 Current state:
 
-- `RECORD_MATCHED_PAYMENT` in `src/state/store.ts` sets a matching split directly to `confirmed`.
-- `HOSTS.md` also describes exact finalized-wallet matching as direct confirmation.
-- `PAYMENT_INTENT_CONTRACT.md` and `SECURITY_FOUNDATION.md` currently say payment evidence may support `marked_paid` but does not independently confirm receipt.
+- the live PAS payer flow no longer dispatches `RECORD_MATCHED_PAYMENT`; after exact finalized chain evidence it now dispatches `MARK_PAID`, so receiver confirmation remains the final user-facing ChopDot transition;
+- `src/settlement/settlement.ts` now defines rail-independent settlement/evidence contracts around `awaiting_receiver_confirmation`;
+- the legacy `RECORD_MATCHED_PAYMENT` branch in `src/state/store.ts` still sets a matching split directly to `confirmed`;
+- the old wallet reducer test still documents that legacy behavior;
+- `HOSTS.md` also contains historical direct-confirm wording.
 
 Risk:
 
-- two conflicting meanings of `confirmed` across runtime and security contracts.
+- the live path is conservative, but an old internal action still has a conflicting definition of `confirmed` and must not become reachable again accidentally.
 
 Current v1 guardrail:
 
-- keep the conservative contract: chain evidence can prove/substantiate payment but receiver confirmation remains final unless the canonical contract is deliberately amended after threat-model review.
+- chain evidence can prove/substantiate payment but receiver confirmation remains final unless the canonical contract is deliberately amended after threat-model review;
+- new runtime code must not call the legacy direct-confirm action.
 
 Rule:
 
-- do not change this opportunistically during expense editing;
-- resolve before extending DOT/USDC settlement adapters.
+- during Codex/local reconciliation, rewrite or remove `RECORD_MATCHED_PAYMENT` so it attaches verified evidence and leaves the split `marked_paid`;
+- update the wallet reducer test and historical host documentation in the same reviewed change;
+- run wallet, state, host-wallet, and settlement tests before marking this debt resolved;
+- do not extend DOT/USDC execution on top of the legacy direct-confirm action.
 
 ## DEBT-PERSIST-001 — Persistence has no explicit schema migration chain
 
@@ -65,7 +70,7 @@ Risk:
 
 Rule:
 
-- `MONEY-001` may proceed only if it does not change persisted object shapes;
+- local product slices may proceed only when persisted-shape changes are additive/backward-compatible;
 - before a feature introduces incompatible persisted shapes, add explicit schema versioning, migration tests, and safe corruption handling.
 
 ## DEBT-SYNC-001 — Edit/delete shared authority is intentionally undefined
@@ -80,31 +85,25 @@ Current state:
 
 Risk:
 
-- adding `UPDATE_EXPENSE` / `DELETE_EXPENSE` to shared transport now could create inconsistent cross-device authority and merge conflicts.
+- adding local mutation actions to shared transport now could create inconsistent cross-device authority and merge conflicts.
 
 Rule:
 
-- implement first edit/delete slice as local-only on the parallel branch;
-- do not claim cross-device edit propagation;
+- keep parallel-branch edit/correction/group/person preference changes local-only;
+- do not claim cross-device propagation;
 - revisit when v0.5.6 is reconciled and `SYNC-001` is unblocked/defined.
 
-## DEBT-PRODUCT-001 — Group screen lacks an expense inspection surface
+## DEBT-PRODUCT-001 — Group screen lacked an expense inspection surface
 
-**Status:** REQUIRED BY MONEY-001
+**Status:** RESOLVED ON PARALLEL BRANCH / VERIFY WITH CODEX
 
 Current state:
 
-- `GroupDetail` shows total spend, member balances/status, invite and group actions;
-- individual expenses are not visible/tappable from the group screen.
+- MONEY-001 added a concise tappable expense list to Group Detail and an expense detail surface.
 
-Impact:
+Remaining requirement:
 
-- an expense-detail/edit flow would be undiscoverable without a small expense-list surface.
-
-Rule:
-
-- add a concise expense list as part of the MONEY-001 vertical slice;
-- preserve the group-level dominant bottom action and avoid dashboard-like density.
+- reconcile and verify against the true current source before marking the runtime slice `DONE`.
 
 ## Debt handling rule
 
