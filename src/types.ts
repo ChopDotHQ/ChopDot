@@ -7,6 +7,15 @@ export interface User {
   statementSignerHex?: string;
   walletAddress?: string;
   preferredPaymentMethodId?: string;
+  hostIdentity?: {
+    source: 'polkadot_host';
+    username: string;
+    productId: string;
+    accountPublicKeyHex: `0x${string}`;
+    accountId: string;
+    addressPrefix: number;
+    boundAt: string;
+  };
 }
 
 export interface Group {
