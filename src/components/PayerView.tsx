@@ -2,7 +2,7 @@ import { Check, ExternalLink, Undo2, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { useAppState } from '../state/AppStateContext';
 import { getInitials } from '../utils';
-import { Split, WalletPaymentReceipt } from '../types';
+import { NativePolkadotPaymentReceipt, Split, WalletPaymentReceipt } from '../types';
 import { Screen, ScreenHeader, ScreenContent, BottomAction, Button, MoneyAmount } from './primitives';
 import {
   connectPasWallet,
@@ -10,6 +10,11 @@ import {
   sendPasPayment,
   waitForMatchingPasPayment,
 } from '../payments/pasWallet';
+import {
+  buildNativePaymentPlan,
+  executeNativePolkadotPayment,
+  PASEO_NATIVE_CONFIG,
+} from '../payments/polkadotNative';
 
 type PaymentStep = 'ready' | 'waiting' | 'manual_marked' | 'received';
 
@@ -28,6 +33,7 @@ export function PayerView({
   const [step, setStep] = useState<PaymentStep>('ready');
   const [error, setError] = useState('');
   const [payment, setPayment] = useState<WalletPaymentReceipt | null>(null);
+  const [nativePayment, setNativePayment] = useState<NativePolkadotPaymentReceipt | null>(null);
 
   const group = state.groups[groupId];
   const member = state.users[memberId];
@@ -41,7 +47,11 @@ export function PayerView({
   const requester = firstExpense ? state.users[firstExpense.paidByUserId] : null;
   const currency = firstExpense?.currency ?? state.currency;
   const displayedAmount = payment ? Number(BigInt(payment.amountBaseUnits)) / 1e18 : amountOwed;
-  const usesWalletPayment = currency === 'PAS';
+  const usesPasPayment = currency === 'PAS';
+  const canUseNativePas = usesPasPayment
+    && reqSplits.length === 1
+    && Boolean(member?.hostIdentity)
+    && Boolean(requester?.hostIdentity);
 
   const paymentMethodLabels: Record<string, string> = {
     cash: 'Cash',
@@ -62,10 +72,43 @@ export function PayerView({
   };
 
   const handleUndoPaid = () => {
-    memberSplits.filter(split => split.status === 'marked_paid' && !split.walletPayment).forEach(split => {
+    memberSplits.filter(split => split.status === 'marked_paid' && !split.walletPayment && !split.nativePayment).forEach(split => {
       dispatch({type: 'RETRACT_MARK_PAID', payload: {splitId: split.id, userId: memberId}});
     });
     setStep('ready');
+  };
+
+  const handleNativePayment = async () => {
+    if (reqSplits.length !== 1 || currency !== PASEO_NATIVE_CONFIG.asset) {
+      setError('This native payment cannot be sent from this screen yet.');
+      return;
+    }
+    setStep('waiting');
+    setError('');
+    try {
+      const plan = buildNativePaymentPlan({
+        payer: member,
+        receiver: requester,
+        amount: reqSplits[0].amount,
+        currency,
+        config: PASEO_NATIVE_CONFIG,
+      });
+      const receipt = await executeNativePolkadotPayment(plan);
+      dispatch({
+        type: 'RECORD_VERIFIED_NATIVE_PAYMENT',
+        payload: {
+          splitId: reqSplits[0].id,
+          userId: memberId,
+          receiverUserId: requester.id,
+          receipt,
+        },
+      });
+      setNativePayment(receipt);
+      setStep('received');
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'The native payment could not be completed.');
+      setStep('ready');
+    }
   };
 
   const handleWalletPayment = async () => {
@@ -95,8 +138,6 @@ export function PayerView({
         amount: amountOwed,
       });
 
-      // Persist the exact verified receipt while keeping application settlement
-      // pending receiver acknowledgement under the current ChopDot policy.
       dispatch({
         type: 'RECORD_VERIFIED_CHAIN_PAYMENT',
         payload: {
@@ -116,7 +157,7 @@ export function PayerView({
 
   if (step === 'manual_marked') {
     const markedAmount = memberSplits
-      .filter(split => split.status === 'marked_paid' && !split.walletPayment)
+      .filter(split => split.status === 'marked_paid' && !split.walletPayment && !split.nativePayment)
       .reduce((sum, split) => sum + split.amount, 0);
     return (
       <Screen>
@@ -151,7 +192,7 @@ export function PayerView({
     );
   }
 
-  if (step === 'received' && payment) {
+  if (step === 'received' && (payment || nativePayment)) {
     return (
       <Screen>
         <ScreenHeader title="Payment sent" onBack={onBack} />
@@ -166,16 +207,24 @@ export function PayerView({
             </p>
           </div>
           <div className="w-full bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 text-left">
-            <div className="text-3xl text-gray-900 dark:text-white"><MoneyAmount amount={displayedAmount} currency="PAS" /></div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">To {requester.name}</div>
-            <a
-              href={`${POLKADOT_HUB_TESTNET_EXPLORER}/${payment.txHash}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mt-5"
-            >
-              View payment <ExternalLink className="w-4 h-4" />
-            </a>
+            <div className="text-3xl text-gray-900 dark:text-white"><MoneyAmount amount={nativePayment ? amountOwed : displayedAmount} currency="PAS" /></div>
+            <div className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              To {requester.name} · {nativePayment ? 'Polkadot native · Paseo TestNet' : 'Wallet · Polkadot Hub TestNet'}
+            </div>
+            {payment ? (
+              <a
+                href={`${POLKADOT_HUB_TESTNET_EXPLORER}/${payment.txHash}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mt-5"
+              >
+                View payment <ExternalLink className="w-4 h-4" />
+              </a>
+            ) : nativePayment ? (
+              <div className="mt-5 text-xs text-gray-500 dark:text-gray-400 break-all">
+                Transaction {nativePayment.txHash}
+              </div>
+            ) : null}
           </div>
         </ScreenContent>
         <BottomAction>
@@ -195,25 +244,39 @@ export function PayerView({
         <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{group.name}</h2>
         <p className="text-gray-500 dark:text-gray-400 font-medium">Your share</p>
         <div className="text-6xl my-8 py-8"><MoneyAmount amount={amountOwed} currency={currency} /></div>
-        {!usesWalletPayment && (
+        {!usesPasPayment && (
           <div className="w-full flex items-center justify-between rounded-2xl border border-gray-100 bg-white px-4 py-4 text-sm dark:border-gray-800 dark:bg-gray-900">
             <span className="text-gray-500 dark:text-gray-400">Pay with</span>
             <span className="font-semibold text-gray-900 dark:text-white">{paymentMethod}</span>
           </div>
         )}
+        {canUseNativePas && (
+          <div className="w-full rounded-2xl border border-gray-100 bg-white px-4 py-4 text-sm dark:border-gray-800 dark:bg-gray-900">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-500 dark:text-gray-400">Pay with</span>
+              <span className="font-semibold text-gray-900 dark:text-white">Polkadot native</span>
+            </div>
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">Paseo TestNet · PAS · signed by your connected product account</p>
+          </div>
+        )}
+        {usesPasPayment && !canUseNativePas && (
+          <p className="max-w-[300px] text-center text-xs text-gray-500 dark:text-gray-400">
+            Connect Polkadot for native PAS settlement. The existing wallet route remains available for compatibility.
+          </p>
+        )}
         {error && <p role="alert" className="max-w-[280px] text-center text-sm font-medium text-red-600 dark:text-red-400">{error}</p>}
       </ScreenContent>
       <BottomAction>
-        {usesWalletPayment ? (
+        {usesPasPayment ? (
           <Button
             variant="primary"
             fullWidth
-            onClick={() => void handleWalletPayment()}
+            onClick={() => void (canUseNativePas ? handleNativePayment() : handleWalletPayment())}
             disabled={step === 'waiting'}
             className="h-14 text-lg shadow-sm"
           >
             <Wallet className="w-5 h-5 mr-2" />
-            {step === 'waiting' ? 'Confirming payment' : `Pay ${requester.name}`}
+            {step === 'waiting' ? 'Confirming payment' : canUseNativePas ? `Pay ${requester.name} with Polkadot` : `Pay ${requester.name}`}
           </Button>
         ) : (
           <Button variant="primary" fullWidth onClick={handlePaid} className="h-14 text-lg shadow-sm">
