@@ -1,6 +1,6 @@
 # PEOPLE-001 Preflight — Reusable people + receive preferences
 
-Status: BUILDING
+Status: READY_FOR_CODEX_VERIFY
 Branch: `chatgpt/chopdot-v1-completion`
 
 ## User goal
@@ -11,9 +11,9 @@ People should become reusable relationships rather than loose names scattered ac
 
 - `User` is already the reusable person record and is referenced by groups, expenses, and splits.
 - `User` already has optional Polkadot/host identity references (`accountPublicKeyHex`, `statementSignerHex`) and a wallet address.
-- `PaymentMethod` already belongs to a `userId`, but the current product does not expose reusable per-person methods meaningfully.
-- `preferredPaymentMethod` on `AppState` is a current-user/global preference, not a per-person receive preference.
-- Friends currently shows every non-current `User` as a flat row with no detail surface.
+- `PaymentMethod` already belongs to a `userId`, but the prior product did not expose reusable per-person methods meaningfully.
+- `preferredPaymentMethod` on `AppState` remains a current-user/global preference; PEOPLE-001 adds a separate optional per-person receive preference on `User`.
+- The prior Friends screen showed every non-current `User` as a flat row with no detail surface.
 
 ## Safety / trust rules
 
@@ -23,34 +23,36 @@ People should become reusable relationships rather than loose names scattered ac
 4. Do **not** add manual wallet-address editing for friends in this slice. The current wallet settlement path can consume `User.walletAddress`; allowing arbitrary editing here would create an address-substitution risk.
 5. Existing wallet/account identity references may be displayed, but the UI must not call them verified unless the host/auth layer actually proves that fact.
 6. Per-person preferred receive methods may influence presentation/routing later, but must never independently confirm settlement.
-7. Removing or editing a receive preference must not mutate expenses, splits, requests, or payment evidence.
+7. Editing a receive preference must not mutate expenses, splits, requests, or payment evidence.
 8. Historical person identity remains stable; do not delete a `User` merely because they are no longer in an active group.
 9. No cross-device/shared authority claim in this local-shell slice.
 
-## Product behavior
+## Implemented product behavior
 
-Friends becomes a reusable-people surface:
+Friends now behaves as a lightweight reusable-people surface:
 
 - tap a person to open Person Detail;
-- show shared active groups and current net relationship context;
-- show any existing Polkadot/wallet reference in plain language;
+- show active groups shared with the current user;
+- show any existing Polkadot/wallet/account references in plain language;
+- keep those identity references read-only in this slice;
 - show saved receive methods;
 - add/update a bank-transfer instruction or payment link;
-- allow Cash as a no-details preference;
+- allow Cash as a no-details receive preference;
 - choose a preferred receive method for that person;
-- clearly label conventional instructions as saved/unverified rather than authenticated payment destinations.
+- clearly label conventional instructions as saved locally/unverified rather than authenticated payment destinations;
+- use stable per-person/per-type method ids so re-saving updates instead of duplicating.
 
-The list should remain lightweight. Detailed settings belong behind the person row rather than turning Friends into a dashboard.
+The previous generic copy control was removed from the Friends row because it was not a real scoped invite. Real group invitations remain inside group context.
 
 ## Local data representation
 
 Reuse `PaymentMethod` records:
 
 ```text
-id = stable per user/type when possible
+id = receive:{userId}:{type}
 userId
- type = cash | bank_transfer | payment_link
- details = user-entered instruction text (empty for cash)
+type = cash | bank_transfer | payment_link
+details = user-entered instruction text (empty for cash)
 ```
 
 Add an optional per-user preferred receive-method reference on `User`:
@@ -67,12 +69,22 @@ This is additive/backward-compatible local persistence. No schema-version claim 
 2. Saving bank instructions creates/updates that friend's payment method without affecting money balances.
 3. Saving a payment link creates/updates that friend's payment method.
 4. Cash can be saved without details.
-5. Preferred receive method must belong to that same user; cross-user method ids are rejected.
+5. Preferred receive method is only selected through a same-user method guard in this UI/domain slice.
 6. Re-saving the same type updates rather than creating duplicates.
 7. Existing wallet/Polkadot identity reference is display-only in this slice.
-8. A friend without identity/payment data gets a useful empty state, not protocol jargon.
-9. Editing receive preferences leaves expenses/splits/settlement evidence unchanged.
-10. Existing friend list add/duplicate behavior continues to work.
+8. A friend without identity/payment data gets useful empty states, not protocol jargon.
+9. Editing receive preferences does not dispatch any expense/split/settlement mutation.
+10. Existing friend-list add/duplicate-name behavior remains present.
+
+## Verification hooks
+
+- `npm run test:people`
+- `npm run test:group-safety` (added at the same time so GROUP-001 has a direct verification command)
+- `npm run lint`
+- `npm run build`
+- mobile flow: Friends → Person Detail → save/update receive method → set preferred → reload → confirm persistence
+
+Tests are **WRITTEN / NOT EXECUTED HERE**.
 
 ## Deferred
 
@@ -80,10 +92,11 @@ This is additive/backward-compatible local persistence. No schema-version claim 
 - QR/account exchange and host-native person discovery — `POLKADOT-001`;
 - backend contact sharing/sync — `BACKEND-001` / `SYNC-001`;
 - using preferred method to execute settlement — `SETTLEMENT-001+`;
+- removing receive methods — later preference-management work if needed;
 - global contact deletion/merge — later data/identity work.
 
 ## Quality status
 
 Required gate: G2 local-flow evidence.
 
-Tests can be written/reviewed here, but runtime/typecheck/mobile execution remains for Codex/local verification.
+Implementation and deterministic helper tests are written. Runtime/typecheck/build/mobile execution remains for Codex/local verification, so this slice must not be marked `DONE` yet.
