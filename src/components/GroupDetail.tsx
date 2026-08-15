@@ -4,10 +4,7 @@ import { useAppState } from '../state/AppStateContext';
 import { getGroupTotal, getMemberBalance, getOpenSplits } from '../state/store';
 import { Expense, Split } from '../types';
 import { Screen, ScreenHeader, ScreenContent, BottomAction, Button, MoneyAmount, EmptyState } from './primitives';
-
-
-
-
+import { ExpenseDetail } from './ExpenseDetail';
 import { getInitials } from '../utils';
 import { buildGroupInviteUrl } from '../requestLinks';
 import { shareOrCopyText } from '../environment';
@@ -29,8 +26,13 @@ export function GroupDetail({
   const group = state.groups[groupId];
   const [showConfirmMenu, setShowConfirmMenu] = useState(false);
   const [inviteStatus, setInviteStatus] = useState<'idle' | 'shared' | 'copied' | 'too_big'>('idle');
+  const [selectedExpenseId, setSelectedExpenseId] = useState<string | null>(null);
   
   if (!group) return null;
+
+  if (selectedExpenseId) {
+    return <ExpenseDetail expenseId={selectedExpenseId} onBack={() => setSelectedExpenseId(null)} />;
+  }
 
   const handleInvite = async () => {
     if (!state.currentUserId) return;
@@ -55,7 +57,9 @@ export function GroupDetail({
     setInviteStatus(result === 'shared' ? 'shared' : 'copied');
   };
 
-  const groupExpenses = (Object.values(state.expenses) as Expense[]).filter(e => e.groupId === groupId);
+  const groupExpenses = (Object.values(state.expenses) as Expense[])
+    .filter(e => e.groupId === groupId)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   const totalSpend = getGroupTotal(state, groupId);
 
   const members = group.memberIds.map(id => state.users[id]).filter(Boolean);
@@ -176,8 +180,7 @@ export function GroupDetail({
                     : memberIsCurrentUser ? 'Ready to pay' : 'Request sent'
                   : null;
 
-
-  return (
+              return (
                 <div key={member.id} className="flex flex-col p-3 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-black/5 dark:border-white/5 transition-colors">
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300 mr-3 shrink-0 transition-colors">
@@ -199,6 +202,36 @@ export function GroupDetail({
             })}
           </div>
         </div>
+
+        {groupExpenses.length > 0 && (
+          <section className="space-y-3" aria-labelledby="group-expenses-heading">
+            <div className="flex items-center justify-between px-1">
+              <h3 id="group-expenses-heading" className="text-sm font-semibold text-gray-900 dark:text-white">Expenses</h3>
+              <span className="text-xs text-gray-400 dark:text-gray-500">{groupExpenses.length}</span>
+            </div>
+            <div className="overflow-hidden rounded-3xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
+              {groupExpenses.map(expense => (
+                <button
+                  key={expense.id}
+                  type="button"
+                  onClick={() => setSelectedExpenseId(expense.id)}
+                  className="w-full flex items-center gap-3 p-4 text-left active:bg-gray-50 dark:active:bg-gray-800"
+                  data-testid={`expense-row-${expense.id}`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">{expense.description}</p>
+                    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                      Paid by {state.users[expense.paidByUserId]?.name ?? 'Unknown'} · {new Date(expense.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-sm font-semibold text-gray-900 dark:text-white">
+                    <MoneyAmount amount={expense.amount} currency={expense.currency ?? state.currency} />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
 
         {groupExpenses.length === 0 && (
           <EmptyState title="No spend yet" />
