@@ -1,6 +1,6 @@
 # SETTLEMENT-002 Preflight — Cash/manual settlement complete
 
-Status: BUILDING
+Status: READY_FOR_CODEX_VERIFY
 Branch: `chatgpt/chopdot-v1-completion`
 
 ## User goal
@@ -9,12 +9,11 @@ Cash/manual settlement should feel as trustworthy and complete as a wallet payme
 
 ## Current facts
 
-- Manual rails currently use `request_sent -> marked_paid -> confirmed`.
-- `PayerView` immediately returns to the group after `I paid`, leaving no immediate undo affordance.
+- Manual rails use `request_sent -> marked_paid -> confirmed`.
 - Receiver confirmation exists in Group Detail and Settle Up.
-- `AppState.activityEvents` already exists and persists locally, but ordinary payment transitions do not consistently append audit events.
-- global History currently renders saved/finished groups only; polished activity-history presentation belongs to HISTORY-001.
-- shared authority is not production-ready on this branch, so new undo/audit behavior stays local-only and must not claim cross-device propagation.
+- `AppState.activityEvents` persists locally through the existing app-state persistence path.
+- global History still renders saved/finished groups only; polished activity-history presentation belongs to HISTORY-001.
+- shared authority is not production-ready on this branch, so new undo/audit behavior stays local-only and does not claim cross-device propagation.
 
 ## Safety rules
 
@@ -22,27 +21,31 @@ Cash/manual settlement should feel as trustworthy and complete as a wallet payme
 2. Retraction returns the exact split to `request_sent`; it does not create/delete expenses or alter amounts.
 3. A confirmed split cannot be retracted.
 4. Wallet/chain-evidenced payments are not retractable through the manual undo path.
-5. Successful mark-paid, retract, and receiver-confirm transitions append immutable activity events.
-6. Rejected/no-op transitions must not emit misleading activity.
-7. Activity-event ids must be stable enough to avoid accidental duplicates for the same transition.
-8. Audit data is evidence of ChopDot application actions, not proof that cash physically moved.
-9. Consumer UI says `Marked as paid`, `Undo`, `Waiting for confirmation`; it does not expose state-machine jargon.
-10. No shared-session protocol change in this slice.
+5. Successful mark-paid, retract, and receiver-confirm transitions append activity events.
+6. Rejected/no-op transitions do not emit misleading activity.
+7. Audit data is evidence of ChopDot application actions, not proof that cash physically moved.
+8. Consumer UI says `Marked as paid`, `Undo`, `Waiting for confirmation`; it does not expose state-machine jargon.
+9. No shared-session protocol change in this slice.
+10. Verified chain evidence is persisted on the exact split and still stops at `marked_paid` under current policy.
 
-## Implementation shape
+## Implemented
 
-- Wrap the existing financial reducer in `AppStateContext` with a narrow local reducer that:
-  - delegates canonical money transitions to the existing reducer;
-  - records activity only when a transition actually succeeded;
-  - supports `RETRACT_MARK_PAID` locally for non-wallet-evidenced splits.
-- Change manual `PayerView` from immediate navigation to a short success state with `Undo` and `Back to group`.
-- Preserve existing receiver-confirm buttons; their successful `CONFIRM_RECEIVED` transitions will now be journaled automatically.
-- Add pure tests for local settlement-audit transitions where practical.
-- Do not redesign the global History screen; HISTORY-001 will consume these events later.
+- Added `src/settlement/localSettlementAudit.ts` as a narrow wrapper around the existing financial reducer.
+- Successful `MARK_PAID` writes `payment_marked_paid` activity with payer-attestation evidence.
+- Successful `CONFIRM_RECEIVED` writes `payment_confirmed` activity.
+- Added local-only `RETRACT_MARK_PAID` for non-wallet-evidenced payments.
+- Retraction restores the exact split to `request_sent` and writes `payment_marked_paid_retracted`.
+- Manual PayerView now shows a `Marked as paid` success state instead of immediately navigating away.
+- Manual payer can tap `I didn't pay yet — undo` before receiver confirmation.
+- Existing receiver confirmation controls automatically gain audit events through the reducer wrapper.
+- Added local-only `RECORD_VERIFIED_CHAIN_PAYMENT` to close the SETTLEMENT-001 evidence-persistence gap: exact verified network/from/to/amount evidence is persisted on the split, duplicate tx hashes are rejected, the split remains `marked_paid`, and manual Undo is blocked.
+- Consolidated all settlement-domain modules under the existing `src/settlement/` directory rather than creating a competing module tree.
+- Added unit tests for payer attestation, retraction, receiver confirmation, invalid/no-op transitions, verified chain evidence persistence, duplicate transaction protection, and no manual retraction of chain-evidenced payment.
+- Existing `npm run test:settlement` glob includes these tests.
 
 ## Activity events
 
-Minimum local events:
+Current local events:
 
 ```text
 payment_marked_paid
@@ -50,20 +53,21 @@ payment_marked_paid_retracted
 payment_confirmed
 ```
 
-Each should include relevant `splitId`, `expenseId`, payer/receiver ids, amount, currency, timestamp, and request id where available.
+They include relevant `splitId`, `expenseId`, payer/receiver ids, amount, currency, timestamp, request id where available, and evidence metadata where relevant.
 
-## Acceptance cases
+## Acceptance review
 
-1. Requested cash split -> payer taps `I paid` -> split becomes `marked_paid` and activity is appended.
-2. Payer sees `Waiting for <receiver> to confirm` rather than being told it is settled.
-3. Payer taps Undo before confirmation -> split returns to `request_sent` and a retraction event is appended.
-4. Receiver confirms -> split becomes `confirmed` and confirmation event is appended.
-5. Undo after confirmation is rejected.
-6. Undo on a split carrying wallet/chain evidence is rejected.
-7. Failed/no-op transition produces no false activity event.
-8. Balances still treat `marked_paid` as unresolved until receiver confirms.
-9. Existing manual bank/payment-link attestation keeps the same application lifecycle.
-10. App restart preserves the event stream through existing local persistence.
+1. Requested cash split -> `I paid` -> `marked_paid` + activity: IMPLEMENTED.
+2. Payer sees waiting-for-receiver language: IMPLEMENTED.
+3. Undo before confirmation -> `request_sent` + retraction event: IMPLEMENTED.
+4. Receiver confirmation -> `confirmed` + confirmation event: IMPLEMENTED.
+5. Undo after confirmation: REJECTED BY DOMAIN RULE.
+6. Undo with wallet/chain evidence: REJECTED BY DOMAIN RULE.
+7. Invalid/no-op transition -> no false activity: COVERED BY TEST.
+8. `marked_paid` remains unresolved in existing balance selectors: PRESERVED.
+9. Bank/payment-link payer attestation shares the same manual lifecycle: PRESERVED.
+10. App restart persistence: expected through existing AppState persistence; MUST BE EXECUTED LOCALLY BEFORE DONE.
+11. Verified chain receipt persists across AppState serialization path: IMPLEMENTED; runtime reload proof still required.
 
 ## Deferred
 
@@ -71,10 +75,11 @@ Each should include relevant `splitId`, `expenseId`, payer/receiver ids, amount,
 - durable shared/backend settlement event persistence — BACKEND-002;
 - cross-device cancellation authority — SYNC/BACKEND work;
 - disputes/chargebacks — future product scope;
-- automatic chain finalization policy — separate security decision.
+- automatic chain finalization policy — separate security decision;
+- removal/rewrite of legacy `RECORD_MATCHED_PAYMENT` reducer branch — DEBT-SECURITY-001 / Codex reconciliation.
 
 ## Quality status
 
 Required gate: G2 local-flow evidence.
 
-Code/tests may be written here, but typecheck, tests, production build, mobile flow and restart persistence require Codex/local execution before DONE.
+Code and tests are written/reviewed here. `npm run lint`, `npm run test:settlement`, relevant state/wallet tests, production build, mobile flow, receiver-confirm flow, undo flow, and restart persistence must be executed by Codex/local verification before DONE.
