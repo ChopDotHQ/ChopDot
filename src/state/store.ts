@@ -291,8 +291,6 @@ export function reducer(state: AppState, action: Action): AppState {
       const nextEvents = {...state.activityEvents};
       const adjustmentIds: string[] = [];
 
-      // Payment evidence is immutable, but live request scope is cancellable.
-      // Clear any still-live request on this expense and record why it became stale.
       for (const requested of requestedSplits) {
         nextSplits[requested.id] = {
           ...requested,
@@ -457,8 +455,13 @@ export function reducer(state: AppState, action: Action): AppState {
 
 export const getGroupTotal = (state: AppState, groupId: string): number => {
   return Object.values(state.expenses)
-    .filter(e => e.groupId === groupId && e.kind !== 'adjustment')
-    .reduce((sum, e) => sum + e.amount, 0);
+    .filter(expense => expense.groupId === groupId)
+    .reduce((sum, expense) => {
+      if (expense.kind !== 'adjustment') return sum + expense.amount;
+      const original = expense.relatedExpenseId ? state.expenses[expense.relatedExpenseId] : undefined;
+      if (!original) return sum;
+      return sum + (expense.paidByUserId === original.paidByUserId ? expense.amount : -expense.amount);
+    }, 0);
 };
 
 export const getMemberBalance = (state: AppState, groupId: string, userId: string): number => {
