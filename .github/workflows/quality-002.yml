@@ -1,0 +1,81 @@
+name: QUALITY-002 Mobile Accessibility
+
+on:
+  push:
+    branches:
+      - chatgpt/chopdot-v1-completion
+    paths:
+      - '.github/workflows/quality-002.yml'
+      - 'index.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'playwright.host-sim.config.ts'
+      - 'src/**'
+      - 'tests/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Package source snapshot
+        run: |
+          tar \
+            --exclude=.git \
+            --exclude=node_modules \
+            --exclude=dist \
+            --exclude=test-results \
+            --exclude=playwright-report \
+            -czf /tmp/chopdot-quality-002-source.tgz .
+
+      - name: Upload source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-002-source
+          path: /tmp/chopdot-quality-002-source.tgz
+          retention-days: 3
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run lint
+
+      - name: Financial quality regressions
+        run: npm run test:quality
+
+      - name: Identity regressions
+        run: npm run test:identity
+
+      - name: Production build
+        run: npm run build
+
+      - name: Install Chromium
+        if: ${{ hashFiles('tests/quality-002-accessibility.spec.ts') != '' }}
+        run: npx playwright install --with-deps chromium
+
+      - name: Mobile and accessibility acceptance
+        if: ${{ hashFiles('tests/quality-002-accessibility.spec.ts') != '' }}
+        run: npx playwright test tests/quality-002-accessibility.spec.ts --config=playwright.host-sim.config.ts
+
+      - name: Upload mobile acceptance evidence
+        if: always() && hashFiles('test-results/**') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-002-test-evidence
+          path: test-results
+          retention-days: 14
