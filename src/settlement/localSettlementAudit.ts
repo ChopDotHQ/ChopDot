@@ -1,14 +1,18 @@
-import type {AppState, ActivityEvent, WalletPaymentReceipt} from '../types';
+import type {AppState, ActivityEvent, NativePolkadotPaymentReceipt, WalletPaymentReceipt} from '../types';
 import {reducer, type Action} from '../state/store';
 import {normalizeEvmAddress, pasToBaseUnits, POLKADOT_HUB_TESTNET_CHAIN_ID} from '../payments/pasWallet';
+import {buildNativePaymentPlan, nativeReceiptMatchesPlan, PASEO_NATIVE_CONFIG} from '../payments/polkadotNative';
 
 export type LocalSettlementAction =
   | Action
   | {type: 'RETRACT_MARK_PAID'; payload: {splitId: string; userId: string}}
-  | {type: 'RECORD_VERIFIED_CHAIN_PAYMENT'; payload: {splitId: string; userId: string; receiverUserId: string; receipt: WalletPaymentReceipt}};
+  | {type: 'RECORD_VERIFIED_CHAIN_PAYMENT'; payload: {splitId: string; userId: string; receiverUserId: string; receipt: WalletPaymentReceipt}}
+  | {type: 'RECORD_VERIFIED_NATIVE_PAYMENT'; payload: {splitId: string; userId: string; receiverUserId: string; receipt: NativePolkadotPaymentReceipt}};
 
 export function isLocalOnlySettlementAction(action: LocalSettlementAction): action is Exclude<LocalSettlementAction, Action> {
-  return action.type === 'RETRACT_MARK_PAID' || action.type === 'RECORD_VERIFIED_CHAIN_PAYMENT';
+  return action.type === 'RETRACT_MARK_PAID'
+    || action.type === 'RECORD_VERIFIED_CHAIN_PAYMENT'
+    || action.type === 'RECORD_VERIFIED_NATIVE_PAYMENT';
 }
 
 export function reduceWithSettlementAudit(
@@ -16,6 +20,52 @@ export function reduceWithSettlementAudit(
   action: LocalSettlementAction,
   now: () => string = () => new Date().toISOString(),
 ): AppState {
+  if (action.type === 'RECORD_VERIFIED_NATIVE_PAYMENT') {
+    const {splitId, userId, receiverUserId, receipt} = action.payload;
+    const split = state.splits[splitId];
+    const expense = split ? state.expenses[split.expenseId] : undefined;
+    const payer = state.users[userId];
+    const receiver = state.users[receiverUserId];
+    if (!split || !expense || !payer || !receiver) return state;
+    if (split.status !== 'request_sent' || split.userId !== userId || expense.paidByUserId !== receiverUserId) return state;
+    if (!payer.hostIdentity || !receiver.hostIdentity) return state;
+
+    let plan;
+    try {
+      plan = buildNativePaymentPlan({
+        payer,
+        receiver,
+        amount: split.amount,
+        currency: expense.currency ?? state.currency,
+        config: PASEO_NATIVE_CONFIG,
+      });
+    } catch {
+      return state;
+    }
+    if (!nativeReceiptMatchesPlan(receipt, plan)) return state;
+    if (Object.values(state.splits).some(item => item.id !== splitId && item.nativePayment?.txHash === receipt.txHash)) return state;
+
+    const nextState: AppState = {
+      ...state,
+      splits: {
+        ...state.splits,
+        [split.id]: {...split, status: 'marked_paid', nativePayment: receipt},
+      },
+    };
+    return appendSettlementEvent(nextState, {
+      type: 'payment_marked_paid',
+      splitId: split.id,
+      expenseId: split.expenseId,
+      payerUserId: split.userId,
+      receiverUserId: expense.paidByUserId,
+      amount: split.amount,
+      currency: expense.currency ?? state.currency,
+      requestId: split.requestId,
+      timestamp: now(),
+      evidence: {kind: 'native_chain_transaction', txHash: receipt.txHash, network: receipt.network, asset: receipt.asset},
+    });
+  }
+
   if (action.type === 'RECORD_VERIFIED_CHAIN_PAYMENT') {
     const {splitId, userId, receiverUserId, receipt} = action.payload;
     const split = state.splits[splitId];
@@ -57,7 +107,7 @@ export function reduceWithSettlementAudit(
 
   if (action.type === 'RETRACT_MARK_PAID') {
     const split = state.splits[action.payload.splitId];
-    if (!split || split.userId !== action.payload.userId || split.status !== 'marked_paid' || split.walletPayment) {
+    if (!split || split.userId !== action.payload.userId || split.status !== 'marked_paid' || split.walletPayment || split.nativePayment) {
       return state;
     }
     const expense = state.expenses[split.expenseId];
@@ -148,7 +198,10 @@ function appendSettlementEvent(
     currency: string;
     requestId?: string;
     timestamp: string;
-    evidence?: {kind: 'payer_attestation'} | {kind: 'chain_transaction'; txHash: string; chainId: string};
+    evidence?:
+      | {kind: 'payer_attestation'}
+      | {kind: 'chain_transaction'; txHash: string; chainId: string}
+      | {kind: 'native_chain_transaction'; txHash: string; network: string; asset: string};
   },
 ): AppState {
   const prefix = `settlement:${input.type}:${input.splitId}:`;
