@@ -18,7 +18,12 @@
   },
   "protectedPaths": [
     ".github/workflows/ci.yml",
+    ".github/workflows/coverage.yml",
+    ".github/workflows/e2e-cypress.yml",
+    ".github/workflows/edge-functions.yml",
+    ".github/workflows/release-validation.yml",
     ".github/workflows/secrets-scan.yml",
+    ".github/workflows/smoke-targeted.yml",
     ".gitleaks.toml",
     ".gitleaksignore",
     "SECURITY.md",
@@ -41,6 +46,20 @@
     "Payer evidence moves a settlement to paid or marked_paid; receiver confirmation closes manual settlement under the current policy.",
     "Private keys and seed material never enter ChopDot."
   ],
+  "workflowContracts": {
+    "required": [
+      "CI frontend fast checks",
+      "CI backend fast checks",
+      "coverage"
+    ],
+    "capabilityGated": [
+      "Cypress E2E",
+      "targeted browser smoke",
+      "edge-function sync verification",
+      "full release validation"
+    ],
+    "rule": "A capability-gated workflow must name missing assets and must never describe a blocked run as test or release evidence."
+  },
   "portOrder": [
     "RECONCILIATION-000: establish protected authoritative baseline and executable CI",
     "DATA-002: integer canonical money and versioned persistence migrations",
@@ -53,6 +72,7 @@
     "PR #10 settlement routes still require payer/receiver authorization and fully atomic pay/confirm/close transitions.",
     "Frontend money models still expose decimal JavaScript numbers and must be migrated in DATA-002.",
     "The completion branch is not directly mergeable because it removes authoritative backend, CI, deployment, and security infrastructure.",
-    "The completion branch verification currently fails TypeScript checks and has no valid QUALITY-002 merge or PR #11 in the repository."
+    "The completion branch verification currently fails TypeScript checks and has no valid QUALITY-002 merge or PR #11 in the repository.",
+    "Legacy Cypress, browser-smoke, edge-function, and full-release runtimes are absent from the mvp source and remain capability-gated until deliberately reconciled."
   ]
 }
