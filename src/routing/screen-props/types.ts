@@ -5,10 +5,9 @@ import type {
   ActivityItem,
   Person,
   Settlement as StoredSettlement,
-  CloseoutRecord,
 } from '../../types/app';
 import type { CalculatedSettlements } from '../../utils/settlements';
-import type { PaymentMethod } from '../../components/screens/PaymentMethods';
+import type { PaymentMethod } from '../../App';
 import type { Notification } from '../../components/screens/NotificationCenter';
 import type { SettleHomeSettlement } from '../../hooks/useSettlementActions';
 
@@ -105,12 +104,10 @@ export interface AppRouterProps {
     ) => void;
     updateExpense: (data: any) => void;
     deleteExpense: (expenseId?: string, options?: { navigateBack?: boolean }) => void;
-    addContribution: (amount: number, method: 'wallet' | 'bank') => void;
-    withdrawFunds: (amount: number) => void;
-    handleLogout: () => void;
-    handleDeleteAccount: () => void;
     updatePaymentMethodValue: (id: string, updates: Partial<PaymentMethod>) => void;
     setPreferredMethod: (id: string) => void;
+    handleLogout: () => void;
+    handleDeleteAccount: () => void;
     handleInviteNew: (email: string) => void;
     copyInviteLink: (potId: string) => Promise<void>;
     resendInviteForPot: (potId: string, inviteId: string) => Promise<void>;
@@ -124,19 +121,14 @@ export interface AppRouterProps {
     handleDeletePot: (potId: string) => Promise<void>;
     handleArchivePot: (potId: string) => Promise<void>;
     handleLeavePot: (potId: string) => Promise<void>;
-    persistPotPartial: (potId: string, updates: Partial<Pot> & { closeouts?: CloseoutRecord[] }) => Promise<void>;
+    persistPotPartial: (potId: string, updates: Partial<Pot>) => Promise<void>;
     acceptInvite: (token: string) => void;
     declineInvite: (token: string) => void;
     confirmSettlement: (params: {
-      method: 'cash' | 'bank' | 'paypal' | 'twint' | 'dot' | 'usdc';
+      method: 'cash' | 'bank' | 'paypal' | 'twint';
       reference?: string;
       settlement: SettleHomeSettlement;
-      closeoutContext?: {
-        closeoutId: string;
-        legIndex: number;
-      };
     }) => Promise<import('../../nav').SettlementResult | null>;
-    retrySettlementProof: (settlementId: string) => Promise<boolean>;
     showToast: (msg: string, type?: 'success' | 'error' | 'info') => void;
     newPotState: Partial<Pot>;
     joinProcessingRef: MutableRefObject<boolean>;
@@ -144,6 +136,5 @@ export interface AppRouterProps {
   };
   flags: {
     DEMO_MODE: boolean;
-    POLKADOT_APP_ENABLED: boolean;
   };
 }

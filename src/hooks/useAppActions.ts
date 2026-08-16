@@ -26,19 +26,10 @@ export function useAppActions(deps: AppActionsDeps) {
   const business = useBusinessActions(deps);
 
   const { confirmSettlement, retrySettlementProof } = useSettlementActions({
-    pots: deps.pots,
-    settlements: deps.settlements,
-    currentPot: deps.currentPot,
     currentPotId: deps.currentPotId,
-    setPots: deps.setPots,
-    setSettlements: deps.setSettlements,
-    addExpenseToPot: business.addExpenseToPot,
     showToast: deps.showToast,
-    currentUserId: deps.userId || 'owner',
-    currentUserAddress: deps.currentUserAddress || undefined,
-    potService: deps.potService as unknown as Parameters<typeof useSettlementActions>[0]['potService'],
-    usingSupabaseSource: deps.usingSupabaseSource,
-    notifyPotRefresh: deps.notifyPotRefresh,
+    userId: deps.userId,
+    notifyPotRefresh: () => deps.notifyPotRefresh(''),
   });
 
   const members = useMemberActions({

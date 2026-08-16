@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import type { Screen } from "../nav";
 
 type ResetNavigation = (screen: Screen) => void;
@@ -27,12 +27,6 @@ const TAB_SCREEN_TYPES = [
 ] as const satisfies readonly TabScreen[];
 
 export const getInitialScreenFromLocation = (): Screen => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const cidParam = urlParams.get("cid");
-  if (cidParam) {
-    return { type: "import-pot" };
-  }
-
   const pathname = window.location.pathname;
   const routeScreen = ROUTE_TO_SCREEN[pathname];
   if (routeScreen) {
@@ -51,23 +45,6 @@ export const useUrlSync = ({
   stackLength: number;
   reset: ResetNavigation;
 }) => {
-  const lastCidRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const cidParam = urlParams.get("cid");
-
-    if (cidParam !== lastCidRef.current) {
-      lastCidRef.current = cidParam;
-
-      if (cidParam && screen?.type !== "import-pot") {
-        reset({ type: "import-pot" });
-      } else if (!cidParam && screen?.type === "import-pot") {
-        reset({ type: "pots-home" });
-      }
-    }
-  }, [screen?.type, reset]);
-
   useEffect(() => {
     const handlePopState = () => {
       const pathname = window.location.pathname;

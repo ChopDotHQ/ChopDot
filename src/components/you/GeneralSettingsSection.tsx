@@ -56,7 +56,10 @@ export function GeneralSettingsSection({
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (€)</option>
             <option value="GBP">GBP (£)</option>
-            <option value="DOT">DOT</option>
+            <option value="CHF">CHF (Fr)</option>
+            <option value="CAD">CAD ($)</option>
+            <option value="AUD">AUD ($)</option>
+            <option value="JPY">JPY (¥)</option>
           </select>
         </div>
 

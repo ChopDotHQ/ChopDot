@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { triggerHaptic } from '../utils/haptics';
-import { resetOnboardingFlag } from '../services/storage/ipfsWithOnboarding';
-import type { PaymentMethod } from '../components/screens/PaymentMethods';
+import type { PaymentMethod } from '../App';
 import type { Notification } from '../components/screens/NotificationCenter';
 import type { Screen } from '../nav';
 import type { InviteService } from '../services/InviteService';
@@ -36,30 +35,17 @@ interface OverlayHandlersDeps {
 
 export function useOverlayHandlers(deps: OverlayHandlersDeps) {
   const {
-    setWalletConnected, setConnectedWallet, setShowWalletSheet,
     setShowNotifications, setNotifications,
-    setShowYouSheet, setShowMyQR, setShowScanQR, setShowChoosePot,
+    setShowYouSheet, setShowChoosePot,
     setShowAddPaymentMethod, setSelectedPaymentMethod, setPaymentMethods, setPreferredMethodId,
     setShowAddMember, setCurrentPotId, setFabQuickAddPotId,
     setShowIPFSAuthOnboarding, setPendingIPFSAction, pendingIPFSAction,
     push, showToast, inviteService, fetchInvites, currentPotId, isGuest,
   } = deps;
 
-  const handleWalletConnect = useCallback((provider: string) => {
-    setWalletConnected(true);
-    setConnectedWallet({ provider, address: '5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY', name: 'My Polkadot Wallet' });
-    setShowWalletSheet(false);
-    showToast('Wallet connected successfully!', 'success');
-  }, [showToast]);
-
-  const handleWalletDisconnect = useCallback(() => {
-    setWalletConnected(false);
-    setConnectedWallet(undefined);
-    setShowWalletSheet(false);
-    showToast('Wallet disconnected', 'info');
-  }, [showToast]);
-
-  const handleWalletClose = useCallback(() => setShowWalletSheet(false), []);
+  const handleWalletConnect = useCallback(() => {}, []);
+  const handleWalletDisconnect = useCallback(() => {}, []);
+  const handleWalletClose = useCallback(() => {}, []);
   const handleNotificationsClose = useCallback(() => setShowNotifications(false), []);
 
   const handleNotificationsMarkAllRead = useCallback(() => {
@@ -73,14 +59,14 @@ export function useOverlayHandlers(deps: OverlayHandlersDeps) {
   }, []);
 
   const handleYouSheetClose = useCallback(() => setShowYouSheet(false), []);
-  const handleYouShowQR = useCallback(() => { setShowYouSheet(false); setShowMyQR(true); }, []);
-  const handleYouScanQR = useCallback(() => { setShowYouSheet(false); setShowScanQR(true); }, []);
-  const handleYouPaymentMethods = useCallback(() => { setShowYouSheet(false); push({ type: 'payment-methods' }); }, [push]);
-  const handleYouViewInsights = useCallback(() => { setShowYouSheet(false); push({ type: 'insights' }); }, [push]);
+  const handleYouShowQR = useCallback(() => { setShowYouSheet(false); }, []);
+  const handleYouScanQR = useCallback(() => { setShowYouSheet(false); }, []);
+  const handleYouPaymentMethods = useCallback(() => { setShowYouSheet(false); }, []);
+  const handleYouViewInsights = useCallback(() => { setShowYouSheet(false); }, []);
   const handleYouSettings = useCallback(() => { setShowYouSheet(false); push({ type: 'settings' }); }, [push]);
-  const handleMyQRClose = useCallback(() => setShowMyQR(false), []);
+  const handleMyQRClose = useCallback(() => {}, []);
   const handleCopyHandle = useCallback(() => showToast('Handle copied', 'info'), [showToast]);
-  const handleScanQRClose = useCallback(() => setShowScanQR(false), []);
+  const handleScanQRClose = useCallback(() => {}, []);
   const handleChoosePotClose = useCallback(() => setShowChoosePot(false), []);
   const handleChoosePotCreate = useCallback(() => push({ type: 'create-pot' }), [push]);
 
@@ -103,11 +89,7 @@ export function useOverlayHandlers(deps: OverlayHandlersDeps) {
 
   const handleSelectedPaymentMethodClose = useCallback(() => setSelectedPaymentMethod(null), []);
   const handleAddMemberClose = useCallback(() => setShowAddMember(false), []);
-
-  const handleAddMemberShowQR = useCallback(() => {
-    setShowAddMember(false);
-    setShowMyQR(true);
-  }, []);
+  const handleAddMemberShowQR = useCallback(() => { setShowAddMember(false); }, []);
 
   const handleInviteNew = useCallback((nameOrEmail: string) => {
     const email = nameOrEmail.trim().toLowerCase();
@@ -135,7 +117,7 @@ export function useOverlayHandlers(deps: OverlayHandlersDeps) {
     setShowIPFSAuthOnboarding(false);
     if (pendingIPFSAction) {
       try { await pendingIPFSAction(); }
-      catch (error) { console.error('[App] Pending IPFS action failed:', error); showToast('Upload failed. Please try again.', 'error'); }
+      catch (error) { console.error('[App] Pending action failed:', error); showToast('Action failed. Please try again.', 'error'); }
       finally { setPendingIPFSAction(null); }
     }
   }, [pendingIPFSAction, showToast]);
@@ -143,7 +125,6 @@ export function useOverlayHandlers(deps: OverlayHandlersDeps) {
   const handleIPFSCancel = useCallback(() => {
     setShowIPFSAuthOnboarding(false);
     setPendingIPFSAction(null);
-    resetOnboardingFlag();
   }, []);
 
   return {

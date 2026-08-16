@@ -9,7 +9,7 @@ import type { CurrencyCode } from "../../services/prices/types";
 
 interface SettingsProps {
   onBack?: () => void;
-  onPaymentMethods: () => void;
+  onPaymentMethods?: () => void;
   onCrustStorage?: () => void;
   onLogout: () => void;
   onDeleteAccount: () => void;

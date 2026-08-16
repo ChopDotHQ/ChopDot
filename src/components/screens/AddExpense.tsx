@@ -578,8 +578,8 @@ export function AddExpense({
                   setReceiptUploadError(null);
 
                   try {
-                    const { gatewayUrl } = await uploadReceipt(file);
-                    setReceiptUrl(gatewayUrl);
+                    const receiptResult = await uploadReceipt(file);
+                    setReceiptUrl(receiptResult ?? undefined);
                     setHasReceipt(true);
                     setShowReceiptSheet(false);
                   } catch (error) {

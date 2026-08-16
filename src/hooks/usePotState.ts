@@ -4,15 +4,11 @@ import type { Pot, Settlement } from '../types/app';
 import type { Notification } from '../components/screens/NotificationCenter';
 import { usePots as useRemotePots, refreshPots } from './usePots';
 import { usePot as useRemotePot } from './usePot';
-import { cleanupBackupTimers } from '../services/backup/autoBackup';
-import { attemptAutoRestore } from '../services/restore/autoRestore';
-import { createPolkadotBuilderPartyPot } from '../data/builder-party';
 import {
   normalizeMembers,
   normalizeExpenses,
-  normalizeHistory,
 } from '../utils/normalization';
-import { mergeTrackedPotRecovery } from '../services/closeout/trackedRecovery';
+import { DEFAULT_POTS } from '../services/data/seeds/defaultPots';
 
 type AccountLike = {
   status: string;
@@ -56,7 +52,7 @@ export const usePotState = ({
   isAuthenticated,
   user,
   isGuest,
-  account,
+  account: _account,
   screen,
   stack,
   showToast,
@@ -136,27 +132,6 @@ export const usePotState = ({
               lastEditAt: pot.lastEditAt ?? new Date().toISOString(),
             }));
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const hasPolkadotBuilderParty = migrated.some((p: any) => p.id === '4');
-            if (!hasPolkadotBuilderParty) {
-              const polkadotBuilderPartyPot = {
-                ...createPolkadotBuilderPartyPot(),
-                mode: 'casual' as const,
-                confirmationsEnabled: false,
-                lastEditAt: new Date().toISOString(),
-              };
-              migrated.push(polkadotBuilderPartyPot);
-              try {
-                const updatedJson = JSON.stringify(migrated);
-                if (updatedJson.length < 1000000) {
-                  localStorage.setItem('chopdot_pots', updatedJson);
-                  localStorage.setItem('chopdot_pots_backup', updatedJson);
-                }
-              } catch {
-                // Ignore save failure during migration
-              }
-            }
-
             setPots(migrated as Pot[]);
             setHasLoadedInitialData(true);
             window.dispatchEvent(new CustomEvent('pots-refresh'));
@@ -195,53 +170,7 @@ export const usePotState = ({
         }
 
         if (!hasLoadedInitialData) {
-          const seedPots = [
-            {
-              id: '1',
-              name: 'Devconnect Buenos Aires',
-              type: 'expense',
-              baseCurrency: 'USD',
-              members: [
-                { id: 'owner', name: 'You', role: 'Owner', status: 'active' },
-                { id: 'alice', name: 'Alice', role: 'Member', status: 'active' },
-                { id: 'bob', name: 'Bob', role: 'Member', status: 'active' },
-              ],
-              expenses: [],
-              budget: 500,
-              budgetEnabled: true,
-              checkpointEnabled: false,
-            },
-            {
-              id: '2',
-              name: 'Urbe Campus Rome',
-              type: 'expense',
-              baseCurrency: 'USD',
-              members: [
-                { id: 'owner', name: 'You', role: 'Owner', status: 'active' },
-                { id: 'charlie', name: 'Charlie', role: 'Member', status: 'active' },
-                { id: 'diana', name: 'Diana', role: 'Member', status: 'pending' },
-              ],
-              expenses: [],
-              budget: 3000,
-              budgetEnabled: true,
-              checkpointEnabled: false,
-            },
-            {
-              id: '3',
-              name: '\u{1F4B0} Emergency Fund',
-              type: 'savings',
-              baseCurrency: 'DOT',
-              members: [{ id: 'owner', name: 'You', role: 'Owner', status: 'active' }],
-              expenses: [],
-              contributions: [],
-              totalPooled: 750,
-              yieldRate: 12.5,
-              defiProtocol: 'Acala',
-              goalAmount: 5000,
-              goalDescription: 'Build a 6-month emergency fund',
-            },
-            createPolkadotBuilderPartyPot(),
-          ];
+          const seedPots = DEFAULT_POTS;
 
           try {
             const potsJson = JSON.stringify(seedPots);
@@ -346,32 +275,6 @@ export const usePotState = ({
     });
   }, [notifications, hasLoadedInitialData]);
 
-  // --- Auto-restore from IPFS ---
-  useEffect(() => {
-    if (!hasLoadedInitialData) return;
-    if (account.status !== 'connected' || !account.address0) return;
-
-    (async () => {
-      try {
-        const localPotsJson = localStorage.getItem('chopdot_pots');
-        if (localPotsJson && localPotsJson.length > 0) return;
-
-        const restoredPots = await attemptAutoRestore(account.address0!);
-        if (restoredPots.length > 0) {
-          setPots(restoredPots as Pot[]);
-          showToast(`Restored ${restoredPots.length} pot(s) from backup`, 'success');
-        }
-      } catch (error) {
-        console.error('[App] Auto-restore failed:', error);
-      }
-    })();
-  }, [hasLoadedInitialData, account.status, account.address0, showToast]);
-
-  // --- Cleanup backup timers ---
-  useEffect(() => {
-    return () => { cleanupBackupTimers(); };
-  }, []);
-
   // --- Sync currentPotId from screen ---
   useEffect(() => {
     if (screen?.type === 'pot-home' && 'potId' in screen) {
@@ -403,13 +306,13 @@ export const usePotState = ({
   const fallbackRemotePot = useMemo(
     () =>
       usingSupabaseSource && currentPotId
-        ? mergeTrackedPotRecovery(remotePots.find((p) => p.id === currentPotId) || null) || null
+        ? remotePots.find((p) => p.id === currentPotId) || null
         : null,
     [usingSupabaseSource, currentPotId, remotePots],
   );
 
   const currentPot = usingSupabaseSource
-    ? (mergeTrackedPotRecovery((remoteCurrentPot ?? fallbackRemotePot) as Pot | null | undefined) as Pot | null | undefined)
+    ? ((remoteCurrentPot ?? fallbackRemotePot) as Pot | null | undefined)
     : (pots.find((p) => p.id === currentPotId) as Pot | undefined);
 
   const lastPotRef = useRef<Pot | null>(null);
@@ -425,10 +328,8 @@ export const usePotState = ({
         ...potForView,
         members: normalizeMembers(potForView.members),
         expenses: normalizeExpenses(potForView.expenses, potForView.baseCurrency),
-        history: normalizeHistory(potForView.history || []),
         budget: potForView.budget ?? undefined,
         goalAmount: potForView.goalAmount ?? undefined,
-        totalPooled: potForView.totalPooled ?? undefined,
       } as Pot)
     : undefined;
 
@@ -441,7 +342,7 @@ export const usePotState = ({
     const serialized = JSON.stringify(remotePots);
     if (remoteSyncSnapshot.current === serialized) return;
     remoteSyncSnapshot.current = serialized;
-    setPots(remotePots.map((pot) => mergeTrackedPotRecovery(pot) ?? pot) as unknown as Pot[]);
+    setPots(remotePots as unknown as Pot[]);
   }, [remotePots, usingSupabaseSource, authLoading, isAuthenticated]);
 
   // In Supabase mode, use remotePots directly rather than relying on the sync
@@ -449,7 +350,7 @@ export const usePotState = ({
   // the localStorage-backed pots state.
   const effectivePots = useMemo(() => {
     if (usingSupabaseSource && remotePots.length > 0) {
-      return remotePots.map((pot) => mergeTrackedPotRecovery(pot) ?? pot) as unknown as Pot[];
+      return remotePots as unknown as Pot[];
     }
     return pots;
   }, [usingSupabaseSource, remotePots, pots]);

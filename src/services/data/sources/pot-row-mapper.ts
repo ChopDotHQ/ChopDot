@@ -133,43 +133,6 @@ export function mapPotRow(
     return entry as any;
   }) as unknown as Pot['history'];
 
-  const rawCloseouts = Array.isArray(metadata.closeouts) ? (metadata.closeouts as Array<Record<string, unknown>>) : [];
-  const closeoutsFromMetadata: Pot['closeouts'] = rawCloseouts.map((closeout) => {
-    const participantMemberIds = Array.isArray(closeout.participantMemberIds)
-      ? (closeout.participantMemberIds as string[]).map((id) => mapMemberId(id))
-      : [];
-    const legs = Array.isArray(closeout.legs)
-      ? (closeout.legs as Array<Record<string, unknown>>).map((leg) => ({
-        ...(leg as any),
-        fromMemberId: typeof leg.fromMemberId === 'string' ? mapMemberId(leg.fromMemberId) : leg.fromMemberId,
-        toMemberId: typeof leg.toMemberId === 'string' ? mapMemberId(leg.toMemberId) : leg.toMemberId,
-      }))
-      : [];
-    return {
-      ...(closeout as any),
-      createdByMemberId:
-        typeof closeout.createdByMemberId === 'string'
-          ? mapMemberId(closeout.createdByMemberId)
-          : closeout.createdByMemberId,
-      participantMemberIds,
-      legs,
-    };
-  }) as unknown as Pot['closeouts'];
-
-  const currentCheckpoint = (() => {
-    const checkpoint = metadata.currentCheckpoint as Record<string, unknown> | undefined;
-    if (!checkpoint || typeof checkpoint !== 'object') return checkpoint as any;
-    const createdBy = typeof checkpoint.createdBy === 'string' ? mapMemberId(checkpoint.createdBy) : checkpoint.createdBy;
-    const bypassedBy = typeof checkpoint.bypassedBy === 'string' ? mapMemberId(checkpoint.bypassedBy) : checkpoint.bypassedBy;
-    const confirmations = checkpoint.confirmations as Record<string, unknown> | undefined;
-    if (!confirmations || typeof confirmations !== 'object' || Array.isArray(confirmations)) return checkpoint as any;
-    const mappedConfirmations: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(confirmations)) {
-      mappedConfirmations[mapMemberId(key)] = value;
-    }
-    return { ...(checkpoint as any), createdBy, bypassedBy, confirmations: mappedConfirmations } as any;
-  })();
-
   const mergedMembers = (() => {
     const merged = new Map<string, Pot['members'][number]>();
 
@@ -214,6 +177,8 @@ export function mapPotRow(
         : 'USD';
   const baseCurrency = isBaseCurrency(rawBaseCurrency) ? rawBaseCurrency : 'USD';
 
+  const historyArray = Array.isArray(historyFromMetadata) ? historyFromMetadata : [];
+
   const basePot: Pot = {
     id: row.id,
     name: row.name ?? (metadata.name as string) ?? 'Untitled Pot',
@@ -221,32 +186,24 @@ export function mapPotRow(
     baseCurrency,
     members: mergedMembers.length > 0 ? mergedMembers : [{ ...DEFAULT_MEMBER }],
     expenses,
-    history: historyFromMetadata,
-    closeouts: closeoutsFromMetadata,
+    history: historyArray,
     budget: (row.budget ?? metadata.budget ?? null) as Pot['budget'],
     budgetEnabled: (row.budget_enabled ?? metadata.budgetEnabled ?? false) as Pot['budgetEnabled'],
     checkpointEnabled: (row.checkpoint_enabled ?? metadata.checkpointEnabled ?? true) as Pot['checkpointEnabled'],
     archived: !!row.archived_at || Boolean(metadata.archived),
     mode: (metadata.mode as Pot['mode']) ?? 'casual',
-    confirmationsEnabled: metadata.confirmationsEnabled as boolean | undefined,
-    currentCheckpoint: currentCheckpoint as Pot['currentCheckpoint'],
-    lastCheckpoint: metadata.lastCheckpoint as Pot['lastCheckpoint'],
     lastEditAt: row.last_edit_at ? new Date(row.last_edit_at).toISOString() : (metadata.lastEditAt as string | undefined),
     createdAt: row.created_at ? new Date(row.created_at).toISOString() : undefined,
     contributions: Array.isArray(metadata.contributions) ? (metadata.contributions as Pot['contributions']) : undefined,
-    totalPooled: (metadata.totalPooled as number | undefined) ?? undefined,
-    yieldRate: (metadata.yieldRate as number | undefined) ?? undefined,
-    defiProtocol: metadata.defiProtocol as string | undefined,
     goalAmount: row.goal_amount ?? (metadata.goalAmount as number | undefined),
     goalDescription: row.goal_description ?? (metadata.goalDescription as string | undefined),
-    lastBackupCid: metadata.lastBackupCid as string | undefined,
   };
 
   const parsed = PotSchema.safeParse({
     ...basePot,
     members: [...basePot.members],
     expenses: [...basePot.expenses],
-    history: [...basePot.history],
+    history: [...historyArray],
   });
 
   if (!parsed.success) {

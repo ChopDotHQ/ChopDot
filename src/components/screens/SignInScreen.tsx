@@ -1,14 +1,12 @@
 import { useRef, useEffect } from 'react';
-import { AlertCircle, ChevronRight, Loader2, Wallet } from 'lucide-react';
-import { useAccount } from '../../contexts/AccountContext';
+import { AlertCircle } from 'lucide-react';
+
 import { triggerHaptic } from '../../utils/haptics';
 import { ChopDotMark } from '../auth/ChopDotMark';
 import { EmailLoginDrawer } from '../auth/EmailLoginDrawer';
-import { WalletConnectQROverlay } from '../auth/WalletConnectQROverlay';
 import { WalletLoginPanel } from '../auth/panels/WalletLoginPanel';
 import { SignupPanel } from '../auth/panels/SignupPanel';
 import { AuthFooter } from '../auth/AuthFooter';
-import { BottomSheet } from '../BottomSheet';
 import { useLoginState } from '../auth/hooks/useLoginState';
 import { useWalletAuth } from '../auth/hooks/useWalletAuth';
 import { useThemeHandler } from '../auth/hooks/useThemeHandler';
@@ -47,7 +45,6 @@ const trackEvent = (name: string, payload?: Record<string, unknown>) => {
 };
 
 export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
-  const account = useAccount();
 
   const {
     loading, setLoading,
@@ -60,10 +57,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
   const { panelMode, loginVariant, backgroundIndex } = useThemeHandler();
 
   const {
-    showWalletConnectQR, setShowWalletConnectQR,
-    walletConnectQRCode, setWalletConnectQRCode,
-    setIsWaitingForWalletConnect: _setIsWaitingForWalletConnect,
-    isWaitingForSignature,
     getWalletAuthMessage,
     startWalletConnectSession: startWalletConnectSessionHook,
   } = useWalletAuth({ setLoading, setError, onLoginSuccess, isMobileWalletFlow, enableWcModal });
@@ -83,10 +76,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     handleGuestLogin,
     handleWalletLogin,
     loginWithExtension,
-    pendingExtensionAccounts,
-    pendingExtensionWalletName,
-    completeExtensionLogin,
-    cancelExtensionAccountSelection,
     handleWalletConnectModal,
   } = useSignInHandlers({ setLoading, setError, onLoginSuccess, getWalletAuthMessage });
 
@@ -109,8 +98,8 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
     }
   }, [isMobileWalletFlow, device.os]);
 
-  const startWalletConnectSession = async ({ openQrModal = true }: { openQrModal?: boolean } = {}): Promise<string | null> =>
-    startWalletConnectSessionHook(handleWalletConnectModal, openQrModal);
+  const startWalletConnectSession = async (_opts: { openQrModal?: boolean } = {}): Promise<string | null> =>
+    startWalletConnectSessionHook(handleWalletConnectModal);
 
   const buildHandlerMap = (): Record<string, (e?: React.MouseEvent) => void> => ({
     email: (e?: React.MouseEvent) => { e?.stopPropagation(); e?.preventDefault(); openEmailLoginDrawer('desktop-option'); },
@@ -155,7 +144,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
 
     const handlerMap = buildHandlerMap();
 
-    const desktopWalletOptions = getBaseWalletOptionConfigs().map((option) => {
+    const desktopWalletOptions = getBaseWalletOptionConfigs().filter(o => o.group !== 'wallet').map((option) => {
       let overrideTheme: Partial<WalletOptionTheme> = {};
       if (useGlassmorphism && option.id === 'email') {
         overrideTheme = getPolkadotSecondAgeEmailOverride(panelMode);
@@ -210,23 +199,7 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         errorAlert={renderErrorAlert()}
         footerContent={<AuthFooter panelMode={panelMode} loginVariant={loginVariant} />}
         mobileToggle={undefined}
-        signatureWaitingBanner={isWaitingForSignature ? (
-          <div className="rounded-2xl border-2 border-[var(--accent)] bg-[var(--accent)]/15 p-5 space-y-3 shadow-lg animate-pulse">
-            <div className="flex items-start gap-3">
-              <Loader2 className="w-6 h-6 animate-spin text-[var(--accent)] flex-shrink-0 mt-0.5" />
-              <div className="flex-1 space-y-2">
-                <p className="text-lg font-bold text-foreground">Signature Approval Required</p>
-                <p className="text-sm text-muted leading-relaxed">
-                  <strong>Action needed:</strong> Go back to your wallet app and approve the signature request.
-                </p>
-                <div className="flex items-center gap-2 text-xs text-muted/80">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  <span>Waiting for your approval...</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : undefined}
+        signatureWaitingBanner={undefined}
       />
     );
   };
@@ -260,58 +233,6 @@ export function SignInScreen({ onLoginSuccess }: LoginScreenProps) {
         onCreateAccount={() => { triggerHaptic('light'); setShowEmailLogin(false); setAuthPanelView('signup'); }}
       />
 
-      {showWalletConnectQR && walletConnectQRCode && (
-        <WalletConnectQROverlay
-          qrCode={walletConnectQRCode}
-          isConnecting={account.status === 'connecting'}
-          onClose={() => { setShowWalletConnectQR(false); setWalletConnectQRCode(null); }}
-        />
-      )}
-
-      <BottomSheet
-        isOpen={pendingExtensionAccounts.length > 0}
-        onClose={cancelExtensionAccountSelection}
-        title="Choose account"
-        maxWidth="520px"
-      >
-        <div className="mx-auto w-full max-w-md space-y-4">
-          <div className="space-y-1">
-            <h3 className="text-lg font-semibold">Select an account</h3>
-            <p className="text-sm text-secondary">
-              {pendingExtensionWalletName
-                ? `Choose which ${pendingExtensionWalletName} account to sign in with.`
-                : 'Choose which account to sign in with.'}
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            {pendingExtensionAccounts.map((accountOption) => (
-              <button
-                key={accountOption.address}
-                type="button"
-                onClick={() => void completeExtensionLogin(accountOption)}
-                disabled={loading}
-                className="w-full rounded-2xl border border-border bg-background px-4 py-4 text-left transition-all duration-150 hover:bg-muted/40 active:scale-[0.99] disabled:opacity-50"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="rounded-2xl bg-muted/60 p-3">
-                    <Wallet className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-base font-medium truncate">
-                      {accountOption.name || 'Unnamed account'}
-                    </div>
-                    <p className="mt-1 font-mono text-sm text-secondary">
-                      {accountOption.address.slice(0, 12)}...{accountOption.address.slice(-10)}
-                    </p>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-secondary" />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      </BottomSheet>
     </div>
   );
 }

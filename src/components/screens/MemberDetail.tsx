@@ -57,7 +57,6 @@ export function MemberDetail({
       case "bank": return "Bank";
       case "twint": return "TWINT";
       case "paypal": return "PayPal";
-      case "crypto": return "DOT Wallet";
       default: return kind;
     }
   };
@@ -67,7 +66,6 @@ export function MemberDetail({
       case "bank": return `IBAN: CH93 0000 0000 0000 ${masked}`;
       case "twint": return `Phone: +41 79 123 ${masked}`;
       case "paypal": return `Email: ${masked.replace("****", "alice")}`;
-      case "crypto": return `Wallet: 1A1zP1eP5QGefi2DM${masked}`;
       default: return masked;
     }
   };

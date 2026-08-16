@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { PaymentMethod } from '../components/screens/PaymentMethods';
+import type { PaymentMethod } from '../App';
 import type { Notification } from '../components/screens/NotificationCenter';
 import type { Pot } from '../types/app';
 

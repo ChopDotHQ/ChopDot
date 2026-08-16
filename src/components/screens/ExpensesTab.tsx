@@ -1,22 +1,16 @@
 import { Receipt } from 'lucide-react';
-import { useMemo } from 'react';
 import { SwipeableExpenseRow } from '../SwipeableExpenseRow';
 import type { Pot } from '../../schema/pot';
-import { SettlementConfirmModal } from '../SettlementConfirmModal';
-import { useAccount } from '../../contexts/AccountContext';
-import type { CloseoutRecord, PotHistory } from '../../types/app';
 import { formatCurrencyAmount } from '../../utils/currencyFormat';
 import { usePotBalances } from '../../hooks/usePotBalances';
 import { useExpenseGroups } from '../../hooks/useExpenseGroups';
 import { useActivityFeed } from '../../hooks/useActivityFeed';
-import { useSettleConfirm } from '../../hooks/useSettleConfirm';
 import { HeroDashboard } from '../expenses/HeroDashboard';
 import { ActivityHistory } from '../expenses/ActivityHistory';
 
 interface Member {
   id: string;
   name: string;
-  address?: string;
   verified?: boolean;
 }
 
@@ -52,17 +46,17 @@ interface ExpensesTabProps {
   contributions?: Contribution[];
   potId?: string;
   pot?: Pot;
-  potHistory?: PotHistory[];
+  potHistory?: Array<{ type: string; [key: string]: unknown }>;
   onAddExpense: () => void;
   onExpenseClick: (expense: Expense) => void;
   onSettle: () => void;
-  trackedCloseout?: CloseoutRecord | null;
+  trackedCloseout?: unknown | null;
   onReopenTrackedSettlement?: () => void;
   canAddExpense?: boolean;
   addExpenseDisabledReason?: string;
   onDeleteExpense?: (expenseId: string) => void;
   onShowToast?: (message: string, type?: 'success' | 'info' | 'error') => void;
-  onUpdatePot?: (updates: { history?: PotHistory[]; lastCheckpoint?: unknown; lastEditAt?: string }) => void;
+  onUpdatePot?: (updates: { history?: unknown[]; lastCheckpoint?: unknown; lastEditAt?: string }) => void;
   checkpointConfirmedCount?: number;
   checkpointTotalCount?: number;
 }
@@ -76,7 +70,6 @@ export function ExpensesTab({
   budgetEnabled,
   contributions = [],
   potId,
-  potHistory = [],
   onAddExpense,
   onExpenseClick,
   onSettle,
@@ -85,15 +78,9 @@ export function ExpensesTab({
   canAddExpense = true,
   addExpenseDisabledReason,
   onDeleteExpense,
-  onShowToast,
-  onUpdatePot,
 }: ExpensesTabProps) {
-  const account = useAccount();
-
   const {
     normalizedBaseCurrency,
-    isUsdcPot,
-    isCryptoPot,
     totalExpenses,
     settlementSuggestions,
     netBalance,
@@ -104,35 +91,6 @@ export function ExpensesTab({
     balances,
     canSettle,
   } = usePotBalances({ expenses, members, potId, baseCurrency, currentUserId, budget, budgetEnabled });
-
-  useMemo(() => {
-    if (isCryptoPot) {
-      import('../../services/chain/polkadot').then(m => m.polkadotChainService.setChain('assethub'));
-    }
-  }, [isCryptoPot]);
-
-  const settlementHistory = useMemo(
-    () =>
-      potHistory.filter(
-        (entry): entry is Extract<PotHistory, { type: 'onchain_settlement' }> =>
-          entry.type === 'onchain_settlement'
-      ),
-    [potHistory]
-  );
-
-  const {
-    settlementModal,
-    isSending,
-    setSettlementModal,
-    handleSettleConfirm,
-    handleSettleCancel,
-  } = useSettleConfirm({
-    isUsdcPot,
-    potHistory,
-    onUpdatePot,
-    onShowToast,
-    refreshBalance: account.refreshBalance,
-  });
 
   const formatPotAmount = (value: number, withSign: boolean = false) =>
     formatCurrencyAmount(value, normalizedBaseCurrency, { withSign });
@@ -161,23 +119,15 @@ export function ExpensesTab({
           isOverBudget={isOverBudget}
           balances={balances}
           settlementSuggestions={settlementSuggestions}
-          settlementHistory={settlementHistory}
           members={members}
           currentUserId={currentUserId}
-          isCryptoPot={isCryptoPot}
-          isUsdcPot={isUsdcPot}
           canSettle={canSettle}
-          isSending={isSending}
           formatPotAmount={formatPotAmount}
           onAddExpense={onAddExpense}
           onSettle={onSettle}
           onReopenTrackedSettlement={onReopenTrackedSettlement}
           canAddExpense={canAddExpense}
           addExpenseDisabledReason={addExpenseDisabledReason}
-          onOpenSettlementModal={setSettlementModal}
-          onShowToast={onShowToast}
-          accountStatus={account.status}
-          accountAddress0={account.address0}
         />
       )}
 
@@ -200,20 +150,6 @@ export function ExpensesTab({
         onDeleteExpense={onDeleteExpense}
       />
 
-      {settlementModal && (
-        <SettlementConfirmModal
-          isOpen={!!settlementModal}
-          fromAddress={settlementModal.fromAddress}
-          toAddress={settlementModal.toAddress}
-          fromName={settlementModal.fromName}
-          toName={settlementModal.toName}
-          amountDot={settlementModal.amountDot}
-          amountUsdc={settlementModal.amountUsdc}
-          onConfirm={handleSettleConfirm}
-          onCancel={handleSettleCancel}
-          isSending={isSending}
-        />
-      )}
     </div>
   );
 }

@@ -1,198 +1,242 @@
 import { TopBar } from "../TopBar";
-import { PrimaryButton } from "../PrimaryButton";
-import { Download, CheckCircle } from "lucide-react";
+import { Download, CheckCircle, Clock, ArrowRight } from "lucide-react";
 import { useMemo } from "react";
-import { buildSubscanUrl } from "../../services/chain/utils";
-import { getPvmCloseoutExplorerBaseUrl } from "../../services/closeout/pvmCloseout";
 import { EmptyState } from "../EmptyState";
 import { exportSettlementHistoryToCSV } from "../../utils/export";
+import { formatCurrencyAmount } from "../../utils/currencyFormat";
+import type { SettlementLeg } from "../../types/app";
+import { useChapterState } from "../../hooks/useChapterState";
+import {
+  LEG_STATUS_LABELS,
+  LEG_STATUS_COLORS,
+  METHOD_LABELS,
+  getMemberDisplayName,
+} from "../../utils/settlementLabels";
 
-interface Settlement {
+// ─── Legacy settlement shape (from old Settlement[] array) ───────────────────
+
+interface LegacySettlement {
   id: string;
-  method: "cash" | "bank" | "paypal" | "twint" | "dot" | "usdc";
+  method: "cash" | "bank" | "paypal" | "twint";
   personName: string;
   amount: number;
   currency: string;
   date: string;
-  txHash?: string;
   potNames?: string[];
-  closeoutId?: string;
-  proofTxHash?: string;
-  proofStatus?: "anchored" | "recorded" | "completed";
   personId?: string;
 }
 
+// ─── Props ────────────────────────────────────────────────────────────────────
+
 interface SettlementHistoryProps {
-  settlements: Settlement[];
+  settlements: LegacySettlement[];
+  /** Typed legs; when omitted and potId is given, they self-load. */
+  legs?: SettlementLeg[];
+  /** When provided, typed legs are loaded from the backend. */
+  potId?: string;
+  members?: Array<{ id: string; name: string }>;
+  currentUserId?: string;
+  baseCurrency?: string;
   onBack: () => void;
   personId?: string;
   onRetryProof?: (settlementId: string) => void;
 }
 
-export function SettlementHistory({ settlements, onBack, personId, onRetryProof }: SettlementHistoryProps) {
-  const proofExplorerBaseUrl = getPvmCloseoutExplorerBaseUrl();
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-  // Filter settlements by personId if provided
-  const filteredSettlements = useMemo(() => {
+function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+// ─── Typed leg card ───────────────────────────────────────────────────────────
+
+function LegCard({
+  leg,
+  members,
+  currentUserId,
+  baseCurrency,
+}: {
+  leg: SettlementLeg;
+  members: Array<{ id: string; name: string }>;
+  currentUserId?: string;
+  baseCurrency: string;
+}) {
+  const fromName  = getMemberDisplayName(members, leg.fromMemberId, currentUserId);
+  const toName    = getMemberDisplayName(members, leg.toMemberId, currentUserId);
+  const amountStr = formatCurrencyAmount(leg.amount, baseCurrency);
+  const color     = LEG_STATUS_COLORS[leg.status] ?? "var(--text-secondary)";
+
+  return (
+    <div className="p-4 card rounded-xl space-y-2 card-hover-lift transition-shadow duration-200">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="text-label font-medium truncate">{fromName}</span>
+          <ArrowRight className="w-3 h-3 flex-shrink-0 text-secondary" />
+          <span className="text-label font-medium truncate">{toName}</span>
+        </div>
+        <span className="text-[18px] tabular-nums font-bold flex-shrink-0 ml-2">{amountStr}</span>
+      </div>
+
+      <div className="flex items-center gap-1.5">
+        {leg.status === "confirmed"
+          ? <CheckCircle className="w-3.5 h-3.5" style={{ color: "var(--success)" }} />
+          : <Clock className="w-3.5 h-3.5" style={{ color }} />}
+        <span className="text-caption" style={{ color }}>
+          {LEG_STATUS_LABELS[leg.status] ?? leg.status}
+        </span>
+      </div>
+
+      <div className="pt-2 border-t border-border space-y-0.5">
+        <div className="flex justify-between text-caption text-secondary">
+          <span>Proposed</span>
+          <span>{formatDate(leg.createdAt)}</span>
+        </div>
+        {leg.paidAt && (
+          <div className="flex justify-between text-caption text-secondary">
+            <span>Paid</span>
+            <span>
+              {leg.method ? `${METHOD_LABELS[leg.method] ?? leg.method} · ` : ""}
+              {formatDate(leg.paidAt)}
+            </span>
+          </div>
+        )}
+        {leg.confirmedAt && (
+          <div className="flex justify-between text-caption text-secondary">
+            <span>Confirmed</span>
+            <span>{formatDate(leg.confirmedAt)}</span>
+          </div>
+        )}
+        {leg.reference && (
+          <div className="flex justify-between text-caption text-secondary">
+            <span>Reference</span>
+            <span>{leg.reference}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Legacy settlement card ───────────────────────────────────────────────────
+
+function LegacyCard({ settlement }: { settlement: LegacySettlement }) {
+  return (
+    <div className="p-4 card rounded-xl space-y-2 card-hover-lift transition-shadow duration-200 hover:shadow-[var(--shadow-fab)]">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-label font-semibold">
+            {METHOD_LABELS[settlement.method] ?? settlement.method}
+          </p>
+          <p className="text-micro text-secondary mt-0.5">{formatDate(settlement.date)}</p>
+        </div>
+        <p className="text-[18px] tabular-nums font-bold">${settlement.amount.toFixed(2)}</p>
+      </div>
+      <div className="pt-2 border-t border-border space-y-0.5">
+        <div className="flex justify-between text-caption text-secondary">
+          <span>Person</span>
+          <span>{settlement.personName}</span>
+        </div>
+        {settlement.potNames && settlement.potNames.length > 0 && (
+          <div className="flex justify-between text-caption text-secondary">
+            <span>Pots</span>
+            <span className="text-right">{settlement.potNames.join(", ")}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
+export function SettlementHistory({
+  settlements,
+  legs: legsProp = [],
+  potId,
+  members = [],
+  currentUserId,
+  baseCurrency = "USD",
+  onBack,
+  personId,
+}: SettlementHistoryProps) {
+  // Self-load typed legs when potId is provided and none were passed in
+  const {
+    legs: loadedLegs,
+    isLoading,
+    error,
+  } = useChapterState({ potId, currentUserId: currentUserId ?? "" });
+
+  const legs = legsProp.length > 0 ? legsProp : loadedLegs;
+
+  const filteredLegacy = useMemo(() => {
     if (!personId) return settlements;
-    // Prefer matching by stored personId if present; fallback to name match for legacy entries
-    return settlements.filter((s: any) => {
-      const hasId = typeof s.personId === 'string' && s.personId.length > 0;
-      const matchById = hasId ? s.personId === personId : false;
-      const matchByName = s.personName && s.personName.toLowerCase() === personId.toLowerCase();
-      return matchById || matchByName;
-    });
+    return settlements.filter(s =>
+      (typeof (s as any).personId === "string" && (s as any).personId === personId) ||
+      (s.personName?.toLowerCase() === personId.toLowerCase())
+    );
   }, [settlements, personId]);
 
-  // Format method name for display
-  const formatMethod = (method: string): string => {
-    const methodLabels: Record<string, string> = {
-      cash: "Cash",
-      bank: "Bank",
-      paypal: "PayPal",
-      twint: "TWINT",
-      dot: "DOT",
-      usdc: "USDC",
-    };
-    return methodLabels[method] || method;
-  };
+  const filteredLegs = useMemo(() => {
+    if (!personId) return legs;
+    return legs.filter(l => l.fromMemberId === personId || l.toMemberId === personId);
+  }, [legs, personId]);
 
-  // Format date for display
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    });
-  };
-
-  const getTrackedStatus = (settlement: Settlement): string | null => {
-    if (!settlement.closeoutId) return null;
-    if (settlement.proofStatus === 'completed') return 'Payment confirmed';
-    if (settlement.proofStatus === 'recorded') return 'Payment sent';
-    return 'Smart settlement started';
-  };
+  const isEmpty = filteredLegacy.length === 0 && filteredLegs.length === 0;
 
   return (
     <div className="flex flex-col h-full">
-      <TopBar 
-        title={personId ? `Settlements with ${personId}` : "Settlement History"} 
-        onBack={onBack} 
+      <TopBar
+        title={personId ? "Settlements" : "Settlement History"}
+        onBack={onBack}
       />
+
       <div className="flex-1 overflow-auto p-4 space-y-2">
-        {filteredSettlements.length === 0 ? (
+        {isLoading && filteredLegs.length === 0 ? (
+          <div className="pt-8 text-center text-caption text-secondary">Loading…</div>
+        ) : error ? (
+          <div className="pt-8 text-center text-caption" style={{ color: "var(--danger)" }}>
+            Failed to load settlement history
+          </div>
+        ) : isEmpty ? (
           <div className="pt-8">
             <EmptyState
               icon={CheckCircle}
               message="No settlements yet"
-              description="Your settlement history will appear here"
+              description="Settlement history will appear here once a chapter is proposed"
             />
           </div>
         ) : (
-          filteredSettlements.map((settlement) => (
-            <div key={settlement.id} className="p-4 card rounded-xl space-y-2 card-hover-lift transition-shadow duration-200 hover:shadow-[var(--shadow-fab)]">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-label" style={{ fontWeight: 600 }}>{formatMethod(settlement.method)}</p>
-                  <p className="text-micro text-secondary mt-0.5">
-                    {formatDate(settlement.date)}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[18px] tabular-nums" style={{ fontWeight: 700 }}>
-                    {settlement.currency === 'DOT'
-                      ? `${settlement.amount.toFixed(6)} DOT`
-                      : settlement.currency === 'USDC'
-                        ? `${settlement.amount.toFixed(6)} USDC`
-                        : `$${settlement.amount.toFixed(2)}`}
-                  </p>
-                  {getTrackedStatus(settlement) && (
-                    <p className="text-micro text-secondary mt-0.5">{getTrackedStatus(settlement)}</p>
-                  )}
-                </div>
-              </div>
-              <div className="pt-2 border-t border-border space-y-0.5">
-                <div className="flex justify-between text-caption text-secondary">
-                  <span>Person</span>
-                  <span>{settlement.personName}</span>
-                </div>
-                {settlement.potNames && settlement.potNames.length > 0 && (
-                  <div className="flex justify-between text-caption text-secondary">
-                    <span>Pots</span>
-                    <span className="text-right">{settlement.potNames.join(", ")}</span>
-                  </div>
-                )}
-                {(settlement.txHash || settlement.closeoutId || settlement.proofTxHash) && (
-                  <details className="pt-2">
-                    <summary className="cursor-pointer text-caption text-secondary">Technical details</summary>
-                    <div className="mt-2 space-y-1.5">
-                      {settlement.txHash && (
-                        <div className="flex justify-between text-caption text-secondary">
-                          <span>Payment tx (Asset Hub)</span>
-                          <a
-                            className="text-micro underline font-mono text-secondary"
-                            href={buildSubscanUrl(settlement.txHash)}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            {settlement.txHash.slice(0, 10)}...{settlement.txHash.slice(-8)}
-                          </a>
-                        </div>
-                      )}
-                      {settlement.closeoutId && (
-                        <div className="flex justify-between text-caption text-secondary">
-                          <span>Settlement package</span>
-                          <span className="font-mono text-right">{settlement.closeoutId}</span>
-                        </div>
-                      )}
-                      {settlement.closeoutId && (
-                        <div className="flex justify-between text-caption text-secondary">
-                          <span>Proof status</span>
-                          <span className="text-right">{settlement.proofStatus || "anchored"}</span>
-                        </div>
-                      )}
-                      {settlement.proofTxHash && (
-                        <div className="flex justify-between text-caption text-secondary">
-                          <span>Proof tx (Polkadot Hub)</span>
-                          <a
-                            className="text-micro underline font-mono text-secondary"
-                            href={`${proofExplorerBaseUrl}${settlement.proofTxHash}`}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            {settlement.proofTxHash.slice(0, 10)}...{settlement.proofTxHash.slice(-8)}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  </details>
-                )}
-                {settlement.closeoutId && !settlement.proofTxHash && onRetryProof && (
-                  <div className="pt-2">
-                    <button
-                      onClick={() => onRetryProof(settlement.id)}
-                      className="text-caption underline text-secondary hover:text-foreground transition-colors"
-                    >
-                      Retry proof recording
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))
+          <>
+            {filteredLegs.map(leg => (
+              <LegCard
+                key={leg.id}
+                leg={leg}
+                members={members}
+                currentUserId={currentUserId}
+                baseCurrency={baseCurrency}
+              />
+            ))}
+            {filteredLegacy.map(s => (
+              <LegacyCard key={s.id} settlement={s} />
+            ))}
+          </>
         )}
       </div>
+
       <div className="p-4 border-t border-border">
-        <PrimaryButton
-          fullWidth
-          onClick={() => exportSettlementHistoryToCSV(filteredSettlements)}
+        <button
+          onClick={() => exportSettlementHistoryToCSV(filteredLegacy)}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-body font-medium card card-hover-lift transition-all"
         >
-          <Download className="w-4 h-4 inline mr-1" />
+          <Download className="w-4 h-4" />
           Export CSV
-        </PrimaryButton>
+        </button>
       </div>
     </div>
   );

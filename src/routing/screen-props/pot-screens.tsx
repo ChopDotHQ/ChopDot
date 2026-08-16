@@ -69,11 +69,6 @@ const ExpenseDetail = lazy(() =>
         default: module.ExpenseDetail,
     }))
 );
-const CloseoutReview = lazy(() =>
-    import("../../components/screens/CloseoutReview").then((module) => ({
-        default: module.CloseoutReview,
-    }))
-);
 
 export function renderPotHome(ctx: RouterContext) {
     const {
@@ -99,7 +94,6 @@ export function renderPotHome(ctx: RouterContext) {
             deleteExpense,
             addExpenseToPot,
             handleRemoveMember,
-            persistPotPartial,
             showToast,
         },
     } = ctx;
@@ -141,10 +135,6 @@ export function renderPotHome(ctx: RouterContext) {
                 pot.currentCheckpoint?.status === "pending"
             }
             checkpointConfirmations={normalizedCheckpointConfirmations}
-            contributions={pot.contributions}
-            totalPooled={pot.totalPooled ?? undefined}
-            yieldRate={pot.yieldRate ?? undefined}
-            defiProtocol={pot.defiProtocol}
             goalAmount={pot.goalAmount ?? undefined}
             goalDescription={pot.goalDescription}
             onBack={back}
@@ -183,9 +173,6 @@ export function renderPotHome(ctx: RouterContext) {
             }}
             onDeleteExpense={deleteExpense}
             onShowToast={showToast}
-            onAddContribution={() => push({ type: "add-contribution" })}
-            onWithdraw={() => push({ type: "withdraw-funds" })}
-            onViewCheckpoint={() => push({ type: "checkpoint-status" })}
             onQuickAddSave={(data) => {
                 setCurrentPotId(pot.id);
                 addExpenseToPot(pot.id, data);
@@ -217,74 +204,10 @@ export function renderPotHome(ctx: RouterContext) {
             onLeavePot={() => {
                 void handleLeavePot(pot.id);
             }}
-            closeouts={pot.closeouts}
-            onReopenTrackedSettlement={() => {
-                const latestCloseout = [...(pot.closeouts || [])]
-                    .filter((entry) => entry.status !== 'cancelled' && entry.status !== 'draft')
-                    .sort((left, right) => right.createdAt - left.createdAt)[0];
-
-                if (!latestCloseout) {
-                    showToast('No smart settlement is active for this tab.', 'info');
-                    return;
-                }
-
-                const hasStartedPayments = latestCloseout.legs.some(
-                    (leg) => Boolean(leg.settlementTxHash || leg.proofTxHash || leg.status !== 'pending')
-                );
-
-                if (hasStartedPayments) {
-                    showToast('This tab already has tracked payments. Rebalancing is locked.', 'info');
-                    return;
-                }
-
-                const nextCloseouts = (pot.closeouts || []).map((entry) =>
-                    entry.id === latestCloseout.id
-                        ? { ...entry, status: 'cancelled' as const }
-                        : entry
-                );
-
-                void persistPotPartial(pot.id, {
-                    closeouts: nextCloseouts,
-                    lastEditAt: new Date().toISOString(),
-                } as any);
-                showToast('Smart settlement reopened. You can change expenses again.', 'success');
-            }}
         />
     );
 }
 
-export function renderCloseoutReview(ctx: RouterContext) {
-    const {
-        screen,
-        nav: { back, push },
-        data: { currentPot: pot },
-        userState: { user, isGuest },
-        actions: { persistPotPartial, showToast },
-    } = ctx;
-
-    if (!screen || screen.type !== 'closeout-review') return null;
-    if (!pot) return null;
-
-    return (
-        <CloseoutReview
-            pot={pot as any}
-            currentUserId={isGuest ? 'owner' : (user?.id || 'owner')}
-            onBack={back}
-            onAnchored={(closeout) => {
-                const nextCloseouts = [
-                    closeout,
-                    ...(pot.closeouts || []).filter((entry) => entry.id !== closeout.id),
-                ];
-                void persistPotPartial(pot.id, {
-                    closeouts: nextCloseouts,
-                    lastEditAt: new Date().toISOString(),
-                } as any);
-            }}
-            onContinueToSettlement={() => push({ type: 'settle-selection' })}
-            onShowToast={showToast}
-        />
-    );
-}
 
 export function renderAddExpense(ctx: RouterContext) {
     const {

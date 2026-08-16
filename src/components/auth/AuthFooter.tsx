@@ -24,23 +24,11 @@ export const AuthFooter = ({ panelMode, loginVariant }: AuthFooterProps) => {
     const linkClasses = `font-medium underline-offset-2 hover:underline focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 rounded-sm px-0.5 ${isDarkMode ? 'text-white' : (useGlassmorphism ? '' : 'text-foreground')
         }`;
 
-    const mainLinkClasses = `block text-center text-sm font-semibold ${isDarkMode ? 'text-white' : (useGlassmorphism ? '' : 'text-[var(--accent)]')
-        } transition-colors hover:text-[var(--accent)]/80 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/25 rounded-xl py-2`;
-
     const footerTextClasses = `text-center text-xs ${isDarkMode ? 'text-white/70' : (useGlassmorphism ? '' : 'text-secondary/80')
         }`;
 
     return (
         <div className="space-y-3">
-            <a
-                href="https://polkadot.com/get-started/wallets/"
-                target="_blank"
-                rel="noreferrer"
-                className={mainLinkClasses}
-                style={linkStyle}
-            >
-                Need a wallet? View recommended options
-            </a>
             <p className={footerTextClasses} style={textStyle}>
                 By continuing, you agree to ChopDot&apos;s{' '}
                 <a

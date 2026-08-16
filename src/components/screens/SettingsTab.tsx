@@ -232,10 +232,12 @@ export function SettingsTab({
             className="w-full px-3 py-2.5 bg-input-background border border-border/30 rounded-[var(--r-lg)] text-body focus:outline-none focus-ring-pink transition-all appearance-none"
           >
             <option value="USD">USD</option>
-            <option value="USDC">USDC</option>
             <option value="EUR">EUR</option>
             <option value="GBP">GBP</option>
-            <option value="DOT">DOT</option>
+            <option value="CHF">CHF</option>
+            <option value="CAD">CAD</option>
+            <option value="AUD">AUD</option>
+            <option value="JPY">JPY</option>
           </select>
         </div>
 
@@ -336,7 +338,7 @@ export function SettingsTab({
             className="w-full card rounded-xl p-4 flex items-center gap-2 hover:shadow-[var(--shadow-fab)] transition-all duration-200 active:scale-[0.98] text-left disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Share2 className="w-4 h-4" />
-            <span className="text-body">Share Pot (IPFS)</span>
+            <span className="text-body">Share Pot</span>
           </button>
         </div>
       )}

@@ -6,10 +6,10 @@ interface SettleSheetProps {
   personId: string;
   personName: string;
   amount: number;
-  preferredMethod?: "Bank" | "PayPal" | "DOT" | "Cash";
+  preferredMethod?: "Bank" | "PayPal" | "Cash";
   pots: { id: string; name: string; amount: number }[];
   onClose: () => void;
-  onConfirm: (method: "Bank" | "PayPal" | "DOT" | "Cash") => void;
+  onConfirm: (method: "Bank" | "PayPal" | "Cash") => void;
   onViewHistory: () => void;
 }
 
@@ -24,14 +24,14 @@ export function SettleSheet({
   onViewHistory,
 }: SettleSheetProps) {
   const [step, setStep] = useState<1 | 2>(1);
-  const [selectedMethod, setSelectedMethod] = useState<"Bank" | "PayPal" | "DOT" | "Cash" | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<"Bank" | "PayPal" | "Cash" | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
 
   // All available methods
-  const allMethods: Array<"Bank" | "PayPal" | "DOT" | "Cash"> = ["Bank", "PayPal", "DOT", "Cash"];
+  const allMethods: Array<"Bank" | "PayPal" | "Cash"> = ["Bank", "PayPal", "Cash"];
   const otherMethods = allMethods.filter(m => m !== preferredMethod);
 
-  const handleMethodSelect = (method: "Bank" | "PayPal" | "DOT" | "Cash") => {
+  const handleMethodSelect = (method: "Bank" | "PayPal" | "Cash") => {
     setSelectedMethod(method);
     setShowConfetti(true);
     
