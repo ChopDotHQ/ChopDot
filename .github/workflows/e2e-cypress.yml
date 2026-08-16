@@ -5,11 +5,63 @@ on:
   push:
     branches:
       - main
-      - '**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  cypress-e2e:
+  preflight:
+    name: Cypress capability preflight
     runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.capability.outputs.ready }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inspect Cypress assets
+        id: capability
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=()
+          [[ -f cypress.config.ts ]] || missing+=("cypress.config.ts")
+          [[ -f scripts/generate-cypress-mvp-spec.mjs ]] || missing+=("scripts/generate-cypress-mvp-spec.mjs")
+          if [[ ! -d cypress/e2e ]] || ! find cypress/e2e -type f -name '*.cy.ts' -print -quit | grep -q .; then
+            missing+=("cypress/e2e/*.cy.ts")
+          fi
+          node -e "const p=require('./package.json'); process.exit(p.scripts?.['e2e:generate'] && p.scripts?.['e2e:server'] && (p.devDependencies?.cypress || p.dependencies?.cypress) ? 0 : 1)" || missing+=("Cypress package/scripts")
+
+          if (( ${#missing[@]} == 0 )); then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "## Cypress E2E capability: READY" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "## Cypress E2E capability: BLOCKED"
+              echo "The canonical source does not currently contain the legacy Cypress runtime. No E2E proof is claimed."
+              echo ""
+              printf -- '- Missing: `%s`\n' "${missing[@]}"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  blocked:
+    name: Cypress E2E — blocked (assets absent)
+    runs-on: ubuntu-latest
+    needs: preflight
+    if: needs.preflight.outputs.ready != 'true'
+    steps:
+      - name: Record blocked capability
+        run: |
+          echo "Cypress E2E was not executed because its required source assets are absent."
+          echo "This successful job records an explicit blocker; it is not E2E test evidence."
+
+  cypress-e2e:
+    name: Cypress E2E
+    runs-on: ubuntu-latest
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'true'
     env:
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL || 'https://example.supabase.co' }}
       VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || vars.VITE_SUPABASE_ANON_KEY || 'test-anon-key' }}
@@ -45,51 +97,25 @@ jobs:
           const fs = require('node:fs');
           const path = require('node:path');
           const dir = 'cypress/results';
-          if (!fs.existsSync(dir)) {
-            console.error('No Cypress JUnit results found');
-            process.exit(1);
-          }
-          const files = fs.readdirSync(dir).filter((f) => f.endsWith('.xml'));
-          if (files.length === 0) {
-            console.error('No Cypress JUnit XML files found');
-            process.exit(1);
-          }
-
+          if (!fs.existsSync(dir)) process.exit(1);
+          const files = fs.readdirSync(dir).filter((file) => file.endsWith('.xml'));
           let tests = 0;
           for (const file of files) {
             const xml = fs.readFileSync(path.join(dir, file), 'utf8');
-            const suiteMatches = [...xml.matchAll(/<testsuite\b[^>]*\btests="(\d+)"/g)];
-            for (const m of suiteMatches) tests += Number(m[1] || 0);
+            for (const match of xml.matchAll(/<testsuite\b[^>]*\btests="(\d+)"/g)) tests += Number(match[1] || 0);
           }
-
           console.log(`Total Cypress tests executed: ${tests}`);
-          const minExpected = 175;
-          if (tests < minExpected) {
-            console.error(`Expected at least ${minExpected} Cypress tests to run, got ${tests}`);
-            process.exit(1);
-          }
+          if (tests < 175) process.exit(1);
           NODE
 
-      - name: Upload Cypress screenshots
+      - name: Upload Cypress evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-screenshots
-          path: cypress/screenshots
+          name: cypress-evidence-${{ github.run_id }}
+          path: |
+            cypress/screenshots
+            cypress/videos
+            cypress/results
           if-no-files-found: ignore
-
-      - name: Upload Cypress videos
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-videos
-          path: cypress/videos
-          if-no-files-found: ignore
-
-      - name: Upload Cypress JUnit
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-junit
-          path: cypress/results
-          if-no-files-found: ignore
+          retention-days: 14

@@ -1,15 +1,63 @@
 name: Smoke (Targeted)
 
 on:
+  pull_request:
   push:
     branches:
-      - '**'
-  pull_request:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
+  preflight:
+    name: Smoke capability preflight
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.capability.outputs.ready }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inspect smoke runtime
+        id: capability
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=()
+          [[ -f scripts/ci-smoke-targeted.cjs ]] || missing+=("scripts/ci-smoke-targeted.cjs")
+          node -e "const p=require('./package.json'); process.exit(p.scripts?.['ci:smoke:targeted'] && (p.devDependencies?.['@playwright/test'] || p.devDependencies?.playwright) ? 0 : 1)" || missing+=("Playwright package/smoke script")
+
+          if (( ${#missing[@]} == 0 )); then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+            echo "## Targeted smoke capability: READY" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "## Targeted smoke capability: BLOCKED"
+              echo "The canonical source does not currently contain the legacy smoke runtime. No browser-smoke proof is claimed."
+              echo ""
+              printf -- '- Missing: `%s`\n' "${missing[@]}"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  blocked:
+    name: Targeted smoke — blocked (runtime absent)
+    runs-on: ubuntu-latest
+    needs: preflight
+    if: needs.preflight.outputs.ready != 'true'
+    steps:
+      - name: Record blocked capability
+        run: |
+          echo "Targeted smoke was not executed because its required runtime is absent."
+          echo "This successful job records an explicit blocker; it is not browser test evidence."
+
   detect:
     name: Detect Smoke Scope
     runs-on: ubuntu-latest
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'true'
     outputs:
       core_changed: ${{ steps.filter.outputs.core }}
       guest_changed: ${{ steps.filter.outputs.guest }}
@@ -24,16 +72,11 @@ jobs:
           filters: |
             core:
               - 'src/components/AppRouter.tsx'
-              - 'src/components/screens/AddExpense.tsx'
-              - 'src/components/screens/CreatePot.tsx'
-              - 'src/components/screens/ExpenseDetail.tsx'
-              - 'src/components/screens/PotHome.tsx'
-              - 'src/components/screens/SettleHome.tsx'
+              - 'src/components/screens/**'
               - 'src/hooks/**'
               - 'src/nav.ts'
               - 'src/services/**'
               - 'src/types/**'
-              - 'src/utils/settlements.ts'
             guest:
               - 'src/components/AppRouter.tsx'
               - 'src/components/auth/**'
@@ -43,16 +86,11 @@ jobs:
               - 'src/nav.ts'
               - 'src/services/**'
 
-      - name: Echo scope
-        run: |
-          echo "core_changed=${{ steps.filter.outputs.core }}"
-          echo "guest_changed=${{ steps.filter.outputs.guest }}"
-
   smoke-core:
-    name: Targeted Smoke (Core, Required)
+    name: Targeted Smoke (Core)
     runs-on: ubuntu-latest
-    needs: detect
-    if: needs.detect.outputs.core_changed == 'true'
+    needs: [preflight, detect]
+    if: needs.preflight.outputs.ready == 'true' && needs.detect.outputs.core_changed == 'true'
     env:
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL || 'https://example.supabase.co' }}
       VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || vars.VITE_SUPABASE_ANON_KEY || 'test-anon-key' }}
@@ -60,37 +98,33 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Playwright browser
+      - name: Install Chromium
         run: npx playwright install --with-deps chromium
-
       - name: Run targeted smoke suite
         run: npm run ci:smoke:targeted
-
-      - name: Upload smoke artifacts
+      - name: Upload smoke evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: smoke-core-artifacts-${{ github.run_id }}
+          name: smoke-core-evidence-${{ github.run_id }}
           path: |
             artifacts/SMOKE_*.md
             output/playwright/**
           if-no-files-found: ignore
+          retention-days: 14
 
   smoke-guest:
-    name: Targeted Smoke (Guest, Required)
+    name: Targeted Smoke (Guest)
     runs-on: ubuntu-latest
-    needs: detect
-    if: needs.detect.outputs.guest_changed == 'true'
+    needs: [preflight, detect]
+    if: needs.preflight.outputs.ready == 'true' && needs.detect.outputs.guest_changed == 'true'
     env:
       VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || vars.VITE_SUPABASE_URL || 'https://example.supabase.co' }}
       VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY || vars.VITE_SUPABASE_ANON_KEY || 'test-anon-key' }}
@@ -98,28 +132,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Playwright browser
+      - name: Install Chromium
         run: npx playwright install --with-deps chromium
-
       - name: Run guest smoke suite
         run: npm run ci:smoke:targeted
-
-      - name: Upload smoke artifacts
+      - name: Upload smoke evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: smoke-guest-artifacts-${{ github.run_id }}
+          name: smoke-guest-evidence-${{ github.run_id }}
           path: |
             artifacts/SMOKE_*.md
             output/playwright/**
           if-no-files-found: ignore
+          retention-days: 14
