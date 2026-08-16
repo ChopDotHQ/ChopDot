@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-16",
+  "branch": "agent/canonical-reconciliation",
+  "canonicalBase": {
+    "ref": "mvp",
+    "sha": "a7db07d6b8844ddee9061adacad10802bc2b7144",
+    "reason": "Preserves the current Prisma backend, Supabase migrations, Docker/deployment files, security scanning, and CI surface while reconciliation proceeds slice by slice."
+  },
+  "sourceRefs": {
+    "main": "06aef59d5e71ee54917caed16f67a4f1a4d09294",
+    "mvp": "a7db07d6b8844ddee9061adacad10802bc2b7144",
+    "chatgpt/chopdot-v1-completion": "b5c92437359d95a8cfd2e55654e9287404be6957",
+    "codex/portable-shell-trial": "81e56801a059253ca3daf667251239d4776e96f4",
+    "codex/p025-canonical-baseline": "d31274af981d7d727a838c2272c92967316023c4",
+    "codex/p025-financial-rls-lockdown": "26d2cc322c85361a4292c0631e76d1da5bf05114",
+    "codex/p025-p026-canonical-integration": "d31274af981d7d727a838c2272c92967316023c4"
+  },
+  "protectedPaths": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/secrets-scan.yml",
+    ".gitleaks.toml",
+    ".gitleaksignore",
+    "SECURITY.md",
+    "Dockerfile.frontend",
+    "docker-compose.yml",
+    "package-lock.json",
+    "backend/package.json",
+    "backend/package-lock.json",
+    "backend/prisma.config.ts",
+    "backend/prisma/schema.prisma",
+    "backend/src/index.ts",
+    "backend/src/routes/settlements.ts",
+    "supabase/migrations/20260416000000_commitment_kernel.sql"
+  ],
+  "authorityRules": [
+    "Postgres is canonical for shared ChopDot operational state.",
+    "Polkadot is canonical only for facts that actually occur on-chain.",
+    "Client storage is limited to drafts, cache, and explicitly local-only state.",
+    "A payment request is not a payment.",
+    "Payer evidence moves a settlement to paid or marked_paid; receiver confirmation closes manual settlement under the current policy.",
+    "Private keys and seed material never enter ChopDot."
+  ],
+  "portOrder": [
+    "RECONCILIATION-000: establish protected authoritative baseline and executable CI",
+    "DATA-002: integer canonical money and versioned persistence migrations",
+    "BACKEND-001: authenticated and idempotent command service",
+    "BACKEND-002: durable obligations, payment intents, settlement evidence, and audit events",
+    "PRODUCT-SLICES: port stronger money, people, group, history, identity, Polkadot, and accessibility work one bounded slice at a time",
+    "RELEASE-001: full acceptance journey, deployment, host, chain, and accessibility evidence"
+  ],
+  "knownBlockers": [
+    "PR #10 settlement routes still require payer/receiver authorization and fully atomic pay/confirm/close transitions.",
+    "Frontend money models still expose decimal JavaScript numbers and must be migrated in DATA-002.",
+    "The completion branch is not directly mergeable because it removes authoritative backend, CI, deployment, and security infrastructure.",
+    "The completion branch verification currently fails TypeScript checks and has no valid QUALITY-002 merge or PR #11 in the repository."
+  ]
+}
