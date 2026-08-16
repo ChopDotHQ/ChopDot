@@ -1,0 +1,53 @@
+name: Canonical Lockfile Repair
+
+on:
+  push:
+    branches:
+      - agent/canonical-reconciliation
+    paths:
+      - '.github/workflows/reconciliation-lockfile.yml'
+      - 'backend/package.json'
+      - 'backend/package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Synchronize backend lockfile
+        run: npm install --package-lock-only --prefix backend --ignore-scripts --no-audit --no-fund
+
+      - name: Upload backend lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-backend-lockfile
+          path: backend/package-lock.json
+          retention-days: 3
+
+      - name: Package reconciliation source
+        run: |
+          tar \
+            --exclude=.git \
+            --exclude=node_modules \
+            --exclude=backend/node_modules \
+            --exclude=dist \
+            --exclude=backend/dist \
+            -czf /tmp/canonical-reconciliation-source.tgz .
+
+      - name: Upload reconciliation source
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-reconciliation-source
+          path: /tmp/canonical-reconciliation-source.tgz
+          retention-days: 3
