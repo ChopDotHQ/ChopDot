@@ -13,7 +13,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "verify:reconciliation": "node scripts/verify-canonical-reconciliation.mjs",
     "ci:fast": "npm run type-check && npm run lint && npm test && npm run build",
-    "ci:backend": "npm --prefix backend run ci:fast",
+    "ci:backend": "npm ci --prefix backend && npm --prefix backend run ci:fast",
     "ci:canonical": "npm run verify:reconciliation && npm run ci:fast && npm run ci:backend",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
