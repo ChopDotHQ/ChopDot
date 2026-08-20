@@ -9,7 +9,7 @@
 
 This document is the persistent handoff from the ChatGPT build session to Codex. It exists so the work does not depend on chat memory.
 
-As of this handoff, GitHub reports `chatgpt/chopdot-v1-completion` as **137 commits ahead** of `codex/portable-shell-trial` and not behind it. That count will age; resolve the live head before doing any work.
+As of this handoff, GitHub reports `chatgpt/chopdot-v1-completion` as **140 commits ahead** of `codex/portable-shell-trial` and not behind it. That count will age; resolve the live head before doing any work.
 
 ---
 
@@ -48,7 +48,7 @@ git switch -c codex/reconcile-chatgpt-v1
 
 The rule is:
 
-> **Compare slice by slice, keep the stronger implementation, and never blindly merge 137 commits into current source.**
+> **Compare slice by slice, keep the stronger implementation, and never blindly merge 140 commits into current source.**
 
 ---
 
