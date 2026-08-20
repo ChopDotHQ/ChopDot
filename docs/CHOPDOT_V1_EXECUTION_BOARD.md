@@ -8,15 +8,18 @@
 
 Read before each slice:
 
-1. this board
-2. `docs/PRODUCT_EXPERIENCE.md`
-3. `docs/SECURITY_TRUST_MODEL.md`
-4. `docs/ARCHITECTURE_DECISIONS.md`
-5. `docs/DATA_ARCHITECTURE.md`
-6. `docs/ENGINEERING_STANDARDS.md`
-7. `docs/QUALITY_GATE.md`
-8. `docs/FOUNDATION_DEBT.md`
-9. relevant `docs/slices/*_PREFLIGHT.md`
+1. `docs/CODEX_HANDOFF.md`
+2. this board
+3. `docs/PRODUCT_EXPERIENCE.md`
+4. `docs/SECURITY_TRUST_MODEL.md`
+5. `docs/ARCHITECTURE_DECISIONS.md`
+6. `docs/DATA_ARCHITECTURE.md`
+7. `docs/ENGINEERING_STANDARDS.md`
+8. `docs/QUALITY_GATE.md`
+9. `docs/FOUNDATION_DEBT.md`
+10. relevant `docs/slices/*_PREFLIGHT.md`
+
+Repository-level Codex behavior is also summarized in `AGENTS.md`.
 
 For Polkadot/data work also read `docs/research/RESEARCH-001_PARITY_REFERENCE_ARCHITECTURE.md`, `SECURITY_FOUNDATION.md`, `PAYMENT_INTENT_CONTRACT.md`, `PAYMENT_INTENT_SERVICE_FOUNDATION.md`, `HOSTS.md`, and `PORTABLE_SHELL_TRIAL.md`.
 
@@ -121,7 +124,7 @@ Unexecuted tests are always labelled WRITTEN / NOT EXECUTED HERE.
 | HISTORY-001 | READY_FOR_CODEX_VERIFY | real money timeline + past-group archive |
 | IDENTITY-001 | READY_FOR_CODEX_VERIFY | honest local profile lifecycle + Polkadot/recovery distinction |
 | QUALITY-001 | READY_FOR_CODEX_VERIFY | strict financial inputs + truthful scoped payment requests + recovery errors |
-| QUALITY-002 | TODO — NEXT | mobile/accessibility/consumer polish |
+| QUALITY-002 | BUILDING | shared mobile/a11y primitives started; navigation/status/layout acceptance remains |
 | SYNC-001 | TODO / PARTIALLY PLATFORM-BLOCKED | API correctness first; Statement Store optional wakeup |
 | BULLETIN-001 | TODO / OPTIONAL | encrypted artifact policy only if useful |
 | RELEASE-001 | TODO | full acceptance journey + deployment proof |
@@ -141,9 +144,31 @@ Full implementation/acceptance details live in the corresponding preflight docs.
 - IDENTITY-001 removes fake login choices, gives one real local onboarding path, validates/normalizes names, saves profile edits intentionally, and states that Polkadot identity reconnect does not yet restore groups/history on another device.
 - QUALITY-001 rejects partial/exponent/negative financial input, validates split rules at explicit asset precision, uses UUID-grade local entity IDs, and turns Request Payment into a real one-payer/one-receiver/one-currency expiring share/copy action that fails closed when delivery is unavailable.
 
-## Next slice: QUALITY-002
+## Current slice: QUALITY-002
 
-Goal: mobile/accessibility/consumer polish over the now safer flows. Audit focus order: touch targets and keyboard/focus behavior, safe-area/viewport handling, screen-reader labels/status messaging, loading/disabled feedback, long-name/large-amount layout, and consistency of consumer copy. Do not reopen money authority or protocol architecture unless the polish audit exposes a real correctness issue.
+Preflight: `docs/slices/QUALITY-002_PREFLIGHT.md`.
+
+Implemented so far:
+
+- minimum shared touch targets;
+- visible keyboard focus;
+- safe button type defaults;
+- top safe-area handling in shared headers;
+- accessible decorative back icon handling;
+- `<main>` content landmark;
+- CI workflow scaffold for typecheck, regressions, build and future mobile/a11y Playwright acceptance.
+
+Remaining focus order:
+
+1. bottom-navigation safe area and selected-tab semantics;
+2. accessible async loading/success/failure status;
+3. long names/group titles/large amounts;
+4. 320/375/390px viewport acceptance;
+5. keyboard and screen-reader spot checks;
+6. reduced motion/high contrast only where a real issue exists;
+7. update this board and do not mark DONE without runtime evidence.
+
+Do not reopen money authority or protocol architecture unless the polish audit exposes a real correctness defect.
 
 ## Reconciliation protocol
 
