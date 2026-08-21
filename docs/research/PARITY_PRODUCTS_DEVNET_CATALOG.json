@@ -1,0 +1,388 @@
+{
+  "catalogVersion": 1,
+  "snapshotDate": "2026-08-21",
+  "scope": "Current Products Devnet application stack and ChopDot-relevant open-source donors. See RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md for details.",
+  "entries": [
+    {
+      "id": "asset-hub",
+      "category": "chain",
+      "name": "Asset Hub",
+      "repositories": ["polkadot-sdk / deployed Devnet runtime"],
+      "maturity": "current_surface",
+      "chopdotUse": "Native PAS/DOT and verified asset settlement; minimal justified public contract state."
+    },
+    {
+      "id": "people-individuality",
+      "category": "chain",
+      "name": "People / Individuality",
+      "repositories": ["paritytech/individuality-community"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Optional identity context, anti-spam or human-friendly lookup later."
+    },
+    {
+      "id": "bulletin",
+      "category": "chain",
+      "name": "Bulletin Chain",
+      "repositories": ["paritytech/polkadot-bulletin-chain"],
+      "maturity": "current_surface",
+      "chopdotUse": "Encrypted receipts, exports, app bundles and proof packages."
+    },
+    {
+      "id": "statement-store",
+      "category": "communication",
+      "name": "Statement Store",
+      "repositories": ["paritytech/product-sdk", "paritytech/triangle-js-sdks", "People runtime"],
+      "maturity": "execution_blocked",
+      "chopdotUse": "Optional DB-version invalidation and narrowly scoped coordination."
+    },
+    {
+      "id": "product-sdk",
+      "category": "sdk",
+      "name": "Product SDK",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Canonical new SDK family for ChopDot adapters after package-family verification."
+    },
+    {
+      "id": "sdk-chain-client",
+      "category": "sdk_package",
+      "name": "Product SDK chain-client",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Canonical chain connection seam"
+    },
+    {
+      "id": "sdk-tx",
+      "category": "sdk_package",
+      "name": "Product SDK tx",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Native/asset transaction execution and evidence"
+    },
+    {
+      "id": "sdk-signer",
+      "category": "sdk_package",
+      "name": "Product SDK signer",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Authenticated product-account signing"
+    },
+    {
+      "id": "sdk-contracts",
+      "category": "sdk_package",
+      "name": "Product SDK contracts",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Runtime contract calls if a justified contract feature exists"
+    },
+    {
+      "id": "sdk-cloud-storage",
+      "category": "sdk_package",
+      "name": "Product SDK cloud-storage",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Encrypted artifact storage only"
+    },
+    {
+      "id": "sdk-statement-store",
+      "category": "sdk_package",
+      "name": "Product SDK statement-store",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Optional coordination/wakeup"
+    },
+    {
+      "id": "sdk-individuality",
+      "category": "sdk_package",
+      "name": "Product SDK individuality",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Optional identity/personhood context"
+    },
+    {
+      "id": "sdk-keys",
+      "category": "sdk_package",
+      "name": "Product SDK keys",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Host/SDK internals; never store user master keys"
+    },
+    {
+      "id": "sdk-local-storage",
+      "category": "sdk_package",
+      "name": "Product SDK local-storage",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Local drafts/cache with explicit migrations"
+    },
+    {
+      "id": "sdk-host",
+      "category": "sdk_package",
+      "name": "Product SDK host",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Capability detection and graceful fallback"
+    },
+    {
+      "id": "sdk-address",
+      "category": "sdk_package",
+      "name": "Product SDK address",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Replace ad hoc address code"
+    },
+    {
+      "id": "sdk-crypto",
+      "category": "sdk_package",
+      "name": "Product SDK crypto",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Only reviewed encryption envelopes and key lifecycle"
+    },
+    {
+      "id": "sdk-descriptors",
+      "category": "sdk_package",
+      "name": "Product SDK descriptors",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Pin with runtime/chain client"
+    },
+    {
+      "id": "sdk-logger-utils",
+      "category": "sdk_package",
+      "name": "Product SDK logger + utils",
+      "repositories": ["paritytech/product-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Redacted observability and display helpers"
+    },
+    {
+      "id": "truapi",
+      "category": "host_protocol",
+      "name": "TrUAPI",
+      "repositories": ["paritytech/host-rust-core"],
+      "maturity": "current_surface",
+      "chopdotUse": "Use through Product SDK; raw protocol only for explicit compatibility work."
+    },
+    {
+      "id": "triangle-js",
+      "category": "host_protocol",
+      "name": "Triangle JS SDKs",
+      "repositories": ["paritytech/triangle-js-sdks"],
+      "maturity": "legacy_predecessor",
+      "chopdotUse": "Keep inherited compatibility paths only; migrate toward Product SDK + TrUAPI."
+    },
+    {
+      "id": "dotli",
+      "category": "host",
+      "name": "Polkadot Web / dotli",
+      "repositories": ["paritytech/dotli-community"],
+      "maturity": "current_surface",
+      "chopdotUse": "Primary web-host target and real sandbox/capability test surface."
+    },
+    {
+      "id": "desktop",
+      "category": "host",
+      "name": "Polkadot Desktop",
+      "repositories": ["Polkadot-Community-Foundation/polkadot-desktop-community"],
+      "maturity": "current_surface",
+      "chopdotUse": "Required verification target; widgets/background mode later."
+    },
+    {
+      "id": "android",
+      "category": "host",
+      "name": "Polkadot Android",
+      "repositories": ["Polkadot-Community-Foundation/polkadot-android-community"],
+      "maturity": "current_surface",
+      "chopdotUse": "Payer/recipient mobile host, deeplinks and signing-return UX."
+    },
+    {
+      "id": "ios",
+      "category": "host",
+      "name": "Polkadot iOS",
+      "repositories": ["Polkadot-Community-Foundation/polkadot-ios-community"],
+      "maturity": "current_surface",
+      "chopdotUse": "Payer/recipient mobile host, safe-area and rejection testing."
+    },
+    {
+      "id": "host-test-sdk",
+      "category": "testing",
+      "name": "Host API Test SDK",
+      "repositories": ["paritytech/host-api-test-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Deterministic host E2E and rejection/failure tests."
+    },
+    {
+      "id": "dotns",
+      "category": "naming",
+      "name": "DotNS protocol",
+      "repositories": ["paritytech/dotns"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Product identifier and optional verified receive/contact records."
+    },
+    {
+      "id": "dotns-sdk",
+      "category": "naming",
+      "name": "DotNS SDK/CLI",
+      "repositories": ["paritytech/dotns-sdk"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Use instead of hand-rolled name logic after release/network match."
+    },
+    {
+      "id": "pad",
+      "category": "deployment",
+      "name": "Polkadot App Deploy / pad",
+      "repositories": ["paritytech/polkadot-app-deploy"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Reproducible ChopDot release deployment with commit/CID/domain evidence."
+    },
+    {
+      "id": "browse",
+      "category": "discovery",
+      "name": "Browse",
+      "repositories": ["paritytech/browse"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Publish after release gate; use source for live ecosystem catalog refresh."
+    },
+    {
+      "id": "browse-sdk",
+      "category": "discovery",
+      "name": "Browse SDK",
+      "repositories": ["paritytech/browse"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Automated live catalog refresh and optional future discovery surface."
+    },
+    {
+      "id": "cdm",
+      "category": "contracts",
+      "name": "Contract Dependency Manager",
+      "repositories": ["paritytech/contract-dependency-manager"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Only if ChopDot adopts a justified contract feature."
+    },
+    {
+      "id": "system-contracts",
+      "category": "contracts",
+      "name": "Contexts / Reputation / Disputes",
+      "repositories": ["paritytech/contract-developer-tools"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Future donor for formal disputes, not a v1 requirement."
+    },
+    {
+      "id": "attestation",
+      "category": "contracts",
+      "name": "Polkadot Attestation Protocol",
+      "repositories": ["paritytech/attestation-protocol"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Potential app certification or signed group-close proof later."
+    },
+    {
+      "id": "identity-backend",
+      "category": "backend",
+      "name": "Polkadot App Identity Backend",
+      "repositories": ["paritytech/identity-backend-community"],
+      "maturity": "adjacent_donor",
+      "chopdotUse": "Architecture donor confirming Postgres/service pattern."
+    },
+    {
+      "id": "playground-cli",
+      "category": "development",
+      "name": "Playground CLI",
+      "repositories": ["paritytech/playground-cli"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Development/deployment donor and network-support reality check."
+    },
+    {
+      "id": "playground-template",
+      "category": "reference_product",
+      "name": "Playground Template",
+      "repositories": ["paritytech/playground-app-template"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Smallest integration donor for ChopDot adapter tests."
+    },
+    {
+      "id": "playground-app",
+      "category": "reference_product",
+      "name": "Playground App Registry",
+      "repositories": ["paritytech/playground-app-community"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Deployment provenance and donor discovery."
+    },
+    {
+      "id": "playground-tutorial",
+      "category": "reference_product",
+      "name": "Playground Tutorial",
+      "repositories": ["paritytech/playground-tutorial"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Validates progressive adoption of Polkadot primitives."
+    },
+    {
+      "id": "survey",
+      "category": "reference_product",
+      "name": "Simple Survey",
+      "repositories": ["paritytech/simple-survey"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Artifact/index separation donor."
+    },
+    {
+      "id": "rps",
+      "category": "reference_product",
+      "name": "Rock Paper Scissors",
+      "repositories": ["paritytech/Rock-Paper-Scissors"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Coordination/evidence donor, not ledger pattern."
+    },
+    {
+      "id": "feedback",
+      "category": "reference_product",
+      "name": "Feedback Board",
+      "repositories": ["paritytech/feedback-board"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Shows content/index split and why ChopDot personal data should not be public."
+    },
+    {
+      "id": "mercado",
+      "category": "reference_product",
+      "name": "Mercado",
+      "repositories": ["paritytech/mercado-community"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Donor for settlement/dispute lifecycle only."
+    },
+    {
+      "id": "localdot",
+      "category": "reference_product",
+      "name": "LocalDOT",
+      "repositories": ["paritytech/localdot-community"],
+      "maturity": "reference_experimental",
+      "chopdotUse": "Strong donor for host-native multi-rail coordination and evidence."
+    },
+    {
+      "id": "polkadot-apps-legacy",
+      "category": "adjacent",
+      "name": "Polkadot Apps package family",
+      "repositories": ["paritytech/polkadot-apps"],
+      "maturity": "legacy_predecessor",
+      "chopdotUse": "Migration context only."
+    },
+    {
+      "id": "polkadot-hub-app",
+      "category": "adjacent",
+      "name": "Polkadot Hub App",
+      "repositories": ["paritytech/polkadot-hub-app"],
+      "maturity": "adjacent_donor",
+      "chopdotUse": "Donor for module isolation and shared data architecture."
+    },
+    {
+      "id": "design-system",
+      "category": "adjacent",
+      "name": "Polkadot App Design Systems",
+      "repositories": [
+        "paritytech/polkadot-app-design-system",
+        "paritytech/polkadot-app-design-system-ios",
+        "paritytech/polkadot-app-design-system-android",
+        "paritytech/polkadot-app-design-system-desktop"
+      ],
+      "maturity": "adjacent_donor",
+      "chopdotUse": "Align host-native feel while keeping ChopDot consumer identity."
+    }
+  ]
+}
