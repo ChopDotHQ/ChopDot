@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
-import { validatePullRequestBody } from '../verify-pr-supervision.mjs';
+import {
+  CURRENT_HEAD_TOKEN,
+  validatePullRequestBody,
+} from '../verify-pr-supervision.mjs';
 
 const root = path.resolve(new URL('../..', import.meta.url).pathname);
 const contract = JSON.parse(
@@ -12,6 +15,8 @@ const baseSha = '1'.repeat(40);
 const headSha = '2'.repeat(40);
 
 function body(overrides = {}) {
+  const headReference = overrides.headReference ?? CURRENT_HEAD_TOKEN;
+  const claimCandidate = overrides.claimCandidate ?? headReference;
   return `## Summary
 
 Adds supervision enforcement.
@@ -19,7 +24,7 @@ Adds supervision enforcement.
 ## Supervision traceability
 
 - **Exact base SHA:** ${overrides.baseSha ?? baseSha}
-- **Exact head SHA:** ${overrides.headSha ?? headSha}
+- **Exact head SHA:** ${headReference}
 - **Change class:** ${overrides.changeClass ?? 'tests'}
 - **Affected invariant IDs:** ${overrides.affected ?? 'EVIDENCE-INV-001 PLATFORM-INV-001'}
 - **ADRs added/updated:** None
@@ -33,7 +38,7 @@ ${overrides.authority ?? 'This changes no financial authority. The verifier fail
 
 | Claim | Evidence level | Exact command or artifact | Candidate SHA | Result / gap |
 |---|---|---|---|---|
-${overrides.claimRow ?? `| The contract verifier rejects invalid promotion | unit | node --test scripts/tests/verify-supervision-contract.test.mjs | ${headSha} | pass |`}
+${overrides.claimRow ?? `| The contract verifier rejects invalid promotion | unit | node --test scripts/tests/verify-supervision-contract.test.mjs | ${claimCandidate} | pass |`}
 
 ## Side investigations
 
@@ -63,8 +68,20 @@ ${overrides.risk ?? 'The PR-body check relies on consistent headings and does no
 `;
 }
 
-test('accepts a complete traceable PR body', () => {
+test('accepts CURRENT_PR_HEAD and resolves it to the event head', () => {
   const result = validatePullRequestBody({ body: body(), contract, baseSha, headSha });
+  assert.equal(result.ok, true, result.errors.join('\n'));
+  assert.equal(result.summary.declaredHead, CURRENT_HEAD_TOKEN);
+  assert.equal(result.summary.resolvedHeadSha, headSha);
+});
+
+test('accepts a literal full SHA when it matches the event head', () => {
+  const result = validatePullRequestBody({
+    body: body({ headReference: headSha, claimCandidate: headSha }),
+    contract,
+    baseSha,
+    headSha,
+  });
   assert.equal(result.ok, true, result.errors.join('\n'));
 });
 
@@ -79,15 +96,26 @@ test('rejects an unknown invariant ID', () => {
   assert(result.errors.some((error) => error.includes('Unknown affected invariant ID')));
 });
 
-test('rejects a stale declared head SHA', () => {
+test('rejects a stale literal declared head SHA', () => {
   const result = validatePullRequestBody({
-    body: body({ headSha: '3'.repeat(40) }),
+    body: body({ headReference: '3'.repeat(40) }),
     contract,
     baseSha,
     headSha,
   });
   assert.equal(result.ok, false);
-  assert(result.errors.some((error) => error.includes('does not match PR head')));
+  assert(result.errors.some((error) => error.includes('Declared head SHA does not match PR head')));
+});
+
+test('rejects a stale literal candidate SHA in a claim row', () => {
+  const result = validatePullRequestBody({
+    body: body({ claimCandidate: '3'.repeat(40) }),
+    contract,
+    baseSha,
+    headSha,
+  });
+  assert.equal(result.ok, false);
+  assert(result.errors.some((error) => error.includes('Claim row 1 candidate SHA does not match PR head')));
 });
 
 test('rejects an empty claim table', () => {

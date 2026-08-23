@@ -5,11 +5,15 @@ What changed, why, and where did it land?
 ## Supervision traceability
 
 - **Exact base SHA:**
-- **Exact head SHA:**
+- **Exact head SHA:** CURRENT_PR_HEAD
 - **Change class:** executable source | backend/data | contract | tests | release tooling | research | documentation
 - **Affected invariant IDs:**
 - **ADRs added/updated:**
 - **Investigations added/updated:**
+
+`CURRENT_PR_HEAD` is resolved and printed by CI for a moving pull request. A
+literal full SHA is also accepted when it matches the event head. Immutable
+evidence packets and release records always require the literal full SHA.
 
 ## Authority and failure analysis
 
@@ -23,7 +27,7 @@ What changed, why, and where did it land?
 
 | Claim | Evidence level | Exact command or artifact | Candidate SHA | Result / gap |
 |---|---|---|---|---|
-| | source-only / unit / simulated-integration / simulated-host / exact-candidate / real-host-chain / live-user / release | | | |
+| | source-only / unit / simulated-integration / simulated-host / exact-candidate / real-host-chain / live-user / release | | CURRENT_PR_HEAD | |
 
 A green skipped job, simulator, Vercel status, registry snapshot, or older SHA
 must not be described as stronger evidence.
@@ -45,6 +49,7 @@ triggers in `SUPERVISION.md`.
 
 - [ ] `node --test scripts/tests/verify-supervision-contract.test.mjs`
 - [ ] `node --test scripts/tests/verify-pr-supervision.test.mjs`
+- [ ] `node --test scripts/tests/verify-workflow-exact-head.test.mjs`
 - [ ] `node scripts/verify-supervision-contract.mjs`
 - [ ] Relevant focused tests passed on this exact head.
 - [ ] Negative/failure paths were exercised.

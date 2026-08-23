@@ -5,6 +5,8 @@ import path from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
 
+export const CURRENT_HEAD_TOKEN = 'CURRENT_PR_HEAD';
+
 const REQUIRED_SECTIONS = [
   'Supervision traceability',
   'Authority and failure analysis',
@@ -65,6 +67,10 @@ function checkedCount(section) {
   return [...section.matchAll(/^- \[[xX]\]/gm)].length;
 }
 
+function stripCode(value) {
+  return value.trim().replace(/^`+|`+$/g, '');
+}
+
 function claimRows(section) {
   return section
     .split('\n')
@@ -74,7 +80,20 @@ function claimRows(section) {
     .filter((cells) => cells.length >= 5)
     .filter((cells) => !cells[0].toLowerCase().includes('claim'))
     .filter((cells) => !cells.every((cell) => /^-+$/.test(cell)))
-    .filter((cells) => cells[0] && cells[1] && cells[2] && cells[4]);
+    .filter((cells) => cells.slice(0, 5).every(Boolean));
+}
+
+function validateHeadReference(value, headSha, label, errors) {
+  const normalized = stripCode(value ?? '');
+  if (normalized === CURRENT_HEAD_TOKEN) return CURRENT_HEAD_TOKEN;
+  if (!/^[0-9a-f]{40}$/i.test(normalized)) {
+    errors.push(`${label} must be a full 40-character Git SHA or ${CURRENT_HEAD_TOKEN}`);
+    return null;
+  }
+  if (headSha && normalized.toLowerCase() !== headSha.toLowerCase()) {
+    errors.push(`${label} does not match PR head ${headSha}`);
+  }
+  return normalized;
 }
 
 export function validatePullRequestBody({ body, contract, baseSha = null, headSha = null }) {
@@ -92,22 +111,22 @@ export function validatePullRequestBody({ body, contract, baseSha = null, headSh
   }
 
   const traceability = sections['Supervision traceability'] ?? '';
-  const declaredBase = lineValue(traceability, 'Exact base SHA');
+  const declaredBase = stripCode(lineValue(traceability, 'Exact base SHA') ?? '');
   const declaredHead = lineValue(traceability, 'Exact head SHA');
   const changeClass = lineValue(traceability, 'Change class');
   const affected = lineValue(traceability, 'Affected invariant IDs');
 
-  if (!/^[0-9a-f]{40}$/i.test(declaredBase ?? '')) {
+  if (!/^[0-9a-f]{40}$/i.test(declaredBase)) {
     errors.push('Exact base SHA must be a full 40-character Git SHA');
   }
-  if (!/^[0-9a-f]{40}$/i.test(declaredHead ?? '')) {
-    errors.push('Exact head SHA must be a full 40-character Git SHA');
-  }
-  if (baseSha && declaredBase?.toLowerCase() !== baseSha.toLowerCase()) {
+  const normalizedHead = validateHeadReference(
+    declaredHead,
+    headSha,
+    'Declared head SHA',
+    errors,
+  );
+  if (baseSha && declaredBase.toLowerCase() !== baseSha.toLowerCase()) {
     errors.push(`Declared base SHA does not match PR base ${baseSha}`);
-  }
-  if (headSha && declaredHead?.toLowerCase() !== headSha.toLowerCase()) {
-    errors.push(`Declared head SHA does not match PR head ${headSha}`);
   }
 
   if (
@@ -142,6 +161,15 @@ export function validatePullRequestBody({ body, contract, baseSha = null, headSh
   if (rows.length === 0) {
     errors.push('Claim-to-evidence table needs at least one completed claim row');
   }
+  const allowedEvidenceLevels = new Set(Object.keys(contract.evidenceLevels ?? {}));
+  rows.forEach((cells, index) => {
+    const rowNumber = index + 1;
+    const evidenceLevel = stripCode(cells[1]);
+    if (!allowedEvidenceLevels.has(evidenceLevel)) {
+      errors.push(`Claim row ${rowNumber} has unknown evidence level: ${evidenceLevel}`);
+    }
+    validateHeadReference(cells[3], headSha, `Claim row ${rowNumber} candidate SHA`, errors);
+  });
 
   const sideInvestigations = sections['Side investigations'] ?? '';
   if (sideInvestigations.includes('List the adjacent questions investigated')) {
@@ -184,6 +212,8 @@ export function validatePullRequestBody({ body, contract, baseSha = null, headSh
       decision,
       claimRows: rows.length,
       checkedVerificationItems: checkedCount(verification),
+      declaredHead: normalizedHead,
+      resolvedHeadSha: headSha,
     },
   };
 }
@@ -210,6 +240,8 @@ function format(result) {
     `- Result: **${result.ok ? 'PASS' : 'FAIL'}**`,
     `- Claim rows: ${result.summary.claimRows ?? 0}`,
     `- Affected invariants: ${(result.summary.affectedInvariantIds ?? []).join(', ') || 'NONE'}`,
+    `- Declared head: ${result.summary.declaredHead ?? 'unresolved'}`,
+    `- Resolved head SHA: ${result.summary.resolvedHeadSha ?? 'unavailable'}`,
     `- Errors: ${result.errors.length}`,
     `- Warnings: ${result.warnings.length}`,
   ];
