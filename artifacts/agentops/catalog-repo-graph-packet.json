@@ -1,0 +1,1104 @@
+{
+  "agentops_source": {
+    "branch": "codex/context-graph-v2-implementation",
+    "commit": "15577d8e15ec98e14dc7f20ce1525ceb68d8ed75",
+    "root": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots"
+  },
+  "context_packet": {
+    "audit": {
+      "finding_count": 30,
+      "finding_counts": {
+        "high": 0,
+        "low": 28,
+        "medium": 2
+      },
+      "status": "warning",
+      "top_findings": [
+        {
+          "category": "status_evidence",
+          "entity_id": "urn:repo:chopdot-v1-launch:statusclaim:docs/superpowers/plans/2026-08-22-products-devnet-catalog-kgv2.md#R1-Complete-repository-universe-105",
+          "finding_id": "unsupported-status:0:urn:repo:chopdot-v1-launch:statusclaim:docs/superpowers/plans/2026-08-22-products-devnet-catalog-kgv2.md#R1-Complete-repository-universe-105",
+          "next_check": "Link current test/evidence proof or downgrade the declared status.",
+          "severity": "medium",
+          "source_path": "docs/superpowers/plans/2026-08-22-products-devnet-catalog-kgv2.md",
+          "summary": "Declared status lacks a current supporting relation: R1 \u2014 Complete repository universe"
+        },
+        {
+          "category": "status_evidence",
+          "entity_id": "urn:repo:chopdot-v1-launch:statusclaim:docs/superpowers/plans/2026-08-22-products-devnet-catalog-kgv2.md#R2-Complete-observed-registry-universe-110",
+          "finding_id": "unsupported-status:1:urn:repo:chopdot-v1-launch:statusclaim:docs/superpowers/plans/2026-08-22-products-devnet-catalog-kgv2.md#R2-Complete-observed-registry-universe-110",
+          "next_check": "Link current test/evidence proof or downgrade the declared status.",
+          "severity": "medium",
+          "source_path": "docs/superpowers/plans/2026-08-22-products-devnet-catalog-kgv2.md",
+          "summary": "Declared status lacks a current supporting relation: R2 \u2014 Complete observed registry universe"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:@parity/host-api-test-sdk",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: @parity/host-api-test-sdk"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:@parity/product-sdk-address",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: @parity/product-sdk-address"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:@parity/product-sdk-statement-store",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: @parity/product-sdk-statement-store"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:@playwright/test",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: @playwright/test"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:@tailwindcss/vite",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: @tailwindcss/vite"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:@types/node",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: @types/node"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:@types/pngjs",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: @types/pngjs"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:@types/qrcode",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: @types/qrcode"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:@types/react",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: @types/react"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:@types/react-dom",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: @types/react-dom"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:@vitejs/plugin-react",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: @vitejs/plugin-react"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:autoprefixer",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: autoprefixer"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:esbuild",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: esbuild"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:ethers",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: ethers"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:jsqr",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: jsqr"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:lucide-react",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: lucide-react"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:motion",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: motion"
+        },
+        {
+          "category": "dependency_drift",
+          "entity_id": "",
+          "finding_id": "dependency-unobserved:nostr-tools",
+          "next_check": "Confirm it is tooling/runtime-only, dynamically loaded, or stale before removal.",
+          "severity": "low",
+          "source_path": "",
+          "summary": "Declared dependency has no observed source import in the indexed scope: nostr-tools"
+        }
+      ]
+    },
+    "branch": "codex/chopdot-v1-launch",
+    "citations": [
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:file:README.md",
+        "source_hash": "148aac252fc40c37516d2205fdeab7f7d5e8399e099124ec8c776f46806f2288",
+        "source_path": "README.md",
+        "verification_status": "verified"
+      },
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#Plan-gates-to-add-28",
+        "source_hash": "4744194b957429ac4a207ad75933b1f16cb68077034384b266895bd13a1e33d2",
+        "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+        "verification_status": "verified"
+      },
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#Platform-Catalog-Addendum-for-the-ChopDot-v1-Plan-1",
+        "source_hash": "4744194b957429ac4a207ad75933b1f16cb68077034384b266895bd13a1e33d2",
+        "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+        "verification_status": "verified"
+      },
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#Still-prohibited-as-assumptions-38",
+        "source_hash": "4744194b957429ac4a207ad75933b1f16cb68077034384b266895bd13a1e33d2",
+        "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+        "verification_status": "verified"
+      },
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#What-does-not-change-19",
+        "source_hash": "4744194b957429ac4a207ad75933b1f16cb68077034384b266895bd13a1e33d2",
+        "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+        "verification_status": "verified"
+      },
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#What-the-new-evidence-changes-5",
+        "source_hash": "4744194b957429ac4a207ad75933b1f16cb68077034384b266895bd13a1e33d2",
+        "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+        "verification_status": "verified"
+      },
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:file:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+        "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+        "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+        "verification_status": "verified"
+      },
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:file:docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json",
+        "source_hash": "f6b2c232cbfa23acc143fb47afb8ffc07c998413be0d4112d9b1abbece39dabf",
+        "source_path": "docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json",
+        "verification_status": "verified"
+      },
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:file:docs/research/README.md",
+        "source_hash": "bd956a80e0018f7509743931ab510eab8e1d436aa3b16413b77a7615d0e4a102",
+        "source_path": "docs/research/README.md",
+        "verification_status": "verified"
+      },
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:file:docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+        "source_hash": "5c3bf2c12157fdbc76c866a78812eca9f55dec3de23bd90156afece2211f8b26",
+        "source_path": "docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+        "verification_status": "verified"
+      },
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:file:package.json",
+        "source_hash": "e2480f23cc0365176e3c0abef01f9a2ac6fbbf6e039b17ac4d2dfc378fff2af7",
+        "source_path": "package.json",
+        "verification_status": "verified"
+      },
+      {
+        "entity_id": "urn:repo:chopdot-v1-launch:file:proof/polkadot-host-sim/README.md",
+        "source_hash": "8bb4febf0f118bae1ff676c2f4421e8fd0e9054ff1f9652f7641b54e3bf24227",
+        "source_path": "proof/polkadot-host-sim/README.md",
+        "verification_status": "verified"
+      }
+    ],
+    "commit": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f",
+    "compiled_at": "2026-08-22T20:49:19.837415+00:00",
+    "graph_digest": "8d479070cef801e26779c79c65cf0dfe1b861fe1af295daddd90e581f86fe454",
+    "limitations": [],
+    "orientation": {
+      "branch": "codex/chopdot-v1-launch",
+      "citations": [
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:file:README.md",
+          "source_hash": "148aac252fc40c37516d2205fdeab7f7d5e8399e099124ec8c776f46806f2288",
+          "source_path": "README.md",
+          "verification_status": "verified"
+        },
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#Plan-gates-to-add-28",
+          "source_hash": "4744194b957429ac4a207ad75933b1f16cb68077034384b266895bd13a1e33d2",
+          "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+          "verification_status": "verified"
+        },
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#Platform-Catalog-Addendum-for-the-ChopDot-v1-Plan-1",
+          "source_hash": "4744194b957429ac4a207ad75933b1f16cb68077034384b266895bd13a1e33d2",
+          "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+          "verification_status": "verified"
+        },
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#Still-prohibited-as-assumptions-38",
+          "source_hash": "4744194b957429ac4a207ad75933b1f16cb68077034384b266895bd13a1e33d2",
+          "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+          "verification_status": "verified"
+        },
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#What-does-not-change-19",
+          "source_hash": "4744194b957429ac4a207ad75933b1f16cb68077034384b266895bd13a1e33d2",
+          "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+          "verification_status": "verified"
+        },
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#What-the-new-evidence-changes-5",
+          "source_hash": "4744194b957429ac4a207ad75933b1f16cb68077034384b266895bd13a1e33d2",
+          "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+          "verification_status": "verified"
+        },
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:file:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+          "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+          "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+          "verification_status": "verified"
+        },
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:file:docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json",
+          "source_hash": "f6b2c232cbfa23acc143fb47afb8ffc07c998413be0d4112d9b1abbece39dabf",
+          "source_path": "docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json",
+          "verification_status": "verified"
+        },
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:file:docs/research/README.md",
+          "source_hash": "bd956a80e0018f7509743931ab510eab8e1d436aa3b16413b77a7615d0e4a102",
+          "source_path": "docs/research/README.md",
+          "verification_status": "verified"
+        },
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:file:docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+          "source_hash": "5c3bf2c12157fdbc76c866a78812eca9f55dec3de23bd90156afece2211f8b26",
+          "source_path": "docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+          "verification_status": "verified"
+        },
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:file:package.json",
+          "source_hash": "e2480f23cc0365176e3c0abef01f9a2ac6fbbf6e039b17ac4d2dfc378fff2af7",
+          "source_path": "package.json",
+          "verification_status": "verified"
+        },
+        {
+          "entity_id": "urn:repo:chopdot-v1-launch:file:proof/polkadot-host-sim/README.md",
+          "source_hash": "8bb4febf0f118bae1ff676c2f4421e8fd0e9054ff1f9652f7641b54e3bf24227",
+          "source_path": "proof/polkadot-host-sim/README.md",
+          "verification_status": "verified"
+        }
+      ],
+      "commit": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f",
+      "graph_digest": "8d479070cef801e26779c79c65cf0dfe1b861fe1af295daddd90e581f86fe454",
+      "limitations": [],
+      "missing_slots": [],
+      "query": "orient_repo",
+      "repo_id": "chopdot-v1-launch",
+      "results": [
+        {
+          "collector_refresh_changes": [],
+          "current_change_records": [
+            {
+              "path": "artifacts/",
+              "status": "??"
+            },
+            {
+              "path": "docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+              "status": "??"
+            },
+            {
+              "path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+              "status": "??"
+            },
+            {
+              "path": "docs/research/",
+              "status": "??"
+            },
+            {
+              "path": "docs/superpowers/",
+              "status": "??"
+            },
+            {
+              "path": "scripts/research/",
+              "status": "??"
+            },
+            {
+              "path": "src/contacts/",
+              "status": "??"
+            },
+            {
+              "path": "tests/fixtures/verifiedContactFixture.ts",
+              "status": "??"
+            }
+          ],
+          "current_changes": [
+            "artifacts/",
+            "docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+            "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+            "docs/research/",
+            "docs/superpowers/",
+            "scripts/research/",
+            "src/contacts/",
+            "tests/fixtures/verifiedContactFixture.ts"
+          ],
+          "dirty": true,
+          "entity_counts": {
+            "Branch": 1,
+            "Commit": 1,
+            "Decision": 33,
+            "Evidence": 3,
+            "ExternalDependency": 46,
+            "File": 33,
+            "Module": 7,
+            "Package": 1,
+            "Repo": 1,
+            "Section": 40,
+            "StatusClaim": 2,
+            "Symbol": 460,
+            "TestCase": 8,
+            "TestSuite": 5
+          },
+          "entrypoints": [
+            "README.md",
+            "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json",
+            "docs/research/README.md",
+            "docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+            "package.json",
+            "proof/polkadot-host-sim/README.md"
+          ],
+          "identity": {
+            "branch": "codex/chopdot-v1-launch",
+            "commit": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f",
+            "dirty": true,
+            "dirty_changes": [
+              {
+                "path": "artifacts/",
+                "status": "??"
+              },
+              {
+                "path": "docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+                "status": "??"
+              },
+              {
+                "path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+                "status": "??"
+              },
+              {
+                "path": "docs/research/",
+                "status": "??"
+              },
+              {
+                "path": "docs/superpowers/",
+                "status": "??"
+              },
+              {
+                "path": "scripts/research/",
+                "status": "??"
+              },
+              {
+                "path": "src/contacts/",
+                "status": "??"
+              },
+              {
+                "path": "tests/fixtures/verifiedContactFixture.ts",
+                "status": "??"
+              }
+            ],
+            "dirty_changes_truncated": false,
+            "dirty_path_count": 8,
+            "dirty_status_digest": "7d780e1f2777344908b7effceb7f9f1f455796458aec085d8dce82e6c5c74159",
+            "git": true,
+            "identity_kind": "git",
+            "remote": "https://github.com/ChopDotHQ/ChopDot.git",
+            "remote_fingerprint": "23d2663623a465537da8",
+            "repo_id": "chopdot-v1-launch",
+            "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch"
+          },
+          "important_entities": {
+            "Decision": [
+              {
+                "id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#Plan-gates-to-add-28",
+                "label": "Plan gates to add",
+                "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#Platform-Catalog-Addendum-for-the-ChopDot-v1-Plan-1",
+                "label": "Platform Catalog Addendum for the ChopDot v1 Plan",
+                "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#Still-prohibited-as-assumptions-38",
+                "label": "Still prohibited as assumptions",
+                "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#What-does-not-change-19",
+                "label": "What does not change",
+                "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:decision:docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md#What-the-new-evidence-changes-5",
+                "label": "What the new evidence changes",
+                "source_path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Approval-boundary:-publication-remains-human-approved-69",
+                "label": "Approval boundary: publication remains human-approved",
+                "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#ChopDot-Platform-Adoption-Decisions-1",
+                "label": "ChopDot Platform Adoption Decisions",
+                "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-Asset-Hub-contract-and-CDM-INVESTIGATE-42",
+                "label": "Decision: Asset Hub contract and CDM INVESTIGATE",
+                "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-Bulletin-storage-INVESTIGATE-37",
+                "label": "Decision: Bulletin storage INVESTIGATE",
+                "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-Direct-TrUAPI-DEFER-12",
+                "label": "Decision: Direct TrUAPI DEFER",
+                "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md"
+              }
+            ],
+            "Evidence": [
+              {
+                "id": "urn:repo:chopdot-v1-launch:evidence:docs/research/evidence/chopdot-catalog-decisions.json",
+                "label": "chopdot-catalog-decisions.json",
+                "source_path": "docs/research/evidence/chopdot-catalog-decisions.json"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:evidence:docs/research/evidence/npm-package-version-observation.json",
+                "label": "npm-package-version-observation.json",
+                "source_path": "docs/research/evidence/npm-package-version-observation.json"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:evidence:docs/research/evidence/primary-source-ledger.json",
+                "label": "primary-source-ledger.json",
+                "source_path": "docs/research/evidence/primary-source-ledger.json"
+              }
+            ],
+            "Feature": [],
+            "Milestone": [],
+            "Package": [
+              {
+                "id": "urn:repo:chopdot-v1-launch:package:package.json:chopdot",
+                "label": "chopdot",
+                "source_path": "package.json"
+              }
+            ],
+            "Requirement": [],
+            "Task": [],
+            "TestSuite": [
+              {
+                "id": "urn:repo:chopdot-v1-launch:testsuite:src/contacts/verifiedContact.test.ts",
+                "label": "verifiedContact.test.ts",
+                "source_path": "src/contacts/verifiedContact.test.ts"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:testsuite:src/contacts/verifiedContactCeremonyService.test.ts",
+                "label": "verifiedContactCeremonyService.test.ts",
+                "source_path": "src/contacts/verifiedContactCeremonyService.test.ts"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:testsuite:src/contacts/verifiedContactLink.test.ts",
+                "label": "verifiedContactLink.test.ts",
+                "source_path": "src/contacts/verifiedContactLink.test.ts"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:testsuite:src/contacts/verifiedContactRepository.test.ts",
+                "label": "verifiedContactRepository.test.ts",
+                "source_path": "src/contacts/verifiedContactRepository.test.ts"
+              },
+              {
+                "id": "urn:repo:chopdot-v1-launch:testsuite:tests/fixtures/verifiedContactFixture.ts",
+                "label": "verifiedContactFixture.ts",
+                "source_path": "tests/fixtures/verifiedContactFixture.ts"
+              }
+            ]
+          },
+          "relation_counts": {
+            "CONTAINS": 576,
+            "DECLARES": 5,
+            "DEPENDS_ON": 39,
+            "HAS_BRANCH": 1,
+            "IMPORTS": 53,
+            "POINTS_TO": 1,
+            "PRODUCES": 3,
+            "VERIFIES": 5
+          }
+        }
+      ],
+      "status": "ok"
+    },
+    "packet_digest": "fa64ca6d6c81490c96f0f8bb91103fa388f03fd9ddf2f8362750b1c458ce0782",
+    "repo_id": "chopdot-v1-launch",
+    "status": "ok"
+  },
+  "coverage": {
+    "declared_languages": [
+      "javascript",
+      "typescript"
+    ],
+    "entity_counts": {
+      "Branch": 1,
+      "Commit": 1,
+      "Decision": 33,
+      "Evidence": 3,
+      "ExternalDependency": 46,
+      "File": 33,
+      "Module": 7,
+      "Package": 1,
+      "Repo": 1,
+      "Section": 40,
+      "StatusClaim": 2,
+      "Symbol": 460,
+      "TestCase": 8,
+      "TestSuite": 5
+    },
+    "language_counts_changed_paths": {},
+    "observed_languages": [
+      "javascript",
+      "json",
+      "markdown",
+      "python",
+      "typescript"
+    ],
+    "parser_limitation_count": 0,
+    "path_metrics": {
+      "accepted_path_count": 33,
+      "binary_or_large_path_count": 1,
+      "candidate_path_count": 594,
+      "excluded_path_count": 0,
+      "outside_scope_path_count": 557,
+      "secret_risk_path_count": 3
+    },
+    "relation_counts": {
+      "CONTAINS": 576,
+      "DECLARES": 5,
+      "DEPENDS_ON": 39,
+      "HAS_BRANCH": 1,
+      "IMPORTS": 53,
+      "POINTS_TO": 1,
+      "PRODUCES": 3,
+      "VERIFIES": 5
+    },
+    "role_counts_changed_paths": {},
+    "source_anchor_resolution": 1.0
+  },
+  "deployment": {
+    "audit": {
+      "finding_count": 30,
+      "finding_counts": {
+        "high": 0,
+        "low": 28,
+        "medium": 2
+      },
+      "status": "warning"
+    },
+    "checks": {
+      "audit_generated": true,
+      "baseline_or_refresh_completed": true,
+      "context_packet_generated": true,
+      "incremental_noop_reuses_graph": true,
+      "ingestion_passed_or_dry_run": true,
+      "mandatory_queries_bounded": true,
+      "manifest_valid": true,
+      "no_unrelated_product_mutation": true,
+      "source_anchors_resolve": true
+    },
+    "coverage": {
+      "declared_languages": [
+        "javascript",
+        "typescript"
+      ],
+      "entity_counts": {
+        "Branch": 1,
+        "Commit": 1,
+        "Decision": 33,
+        "Evidence": 3,
+        "ExternalDependency": 46,
+        "File": 33,
+        "Module": 7,
+        "Package": 1,
+        "Repo": 1,
+        "Section": 40,
+        "StatusClaim": 2,
+        "Symbol": 460,
+        "TestCase": 8,
+        "TestSuite": 5
+      },
+      "language_counts_changed_paths": {},
+      "observed_languages": [
+        "javascript",
+        "json",
+        "markdown",
+        "python",
+        "typescript"
+      ],
+      "parser_limitation_count": 0,
+      "path_metrics": {
+        "accepted_path_count": 33,
+        "binary_or_large_path_count": 1,
+        "candidate_path_count": 594,
+        "excluded_path_count": 0,
+        "outside_scope_path_count": 557,
+        "secret_risk_path_count": 3
+      },
+      "relation_counts": {
+        "CONTAINS": 576,
+        "DECLARES": 5,
+        "DEPENDS_ON": 39,
+        "HAS_BRANCH": 1,
+        "IMPORTS": 53,
+        "POINTS_TO": 1,
+        "PRODUCES": 3,
+        "VERIFIES": 5
+      },
+      "role_counts_changed_paths": {},
+      "source_anchor_resolution": 1.0
+    },
+    "generated_at": "2026-08-22T20:49:19+00:00",
+    "graph_digest": "8d479070cef801e26779c79c65cf0dfe1b861fe1af295daddd90e581f86fe454",
+    "identity": {
+      "branch": "codex/chopdot-v1-launch",
+      "commit": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f",
+      "dirty": true,
+      "dirty_changes": [
+        {
+          "path": "artifacts/",
+          "status": "??"
+        },
+        {
+          "path": "docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+          "status": "??"
+        },
+        {
+          "path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+          "status": "??"
+        },
+        {
+          "path": "docs/research/",
+          "status": "??"
+        },
+        {
+          "path": "docs/superpowers/",
+          "status": "??"
+        },
+        {
+          "path": "scripts/research/",
+          "status": "??"
+        },
+        {
+          "path": "src/contacts/",
+          "status": "??"
+        },
+        {
+          "path": "tests/fixtures/verifiedContactFixture.ts",
+          "status": "??"
+        }
+      ],
+      "dirty_changes_truncated": false,
+      "dirty_path_count": 8,
+      "dirty_status_digest": "7d780e1f2777344908b7effceb7f9f1f455796458aec085d8dce82e6c5c74159",
+      "git": true,
+      "identity_kind": "git",
+      "remote": "https://github.com/ChopDotHQ/ChopDot.git",
+      "remote_fingerprint": "23d2663623a465537da8",
+      "repo_id": "chopdot-v1-launch",
+      "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch"
+    },
+    "incremental": {
+      "collect_seconds": 0.585823,
+      "noop": {
+        "changed_paths": [],
+        "mode": "incremental",
+        "moved_from": {},
+        "parsed_path_count": 0,
+        "parser_refresh": false,
+        "refresh_proof": {
+          "changed_paths": [
+            "docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+            "docs/superpowers/plans/2026-08-22-products-devnet-catalog-kgv2.md",
+            "scripts/research/verify-products-devnet-catalog.mjs"
+          ],
+          "mode": "incremental",
+          "moved_from": {},
+          "parsed_path_count": 3,
+          "parser_refresh": false,
+          "removed_paths": [],
+          "reused_entity_count": 579,
+          "unchanged_path_count": 30
+        },
+        "removed_paths": [],
+        "reused_entity_count": 641,
+        "unchanged_path_count": 33
+      },
+      "noop_seconds": 0.242835,
+      "refresh": {
+        "changed_paths": [
+          "docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+          "docs/superpowers/plans/2026-08-22-products-devnet-catalog-kgv2.md",
+          "scripts/research/verify-products-devnet-catalog.mjs"
+        ],
+        "mode": "incremental",
+        "moved_from": {},
+        "parsed_path_count": 3,
+        "parser_refresh": false,
+        "removed_paths": [],
+        "reused_entity_count": 579,
+        "unchanged_path_count": 30
+      }
+    },
+    "ingestion": {
+      "accepted": 2,
+      "duplicates": 0,
+      "ingested_content_digest": "04bc4e7f57061b91dc05864432b1938451bdff02a62e05005d216ec05c349cd0",
+      "ingested_graph_digest": "0d3aa5380d6d659d304bedcf026f01ccc6b1acd1921ca000366f4bb4034edd9a",
+      "journal_path": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/state/repo_graph_v1/journals/chopdot-v1-launch-66dbd5e1b7be.sqlite3",
+      "journaled": 2,
+      "projection_failures": 0,
+      "projection_results": {
+        "age": {
+          "applied": 2,
+          "failed": 0,
+          "fetched": 2
+        },
+        "jena": {
+          "applied": 2,
+          "failed": 0,
+          "fetched": 2
+        },
+        "neo4j": {
+          "applied": 2,
+          "failed": 0,
+          "fetched": 2
+        }
+      },
+      "quarantined": 0,
+      "repo_id": "chopdot-v1-launch",
+      "retracted_entity_count": 0,
+      "retracted_relation_count": 0,
+      "selected_entity_count": 2,
+      "selected_relation_count": 0,
+      "status": "pass",
+      "writer_id": "repo-graph-v1:chopdot-v1-launch:c0eae133529e:66dbd5e1b7be"
+    },
+    "limitations": [],
+    "packet_digest": "fa64ca6d6c81490c96f0f8bb91103fa388f03fd9ddf2f8362750b1c458ce0782",
+    "portfolio_tier": "product",
+    "queries": {
+      "changed_since": {
+        "citation_count": 66,
+        "missing_slots": [],
+        "result_count": 1,
+        "status": "ok"
+      },
+      "current_blockers": {
+        "citation_count": 0,
+        "missing_slots": [
+          "structured_blockers"
+        ],
+        "result_count": 0,
+        "status": "unknown"
+      },
+      "decision_context": {
+        "citation_count": 51,
+        "missing_slots": [],
+        "result_count": 1,
+        "status": "ok"
+      },
+      "explain_symbol": {
+        "citation_count": 40,
+        "missing_slots": [],
+        "result_count": 20,
+        "status": "ok"
+      },
+      "impact_of_change": {
+        "citation_count": 422,
+        "missing_slots": [],
+        "result_count": 1,
+        "status": "ok"
+      },
+      "milestone_readiness": {
+        "citation_count": 0,
+        "missing_slots": [
+          "structured_milestones"
+        ],
+        "result_count": 0,
+        "status": "unknown"
+      },
+      "orient_repo": {
+        "citation_count": 12,
+        "missing_slots": [],
+        "result_count": 1,
+        "status": "ok"
+      },
+      "orphan_tests": {
+        "citation_count": 9,
+        "missing_slots": [],
+        "result_count": 9,
+        "status": "ok"
+      },
+      "stale_project_evidence": {
+        "citation_count": 0,
+        "missing_slots": [],
+        "result_count": 0,
+        "status": "ok"
+      },
+      "trace_feature": {
+        "citation_count": 0,
+        "missing_slots": [
+          "requirement",
+          "symbol",
+          "testcase",
+          "evidence"
+        ],
+        "result_count": 0,
+        "status": "unknown"
+      },
+      "unsupported_status_claims": {
+        "citation_count": 2,
+        "missing_slots": [],
+        "result_count": 2,
+        "status": "ok"
+      },
+      "untested_requirements": {
+        "citation_count": 0,
+        "missing_slots": [
+          "structured_requirements"
+        ],
+        "result_count": 0,
+        "status": "unknown"
+      }
+    },
+    "repo_id": "chopdot-v1-launch",
+    "runtime_digest": "44aef19f690ea692ecec08097153b6aa89a295e1867086d6f33a71d02b576791",
+    "source_anchors": {
+      "required": 639,
+      "resolution": 1.0,
+      "resolved": 639
+    },
+    "status": "working",
+    "validation_errors": []
+  },
+  "generated_at": "2026-08-22T20:49:19.902943+00:00",
+  "graph_digest": "8d479070cef801e26779c79c65cf0dfe1b861fe1af295daddd90e581f86fe454",
+  "identity": {
+    "branch": "codex/chopdot-v1-launch",
+    "commit": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f",
+    "dirty": true,
+    "dirty_changes": [
+      {
+        "path": "artifacts/",
+        "status": "??"
+      },
+      {
+        "path": "docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+        "status": "??"
+      },
+      {
+        "path": "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+        "status": "??"
+      },
+      {
+        "path": "docs/research/",
+        "status": "??"
+      },
+      {
+        "path": "docs/superpowers/",
+        "status": "??"
+      },
+      {
+        "path": "scripts/research/",
+        "status": "??"
+      },
+      {
+        "path": "src/contacts/",
+        "status": "??"
+      },
+      {
+        "path": "tests/fixtures/verifiedContactFixture.ts",
+        "status": "??"
+      }
+    ],
+    "dirty_changes_truncated": false,
+    "dirty_path_count": 8,
+    "dirty_status_digest": "7d780e1f2777344908b7effceb7f9f1f455796458aec085d8dce82e6c5c74159",
+    "git": true,
+    "identity_kind": "git",
+    "remote": "https://github.com/ChopDotHQ/ChopDot.git",
+    "remote_fingerprint": "23d2663623a465537da8",
+    "repo_id": "chopdot-v1-launch",
+    "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch"
+  },
+  "kind": "exact_worktree_repo_graph_packet",
+  "manifest": {
+    "critical_paths": [
+      "README.md",
+      "package.json",
+      "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+      "docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+      "docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json"
+    ],
+    "languages": [
+      "javascript",
+      "typescript"
+    ],
+    "paths": {
+      "decisions": [
+        "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+        "docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+        "docs/research/CHOPDOT_PLATFORM_OPPORTUNITY_MATRIX.md",
+        "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md"
+      ],
+      "evidence": [
+        "docs/research/evidence/**",
+        "artifacts/**"
+      ],
+      "exclude": [
+        "**/.local-private/**",
+        "**/node_modules/**",
+        "**/.venv*/**",
+        "**/vendor/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/coverage/**"
+      ],
+      "generated": [
+        "docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json",
+        "docs/research/devnet-registry-snapshots/**",
+        "docs/research/parity-repository-snapshots/**"
+      ],
+      "include": [
+        "README.md",
+        "package.json",
+        "package-lock.json",
+        "docs/research/**",
+        "docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+        "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+        "docs/superpowers/plans/2026-08-22-products-devnet-catalog-kgv2.md",
+        "scripts/research/**",
+        "src/contacts/**",
+        "src/payments/pasWallet.ts",
+        "tests/fixtures/verifiedContactFixture.ts"
+      ],
+      "source": [
+        "src/**",
+        "scripts/**"
+      ],
+      "specs": [
+        "docs/superpowers/plans/**"
+      ],
+      "tasks": [
+        "docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+        "docs/superpowers/plans/**"
+      ],
+      "tests": [
+        "tests/**",
+        "**/*.test.*",
+        "**/*.spec.*"
+      ]
+    },
+    "privacy": "private_local",
+    "repo_id": "chopdot-v1-launch",
+    "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+    "schema_version": "1.0"
+  },
+  "packet_digest": "fa64ca6d6c81490c96f0f8bb91103fa388f03fd9ddf2f8362750b1c458ce0782",
+  "scan": {
+    "changed_paths": [],
+    "mode": "incremental",
+    "moved_from": {},
+    "parsed_path_count": 0,
+    "parser_refresh": false,
+    "refresh_proof": {
+      "changed_paths": [
+        "docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+        "docs/superpowers/plans/2026-08-22-products-devnet-catalog-kgv2.md",
+        "scripts/research/verify-products-devnet-catalog.mjs"
+      ],
+      "mode": "incremental",
+      "moved_from": {},
+      "parsed_path_count": 3,
+      "parser_refresh": false,
+      "removed_paths": [],
+      "reused_entity_count": 579,
+      "unchanged_path_count": 30
+    },
+    "removed_paths": [],
+    "reused_entity_count": 641,
+    "unchanged_path_count": 33
+  },
+  "schema_version": 1
+}

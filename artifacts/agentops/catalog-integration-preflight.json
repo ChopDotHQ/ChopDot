@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "bounded_agentops_integration_preflight",
+  "executed_at": "2026-08-23T12:20:27.895Z",
+  "command": "python3 /Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/runners/repo_graph_integration_preflight.py --repo-id chopdot --source-root /Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch --target-root /Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch --include src/contacts/verifiedContact.ts --include src/contacts/verifiedContact.test.ts --include src/contacts/verifiedContactLink.ts --include src/contacts/verifiedContactLink.test.ts --include src/contacts/verifiedContactRepository.ts --include src/contacts/verifiedContactRepository.test.ts --include src/contacts/verifiedContactCeremonyService.ts --include src/contacts/verifiedContactCeremonyService.test.ts --include tests/fixtures/verifiedContactFixture.ts",
+  "exit_code": 0,
+  "checks": {
+    "dependency_closure_complete": true,
+    "included_sources_exist": true,
+    "semantic_authority_preserved": true
+  },
+  "findings": [],
+  "included_paths": [
+    "src/contacts/verifiedContact.test.ts",
+    "src/contacts/verifiedContact.ts",
+    "src/contacts/verifiedContactCeremonyService.test.ts",
+    "src/contacts/verifiedContactCeremonyService.ts",
+    "src/contacts/verifiedContactLink.test.ts",
+    "src/contacts/verifiedContactLink.ts",
+    "src/contacts/verifiedContactRepository.test.ts",
+    "src/contacts/verifiedContactRepository.ts",
+    "tests/fixtures/verifiedContactFixture.ts"
+  ],
+  "repo_id": "chopdot",
+  "source_root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+  "status": "pass",
+  "target_root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch"
+}

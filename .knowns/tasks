@@ -1,0 +1,15 @@
+# Active ChopDot tasks
+
+PROGRAMME=A+B participant-held-public-beta
+
+- [ ] Close Wave 0 governance, isolation, evidence, and exact-worktree KGv2.
+- [ ] Wire One Chop Core into `src/main.tsx` production composition.
+- [ ] Complete identity, encrypted delivery, recovery, and revocation.
+- [ ] Complete and prove normal pot, receipt, Spend Card, savings circle,
+      emergency pot, and community fund production journeys.
+- [ ] Freeze one deterministic CAR, stage on Products Devnet, promote unchanged,
+      verify every supported public-testnet surface, and transfer DotNS ownership.
+- [ ] Record independent real-organizer/two-participant acceptance.
+
+Completion dimensions remain separate: implemented, tested, committed, pushed,
+candidate_built, staged, promoted, reachable, user_owned, user_proven, kg_known.

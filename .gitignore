@@ -1,6 +1,7 @@
 node_modules/
 build/
 dist/
+dist-dot-host/
 coverage/
 test-results/
 playwright-report/
@@ -9,6 +10,9 @@ playwright-report/
 .env*
 !.env.example
 .vercel
+
+# Local agent scratch space is never release or product evidence.
+output/working_memory/
 
 # Batch 6 evidence is generated against the frozen source commit and kept
 # outside that commit so the candidate fingerprint remains exact and clean.

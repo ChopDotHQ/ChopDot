@@ -1,0 +1,318 @@
+{
+  "schema_version": 1,
+  "kind": "chopdot_full_product_deployment_plan_verification",
+  "generated_at": "2026-08-23T12:43:11.578Z",
+  "status": "pass",
+  "target": {
+    "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+    "branch_at_review": "codex/chopdot-v1-launch",
+    "head_at_review": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f"
+  },
+  "actual_root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+  "counts": {
+    "checks": 33,
+    "passed": 33,
+    "failed": 0,
+    "feature_families": 15,
+    "cards": 35,
+    "current_paths": 42,
+    "future_journeys": 4,
+    "required_future_paths": 40,
+    "waves": 11,
+    "release_dimensions": 8
+  },
+  "hashes": {
+    "plan_markdown_sha256": "4c6d75644137ad4153e255d293e7c0ac138078808d04f4349a2fef4b4051b914",
+    "plan_manifest_sha256": "6c08d1919b30cd10b775ab360a20a042e2ab16dd9ce8de279eb1bd809177b563",
+    "source_matrix_sha256": "f0f37486f7887d7b16bf3dd95921797fb6b1358b4cc0c8a15fb44f6fe4c13298",
+    "ordered_plan_bundle_sha256": "502dcff37e3bc6e9421073073c90a0e9d14251c70256e49f35d99b6bbe9d2976"
+  },
+  "planned_native_script_state": {
+    "build:dot-host": true,
+    "preview:dot-host": true,
+    "e2e:dot-host-preview": true,
+    "verify:dot-host": true
+  },
+  "checks": [
+    {
+      "id": "exact-target-root",
+      "pass": true,
+      "details": {
+        "expected": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+        "actual": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch"
+      }
+    },
+    {
+      "id": "manifest-kind",
+      "pass": true,
+      "details": "chopdot_full_product_dot_devnet_execution_plan"
+    },
+    {
+      "id": "no-supabase-decision",
+      "pass": true,
+      "details": "rejected"
+    },
+    {
+      "id": "participant-held-authority",
+      "pass": true,
+      "details": "participant-held append-only signed ChopEventV1 log reduced by One Chop Core"
+    },
+    {
+      "id": "four-pillar-loop",
+      "pass": true,
+      "details": [
+        "Catch",
+        "Management",
+        "Payout",
+        "History"
+      ]
+    },
+    {
+      "id": "feature-family-coverage",
+      "pass": true,
+      "details": {
+        "expected_count": 15,
+        "routed_count": 15,
+        "missing": [],
+        "extra": []
+      }
+    },
+    {
+      "id": "one-workstream-per-family",
+      "pass": true,
+      "details": [
+        "identity_people_membership_recovery",
+        "group_cards_home_language",
+        "normal_pots_trips_couples",
+        "capture_spend_receipts",
+        "exact_money_splits_corrections",
+        "payment_requests_guest_invites",
+        "payment_rails_wallets",
+        "confirmation_resolution_closeout",
+        "history_privacy_export",
+        "live_sync_offline_chat_notifications",
+        "savings_circles",
+        "emergency_pots",
+        "community_funds",
+        "native_delivery_hosting",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "card-coverage",
+      "pass": true,
+      "details": {
+        "expected_count": 35,
+        "covered_count": 35,
+        "missing": [],
+        "extra": []
+      }
+    },
+    {
+      "id": "card-primary-family-routing",
+      "pass": true,
+      "details": {
+        "misrouted": []
+      }
+    },
+    {
+      "id": "current-path-coverage",
+      "pass": true,
+      "details": {
+        "expected_count": 42,
+        "covered_count": 42,
+        "missing": [],
+        "extra": []
+      }
+    },
+    {
+      "id": "current-path-wave-owners",
+      "pass": true,
+      "details": {
+        "missing_wave_owner": []
+      }
+    },
+    {
+      "id": "future-journey-coverage",
+      "pass": true,
+      "details": {
+        "expected": [
+          "spend-card",
+          "savings-circle",
+          "community-fund",
+          "emergency-pot"
+        ],
+        "covered": [
+          "spend-card",
+          "savings-circle",
+          "emergency-pot",
+          "community-fund"
+        ]
+      }
+    },
+    {
+      "id": "future-journey-minimum-paths",
+      "pass": true,
+      "details": {
+        "spend-card": 8,
+        "savings-circle": 12,
+        "emergency-pot": 10,
+        "community-fund": 10
+      }
+    },
+    {
+      "id": "future-path-id-unique",
+      "pass": true,
+      "details": {
+        "count": 40
+      }
+    },
+    {
+      "id": "release-dimensions-separated",
+      "pass": true,
+      "details": [
+        "implemented",
+        "tested",
+        "committed",
+        "merged",
+        "candidate_built",
+        "published",
+        "reachable",
+        "user_proven"
+      ]
+    },
+    {
+      "id": "wave-sequence",
+      "pass": true,
+      "details": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "id": "wave-contracts",
+      "pass": true,
+      "details": {
+        "invalid_waves": []
+      }
+    },
+    {
+      "id": "architecture-experiments",
+      "pass": true,
+      "details": [
+        {
+          "id": "R1",
+          "name": "durable recovery locator",
+          "required_before_wave": 3
+        },
+        {
+          "id": "R2",
+          "name": "Bulletin encrypted blob",
+          "required_before_wave": 3
+        },
+        {
+          "id": "R3",
+          "name": "minimum shared-state contract need",
+          "required_before_wave": 7
+        },
+        {
+          "id": "R4",
+          "name": "Product SDK family compatibility",
+          "required_before_wave": 7
+        }
+      ]
+    },
+    {
+      "id": "declared-existing-scripts-exist",
+      "pass": true,
+      "details": {
+        "checked": 23,
+        "missing": []
+      }
+    },
+    {
+      "id": "planned-native-command-contract",
+      "pass": true,
+      "details": {
+        "build:dot-host": true,
+        "preview:dot-host": true,
+        "e2e:dot-host-preview": true,
+        "verify:dot-host": true
+      }
+    },
+    {
+      "id": "markdown-section:## 1. Executive decision",
+      "pass": true,
+      "details": "## 1. Executive decision"
+    },
+    {
+      "id": "markdown-section:## 5. No-Supabase architecture decision lock",
+      "pass": true,
+      "details": "## 5. No-Supabase architecture decision lock"
+    },
+    {
+      "id": "markdown-section:## 6. Full-product mode contract",
+      "pass": true,
+      "details": "## 6. Full-product mode contract"
+    },
+    {
+      "id": "markdown-section:## 8. Ordered execution waves",
+      "pass": true,
+      "details": "## 8. Ordered execution waves"
+    },
+    {
+      "id": "markdown-section:## 13. Definition of full-product release",
+      "pass": true,
+      "details": "## 13. Definition of full-product release"
+    },
+    {
+      "id": "markdown-section:## 15. Immediate next move",
+      "pass": true,
+      "details": "## 15. Immediate next move"
+    },
+    {
+      "id": "markdown-token:Spend Card",
+      "pass": true,
+      "details": "Spend Card"
+    },
+    {
+      "id": "markdown-token:Savings circle",
+      "pass": true,
+      "details": "Savings circle"
+    },
+    {
+      "id": "markdown-token:Emergency pot",
+      "pass": true,
+      "details": "Emergency pot"
+    },
+    {
+      "id": "markdown-token:Community fund",
+      "pass": true,
+      "details": "Community fund"
+    },
+    {
+      "id": "markdown-token:Group cards",
+      "pass": true,
+      "details": "Group cards"
+    },
+    {
+      "id": "markdown-token:fresh-device",
+      "pass": true,
+      "details": "fresh-device"
+    },
+    {
+      "id": "markdown-token:action-time approval",
+      "pass": true,
+      "details": "action-time approval"
+    }
+  ]
+}
