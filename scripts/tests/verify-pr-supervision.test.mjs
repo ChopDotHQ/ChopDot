@@ -85,6 +85,19 @@ test('accepts a literal full SHA when it matches the event head', () => {
   assert.equal(result.ok, true, result.errors.join('\n'));
 });
 
+test('does not mistake a legitimate claim row for the table header', () => {
+  const result = validatePullRequestBody({
+    body: body({
+      claimRow: `| This claim must remain visible to validation | unit | node --test scripts/tests/verify-pr-supervision.test.mjs | ${CURRENT_HEAD_TOKEN} | pass |`,
+    }),
+    contract,
+    baseSha,
+    headSha,
+  });
+  assert.equal(result.ok, true, result.errors.join('\n'));
+  assert.equal(result.summary.claimRows, 1);
+});
+
 test('rejects an unknown invariant ID', () => {
   const result = validatePullRequestBody({
     body: body({ affected: 'UNKNOWN-INV-001' }),

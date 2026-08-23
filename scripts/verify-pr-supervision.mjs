@@ -78,7 +78,7 @@ function claimRows(section) {
     .filter((line) => line.startsWith('|'))
     .map((line) => line.split('|').slice(1, -1).map((cell) => cell.trim()))
     .filter((cells) => cells.length >= 5)
-    .filter((cells) => !cells[0].toLowerCase().includes('claim'))
+    .filter((cells) => cells[0].trim().toLowerCase() !== 'claim')
     .filter((cells) => !cells.every((cell) => /^-+$/.test(cell)))
     .filter((cells) => cells.slice(0, 5).every(Boolean));
 }
