@@ -20,6 +20,13 @@ jobs:
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Assert exact candidate checkout
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -27,7 +34,7 @@ jobs:
           node-version: 22
 
       - name: Test supervision gates
-        run: node --test scripts/tests/verify-supervision-contract.test.mjs scripts/tests/verify-pr-supervision.test.mjs
+        run: node --test scripts/tests/*.test.mjs
 
       - name: Validate invariant contract and provider independence
         run: >-
@@ -65,6 +72,13 @@ jobs:
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Assert exact candidate checkout
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
 
       - name: Setup Node
         uses: actions/setup-node@v4
