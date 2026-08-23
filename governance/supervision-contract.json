@@ -1,0 +1,456 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-08-23",
+  "authority": {
+    "productLaw": "PRODUCT_TRUTH.md",
+    "operatingProtocol": "SUPERVISION.md",
+    "machineContract": "governance/supervision-contract.json",
+    "pullRequestTemplate": ".github/pull_request_template.md",
+    "decisionsDirectory": "docs/adr",
+    "investigationsDirectory": "docs/investigations",
+    "evidenceDirectory": "artifacts",
+    "evidenceSchema": "governance/evidence-packet.schema.json"
+  },
+  "stateOrder": [
+    "PROPOSED",
+    "DOCUMENTED",
+    "AUTOMATED_PARTIAL",
+    "READY_FOR_CODEX_VERIFY",
+    "VERIFIED_CANDIDATE",
+    "VERIFIED_REAL_HOST",
+    "RELEASED"
+  ],
+  "evidenceLevels": {
+    "source-only": "Implementation or documentation exists; no execution proof.",
+    "unit": "Focused automated test executed.",
+    "simulated-integration": "Integrated flow executed against local or simulated dependencies.",
+    "simulated-host": "Flow executed inside a host simulator; not real-host proof.",
+    "exact-candidate": "Checks executed against the exact clean candidate commit and lockfiles.",
+    "real-host-chain": "Flow executed on the named real host/network with finality and provenance.",
+    "live-user": "Observed participant journey with consent and redacted evidence.",
+    "release": "Published artifact is cryptographically tied to the exact candidate and deployment record.",
+    "local-blocked": "Useful local evidence that records an unresolved blocker and cannot promote state."
+  },
+  "providerIndependence": {
+    "policy": "The supported runtime, development, test, migration, and deployment path must not require Supabase. Historical references may live only in clearly inactive archival material.",
+    "blockedPackages": [
+      "@supabase/supabase-js",
+      "@supabase/ssr"
+    ],
+    "blockedText": [
+      "@supabase/",
+      "VITE_SUPABASE_",
+      "SUPABASE_URL",
+      "SUPABASE_ANON_KEY",
+      "supabase.auth",
+      "supabase.functions"
+    ],
+    "scanRoots": [
+      "src",
+      "server",
+      "contracts",
+      "scripts",
+      ".github",
+      "package.json",
+      "package-lock.json",
+      ".env.example",
+      "vite.config.ts"
+    ],
+    "allowlist": [
+      {
+        "path": "scripts/tests/verify-supervision-contract.test.mjs",
+        "pattern": "@supabase/",
+        "reason": "negative test fixture"
+      },
+      {
+        "path": "scripts/tests/verify-supervision-contract.test.mjs",
+        "pattern": "VITE_SUPABASE_",
+        "reason": "negative test fixture"
+      },
+      {
+        "path": "scripts/tests/verify-supervision-contract.test.mjs",
+        "pattern": "SUPABASE_URL",
+        "reason": "negative test fixture"
+      }
+    ]
+  },
+  "invariants": [
+    {
+      "id": "SETTLEMENT-INV-001",
+      "title": "Only the receiver closes manual or external payment",
+      "severity": "critical",
+      "state": "AUTOMATED_PARTIAL",
+      "minimumPublicBetaState": "VERIFIED_REAL_HOST",
+      "source": {
+        "path": "PRODUCT_TRUTH.md",
+        "section": "1. Money states are distinct, and only the receiver closes the loop"
+      },
+      "statement": "A payer claim never equals receiver confirmation. Only a finalized transfer that exactly matches payer, receiver, amount, currency, network, and item may confirm that exact item automatically.",
+      "automatedChecks": [
+        {
+          "command": "npm run proof:full-loop",
+          "evidenceLevel": "simulated-integration"
+        },
+        {
+          "command": "npm run test:host-wallet",
+          "evidenceLevel": "simulated-host"
+        },
+        {
+          "command": "npm run test:guest-link",
+          "evidenceLevel": "simulated-host"
+        }
+      ],
+      "evidence": [],
+      "knownGaps": [
+        "Exact-candidate proof",
+        "real-host chain finality",
+        "receiver confirmation and reload proof"
+      ]
+    },
+    {
+      "id": "MONEY-INV-001",
+      "title": "Canonical money is exact and conserved",
+      "severity": "critical",
+      "state": "DOCUMENTED",
+      "minimumPublicBetaState": "VERIFIED_CANDIDATE",
+      "source": {
+        "path": "SUPERVISION.md",
+        "section": "Exact money and conservation"
+      },
+      "statement": "Canonical financial amounts use integer base units with an explicit currency scale; allocation, correction, refund, and settlement operations conserve units exactly and never rely on floating-point tolerance.",
+      "automatedChecks": [],
+      "evidence": [],
+      "knownGaps": [
+        "Dedicated exact-money test command",
+        "large-value and high-precision coverage",
+        "migration and corrupt-state proof"
+      ]
+    },
+    {
+      "id": "DATA-AUTHORITY-INV-001",
+      "title": "Participant signatures define authority",
+      "severity": "critical",
+      "state": "AUTOMATED_PARTIAL",
+      "minimumPublicBetaState": "VERIFIED_REAL_HOST",
+      "source": {
+        "path": "PRODUCT_TRUTH.md",
+        "section": "5. Truth is the signed event log, held by participants"
+      },
+      "statement": "Servers, hosts, chains, registries, delivery systems, and indexes may carry, project, or verify participant events but may not forge, rewrite, or become unilateral money or membership authority.",
+      "automatedChecks": [
+        {
+          "command": "npm run test:signed-membership",
+          "evidenceLevel": "unit"
+        },
+        {
+          "command": "npm run test:gate0-foundation",
+          "evidenceLevel": "unit"
+        }
+      ],
+      "evidence": [],
+      "knownGaps": [
+        "Real-host product-account binding",
+        "cross-device convergence proof",
+        "authority-composition threat model"
+      ]
+    },
+    {
+      "id": "FAILURE-INV-001",
+      "title": "Failure cannot masquerade as financial success",
+      "severity": "critical",
+      "state": "AUTOMATED_PARTIAL",
+      "minimumPublicBetaState": "VERIFIED_CANDIDATE",
+      "source": {
+        "path": "SUPERVISION.md",
+        "section": "Failure semantics"
+      },
+      "statement": "A failed, cancelled, unavailable, stale, or unverified remote, host, delivery, database, or chain operation leaves canonical financial state unchanged and is presented honestly to the user.",
+      "automatedChecks": [
+        {
+          "command": "npm run test:guest-link",
+          "evidenceLevel": "simulated-host"
+        },
+        {
+          "command": "npm run test:host-wallet",
+          "evidenceLevel": "simulated-host"
+        }
+      ],
+      "evidence": [],
+      "knownGaps": [
+        "Exact-candidate negative-path matrix",
+        "offline/retry/idempotency proof"
+      ]
+    },
+    {
+      "id": "IDENTITY-INV-001",
+      "title": "Recipient authority is explicitly verified",
+      "severity": "critical",
+      "state": "AUTOMATED_PARTIAL",
+      "minimumPublicBetaState": "VERIFIED_REAL_HOST",
+      "source": {
+        "path": "SUPERVISION.md",
+        "section": "Identity and recipient binding"
+      },
+      "statement": "A name, contact card, pointer, registry entry, or typed address is not permanent recipient authority. Payment destinations must bind the intended person to the current account, network, and capability with rotation and staleness handling.",
+      "automatedChecks": [
+        {
+          "command": "node --import tsx --test src/contacts/verifiedContact.test.ts src/contacts/verifiedContactCeremonyService.test.ts src/contacts/verifiedContactLink.test.ts src/contacts/verifiedContactRepository.test.ts",
+          "testFiles": [
+            "src/contacts/verifiedContact.test.ts",
+            "src/contacts/verifiedContactCeremonyService.test.ts",
+            "src/contacts/verifiedContactLink.test.ts",
+            "src/contacts/verifiedContactRepository.test.ts"
+          ],
+          "evidenceLevel": "unit"
+        }
+      ],
+      "evidence": [],
+      "knownGaps": [
+        "Real-host identity ceremony",
+        "account rotation and stale-name proof",
+        "cross-network confusion tests"
+      ]
+    },
+    {
+      "id": "RECOVERY-INV-001",
+      "title": "Recovery locates state but does not grant authority",
+      "severity": "critical",
+      "state": "AUTOMATED_PARTIAL",
+      "minimumPublicBetaState": "VERIFIED_CANDIDATE",
+      "source": {
+        "path": "docs/adr/0002-recovery-head-index.md",
+        "section": "Decision"
+      },
+      "statement": "Recovery heads and indexes are bounded locators and integrity aids; they cannot grant membership, confirm payment, move money, or override participant signatures.",
+      "automatedChecks": [
+        {
+          "command": "npm run test:recovery-contract",
+          "testFiles": [
+            "src/recovery/recoveryHeadIndex.test.ts",
+            "contracts/recovery-head-index/test/RecoveryHeadIndex.t.sol"
+          ],
+          "evidenceLevel": "unit"
+        }
+      ],
+      "evidence": [],
+      "knownGaps": [
+        "Recovery corruption and rollback proof",
+        "real-network deployment provenance if enabled"
+      ]
+    },
+    {
+      "id": "PRIVACY-INV-001",
+      "title": "Public systems never receive plaintext personal expense data",
+      "severity": "critical",
+      "state": "AUTOMATED_PARTIAL",
+      "minimumPublicBetaState": "VERIFIED_CANDIDATE",
+      "source": {
+        "path": "SECURITY_FOUNDATION.md",
+        "section": "Data protection"
+      },
+      "statement": "Public chains, Bulletin, registries, logs, analytics, artifacts, and support evidence must not expose plaintext personal expense content or reusable secrets; evidence is minimized and redacted.",
+      "automatedChecks": [
+        {
+          "command": "npm run security:baseline",
+          "testFiles": [
+            "scripts/security-baseline.mjs"
+          ],
+          "evidenceLevel": "unit"
+        }
+      ],
+      "evidence": [],
+      "knownGaps": [
+        "Candidate artifact privacy scan",
+        "redaction review for user proof"
+      ]
+    },
+    {
+      "id": "PLATFORM-INV-001",
+      "title": "The supported system is Supabase-independent",
+      "severity": "high",
+      "state": "AUTOMATED_PARTIAL",
+      "minimumPublicBetaState": "VERIFIED_CANDIDATE",
+      "source": {
+        "path": "SUPERVISION.md",
+        "section": "Provider independence"
+      },
+      "statement": "The active runtime, authentication, development, test, migration, deployment, and CI paths must not require Supabase packages, environment variables, APIs, Edge Functions, CLI commands, or secrets.",
+      "automatedChecks": [
+        {
+          "command": "node scripts/verify-supervision-contract.mjs",
+          "testFiles": [
+            "scripts/tests/verify-supervision-contract.test.mjs"
+          ],
+          "evidenceLevel": "unit"
+        }
+      ],
+      "evidence": [],
+      "knownGaps": [
+        "Exact-candidate environment and deployment configuration audit"
+      ]
+    },
+    {
+      "id": "MIGRATION-INV-001",
+      "title": "Persisted financial state migrates safely",
+      "severity": "high",
+      "state": "DOCUMENTED",
+      "minimumPublicBetaState": "VERIFIED_CANDIDATE",
+      "source": {
+        "path": "SUPERVISION.md",
+        "section": "Persistence and migrations"
+      },
+      "statement": "Persisted schemas are explicitly versioned; migrations are ordered and idempotent, preserve a pre-migration backup, and quarantine ambiguous or corrupt financial records rather than silently coercing them.",
+      "automatedChecks": [],
+      "evidence": [],
+      "knownGaps": [
+        "Dedicated migration test command",
+        "old-state fixtures",
+        "repeated migration and reload proof"
+      ]
+    },
+    {
+      "id": "UX-INV-001",
+      "title": "Normal users never meet protocol plumbing",
+      "severity": "high",
+      "state": "DOCUMENTED",
+      "minimumPublicBetaState": "VERIFIED_CANDIDATE",
+      "source": {
+        "path": "PRODUCT_TRUTH.md",
+        "section": "2. The user never meets the plumbing"
+      },
+      "statement": "Normal UI explains people, money direction, action, status, and recovery without adapter, protocol, host, SDK, native, proof, chain, or state-machine language.",
+      "automatedChecks": [],
+      "evidence": [],
+      "knownGaps": [
+        "Candidate copy audit",
+        "payer/receiver/organizer/guest walkthroughs"
+      ]
+    },
+    {
+      "id": "ACCESSIBILITY-INV-001",
+      "title": "Core money journeys are operable on mobile and assistive technology",
+      "severity": "high",
+      "state": "DOCUMENTED",
+      "minimumPublicBetaState": "VERIFIED_REAL_HOST",
+      "source": {
+        "path": "SUPERVISION.md",
+        "section": "Accessibility and mobile proof"
+      },
+      "statement": "The exact candidate must pass narrow mobile viewports, keyboard navigation, visible focus, accessible names and status announcements, safe-area behavior in the actual host, and a VoiceOver or TalkBack walkthrough of the core money journey.",
+      "automatedChecks": [],
+      "evidence": [],
+      "knownGaps": [
+        "Fresh typecheck/build proof",
+        "mobile browser acceptance",
+        "real-host safe-area proof",
+        "screen-reader evidence"
+      ]
+    },
+    {
+      "id": "NETWORK-INV-001",
+      "title": "Network and asset provenance is exact",
+      "severity": "critical",
+      "state": "AUTOMATED_PARTIAL",
+      "minimumPublicBetaState": "VERIFIED_REAL_HOST",
+      "source": {
+        "path": "HOSTS.md",
+        "section": "Host and network capability"
+      },
+      "statement": "Every chain-affecting claim records the exact SDK and host versions, network and genesis, asset identifier and decimals, contract address/code identity, participant accounts, finality evidence, and timestamp; mainnet metadata is never reused as Devnet proof.",
+      "automatedChecks": [
+        {
+          "command": "npm run proof:host-capabilities",
+          "evidenceLevel": "simulated-host"
+        },
+        {
+          "command": "npm run verify:dot-host",
+          "testFiles": [
+            "scripts/verify-dot-host.mjs"
+          ],
+          "evidenceLevel": "simulated-integration"
+        }
+      ],
+      "evidence": [],
+      "knownGaps": [
+        "Real Products Devnet PAS transfer",
+        "exact genesis/asset/finality record"
+      ]
+    },
+    {
+      "id": "PROVENANCE-INV-001",
+      "title": "Release proof binds the exact immutable candidate",
+      "severity": "critical",
+      "state": "AUTOMATED_PARTIAL",
+      "minimumPublicBetaState": "VERIFIED_REAL_HOST",
+      "source": {
+        "path": "docs/adr/0003-immutable-testnet-promotion.md",
+        "section": "Decision"
+      },
+      "statement": "A release claim binds the clean Git commit, dependency locks, build profile and output hashes, CAR/CID or equivalent artifact identity, product name/version, host version, network/genesis, deployment evidence, ownership, and verification timestamp.",
+      "automatedChecks": [
+        {
+          "command": "npm run build:dot-host",
+          "evidenceLevel": "simulated-integration"
+        },
+        {
+          "command": "npm run e2e:dot-host-preview",
+          "evidenceLevel": "simulated-host"
+        },
+        {
+          "command": "npm run verify:dot-host",
+          "testFiles": [
+            "scripts/verify-dot-host.mjs"
+          ],
+          "evidenceLevel": "simulated-integration"
+        }
+      ],
+      "evidence": [
+        {
+          "level": "local-blocked",
+          "path": "artifacts/release/wave-0-provenance.json",
+          "note": "Records a dirty-worktree/exact-head blocker; cannot promote state."
+        }
+      ],
+      "knownGaps": [
+        "Clean exact-candidate provenance",
+        "deterministic artifact promotion",
+        "published Devnet identity and ownership proof"
+      ]
+    },
+    {
+      "id": "CUSTODY-GUARD-001",
+      "title": "Custody cannot be introduced incidentally",
+      "severity": "critical",
+      "state": "DOCUMENTED",
+      "minimumPublicBetaState": "VERIFIED_CANDIDATE",
+      "source": {
+        "path": "SUPERVISION.md",
+        "section": "Custody change control"
+      },
+      "statement": "Custody or escrow remains an open product decision, but no feature may introduce it incidentally. Any custody path requires a dated ADR, legal and regulatory review, threat model, explicit participant consent, operational controls, and release-specific approval.",
+      "automatedChecks": [],
+      "evidence": [],
+      "knownGaps": [
+        "No custody path is approved for the current beta"
+      ]
+    },
+    {
+      "id": "EVIDENCE-INV-001",
+      "title": "Claims never exceed their evidence",
+      "severity": "critical",
+      "state": "DOCUMENTED",
+      "minimumPublicBetaState": "VERIFIED_CANDIDATE",
+      "source": {
+        "path": "SUPERVISION.md",
+        "section": "Evidence ladder"
+      },
+      "statement": "Source existence, test existence, test execution, exact-candidate execution, real-host execution, chain finality, receiver confirmation, live-user observation, and published release are distinct evidence levels and must never be described as interchangeable.",
+      "automatedChecks": [],
+      "evidence": [],
+      "knownGaps": [
+        "PR claim/evidence review must be applied to the release train",
+        "release-mode gate currently expected to fail"
+      ]
+    }
+  ]
+}

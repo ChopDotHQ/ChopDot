@@ -1,0 +1,95 @@
+name: ChopDot Supervision Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      enforce_release:
+        description: Fail unless every public-beta invariant meets its declared minimum evidence state
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  supervision-contract:
+    name: Supervision contract and PR traceability
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Test supervision gates
+        run: node --test scripts/tests/verify-supervision-contract.test.mjs scripts/tests/verify-pr-supervision.test.mjs
+
+      - name: Validate invariant contract and provider independence
+        run: >-
+          node scripts/verify-supervision-contract.mjs
+          --json-out=artifacts/governance/supervision-report.json
+          --md-out=artifacts/governance/supervision-report.md
+
+      - name: Validate pull-request traceability
+        if: github.event_name == 'pull_request'
+        run: node scripts/verify-pr-supervision.mjs
+
+      - name: Publish supervision summary
+        if: always()
+        shell: bash
+        run: |
+          if [[ -f artifacts/governance/supervision-report.md ]]; then
+            cat artifacts/governance/supervision-report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Supervision report was not produced." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload supervision evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supervision-report-${{ github.run_id }}
+          path: artifacts/governance/
+          if-no-files-found: warn
+          retention-days: 30
+
+  public-beta-release-enforcement:
+    name: Public-beta evidence enforcement
+    if: github.event_name == 'workflow_dispatch' && inputs.enforce_release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enforce public-beta promotion thresholds
+        run: >-
+          node scripts/verify-supervision-contract.mjs --release
+          --json-out=artifacts/governance/public-beta-release-report.json
+          --md-out=artifacts/governance/public-beta-release-report.md
+
+      - name: Publish release decision
+        if: always()
+        shell: bash
+        run: |
+          if [[ -f artifacts/governance/public-beta-release-report.md ]]; then
+            cat artifacts/governance/public-beta-release-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload release decision evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-beta-release-report-${{ github.run_id }}
+          path: artifacts/governance/
+          if-no-files-found: warn
+          retention-days: 90
