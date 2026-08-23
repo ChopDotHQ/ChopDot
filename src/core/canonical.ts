@@ -18,6 +18,25 @@ export function canonicalJson(value: unknown): string {
   throw new Error('Canonical data must be JSON-compatible.');
 }
 
+/** Byte-stable UTF-8 encoding for values accepted by {@link canonicalJson}. */
+export function canonicalBytes(value: unknown): Uint8Array {
+  return encoder.encode(canonicalJson(value));
+}
+
+/**
+ * Canonical bytes with an explicit protocol domain. Keeping the domain inside
+ * the encoded value prevents one signed/hashable record type being replayed as
+ * another while preserving the v1 JSON codec.
+ */
+export function domainSeparatedCanonicalBytes(domain: string, value: unknown): Uint8Array {
+  if (!domain.trim()) throw new Error('Canonical domain is invalid.');
+  return canonicalBytes([domain, value]);
+}
+
+export function canonicalHash(value: unknown): Promise<string> {
+  return sha256Hex(canonicalBytes(value));
+}
+
 export async function sha256Hex(value: string | Uint8Array): Promise<string> {
   const bytes = typeof value === 'string' ? encoder.encode(value) : value;
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));

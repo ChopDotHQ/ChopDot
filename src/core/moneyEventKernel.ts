@@ -1,4 +1,13 @@
-import {canonicalJson, bytesToHex, cloneJson, hexToBytes, isRecord, sha256Hex} from './canonical.ts';
+import {
+  canonicalBytes,
+  canonicalHash,
+  canonicalJson,
+  bytesToHex,
+  cloneJson,
+  domainSeparatedCanonicalBytes,
+  hexToBytes,
+  isRecord,
+} from './canonical.ts';
 import {
   addMoney,
   assertConservation,
@@ -46,7 +55,7 @@ export interface CanonicalGroupStateV1 {
   eventIds: string[];
 }
 
-type EventPayload =
+export type ChopEventPayloadV1 =
   | {name: string; organizerId: string; members: CanonicalMemberV1[]}
   | {expenseId: string; description: string; paidBy: string; total: MoneyV1; allocations: MoneyAllocationV1[]}
   | {shareId: string}
@@ -82,7 +91,7 @@ export interface CanonicalEventInput {
   eventVersion?: 1;
   keyVersion?: number;
   visibility?: 'group_encrypted';
-  payload: EventPayload;
+  payload: ChopEventPayloadV1;
 }
 
 export interface CanonicalEventV1 extends Omit<CanonicalEventInput, 'acceptedAt' | 'eventVersion' | 'keyVersion' | 'visibility'> {
@@ -95,18 +104,32 @@ export interface CanonicalEventV1 extends Omit<CanonicalEventInput, 'acceptedAt'
   signatureHex: string;
 }
 
+/** Public v1 names. CanonicalEvent* aliases remain for source compatibility. */
+export type ChopEventInputV1 = CanonicalEventInput;
+export type ChopEventV1 = CanonicalEventV1;
+export type ChopEventTypeV1 = CanonicalEventType;
+
 export interface CanonicalSigner {sign(bytes: Uint8Array): Promise<Uint8Array>}
 export type CanonicalVerifier = (bytes: Uint8Array, signature: Uint8Array, publicKeyHex: string) => Promise<boolean>;
 export interface ProjectionIssue {eventId: string; reason: string}
 export interface CanonicalProjectionResult {
   state: CanonicalGroupStateV1;
   stateHash: string;
+  frontierHash: string;
   duplicates: ProjectionIssue[];
   conflicts: ProjectionIssue[];
   rejected: ProjectionIssue[];
 }
 
-const encoder = new TextEncoder();
+export interface CanonicalFrontierV1 {
+  readonly v: 1;
+  readonly groupId: string;
+  readonly version: number;
+  readonly currentEventId: string | null;
+  readonly eventIds: readonly string[];
+}
+
+export type ChopFrontierV1 = CanonicalFrontierV1;
 
 export async function createCanonicalEvent(input: CanonicalEventInput, signer: CanonicalSigner): Promise<CanonicalEventV1> {
   const normalized = cloneJson({
@@ -117,7 +140,7 @@ export async function createCanonicalEvent(input: CanonicalEventInput, signer: C
     visibility: input.visibility ?? 'group_encrypted',
   }) as CanonicalEventV1;
   assertInput(normalized);
-  const payloadHash = await sha256Hex(canonicalJson(normalized.payload));
+  const payloadHash = await canonicalHash(normalized.payload);
   const unsigned = {v: 1 as const, ...normalized, payloadHash};
   const signature = await signer.sign(canonicalEventSigningBytes(unsigned));
   if (!(signature instanceof Uint8Array) || signature.byteLength < 16) throw new Error('Canonical event signature is invalid.');
@@ -125,7 +148,7 @@ export async function createCanonicalEvent(input: CanonicalEventInput, signer: C
 }
 
 export function canonicalEventSigningBytes(event: Omit<CanonicalEventV1, 'signatureHex'>): Uint8Array {
-  return encoder.encode(canonicalJson(['chopdot:money-event:v1', event]));
+  return domainSeparatedCanonicalBytes('chopdot:money-event:v1', event);
 }
 
 export async function projectCanonicalEvents(
@@ -137,6 +160,7 @@ export async function projectCanonicalEvents(
   const conflicts: ProjectionIssue[] = [];
   const rejected: ProjectionIssue[] = [];
   const byId = new Map<string, CanonicalEventV1>();
+  const validated: CanonicalEventV1[] = [];
   const compactedEventIds = new Set(seed?.eventIds ?? []);
 
   for (const candidate of input) {
@@ -152,16 +176,32 @@ export async function projectCanonicalEvents(
       duplicates.push({eventId: event.eventId, reason: 'already represented by the verified checkpoint'});
       continue;
     }
-    const existing = byId.get(event.eventId);
-    if (existing) {
-      if (canonicalJson(existing) === canonicalJson(event)) duplicates.push({eventId: event.eventId, reason: 'exact duplicate'});
-      else rejected.push({eventId: event.eventId, reason: 'event ID reused with different content'});
-      continue;
-    }
-    byId.set(event.eventId, event);
+    validated.push(event);
   }
 
-  const groupIds = [...new Set([...byId.values()].map(event => event.groupId))];
+  // Validate identity reuse as a set so input arrival order cannot select
+  // which signed content becomes authoritative.
+  for (const events of groupBy(validated, event => event.eventId).values()) {
+    const unique = uniqueCanonicalEvents(events);
+    if (unique.length > 1) {
+      for (const event of unique) rejected.push({eventId: event.eventId, reason: 'event ID reused with different content'});
+      continue;
+    }
+    byId.set(unique[0].eventId, unique[0]);
+    for (let index = 1; index < events.length; index += 1) {
+      duplicates.push({eventId: unique[0].eventId, reason: 'exact duplicate'});
+    }
+  }
+
+  for (const events of groupBy([...byId.values()], event => event.commandId).values()) {
+    if (events.length < 2) continue;
+    for (const event of events) {
+      byId.delete(event.eventId);
+      rejected.push({eventId: event.eventId, reason: 'command ID reused with different content'});
+    }
+  }
+
+  const groupIds = [...new Set(validated.map(event => event.groupId))];
   if (seed) groupIds.push(seed.groupId);
   if (new Set(groupIds).size !== 1) throw new Error('Projection requires exactly one group aggregate.');
   if (!seed && groupIds.length === 0) throw new Error('Projection requires exactly one group aggregate.');
@@ -196,11 +236,44 @@ export async function projectCanonicalEvents(
   for (const event of [...remaining.values()].sort((left, right) => left.eventId.localeCompare(right.eventId))) {
     conflicts.push({eventId: event.eventId, reason: 'causal parent or expected version is not on the accepted frontier'});
   }
-  return {state, stateHash: await canonicalStateHash(state), duplicates, conflicts, rejected};
+  duplicates.sort(compareProjectionIssues);
+  conflicts.sort(compareProjectionIssues);
+  rejected.sort(compareProjectionIssues);
+  return {
+    state,
+    stateHash: await canonicalStateHash(state),
+    frontierHash: await canonicalFrontierHash(state),
+    duplicates,
+    conflicts,
+    rejected,
+  };
+}
+
+export function canonicalStateBytes(state: CanonicalGroupStateV1): Uint8Array {
+  return canonicalBytes(state);
 }
 
 export async function canonicalStateHash(state: CanonicalGroupStateV1): Promise<string> {
-  return sha256Hex(canonicalJson(state));
+  return canonicalHash(state);
+}
+
+export function canonicalFrontier(state: CanonicalGroupStateV1): CanonicalFrontierV1 {
+  assertSeedState(state);
+  return {
+    v: 1,
+    groupId: state.groupId,
+    version: state.version,
+    currentEventId: state.currentEventId,
+    eventIds: [...state.eventIds],
+  };
+}
+
+export function canonicalFrontierBytes(state: CanonicalGroupStateV1): Uint8Array {
+  return domainSeparatedCanonicalBytes('chopdot:event-frontier:v1', canonicalFrontier(state));
+}
+
+export function canonicalFrontierHash(state: CanonicalGroupStateV1): Promise<string> {
+  return canonicalHash(['chopdot:event-frontier:v1', canonicalFrontier(state)]);
 }
 
 async function assertCanonicalEvent(event: CanonicalEventV1, verify: CanonicalVerifier): Promise<void> {
@@ -209,7 +282,7 @@ async function assertCanonicalEvent(event: CanonicalEventV1, verify: CanonicalVe
   }
   const {signatureHex, ...unsigned} = event;
   assertInput(unsigned);
-  if (event.payloadHash !== await sha256Hex(canonicalJson(event.payload))) throw new Error('Canonical event payload digest does not match.');
+  if (event.payloadHash !== await canonicalHash(event.payload)) throw new Error('Canonical event payload digest does not match.');
   const valid = await verify(canonicalEventSigningBytes(unsigned), hexToBytes(signatureHex), event.actorAccountPublicKeyHex);
   if (!valid) throw new Error('Canonical event signature is invalid.');
 }
@@ -218,7 +291,7 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
   const state = cloneJson(previous);
   if (event.eventType === 'GROUP_CREATED') {
     if (state.version !== 0 || state.organizerId) throw new Error('Group already exists.');
-    const payload = event.payload as Extract<EventPayload, {organizerId: string}>;
+    const payload = event.payload as Extract<ChopEventPayloadV1, {organizerId: string}>;
     if (!payload.name.trim() || payload.organizerId !== event.actorId || event.actorRole !== 'organizer') throw new Error('Group organizer authority is invalid.');
     const members: Record<string, CanonicalMemberV1> = {};
     for (const member of payload.members) {
@@ -256,7 +329,7 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
   if (state.closed) throw new Error('Closed records cannot be changed.');
 
   if (event.eventType === 'EXPENSE_ADDED') {
-    const payload = event.payload as Extract<EventPayload, {expenseId: string; paidBy: string; total: MoneyV1}>;
+    const payload = event.payload as Extract<ChopEventPayloadV1, {expenseId: string; paidBy: string; total: MoneyV1}>;
     if (event.actorId !== payload.paidBy || !state.members[payload.paidBy] || state.expenses[payload.expenseId]) throw new Error('Expense authority is invalid.');
     assertMoney(payload.total);
     assertConservation(payload.total, payload.allocations);
@@ -300,7 +373,7 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
   }
 
   if (event.eventType === 'EXPENSE_CORRECTED') {
-    const payload = event.payload as Extract<EventPayload, {expenseId: string; reason: string; total: MoneyV1}>;
+    const payload = event.payload as Extract<ChopEventPayloadV1, {expenseId: string; reason: string; total: MoneyV1}>;
     const expense = state.expenses[payload.expenseId];
     if (!expense || event.actorId !== expense.paidBy || !payload.reason.trim()) throw new Error('Expense correction authority is invalid.');
     const shares = Object.values(state.shares).filter(share => share.expenseId === expense.expenseId);
@@ -322,7 +395,7 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
   }
 
   if (event.eventType === 'SHARE_ADJUSTED') {
-    const payload = event.payload as Extract<EventPayload, {shareId: string; kind: AdjustmentKind}>;
+    const payload = event.payload as Extract<ChopEventPayloadV1, {shareId: string; kind: AdjustmentKind}>;
     const share = shareFor(state, payload.shareId);
     const expense = state.expenses[share.expenseId];
     if (event.actorId !== expense.paidBy || !payload.reason.trim()) throw new Error('Share adjustment authority is invalid.');
@@ -417,3 +490,18 @@ function currencyTotals(state: CanonicalGroupStateV1): Record<string, MoneyV1> {
 }
 
 function message(reason: unknown): string {return reason instanceof Error ? reason.message : String(reason)}
+
+function groupBy<T>(rows: T[], key: (row: T) => string): Map<string, T[]> {
+  const grouped = new Map<string, T[]>();
+  for (const row of rows) grouped.set(key(row), [...(grouped.get(key(row)) ?? []), row]);
+  return grouped;
+}
+
+function uniqueCanonicalEvents(events: CanonicalEventV1[]): CanonicalEventV1[] {
+  return [...new Map(events.map(event => [canonicalJson(event), event])).values()]
+    .sort((left, right) => canonicalJson(left).localeCompare(canonicalJson(right)));
+}
+
+function compareProjectionIssues(left: ProjectionIssue, right: ProjectionIssue): number {
+  return left.eventId.localeCompare(right.eventId) || left.reason.localeCompare(right.reason);
+}

@@ -1,8 +1,8 @@
 export interface MoneyV1 {
-  v: 1;
-  minorUnits: string;
-  currency: string;
-  exponent: number;
+  readonly v: 1;
+  readonly minorUnits: string;
+  readonly currency: string;
+  readonly exponent: number;
 }
 
 export interface MoneyAllocationV1 {
@@ -16,7 +16,8 @@ export interface MoneyPostingV1 {
   amount: MoneyV1;
 }
 
-const MAX_ABS_MINOR_UNITS = 10n ** 30n;
+export const MONEY_V1_SCHEMA_VERSION = 1 as const;
+export const MONEY_V1_MAX_ABS_MINOR_UNITS = 10n ** 30n;
 
 export function moneyFromDecimal(decimal: string, currency: string, exponent = 2): MoneyV1 {
   if (typeof decimal !== 'string') throw new Error('Money must enter the core as a decimal string.');
@@ -35,7 +36,7 @@ export function moneyFromMinorUnits(minorUnits: bigint | string, currency: strin
   const amount = typeof minorUnits === 'bigint' ? minorUnits : parseInteger(minorUnits);
   if (amount < 0n) throw new Error('Money amount cannot be negative.');
   assertLimit(amount);
-  return {v: 1, minorUnits: amount.toString(), currency, exponent};
+  return {v: MONEY_V1_SCHEMA_VERSION, minorUnits: amount.toString(), currency, exponent};
 }
 
 /** Signed money is restricted to explicit adjustment/reversal payloads. */
@@ -44,7 +45,7 @@ export function signedMoney(minorUnits: string, currency: string, exponent = 2):
   assertExponent(exponent);
   const amount = parseInteger(minorUnits);
   assertLimit(amount);
-  return {v: 1, minorUnits: amount.toString(), currency, exponent};
+  return {v: MONEY_V1_SCHEMA_VERSION, minorUnits: amount.toString(), currency, exponent};
 }
 
 export function assertMoney(value: unknown, options: {allowNegative?: boolean} = {}): asserts value is MoneyV1 {
@@ -166,5 +167,5 @@ function parseInteger(value: string): bigint {
 }
 
 function assertLimit(value: bigint): void {
-  if (value > MAX_ABS_MINOR_UNITS || value < -MAX_ABS_MINOR_UNITS) throw new Error('Money amount exceeds the supported limit.');
+  if (value > MONEY_V1_MAX_ABS_MINOR_UNITS || value < -MONEY_V1_MAX_ABS_MINOR_UNITS) throw new Error('Money amount exceeds the supported limit.');
 }
