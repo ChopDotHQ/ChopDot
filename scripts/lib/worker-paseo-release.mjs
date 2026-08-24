@@ -361,36 +361,6 @@ export function assertFinalizedStorageProof(observed, expectedCids) {
   return observed;
 }
 
-export async function verifyDirectIpfsFiles({baseUrl, release, releaseBytes, sha256}) {
-  const expected = [...release.files, {
-    path: 'release.json',
-    bytes: releaseBytes.byteLength,
-    sha256: sha256(releaseBytes),
-  }];
-  const files = [];
-  for (const entry of expected) {
-    const encoded = entry.path.split('/').map(encodeURIComponent).join('/');
-    const url = `${baseUrl.replace(/\/$/, '')}/${encoded}`;
-    const response = await fetch(url, {
-      redirect: 'follow',
-      cache: 'no-store',
-      signal: AbortSignal.timeout(30_000),
-    });
-    if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}.`);
-    const bytes = Buffer.from(await response.arrayBuffer());
-    if (bytes.byteLength !== entry.bytes || sha256(bytes) !== entry.sha256) {
-      throw new Error(`${url} does not serve the frozen bytes for ${entry.path}.`);
-    }
-    files.push({path: entry.path, bytes: bytes.byteLength, sha256: sha256(bytes)});
-  }
-  files.sort((a, b) => a.path.localeCompare(b.path));
-  return {
-    baseUrl,
-    files: files.length,
-    aggregateSha256: sha256(files.map(entry => `${entry.path}\0${entry.sha256}\n`).join('')),
-  };
-}
-
 export async function verifyDirectIpfsFile({url, expectedBytes, sha256}) {
   const response = await fetch(url, {
     redirect: 'follow',

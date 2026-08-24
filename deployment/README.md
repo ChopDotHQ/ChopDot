@@ -320,9 +320,12 @@ invocation. No secret belongs in arguments or evidence.
 
 Final readback requires `--expected-devinson-owner=0x...`. It independently
 requires both DotNS owners to equal that address, exact root/executable manifest
-shapes, the CAR root as the published CID, transaction/block inclusion carrying
-the exact resolver calldata, the icon bytes, and every `release.files` byte on
-both the named browser gateway and direct IPFS gateway. Promotion recording
+shapes, the outer Bulletin storage CID as the published CID,
+transaction/block inclusion carrying the exact resolver calldata, the icon
+bytes, the exact outer CAR bytes from the direct IPFS gateway, and every
+`release.files` byte through the named browser host. The CAR verifier separately
+reconstructs the inner UnixFS directory and proves every release file before
+publication. Promotion recording
 requires the same expected owner on Devnet and Paseo. Strict verification also
 requires the operator-supplied `DOT_EXPECTED_DEVINSON_OWNER`; an arbitrary
 equal nonzero owner is never accepted as user ownership.

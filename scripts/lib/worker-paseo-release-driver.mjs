@@ -52,7 +52,6 @@ import {
   releaseNodes,
   requireFinalizedResolution,
   verifyDirectIpfsFile,
-  verifyDirectIpfsFiles,
   verifyFinalizedTransactions,
 } from './worker-paseo-release.mjs';
 
@@ -163,6 +162,7 @@ async function verifySnapshot(root) {
     throw new Error('DotNS code-anchor file differs from the frozen release binding.');
   }
   const carPath = safeRepoPath(root, CAR_FILE, 'Frozen promotion CAR');
+  const carBytes = await readFile(carPath.absolute);
   const car = await inspectCar(carPath.absolute, releaseBytes, release);
   if (car.sha256 !== RELEASE_CAR_SHA256 || car.rootCid !== RELEASE_ROOT_CID) {
     throw new Error('Frozen CAR hash/CID differs from the explicit approval.');
@@ -178,6 +178,7 @@ async function verifySnapshot(root) {
     releaseBytes,
     release,
     carPath,
+    carBytes,
     car,
     directory,
     cli,
@@ -420,6 +421,9 @@ async function uploadFrozenStorage(root, verified, environment) {
       // Paseo Bulletin endpoint here, even when an exact current client was
       // supplied above. Bind nonce reads to the same pinned unsafe API.
       fetchNonce: (_endpoints, ss58) => readSystemAccountNonce(unsafeApi, ss58),
+      // Always probe deterministic frozen chunks so a finalized upload can be
+      // resumed without re-submitting identical Bulletin data.
+      skipCids: new Set(rebuilt.chunkCids),
     });
     if (storage.storageCid !== RELEASE_ROOT_CID) throw new Error('Bulletin stored a CID other than the frozen release CID.');
     const iconCid = await storeFile(verified.iconBytes, {
@@ -431,10 +435,9 @@ async function uploadFrozenStorage(root, verified, environment) {
     if (iconCid !== verified.iconCid) throw new Error('Bulletin icon CID differs from the frozen icon CID.');
     const finalized = await waitForFinalizedStorage(client, [...rebuilt.chunkCids, RELEASE_ROOT_CID, iconCid]);
     const [releaseGateway, iconGateway] = await Promise.all([
-      withGatewayRetry(() => verifyDirectIpfsFiles({
-        baseUrl: `${environment.pinned.ipfs}/ipfs/${RELEASE_ROOT_CID}`,
-        release: verified.release,
-        releaseBytes: verified.releaseBytes,
+      withGatewayRetry(() => verifyDirectIpfsFile({
+        url: `${environment.pinned.ipfs}/ipfs/${RELEASE_ROOT_CID}`,
+        expectedBytes: verified.carBytes,
         sha256,
       })),
       withGatewayRetry(() => verifyDirectIpfsFile({
@@ -692,10 +695,9 @@ async function verifyFinal(verified, environment) {
     },
   );
   const [releaseGateway, iconGateway] = await Promise.all([
-    verifyDirectIpfsFiles({
-      baseUrl: `${environment.pinned.ipfs}/ipfs/${RELEASE_ROOT_CID}`,
-      release: verified.release,
-      releaseBytes: verified.releaseBytes,
+    verifyDirectIpfsFile({
+      url: `${environment.pinned.ipfs}/ipfs/${RELEASE_ROOT_CID}`,
+      expectedBytes: verified.carBytes,
       sha256,
     }),
     verifyDirectIpfsFile({

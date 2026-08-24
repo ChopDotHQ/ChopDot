@@ -12,7 +12,7 @@ import {
   assertFinalizedStorageProof,
   assertFrozenEnvironmentBinding,
   expectedReleaseManifests,
-  verifyDirectIpfsFiles,
+  verifyDirectIpfsFile,
   verifyFinalizedTransactions,
 } from './lib/worker-paseo-release.mjs';
 import {
@@ -198,34 +198,24 @@ test('Bulletin nonce reads are bound to the supplied current-chain API', async (
   ), /invalid system nonce/u);
 });
 
-test('direct gateway proof covers every file and rejects one-byte drift', async () => {
-  const releaseBytes = Buffer.from('{"release":true}');
-  const fileBytes = new Map([
-    ['https://gateway.test/root/app.js', Buffer.from('app')],
-    ['https://gateway.test/root/index.html', Buffer.from('index')],
-    ['https://gateway.test/root/release.json', releaseBytes],
-  ]);
-  const release = {files: [
-    {path: 'app.js', bytes: 3, sha256: sha256(Buffer.from('app'))},
-    {path: 'index.html', bytes: 5, sha256: sha256(Buffer.from('index'))},
-  ]};
+test('direct gateway proof verifies the exact frozen outer CAR bytes', async () => {
+  const carBytes = Buffer.from('frozen-car');
+  let observed = carBytes;
   const originalFetch = globalThis.fetch;
-  globalThis.fetch = async url => new Response(fileBytes.get(String(url)) ?? Buffer.from('missing'), {status: 200});
+  globalThis.fetch = async () => new Response(observed, {status: 200});
   try {
-    const proof = await verifyDirectIpfsFiles({
-      baseUrl: 'https://gateway.test/root',
-      release,
-      releaseBytes,
+    const proof = await verifyDirectIpfsFile({
+      url: 'https://gateway.test/ipfs/storage-cid',
+      expectedBytes: carBytes,
       sha256,
     });
-    assert.equal(proof.files, 3);
-    fileBytes.set('https://gateway.test/root/app.js', Buffer.from('bad'));
-    await assert.rejects(() => verifyDirectIpfsFiles({
-      baseUrl: 'https://gateway.test/root',
-      release,
-      releaseBytes,
+    assert.equal(proof.sha256, sha256(carBytes));
+    observed = Buffer.from('frozen-caR');
+    await assert.rejects(() => verifyDirectIpfsFile({
+      url: 'https://gateway.test/ipfs/storage-cid',
+      expectedBytes: carBytes,
       sha256,
-    }), /frozen bytes/u);
+    }), /frozen file bytes/u);
   } finally {
     globalThis.fetch = originalFetch;
   }
