@@ -17,6 +17,7 @@ WORKTREE = Path("/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch").reso
 AUTOBOTS_SOURCE = Path("/Users/devinsonpena/.codex/worktrees/24f9/AutoBots").resolve()
 AUTOBOTS_COMMIT = "15577d8e15ec98e14dc7f20ce1525ceb68d8ed75"
 NODE_BIN = Path("/opt/homebrew/bin/node").resolve()
+KG_PYTHON = Path("/Users/devinsonpena/Documents/AutoBots/proofmap/.venv/bin/python")
 AUTOBOTS_TOOL_HASHES = {
     "agentops/runners/kg_preflight.py": "cda747f0737c372a8121715cff8fb36539b8e411ca9f75cc8aa95e3abf0627ba",
     "agentops/runners/repo_graph_v1.py": "015648c5acd7c6ac210b8b64a9b8ce8711ce9b0dc1ec083aa89663d42edf1275",
@@ -480,6 +481,8 @@ def main() -> int:
     if len(sys.argv) == 3 and sys.argv[1] == "--isolated-run":
         if sys.flags.isolated != 1:
             raise RuntimeError("The AgentOps child entrypoint requires Python isolated mode")
+        if Path(sys.executable) != KG_PYTHON:
+            raise RuntimeError(f"The AgentOps child requires the configured KGv2 Python: {KG_PYTHON}")
         for variable in ["PYTHONPATH", "PYTHONHOME", "PYTHONSTARTUP", "PYTHONUSERBASE"]:
             if variable in os.environ:
                 raise RuntimeError(f"The AgentOps child environment still contains {variable}")
@@ -498,6 +501,17 @@ def main() -> int:
         raise RuntimeError("No arguments are accepted for the operator entrypoint")
     if not NODE_BIN.is_file():
         raise RuntimeError(f"Required Node runtime is missing: {NODE_BIN}")
+    if not KG_PYTHON.is_file():
+        raise RuntimeError(f"Required KGv2 Python runtime is missing: {KG_PYTHON}")
+    dependency_check = subprocess.run(
+        [str(KG_PYTHON), "-B", "-I", "-c", "import psycopg"],
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    if dependency_check.returncode != 0:
+        raise RuntimeError("Configured KGv2 Python is missing its approved psycopg dependency")
     attest_autobots_source()
     with tempfile.TemporaryDirectory(prefix="chopdot-agentops-") as temporary:
         snapshot = (Path(temporary) / "runtime").resolve()
@@ -517,7 +531,7 @@ def main() -> int:
             }
         )
         child = subprocess.run(
-            [sys.executable, "-I", str(Path(__file__).resolve()), "--isolated-run", str(snapshot)],
+            [str(KG_PYTHON), "-B", "-I", str(Path(__file__).resolve()), "--isolated-run", str(snapshot)],
             cwd=WORKTREE,
             env=environment,
             check=False,
