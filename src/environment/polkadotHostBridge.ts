@@ -236,7 +236,9 @@ export class PolkadotHostBridge {
    * public context and fails closed when the capability is unavailable.
    */
   async deriveAccountEntropy(context: Uint8Array): Promise<Uint8Array> {
-    if (context.byteLength === 0) throw new Error('Account recovery context is required.');
+    if (!(context instanceof Uint8Array) || context.byteLength === 0 || context.byteLength > 32) {
+      throw new Error('Account recovery context must be between 1 and 32 bytes.');
+    }
     const sdk = await this.sdkLoader();
     if (!(await sdk.isInsideContainer())) throw new Error('Account recovery is unavailable.');
     const result = await sdk.deriveEntropy(new Uint8Array(context));

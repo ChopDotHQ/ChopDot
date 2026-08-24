@@ -34,6 +34,8 @@ export interface RecoveryLocatorV1 {
   frontierHash: string;
   publishedAt: string;
   issuerAccountPublicKeyHex: string;
+  /** Account-bound ciphertext needed on a fresh device; the outer locator is also account-encrypted. */
+  keyEnvelope?: GroupKeyEnvelopeV1;
   signatureHex: string;
 }
 
@@ -51,6 +53,17 @@ export interface LaterEventSource {
   listAfter(groupId: string, version: number): Promise<CanonicalEventV1[]>;
 }
 
+/**
+ * Optional at the reusable service boundary so local tests and migrations can
+ * replay without a chain. Public-beta production composition must provide the
+ * RecoveryHeadIndex-backed implementation and may not treat a locator as
+ * current until this guard accepts it.
+ */
+export interface RecoveryLocatorHeadGuard {
+  publish(locator: RecoveryLocatorV1): Promise<void>;
+  assertCurrent(locator: RecoveryLocatorV1): Promise<void>;
+}
+
 export class GroupRecoveryService {
   constructor(private readonly edges: {
     archive: CheckpointArchive;
@@ -58,6 +71,7 @@ export class GroupRecoveryService {
     laterEvents: LaterEventSource;
     verifyEvent: CanonicalVerifier;
     verifyCheckpoint: CanonicalVerifier;
+    head?: RecoveryLocatorHeadGuard;
   }) {}
 
   async publish(input: {
@@ -68,9 +82,16 @@ export class GroupRecoveryService {
     issuerAccountPublicKeyHex: string;
     recipientId: string;
     recipientAccountPublicKeyHex: string;
+    recipientKeyEnvelope?: GroupKeyEnvelopeV1;
     createdAt: string;
     signer: CanonicalSigner;
   }): Promise<{checkpoint: EncryptedGroupCheckpointV1; locator: RecoveryLocatorV1}> {
+    if (input.recipientKeyEnvelope && (
+      input.recipientKeyEnvelope.groupId !== input.acceptedEvents[0]?.groupId
+      || input.recipientKeyEnvelope.recipientId !== input.recipientId
+      || input.recipientKeyEnvelope.recipientAccountPublicKeyHex.toLowerCase() !== input.recipientAccountPublicKeyHex.toLowerCase()
+      || input.recipientKeyEnvelope.keyVersion !== input.keyVersion
+    )) throw new Error('Recovery group access envelope does not match this recipient checkpoint.');
     const checkpoint = await createEncryptedGroupCheckpoint({...input, verifyEvent: this.edges.verifyEvent});
     const checkpointRef = await this.edges.archive.put(checkpoint);
     const unsigned = {
@@ -85,10 +106,12 @@ export class GroupRecoveryService {
       frontierHash: checkpoint.frontierHash,
       publishedAt: input.createdAt,
       issuerAccountPublicKeyHex: input.issuerAccountPublicKeyHex,
+      ...(input.recipientKeyEnvelope ? {keyEnvelope: cloneJson(input.recipientKeyEnvelope)} : {}),
     };
     const signature = await input.signer.sign(locatorSigningBytes(unsigned));
     const locator: RecoveryLocatorV1 = {...unsigned, signatureHex: bytesToHex(signature)};
     await this.edges.locators.put(locator);
+    await this.edges.head?.publish(locator);
     return {checkpoint, locator};
   }
 
@@ -98,12 +121,13 @@ export class GroupRecoveryService {
     participantId: string;
     accountPublicKeyHex: string;
     minimumKeyVersion: number;
-    keyEnvelope: GroupKeyEnvelopeV1;
+    keyEnvelope?: GroupKeyEnvelopeV1;
     entropy: AccountEntropyProvider;
-  }): Promise<CanonicalProjectionResult & {locator: RecoveryLocatorV1}> {
+  }): Promise<CanonicalProjectionResult & {locator: RecoveryLocatorV1; events: CanonicalEventV1[]}> {
     const locator = await this.edges.locators.get(input.groupId, input.participantId, input.accountPublicKeyHex);
     if (!locator) throw new Error('No recovery record is available for this group.');
     assertLocator(locator);
+    await this.edges.head?.assertCurrent(locator);
     if (
       locator.groupId !== input.groupId
       || locator.participantId !== input.participantId
@@ -125,7 +149,9 @@ export class GroupRecoveryService {
       recipientAccountPublicKeyHex: input.accountPublicKeyHex,
       keyVersion: locator.keyVersion,
     };
-    const groupKey = await openAccountBoundGroupKeyEnvelope(input.keyEnvelope, metadata, input.entropy);
+    const keyEnvelope = input.keyEnvelope ?? locator.keyEnvelope;
+    if (!keyEnvelope) throw new Error('Fresh-device group access is unavailable.');
+    const groupKey = await openAccountBoundGroupKeyEnvelope(keyEnvelope, metadata, input.entropy);
     const checkpoint = await this.edges.archive.get(locator.checkpointRef);
     if (!checkpoint) throw new Error('Recovery archive is unavailable.');
     const opened = await openEncryptedGroupCheckpoint({
@@ -145,7 +171,7 @@ export class GroupRecoveryService {
     const later = await this.edges.laterEvents.listAfter(input.groupId, opened.state.version);
     const projected = await projectCanonicalEvents(later, this.edges.verifyEvent, opened.state);
     if (projected.rejected.length || projected.conflicts.length) throw new Error('Later group events could not be recovered safely.');
-    return {...projected, locator};
+    return {...projected, locator, events: [...opened.acceptedEvents, ...later]};
   }
 }
 
@@ -287,7 +313,7 @@ function assertLocator(value: RecoveryLocatorV1): void {
     || value.keyVersion < 1
     || !Number.isSafeInteger(value.checkpointVersion)
     || value.checkpointVersion < 1
-    || !value.checkpointRef.startsWith('sha256:')
+    || !/^(?:sha256:[0-9a-f]{64}|bulletin:0x[0-9a-f]{64})$/iu.test(value.checkpointRef)
     || Number.isNaN(Date.parse(value.publishedAt))
   ) throw new Error('Recovery locator is invalid.');
 }

@@ -50,7 +50,7 @@ test('direct RPC matching rejects a wrong recipient', async () => {
   }
 });
 
-test('matched payment confirms only its exact split and duplicate hash cannot clear another split', () => {
+test('matched payment clears only its exact split, awaits the receiver, and duplicate hash cannot clear another split', () => {
   const mina: User = {id: 'mina', name: 'Mina', walletAddress: minaAddress};
   const leo: User = {id: 'leo', name: 'Leo', walletAddress: leoAddress};
   const nina: User = {id: 'nina', name: 'Nina', walletAddress: '0x3333333333333333333333333333333333333333'};
@@ -58,13 +58,15 @@ test('matched payment confirms only its exact split and duplicate hash cannot cl
   const expense: Expense = {id: 'e1', groupId: 'g1', description: 'Dinner', amount: 0.024, currency: 'PAS', paidByUserId: 'mina', date: new Date().toISOString()};
   const splits: Split[] = [
     {id: 's-mina', expenseId: 'e1', userId: 'mina', amount: 0.008, status: 'confirmed'},
-    {id: 's-leo', expenseId: 'e1', userId: 'leo', amount: 0.008, status: 'request_sent'},
-    {id: 's-nina', expenseId: 'e1', userId: 'nina', amount: 0.008, status: 'request_sent'},
+    {id: 's-leo', expenseId: 'e1', userId: 'leo', amount: 0.008, status: 'open'},
+    {id: 's-nina', expenseId: 'e1', userId: 'nina', amount: 0.008, status: 'open'},
   ];
   let state = createCleanState();
   for (const user of [mina, leo, nina]) state = reducer(state, {type: 'ADD_USER', payload: {user}});
   state = reducer(state, {type: 'CREATE_GROUP', payload: {group}});
   state = reducer(state, {type: 'ADD_EXPENSE', payload: {expense, splits}});
+  state = reducer(state, {type: 'SEND_REQUEST', payload: {splitId: 's-leo'}});
+  state = reducer(state, {type: 'SEND_REQUEST', payload: {splitId: 's-nina'}});
 
   const receipt: WalletPaymentReceipt = {
     txHash,
@@ -76,7 +78,7 @@ test('matched payment confirms only its exact split and duplicate hash cannot cl
     confirmedAt: new Date().toISOString(),
   };
   state = reducer(state, {type: 'RECORD_MATCHED_PAYMENT', payload: {splitId: 's-leo', userId: 'leo', receiverUserId: 'mina', receipt}});
-  assert.equal(state.splits['s-leo'].status, 'confirmed');
+  assert.equal(state.splits['s-leo'].status, 'cleared');
   assert.equal(state.splits['s-nina'].status, 'request_sent');
 
   state = reducer(state, {
@@ -89,6 +91,9 @@ test('matched payment confirms only its exact split and duplicate hash cannot cl
     },
   });
   assert.equal(state.splits['s-nina'].status, 'request_sent');
+
+  state = reducer(state, {type: 'CONFIRM_RECEIVED', payload: {splitId: 's-leo', currentUserId: 'mina'}});
+  assert.equal(state.splits['s-leo'].status, 'confirmed');
 });
 
 function mockRpc(transaction: {from: string; to: string; value: string}): typeof fetch {

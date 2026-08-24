@@ -44,10 +44,7 @@ async function requestedState(capability = leoCapability): Promise<AppState> {
       expenseId: expense.id,
       userId: leo.id,
       amount: 60,
-      status: 'request_sent',
-      requestId: 'req-leo',
-      requestExpiresAt: '2099-08-10T18:00:00.987Z',
-      requestCapabilityHash: capabilityHash,
+      status: 'open',
     },
   ];
   let state = createCleanState();
@@ -56,6 +53,15 @@ async function requestedState(capability = leoCapability): Promise<AppState> {
   state = reducer(state, {type: 'SET_CURRENT_USER', payload: {userId: mina.id}});
   state = reducer(state, {type: 'CREATE_GROUP', payload: {group}});
   state = reducer(state, {type: 'ADD_EXPENSE', payload: {expense, splits}});
+  state = reducer(state, {
+    type: 'SEND_REQUEST',
+    payload: {
+      splitId: 's-leo',
+      requestId: 'req-leo',
+      expiresAt: '2099-08-10T18:00:00.987Z',
+      capabilityHash,
+    },
+  });
   return state;
 }
 
@@ -140,7 +146,7 @@ test('an already marked-paid request is replay-safe', async () => {
 test('payer outbox keeps one stable event through failure and removes it after publish', async () => {
   const storage = memoryStorage();
   const outbox = new PayerActionOutbox(storage);
-  const pending = outbox.enqueue({
+  const pending = await outbox.enqueue({
     eventId: 'evt-stable',
     requestId: 'req-leo',
     groupId: group.id,
@@ -153,7 +159,7 @@ test('payer outbox keeps one stable event through failure and removes it after p
     occurredAt: '2026-08-09T18:05:00.000Z',
     expiresAt: '2099-08-10T18:00:00.000Z',
   });
-  assert.equal(outbox.enqueue({...pending, eventId: 'evt-repeated'}).eventId, 'evt-stable');
+  assert.equal((await outbox.enqueue({...pending, eventId: 'evt-repeated'})).eventId, 'evt-stable');
 
   const attempted: string[] = [];
   const failed = await outbox.flush(async item => {
@@ -161,14 +167,14 @@ test('payer outbox keeps one stable event through failure and removes it after p
     return false;
   });
   assert.deepEqual(failed, {published: [], pending: ['req-leo']});
-  assert.equal(outbox.get('req-leo')?.eventId, 'evt-stable');
+  assert.equal((await outbox.get('req-leo'))?.eventId, 'evt-stable');
 
   const passed = await outbox.flush(async item => {
     attempted.push(item.eventId);
     return true;
   });
   assert.deepEqual(passed, {published: ['req-leo'], pending: []});
-  assert.equal(outbox.get('req-leo'), null);
+  assert.equal(await outbox.get('req-leo'), null);
   assert.deepEqual(attempted, ['evt-stable', 'evt-stable']);
 });
 

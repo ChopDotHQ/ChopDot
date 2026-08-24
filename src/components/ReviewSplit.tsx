@@ -4,29 +4,35 @@ import { getCurrencySymbol, getInitials } from '../utils';
 import { useAppState } from '../state/AppStateContext';
 import { Expense, Split } from '../types';
 import {CaptureSource} from '../capture/receiptDraft';
+import {moneyFromDecimal, moneyToDecimal, moneyToDisplayNumber} from '../core/money';
+import {calculateReviewedExpenseAllocations, type ReviewedSplitMethod} from '../core/reviewedExpenseAllocation';
 import {ScreenHeader} from './primitives';
+import {modeCopy} from './productModes';
 
-type SplitMethod = 'equal' | 'exact' | 'percent' | 'shares' | 'exclude';
+type SplitMethod = ReviewedSplitMethod;
 
 export function ReviewSplit({ 
   groupId, 
   amount, 
   title, 
   source,
+  spendCardTransactionId,
   onBack, 
   onSave 
 }: { 
   groupId: string; 
-  amount: number; 
+  amount: string;
   title: string; 
   source: CaptureSource;
+  spendCardTransactionId?: string;
   onBack: () => void; 
   onSave: () => void;
 }) {
-  const { state, dispatch } = useAppState();
+  const { state, runAuthority, runModeAuthority, authorityBusy, authorityError } = useAppState();
   const sym = getCurrencySymbol(state.currency);
   const group = state.groups[groupId];
   const currentUser = state.users[state.currentUserId!];
+  const copy = modeCopy(group);
 
   const [method, setMethod] = useState<SplitMethod>('equal');
   const [showMethodMenu, setShowMethodMenu] = useState(false);
@@ -41,100 +47,67 @@ export function ReviewSplit({
 
   if (!group || !currentUser) return null;
 
-  // Calculate split amounts
-  const computedSplits = useMemo(() => {
-    const splits: Record<string, number> = {};
-    const members = group.memberIds;
-
-    if (method === 'equal') {
-      const splitAmount = amount / members.length;
-      members.forEach(m => splits[m] = splitAmount);
-    } else if (method === 'exclude') {
-      const included = members.filter(m => !excluded.has(m));
-      const splitAmount = included.length > 0 ? amount / included.length : 0;
-      members.forEach(m => {
-        splits[m] = excluded.has(m) ? 0 : splitAmount;
-      });
-    } else if (method === 'exact') {
-      members.forEach(m => {
-        splits[m] = parseFloat(exactAmounts[m]) || 0;
-      });
-    } else if (method === 'percent') {
-      members.forEach(m => {
-        const p = parseFloat(percentages[m]) || 0;
-        splits[m] = (p / 100) * amount;
-      });
-    } else if (method === 'shares') {
-      const totalShares = members.reduce((sum, m) => sum + (parseFloat(shares[m]) || 0), 0);
-      members.forEach(m => {
-        const s = parseFloat(shares[m]) || 0;
-        splits[m] = totalShares > 0 ? (s / totalShares) * amount : 0;
-      });
+  const total = useMemo(() => {
+    try {
+      return moneyFromDecimal(amount.trim(), state.currency, state.currency === 'PAS' ? 18 : 2);
+    } catch {
+      return null;
     }
+  }, [amount, state.currency]);
+  const splitResult = useMemo(() => total
+    ? calculateReviewedExpenseAllocations({
+      method,
+      total,
+      participantIds: group.memberIds,
+      exactAmounts,
+      percentages,
+      shares,
+      excluded,
+    })
+    : {allocations: [], validationMessage: 'Enter an amount supported by this currency.'},
+  [method, total, group.memberIds, exactAmounts, percentages, shares, excluded]);
+  const computedSplits = useMemo(() => Object.fromEntries(
+    splitResult.allocations.map(row => [row.participantId, moneyToDisplayNumber(row.amount)]),
+  ), [splitResult.allocations]);
+  const isValid = Boolean(total && !splitResult.validationMessage && splitResult.allocations.length === group.memberIds.length);
+  const validationMessage = splitResult.validationMessage;
 
-    return splits;
-  }, [method, group.memberIds, amount, excluded, exactAmounts, percentages, shares]);
-
-  // Validation
-  let isValid = true;
-  let validationMessage = '';
-
-  if (method === 'exact') {
-    const total = (Object.values(computedSplits) as number[]).reduce((sum: number, v: number) => sum + v, 0);
-    // Use a small epsilon for floating point comparison, but exact needs to match strictly usually, 
-    // we can round to 2 decimals
-    const roundedTotal = Math.round(total * 100) / 100;
-    const roundedAmount = Math.round(amount * 100) / 100;
-    
-    if (roundedTotal !== roundedAmount) {
-      isValid = false;
-      const diff = roundedAmount - roundedTotal;
-      validationMessage = diff > 0 
-        ? `Total is ${sym}${diff.toFixed(2)} short` 
-        : `Total is ${sym}${Math.abs(diff).toFixed(2)} over`;
-    }
-  } else if (method === 'percent') {
-    const totalP = group.memberIds.reduce((sum, m) => sum + (parseFloat(percentages[m]) || 0), 0);
-    if (Math.round(totalP * 100) / 100 !== 100) {
-      isValid = false;
-      validationMessage = `Total must be 100% (currently ${totalP}%)`;
-    }
-  } else if (method === 'exclude') {
-    if (excluded.size === group.memberIds.length) {
-      isValid = false;
-      validationMessage = 'Cannot exclude everyone';
-    }
-  } else if (method === 'shares') {
-    const totalShares = group.memberIds.reduce((sum, m) => sum + (parseFloat(shares[m]) || 0), 0);
-    if (totalShares <= 0) {
-      isValid = false;
-      validationMessage = 'Total shares must be greater than 0';
-    }
-  }
-
-  const handleSave = () => {
-    if (!isValid) return;
+  const handleSave = async () => {
+    if (!isValid || !total || authorityBusy) return;
 
     const expenseId = `e-${Date.now()}rnd${Math.random().toString(36).substring(7)}`;
     const expense: Expense = {
       id: expenseId,
       groupId,
       description: title,
-      amount,
+      amount: moneyToDisplayNumber(total),
       currency: state.currency,
       paidByUserId: currentUser.id,
       date: new Date().toISOString(),
     };
 
+    const allocationByParticipant = new Map(splitResult.allocations.map(row => [row.participantId, row.amount]));
     const splitsToSave: Split[] = group.memberIds.map(memberId => ({
       id: `s-${Date.now()}rnd${Math.random().toString(36).substring(7)}`,
       expenseId,
       userId: memberId,
-      amount: computedSplits[memberId],
+      amount: moneyToDisplayNumber(allocationByParticipant.get(memberId)!),
       status: memberId === currentUser.id ? 'confirmed' : 'open',
     }));
 
-    dispatch({ type: 'ADD_EXPENSE', payload: { expense, splits: splitsToSave } });
+    const saved = await runAuthority({
+      type: 'ADD_EXPENSE',
+      payload: {expense, splits: splitsToSave, exact: {total, allocations: splitResult.allocations}},
+    });
+    if (!saved) return;
+    if (spendCardTransactionId) {
+      const linked = await runModeAuthority({
+        groupId,
+        eventType: 'SPEND_TRANSACTION_LINKED',
+        payload: {transactionId: spendCardTransactionId, expenseId},
+      });
+      if (!linked) return;
+    }
     onSave();
   };
 
@@ -148,7 +121,7 @@ export function ReviewSplit({
 
   return (
     <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-950 transition-colors h-full overflow-hidden">
-      <ScreenHeader title="Review split" onBack={onBack} />
+      <ScreenHeader title={copy.reviewTitle} onBack={onBack} />
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6 relative">
         <div className="text-center">
@@ -157,7 +130,7 @@ export function ReviewSplit({
           )}
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h2>
           <div className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white mt-2">
-            {sym}{amount.toFixed(2)}
+            {sym}{total ? moneyToDecimal(total) : amount}
           </div>
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">
             Paid by {currentUser.name}
@@ -299,16 +272,21 @@ export function ReviewSplit({
             {validationMessage}
           </div>
         )}
+        {authorityError && (
+          <div role="alert" className="rounded-xl bg-red-50 p-3 text-center text-sm font-medium text-red-700 dark:bg-red-950/30 dark:text-red-300">
+            {authorityError}
+          </div>
+        )}
       </div>
 
       <div className="p-6 bg-white dark:bg-[#0a0a0a] border-t border-gray-100 dark:border-[#1a1a1a] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)] shrink-0 transition-colors">
         <button 
           onClick={handleSave}
-          disabled={!isValid}
+          disabled={!isValid || authorityBusy}
           className="w-full py-4 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full font-semibold flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-sm"
         >
           <Check className="w-5 h-5 mr-2" />
-          Save spend
+          {authorityBusy ? 'Saving safely…' : copy.saveAction}
         </button>
       </div>
     </div>

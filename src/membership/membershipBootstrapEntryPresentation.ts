@@ -3,7 +3,7 @@ import type {
   MembershipBootstrapEntryOutcome,
   MembershipBootstrapEntryService,
 } from './membershipBootstrapEntryService.ts';
-import type {RecipientBoundBootstrapV1} from './recipientBoundBootstrap.ts';
+import type {RecipientBoundBootstrap} from './recipientBoundBootstrap.ts';
 
 export function verifiedInvitationDisplay(invitation: GroupInvitation) {
   return {
@@ -16,7 +16,7 @@ export function verifiedInvitationDisplay(invitation: GroupInvitation) {
 
 export async function resolveMembershipBootstrapEntry(
   service: Pick<MembershipBootstrapEntryService, 'restore' | 'enter'>,
-  bootstrap: RecipientBoundBootstrapV1,
+  bootstrap: RecipientBoundBootstrap,
 ): Promise<MembershipBootstrapEntryOutcome> {
   try {
     await service.restore();

@@ -9,6 +9,7 @@ import {
   signedMoney,
 } from '../src/core/money.ts';
 import {
+  canonicalShareId,
   createCanonicalEvent,
   projectCanonicalEvents,
   type CanonicalEventInput,
@@ -58,29 +59,60 @@ test('money boundary rejects floats, unsupported precision, mixed currency, and 
   );
 });
 
-test('canonical dinner lifecycle preserves requested, marked paid, received, and close authority', async () => {
+test('canonical dinner lifecycle keeps finalized evidence distinct from receiver confirmation', async () => {
   const events = await dinnerEvents();
   const result = await projectCanonicalEvents(events, verify);
   assert.equal(result.rejected.length, 0, JSON.stringify(result.rejected));
   assert.equal(result.conflicts.length, 0);
-  assert.equal(result.state.version, 7);
-  assert.equal(result.state.shares['share-leo'].status, 'received');
-  assert.equal(result.state.shares['share-nina'].status, 'received');
+  assert.equal(result.state.version, 9);
+  assert.equal(result.state.shares['share:expense-dinner:leo'].status, 'received');
+  assert.equal(result.state.shares['share:expense-dinner:nina'].status, 'received');
   assert.equal(result.state.closed?.recordId, 'record-zurich-dinner');
   assert.equal(result.state.closed?.total.minorUnits, '12000');
   assert.equal(result.state.closed?.total.currency, 'CHF');
 });
 
+test('finalized matching evidence clears only the exact share and still awaits the receiver', async () => {
+  const events = (await dinnerEvents()).slice(0, 7);
+  const result = await projectCanonicalEvents(events, verify);
+  assert.equal(result.rejected.length, 0, JSON.stringify(result.rejected));
+  assert.equal(result.state.shares['share:expense-dinner:nina'].status, 'cleared');
+  assert.equal(result.state.shares['share:expense-dinner:nina'].clearedEvidence?.reference, '0xabc123');
+  assert.equal(result.state.shares['share:expense-dinner:leo'].status, 'received');
+  assert.equal(result.state.closed, null);
+});
+
+test('each expense owns distinct participant shares', async () => {
+  const first = await dinnerEvents({through: 'expense'});
+  const second = await event({
+    eventId: '03-taxi', commandId: 'cmd-taxi', expectedVersion: 2, parentEventId: '02-expense',
+    actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'EXPENSE_ADDED',
+    payload: {
+      expenseId: 'expense-taxi', description: 'Taxi', paidBy: 'mina', total: moneyFromDecimal('30.00', 'CHF', 2),
+      allocations: [
+        {participantId: 'mina', amount: moneyFromDecimal('10.00', 'CHF', 2)},
+        {participantId: 'leo', amount: moneyFromDecimal('10.00', 'CHF', 2)},
+        {participantId: 'nina', amount: moneyFromDecimal('10.00', 'CHF', 2)},
+      ],
+    },
+  });
+  const result = await projectCanonicalEvents([...first, second], verify);
+  assert.equal(result.rejected.length, 0, JSON.stringify(result.rejected));
+  assert.equal(Object.keys(result.state.shares).length, 6);
+  assert.equal(result.state.shares[canonicalShareId('expense-dinner', 'leo')].amount.minorUnits, '4000');
+  assert.equal(result.state.shares[canonicalShareId('expense-taxi', 'leo')].amount.minorUnits, '1000');
+});
+
 test('wrong actor, currency drift, and post-close mutation change no money truth', async () => {
   const valid = await dinnerEvents();
   const wrongPayer = await event({
-    eventId: '08-wrong-payer', commandId: 'cmd-wrong-payer', expectedVersion: 7,
-    parentEventId: '07-close', actorId: 'nina', actorAccountPublicKeyHex: ninaKey,
-    actorRole: 'member', eventType: 'SHARE_MARKED_PAID', payload: {shareId: 'share-leo'},
+    eventId: '10-wrong-payer', commandId: 'cmd-wrong-payer', expectedVersion: 9,
+    parentEventId: '09-close', actorId: 'nina', actorAccountPublicKeyHex: ninaKey,
+    actorRole: 'member', eventType: 'SHARE_MARKED_PAID', payload: {shareId: 'share:expense-dinner:leo'},
   });
   const lateExpense = await event({
-    eventId: '09-late-expense', commandId: 'cmd-late-expense', expectedVersion: 7,
-    parentEventId: '07-close', actorId: 'mina', actorAccountPublicKeyHex: minaKey,
+    eventId: '11-late-expense', commandId: 'cmd-late-expense', expectedVersion: 9,
+    parentEventId: '09-close', actorId: 'mina', actorAccountPublicKeyHex: minaKey,
     actorRole: 'organizer', eventType: 'EXPENSE_ADDED', payload: {
       expenseId: 'late', description: 'Late', paidBy: 'mina',
       total: moneyFromDecimal('10.00', 'USD', 2),
@@ -88,7 +120,7 @@ test('wrong actor, currency drift, and post-close mutation change no money truth
     },
   });
   const result = await projectCanonicalEvents([...valid, wrongPayer, lateExpense], verify);
-  assert.equal(result.state.version, 7);
+  assert.equal(result.state.version, 9);
   assert.equal(result.state.closed?.total.minorUnits, '12000');
   assert.equal(result.rejected.length, 2);
 });
@@ -112,42 +144,42 @@ test('corrections and reversals append attributable facts without rewriting the 
     eventId: '04-refund', commandId: 'cmd-refund', expectedVersion: 3,
     parentEventId: '03-correct', actorId: 'mina', actorAccountPublicKeyHex: minaKey,
     actorRole: 'organizer', eventType: 'SHARE_ADJUSTED', payload: {
-      shareId: 'share-leo', kind: 'refund', delta: signedMoney('-100', 'CHF', 2), reason: 'Returned item',
+      shareId: 'share:expense-dinner:leo', kind: 'refund', delta: signedMoney('-100', 'CHF', 2), reason: 'Returned item',
     },
   });
   const result = await projectCanonicalEvents([...base, correction, refund], verify);
   assert.equal(result.state.expenses['expense-dinner'].revisions.length, 1);
   assert.equal(result.state.expenses['expense-dinner'].originalTotal.minorUnits, '12000');
   assert.equal(result.state.expenses['expense-dinner'].total.minorUnits, '12300');
-  assert.equal(result.state.shares['share-leo'].amount.minorUnits, '4000');
-  assert.equal(result.state.shares['share-leo'].adjustments.length, 1);
+  assert.equal(result.state.shares['share:expense-dinner:leo'].amount.minorUnits, '4000');
+  assert.equal(result.state.shares['share:expense-dinner:leo'].adjustments.length, 1);
 });
 
 test('partial payment, fee, dispute, and exact waiver stay typed and attributable', async () => {
   const base = await dinnerEvents({through: 'expense'});
   const adjustments = [
-    await event({eventId:'03-partial',commandId:'partial',expectedVersion:2,parentEventId:'02-expense',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_ADJUSTED',payload:{shareId:'share-leo',kind:'partial_payment',delta:signedMoney('-1000','CHF'),reason:'First part received'}}),
-    await event({eventId:'04-fee',commandId:'fee',expectedVersion:3,parentEventId:'03-partial',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_ADJUSTED',payload:{shareId:'share-leo',kind:'fee',delta:signedMoney('100','CHF'),reason:'Transfer fee'}}),
-    await event({eventId:'05-dispute',commandId:'dispute',expectedVersion:4,parentEventId:'04-fee',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_ADJUSTED',payload:{shareId:'share-leo',kind:'dispute',delta:signedMoney('0','CHF'),reason:'Amount questioned'}}),
-    await event({eventId:'06-waiver',commandId:'waiver',expectedVersion:5,parentEventId:'05-dispute',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_ADJUSTED',payload:{shareId:'share-leo',kind:'waiver',delta:signedMoney('-3100','CHF'),reason:'Organizer waived remainder'}}),
+    await event({eventId:'03-partial',commandId:'partial',expectedVersion:2,parentEventId:'02-expense',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_ADJUSTED',payload:{shareId:'share:expense-dinner:leo',kind:'partial_payment',delta:signedMoney('-1000','CHF'),reason:'First part received'}}),
+    await event({eventId:'04-fee',commandId:'fee',expectedVersion:3,parentEventId:'03-partial',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_ADJUSTED',payload:{shareId:'share:expense-dinner:leo',kind:'fee',delta:signedMoney('100','CHF'),reason:'Transfer fee'}}),
+    await event({eventId:'05-dispute',commandId:'dispute',expectedVersion:4,parentEventId:'04-fee',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_ADJUSTED',payload:{shareId:'share:expense-dinner:leo',kind:'dispute',delta:signedMoney('0','CHF'),reason:'Amount questioned'}}),
+    await event({eventId:'06-waiver',commandId:'waiver',expectedVersion:5,parentEventId:'05-dispute',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_ADJUSTED',payload:{shareId:'share:expense-dinner:leo',kind:'waiver',delta:signedMoney('-3100','CHF'),reason:'Organizer waived remainder'}}),
   ];
   const result = await projectCanonicalEvents([...base,...adjustments],verify);
-  assert.equal(result.state.shares['share-leo'].amount.minorUnits,'0');
-  assert.equal(result.state.shares['share-leo'].status,'waived');
-  assert.deepEqual(result.state.shares['share-leo'].adjustments.map(row => row.kind),['partial_payment','fee','dispute','waiver']);
+  assert.equal(result.state.shares['share:expense-dinner:leo'].amount.minorUnits,'0');
+  assert.equal(result.state.shares['share:expense-dinner:leo'].status,'waived');
+  assert.deepEqual(result.state.shares['share:expense-dinner:leo'].adjustments.map(row => row.kind),['partial_payment','fee','dispute','waiver']);
 });
 
 test('a closed record stays unchanged while an explicit successor is appended', async () => {
   const closed = await dinnerEvents();
   const successor = await event({
-    eventId:'08-successor',commandId:'successor',expectedVersion:7,parentEventId:'07-close',
+    eventId:'10-successor',commandId:'successor',expectedVersion:9,parentEventId:'09-close',
     actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SUCCESSOR_RECORD_CREATED',
     payload:{recordId:'record-zurich-dinner-v2',predecessorRecordId:'record-zurich-dinner',reason:'Receipt corrected after close'},
   });
   const result = await projectCanonicalEvents([...closed,successor],verify);
   assert.equal(result.state.closed?.recordId,'record-zurich-dinner');
   assert.equal(result.state.closed?.total.minorUnits,'12000');
-  assert.deepEqual(result.state.successorRecords,[{recordId:'record-zurich-dinner-v2',predecessorRecordId:'record-zurich-dinner',eventId:'08-successor',reason:'Receipt corrected after close'}]);
+  assert.deepEqual(result.state.successorRecords,[{recordId:'record-zurich-dinner-v2',predecessorRecordId:'record-zurich-dinner',eventId:'10-successor',reason:'Receipt corrected after close'}]);
 });
 
 async function dinnerEvents(options: {through?: 'expense'} = {}) {
@@ -171,11 +203,13 @@ async function dinnerEvents(options: {through?: 'expense'} = {}) {
   });
   if (options.through === 'expense') return [created, expense];
   return [created, expense,
-    await event({eventId: '03-request-leo', commandId: 'cmd-request-leo', expectedVersion: 2, parentEventId: '02-expense', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'SHARE_REQUESTED', payload: {shareId: 'share-leo'}}),
-    await event({eventId: '04-paid-leo', commandId: 'cmd-paid-leo', expectedVersion: 3, parentEventId: '03-request-leo', actorId: 'leo', actorAccountPublicKeyHex: leoKey, actorRole: 'member', eventType: 'SHARE_MARKED_PAID', payload: {shareId: 'share-leo'}}),
-    await event({eventId: '05-received-leo', commandId: 'cmd-received-leo', expectedVersion: 4, parentEventId: '04-paid-leo', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'SHARE_RECEIVED', payload: {shareId: 'share-leo'}}),
-    await event({eventId: '06-received-nina', commandId: 'cmd-received-nina', expectedVersion: 5, parentEventId: '05-received-leo', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'SHARE_RECEIVED', payload: {shareId: 'share-nina', exactFinalizedPayment: true}}),
-    await event({eventId: '07-close', commandId: 'cmd-close', expectedVersion: 6, parentEventId: '06-received-nina', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'GROUP_CLOSED', payload: {recordId: 'record-zurich-dinner'}}),
+    await event({eventId: '03-request-leo', commandId: 'cmd-request-leo', expectedVersion: 2, parentEventId: '02-expense', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'SHARE_REQUESTED', payload: {shareId: 'share:expense-dinner:leo'}}),
+    await event({eventId: '04-paid-leo', commandId: 'cmd-paid-leo', expectedVersion: 3, parentEventId: '03-request-leo', actorId: 'leo', actorAccountPublicKeyHex: leoKey, actorRole: 'member', eventType: 'SHARE_MARKED_PAID', payload: {shareId: 'share:expense-dinner:leo'}}),
+    await event({eventId: '05-received-leo', commandId: 'cmd-received-leo', expectedVersion: 4, parentEventId: '04-paid-leo', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'SHARE_RECEIVED', payload: {shareId: 'share:expense-dinner:leo'}}),
+    await event({eventId: '06-request-nina', commandId: 'cmd-request-nina', expectedVersion: 5, parentEventId: '05-received-leo', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'SHARE_REQUESTED', payload: {shareId: 'share:expense-dinner:nina'}}),
+    await event({eventId: '07-cleared-nina', commandId: 'cmd-cleared-nina', expectedVersion: 6, parentEventId: '06-request-nina', actorId: 'nina', actorAccountPublicKeyHex: ninaKey, actorRole: 'member', eventType: 'SHARE_CLEARED', payload: {shareId: 'share:expense-dinner:nina', evidence: {reference: '0xabc123', network: 'paseo-asset-hub', asset: 'CHF', payerId: 'nina', receiverId: 'mina', amount: moneyFromDecimal('40.00', 'CHF', 2), finality: 'finalized'}}}),
+    await event({eventId: '08-received-nina', commandId: 'cmd-received-nina', expectedVersion: 7, parentEventId: '07-cleared-nina', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'SHARE_RECEIVED', payload: {shareId: 'share:expense-dinner:nina'}}),
+    await event({eventId: '09-close', commandId: 'cmd-close', expectedVersion: 8, parentEventId: '08-received-nina', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'GROUP_CLOSED', payload: {recordId: 'record-zurich-dinner'}}),
   ];
 }
 

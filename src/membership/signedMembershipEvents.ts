@@ -17,13 +17,49 @@ import {
 
 const encoder = new TextEncoder();
 const SIGNING_DOMAIN = 'chopdot:signed-membership-event:v1';
+const ZERO_FRONTIER_HASH = `0x${'00'.repeat(32)}`;
 
 export type MembershipEventV1 =
   | {type: 'INVITATION_CREATED'; invitation: GroupInvitation}
   | {type: 'INVITATION_ACCEPTED'; acceptance: MembershipAcceptanceV1}
   | {type: 'MEMBERSHIP_GRANTED'; handoff: GroupKeyHandoffV1; groupKeyEnvelopeId: string}
   | {type: 'INVITATION_DECLINED'; invitationId: string}
-  | {type: 'INVITATION_REVOKED'; invitationId: string};
+  | {type: 'INVITATION_REVOKED'; invitationId: string}
+  | {
+      type: 'MEMBERSHIP_REMOVED';
+      groupId: string;
+      participantId: string;
+      nextKeyVersion: number;
+      groupKeyEnvelopes: Record<string, MembershipKeyEnvelopeBindingV1>;
+    }
+  | {
+      type: 'MEMBERSHIP_ROLES_CHANGED';
+      groupId: string;
+      roles: Record<string, 'organizer' | 'member'>;
+      nextKeyVersion: number;
+      groupKeyEnvelopes: Record<string, MembershipKeyEnvelopeBindingV1>;
+    }
+  | {
+      type: 'GROUP_KEY_ROTATED';
+      groupId: string;
+      nextKeyVersion: number;
+      groupKeyEnvelopes: Record<string, MembershipKeyEnvelopeBindingV1>;
+    };
+
+export interface MembershipKeyEnvelopeBindingV1 {
+  participantId: string;
+  recipientAccountPublicKeyHex: string;
+  keyVersion: number;
+  groupKeyEnvelopeId: string;
+}
+
+export interface MembershipKeyEnvelopeResolver {
+  resolve(input: {
+    groupId: string;
+    keyVersion: number;
+    binding: MembershipKeyEnvelopeBindingV1;
+  }): Promise<boolean>;
+}
 
 export interface SignedMembershipEventV1 {
   v: 1;
@@ -32,18 +68,51 @@ export interface SignedMembershipEventV1 {
   actorAccountPublicKeyHex: string;
   occurredAt: string;
   event: MembershipEventV1;
+  /**
+   * Required on the production coordinator path and on every active-authority
+   * mutation. Legacy invitation packets remain readable during migration but
+   * cannot remove, re-role, or rotate a group.
+   */
+  causal?: MembershipCausalV1;
   signature: string;
+}
+
+export interface MembershipCausalV1 {
+  groupId: string;
+  expectedVersion: number;
+  parentEventId: string | null;
+  expectedFrontierHash: string;
+}
+
+export interface MembershipGroupFrontierV1 {
+  groupId: string;
+  version: number;
+  lastEventId: string | null;
+  frontierHash: string;
+}
+
+export interface MembershipAuthorityIntervalV1 {
+  groupId: string;
+  participantId: string;
+  accountPublicKeyHex: string;
+  role: 'organizer' | 'member';
+  effectiveFromVersion: number;
+  effectiveUntilVersion: number | null;
+  openedByEventId: string;
+  closedByEventId?: string;
 }
 
 export interface SignedMembershipState {
   lifecycle: MembershipLifecycleState;
   pendingAcceptances: Record<string, MembershipAcceptanceV1>;
   events: Record<string, SignedMembershipEventV1>;
+  groupFrontiers: Record<string, MembershipGroupFrontierV1>;
+  authorityIntervals: MembershipAuthorityIntervalV1[];
 }
 
 export interface SignedMembershipTransition {
   state: SignedMembershipState;
-  outcome: 'applied' | 'idempotent' | 'deferred' | 'rejected';
+  outcome: 'applied' | 'idempotent' | 'deferred' | 'conflict' | 'rejected';
   reason?: string;
 }
 
@@ -57,6 +126,16 @@ export function createSignedMembershipState(
     lifecycle: {invitations: {}, memberships},
     pendingAcceptances: {},
     events: {},
+    groupFrontiers: {},
+    authorityIntervals: organizers.map(grant => ({
+      groupId: grant.groupId,
+      participantId: grant.participantId,
+      accountPublicKeyHex: normalizeKey(grant.accountPublicKeyHex),
+      role: grant.role,
+      effectiveFromVersion: 0,
+      effectiveUntilVersion: null,
+      openedByEventId: grant.invitationId,
+    })),
   };
 }
 
@@ -66,6 +145,7 @@ export async function createSignedMembershipEvent(input: {
   actorAccountPublicKeyHex: string;
   occurredAt?: string;
   event: MembershipEventV1;
+  causal?: MembershipCausalV1;
   signer: AccountMessageSigner;
 }): Promise<SignedMembershipEventV1> {
   const unsigned = canonicalUnsigned({
@@ -74,16 +154,39 @@ export async function createSignedMembershipEvent(input: {
     actorAccountPublicKeyHex: input.actorAccountPublicKeyHex,
     occurredAt: input.occurredAt ?? new Date().toISOString(),
     event: input.event,
+    ...(input.causal ? {causal: input.causal} : {}),
   });
   const signature = await input.signer.signBytes(membershipEventSigningBytes(unsigned));
   if (signature.byteLength !== 64) throw new Error('Membership action could not be signed.');
   return {...unsigned, signature: bytesToHex(signature)};
 }
 
+/** Build a production event against one exact group frontier. */
+export async function createCausalSignedMembershipEvent(
+  current: SignedMembershipState,
+  input: Omit<Parameters<typeof createSignedMembershipEvent>[0], 'causal'> & {groupId?: string},
+): Promise<SignedMembershipEventV1> {
+  const groupId = (input.groupId ?? membershipEventGroupId(input.event)).trim();
+  if (!groupId || membershipEventGroupId(input.event, current) !== groupId) {
+    throw new Error('Membership action group is invalid.');
+  }
+  const frontier = membershipGroupFrontier(current, groupId);
+  return createSignedMembershipEvent({
+    ...input,
+    causal: {
+      groupId,
+      expectedVersion: frontier.version,
+      parentEventId: frontier.lastEventId,
+      expectedFrontierHash: frontier.frontierHash,
+    },
+  });
+}
+
 export async function applySignedMembershipEvent(
   current: SignedMembershipState,
   envelope: SignedMembershipEventV1,
   verifier: AccountMessageVerifier = verifyProductAccountSignature,
+  keyEnvelopes?: MembershipKeyEnvelopeResolver,
 ): Promise<SignedMembershipTransition> {
   let canonical: SignedMembershipEventV1;
   try {
@@ -105,14 +208,55 @@ export async function applySignedMembershipEvent(
     hexToBytes(canonical.signature),
   )) return rejected(current, 'Membership action could not be verified.');
 
-  const transition = await applyVerifiedEvent(current, canonical, verifier);
+  if (requiresCausalAuthority(canonical.event) && !canonical.causal) {
+    return rejected(current, 'This membership action requires an exact group frontier.');
+  }
+  if (!canonical.causal) {
+    const legacyGroupId = membershipEventGroupId(canonical.event, current);
+    if (legacyGroupId && membershipGroupFrontier(current, legacyGroupId).version > 0) {
+      return rejected(current, 'Legacy membership actions cannot be admitted after a causal frontier.');
+    }
+  }
+  if (canonical.causal) {
+    const actualGroupId = membershipEventGroupId(canonical.event, current);
+    if (actualGroupId !== canonical.causal.groupId) {
+      return rejected(current, 'Membership action group does not match its frontier.');
+    }
+    const frontier = membershipGroupFrontier(current, canonical.causal.groupId);
+    const exact = canonical.causal.expectedVersion === frontier.version
+      && canonical.causal.parentEventId === frontier.lastEventId
+      && canonical.causal.expectedFrontierHash === frontier.frontierHash;
+    if (!exact) {
+      if (canonical.causal.expectedVersion > frontier.version) {
+        return deferred(current, 'Membership action depends on an event that has not arrived yet.');
+      }
+      return conflicted(current, 'Membership action conflicts with the accepted group frontier.');
+    }
+  }
+
+  const transition = await applyVerifiedEvent(current, canonical, verifier, keyEnvelopes);
   if (transition.outcome !== 'applied') return transition;
+  let state = {
+    ...transition.state,
+    events: {...transition.state.events, [canonical.eventId]: canonical},
+  };
+  if (canonical.causal) {
+    const nextVersion = canonical.causal.expectedVersion + 1;
+    const nextFrontier: MembershipGroupFrontierV1 = {
+      groupId: canonical.causal.groupId,
+      version: nextVersion,
+      lastEventId: canonical.eventId,
+      frontierHash: await nextMembershipFrontierHash(canonical.causal.expectedFrontierHash, canonical),
+    };
+    state = {
+      ...state,
+      groupFrontiers: {...state.groupFrontiers, [nextFrontier.groupId]: nextFrontier},
+      authorityIntervals: updateAuthorityIntervals(current, state, canonical, nextVersion),
+    };
+  }
   return {
     ...transition,
-    state: {
-      ...transition.state,
-      events: {...transition.state.events, [canonical.eventId]: canonical},
-    },
+    state,
   };
 }
 
@@ -122,6 +266,17 @@ export async function membershipEventFrontier(state: SignedMembershipState): Pro
     .map(event => stableSerialize(event));
   const digest = await crypto.subtle.digest('SHA-256', encoder.encode(stableSerialize(canonical)));
   return bytesToHex(new Uint8Array(digest));
+}
+
+export function membershipGroupFrontier(
+  state: SignedMembershipState,
+  groupIdValue: string,
+): MembershipGroupFrontierV1 {
+  const groupId = groupIdValue.trim();
+  const existing = state.groupFrontiers[groupId];
+  return existing
+    ? {...existing}
+    : {groupId, version: 0, lastEventId: null, frontierHash: ZERO_FRONTIER_HASH};
 }
 
 export function assertSignedMembershipEvent(value: unknown): asserts value is SignedMembershipEventV1 {
@@ -136,6 +291,7 @@ async function applyVerifiedEvent(
   current: SignedMembershipState,
   envelope: SignedMembershipEventV1,
   verifier: AccountMessageVerifier,
+  keyEnvelopes?: MembershipKeyEnvelopeResolver,
 ): Promise<SignedMembershipTransition> {
   const {event} = envelope;
   switch (event.type) {
@@ -250,6 +406,56 @@ async function applyVerifiedEvent(
         invitationId: event.invitationId, decidedAt: envelope.occurredAt,
       }));
     }
+
+    case 'MEMBERSHIP_REMOVED': {
+      if (!isOrganizer(current, event.groupId, envelope.actorId, envelope.actorAccountPublicKeyHex)) {
+        return rejected(current, 'Only the current organizer can remove a member.');
+      }
+      const envelopeIds = await validateKeyEnvelopeBindings(current, event, keyEnvelopes, event.participantId);
+      if (!envelopeIds) return rejected(current, 'Future protected group access is not bound to every remaining account.');
+      return fromLifecycle(current, applyMembershipDecision(current.lifecycle, {
+        type: 'REMOVE_MEMBER',
+        actorId: envelope.actorId,
+        groupId: event.groupId,
+        participantId: event.participantId,
+        decidedAt: envelope.occurredAt,
+        nextKeyVersion: event.nextKeyVersion,
+        groupKeyEnvelopeIds: envelopeIds,
+      }));
+    }
+
+    case 'MEMBERSHIP_ROLES_CHANGED': {
+      if (!isOrganizer(current, event.groupId, envelope.actorId, envelope.actorAccountPublicKeyHex)) {
+        return rejected(current, 'Only the current organizer can transfer group roles.');
+      }
+      const envelopeIds = await validateKeyEnvelopeBindings(current, event, keyEnvelopes);
+      if (!envelopeIds) return rejected(current, 'Future protected group access is not bound to every current account.');
+      return fromLifecycle(current, applyMembershipDecision(current.lifecycle, {
+        type: 'CHANGE_MEMBERSHIP_ROLES',
+        actorId: envelope.actorId,
+        groupId: event.groupId,
+        decidedAt: envelope.occurredAt,
+        roles: event.roles,
+        nextKeyVersion: event.nextKeyVersion,
+        groupKeyEnvelopeIds: envelopeIds,
+      }));
+    }
+
+    case 'GROUP_KEY_ROTATED': {
+      if (!isOrganizer(current, event.groupId, envelope.actorId, envelope.actorAccountPublicKeyHex)) {
+        return rejected(current, 'Only the current organizer can rotate protected group access.');
+      }
+      const envelopeIds = await validateKeyEnvelopeBindings(current, event, keyEnvelopes);
+      if (!envelopeIds) return rejected(current, 'Future protected group access is not bound to every current account.');
+      return fromLifecycle(current, applyMembershipDecision(current.lifecycle, {
+        type: 'ROTATE_GROUP_KEY',
+        actorId: envelope.actorId,
+        groupId: event.groupId,
+        decidedAt: envelope.occurredAt,
+        nextKeyVersion: event.nextKeyVersion,
+        groupKeyEnvelopeIds: envelopeIds,
+      }));
+    }
   }
 }
 
@@ -316,6 +522,7 @@ function canonicalUnsigned(value: Omit<SignedMembershipEventV1, 'v' | 'signature
     actorAccountPublicKeyHex,
     occurredAt: new Date(value.occurredAt).toISOString(),
     event: value.event,
+    ...(value.causal ? {causal: canonicalCausal(value.causal)} : {}),
   };
 }
 
@@ -336,8 +543,190 @@ function isMembershipEvent(value: unknown): value is MembershipEventV1 {
     case 'MEMBERSHIP_GRANTED': return isRecord(value.handoff) && typeof value.groupKeyEnvelopeId === 'string';
     case 'INVITATION_DECLINED':
     case 'INVITATION_REVOKED': return typeof value.invitationId === 'string' && Boolean(value.invitationId.trim());
+    case 'MEMBERSHIP_REMOVED':
+      return nonempty(value.groupId)
+        && nonempty(value.participantId)
+        && validKeyRotation(value.nextKeyVersion, value.groupKeyEnvelopes);
+    case 'MEMBERSHIP_ROLES_CHANGED':
+      return nonempty(value.groupId)
+        && validRoleRecord(value.roles)
+        && validKeyRotation(value.nextKeyVersion, value.groupKeyEnvelopes);
+    case 'GROUP_KEY_ROTATED':
+      return nonempty(value.groupId)
+        && validKeyRotation(value.nextKeyVersion, value.groupKeyEnvelopes);
     default: return false;
   }
+}
+
+function canonicalCausal(value: MembershipCausalV1): MembershipCausalV1 {
+  const groupId = typeof value?.groupId === 'string' ? value.groupId.trim() : '';
+  const parentEventId = value?.parentEventId === null
+    ? null
+    : typeof value?.parentEventId === 'string' && value.parentEventId.trim()
+      ? value.parentEventId.trim()
+      : undefined;
+  const expectedFrontierHash = typeof value?.expectedFrontierHash === 'string'
+    ? value.expectedFrontierHash.toLowerCase()
+    : '';
+  if (
+    !groupId
+    || !Number.isSafeInteger(value.expectedVersion)
+    || value.expectedVersion < 0
+    || parentEventId === undefined
+    || !/^0x[0-9a-f]{64}$/u.test(expectedFrontierHash)
+    || (value.expectedVersion === 0 && (parentEventId !== null || expectedFrontierHash !== ZERO_FRONTIER_HASH))
+    || (value.expectedVersion > 0 && parentEventId === null)
+  ) throw new Error('Invalid membership causal frontier.');
+  return {groupId, expectedVersion: value.expectedVersion, parentEventId, expectedFrontierHash};
+}
+
+export function membershipEventGroupId(
+  event: MembershipEventV1,
+  state?: SignedMembershipState,
+): string {
+  switch (event.type) {
+    case 'INVITATION_CREATED': return event.invitation.groupId.trim();
+    case 'INVITATION_ACCEPTED': return event.acceptance.groupId.trim();
+    case 'MEMBERSHIP_GRANTED': return event.handoff.groupId.trim();
+    case 'MEMBERSHIP_REMOVED':
+    case 'MEMBERSHIP_ROLES_CHANGED':
+    case 'GROUP_KEY_ROTATED': return event.groupId.trim();
+    case 'INVITATION_DECLINED':
+    case 'INVITATION_REVOKED': return state?.lifecycle.invitations[event.invitationId]?.groupId ?? '';
+  }
+}
+
+function requiresCausalAuthority(event: MembershipEventV1): boolean {
+  return ['MEMBERSHIP_REMOVED', 'MEMBERSHIP_ROLES_CHANGED', 'GROUP_KEY_ROTATED'].includes(event.type);
+}
+
+async function nextMembershipFrontierHash(
+  previousHash: string,
+  event: SignedMembershipEventV1,
+): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    'SHA-256',
+    encoder.encode(stableSerialize(['chopdot:membership-frontier:v1', previousHash, event])),
+  );
+  return bytesToHex(new Uint8Array(digest));
+}
+
+function updateAuthorityIntervals(
+  before: SignedMembershipState,
+  after: SignedMembershipState,
+  event: SignedMembershipEventV1,
+  effectiveVersion: number,
+): MembershipAuthorityIntervalV1[] {
+  const intervals = before.authorityIntervals.map(interval => ({...interval}));
+  const close = (groupId: string, participantId: string) => {
+    let active: MembershipAuthorityIntervalV1 | undefined;
+    for (let index = intervals.length - 1; index >= 0; index -= 1) {
+      const interval = intervals[index];
+      if (interval.groupId === groupId
+        && interval.participantId === participantId
+        && interval.effectiveUntilVersion === null) {
+        active = interval;
+        break;
+      }
+    }
+    if (active) {
+      active.effectiveUntilVersion = effectiveVersion;
+      active.closedByEventId = event.eventId;
+    }
+  };
+  const open = (grant: MembershipGrant) => {
+    intervals.push({
+      groupId: grant.groupId,
+      participantId: grant.participantId,
+      accountPublicKeyHex: normalizeKey(grant.accountPublicKeyHex),
+      role: grant.role,
+      effectiveFromVersion: effectiveVersion,
+      effectiveUntilVersion: null,
+      openedByEventId: event.eventId,
+    });
+  };
+
+  switch (event.event.type) {
+    case 'MEMBERSHIP_GRANTED': {
+      const participantId = event.event.handoff.recipientId;
+      const key = membershipKey(event.event.handoff.groupId, participantId);
+      if (!before.lifecycle.memberships[key] && after.lifecycle.memberships[key]) open(after.lifecycle.memberships[key]);
+      break;
+    }
+    case 'MEMBERSHIP_REMOVED':
+      close(event.event.groupId, event.event.participantId);
+      break;
+    case 'MEMBERSHIP_ROLES_CHANGED':
+      for (const [participantId, nextRole] of Object.entries(event.event.roles)) {
+        const key = membershipKey(event.event.groupId, participantId);
+        const prior = before.lifecycle.memberships[key];
+        const next = after.lifecycle.memberships[key];
+        if (prior && next && prior.role !== nextRole) {
+          close(event.event.groupId, participantId);
+          open(next);
+        }
+      }
+      break;
+    default:
+      break;
+  }
+  return intervals;
+}
+
+function validKeyRotation(version: unknown, envelopes: unknown): envelopes is Record<string, MembershipKeyEnvelopeBindingV1> {
+  return typeof version === 'number'
+    && Number.isSafeInteger(version)
+    && version > 1
+    && isRecord(envelopes)
+    && Object.keys(envelopes).length > 0
+    && Object.entries(envelopes).every(([participantId, binding]) => isRecord(binding)
+      && nonempty(participantId)
+      && binding.participantId === participantId
+      && Boolean(normalizeKey(binding.recipientAccountPublicKeyHex))
+      && binding.keyVersion === version
+      && nonempty(binding.groupKeyEnvelopeId));
+}
+
+function validRoleRecord(value: unknown): value is Record<string, 'organizer' | 'member'> {
+  return isRecord(value)
+    && Object.keys(value).length > 0
+    && Object.entries(value).every(([participantId, role]) => nonempty(participantId) && ['organizer', 'member'].includes(role));
+}
+
+function nonempty(value: unknown): value is string {
+  return typeof value === 'string' && Boolean(value.trim());
+}
+
+async function validateKeyEnvelopeBindings(
+  state: SignedMembershipState,
+  event: Extract<MembershipEventV1, {type: 'MEMBERSHIP_REMOVED' | 'MEMBERSHIP_ROLES_CHANGED' | 'GROUP_KEY_ROTATED'}>,
+  resolver?: MembershipKeyEnvelopeResolver,
+  removedParticipantId?: string,
+): Promise<Record<string, string> | null> {
+  if (!resolver) return null;
+  const expected = Object.values(state.lifecycle.memberships)
+    .filter(grant => grant.groupId === event.groupId && grant.participantId !== removedParticipantId)
+    .sort((a, b) => a.participantId.localeCompare(b.participantId));
+  const bindingIds = Object.keys(event.groupKeyEnvelopes).sort();
+  if (stableSerialize(expected.map(grant => grant.participantId)) !== stableSerialize(bindingIds)) return null;
+  const envelopeIds: Record<string, string> = {};
+  for (const grant of expected) {
+    const binding = event.groupKeyEnvelopes[grant.participantId];
+    if (
+      !binding
+      || binding.participantId !== grant.participantId
+      || normalizeKey(binding.recipientAccountPublicKeyHex) !== normalizeKey(grant.accountPublicKeyHex)
+      || binding.keyVersion !== event.nextKeyVersion
+      || !binding.groupKeyEnvelopeId.trim()
+    ) return null;
+    try {
+      if (!await resolver.resolve({groupId: event.groupId, keyVersion: event.nextKeyVersion, binding})) return null;
+    } catch {
+      return null;
+    }
+    envelopeIds[grant.participantId] = binding.groupKeyEnvelopeId.trim();
+  }
+  return envelopeIds;
 }
 
 function stableSerialize(value: unknown): string {
@@ -373,4 +762,8 @@ function rejected(state: SignedMembershipState, reason: string): SignedMembershi
 
 function deferred(state: SignedMembershipState, reason: string): SignedMembershipTransition {
   return {state, outcome: 'deferred', reason};
+}
+
+function conflicted(state: SignedMembershipState, reason: string): SignedMembershipTransition {
+  return {state, outcome: 'conflict', reason};
 }

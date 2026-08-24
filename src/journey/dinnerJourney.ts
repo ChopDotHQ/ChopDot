@@ -1,5 +1,6 @@
 import type {KeyValueStorage} from '../environment/livePayerSync.ts';
 import {
+  canonicalShareId,
   createCanonicalEvent,
   projectCanonicalEvents,
   type CanonicalEventType,
@@ -140,10 +141,10 @@ export class DinnerJourneyService {
     const {actor, participants, groupId} = this.options;
     const expense = Object.values(this.state.expenses)[0];
     const total = expense?.total;
-    const ownShare = this.state.shares[`share-${actor.participantId}`]?.amount;
+    const ownShare = this.state.shares[canonicalShareId('expense-dinner', actor.participantId)]?.amount;
     const pendingCount = this.pending.length;
     const members = participants.map(participant => {
-      const share = this.state.shares[`share-${participant.participantId}`];
+      const share = this.state.shares[canonicalShareId('expense-dinner', participant.participantId)];
       return {
         participantId: participant.participantId,
         name: participant.name,
@@ -156,9 +157,9 @@ export class DinnerJourneyService {
     if (this.state.closed) return {status: 'closed', actorId: actor.participantId, actorName: actor.name, actorRole: actor.role, groupId, groupName: this.state.name, description: expense?.description ?? '', total, ownShare, members, recordId: this.state.closed.recordId, pendingCount};
 
     const requiredShares = Object.values(this.state.shares).filter(share => share.participantId !== this.state.organizerId);
-    const marked = requiredShares.filter(share => share.status === 'marked_paid');
+    const marked = requiredShares.filter(share => ['marked_paid', 'cleared'].includes(share.status));
     const allReceived = requiredShares.length > 0 && requiredShares.every(share => ['received', 'waived'].includes(share.status));
-    const own = this.state.shares[`share-${actor.participantId}`];
+    const own = this.state.shares[canonicalShareId('expense-dinner', actor.participantId)];
     let status: DinnerJourneySnapshot['status'];
     if (actor.role === 'organizer') {
       if (allReceived) status = 'ready_to_close';
@@ -167,7 +168,7 @@ export class DinnerJourneyService {
       else status = 'ready_to_request';
     } else if (pendingCount) status = 'sending';
     else if (own?.status === 'requested') status = 'payment_requested';
-    else if (own?.status === 'marked_paid') status = 'marked_paid';
+    else if (['marked_paid', 'cleared'].includes(own?.status ?? '')) status = 'marked_paid';
     else status = 'waiting';
     return {status, actorId: actor.participantId, actorName: actor.name, actorRole: actor.role, groupId, groupName: this.state.name, description: expense?.description ?? '', total, ownShare, members, pendingCount};
   }
@@ -182,19 +183,19 @@ export class DinnerJourneyService {
     const allocations = allocateMoneyEvenly(total, members.map(member => member.participantId));
     await this.publishEvent('EXPENSE_ADDED', {expenseId: 'expense-dinner', description: input.description, paidBy: this.options.actor.participantId, total, allocations});
     for (const participant of this.options.participants.filter(person => person.role === 'member')) {
-      await this.publishEvent('SHARE_REQUESTED', {shareId: `share-${participant.participantId}`});
+      await this.publishEvent('SHARE_REQUESTED', {shareId: canonicalShareId('expense-dinner', participant.participantId)});
     }
   }
 
   async markPaid(): Promise<void> {
     if (this.options.actor.role !== 'member') throw new Error('Only a requested member may mark their share paid.');
-    this.enqueue({id: this.id('mark-paid'), kind: 'mark_paid', shareId: `share-${this.options.actor.participantId}`, createdAt: this.now()});
+    this.enqueue({id: this.id('mark-paid'), kind: 'mark_paid', shareId: canonicalShareId('expense-dinner', this.options.actor.participantId), createdAt: this.now()});
     await this.flush();
   }
 
   async confirmReceived(participantId: string): Promise<void> {
     if (this.options.actor.role !== 'organizer') throw new Error('Only the receiver may confirm receipt.');
-    this.enqueue({id: this.id(`confirm-${participantId}`), kind: 'confirm_received', shareId: `share-${participantId}`, createdAt: this.now()});
+    this.enqueue({id: this.id(`confirm-${participantId}`), kind: 'confirm_received', shareId: canonicalShareId('expense-dinner', participantId), createdAt: this.now()});
     await this.flush();
   }
 
@@ -364,7 +365,7 @@ function intentSatisfied(state: CanonicalGroupStateV1, intent: PendingIntent): b
   if (intent.kind === 'close') return state.closed?.recordId === intent.recordId;
   const share = state.shares[intent.shareId];
   if (!share) return false;
-  if (intent.kind === 'mark_paid') return ['marked_paid', 'received'].includes(share.status);
+  if (intent.kind === 'mark_paid') return ['marked_paid', 'cleared', 'received'].includes(share.status);
   return share.status === 'received';
 }
 
@@ -373,6 +374,7 @@ function displayShareStatus(status: string, role: 'organizer' | 'member'): strin
   if (status === 'open') return 'Not asked yet';
   if (status === 'requested') return 'Payment requested';
   if (status === 'marked_paid') return 'Marked paid';
+  if (status === 'cleared') return 'Finalized · awaiting confirmation';
   if (status === 'received') return 'Received';
   if (status === 'waived') return 'Waived';
   return 'Needs review';

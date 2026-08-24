@@ -1,4 +1,4 @@
-import { Users } from 'lucide-react';
+import { ShieldCheck, UserMinus, UserPlus, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useAppState } from '../state/AppStateContext';
 import { getGroupTotal, getMemberBalance, getOpenSplits } from '../state/store';
@@ -9,25 +9,33 @@ import { Screen, ScreenHeader, ScreenContent, BottomAction, Button, MoneyAmount,
 
 
 import { getInitials } from '../utils';
+import {modeCopy} from './productModes';
 
 export function GroupDetail({ 
   groupId, 
   onBack, 
   onAddSpend, 
   onCloseGroup,
-  onGoToSettleUp
+  onGoToSettleUp,
+  onProtectGroup,
+  onInviteMember,
+  onRemoveMember,
 }: { 
   groupId: string, 
   onBack: () => void, 
   onAddSpend: () => void, 
   onCloseGroup: () => void,
-  onGoToSettleUp: () => void
+  onGoToSettleUp: () => void,
+  onProtectGroup?: () => void,
+  onInviteMember?: () => void,
+  onRemoveMember?: () => void,
 }) {
   const { state, dispatch } = useAppState();
   const group = state.groups[groupId];
   const [showConfirmMenu, setShowConfirmMenu] = useState(false);
   
   if (!group) return null;
+  const copy = modeCopy(group);
 
   const groupExpenses = (Object.values(state.expenses) as Expense[]).filter(e => e.groupId === groupId);
   const totalSpend = getGroupTotal(state, groupId);
@@ -35,7 +43,7 @@ export function GroupDetail({
   const members = group.memberIds.map(id => state.users[id]).filter(Boolean);
   
   const myMarkedSplits = (Object.values(state.splits) as Split[]).filter(
-    s => s.status === 'marked_paid' && 
+    s => ['marked_paid', 'cleared'].includes(s.status) &&
     state.expenses[s.expenseId]?.groupId === groupId && 
     state.expenses[s.expenseId]?.paidByUserId === state.currentUserId
   );
@@ -68,7 +76,7 @@ export function GroupDetail({
     && state.expenses[split.expenseId]?.paidByUserId !== state.currentUserId
     && split.status !== 'confirmed',
   );
-  const currentUserMarkedPaid = currentUserPaymentSplits.some(split => split.status === 'marked_paid');
+  const currentUserMarkedPaid = currentUserPaymentSplits.some(split => ['marked_paid', 'cleared'].includes(split.status));
   const currentUserRequestSent = currentUserPaymentSplits.some(split => split.status === 'request_sent');
   const currentReceiverName = currentUserPaymentSplits.length > 0
     ? state.users[state.expenses[currentUserPaymentSplits[0].expenseId]?.paidByUserId]?.name
@@ -95,14 +103,14 @@ export function GroupDetail({
       />
 
       <ScreenContent className="p-6 space-y-6">
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors flex flex-col items-center justify-center min-h-[140px]">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total spend</p>
+        <div className="border-b border-gray-200 pb-6 text-center transition-colors dark:border-gray-800">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{copy.totalLabel}</p>
           <div className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
             <MoneyAmount amount={totalSpend} currency={state.currency} />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 rounded-3xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+        <div className="transition-colors">
           <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
             <Users className="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" />
             Members ({members.length})
@@ -111,7 +119,7 @@ export function GroupDetail({
             {members.map(member => {
               const bal = getMemberBalance(state, group.id, member.id);
               const reqSplits = (Object.values(state.splits) as Split[]).filter(s => s.userId === member.id && s.status === 'request_sent' && state.expenses[s.expenseId]?.groupId === group.id);
-              const markedSplits = (Object.values(state.splits) as Split[]).filter(s => s.userId === member.id && s.status === 'marked_paid' && state.expenses[s.expenseId]?.groupId === group.id);
+              const markedSplits = (Object.values(state.splits) as Split[]).filter(s => s.userId === member.id && ['marked_paid', 'cleared'].includes(s.status) && state.expenses[s.expenseId]?.groupId === group.id);
               const newlyOpenSplits = (Object.values(state.splits) as Split[]).filter(s =>
                 s.userId === member.id
                 && s.status === 'open'
@@ -120,10 +128,13 @@ export function GroupDetail({
               );
               const newlyOpenAmount = newlyOpenSplits.reduce((sum, split) => sum + split.amount, 0);
               const memberIsCurrentUser = member.id === state.currentUserId;
+              const hasCleared = markedSplits.some(split => split.status === 'cleared');
               const status = markedSplits.length > 0
                 ? memberIsCurrentUser
-                  ? `Waiting for ${state.users[state.expenses[markedSplits[0].expenseId]?.paidByUserId]?.name ?? 'confirmation'}`
-                  : 'Needs confirm'
+                  ? hasCleared
+                    ? `Finalized · waiting for ${state.users[state.expenses[markedSplits[0].expenseId]?.paidByUserId]?.name ?? 'confirmation'}`
+                    : `Waiting for ${state.users[state.expenses[markedSplits[0].expenseId]?.paidByUserId]?.name ?? 'confirmation'}`
+                  : hasCleared ? 'Finalized · confirm receipt' : 'Needs confirm'
                 : reqSplits.length > 0
                   ? newlyOpenAmount > 0
                     ? memberIsCurrentUser
@@ -134,7 +145,7 @@ export function GroupDetail({
 
 
   return (
-                <div key={member.id} className="flex flex-col p-3 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-black/5 dark:border-white/5 transition-colors">
+                <div key={member.id} className="flex flex-col border-b border-gray-200 py-3 transition-colors last:border-b-0 dark:border-gray-800">
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300 mr-3 shrink-0 transition-colors">
                       {getInitials(member.name)}
@@ -142,7 +153,7 @@ export function GroupDetail({
                     <div className="font-medium text-gray-900 dark:text-white text-sm flex-1 truncate">
                       {member.name} {member.id === state.currentUserId ? '(You)' : ''}
                     </div>
-                    <div className={`text-sm font-semibold shrink-0 ml-2 ${status ? 'text-orange-600' : bal === 0 ? 'text-gray-400' : bal > 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                    <div className={`text-sm font-semibold shrink-0 ml-2 ${status ? 'text-orange-600' : bal === 0 ? 'text-gray-600 dark:text-gray-300' : bal > 0 ? 'text-green-600' : 'text-orange-600'}`}>
                       {status ?? (bal === 0 ? 'Settled' : bal > 0 ? (
                         <>Gets <MoneyAmount amount={bal} currency={state.currency} /></>
                       ) : (
@@ -157,7 +168,25 @@ export function GroupDetail({
         </div>
 
         {groupExpenses.length === 0 && (
-          <EmptyState title="No spend yet" />
+          <EmptyState title={copy.emptyLabel} description={copy.description} />
+        )}
+        {onProtectGroup && (
+          <button type="button" onClick={onProtectGroup} className="flex w-full items-center justify-between border-t border-gray-200 py-4 text-left text-sm font-semibold text-gray-700 dark:border-gray-800 dark:text-gray-200">
+            <span className="flex items-center"><ShieldCheck className="mr-2 h-4 w-4 text-gray-400" />Protect or recover this group</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        )}
+        {onInviteMember && (
+          <button type="button" onClick={onInviteMember} className="flex w-full items-center justify-between border-t border-gray-200 py-4 text-left text-sm font-semibold text-gray-700 dark:border-gray-800 dark:text-gray-200">
+            <span className="flex items-center"><UserPlus className="mr-2 h-4 w-4 text-gray-400" />Invite a member</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        )}
+        {onRemoveMember && (
+          <button type="button" onClick={onRemoveMember} className="flex w-full items-center justify-between border-t border-gray-200 py-4 text-left text-sm font-semibold text-gray-700 dark:border-gray-800 dark:text-gray-200">
+            <span className="flex items-center"><UserMinus className="mr-2 h-4 w-4 text-gray-400" />Remove a member</span>
+            <span aria-hidden="true">→</span>
+          </button>
         )}
       </ScreenContent>
 
@@ -167,8 +196,8 @@ export function GroupDetail({
             Group closed · saved to History
           </div>
         ) : groupExpenses.length === 0 ? (
-          <Button onClick={onAddSpend} fullWidth>
-            Add spend
+          <Button onClick={onAddSpend} fullWidth aria-label={`${copy.addAction} — Add spend`}>
+            {copy.addAction}
           </Button>
         ) : needsConfirm ? (
           <Button
@@ -212,7 +241,7 @@ export function GroupDetail({
           </div>
         ) : canFinish ? (
           <Button onClick={onCloseGroup} fullWidth>
-            Finish group
+            {copy.closeAction}
           </Button>
         ) : (
           <div className="w-full py-3 text-center text-sm font-semibold text-green-600">
@@ -220,8 +249,8 @@ export function GroupDetail({
           </div>
         )}
         {groupExpenses.length > 0 && !isClosed && (
-          <Button variant="muted" onClick={onAddSpend} fullWidth data-testid="group-add-expense">
-            Add expense
+          <Button variant="muted" onClick={onAddSpend} fullWidth data-testid="group-add-expense" aria-label={`Add expense — ${copy.addAction}`}>
+            {copy.capture === 'receipt' ? 'Scan another receipt' : copy.addAction}
           </Button>
         )}
       </BottomAction>

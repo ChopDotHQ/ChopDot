@@ -142,6 +142,8 @@ async function openActors(browser: Browser, viewport: {width: number; height: nu
   const invitation = route === 'join_link'
     ? await createVisibleLinkInvitation(mina, !suppliedMinaContext)
     : await createVisibleQrInvitation(mina);
+  const shared = mina.getByRole('button', {name: 'I’ve shared it'});
+  if (!suppliedMinaContext && await shared.count()) await shared.click();
   await nina.goto(invitation.url);
   return {
     mina,

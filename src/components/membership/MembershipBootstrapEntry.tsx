@@ -4,7 +4,7 @@ import type {
   MembershipBootstrapEntryOutcome,
   MembershipBootstrapEntryService,
 } from '../../membership/membershipBootstrapEntryService';
-import type {RecipientBoundBootstrapV1} from '../../membership/recipientBoundBootstrap';
+import type {RecipientBoundBootstrap} from '../../membership/recipientBoundBootstrap';
 import {
   resolveMembershipBootstrapEntry,
   verifiedInvitationDisplay,
@@ -21,6 +21,8 @@ export interface MembershipBootstrapEntryDependencies {
    * the organizer action itself.
    */
   subscribeToState?(listener: () => void): () => void;
+  /** Bind delivery only after the signed grant is active; room metadata itself never grants membership. */
+  onMembershipActive?(input: {groupId: string; roomId: string}): Promise<void>;
 }
 
 export function MembershipBootstrapEntry({
@@ -28,7 +30,7 @@ export function MembershipBootstrapEntry({
   onClose,
   dependencies,
 }: {
-  bootstrap: RecipientBoundBootstrapV1;
+  bootstrap: RecipientBoundBootstrap;
   onClose: () => void;
   dependencies?: MembershipBootstrapEntryDependencies;
 }) {
@@ -55,6 +57,16 @@ export function MembershipBootstrapEntry({
     refresh(value => value + 1);
   }), [dependencies]);
 
+  const membershipActive = Boolean(invitation && dependencies?.service.isMembershipActive({
+    invitationId: invitation.invitationId,
+    groupId: invitation.groupId,
+    participantId: invitation.inviteeId,
+  }));
+  useEffect(() => {
+    if (!membershipActive || !invitation || !dependencies?.onMembershipActive) return;
+    void dependencies.onMembershipActive({groupId: invitation.groupId, roomId: bootstrap.returnRoute.roomId});
+  }, [bootstrap.returnRoute.roomId, dependencies, invitation, membershipActive]);
+
   if (!invitation) return <Unavailable status="invalid" onClose={() => closeRoute(onClose)} />;
   if (!outcome) {
     return (
@@ -76,11 +88,6 @@ export function MembershipBootstrapEntry({
     participantId: invitation.inviteeId,
   };
   const projected = projectMembershipInvitationStatus(projectionInput);
-  const membershipActive = dependencies.service.isMembershipActive({
-    invitationId: invitation.invitationId,
-    groupId: invitation.groupId,
-    participantId: invitation.inviteeId,
-  });
   const status: MembershipInvitationUiStatus = membershipActive
     ? 'accepted'
     : projected === 'ready_to_grant'

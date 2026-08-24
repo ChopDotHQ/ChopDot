@@ -2,7 +2,7 @@ import { ArrowLeft, Send, Check } from 'lucide-react';
 import { useState } from 'react';
 import { useAppState } from '../state/AppStateContext';
 import { getCurrencySymbol } from '../utils';
-import { getMemberBalance, getOpenSplits } from '../state/store';
+import { getOpenSplits } from '../state/store';
 import { getInitials } from '../utils';
 import { shareOrCopyText } from '../environment';
 import {appStorage} from '../environment';
@@ -18,6 +18,7 @@ import {
 import {PolkadotHostBridge} from '../environment/polkadotHostBridge';
 import {publicKeyHex} from '../environment/hostSessionSync';
 import {publishPendingReceiptConfirmation} from '../environment/payerDelivery';
+import {settlementObligations} from '../payments/settlementObligations';
 
 type LinkDeliveryStatus = 'shared' | 'copied' | 'unavailable';
 
@@ -36,7 +37,7 @@ export function SettleUp({
   onBack: () => void;
   onFinishGroup: () => void;
 }) {
-  const { state, dispatch } = useAppState();
+  const { state, dispatch, runAuthority, authorityBusy, authorityError } = useAppState();
   const [linkDelivery, setLinkDelivery] = useState<Record<string, LinkDeliveryStatus>>({});
   const [requestLinks, setRequestLinks] = useState<Record<string, string>>({});
   const [walletError, setWalletError] = useState('');
@@ -50,52 +51,40 @@ export function SettleUp({
 
   if (!group) return null;
 
-  // 1. Compute net balances
-  const balances = group.memberIds.map(id => ({
-    id,
-    balance: getMemberBalance(state, groupId, id)
-  }));
+  // Preserve the receiver named by each expense. Netting a debtor's shares
+  // against another payer would let the wrong person request or confirm money.
+  const moves = settlementObligations(state, groupId);
 
-  // 2. Generate moves
-  const debtors = balances.filter(b => b.balance < -0.005).sort((a, b) => a.balance - b.balance);
-  const creditors = balances.filter(b => b.balance > 0.005).sort((a, b) => b.balance - a.balance);
-
-  const moves: { from: string, to: string, amount: number }[] = [];
-  let d = 0;
-  let c = 0;
-
-  while (d < debtors.length && c < creditors.length) {
-    const debtor = debtors[d];
-    const creditor = creditors[c];
-    const amount = Math.min(-debtor.balance, creditor.balance);
-
-    if (amount > 0.005) {
-      moves.push({ from: debtor.id, to: creditor.id, amount });
-    }
-
-    debtor.balance += amount;
-    creditor.balance -= amount;
-
-    if (Math.abs(debtor.balance) < 0.005) d++;
-    if (Math.abs(creditor.balance) < 0.005) c++;
-  }
-
-  const handleRequest = async (memberId: string, amount: number, receiverName: string, payerName: string) => {
+  const handleRequest = async (statusKey: string, memberId: string, receiverId: string, amount: number, receiverName: string, payerName: string) => {
     const requestId = `req-${crypto.randomUUID()}`;
     const createdAt = new Date();
     const expiresAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000).toISOString();
     const memberCapability = createMemberCapability();
     const capabilityHash = await hashMemberCapability(memberCapability);
     const requestedSplits = getOpenSplits(state, groupId).filter(
-      split => split.userId === memberId && ['open', 'request_sent'].includes(split.status),
+      split => split.userId === memberId
+        && state.expenses[split.expenseId]?.paidByUserId === receiverId
+        && ['open', 'request_sent'].includes(split.status),
     );
-    requestedSplits.forEach(split => {
-      dispatch({ type: 'SEND_REQUEST', payload: { splitId: split.id, requestId, createdAt: createdAt.toISOString(), expiresAt, capabilityHash } });
-      dispatch({type: 'SET_REQUEST_ENTRY', payload: {splitId: split.id, memberCapability, createdAt: createdAt.toISOString()}});
-    });
+    for (const split of requestedSplits) {
+      const accepted = await runAuthority({type: 'SEND_REQUEST', payload: {
+        splitId: split.id,
+        requestId,
+        createdAt: createdAt.toISOString(),
+        expiresAt,
+        capabilityHash,
+        requestEntryCapability: memberCapability,
+      }});
+      if (!accepted) {
+        setRequestError('The signed request could not be saved. Nothing was shared.');
+        return;
+      }
+    }
 
     await shareRequestLink({
+      statusKey,
       memberId,
+      receiverId,
       amount,
       receiverName,
       payerName,
@@ -107,7 +96,9 @@ export function SettleUp({
   };
 
   const shareRequestLink = async ({
+    statusKey,
     memberId,
+    receiverId,
     amount,
     receiverName,
     payerName,
@@ -116,7 +107,9 @@ export function SettleUp({
     expiresAt,
     memberCapability,
   }: {
+    statusKey: string;
     memberId: string;
+    receiverId: string;
     amount: number;
     receiverName: string;
     payerName: string;
@@ -151,7 +144,7 @@ export function SettleUp({
       paymentMethodLabel: currency === 'PAS'
         ? 'PAS wallet'
         : state.preferredPaymentMethod ? paymentMethodLabels[state.preferredPaymentMethod] : 'Cash',
-      recipientWalletAddress: state.users[state.currentUserId!]?.walletAddress,
+      recipientWalletAddress: state.users[receiverId]?.walletAddress,
       createdAt,
       expiresAt,
       live: {
@@ -166,17 +159,17 @@ export function SettleUp({
       url: payerUrl,
     });
 
-    setRequestLinks(previous => ({...previous, [memberId]: payerUrl}));
+    setRequestLinks(previous => ({...previous, [statusKey]: payerUrl}));
 
     setLinkDelivery(previous => ({
       ...previous,
-      [memberId]: result,
+      [statusKey]: result,
     }));
   };
 
   const handleConfirmReceived = async (memberId: string, debtorSplits: typeof state.splits[string][]) => {
     if (confirmationBusy) return;
-    const markedSplits = debtorSplits.filter(split => split.status === 'marked_paid');
+    const markedSplits = debtorSplits.filter(split => ['marked_paid', 'cleared'].includes(split.status));
     const first = markedSplits[0];
     if (
       !first?.requestId ||
@@ -196,7 +189,7 @@ export function SettleUp({
     const storageKey = `chopdot-receipt-confirmation-outbox-v1:${first.requestId}`;
     const outbox = new ReceiptConfirmationOutbox(appStorage, storageKey);
     const requestSession = await derivePayerSessionConfig(first.requestId, first.requestEntryCapability);
-    outbox.enqueue({
+    await outbox.enqueue({
       eventId: receiptConfirmationEventId(first.requestId),
       requestId: first.requestId,
       groupId,
@@ -217,9 +210,13 @@ export function SettleUp({
       setConfirmationBusy(null);
       return;
     }
-    markedSplits.forEach(split => {
-      dispatch({type: 'CONFIRM_RECEIVED', payload: {splitId: split.id, currentUserId: state.currentUserId!}});
-    });
+    for (const split of markedSplits) {
+      if (!await runAuthority({type: 'CONFIRM_RECEIVED', payload: {splitId: split.id, currentUserId: state.currentUserId!}})) {
+        setConfirmationDelivery(previous => ({...previous, [memberId]: 'pending'}));
+        setConfirmationBusy(null);
+        return;
+      }
+    }
     setConfirmationDelivery(previous => {
       const next = {...previous};
       delete next[memberId];
@@ -228,9 +225,10 @@ export function SettleUp({
     setConfirmationBusy(null);
   };
 
-  const handleReshare = async (memberId: string, amount: number, receiverName: string, payerName: string) => {
+  const handleReshare = async (statusKey: string, memberId: string, receiverId: string, amount: number, receiverName: string, payerName: string) => {
     const split = getOpenSplits(state, groupId).find(candidate =>
       candidate.userId === memberId
+      && state.expenses[candidate.expenseId]?.paidByUserId === receiverId
       && candidate.status === 'request_sent'
       && candidate.requestId
       && candidate.requestExpiresAt
@@ -239,7 +237,9 @@ export function SettleUp({
     );
     if (!split?.requestId || !split.requestExpiresAt || !split.requestCreatedAt || !split.requestEntryCapability) return;
     await shareRequestLink({
+      statusKey,
       memberId,
+      receiverId,
       amount,
       receiverName,
       payerName,
@@ -271,9 +271,9 @@ export function SettleUp({
       </header>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {requestError && (
+        {(requestError || authorityError) && (
           <div role="alert" className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:bg-red-950/30 dark:text-red-300">
-            {requestError}
+            {requestError || authorityError}
           </div>
         )}
         <div className="text-center mb-6">
@@ -289,6 +289,7 @@ export function SettleUp({
               <button
                 type="button"
                 onClick={() => void handleConnectWallet()}
+                disabled={authorityBusy}
                 className="w-full py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl text-sm font-semibold"
               >
                 Connect wallet
@@ -301,23 +302,25 @@ export function SettleUp({
               Everyone is settled up!
             </div>
           ) : (
-            moves.map((move, idx) => {
+            moves.map(move => {
               const fromUser = state.users[move.from];
               const toUser = state.users[move.to];
               
-              const debtorSplits = getOpenSplits(state, groupId).filter(s => s.userId === move.from);
-              const hasMarkedPaid = debtorSplits.some(s => s.status === 'marked_paid');
+              const moveSplitIds = new Set(move.splitIds);
+              const debtorSplits = getOpenSplits(state, groupId).filter(split => moveSplitIds.has(split.id));
+              const hasMarkedPaid = debtorSplits.some(s => ['marked_paid', 'cleared'].includes(s.status));
               const hasRequestSent = debtorSplits.some(s => s.status === 'request_sent');
               const hasUnrequested = debtorSplits.some(s => s.status === 'open');
-              const deliveryStatus = linkDelivery[move.from];
-              const markedRequestId = debtorSplits.find(s => s.status === 'marked_paid')?.requestId;
+              const deliveryStatus = linkDelivery[move.key];
+              const markedRequestId = debtorSplits.find(s => ['marked_paid', 'cleared'].includes(s.status))?.requestId;
               const hasPersistedConfirmation = Boolean(markedRequestId && new ReceiptConfirmationOutbox(
                 appStorage,
                 `chopdot-receipt-confirmation-outbox-v1:${markedRequestId}`,
-              ).get(markedRequestId));
+              ).has(markedRequestId));
               
               let statusText = '';
-              if (hasMarkedPaid) statusText = 'Needs confirm';
+              if (debtorSplits.some(split => split.status === 'cleared')) statusText = 'Finalized · confirm receipt';
+              else if (hasMarkedPaid) statusText = 'Needs confirm';
               else if (hasRequestSent && hasUnrequested) statusText = 'Request needs update';
               else if (hasRequestSent && deliveryStatus === 'shared') statusText = 'Link shared';
               else if (hasRequestSent && deliveryStatus === 'copied') statusText = 'Link copied';
@@ -327,7 +330,7 @@ export function SettleUp({
               const isCurrentUserReceiver = move.to === state.currentUserId;
 
               return (
-                <div key={idx} className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
+                <div key={move.key} className="bg-white dark:bg-gray-900 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-800 transition-colors">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-sm shrink-0">
@@ -356,13 +359,13 @@ export function SettleUp({
                       </span>
                     </div>
                   )}
-                  {hasRequestSent && deliveryStatus === 'unavailable' && requestLinks[move.from] && (
+                  {hasRequestSent && deliveryStatus === 'unavailable' && requestLinks[move.key] && (
                     <div className="mt-3 rounded-xl bg-gray-50 p-3 dark:bg-gray-950">
                       <p className="mb-2 text-xs font-semibold text-gray-600 dark:text-gray-300">
                         Select and share this link
                       </p>
-                      <p className="select-all break-all text-xs text-gray-500 dark:text-gray-400" data-testid={`request-link-${move.from}`}>
-                        {requestLinks[move.from]}
+                      <p className="select-all break-all text-xs text-gray-500 dark:text-gray-400" data-testid={`request-link-${move.from}-${move.to}`}>
+                        {requestLinks[move.key]}
                       </p>
                     </div>
                   )}
@@ -370,7 +373,8 @@ export function SettleUp({
                   <div className="flex space-x-2 border-t border-gray-50 dark:border-gray-800 pt-3">
                     {isCurrentUserReceiver && !hasMarkedPaid && (!hasRequestSent || hasUnrequested) && (currency !== 'PAS' || Boolean(toUser?.walletAddress)) && (
                       <button 
-                        onClick={() => void handleRequest(move.from, move.amount, toUser?.name ?? 'ChopDot', fromUser?.name ?? 'Friend')}
+                        onClick={() => void handleRequest(move.key, move.from, move.to, move.amount, toUser?.name ?? 'ChopDot', fromUser?.name ?? 'Friend')}
+                        disabled={authorityBusy}
                         aria-label={`${hasRequestSent ? 'Send updated link' : 'Send link'} to ${fromUser?.name}`}
                         className="flex-1 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-xl text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                       >
@@ -380,7 +384,7 @@ export function SettleUp({
                     )}
                     {isCurrentUserReceiver && hasRequestSent && !hasMarkedPaid && !hasUnrequested && (
                       <button
-                        onClick={() => void handleReshare(move.from, move.amount, toUser?.name ?? 'ChopDot', fromUser?.name ?? 'Friend')}
+                        onClick={() => void handleReshare(move.key, move.from, move.to, move.amount, toUser?.name ?? 'ChopDot', fromUser?.name ?? 'Friend')}
                         aria-label={`Share link again with ${fromUser?.name}`}
                         className="flex-1 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center"
                       >
@@ -391,7 +395,7 @@ export function SettleUp({
                     {isCurrentUserReceiver && hasMarkedPaid && (
                       <button 
                         onClick={() => void handleConfirmReceived(move.from, debtorSplits)}
-                        disabled={confirmationBusy !== null}
+                        disabled={confirmationBusy !== null || authorityBusy}
                         aria-label={`Confirm received from ${fromUser?.name}`}
                         className="flex-1 py-2 bg-green-600 dark:bg-green-500 text-white rounded-xl text-sm font-semibold hover:bg-green-700 dark:hover:bg-green-400 transition-colors flex items-center justify-center"
                       >

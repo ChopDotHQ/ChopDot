@@ -45,6 +45,39 @@ test('reports image receipts as unsupported instead of pretending OCR succeeded'
   });
 });
 
+test('uses optional local image text only as a reviewable draft', async () => {
+  const result = await extractReceiptDraft({
+    name: 'camera-receipt.jpg',
+    type: 'image/jpeg',
+    text: async () => '',
+  }, {
+    readImageText: async () => 'Gusto Zurich\nGrand total CHF 87.40',
+  });
+
+  assert.deepEqual(result, {
+    status: 'needs_review',
+    amount: 87.4,
+    title: 'Gusto Zurich',
+    fileName: 'camera-receipt.jpg',
+  });
+});
+
+test('an unavailable local image detector keeps the manual-correction fallback', async () => {
+  const result = await extractReceiptDraft({
+    name: 'camera-receipt.jpg',
+    type: 'image/jpeg',
+    text: async () => '',
+  }, {
+    readImageText: async () => null,
+  });
+
+  assert.deepEqual(result, {
+    status: 'could_not_read',
+    reason: 'unsupported_file',
+    fileName: 'camera-receipt.jpg',
+  });
+});
+
 test('routes supported receipts without a total to manual correction', async () => {
   const result = await extractReceiptDraft({
     name: 'receipt.txt',

@@ -63,6 +63,32 @@ export type MembershipDecision =
       type: 'EXPIRE_INVITATION';
       invitationId: string;
       decidedAt: string;
+    }
+  | {
+      type: 'REMOVE_MEMBER';
+      actorId: string;
+      groupId: string;
+      participantId: string;
+      decidedAt: string;
+      nextKeyVersion: number;
+      groupKeyEnvelopeIds: Record<string, string>;
+    }
+  | {
+      type: 'CHANGE_MEMBERSHIP_ROLES';
+      actorId: string;
+      groupId: string;
+      decidedAt: string;
+      roles: Record<string, Exclude<MembershipRole, 'limited'>>;
+      nextKeyVersion: number;
+      groupKeyEnvelopeIds: Record<string, string>;
+    }
+  | {
+      type: 'ROTATE_GROUP_KEY';
+      actorId: string;
+      groupId: string;
+      decidedAt: string;
+      nextKeyVersion: number;
+      groupKeyEnvelopeIds: Record<string, string>;
     };
 
 export interface MembershipTransition {
@@ -109,7 +135,13 @@ export function applyMembershipDecision(
       }
       if (Object.values(current.invitations).some(candidate =>
         candidate.groupId === invitation.groupId
-        && (candidate.status === 'invited' || candidate.status === 'accepted')
+        && (
+          candidate.status === 'invited'
+          || (
+            candidate.status === 'accepted'
+            && Boolean(current.memberships[membershipKey(candidate.groupId, candidate.inviteeId)])
+          )
+        )
         && (
           candidate.inviteeId === invitation.inviteeId
           || Boolean(
@@ -224,7 +256,117 @@ export function applyMembershipDecision(
       }
       return expireInvitation(current, invitation, decision.decidedAt);
     }
+
+    case 'REMOVE_MEMBER': {
+      const groupId = decision.groupId.trim();
+      const participantId = decision.participantId.trim();
+      if (!isActiveOrganizer(current, groupId, decision.actorId)) {
+        return rejected(current, 'Only a current organizer can remove a member.');
+      }
+      const targetKey = membershipKey(groupId, participantId);
+      const target = current.memberships[targetKey];
+      if (!target) return rejected(current, 'This person is not an active group member.');
+      if (!isTimestamp(decision.decidedAt) || Date.parse(decision.decidedAt) < Date.parse(target.acceptedAt)) {
+        return rejected(current, 'Removal time is invalid.');
+      }
+      const remaining = groupMemberships(current, groupId).filter(grant => grant.participantId !== participantId);
+      if (remaining.length === 0 || !remaining.some(grant => grant.role === 'organizer')) {
+        return rejected(current, 'Transfer organizer responsibility before removing this member.');
+      }
+      const rotated = rotateMembershipKeys(current, groupId, remaining, decision.nextKeyVersion, decision.groupKeyEnvelopeIds);
+      if (!rotated) return rejected(current, 'Future protected group access is incomplete.');
+      const memberships = {...rotated};
+      delete memberships[targetKey];
+      return {state: {...current, memberships}, outcome: 'applied'};
+    }
+
+    case 'CHANGE_MEMBERSHIP_ROLES': {
+      const groupId = decision.groupId.trim();
+      if (!isActiveOrganizer(current, groupId, decision.actorId)) {
+        return rejected(current, 'Only a current organizer can transfer group roles.');
+      }
+      if (!isTimestamp(decision.decidedAt)) return rejected(current, 'Role change time is invalid.');
+      const members = groupMemberships(current, groupId);
+      const participantIds = members.map(grant => grant.participantId).sort();
+      const roles = canonicalStringRecord(decision.roles);
+      const roleIds = roles ? Object.keys(roles).sort() : [];
+      if (JSON.stringify(participantIds) !== JSON.stringify(roleIds)) {
+        return rejected(current, 'Role changes must name every current member exactly once.');
+      }
+      if (!roles || participantIds.some(participantId => !['organizer', 'member'].includes(roles[participantId]))) {
+        return rejected(current, 'Role change contains an invalid role.');
+      }
+      if (!participantIds.some(participantId => roles[participantId] === 'organizer')) {
+        return rejected(current, 'Every group must retain an organizer.');
+      }
+      if (!members.some(grant => roles[grant.participantId] !== grant.role)) {
+        return rejected(current, 'Role change does not change any membership.');
+      }
+      const updated = members.map(grant => ({...grant, role: roles[grant.participantId] as Exclude<MembershipRole, 'limited'>}));
+      const rotated = rotateMembershipKeys(current, groupId, updated, decision.nextKeyVersion, decision.groupKeyEnvelopeIds);
+      if (!rotated) return rejected(current, 'Future protected group access is incomplete.');
+      return {state: {...current, memberships: rotated}, outcome: 'applied'};
+    }
+
+    case 'ROTATE_GROUP_KEY': {
+      const groupId = decision.groupId.trim();
+      if (!isActiveOrganizer(current, groupId, decision.actorId)) {
+        return rejected(current, 'Only a current organizer can rotate protected group access.');
+      }
+      if (!isTimestamp(decision.decidedAt)) return rejected(current, 'Key rotation time is invalid.');
+      const members = groupMemberships(current, groupId);
+      const rotated = rotateMembershipKeys(current, groupId, members, decision.nextKeyVersion, decision.groupKeyEnvelopeIds);
+      if (!rotated) return rejected(current, 'Future protected group access is incomplete.');
+      return {state: {...current, memberships: rotated}, outcome: 'applied'};
+    }
   }
+}
+
+function rotateMembershipKeys(
+  current: MembershipLifecycleState,
+  groupId: string,
+  members: MembershipGrant[],
+  nextKeyVersion: number,
+  envelopeIds: Record<string, string>,
+): Record<string, MembershipGrant> | null {
+  const active = groupMemberships(current, groupId);
+  const currentVersion = Math.max(...active.map(grant => grant.keyVersion));
+  if (!Number.isSafeInteger(nextKeyVersion) || nextKeyVersion !== currentVersion + 1) return null;
+  const participantIds = members.map(grant => grant.participantId).sort();
+  const canonicalEnvelopeIds = canonicalStringRecord(envelopeIds);
+  if (!canonicalEnvelopeIds) return null;
+  const envelopeParticipantIds = Object.keys(canonicalEnvelopeIds).sort();
+  if (JSON.stringify(participantIds) !== JSON.stringify(envelopeParticipantIds)) return null;
+  if (participantIds.some(participantId => !canonicalEnvelopeIds[participantId]?.trim())) return null;
+
+  const memberships = {...current.memberships};
+  for (const grant of members) {
+    memberships[membershipKey(groupId, grant.participantId)] = {
+      ...grant,
+      keyVersion: nextKeyVersion,
+      groupKeyEnvelopeId: canonicalEnvelopeIds[grant.participantId].trim(),
+    };
+  }
+  return memberships;
+}
+
+function canonicalStringRecord(value: Record<string, string>): Record<string, string> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const result: Record<string, string> = {};
+  for (const [rawKey, rawValue] of Object.entries(value)) {
+    const key = rawKey.trim();
+    if (!key || key in result || typeof rawValue !== 'string' || !rawValue.trim()) return null;
+    result[key] = rawValue.trim();
+  }
+  return result;
+}
+
+function groupMemberships(current: MembershipLifecycleState, groupId: string): MembershipGrant[] {
+  return Object.values(current.memberships).filter(grant => grant.groupId === groupId);
+}
+
+function isActiveOrganizer(current: MembershipLifecycleState, groupId: string, participantId: string): boolean {
+  return current.memberships[membershipKey(groupId, participantId.trim())]?.role === 'organizer';
 }
 
 function decideWithoutMembership(

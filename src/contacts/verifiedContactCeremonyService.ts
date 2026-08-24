@@ -44,7 +44,7 @@ export type VerifiedContactCeremonyState =
       safetyCode: string;
       carrierUrl: string;
     }
-  | {status: 'verified'; record: VerifiedContactRecordV1}
+  | {status: 'verified'; record: VerifiedContactRecordV1; carrierUrl?: string}
   | {status: 'expired'}
   | {status: 'wrong_account'}
   | {status: 'invalid'};
@@ -132,7 +132,7 @@ export class VerifiedContactCeremonyService {
       this.response = message;
       this.localConfirmation = null;
       this.remoteConfirmation = null;
-      const state = await this.showComparison(verifiedContactUrl(this.options.baseUrl, message));
+      const state = await this.showComparison();
       await this.persistDraft();
       return state;
     }
@@ -195,7 +195,9 @@ export class VerifiedContactCeremonyService {
         verifier: this.options.verifier,
       });
     }
-    if (this.remoteConfirmation) return this.complete();
+    if (this.remoteConfirmation) {
+      return this.complete(verifiedContactUrl(this.options.baseUrl, this.localConfirmation));
+    }
     const transcript = await contactTranscript({
       offer: this.offer, response: this.response, now: this.now(), verifier: this.options.verifier,
     });
@@ -243,7 +245,7 @@ export class VerifiedContactCeremonyService {
     }
   }
 
-  private async complete(): Promise<VerifiedContactCeremonyState> {
+  private async complete(carrierUrl?: string): Promise<VerifiedContactCeremonyState> {
     if (!this.offer || !this.response || !this.localConfirmation || !this.remoteConfirmation) return this.fail();
     try {
       const record = await completeVerifiedContact({
@@ -258,7 +260,7 @@ export class VerifiedContactCeremonyService {
       });
       await this.options.repository.save(record);
       await this.options.draftStorage.clear(this.draftKey());
-      this.stateValue = {status: 'verified', record};
+      this.stateValue = {status: 'verified', record, ...(carrierUrl ? {carrierUrl} : {})};
       return this.stateValue;
     } catch {
       return this.failByTime(this.offer.expiresAt);

@@ -11,11 +11,21 @@ import {
   openGroupKeyHandoff,
   verifyProductAccountSignature,
 } from './groupKeyHandoff.ts';
-import {MembershipDeliveryOutbox} from './membershipDeliveryOutbox.ts';
+import {
+  createMembershipDeliveryAcknowledgement,
+  MembershipDeliveryOutbox,
+  type MembershipDeliveryAcknowledgement,
+  type MembershipDeliveryTarget,
+} from './membershipDeliveryOutbox.ts';
 import type {MembershipGrant, MembershipRole} from './membershipLifecycle.ts';
 import {
-  createSignedMembershipEvent,
+  createCausalSignedMembershipEvent,
   createSignedMembershipState,
+  membershipEventGroupId,
+  type MembershipEventV1,
+  type MembershipGroupFrontierV1,
+  type MembershipKeyEnvelopeBindingV1,
+  type MembershipKeyEnvelopeResolver,
   type SignedMembershipEventV1,
   type SignedMembershipState,
   type SignedMembershipTransition,
@@ -26,12 +36,18 @@ import {
   type MembershipReplayResult,
 } from './signedMembershipJournal.ts';
 import {
+  createOriginBoundRecipientBootstrap,
   createRecipientBoundBootstrap,
   verifyRecipientBoundBootstrap,
+  type RecipientBoundBootstrap,
   type RecipientBoundBootstrapV1,
+  type RecipientBoundBootstrapV2,
 } from './recipientBoundBootstrap.ts';
+import type {CanonicalEventV1} from '../core/moneyEventKernel.ts';
+import type {MembershipKeyEnvelopeRecordV1} from './membershipKeyEnvelopeRegistry.ts';
 
 const ROUTE_STORAGE_KEY = 'chopdot-trusted-contact-invitation-routes-v1';
+const FRONTIER_ANCHOR_STORAGE_KEY = 'chopdot-trusted-membership-frontier-anchors-v1';
 
 export interface TrustedContactAccount {
   contactId: string;
@@ -57,7 +73,10 @@ export interface TrustedGroupOrganizerResolver {
 }
 
 export interface MembershipEventDelivery {
-  send(roomId: string, event: SignedMembershipEventV1): Promise<{messageId: string}>;
+  send(roomId: string, event: SignedMembershipEventV1): Promise<{
+    messageId: string;
+    acknowledgement?: MembershipDeliveryAcknowledgement;
+  }>;
 }
 
 export interface PendingAcceptanceRecord {
@@ -98,6 +117,13 @@ export interface ProtectedGroupKeySink {
     keyVersion: number;
     groupKeyEnvelopeId: string;
   }): Promise<boolean>;
+  /** Durable account-opened envelope used only in a V2 grant acknowledgement. */
+  acknowledgedRecord?(input: {
+    groupId: string;
+    participantId: string;
+    accountPublicKeyHex: string;
+    keyVersion: number;
+  }): Promise<MembershipKeyEnvelopeRecordV1 | null>;
 }
 
 export interface TrustedContactInvitationCoordinatorOptions {
@@ -113,12 +139,15 @@ export interface TrustedContactInvitationCoordinatorOptions {
   delivery: MembershipEventDelivery;
   pendingAcceptances: PendingAcceptanceVault;
   protectedKeys: ProtectedGroupKeySink;
+  /** Required before any removal, role transfer, or future-key rotation. */
+  keyEnvelopes?: MembershipKeyEnvelopeResolver;
   verifier?: AccountMessageVerifier;
 }
 
 export interface ReceiveMembershipResult extends SignedMembershipTransition {
   groupKeyStored?: boolean;
   membershipActive?: boolean;
+  deliveryAcknowledgement?: MembershipDeliveryAcknowledgement;
 }
 
 interface InvitationRouteBinding {
@@ -132,6 +161,7 @@ export class TrustedContactInvitationCoordinator {
   private readonly journal: SignedMembershipEventJournal;
   private readonly outbox: MembershipDeliveryOutbox;
   private readonly routes: InvitationRouteStore;
+  private readonly frontierAnchors: TrustedMembershipFrontierAnchorStore;
   private readonly verifier: AccountMessageVerifier;
   private readonly resolvedOrganizerRoots: MembershipGrant[] = [];
   private readonly readyInvitations = new Set<string>();
@@ -145,8 +175,9 @@ export class TrustedContactInvitationCoordinator {
     this.journal = new SignedMembershipEventJournal(options.storage);
     this.outbox = new MembershipDeliveryOutbox(options.storage);
     this.routes = new InvitationRouteStore(options.storage);
+    this.frontierAnchors = new TrustedMembershipFrontierAnchorStore(options.storage);
     this.verifier = options.verifier ?? verifyProductAccountSignature;
-    this.stateValue = createSignedMembershipState(options.organizerRoots);
+    this.stateValue = this.initialState();
   }
 
   get state(): SignedMembershipState {
@@ -154,7 +185,7 @@ export class TrustedContactInvitationCoordinator {
   }
 
   async restore(now = new Date().toISOString()): Promise<MembershipReplayResult & {readyInvitationIds: string[]}> {
-    const replay = await replaySignedMembershipJournal(this.initialState(), this.journal, this.verifier);
+    const replay = await replaySignedMembershipJournal(this.initialState(), this.journal, this.verifier, this.options.keyEnvelopes);
     this.stateValue = replay.state;
     await this.restorePendingGroupAccess(now);
     return {...replay, state: this.stateValue, readyInvitationIds: [...this.readyInvitations].sort()};
@@ -182,7 +213,7 @@ export class TrustedContactInvitationCoordinator {
       || !expectedAccount
     ) throw new Error('This contact does not match the approved Product Account.');
 
-    const event = await createSignedMembershipEvent({
+    const event = await this.createCausalEvent({
       eventId: input.eventId,
       actorId: this.options.actor.participantId,
       actorAccountPublicKeyHex: this.options.actor.accountPublicKeyHex,
@@ -204,16 +235,14 @@ export class TrustedContactInvitationCoordinator {
       },
       signer: this.options.actor.signer,
     });
-    const transition = await this.journal.accept(this.stateValue, event, this.verifier);
-    this.requireAccepted(transition);
-    this.stateValue = transition.state;
+    await this.acceptLocal(event);
     this.routes.bind({
       invitationId: input.invitationId,
       roomId,
       remoteParticipantId: contact.participantId,
       remoteAccountPublicKeyHex: expectedAccount,
     });
-    this.outbox.enqueue({target: {kind: 'chat_room', roomId}, event, queuedAt: input.createdAt});
+    this.enqueueDelivery({target: deliveryTarget(roomId, contact.participantId, expectedAccount), event, queuedAt: input.createdAt});
     return event;
   }
 
@@ -229,11 +258,67 @@ export class TrustedContactInvitationCoordinator {
     createdAt: string;
     expiresAt: string;
   }): Promise<{event: SignedMembershipEventV1; bootstrap: RecipientBoundBootstrapV1}> {
+    const prepared = await this.prepareBootstrapInvitation(input);
+    const bootstrap = await createRecipientBoundBootstrap({
+      invitationEvent: prepared.event,
+      returnRoomId: prepared.roomId,
+      signer: this.options.actor.signer,
+    });
+    await this.rememberBootstrapInvitation(prepared);
+    return {event: prepared.event, bootstrap};
+  }
+
+  /**
+   * Production bootstrap path. The signed canonical group origin is carried so
+   * a fresh recipient can verify organizer authority without treating the URL,
+   * chat room, or prior contact proof as group authority.
+   */
+  async createOriginBoundBootstrapInvitation(input: {
+    returnRoomId: string;
+    recipientId: string;
+    recipientAccountPublicKeyHex: string;
+    groupId: string;
+    invitationId: string;
+    eventId: string;
+    role: Exclude<MembershipRole, 'limited'>;
+    route: 'join_link' | 'qr';
+    createdAt: string;
+    expiresAt: string;
+    organizerGroupEvent: CanonicalEventV1;
+  }): Promise<{event: SignedMembershipEventV1; bootstrap: RecipientBoundBootstrapV2}> {
+    const prepared = await this.prepareBootstrapInvitation(input);
+    const bootstrap = await createOriginBoundRecipientBootstrap({
+      invitationEvent: prepared.event,
+      organizerGroupEvent: input.organizerGroupEvent,
+      returnRoomId: prepared.roomId,
+      signer: this.options.actor.signer,
+    });
+    await this.rememberBootstrapInvitation(prepared);
+    return {event: prepared.event, bootstrap};
+  }
+
+  private async prepareBootstrapInvitation(input: {
+    returnRoomId: string;
+    recipientId: string;
+    recipientAccountPublicKeyHex: string;
+    groupId: string;
+    invitationId: string;
+    eventId: string;
+    role: Exclude<MembershipRole, 'limited'>;
+    route: 'join_link' | 'qr';
+    createdAt: string;
+    expiresAt: string;
+  }): Promise<{
+    roomId: string;
+    recipientId: string;
+    recipientAccountPublicKeyHex: string;
+    event: SignedMembershipEventV1;
+  }> {
     const roomId = required(input.returnRoomId, 'Invitation return route is required.');
     const recipientId = required(input.recipientId, 'Invited person is required.');
     const recipientAccountPublicKeyHex = normalizeAccountKey(input.recipientAccountPublicKeyHex);
     if (!recipientAccountPublicKeyHex) throw new Error('The invited Product Account is required.');
-    const event = await createSignedMembershipEvent({
+    const event = await this.createCausalEvent({
       eventId: input.eventId,
       actorId: this.options.actor.participantId,
       actorAccountPublicKeyHex: this.options.actor.accountPublicKeyHex,
@@ -255,25 +340,27 @@ export class TrustedContactInvitationCoordinator {
       },
       signer: this.options.actor.signer,
     });
-    const bootstrap = await createRecipientBoundBootstrap({
-      invitationEvent: event,
-      returnRoomId: roomId,
-      signer: this.options.actor.signer,
-    });
-    const transition = await this.journal.accept(this.stateValue, event, this.verifier);
-    this.requireAccepted(transition);
-    this.stateValue = transition.state;
+    return {roomId, recipientId, recipientAccountPublicKeyHex, event};
+  }
+
+  private async rememberBootstrapInvitation(input: {
+    roomId: string;
+    recipientId: string;
+    recipientAccountPublicKeyHex: string;
+    event: SignedMembershipEventV1;
+  }): Promise<void> {
+    if (input.event.event.type !== 'INVITATION_CREATED') throw new Error('Invitation bootstrap is invalid.');
+    await this.acceptLocal(input.event);
     this.routes.bind({
-      invitationId: input.invitationId,
-      roomId,
-      remoteParticipantId: recipientId,
-      remoteAccountPublicKeyHex: recipientAccountPublicKeyHex,
+      invitationId: input.event.event.invitation.invitationId,
+      roomId: input.roomId,
+      remoteParticipantId: input.recipientId,
+      remoteAccountPublicKeyHex: input.recipientAccountPublicKeyHex,
     });
-    return {event, bootstrap};
   }
 
   async importBootstrapInvitation(input: {
-    bootstrap: RecipientBoundBootstrapV1;
+    bootstrap: RecipientBoundBootstrap;
     now?: string;
   }): Promise<SignedMembershipTransition> {
     if (!await verifyRecipientBoundBootstrap({
@@ -297,10 +384,33 @@ export class TrustedContactInvitationCoordinator {
     if (!trustedRoot) return rejected(this.stateValue, 'The group organizer could not be trusted.');
     if (!this.hasOrganizerRoot(trustedRoot)) {
       this.resolvedOrganizerRoots.push(trustedRoot);
-      const replay = await replaySignedMembershipJournal(this.initialState(), this.journal, this.verifier);
+      const replay = await replaySignedMembershipJournal(this.initialState(), this.journal, this.verifier, this.options.keyEnvelopes);
       this.stateValue = replay.state;
     }
-    const transition = await this.journal.accept(this.stateValue, event, this.verifier);
+    // A verified bootstrap may be this account's first observation of an
+    // established group. The organizer signature commits to the exact prior
+    // frontier; retaining that commitment lets the recipient verify this
+    // invitation and its successors without importing unrelated invitations.
+    // This anchor grants neither membership nor a group key.
+    if (event.causal && event.causal.expectedVersion > 0 && !this.stateValue.groupFrontiers[invitation.groupId]) {
+      const hasObservedGroupEvent = Object.values(this.stateValue.events)
+        .some(candidate => membershipEventGroupId(candidate.event, this.stateValue) === invitation.groupId);
+      if (hasObservedGroupEvent) {
+        return rejected(this.stateValue, 'Invitation bootstrap does not extend the observed group frontier.');
+      }
+      const anchor: MembershipGroupFrontierV1 = {
+        groupId: invitation.groupId,
+        version: event.causal.expectedVersion,
+        lastEventId: event.causal.parentEventId,
+        frontierHash: event.causal.expectedFrontierHash,
+      };
+      this.frontierAnchors.bind(anchor);
+      this.stateValue = {
+        ...this.stateValue,
+        groupFrontiers: {...this.stateValue.groupFrontiers, [anchor.groupId]: anchor},
+      };
+    }
+    const transition = await this.journal.accept(this.stateValue, event, this.verifier, this.options.keyEnvelopes);
     if (transition.outcome === 'rejected' || transition.outcome === 'deferred') return transition;
     this.routes.bind({
       invitationId: invitation.invitationId,
@@ -329,10 +439,10 @@ export class TrustedContactInvitationCoordinator {
     const existing = await this.options.pendingAcceptances.load(input.invitationId);
     if (existing) {
       this.assertPendingRecord(existing, route);
-      const transition = await this.journal.accept(this.stateValue, existing.event, this.verifier);
+      const transition = await this.journal.accept(this.stateValue, existing.event, this.verifier, this.options.keyEnvelopes);
       this.requireAccepted(transition);
       this.stateValue = transition.state;
-      this.outbox.enqueue({target: {kind: 'chat_room', roomId: route.roomId}, event: existing.event});
+      this.enqueueDelivery({target: deliveryTarget(route.roomId, route.remoteParticipantId, route.remoteAccountPublicKeyHex), event: existing.event});
       return existing.event;
     }
     if (this.stateValue.pendingAcceptances[input.invitationId]) {
@@ -348,7 +458,7 @@ export class TrustedContactInvitationCoordinator {
       expiresAt: invitation.expiresAt,
       signer: this.options.actor.signer,
     });
-    const event = await createSignedMembershipEvent({
+    const event = await this.createCausalEvent({
       eventId: input.eventId,
       actorId: this.options.actor.participantId,
       actorAccountPublicKeyHex: this.options.actor.accountPublicKeyHex,
@@ -358,13 +468,13 @@ export class TrustedContactInvitationCoordinator {
     });
     const record = {roomId: route.roomId, pending, event};
     await this.options.pendingAcceptances.save(input.invitationId, record);
-    const transition = await this.journal.accept(this.stateValue, event, this.verifier);
-    if (transition.outcome === 'rejected' || transition.outcome === 'deferred') {
+    try {
+      await this.acceptLocal(event);
+    } catch (reason) {
       await this.options.pendingAcceptances.remove(input.invitationId);
-      this.requireAccepted(transition);
+      throw reason;
     }
-    this.stateValue = transition.state;
-    this.outbox.enqueue({target: {kind: 'chat_room', roomId: route.roomId}, event, queuedAt: input.acceptedAt});
+    this.enqueueDelivery({target: deliveryTarget(route.roomId, route.remoteParticipantId, route.remoteAccountPublicKeyHex), event, queuedAt: input.acceptedAt});
     return event;
   }
 
@@ -390,22 +500,21 @@ export class TrustedContactInvitationCoordinator {
       && event.actorId === this.options.actor.participantId
       && normalizeAccountKey(event.actorAccountPublicKeyHex) === this.options.actor.accountPublicKeyHex);
     if (existing) {
-      this.outbox.enqueue({target: {kind: 'chat_room', roomId: route.roomId}, event: existing});
+      this.enqueueDelivery({target: deliveryTarget(route.roomId, route.remoteParticipantId, route.remoteAccountPublicKeyHex), event: existing});
       return existing;
     }
 
-    const event = await createSignedMembershipEvent({
+    const event = await this.createCausalEvent({
       eventId: input.eventId,
       actorId: this.options.actor.participantId,
       actorAccountPublicKeyHex: this.options.actor.accountPublicKeyHex,
       occurredAt: input.declinedAt,
       event: {type: 'INVITATION_DECLINED', invitationId: input.invitationId},
       signer: this.options.actor.signer,
+      groupId: invitation.groupId,
     });
-    const transition = await this.journal.accept(this.stateValue, event, this.verifier);
-    this.requireAccepted(transition);
-    this.stateValue = transition.state;
-    this.outbox.enqueue({target: {kind: 'chat_room', roomId: route.roomId}, event, queuedAt: input.declinedAt});
+    await this.acceptLocal(event);
+    this.enqueueDelivery({target: deliveryTarget(route.roomId, route.remoteParticipantId, route.remoteAccountPublicKeyHex), event, queuedAt: input.declinedAt});
     return event;
   }
 
@@ -426,7 +535,7 @@ export class TrustedContactInvitationCoordinator {
     const existing = Object.values(this.stateValue.events).find(event =>
       event.event.type === 'MEMBERSHIP_GRANTED' && event.event.handoff.invitationId === input.invitationId);
     if (existing) {
-      this.outbox.enqueue({target: {kind: 'chat_room', roomId: route.roomId}, event: existing});
+      this.enqueueDelivery({target: deliveryTarget(route.roomId, route.remoteParticipantId, route.remoteAccountPublicKeyHex), event: existing});
       return existing;
     }
 
@@ -443,7 +552,7 @@ export class TrustedContactInvitationCoordinator {
       expiresAt: input.expiresAt,
       signer: this.options.actor.signer,
     });
-    const event = await createSignedMembershipEvent({
+    const event = await this.createCausalEvent({
       eventId: input.eventId,
       actorId: this.options.actor.participantId,
       actorAccountPublicKeyHex: this.options.actor.accountPublicKeyHex,
@@ -451,11 +560,95 @@ export class TrustedContactInvitationCoordinator {
       event: {type: 'MEMBERSHIP_GRANTED', handoff, groupKeyEnvelopeId: input.groupKeyEnvelopeId},
       signer: this.options.actor.signer,
     });
-    const transition = await this.journal.accept(this.stateValue, event, this.verifier);
-    this.requireAccepted(transition);
-    this.stateValue = transition.state;
-    this.outbox.enqueue({target: {kind: 'chat_room', roomId: route.roomId}, event, queuedAt: input.createdAt});
+    await this.acceptLocal(event);
+    this.enqueueDelivery({target: deliveryTarget(route.roomId, route.remoteParticipantId, route.remoteAccountPublicKeyHex), event, queuedAt: input.createdAt});
     return event;
+  }
+
+  async revokeInvitation(input: {
+    invitationId: string;
+    eventId: string;
+    revokedAt: string;
+  }): Promise<SignedMembershipEventV1> {
+    const invitation = this.stateValue.lifecycle.invitations[input.invitationId];
+    const route = this.routes.get(input.invitationId);
+    if (!invitation || !route) throw new Error('Invitation is not available on this device.');
+    const event = await this.createCausalEvent({
+      eventId: input.eventId,
+      actorId: this.options.actor.participantId,
+      actorAccountPublicKeyHex: this.options.actor.accountPublicKeyHex,
+      occurredAt: input.revokedAt,
+      event: {type: 'INVITATION_REVOKED', invitationId: input.invitationId},
+      signer: this.options.actor.signer,
+      groupId: invitation.groupId,
+    });
+    await this.acceptLocal(event);
+    this.enqueueDelivery({target: deliveryTarget(route.roomId, route.remoteParticipantId, route.remoteAccountPublicKeyHex), event, queuedAt: input.revokedAt});
+    return event;
+  }
+
+  async removeMember(input: {
+    groupId: string;
+    participantId: string;
+    eventId: string;
+    nextKeyVersion: number;
+    groupKeyEnvelopes: Record<string, MembershipKeyEnvelopeBindingV1>;
+    removedAt: string;
+  }): Promise<SignedMembershipEventV1> {
+    return this.publishGroupMembershipEvent({
+      groupId: input.groupId,
+      eventId: input.eventId,
+      occurredAt: input.removedAt,
+      event: {
+        type: 'MEMBERSHIP_REMOVED',
+        groupId: input.groupId,
+        participantId: input.participantId,
+        nextKeyVersion: input.nextKeyVersion,
+        groupKeyEnvelopes: input.groupKeyEnvelopes,
+      },
+    });
+  }
+
+  async changeMembershipRoles(input: {
+    groupId: string;
+    eventId: string;
+    roles: Record<string, 'organizer' | 'member'>;
+    nextKeyVersion: number;
+    groupKeyEnvelopes: Record<string, MembershipKeyEnvelopeBindingV1>;
+    changedAt: string;
+  }): Promise<SignedMembershipEventV1> {
+    return this.publishGroupMembershipEvent({
+      groupId: input.groupId,
+      eventId: input.eventId,
+      occurredAt: input.changedAt,
+      event: {
+        type: 'MEMBERSHIP_ROLES_CHANGED',
+        groupId: input.groupId,
+        roles: input.roles,
+        nextKeyVersion: input.nextKeyVersion,
+        groupKeyEnvelopes: input.groupKeyEnvelopes,
+      },
+    });
+  }
+
+  async rotateGroupKey(input: {
+    groupId: string;
+    eventId: string;
+    nextKeyVersion: number;
+    groupKeyEnvelopes: Record<string, MembershipKeyEnvelopeBindingV1>;
+    rotatedAt: string;
+  }): Promise<SignedMembershipEventV1> {
+    return this.publishGroupMembershipEvent({
+      groupId: input.groupId,
+      eventId: input.eventId,
+      occurredAt: input.rotatedAt,
+      event: {
+        type: 'GROUP_KEY_ROTATED',
+        groupId: input.groupId,
+        nextKeyVersion: input.nextKeyVersion,
+        groupKeyEnvelopes: input.groupKeyEnvelopes,
+      },
+    });
   }
 
   async receive(input: {
@@ -466,7 +659,8 @@ export class TrustedContactInvitationCoordinator {
   }): Promise<ReceiveMembershipResult> {
     const roomId = required(input.roomId, 'Invitation delivery route is invalid.');
     const invitationId = eventInvitationId(input.event);
-    if (!invitationId) return rejected(this.stateValue, 'Membership action is invalid.');
+    const groupScoped = isGroupLifecycleEvent(input.event.event);
+    if (!invitationId && !groupScoped) return rejected(this.stateValue, 'Membership action is invalid.');
     const now = input.now ?? new Date().toISOString();
     if (!isTimestamp(now)) return rejected(this.stateValue, 'Membership action time is invalid.');
     if (
@@ -487,6 +681,12 @@ export class TrustedContactInvitationCoordinator {
         || invitation.inviteeId !== this.options.actor.participantId
         || normalizeAccountKey(invitation.inviteeAccountPublicKeyHex ?? '') !== this.options.actor.accountPublicKeyHex
       ) return rejected(this.stateValue, 'Invitation does not match trusted contact accounts.');
+    } else if (groupScoped) {
+      if (!this.routes.matchesRemote({
+        roomId,
+        participantId: input.event.actorId,
+        accountPublicKeyHex: input.event.actorAccountPublicKeyHex,
+      })) return rejected(this.stateValue, 'Group membership action arrived through an unverified sender route.');
     } else {
       const route = this.routes.get(invitationId);
       if (!route || route.roomId !== roomId) {
@@ -494,11 +694,13 @@ export class TrustedContactInvitationCoordinator {
       }
     }
 
-    const transition = await this.journal.accept(this.stateValue, input.event, this.verifier);
+    const transition = await this.journal.accept(this.stateValue, input.event, this.verifier, this.options.keyEnvelopes);
     if (transition.outcome === 'rejected') return transition;
-    this.stateValue = transition.state;
-    const replay = await replaySignedMembershipJournal(this.initialState(), this.journal, this.verifier);
+    const replay = await replaySignedMembershipJournal(this.initialState(), this.journal, this.verifier, this.options.keyEnvelopes);
     this.stateValue = replay.state;
+    const replayConflict = replay.conflicts.find(item => item.event.eventId === input.event.eventId);
+    const replayRejected = replay.rejected.find(item => item.event.eventId === input.event.eventId);
+    const applied = Boolean(this.stateValue.events[input.event.eventId]);
 
     if (input.event.event.type === 'INVITATION_CREATED') {
       this.routes.bind({
@@ -518,23 +720,84 @@ export class TrustedContactInvitationCoordinator {
         && candidate.participantId === this.options.actor.participantId
         && normalizeAccountKey(candidate.accountPublicKeyHex) === this.options.actor.accountPublicKeyHex);
     const membershipActive = Boolean(membership && this.readyInvitations.has(invitationId));
+    const outcome = applied ? (transition.outcome === 'idempotent' ? 'idempotent' : 'applied')
+      : replayConflict ? 'conflict'
+        : replayRejected ? 'rejected'
+          : transition.outcome;
+    let deliveryAcknowledgement: MembershipDeliveryAcknowledgement | undefined;
+    if (['applied', 'idempotent', 'deferred'].includes(outcome)) {
+      const acknowledgementInput = {
+        deliveryId: `chat_room:${roomId}:${input.event.eventId}`,
+        event: input.event,
+        recipientId: this.options.actor.participantId,
+        recipientAccountPublicKeyHex: this.options.actor.accountPublicKeyHex,
+        receivedAt: now,
+        signer: this.options.actor.signer,
+      };
+      if (input.event.event.type !== 'MEMBERSHIP_GRANTED') {
+        deliveryAcknowledgement = await createMembershipDeliveryAcknowledgement(acknowledgementInput);
+      } else if (this.readyInvitations.has(invitationId)) {
+        // A production durable sink must return the exact account-opened record
+        // before a grant can be acknowledged. Falling back to V1 after the sink
+        // advertises V2 support would let transport success outrun protected-key
+        // durability. Legacy sinks that have no record API retain V1 behavior.
+        if (this.options.protectedKeys.acknowledgedRecord) {
+          const durableRecord = await this.options.protectedKeys.acknowledgedRecord({
+            groupId: input.event.event.handoff.groupId,
+            participantId: input.event.event.handoff.recipientId,
+            accountPublicKeyHex: input.event.event.handoff.recipientAccountPublicKeyHex,
+            keyVersion: input.event.event.handoff.keyVersion,
+          });
+          if (durableRecord) {
+            deliveryAcknowledgement = await createMembershipDeliveryAcknowledgement({
+              ...acknowledgementInput,
+              groupKeyEnvelopeRecord: durableRecord,
+            });
+          }
+        } else {
+          deliveryAcknowledgement = await createMembershipDeliveryAcknowledgement(acknowledgementInput);
+        }
+      }
+    }
     return {
       ...transition,
+      outcome,
+      reason: replayConflict?.reason ?? replayRejected?.reason ?? transition.reason,
       state: this.stateValue,
       groupKeyStored: this.readyInvitations.has(invitationId),
       membershipActive,
+      ...(deliveryAcknowledgement ? {deliveryAcknowledgement} : {}),
     };
   }
 
   flush(): Promise<{delivered: string[]; pending: string[]}> {
     return this.outbox.flush(async item => {
-      await this.options.delivery.send(item.target.roomId, item.event);
-      return true;
-    });
+      const result = await this.options.delivery.send(item.target.roomId, item.event);
+      return result.acknowledgement;
+    }, this.verifier);
+  }
+
+  deliveryAcknowledgements(): MembershipDeliveryAcknowledgement[] {
+    return this.outbox.acknowledgements();
+  }
+
+  acknowledgeDelivery(acknowledgement: MembershipDeliveryAcknowledgement): Promise<boolean> {
+    return this.outbox.acknowledge(acknowledgement, this.verifier);
   }
 
   pendingDeliveryCount(): number {
     return this.outbox.list().length;
+  }
+
+  isDeliveryPending(eventId: string): boolean {
+    const normalized = eventId.trim();
+    return Boolean(normalized && this.outbox.list().some(item => item.event.eventId === normalized));
+  }
+
+  private enqueueDelivery(input: Parameters<MembershipDeliveryOutbox['enqueue']>[0]): void {
+    const deliveryId = `${input.target.kind}:${input.target.roomId.trim()}:${input.event.eventId}`;
+    if (this.outbox.hasAcknowledged(deliveryId)) return;
+    this.outbox.enqueue(input);
   }
 
   isMembershipActive(input: {invitationId: string; groupId: string; participantId: string}): boolean {
@@ -547,8 +810,68 @@ export class TrustedContactInvitationCoordinator {
     );
   }
 
+  private createCausalEvent(input: {
+    eventId: string;
+    actorId: string;
+    actorAccountPublicKeyHex: string;
+    occurredAt: string;
+    event: MembershipEventV1;
+    signer: AccountMessageSigner;
+    groupId?: string;
+  }): Promise<SignedMembershipEventV1> {
+    return createCausalSignedMembershipEvent(this.stateValue, input);
+  }
+
+  private async acceptLocal(event: SignedMembershipEventV1): Promise<void> {
+    const transition = await this.journal.accept(this.stateValue, event, this.verifier, this.options.keyEnvelopes);
+    this.requireAccepted(transition);
+    this.stateValue = transition.state;
+  }
+
+  private async publishGroupMembershipEvent(input: {
+    groupId: string;
+    eventId: string;
+    occurredAt: string;
+    event: Extract<MembershipEventV1, {type: 'MEMBERSHIP_REMOVED' | 'MEMBERSHIP_ROLES_CHANGED' | 'GROUP_KEY_ROTATED'}>;
+  }): Promise<SignedMembershipEventV1> {
+    const routes = this.groupDeliveryRoutes(input.groupId);
+    const event = await this.createCausalEvent({
+      eventId: input.eventId,
+      actorId: this.options.actor.participantId,
+      actorAccountPublicKeyHex: this.options.actor.accountPublicKeyHex,
+      occurredAt: input.occurredAt,
+      event: input.event,
+      signer: this.options.actor.signer,
+      groupId: input.groupId,
+    });
+    await this.acceptLocal(event);
+    for (const route of routes) {
+      this.enqueueDelivery({
+        target: deliveryTarget(route.roomId, route.remoteParticipantId, route.remoteAccountPublicKeyHex),
+        event,
+        queuedAt: input.occurredAt,
+      });
+    }
+    return event;
+  }
+
+  private groupDeliveryRoutes(groupIdValue: string): InvitationRouteBinding[] {
+    const groupId = required(groupIdValue, 'Group delivery route is invalid.');
+    const routes = new Map<string, InvitationRouteBinding>();
+    for (const membership of Object.values(this.stateValue.lifecycle.memberships)) {
+      if (membership.groupId !== groupId || membership.participantId === this.options.actor.participantId) continue;
+      const route = this.routes.get(membership.invitationId)
+        ?? this.routes.forRemote(membership.participantId, membership.accountPublicKeyHex);
+      if (!route) throw new Error(`No verified delivery route exists for ${membership.participantId}.`);
+      routes.set(`${route.remoteParticipantId}:${route.remoteAccountPublicKeyHex}`, route);
+    }
+    if (routes.size === 0) throw new Error('No verified member delivery route is available.');
+    return [...routes.values()].sort((left, right) => left.remoteParticipantId.localeCompare(right.remoteParticipantId));
+  }
+
   private initialState(): SignedMembershipState {
-    return createSignedMembershipState([...this.options.organizerRoots, ...this.resolvedOrganizerRoots]);
+    const state = createSignedMembershipState([...this.options.organizerRoots, ...this.resolvedOrganizerRoots]);
+    return {...state, groupFrontiers: {...state.groupFrontiers, ...this.frontierAnchors.list()}};
   }
 
   private hasOrganizerRoot(root: MembershipGrant): boolean {
@@ -572,7 +895,7 @@ export class TrustedContactInvitationCoordinator {
   }
 
   private requireAccepted(transition: SignedMembershipTransition): void {
-    if (transition.outcome === 'rejected' || transition.outcome === 'deferred') {
+    if (transition.outcome === 'rejected' || transition.outcome === 'deferred' || transition.outcome === 'conflict') {
       throw new Error(transition.reason ?? 'Membership action was rejected.');
     }
   }
@@ -601,8 +924,9 @@ export class TrustedContactInvitationCoordinator {
     }
     const record = await this.options.pendingAcceptances.load(handoff.invitationId);
     if (!record) return false;
+    let groupKey: Uint8Array | undefined;
     try {
-      const groupKey = await openGroupKeyHandoff({
+      groupKey = await openGroupKeyHandoff({
         pending: record.pending,
         handoff,
         expectedOrganizerAccountPublicKeyHex: handoff.organizerAccountPublicKeyHex,
@@ -618,6 +942,8 @@ export class TrustedContactInvitationCoordinator {
       return true;
     } catch {
       return false;
+    } finally {
+      groupKey?.fill(0);
     }
   }
 
@@ -629,6 +955,70 @@ export class TrustedContactInvitationCoordinator {
       .sort((left, right) => left.occurredAt.localeCompare(right.occurredAt) || left.eventId.localeCompare(right.eventId));
     for (const event of grants) await this.storeGrantedGroupKey(event.event.handoff, now);
   }
+}
+
+/**
+ * A bootstrap anchor is a trusted organizer's commitment to the group
+ * frontier immediately before the recipient's invitation. It is deliberately
+ * separate from the append-only event log because it is not an authority
+ * event and cannot grant group access.
+ */
+class TrustedMembershipFrontierAnchorStore {
+  constructor(private readonly storage: KeyValueStorage) {}
+
+  bind(value: MembershipGroupFrontierV1): void {
+    const anchor = canonicalFrontierAnchor(value);
+    const anchors = this.list();
+    const existing = anchors[anchor.groupId];
+    if (existing) {
+      if (JSON.stringify(existing) !== JSON.stringify(anchor)) {
+        throw new Error('Group membership frontier is already anchored elsewhere.');
+      }
+      return;
+    }
+    this.storage.write(FRONTIER_ANCHOR_STORAGE_KEY, JSON.stringify({...anchors, [anchor.groupId]: anchor}));
+    if (JSON.stringify(this.list()[anchor.groupId]) !== JSON.stringify(anchor)) {
+      throw new Error('Group membership frontier could not be persisted.');
+    }
+  }
+
+  list(): Record<string, MembershipGroupFrontierV1> {
+    const stored = this.storage.read(FRONTIER_ANCHOR_STORAGE_KEY);
+    if (!stored) return {};
+    try {
+      const parsed = JSON.parse(stored) as unknown;
+      if (!isRecord(parsed)) throw new Error('Invalid frontier anchors.');
+      const result: Record<string, MembershipGroupFrontierV1> = {};
+      for (const [key, value] of Object.entries(parsed)) {
+        const anchor = canonicalFrontierAnchor(value as MembershipGroupFrontierV1);
+        if (key !== anchor.groupId || result[key]) throw new Error('Invalid frontier anchor key.');
+        result[key] = anchor;
+      }
+      return result;
+    } catch {
+      throw new Error('Trusted membership frontier anchors are corrupt.');
+    }
+  }
+}
+
+function canonicalFrontierAnchor(value: MembershipGroupFrontierV1): MembershipGroupFrontierV1 {
+  if (!isRecord(value)) throw new Error('Invalid group membership frontier.');
+  const keys = Object.keys(value).sort();
+  if (keys.join(',') !== ['frontierHash', 'groupId', 'lastEventId', 'version'].sort().join(',')) {
+    throw new Error('Invalid group membership frontier.');
+  }
+  const groupId = required(value.groupId, 'Invalid group membership frontier.');
+  const lastEventId = value.lastEventId === null
+    ? null
+    : required(value.lastEventId, 'Invalid group membership frontier.');
+  const frontierHash = typeof value.frontierHash === 'string' ? value.frontierHash.toLowerCase() : '';
+  if (
+    !Number.isSafeInteger(value.version)
+    || value.version <= 0
+    || lastEventId === null
+    || !/^0x[0-9a-f]{64}$/u.test(frontierHash)
+  ) throw new Error('Invalid group membership frontier.');
+  return {groupId, version: value.version, lastEventId, frontierHash};
 }
 
 class InvitationRouteStore {
@@ -653,6 +1043,20 @@ class InvitationRouteStore {
 
   get(invitationId: string): InvitationRouteBinding | null {
     return this.list()[invitationId.trim()] ?? null;
+  }
+
+  matchesRemote(input: {roomId: string; participantId: string; accountPublicKeyHex: string}): boolean {
+    const account = normalizeAccountKey(input.accountPublicKeyHex);
+    return Object.values(this.list()).some(binding => binding.roomId === input.roomId.trim()
+      && binding.remoteParticipantId === input.participantId.trim()
+      && binding.remoteAccountPublicKeyHex === account);
+  }
+
+  forRemote(participantIdValue: string, accountPublicKeyHexValue: string): InvitationRouteBinding | null {
+    const participantId = participantIdValue.trim();
+    const account = normalizeAccountKey(accountPublicKeyHexValue);
+    return Object.values(this.list()).find(binding => binding.remoteParticipantId === participantId
+      && binding.remoteAccountPublicKeyHex === account) ?? null;
   }
 
   private list(): Record<string, InvitationRouteBinding> {
@@ -695,7 +1099,16 @@ function eventInvitationId(event: SignedMembershipEventV1): string {
     case 'MEMBERSHIP_GRANTED': return event.event.handoff.invitationId;
     case 'INVITATION_DECLINED':
     case 'INVITATION_REVOKED': return event.event.invitationId;
+    case 'MEMBERSHIP_REMOVED':
+    case 'MEMBERSHIP_ROLES_CHANGED':
+    case 'GROUP_KEY_ROTATED': return '';
   }
+}
+
+function isGroupLifecycleEvent(event: MembershipEventV1): event is Extract<MembershipEventV1, {
+  type: 'MEMBERSHIP_REMOVED' | 'MEMBERSHIP_ROLES_CHANGED' | 'GROUP_KEY_ROTATED';
+}> {
+  return ['MEMBERSHIP_REMOVED', 'MEMBERSHIP_ROLES_CHANGED', 'GROUP_KEY_ROTATED'].includes(event.type);
 }
 
 function normalizeAccountKey(value: string): string {
@@ -722,6 +1135,19 @@ function required(value: string, message: string): string {
   const normalized = value.trim();
   if (!normalized) throw new Error(message);
   return normalized;
+}
+
+function deliveryTarget(
+  roomId: string,
+  recipientId: string,
+  recipientAccountPublicKeyHex: string,
+): MembershipDeliveryTarget {
+  return {
+    kind: 'chat_room',
+    roomId: required(roomId, 'Invitation delivery route is invalid.'),
+    recipientId: required(recipientId, 'Invitation recipient is invalid.'),
+    recipientAccountPublicKeyHex: normalizeAccountKey(recipientAccountPublicKeyHex),
+  };
 }
 
 function rejected(state: SignedMembershipState, reason: string): ReceiveMembershipResult {

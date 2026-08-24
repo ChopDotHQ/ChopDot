@@ -45,8 +45,8 @@ async function fixture(options: {throughExpense?: boolean} = {}) {
   const created = await make({eventId: '01-create', commandId: 'c1', expectedVersion: 0, parentEventId: null, actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'GROUP_CREATED', payload: {name: 'Dinner', organizerId: 'mina', members: [{participantId: 'mina', accountPublicKeyHex: minaKey, role: 'organizer'}, {participantId: 'leo', accountPublicKeyHex: leoKey, role: 'member'}]}});
   const expense = await make({eventId: '02-expense', commandId: 'c2', expectedVersion: 1, parentEventId: '01-create', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'EXPENSE_ADDED', payload: {expenseId: 'e1', description: 'Dinner', paidBy: 'mina', total: moneyFromDecimal('100.00', 'CHF', 2), allocations: [{participantId: 'mina', amount: moneyFromDecimal('50.00', 'CHF', 2)}, {participantId: 'leo', amount: moneyFromDecimal('50.00', 'CHF', 2)}]}});
   if (options.throughExpense) return [created, expense];
-  const request = await make({eventId: '03-request', commandId: 'c3', expectedVersion: 2, parentEventId: '02-expense', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'SHARE_REQUESTED', payload: {shareId: 'share-leo'}});
-  const paid = await make({eventId: '04-paid', commandId: 'c4', expectedVersion: 3, parentEventId: '03-request', actorId: 'leo', actorAccountPublicKeyHex: leoKey, actorRole: 'member', eventType: 'SHARE_MARKED_PAID', payload: {shareId: 'share-leo'}});
+  const request = await make({eventId: '03-request', commandId: 'c3', expectedVersion: 2, parentEventId: '02-expense', actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer', eventType: 'SHARE_REQUESTED', payload: {shareId: 'share:e1:leo'}});
+  const paid = await make({eventId: '04-paid', commandId: 'c4', expectedVersion: 3, parentEventId: '03-request', actorId: 'leo', actorAccountPublicKeyHex: leoKey, actorRole: 'member', eventType: 'SHARE_MARKED_PAID', payload: {shareId: 'share:e1:leo'}});
   return [created, expense, request, paid];
 }
 

@@ -37,6 +37,10 @@ test('wrong account entropy and tampered envelope fail readiness closed', async 
   await new AccountBoundProtectedGroupKeySink({productId: 'chopdotproof02.dot', storage, entropy: entropy(1)}).save(access);
   assert.equal(await new AccountBoundProtectedGroupKeySink({productId: 'chopdotproof02.dot', storage, entropy: entropy(2)}).has(access), false);
   const [key, raw] = [...storage.values.entries()][0];
-  storage.write(key, raw.replace(/"ciphertext":"./u, '"ciphertext":"A'));
+  const records = JSON.parse(raw) as Record<string, {envelope: {ciphertext: string}}>;
+  const record = Object.values(records)[0];
+  const first = record.envelope.ciphertext[0];
+  record.envelope.ciphertext = `${first === 'A' ? 'B' : 'A'}${record.envelope.ciphertext.slice(1)}`;
+  storage.write(key, JSON.stringify(records));
   assert.equal(await new AccountBoundProtectedGroupKeySink({productId: 'chopdotproof02.dot', storage, entropy: entropy(1)}).has(access), false);
 });

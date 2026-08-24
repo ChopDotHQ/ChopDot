@@ -184,6 +184,54 @@ export async function verifyPasPaymentReceipt(
   }
 }
 
+/**
+ * Authority-grade verification. Only the transaction reference is treated as
+ * untrusted input; payer, receiver and exact base units come from the signed
+ * ChopDot share. The receipt is returned only after its block is at or behind
+ * the RPC's finalized head on the expected chain.
+ */
+export async function verifyFinalizedPasPaymentReference({
+  txHash,
+  from,
+  to,
+  amountBaseUnits,
+  rpcUrl = POLKADOT_HUB_TESTNET_RPC,
+}: {
+  txHash: string;
+  from: string;
+  to: string;
+  amountBaseUnits: string;
+  rpcUrl?: string;
+}): Promise<PasPaymentReceipt> {
+  const normalizedHash = txHash.trim().toLowerCase();
+  if (!/^0x[0-9a-f]{64}$/u.test(normalizedHash)) throw new Error('The payment reference is not valid.');
+  if (!/^\d+$/u.test(amountBaseUnits) || BigInt(amountBaseUnits) <= 0n) throw new Error('The exact payment amount is invalid.');
+  const [chainId, transaction, receipt, finalized] = await Promise.all([
+    rpcRequest<string>(rpcUrl, 'eth_chainId', []),
+    rpcRequest<RpcTransaction | null>(rpcUrl, 'eth_getTransactionByHash', [normalizedHash]),
+    rpcRequest<RpcReceipt | null>(rpcUrl, 'eth_getTransactionReceipt', [normalizedHash]),
+    rpcRequest<RpcBlock | null>(rpcUrl, 'eth_getBlockByNumber', ['finalized', false]),
+  ]);
+  if (String(chainId).toLowerCase() !== POLKADOT_HUB_TESTNET_CHAIN_ID) throw new Error('The payment is on a different network.');
+  if (!transaction || !receipt || receipt.status !== '0x1' || !receipt.blockNumber || !finalized?.number) {
+    throw new Error('The payment is still being finalized. Try again shortly.');
+  }
+  if (BigInt(receipt.blockNumber) > BigInt(finalized.number)) throw new Error('The payment is still being finalized. Try again shortly.');
+  if (normalizeEvmAddress(transaction.from) !== normalizeEvmAddress(from)) throw new Error('This payment came from a different wallet.');
+  if (!transaction.to || normalizeEvmAddress(transaction.to) !== normalizeEvmAddress(to)) throw new Error('This payment went to a different wallet.');
+  const receivedAmount = BigInt(transaction.value).toString();
+  if (receivedAmount !== BigInt(amountBaseUnits).toString()) throw new Error('This payment has a different amount.');
+  return {
+    txHash: normalizedHash,
+    chainId: POLKADOT_HUB_TESTNET_CHAIN_ID,
+    from: normalizeEvmAddress(transaction.from),
+    to: normalizeEvmAddress(transaction.to),
+    amountBaseUnits: receivedAmount,
+    blockNumber: receipt.blockNumber.toLowerCase(),
+    confirmedAt: new Date().toISOString(),
+  };
+}
+
 interface RpcTransaction {
   from: string;
   to: string | null;
@@ -194,6 +242,8 @@ interface RpcReceipt {
   status: string;
   blockNumber: string | null;
 }
+
+interface RpcBlock { number: string | null }
 
 async function rpcRequest<T>(rpcUrl: string, method: string, params: unknown[]): Promise<T> {
   const response = await fetch(rpcUrl, {

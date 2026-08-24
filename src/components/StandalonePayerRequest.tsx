@@ -24,7 +24,7 @@ export function StandalonePayerRequest({
       ? 'confirmed'
       : appStorage.read(deliveredKey)
         ? 'delivered'
-        : outbox.get(request.requestId) ? 'pending' : 'ready'
+        : outbox.has(request.requestId) ? 'pending' : 'ready'
   ));
   const [syncError, setSyncError] = useState('');
 
@@ -35,7 +35,7 @@ export function StandalonePayerRequest({
     }
     setDeliveryStatus('sending');
     const requestSession = await derivePayerSessionConfig(request.requestId, request.live.memberCapability);
-    outbox.enqueue({
+    await outbox.enqueue({
       eventId: `paid-${crypto.randomUUID()}`,
       requestId: request.requestId,
       groupId,

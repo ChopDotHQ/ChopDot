@@ -26,6 +26,14 @@ export interface ReceiptFile {
   text: () => Promise<string>;
 }
 
+export interface ReceiptDraftOptions {
+  /**
+   * Optional, local-only image text extraction. Browsers without an on-device
+   * detector omit this and still receive an image-first correction draft.
+   */
+  readImageText?: (file: ReceiptFile) => Promise<string | null>;
+}
+
 const supportedTextTypes = new Set([
   'text/plain',
   'text/csv',
@@ -34,8 +42,24 @@ const supportedTextTypes = new Set([
 
 const supportedTextExtensions = ['.txt', '.csv', '.json'];
 
-export async function extractReceiptDraft(file: ReceiptFile): Promise<ReceiptDraft> {
-  if (!isSupportedTextReceipt(file)) {
+export async function extractReceiptDraft(file: ReceiptFile, options: ReceiptDraftOptions = {}): Promise<ReceiptDraft> {
+  let text: string;
+  if (isImageReceipt(file) && options.readImageText) {
+    try {
+      text = (await options.readImageText(file)) ?? '';
+    } catch {
+      text = '';
+    }
+    if (!text.trim()) {
+      return {
+        status: 'could_not_read',
+        reason: 'unsupported_file',
+        fileName: file.name,
+      };
+    }
+  } else if (isSupportedTextReceipt(file)) {
+    text = await file.text();
+  } else {
     return {
       status: 'could_not_read',
       reason: 'unsupported_file',
@@ -43,7 +67,6 @@ export async function extractReceiptDraft(file: ReceiptFile): Promise<ReceiptDra
     };
   }
 
-  const text = await file.text();
   if (!text.trim()) {
     return {
       status: 'could_not_read',
@@ -72,6 +95,10 @@ export async function extractReceiptDraft(file: ReceiptFile): Promise<ReceiptDra
 function isSupportedTextReceipt(file: ReceiptFile) {
   const lowerName = file.name.toLowerCase();
   return supportedTextTypes.has(file.type) || supportedTextExtensions.some(extension => lowerName.endsWith(extension));
+}
+
+function isImageReceipt(file: ReceiptFile) {
+  return file.type.toLowerCase().startsWith('image/');
 }
 
 function extractTotal(text: string): number | null {

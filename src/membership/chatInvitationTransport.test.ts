@@ -10,10 +10,12 @@ import type {
 import {
   adaptChatInvitationTransport,
   decodeMembershipChatAction,
+  encodeMembershipAcknowledgementChatMessage,
   encodeMembershipChatMessage,
   MAX_MEMBERSHIP_CHAT_PAYLOAD_BYTES,
 } from './chatInvitationTransport.ts';
 import {createSignedMembershipEvent} from './signedMembershipEvents.ts';
+import {createMembershipDeliveryAcknowledgement} from './membershipDeliveryOutbox.ts';
 
 async function event() {
   await cryptoWaitReady();
@@ -43,7 +45,26 @@ test('custom chat message round-trips one signed membership event', async () => 
     peer: 'leo-peer',
     payload: {tag: 'MessagePosted', value: encodeMembershipChatMessage(signed)},
   };
-  assert.deepEqual(decodeMembershipChatAction(action), signed);
+  assert.deepEqual(decodeMembershipChatAction(action), {kind: 'event', event: signed});
+});
+
+test('custom chat message round-trips a recipient-signed delivery acknowledgement', async () => {
+  await cryptoWaitReady();
+  const signed = await event();
+  const leo = sr25519PairFromSeed(new Uint8Array(32).fill(22));
+  const acknowledgement = await createMembershipDeliveryAcknowledgement({
+    deliveryId: `chat_room:friends-room:${signed.eventId}`,
+    event: signed,
+    recipientId: 'leo',
+    recipientAccountPublicKeyHex: `0x${Buffer.from(leo.publicKey).toString('hex')}`,
+    receivedAt: '2026-08-12T12:02:00.000Z',
+    signer: {signBytes: async data => sr25519Sign(data, leo)},
+  });
+  const action: ChatReceivedAction = {
+    roomId: 'friends-room', peer: 'leo-peer',
+    payload: {tag: 'MessagePosted', value: encodeMembershipAcknowledgementChatMessage(acknowledgement)},
+  };
+  assert.deepEqual(decodeMembershipChatAction(action), {kind: 'acknowledgement', acknowledgement});
 });
 
 test('unrelated, malformed, and structurally tampered chat payloads are ignored', async () => {
@@ -109,6 +130,6 @@ test('adapter sends only to the selected room and forwards decoded events', asyn
     roomId: 'friends-room', peer: 'mina-peer',
     payload: {tag: 'MessagePosted', value: sent[0].payload},
   });
-  assert.deepEqual(received, [{roomId: 'friends-room', peer: 'mina-peer', event: signed}]);
+  assert.deepEqual(received, [{roomId: 'friends-room', peer: 'mina-peer', message: {kind: 'event', event: signed}}]);
   assert.throws(() => transport.send('   ', signed), /Choose a conversation/u);
 });

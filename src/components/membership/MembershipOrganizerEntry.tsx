@@ -28,7 +28,11 @@ export function MembershipOrganizerEntry({adapter, onClose}: {adapter: Membershi
   const [copied, setCopied] = useState(false);
   const [copyUnavailable, setCopyUnavailable] = useState(false);
 
-  if (status === 'ready_to_invite') {
+  // Once a carrier is being prepared, keep it visible until the organizer
+  // explicitly says it was shared. Creating the signed invitation changes the
+  // authority status to pending before this promise resolves; that transition
+  // must not erase the link or QR the other person still needs.
+  if (status === 'ready_to_invite' || creationView !== 'start') {
     const create = async (route: 'join_link' | 'qr') => {
       if (!adapter.createInvitation) return;
       setCreationView('creating');
@@ -96,6 +100,7 @@ export function MembershipOrganizerEntry({adapter, onClose}: {adapter: Membershi
                 </div>
               )}
             </div>
+            <SecondaryAction onClick={() => setCreationView('start')}>I’ve shared it</SecondaryAction>
             <SecondaryAction onClick={() => setCreationView('choose')}>Choose another way</SecondaryAction>
           </CreationShell>
         )}
@@ -109,6 +114,7 @@ export function MembershipOrganizerEntry({adapter, onClose}: {adapter: Membershi
             <div className="mx-auto w-fit rounded-3xl bg-white p-3 shadow-sm ring-1 ring-black/5">
               <img src={qrDataUrl} width={256} height={256} alt="Invitation QR code" className="h-56 w-56" />
             </div>
+            <SecondaryAction onClick={() => setCreationView('start')}>They’ve scanned it</SecondaryAction>
             <SecondaryAction onClick={() => setCreationView('choose')}>Choose another way</SecondaryAction>
           </CreationShell>
         )}

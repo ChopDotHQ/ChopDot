@@ -17,12 +17,49 @@ import {
   type MoneyAllocationV1,
   type MoneyV1,
 } from './money.ts';
+import {
+  applyModeWorkflowEventV1,
+  applyCanonicalExpenseCorrectionToModeStateV1,
+  hasOutstandingModeWorkV1,
+  initialModeStateV1,
+  isModeWorkflowEventTypeV1,
+  type CanonicalModeStateV1,
+  type ModeWorkflowEventPayloadV1,
+  type ModeWorkflowEventTypeV1,
+} from './modeWorkflows.ts';
 
 export type ParticipantRole = 'organizer' | 'member';
-export type ShareStatus = 'open' | 'requested' | 'marked_paid' | 'received' | 'waived' | 'disputed';
+export type ShareStatus = 'open' | 'requested' | 'marked_paid' | 'cleared' | 'received' | 'waived' | 'disputed';
 export type AdjustmentKind = 'correction' | 'refund' | 'fee' | 'waiver' | 'partial_payment' | 'dispute';
+export type CanonicalGroupModeV1 = 'normal_pot' | 'trip' | 'couple' | 'spend_card' | 'savings_circle' | 'emergency_pot' | 'community_fund';
 
-export interface CanonicalMemberV1 {participantId: string; accountPublicKeyHex: string; role: ParticipantRole}
+export interface ShareRequestMetadataV1 {
+  requestId: string;
+  createdAt: string;
+  expiresAt: string;
+  capabilityHash: string;
+}
+
+export interface FinalizedPaymentEvidenceV1 {
+  reference: string;
+  network: string;
+  asset: string;
+  payerId: string;
+  receiverId: string;
+  amount: MoneyV1;
+  finality: 'finalized';
+}
+
+export interface CanonicalMemberV1 {
+  participantId: string;
+  accountPublicKeyHex: string;
+  role: ParticipantRole;
+  active?: boolean;
+  acceptedAt?: string;
+  invitationId?: string;
+  keyVersion?: number;
+  groupKeyEnvelopeId?: string;
+}
 export interface CanonicalExpenseV1 {
   expenseId: string;
   description: string;
@@ -38,43 +75,60 @@ export interface CanonicalShareV1 {
   originalAmount: MoneyV1;
   amount: MoneyV1;
   status: ShareStatus;
+  request?: ShareRequestMetadataV1;
+  clearedEvidence?: FinalizedPaymentEvidenceV1;
   adjustments: Array<{eventId: string; kind: AdjustmentKind; delta: MoneyV1; reason: string}>;
 }
 export interface CanonicalGroupStateV1 {
   v: 1;
   groupId: string;
   name: string;
+  mode?: CanonicalGroupModeV1;
   version: number;
   currentEventId: string | null;
   organizerId: string;
+  groupKeyVersion?: number;
   members: Record<string, CanonicalMemberV1>;
   expenses: Record<string, CanonicalExpenseV1>;
   shares: Record<string, CanonicalShareV1>;
   closed: null | {recordId: string; eventId: string; total: MoneyV1; currencyTotals: Record<string, MoneyV1>};
   successorRecords: Array<{recordId: string; predecessorRecordId: string; eventId: string; reason: string}>;
+  /** Named-mode state is a projection of the same signed group frontier. */
+  modeState?: CanonicalModeStateV1;
   eventIds: string[];
 }
 
 export type ChopEventPayloadV1 =
-  | {name: string; organizerId: string; members: CanonicalMemberV1[]}
+  | {name: string; mode?: CanonicalGroupModeV1; organizerId: string; members: CanonicalMemberV1[]}
   | {expenseId: string; description: string; paidBy: string; total: MoneyV1; allocations: MoneyAllocationV1[]}
-  | {shareId: string}
-  | {shareId: string; exactFinalizedPayment?: boolean}
+  | {shareId: string; request?: ShareRequestMetadataV1}
+  | {shareId: string; evidence: FinalizedPaymentEvidenceV1}
   | {expenseId: string; reason: string; total: MoneyV1; allocations: MoneyAllocationV1[]}
   | {shareId: string; kind: AdjustmentKind; delta: MoneyV1; reason: string}
   | {recordId: string}
-  | {recordId: string; predecessorRecordId: string; reason: string};
+  | {recordId: string; predecessorRecordId: string; reason: string}
+  | {member: CanonicalMemberV1}
+  | {participantId: string; nextKeyVersion: number; groupKeyEnvelopeIds: Record<string, string>}
+  | {roles: Record<string, ParticipantRole>; nextKeyVersion: number; groupKeyEnvelopeIds: Record<string, string>}
+  | {nextKeyVersion: number; groupKeyEnvelopeIds: Record<string, string>}
+  | ModeWorkflowEventPayloadV1;
 
 export type CanonicalEventType =
   | 'GROUP_CREATED'
   | 'EXPENSE_ADDED'
   | 'SHARE_REQUESTED'
   | 'SHARE_MARKED_PAID'
+  | 'SHARE_CLEARED'
   | 'SHARE_RECEIVED'
   | 'EXPENSE_CORRECTED'
   | 'SHARE_ADJUSTED'
   | 'GROUP_CLOSED'
-  | 'SUCCESSOR_RECORD_CREATED';
+  | 'SUCCESSOR_RECORD_CREATED'
+  | 'MEMBER_ADDED'
+  | 'MEMBER_REMOVED'
+  | 'MEMBERSHIP_ROLES_CHANGED'
+  | 'GROUP_KEY_ROTATED'
+  | ModeWorkflowEventTypeV1;
 
 export interface CanonicalEventInput {
   eventId: string;
@@ -108,6 +162,15 @@ export interface CanonicalEventV1 extends Omit<CanonicalEventInput, 'acceptedAt'
 export type ChopEventInputV1 = CanonicalEventInput;
 export type ChopEventV1 = CanonicalEventV1;
 export type ChopEventTypeV1 = CanonicalEventType;
+
+/**
+ * A share belongs to one expense and one participant. Keeping both identities
+ * in the key prevents a later receipt from colliding with an earlier share.
+ */
+export function canonicalShareId(expenseId: string, participantId: string): string {
+  if (!expenseId.trim() || !participantId.trim()) throw new Error('Canonical share identity is invalid.');
+  return `share:${encodeURIComponent(expenseId)}:${encodeURIComponent(participantId)}`;
+}
 
 export interface CanonicalSigner {sign(bytes: Uint8Array): Promise<Uint8Array>}
 export type CanonicalVerifier = (bytes: Uint8Array, signature: Uint8Array, publicKeyHex: string) => Promise<boolean>;
@@ -301,8 +364,13 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
     }
     const organizer = members[payload.organizerId];
     if (!organizer || organizer.role !== 'organizer' || organizer.accountPublicKeyHex !== event.actorAccountPublicKeyHex) throw new Error('Group organizer binding is invalid.');
+    const mode = payload.mode ?? 'normal_pot';
+    if (!isCanonicalGroupMode(mode)) throw new Error('Group mode policy is invalid.');
     state.name = payload.name.trim();
+    state.mode = mode;
+    state.modeState = initialModeStateV1(mode);
     state.organizerId = payload.organizerId;
+    state.groupKeyVersion = Math.max(1, ...Object.values(members).map(member => member.keyVersion ?? 1));
     state.members = members;
     return advance(state, event);
   }
@@ -328,18 +396,71 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
   }
   if (state.closed) throw new Error('Closed records cannot be changed.');
 
+  if (event.eventType === 'MEMBER_ADDED') {
+    if (event.actorId !== state.organizerId) throw new Error('Only the organizer may add an accepted member.');
+    const member = cloneJson((event.payload as {member: CanonicalMemberV1}).member);
+    assertMember(member);
+    if (member.role !== 'member' || member.active === false) throw new Error('New membership role is invalid.');
+    if (!member.acceptedAt || Number.isNaN(Date.parse(member.acceptedAt)) || !member.invitationId?.trim()
+      || !Number.isSafeInteger(member.keyVersion) || member.keyVersion! < 1 || !member.groupKeyEnvelopeId?.trim()) {
+      throw new Error('Accepted membership evidence is incomplete.');
+    }
+    const existingMember = state.members[member.participantId];
+    if ((existingMember && existingMember.active !== false) || Object.values(state.members).some(candidate =>
+      candidate.active !== false && candidate.accountPublicKeyHex === member.accountPublicKeyHex)) {
+      throw new Error('Accepted member is already active in this group.');
+    }
+    state.members[member.participantId] = {...member, active: true};
+    state.groupKeyVersion = Math.max(state.groupKeyVersion ?? 1, member.keyVersion!);
+    return advance(state, event);
+  }
+
+  if (event.eventType === 'MEMBER_REMOVED') {
+    if (event.actorId !== state.organizerId) throw new Error('Only the organizer may remove a member.');
+    const payload = event.payload as {participantId: string; nextKeyVersion: number; groupKeyEnvelopeIds: Record<string, string>};
+    const target = state.members[payload.participantId];
+    if (!target || target.active === false) throw new Error('Removed member is not active.');
+    const remaining = activeMembers(state).filter(member => member.participantId !== payload.participantId);
+    if (!remaining.some(member => member.role === 'organizer')) throw new Error('A group must retain an organizer.');
+    applyRotatedKeyEvidence(state, payload.nextKeyVersion, payload.groupKeyEnvelopeIds, remaining);
+    target.active = false;
+    return advance(state, event);
+  }
+
+  if (event.eventType === 'MEMBERSHIP_ROLES_CHANGED') {
+    if (event.actorId !== state.organizerId) throw new Error('Only the organizer may change group roles.');
+    const payload = event.payload as {roles: Record<string, ParticipantRole>; nextKeyVersion: number; groupKeyEnvelopeIds: Record<string, string>};
+    const members = activeMembers(state);
+    const ids = members.map(member => member.participantId).sort();
+    if (JSON.stringify(Object.keys(payload.roles).sort()) !== JSON.stringify(ids)
+      || Object.values(payload.roles).some(role => !['organizer', 'member'].includes(role))
+      || !Object.values(payload.roles).includes('organizer')) throw new Error('Group role transfer is invalid.');
+    applyRotatedKeyEvidence(state, payload.nextKeyVersion, payload.groupKeyEnvelopeIds, members);
+    for (const member of members) member.role = payload.roles[member.participantId];
+    const organizerIds = members.filter(member => member.role === 'organizer').map(member => member.participantId).sort();
+    state.organizerId = organizerIds[0];
+    return advance(state, event);
+  }
+
+  if (event.eventType === 'GROUP_KEY_ROTATED') {
+    if (event.actorId !== state.organizerId) throw new Error('Only the organizer may rotate protected group access.');
+    const payload = event.payload as {nextKeyVersion: number; groupKeyEnvelopeIds: Record<string, string>};
+    applyRotatedKeyEvidence(state, payload.nextKeyVersion, payload.groupKeyEnvelopeIds, activeMembers(state));
+    return advance(state, event);
+  }
+
   if (event.eventType === 'EXPENSE_ADDED') {
     const payload = event.payload as Extract<ChopEventPayloadV1, {expenseId: string; paidBy: string; total: MoneyV1}>;
     if (event.actorId !== payload.paidBy || !state.members[payload.paidBy] || state.expenses[payload.expenseId]) throw new Error('Expense authority is invalid.');
     assertMoney(payload.total);
     assertConservation(payload.total, payload.allocations);
-    for (const row of payload.allocations) if (!state.members[row.participantId]) throw new Error('Expense allocation member is invalid.');
+    for (const row of payload.allocations) if (!state.members[row.participantId] || state.members[row.participantId].active === false) throw new Error('Expense allocation member is invalid.');
     state.expenses[payload.expenseId] = {
       expenseId: payload.expenseId, description: payload.description.trim(), paidBy: payload.paidBy,
       originalTotal: cloneJson(payload.total), total: cloneJson(payload.total), revisions: [],
     };
     for (const row of payload.allocations) {
-      const shareId = `share-${row.participantId}`;
+      const shareId = canonicalShareId(payload.expenseId, row.participantId);
       if (state.shares[shareId]) throw new Error('Expense share identifier conflicts.');
       state.shares[shareId] = {shareId, expenseId: payload.expenseId, participantId: row.participantId, originalAmount: cloneJson(row.amount), amount: cloneJson(row.amount), status: 'open', adjustments: []};
     }
@@ -347,10 +468,17 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
   }
 
   if (event.eventType === 'SHARE_REQUESTED') {
-    const share = shareFor(state, (event.payload as {shareId: string}).shareId);
+    const payload = event.payload as {shareId: string; request?: ShareRequestMetadataV1};
+    const share = shareFor(state, payload.shareId);
     const expense = state.expenses[share.expenseId];
-    if (event.actorId !== expense.paidBy || share.participantId === expense.paidBy || share.status !== 'open') throw new Error('Share request authority or state is invalid.');
+    if (
+      event.actorId !== expense.paidBy
+      || share.participantId === expense.paidBy
+      || !['open', 'requested'].includes(share.status)
+    ) throw new Error('Share request authority or state is invalid.');
+    if (payload.request && !validShareRequest(payload.request, event.occurredAt)) throw new Error('Share request metadata is invalid.');
     share.status = 'requested';
+    if (payload.request) share.request = cloneJson(payload.request);
     return advance(state, event);
   }
 
@@ -361,13 +489,35 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
     return advance(state, event);
   }
 
+  if (event.eventType === 'SHARE_CLEARED') {
+    const payload = event.payload as {shareId: string; evidence: FinalizedPaymentEvidenceV1};
+    const share = shareFor(state, payload.shareId);
+    const expense = state.expenses[share.expenseId];
+    const evidence = payload.evidence;
+    if (![share.participantId, expense.paidBy].includes(event.actorId)) throw new Error('Only the payer or receiver may record cleared evidence.');
+    if (!['requested', 'marked_paid'].includes(share.status)) throw new Error('Finalized payment cannot clear this share state.');
+    if (
+      !evidence
+      || !evidence.reference?.trim()
+      || !evidence.network?.trim()
+      || !evidence.asset?.trim()
+      || evidence.finality !== 'finalized'
+      || evidence.payerId !== share.participantId
+      || evidence.receiverId !== expense.paidBy
+    ) throw new Error('Finalized payment evidence does not match this share.');
+    assertMoney(evidence.amount);
+    if (!moneyEquals(evidence.amount, share.amount) || evidence.asset !== share.amount.currency) throw new Error('Finalized payment amount or asset does not match this share.');
+    share.status = 'cleared';
+    share.clearedEvidence = cloneJson(evidence);
+    return advance(state, event);
+  }
+
   if (event.eventType === 'SHARE_RECEIVED') {
-    const payload = event.payload as {shareId: string; exactFinalizedPayment?: boolean};
+    const payload = event.payload as {shareId: string};
     const share = shareFor(state, payload.shareId);
     const expense = state.expenses[share.expenseId];
     if (event.actorId !== expense.paidBy) throw new Error('Only the receiver may confirm this share.');
-    if (share.status !== 'marked_paid' && !payload.exactFinalizedPayment) throw new Error('Share must be marked paid before receiver confirmation.');
-    if (!['open', 'requested', 'marked_paid'].includes(share.status) && payload.exactFinalizedPayment) throw new Error('Exact payment cannot clear this share state.');
+    if (!['marked_paid', 'cleared'].includes(share.status)) throw new Error('Share must be marked paid or cleared before receiver confirmation.');
     share.status = 'received';
     return advance(state, event);
   }
@@ -379,18 +529,24 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
     const shares = Object.values(state.shares).filter(share => share.expenseId === expense.expenseId);
     if (shares.some(share => !['open', 'requested'].includes(share.status))) throw new Error('Paid or received expenses require an explicit adjustment.');
     assertConservation(payload.total, payload.allocations);
-    if (payload.allocations.some(row => !state.members[row.participantId])) throw new Error('Correction allocation member is invalid.');
+    if (payload.allocations.some(row => !state.members[row.participantId] || state.members[row.participantId].active === false)) throw new Error('Correction allocation member is invalid.');
     expense.revisions.push({eventId: event.eventId, reason: payload.reason.trim(), previousTotal: cloneJson(expense.total), nextTotal: cloneJson(payload.total)});
     expense.total = cloneJson(payload.total);
     const nextParticipants = new Set(payload.allocations.map(row => row.participantId));
     for (const share of shares) if (!nextParticipants.has(share.participantId)) delete state.shares[share.shareId];
     for (const row of payload.allocations) {
-      const shareId = `share-${row.participantId}`;
+      const shareId = canonicalShareId(payload.expenseId, row.participantId);
       const existing = state.shares[shareId];
       state.shares[shareId] = existing
         ? {...existing, amount: cloneJson(row.amount)}
         : {shareId, expenseId: expense.expenseId, participantId: row.participantId, originalAmount: cloneJson(row.amount), amount: cloneJson(row.amount), status: 'open', adjustments: []};
     }
+    state.modeState = applyCanonicalExpenseCorrectionToModeStateV1(state.modeState, {
+      expenseId: payload.expenseId,
+      correctionEventId: event.eventId,
+      reason: payload.reason,
+      total: payload.total,
+    });
     return advance(state, event);
   }
 
@@ -414,7 +570,26 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
     return advance(state, event);
   }
 
+  if (isModeWorkflowEventTypeV1(event.eventType)) {
+    state.modeState = applyModeWorkflowEventV1({
+      mode: state.mode ?? 'normal_pot',
+      organizerId: state.organizerId,
+      members: state.members,
+      expenses: state.expenses,
+      shares: state.shares,
+      modeState: state.modeState,
+    }, {
+      eventId: event.eventId,
+      eventType: event.eventType,
+      actorId: event.actorId,
+      occurredAt: event.occurredAt,
+      payload: event.payload as ModeWorkflowEventPayloadV1,
+    });
+    return advance(state, event);
+  }
+
   const payload = event.payload as {recordId: string};
+  if (hasOutstandingModeWorkV1(state.modeState)) throw new Error('Finish the pending Spend Card correction or settled follow-up before closing this group.');
   if (event.actorId !== state.organizerId || !payload.recordId.trim()) throw new Error('Close authority is invalid.');
   const open = Object.values(state.shares).filter(share => {
     const expense = state.expenses[share.expenseId];
@@ -436,7 +611,22 @@ function advance(state: CanonicalGroupStateV1, event: CanonicalEventV1): Canonic
 }
 
 function emptyState(groupId: string): CanonicalGroupStateV1 {
-  return {v: 1, groupId, name: '', version: 0, currentEventId: null, organizerId: '', members: {}, expenses: {}, shares: {}, closed: null, successorRecords: [], eventIds: []};
+  return {v: 1, groupId, name: '', mode: 'normal_pot', version: 0, currentEventId: null, organizerId: '', members: {}, expenses: {}, shares: {}, closed: null, successorRecords: [], eventIds: []};
+}
+
+function isCanonicalGroupMode(value: unknown): value is CanonicalGroupModeV1 {
+  return ['normal_pot','trip','couple','spend_card','savings_circle','emergency_pot','community_fund'].includes(String(value));
+}
+
+function validShareRequest(value: ShareRequestMetadataV1, occurredAt: string): boolean {
+  return Boolean(
+    value.requestId?.trim()
+    && value.capabilityHash?.trim()
+    && !Number.isNaN(Date.parse(value.createdAt))
+    && !Number.isNaN(Date.parse(value.expiresAt))
+    && Date.parse(value.createdAt) >= Date.parse(occurredAt) - 1_000
+    && Date.parse(value.expiresAt) > Date.parse(value.createdAt),
+  );
 }
 
 function assertSeedState(state: CanonicalGroupStateV1): void {
@@ -462,16 +652,43 @@ function assertInput(input: CanonicalEventInput): void {
   if (Number.isNaN(Date.parse(input.occurredAt))) throw new Error('Canonical event time is invalid.');
   if (!input.acceptedAt || Number.isNaN(Date.parse(input.acceptedAt))) throw new Error('Canonical acceptance time is invalid.');
   if (input.eventVersion !== 1 || !Number.isSafeInteger(input.keyVersion) || input.keyVersion! < 1 || input.visibility !== 'group_encrypted') throw new Error('Canonical event metadata is invalid.');
-  if (!['GROUP_CREATED','EXPENSE_ADDED','SHARE_REQUESTED','SHARE_MARKED_PAID','SHARE_RECEIVED','EXPENSE_CORRECTED','SHARE_ADJUSTED','GROUP_CLOSED','SUCCESSOR_RECORD_CREATED'].includes(input.eventType)) throw new Error('Canonical event type is invalid.');
+  if (!['GROUP_CREATED','EXPENSE_ADDED','SHARE_REQUESTED','SHARE_MARKED_PAID','SHARE_CLEARED','SHARE_RECEIVED','EXPENSE_CORRECTED','SHARE_ADJUSTED','GROUP_CLOSED','SUCCESSOR_RECORD_CREATED','MEMBER_ADDED','MEMBER_REMOVED','MEMBERSHIP_ROLES_CHANGED','GROUP_KEY_ROTATED'].includes(input.eventType) && !isModeWorkflowEventTypeV1(input.eventType)) throw new Error('Canonical event type is invalid.');
 }
 
 function assertActor(state: CanonicalGroupStateV1, event: CanonicalEventV1): void {
   const member = state.members[event.actorId];
-  if (!member || member.accountPublicKeyHex !== event.actorAccountPublicKeyHex || member.role !== event.actorRole) throw new Error('Canonical actor is not authorized for this group.');
+  if (!member || member.active === false || member.accountPublicKeyHex !== event.actorAccountPublicKeyHex || member.role !== event.actorRole) throw new Error('Canonical actor is not authorized for this group.');
 }
 
 function assertMember(member: CanonicalMemberV1): void {
   if (!member.participantId?.trim() || !/^0x[0-9a-f]{64}$/iu.test(member.accountPublicKeyHex) || !['organizer', 'member'].includes(member.role)) throw new Error('Group member binding is invalid.');
+}
+
+function activeMembers(state: CanonicalGroupStateV1): CanonicalMemberV1[] {
+  return Object.values(state.members).filter(member => member.active !== false);
+}
+
+function applyRotatedKeyEvidence(
+  state: CanonicalGroupStateV1,
+  nextKeyVersion: number,
+  groupKeyEnvelopeIds: Record<string, string>,
+  recipients: CanonicalMemberV1[],
+): void {
+  const current = state.groupKeyVersion ?? 1;
+  if (!Number.isSafeInteger(nextKeyVersion) || nextKeyVersion !== current + 1) {
+    throw new Error('Group key rotation version is invalid.');
+  }
+  const recipientIds = recipients.map(member => member.participantId).sort();
+  if (!groupKeyEnvelopeIds || typeof groupKeyEnvelopeIds !== 'object' || Array.isArray(groupKeyEnvelopeIds)
+    || JSON.stringify(Object.keys(groupKeyEnvelopeIds).sort()) !== JSON.stringify(recipientIds)
+    || recipientIds.some(participantId => !groupKeyEnvelopeIds[participantId]?.trim())) {
+    throw new Error('Future protected group access is incomplete.');
+  }
+  for (const member of recipients) {
+    member.keyVersion = nextKeyVersion;
+    member.groupKeyEnvelopeId = groupKeyEnvelopeIds[member.participantId].trim();
+  }
+  state.groupKeyVersion = nextKeyVersion;
 }
 
 function shareFor(state: CanonicalGroupStateV1, shareId: string): CanonicalShareV1 {

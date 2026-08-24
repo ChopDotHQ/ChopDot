@@ -247,32 +247,26 @@ export const appStorage = {
 
   write(key: string, value: string): 'saved' | 'memory-only' {
     if (!getEnvironmentCapabilities().canUseLocalStorage) {
-      mirrorToTelegramCloudStorage(key, value);
       return 'memory-only';
     }
 
     try {
       window.localStorage.setItem(key, value);
-      mirrorToTelegramCloudStorage(key, value);
       return 'saved';
     } catch {
-      mirrorToTelegramCloudStorage(key, value);
       return 'memory-only';
     }
   },
 
   remove(key: string): void {
     if (!getEnvironmentCapabilities().canUseLocalStorage) {
-      removeFromTelegramCloudStorage(key);
       return;
     }
 
     try {
       window.localStorage.removeItem(key);
-      removeFromTelegramCloudStorage(key);
     } catch {
       // Storage can be blocked in embedded hosts. Memory state still works.
-      removeFromTelegramCloudStorage(key);
     }
   },
 };
@@ -283,22 +277,6 @@ function getTelegramWebApp(): TelegramWebApp | null {
   }
 
   return window.Telegram?.WebApp ?? null;
-}
-
-function mirrorToTelegramCloudStorage(key: string, value: string) {
-  try {
-    getTelegramWebApp()?.CloudStorage?.setItem?.(key, value);
-  } catch {
-    // Telegram CloudStorage is an optional host mirror, not product truth.
-  }
-}
-
-function removeFromTelegramCloudStorage(key: string) {
-  try {
-    getTelegramWebApp()?.CloudStorage?.removeItem?.(key);
-  } catch {
-    // Telegram CloudStorage is an optional host mirror, not product truth.
-  }
 }
 
 function canAccessLocalStorage(): boolean {

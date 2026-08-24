@@ -4,14 +4,17 @@ import {cryptoWaitReady, sr25519PairFromSeed, sr25519Sign} from '@polkadot/util-
 import type {AccountMessageSigner} from './groupKeyHandoff.ts';
 import {
   bootstrapFromUrl,
+  createOriginBoundRecipientBootstrap,
   createRecipientBoundBootstrap,
   decodeRecipientBoundBootstrap,
   encodeRecipientBoundBootstrap,
   recipientBoundBootstrapQrText,
   recipientBoundBootstrapUrl,
+  organizerGrantFromVerifiedBootstrap,
   verifyRecipientBoundBootstrap,
 } from './recipientBoundBootstrap.ts';
 import {createSignedMembershipEvent, type SignedMembershipEventV1} from './signedMembershipEvents.ts';
+import {createCanonicalEvent} from '../core/moneyEventKernel.ts';
 
 const expiresAt = '2099-08-13T12:00:00.000Z';
 
@@ -75,17 +78,62 @@ test('bootstrap admits only account-bound join-link or QR membership invitations
   );
 });
 
+test('v2 binds a recipient invitation to the signed canonical group origin', async () => {
+  const {event, signer, leoAccount, mina, minaAccount} = await invitation();
+  const organizerGroupEvent = await createCanonicalEvent({
+    eventId: 'group-origin-zurich', commandId: 'create-zurich', groupId: 'zurich-dinner',
+    eventType: 'GROUP_CREATED', expectedVersion: 0, parentEventId: null,
+    actorId: 'mina', actorAccountPublicKeyHex: minaAccount, actorRole: 'organizer',
+    occurredAt: '2026-08-12T12:00:00.000Z',
+    payload: {name: 'Zurich dinner', mode: 'normal_pot', organizerId: 'mina', members: [
+      {
+        participantId: 'mina', accountPublicKeyHex: minaAccount, role: 'organizer', active: true,
+        acceptedAt: '2026-08-12T12:00:00.000Z', invitationId: 'group-origin-zurich', keyVersion: 1,
+        groupKeyEnvelopeId: `sha256:${'aa'.repeat(32)}`,
+      },
+    ]},
+  }, {sign: async data => sr25519Sign(data, mina)});
+  const bootstrap = await createOriginBoundRecipientBootstrap({
+    invitationEvent: event, organizerGroupEvent, returnRoomId: 'friends-room', signer,
+  });
+  assert.equal(await verifyRecipientBoundBootstrap({
+    bootstrap, expectedRecipientAccountPublicKeyHex: leoAccount,
+    now: '2026-08-12T12:02:00.000Z',
+  }), true);
+  assert.deepEqual(organizerGrantFromVerifiedBootstrap(bootstrap), {
+    groupId: 'zurich-dinner', participantId: 'mina', accountPublicKeyHex: minaAccount,
+    role: 'organizer', acceptedAt: '2026-08-12T12:00:00.000Z',
+    invitationId: 'group-origin-zurich', keyVersion: 1,
+    groupKeyEnvelopeId: `sha256:${'aa'.repeat(32)}`,
+  });
+  assert.equal(await verifyRecipientBoundBootstrap({
+    bootstrap: {...bootstrap, organizerGroupEvent: {...organizerGroupEvent, groupId: 'another-group'}},
+    expectedRecipientAccountPublicKeyHex: leoAccount,
+  }), false);
+
+  const incompleteOrigin = structuredClone(organizerGroupEvent);
+  const members = (incompleteOrigin.payload as unknown as {members: Array<Record<string, unknown>>}).members;
+  delete members[0].groupKeyEnvelopeId;
+  await assert.rejects(() => createOriginBoundRecipientBootstrap({
+    invitationEvent: event, organizerGroupEvent: incompleteOrigin,
+    returnRoomId: 'friends-room', signer,
+  }), /organizer proof/u);
+});
+
 async function invitation(): Promise<{
   event: SignedMembershipEventV1;
   signer: AccountMessageSigner;
   leoAccount: string;
+  mina: ReturnType<typeof sr25519PairFromSeed>;
+  minaAccount: string;
 }> {
   await cryptoWaitReady();
   const mina = sr25519PairFromSeed(new Uint8Array(32).fill(11));
   const signer: AccountMessageSigner = {signBytes: async data => sr25519Sign(data, mina)};
+  const minaAccount = `0x${Buffer.from(mina.publicKey).toString('hex')}`;
   const event = await createSignedMembershipEvent({
     eventId: 'event-link-nina', actorId: 'mina',
-    actorAccountPublicKeyHex: `0x${Buffer.from(mina.publicKey).toString('hex')}`,
+    actorAccountPublicKeyHex: minaAccount,
     occurredAt: '2026-08-12T12:01:00.000Z',
     event: {type: 'INVITATION_CREATED', invitation: {
       invitationId: 'invite-leo', groupId: 'zurich-dinner', inviterId: 'mina', inviteeId: 'leo',
@@ -95,5 +143,5 @@ async function invitation(): Promise<{
     }},
     signer,
   });
-  return {event, signer, leoAccount: `0x${'22'.repeat(32)}`};
+  return {event, signer, leoAccount: `0x${'22'.repeat(32)}`, mina, minaAccount};
 }

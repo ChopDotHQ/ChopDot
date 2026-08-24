@@ -3,6 +3,7 @@ import test from 'node:test';
 import {verifiedContactFixture} from '../../tests/fixtures/verifiedContactFixture.ts';
 import {VerifiedContactRepository, type AsyncJsonStorage} from './verifiedContactRepository.ts';
 import {VerifiedContactCeremonyService} from './verifiedContactCeremonyService.ts';
+import {verifiedContactFromUrl} from './verifiedContactLink.ts';
 
 class MemoryAsyncStorage implements AsyncJsonStorage {
   values = new Map<string, unknown>();
@@ -106,6 +107,40 @@ test('an in-progress offer and response survive a full service restart', async (
   const restoredLeo = await service(fixture.leo, leoRepository, 'leo-second', leoDrafts).restore();
   assert.equal(restoredLeo.status, 'compare');
   if (restoredLeo.status === 'compare') assert.equal(restoredLeo.carrierUrl, response.carrierUrl);
+});
+
+test('the second confirmer returns a signed final carrier before the first side becomes verified', async () => {
+  const fixture = await verifiedContactFixture();
+  const minaRepository = new VerifiedContactRepository(new MemoryAsyncStorage());
+  const leoRepository = new VerifiedContactRepository(new MemoryAsyncStorage());
+  const mina = service(fixture.mina, minaRepository, 'mina-serial');
+  const leo = service(fixture.leo, leoRepository, 'leo-serial');
+
+  const offer = await mina.start();
+  if (offer.status !== 'offer_ready') throw new Error('Expected offer.');
+  await leo.enter(offer.offer);
+  const leoResponse = await leo.respond();
+  if (leoResponse.status !== 'compare') throw new Error('Expected response.');
+  const minaCompare = await mina.enter(leoResponse.response);
+  assert.equal(minaCompare.status, 'compare');
+  if (minaCompare.status === 'compare') assert.equal(minaCompare.carrierUrl, undefined);
+
+  const minaConfirmation = await mina.confirmCodesMatch();
+  if (minaConfirmation.status !== 'confirmation_ready') throw new Error('Expected first confirmation.');
+  assert.deepEqual(await minaRepository.list(fixture.mina.accountPublicKeyHex), []);
+
+  const leoReceived = await leo.enter(minaConfirmation.localConfirmation);
+  assert.equal(leoReceived.status, 'compare');
+  const leoVerified = await leo.confirmCodesMatch();
+  assert.equal(leoVerified.status, 'verified');
+  if (leoVerified.status !== 'verified') throw new Error('Expected reciprocal verification.');
+  assert.match(leoVerified.carrierUrl ?? '', /#chopdot-contact=/u);
+  assert.deepEqual(await minaRepository.list(fixture.mina.accountPublicKeyHex), []);
+
+  const finalConfirmation = verifiedContactFromUrl(leoVerified.carrierUrl!);
+  assert.ok(finalConfirmation);
+  assert.equal((await mina.enter(finalConfirmation)).status, 'verified');
+  assert.equal((await minaRepository.list(fixture.mina.accountPublicKeyHex))[0].remoteParticipantId, 'leo');
 });
 
 function service(

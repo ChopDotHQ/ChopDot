@@ -7,7 +7,7 @@ export interface MigratedLegacyShareV1 {
   expenseId: string;
   participantId: string;
   amount: MoneyV1;
-  status: 'open' | 'requested' | 'marked_paid' | 'received';
+  status: 'open' | 'requested' | 'marked_paid' | 'cleared' | 'received';
 }
 export interface MigratedLegacyExpenseV1 {expenseId: string; description: string; paidBy: string; total: MoneyV1}
 export interface MigratedLegacyGroupV1 {

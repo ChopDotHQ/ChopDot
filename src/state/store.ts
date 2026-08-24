@@ -1,5 +1,6 @@
 import { AppState, User, Group, Expense, Split, SavedRecord, PaymentMethod, WalletPaymentReceipt } from '../types';
 import {normalizeEvmAddress, pasToBaseUnits, POLKADOT_HUB_TESTNET_CHAIN_ID} from '../payments/pasWallet';
+import type {MoneyAllocationV1, MoneyV1} from '../core/money';
 
 export const createCleanState = (): AppState => ({
   mode: 'clean',
@@ -24,6 +25,7 @@ export const createDemoState = (): AppState => {
 };
 
 export type Action =
+  | { type: 'REPLACE_AUTHORITY_PROJECTION'; payload: { state: AppState } }
   | { type: 'RESET_TO_CLEAN' }
   | { type: 'LOAD_DEMO' }
   | { type: 'SET_CURRENT_USER'; payload: { userId: string } }
@@ -33,8 +35,8 @@ export type Action =
   | { type: 'BIND_USER_IDENTITY'; payload: { userId: string; accountPublicKeyHex: string; statementSignerHex: string } }
   | { type: 'CREATE_GROUP'; payload: { group: Group } }
   | { type: 'SET_GROUP_LIVE_SESSION'; payload: { groupId: string; roomId: string; secret: string } }
-  | { type: 'ADD_EXPENSE'; payload: { expense: Expense; splits: Split[] } }
-  | { type: 'SEND_REQUEST'; payload: { splitId: string; requestId?: string; createdAt?: string; expiresAt?: string; capabilityHash?: string } }
+  | { type: 'ADD_EXPENSE'; payload: { expense: Expense; splits: Split[]; exact?: {total: MoneyV1; allocations: MoneyAllocationV1[]} } }
+  | { type: 'SEND_REQUEST'; payload: { splitId: string; requestId?: string; createdAt?: string; expiresAt?: string; capabilityHash?: string; requestEntryCapability?: string } }
   | { type: 'SET_REQUEST_ENTRY'; payload: { splitId: string; memberCapability: string; createdAt: string } }
   | { type: 'MARK_PAID'; payload: { splitId: string; userId: string } }
   | { type: 'CONFIRM_RECEIVED'; payload: { splitId: string; currentUserId: string } }
@@ -48,6 +50,8 @@ export type Action =
 
 export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
+    case 'REPLACE_AUTHORITY_PROJECTION':
+      return action.payload.state;
     case 'RESET_TO_CLEAN':
       return createCleanState();
     case 'LOAD_DEMO':
@@ -186,7 +190,34 @@ export function reducer(state: AppState, action: Action): AppState {
     }
     case 'ADD_EXPENSE': {
       const { expense, splits } = action.payload;
-      if (!state.groups[expense.groupId] || state.groups[expense.groupId].closedRecordId) return state;
+      const group = state.groups[expense.groupId];
+      if (
+        !group
+        || group.closedRecordId
+        || state.expenses[expense.id]
+        || !group.memberIds.includes(expense.paidByUserId)
+        || !Number.isFinite(expense.amount)
+        || expense.amount <= 0
+        || splits.length === 0
+        || new Set(splits.map(split => split.id)).size !== splits.length
+        || new Set(splits.map(split => split.userId)).size !== splits.length
+        || !splits.some(split => split.userId === expense.paidByUserId)
+        || splits.some(split => (
+          state.splits[split.id]
+          || split.expenseId !== expense.id
+          || !group.memberIds.includes(split.userId)
+          || !Number.isFinite(split.amount)
+          || split.amount < 0
+          || (split.userId === expense.paidByUserId ? split.status !== 'confirmed' : split.status !== 'open')
+          || split.requestId !== undefined
+          || split.requestExpiresAt !== undefined
+          || split.requestCapabilityHash !== undefined
+          || split.requestEntryCapability !== undefined
+          || split.requestCreatedAt !== undefined
+          || split.walletPayment !== undefined
+        ))
+        || Math.abs(splits.reduce((sum, split) => sum + split.amount, 0) - expense.amount) > 1e-9
+      ) return state;
       const newSplits = { ...state.splits };
       splits.forEach(s => newSplits[s.id] = s);
       return {
@@ -211,6 +242,7 @@ export function reducer(state: AppState, action: Action): AppState {
             requestCreatedAt: action.payload.createdAt ?? split.requestCreatedAt,
             requestExpiresAt: action.payload.expiresAt ?? split.requestExpiresAt,
             requestCapabilityHash: action.payload.capabilityHash ?? split.requestCapabilityHash,
+            requestEntryCapability: action.payload.requestEntryCapability ?? split.requestEntryCapability,
           }
         }
       };
@@ -252,7 +284,7 @@ export function reducer(state: AppState, action: Action): AppState {
       const expense = state.expenses[split.expenseId];
       // Law: Leo/Nina cannot confirm received money for Mina.
       // Only the organizer (expense.paidByUserId) can confirm receipt.
-      if (!expense || expense.paidByUserId !== currentUserId || split.status !== 'marked_paid') return state;
+      if (!expense || expense.paidByUserId !== currentUserId || !['marked_paid', 'cleared'].includes(split.status)) return state;
       return {
         ...state,
         splits: {
@@ -282,7 +314,7 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         splits: {
           ...state.splits,
-          [split.id]: {...split, status: 'confirmed', walletPayment: receipt},
+          [split.id]: {...split, status: 'cleared', walletPayment: receipt},
         },
       };
     }

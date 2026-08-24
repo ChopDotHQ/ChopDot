@@ -1,6 +1,7 @@
 import type {AppState} from '../types.ts';
 import {cryptoWaitReady, signatureVerify} from '@polkadot/util-crypto';
 import type {StandalonePayerRequest} from '../requestLinks.ts';
+import {IndexedDbAuthorityJournalStore} from '../core/authority/browserAuthority.ts';
 
 export interface PayerMarkedPaidEnvelope {
   v: 1;
@@ -84,6 +85,20 @@ export interface KeyValueStorage {
   read(key: string): string | null;
   write(key: string, value: string): unknown;
   remove(key: string): unknown;
+}
+
+export interface ProtectedPaymentActionVault {
+  writeProtectedValue(reference: string, value: unknown): Promise<void>;
+  readProtectedValue<T>(reference: string): Promise<T | null>;
+  removeProtectedValue(reference: string): Promise<void>;
+}
+
+interface PendingPaymentActionReferenceV1 {
+  v: 1;
+  requestId: string;
+  eventId: string;
+  vaultReference: string;
+  queuedAt: string;
 }
 
 export type PayerEnvelopeValidation =
@@ -484,53 +499,68 @@ export async function derivePayerSessionConfig(
 }
 
 export class PayerActionOutbox {
-  constructor(private readonly storage: KeyValueStorage, private readonly storageKey = OUTBOX_KEY) {}
+  private readonly vault: ProtectedPaymentActionVault;
+  constructor(private readonly storage: KeyValueStorage, private readonly storageKey = OUTBOX_KEY, vault?: ProtectedPaymentActionVault) {
+    this.vault = vault ?? defaultProtectedPaymentVault();
+  }
 
-  enqueue(action: PendingPayerAction): PendingPayerAction {
-    const items = this.readAll();
+  async enqueue(action: PendingPayerAction): Promise<PendingPayerAction> {
+    const items = this.references();
     const existing = items.find(item => item.requestId === action.requestId);
-    if (existing) return existing;
-    items.push(action);
-    this.writeAll(items);
+    if (existing) return (await this.vault.readProtectedValue<PendingPayerAction>(existing.vaultReference)) ?? action;
+    const reference: PendingPaymentActionReferenceV1 = {
+      v: 1, requestId: action.requestId, eventId: action.eventId,
+      vaultReference: `payer:${action.requestId}:${action.eventId}`,
+      queuedAt: new Date().toISOString(),
+    };
+    await this.vault.writeProtectedValue(reference.vaultReference, action);
+    this.writeReferences([...items, reference]);
     return action;
   }
 
-  get(requestId: string): PendingPayerAction | null {
-    return this.readAll().find(item => item.requestId === requestId) ?? null;
+  has(requestId: string): boolean { return this.references().some(item => item.requestId === requestId); }
+
+  async get(requestId: string): Promise<PendingPayerAction | null> {
+    const reference = this.references().find(item => item.requestId === requestId);
+    return reference ? this.vault.readProtectedValue<PendingPayerAction>(reference.vaultReference) : null;
   }
 
   async flush(
     publish: (action: PendingPayerAction) => Promise<boolean>,
   ): Promise<{published: string[]; pending: string[]}> {
-    const items = this.readAll();
-    const retained: PendingPayerAction[] = [];
+    const items = this.references();
+    const retained: PendingPaymentActionReferenceV1[] = [];
     const published: string[] = [];
-    for (const item of items) {
+    for (const reference of items) {
+      const item = await this.vault.readProtectedValue<PendingPayerAction>(reference.vaultReference);
+      if (!item || !isPendingPayerAction(item)) { retained.push(reference); continue; }
       let accepted = false;
       try {
         accepted = await publish(item);
       } catch {
         accepted = false;
       }
-      if (accepted) published.push(item.requestId);
-      else retained.push(item);
+      if (accepted) {
+        published.push(item.requestId);
+        await this.vault.removeProtectedValue(reference.vaultReference);
+      } else retained.push(reference);
     }
-    this.writeAll(retained);
+    this.writeReferences(retained);
     return {published, pending: retained.map(item => item.requestId)};
   }
 
-  private readAll(): PendingPayerAction[] {
+  private references(): PendingPaymentActionReferenceV1[] {
     const stored = this.storage.read(this.storageKey);
     if (!stored) return [];
     try {
       const parsed = JSON.parse(stored) as unknown;
-      return Array.isArray(parsed) ? parsed.filter(isPendingPayerAction) : [];
+      return Array.isArray(parsed) ? parsed.filter(isPendingPaymentActionReference) : [];
     } catch {
       return [];
     }
   }
 
-  private writeAll(items: PendingPayerAction[]): void {
+  private writeReferences(items: PendingPaymentActionReferenceV1[]): void {
     if (items.length === 0) {
       this.storage.remove(this.storageKey);
       return;
@@ -540,58 +570,43 @@ export class PayerActionOutbox {
 }
 
 export class ReceiptConfirmationOutbox {
-  constructor(private readonly storage: KeyValueStorage, private readonly storageKey = CONFIRMATION_OUTBOX_KEY) {}
-
-  enqueue(action: PendingReceiptConfirmation): PendingReceiptConfirmation {
-    const items = this.readAll();
-    const existing = items.find(item => item.requestId === action.requestId);
-    if (existing) return existing;
-    items.push(action);
-    this.writeAll(items);
-    return action;
+  private readonly delegate: PayerActionOutbox;
+  constructor(storage: KeyValueStorage, storageKey = CONFIRMATION_OUTBOX_KEY, vault?: ProtectedPaymentActionVault) {
+    this.delegate = new PayerActionOutbox(storage, storageKey, vault);
   }
 
-  get(requestId: string): PendingReceiptConfirmation | null {
-    return this.readAll().find(item => item.requestId === requestId) ?? null;
-  }
+  enqueue(action: PendingReceiptConfirmation): Promise<PendingReceiptConfirmation> { return this.delegate.enqueue(action); }
+
+  has(requestId: string): boolean { return this.delegate.has(requestId); }
+  get(requestId: string): Promise<PendingReceiptConfirmation | null> { return this.delegate.get(requestId); }
 
   async flush(
     publish: (action: PendingReceiptConfirmation) => Promise<boolean>,
   ): Promise<{published: string[]; pending: string[]}> {
-    const retained: PendingReceiptConfirmation[] = [];
-    const published: string[] = [];
-    for (const item of this.readAll()) {
-      let accepted = false;
-      try {
-        accepted = await publish(item);
-      } catch {
-        accepted = false;
-      }
-      if (accepted) published.push(item.requestId);
-      else retained.push(item);
-    }
-    this.writeAll(retained);
-    return {published, pending: retained.map(item => item.requestId)};
+    return this.delegate.flush(publish);
   }
+}
 
-  private readAll(): PendingReceiptConfirmation[] {
-    const stored = this.storage.read(this.storageKey);
-    if (!stored) return [];
-    try {
-      const parsed = JSON.parse(stored) as unknown;
-      return Array.isArray(parsed) ? parsed.filter(isPendingPayerAction) : [];
-    } catch {
-      return [];
-    }
-  }
+function isPendingPaymentActionReference(value: unknown): value is PendingPaymentActionReferenceV1 {
+  return isRecord(value) && value.v === 1
+    && typeof value.requestId === 'string' && Boolean(value.requestId)
+    && typeof value.eventId === 'string' && Boolean(value.eventId)
+    && typeof value.vaultReference === 'string' && Boolean(value.vaultReference)
+    && typeof value.queuedAt === 'string' && !Number.isNaN(Date.parse(value.queuedAt));
+}
 
-  private writeAll(items: PendingReceiptConfirmation[]): void {
-    if (items.length === 0) {
-      this.storage.remove(this.storageKey);
-      return;
-    }
-    this.storage.write(this.storageKey, JSON.stringify(items));
-  }
+let nodeProtectedPaymentVault: MemoryProtectedPaymentVault | undefined;
+function defaultProtectedPaymentVault(): ProtectedPaymentActionVault {
+  if (typeof indexedDB !== 'undefined') return new IndexedDbAuthorityJournalStore();
+  nodeProtectedPaymentVault ??= new MemoryProtectedPaymentVault();
+  return nodeProtectedPaymentVault;
+}
+
+class MemoryProtectedPaymentVault implements ProtectedPaymentActionVault {
+  private readonly values = new Map<string, unknown>();
+  async writeProtectedValue(reference: string, value: unknown) { this.values.set(reference, structuredClone(value)); }
+  async readProtectedValue<T>(reference: string): Promise<T | null> { return structuredClone((this.values.get(reference) as T | undefined) ?? null); }
+  async removeProtectedValue(reference: string) { this.values.delete(reference); }
 }
 
 function isPendingPayerAction(value: unknown): value is PendingPayerAction {

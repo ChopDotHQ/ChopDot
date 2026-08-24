@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  accountBoundGroupKeyEntropyContext,
   createAccountBoundGroupKeyEnvelope,
   openAccountBoundGroupKeyEnvelope,
   type AccountEntropyProvider,
@@ -36,6 +37,26 @@ test('same account and context recover the group key after provider recreation',
   const envelope = await createAccountBoundGroupKeyEnvelope(metadata, groupKey(), deterministicProvider('leo'));
   const recovered = await openAccountBoundGroupKeyEnvelope(envelope, metadata, deterministicProvider('leo'));
   assert.deepEqual(recovered, groupKey());
+});
+
+test('host entropy receives one bounded domain-separated selector while full metadata stays authenticated', async () => {
+  const contexts: Uint8Array[] = [];
+  const provider: AccountEntropyProvider = {
+    deriveAccountEntropy: async context => {
+      contexts.push(new Uint8Array(context));
+      return new Uint8Array(await crypto.subtle.digest('SHA-256', context));
+    },
+  };
+
+  const envelope = await createAccountBoundGroupKeyEnvelope(metadata, groupKey(), provider);
+  await openAccountBoundGroupKeyEnvelope(envelope, metadata, provider);
+
+  const expected = await accountBoundGroupKeyEntropyContext(metadata);
+  const otherGroup = await accountBoundGroupKeyEntropyContext({...metadata, groupId: 'another-group'});
+  assert.equal(expected.byteLength, 32);
+  assert.equal(otherGroup.byteLength, 32);
+  assert.notDeepEqual(otherGroup, expected);
+  assert.deepEqual(contexts, [expected, expected]);
 });
 
 test('another account cannot recover the group key', async () => {

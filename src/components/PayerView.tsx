@@ -11,7 +11,7 @@ import {
   waitForMatchingPasPayment,
 } from '../payments/pasWallet';
 
-type PaymentStep = 'ready' | 'waiting' | 'received';
+type PaymentStep = 'ready' | 'waiting' | 'cleared';
 
 export function PayerView({
   groupId,
@@ -24,7 +24,7 @@ export function PayerView({
   onBack: () => void;
   onPaid: () => void;
 }) {
-  const { state, dispatch } = useAppState();
+  const { state, dispatch, runAuthority, authorityBusy, authorityError } = useAppState();
   const [step, setStep] = useState<PaymentStep>('ready');
   const [error, setError] = useState('');
   const [payment, setPayment] = useState<WalletPaymentReceipt | null>(null);
@@ -54,10 +54,10 @@ export function PayerView({
 
   if (!group || !member || !requester) return null;
 
-  const handlePaid = () => {
-    reqSplits.forEach(split => {
-      dispatch({type: 'MARK_PAID', payload: {splitId: split.id, userId: memberId}});
-    });
+  const handlePaid = async () => {
+    for (const split of reqSplits) {
+      if (!await runAuthority({type: 'MARK_PAID', payload: {splitId: split.id, userId: memberId}})) return;
+    }
     onPaid();
   };
 
@@ -87,7 +87,7 @@ export function PayerView({
         to: requester.walletAddress,
         amount: amountOwed,
       });
-      dispatch({
+      const recorded = await runAuthority({
         type: 'RECORD_MATCHED_PAYMENT',
         payload: {
           splitId: reqSplits[0].id,
@@ -96,25 +96,26 @@ export function PayerView({
           receipt,
         },
       });
+      if (!recorded) throw new Error('The finalized payment could not be added to the shared record.');
       setPayment(receipt);
-      setStep('received');
+      setStep('cleared');
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'The payment could not be completed.');
       setStep('ready');
     }
   };
 
-  if (step === 'received' && payment) {
+  if (step === 'cleared' && payment) {
     return (
       <Screen>
-        <ScreenHeader title="Payment received" onBack={onBack} />
+        <ScreenHeader title="Payment finalized" onBack={onBack} />
         <ScreenContent className="p-6 flex flex-col items-center justify-center text-center space-y-6 pb-24">
           <div className="w-24 h-24 rounded-full bg-green-50 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400">
             <Check className="w-11 h-11" />
           </div>
           <div>
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Payment received</h2>
-            <p className="text-gray-500 dark:text-gray-400 font-medium mt-2">Your share is settled.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Payment finalized</h2>
+            <p className="text-gray-500 dark:text-gray-400 font-medium mt-2">Waiting for {requester.name} to confirm receipt.</p>
           </div>
           <div className="w-full bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 text-left">
             <div className="text-3xl text-gray-900 dark:text-white"><MoneyAmount amount={displayedAmount} currency="PAS" /></div>
@@ -152,7 +153,7 @@ export function PayerView({
             <span className="font-semibold text-gray-900 dark:text-white">{paymentMethod}</span>
           </div>
         )}
-        {error && <p role="alert" className="max-w-[280px] text-center text-sm font-medium text-red-600 dark:text-red-400">{error}</p>}
+        {(error || authorityError) && <p role="alert" className="max-w-[280px] text-center text-sm font-medium text-red-600 dark:text-red-400">{error || authorityError}</p>}
       </ScreenContent>
       <BottomAction>
         {usesWalletPayment ? (
@@ -160,14 +161,14 @@ export function PayerView({
             variant="primary"
             fullWidth
             onClick={() => void handleWalletPayment()}
-            disabled={step === 'waiting'}
+            disabled={step === 'waiting' || authorityBusy}
             className="h-14 text-lg shadow-sm"
           >
             <Wallet className="w-5 h-5 mr-2" />
             {step === 'waiting' ? 'Confirming payment' : `Pay ${requester.name}`}
           </Button>
         ) : (
-          <Button variant="primary" fullWidth onClick={handlePaid} className="h-14 text-lg shadow-sm">
+          <Button variant="primary" fullWidth onClick={() => void handlePaid()} disabled={authorityBusy} className="h-14 text-lg shadow-sm">
             <Check className="w-5 h-5 mr-2" />
             I paid {requester.name}
           </Button>

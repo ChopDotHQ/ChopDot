@@ -1,4 +1,18 @@
-export type PaymentStatus = 'open' | 'request_sent' | 'marked_paid' | 'confirmed';
+/**
+ * Payment evidence and human receipt are deliberately separate:
+ * `cleared` means an exact transfer finalized on the selected network;
+ * `confirmed` means the receiver explicitly acknowledged receipt.
+ */
+export type PaymentStatus = 'open' | 'request_sent' | 'marked_paid' | 'cleared' | 'confirmed';
+
+export type GroupMode =
+  | 'normal_pot'
+  | 'trip'
+  | 'couple'
+  | 'spend_card'
+  | 'savings_circle'
+  | 'emergency_pot'
+  | 'community_fund';
 
 export interface User {
   id: string;
@@ -12,6 +26,11 @@ export interface Group {
   id: string;
   name: string;
   memberIds: string[];
+  /**
+   * Presentation and policy configuration over the shared group lifecycle.
+   * Legacy groups omit this and are presented as a normal pot.
+   */
+  mode?: GroupMode;
   liveSession?: {
     roomId: string;
     secret: string;

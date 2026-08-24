@@ -26,6 +26,7 @@ test('full dinner journey preserves requested, marked paid, received, closed, an
 
   await leo.markPaid();
   assert.equal(leo.getSnapshot().status,'marked_paid');
+  await mina.reconnect();
   assert.equal(mina.getSnapshot().status,'needs_confirmation');
   await mina.confirmReceived('leo');
   await nina.markPaid();

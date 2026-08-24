@@ -41,12 +41,13 @@ function boundState(): AppState {
   };
   const splits: Split[] = [
     {id: 's-mina', expenseId: expense.id, userId: minaId, amount: 50, status: 'confirmed'},
-    {id: 's-leo', expenseId: expense.id, userId: leoId, amount: 50, status: 'request_sent'},
+    {id: 's-leo', expenseId: expense.id, userId: leoId, amount: 50, status: 'open'},
   ];
   let state = createCleanState();
   for (const user of users) state = reducer(state, {type: 'ADD_USER', payload: {user}});
   state = reducer(state, {type: 'CREATE_GROUP', payload: {group}});
   state = reducer(state, {type: 'ADD_EXPENSE', payload: {expense, splits}});
+  state = reducer(state, {type: 'SEND_REQUEST', payload: {splitId: 's-leo'}});
   return state;
 }
 
@@ -228,6 +229,8 @@ test('post-sign refresh retires the old subscription before opening its replacem
 test('self registration uses one replaceable compact statement and reconstructs the actor envelope', async () => {
   let channelName = '';
   let received: SharedActionEnvelope | undefined;
+  let resolveReceived!: (envelope: SharedActionEnvelope) => void;
+  const receivedPromise = new Promise<SharedActionEnvelope>(resolve => { resolveReceived = resolve; });
   const signerHex = `0x${'44'.repeat(32)}`;
   const bridge = {
     requestIdentity: async () => ({
@@ -248,7 +251,12 @@ test('self registration uses one replaceable compact statement and reconstructs 
   };
   const connection = await connectHostSession({
     config: {roomId: 'compact-registration', secret: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'},
-    onEnvelope: envelope => { if ('action' in envelope) received = envelope; },
+    onEnvelope: envelope => {
+      if ('action' in envelope) {
+        received = envelope;
+        resolveReceived(envelope);
+      }
+    },
     bridge: bridge as never,
   });
   const user = {
@@ -257,7 +265,10 @@ test('self registration uses one replaceable compact statement and reconstructs 
     accountPublicKeyHex: connection.participant.publicKeyHex,
   };
   await connection.publish(createSharedEnvelope({type: 'ADD_USER', payload: {user}}, connection.participant));
-  await new Promise(resolve => setTimeout(resolve, 10));
+  await Promise.race([
+    receivedPromise,
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Timed out waiting for compact registration.')), 500)),
+  ]);
 
   assert.equal(channelName, `registration/${connection.participant.userId}`);
   assert.equal(received?.action.type, 'ADD_USER');

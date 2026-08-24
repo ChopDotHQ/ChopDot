@@ -116,7 +116,7 @@ test('organizer confirmation outbox retains one stable event through failure', a
   const storage = memoryStorage();
   const outbox = new ReceiptConfirmationOutbox(storage);
   const session = await derivePayerSessionConfig(request.requestId, request.live.memberCapability);
-  const pending = outbox.enqueue({
+  const pending = await outbox.enqueue({
     eventId: 'confirm-stable',
     requestId: request.requestId,
     groupId: 'g-zurich',
@@ -129,11 +129,11 @@ test('organizer confirmation outbox retains one stable event through failure', a
     occurredAt: '2026-08-09T18:06:00.000Z',
     expiresAt: request.expiresAt,
   });
-  assert.equal(outbox.enqueue({...pending, eventId: 'confirm-repeated'}).eventId, 'confirm-stable');
+  assert.equal((await outbox.enqueue({...pending, eventId: 'confirm-repeated'})).eventId, 'confirm-stable');
   assert.deepEqual(await outbox.flush(async () => false), {published: [], pending: [request.requestId]});
-  assert.equal(outbox.get(request.requestId)?.eventId, 'confirm-stable');
+  assert.equal((await outbox.get(request.requestId))?.eventId, 'confirm-stable');
   assert.deepEqual(await outbox.flush(async () => true), {published: [request.requestId], pending: []});
-  assert.equal(outbox.get(request.requestId), null);
+  assert.equal(await outbox.get(request.requestId), null);
 });
 
 function toBase64Url(bytes: Uint8Array): string {

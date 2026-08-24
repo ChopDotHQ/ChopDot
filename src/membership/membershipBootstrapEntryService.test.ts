@@ -8,14 +8,16 @@ import {
   type VerifiedOrganizerAuthorityResolver,
 } from './membershipBootstrapEntryService.ts';
 import type {MembershipGrant} from './membershipLifecycle.ts';
-import {createRecipientBoundBootstrap} from './recipientBoundBootstrap.ts';
+import {createOriginBoundRecipientBootstrap, createRecipientBoundBootstrap} from './recipientBoundBootstrap.ts';
 import {createSignedMembershipEvent} from './signedMembershipEvents.ts';
+import {createCanonicalEvent} from '../core/moneyEventKernel.ts';
 import type {
   MembershipEventDelivery,
   PendingAcceptanceRecord,
   PendingAcceptanceVault,
   ProtectedGroupKeySink,
 } from './trustedContactInvitationCoordinator.ts';
+import {createMembershipDeliveryAcknowledgement} from './membershipDeliveryOutbox.ts';
 
 class MemoryStorage implements KeyValueStorage {
   values = new Map<string, string>();
@@ -67,6 +69,35 @@ test('real entry re-resolves external organizer authority and rebuilds pending i
   assert.equal(recreated.state.lifecycle.memberships['zurich-dinner:nina'], undefined);
 });
 
+test('signed canonical group origin replaces an operated organizer registry for a fresh recipient', async () => {
+  const h = await harness();
+  const organizerGroupEvent = await createCanonicalEvent({
+    eventId: 'group-origin-zurich', commandId: 'create-zurich', groupId: 'zurich-dinner',
+    eventType: 'GROUP_CREATED', expectedVersion: 0, parentEventId: null,
+    actorId: 'mina', actorAccountPublicKeyHex: h.minaAccount, actorRole: 'organizer',
+    occurredAt: '2026-08-12T12:00:00.000Z',
+    payload: {name: 'Zurich dinner', mode: 'normal_pot', organizerId: 'mina', members: [
+      {
+        participantId: 'mina', accountPublicKeyHex: h.minaAccount, role: 'organizer', active: true,
+        acceptedAt: '2026-08-12T12:00:00.000Z', invitationId: 'group-origin-zurich', keyVersion: 1,
+        groupKeyEnvelopeId: `sha256:${'aa'.repeat(32)}`,
+      },
+    ]},
+  }, {sign: async data => h.minaSigner.signBytes(data)});
+  const bootstrap = await createOriginBoundRecipientBootstrap({
+    invitationEvent: h.bootstrap.invitationEvent,
+    organizerGroupEvent,
+    returnRoomId: h.bootstrap.returnRoute.roomId,
+    signer: h.minaSigner,
+  });
+  const service = h.service({storage: new MemoryStorage(), pending: new PendingVault()});
+  assert.deepEqual(await service.enter(bootstrap, '2026-08-12T12:03:00.000Z'), {
+    status: 'ready', invitationId: 'invite-nina',
+  });
+  assert.equal(service.state.lifecycle.invitations['invite-nina'].status, 'invited');
+  assert.equal(service.state.lifecycle.memberships['zurich-dinner:nina'], undefined);
+});
+
 test('URL, preview fixtures, wrong account, expiry, and missing restart authority never become trust roots', async () => {
   const h = await harness();
   const storage = new MemoryStorage();
@@ -116,11 +147,22 @@ test('Product Account signer mismatch rejects acceptance and clears unusable pen
 test('invitee decline is signed, durable, delivered, idempotent, and never creates membership', async () => {
   const h = await harness();
   const sent: Array<{roomId: string; event: {eventId: string; event: {type: string}}}> = [];
+  let acknowledge = false;
   const service = h.service({
     storage: new MemoryStorage(), pending: new PendingVault(), authority: h.authority,
     delivery: {async send(roomId, event) {
       sent.push({roomId, event});
-      return {messageId: event.eventId};
+      return {
+        messageId: event.eventId,
+        ...(acknowledge ? {acknowledgement: await createMembershipDeliveryAcknowledgement({
+          deliveryId: `chat_room:${roomId}:${event.eventId}`,
+          event,
+          recipientId: 'mina',
+          recipientAccountPublicKeyHex: h.minaAccount,
+          receivedAt: '2026-08-12T12:05:30.000Z',
+          signer: h.minaSigner,
+        })} : {}),
+      };
     }},
   });
   assert.equal((await service.enter(h.bootstrap, '2026-08-12T12:03:00.000Z')).status, 'ready');
@@ -137,8 +179,14 @@ test('invitee decline is signed, durable, delivered, idempotent, and never creat
   assert.equal(first.event.type, 'INVITATION_DECLINED');
   assert.equal(service.state.lifecycle.invitations['invite-nina'].status, 'declined');
   assert.equal(service.state.lifecycle.memberships['zurich-dinner:nina'], undefined);
+  assert.deepEqual(await service.flush(), {
+    delivered: [],
+    pending: ['chat_room:mina-nina-return:event-decline-nina'],
+  });
+  acknowledge = true;
   assert.equal((await service.flush()).delivered.length, 1);
   assert.deepEqual(sent.map(item => [item.roomId, item.event.eventId, item.event.event.type]), [
+    ['mina-nina-return', 'event-decline-nina', 'INVITATION_DECLINED'],
     ['mina-nina-return', 'event-decline-nina', 'INVITATION_DECLINED'],
   ]);
 });
@@ -179,11 +227,12 @@ async function harness() {
     };
   }};
   return {
-    bootstrap, organizer, authority, ninaAccount, leoAccount, leoSigner: signer(leo),
+    bootstrap, organizer, authority, ninaAccount, leoAccount, minaAccount, minaSigner,
+    leoSigner: signer(leo),
     service(input: {
       storage: MemoryStorage;
       pending: PendingVault;
-      authority: VerifiedOrganizerAuthorityResolver;
+      authority?: VerifiedOrganizerAuthorityResolver;
       actorId?: string;
       actorAccount?: string;
       actorSigner?: AccountMessageSigner;
@@ -196,7 +245,7 @@ async function harness() {
           signer: input.actorSigner ?? signer(nina),
         },
         storage: input.storage,
-        organizerAuthority: input.authority,
+        ...(input.authority ? {organizerAuthority: input.authority} : {}),
         delivery: input.delivery ?? delivery,
         pendingAcceptances: input.pending,
         protectedKeys: keySink,

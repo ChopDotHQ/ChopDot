@@ -64,6 +64,21 @@ test('a late expense stays separate from an already-sent payment request', () =>
   assert.equal(getMemberBalance(state, 'friday', 'leo'), -5);
 });
 
+test('an expense cannot pre-assert another member payment or attach evidence', () => {
+  let state = createCleanState();
+  state = reducer(state, {type: 'ADD_USER', payload: {user: {id: 'mina', name: 'Mina'}}});
+  state = reducer(state, {type: 'ADD_USER', payload: {user: {id: 'leo', name: 'Leo'}}});
+  state = reducer(state, {type: 'CREATE_GROUP', payload: {group: {id: 'g1', name: 'Dinner', memberIds: ['mina', 'leo']}}});
+  const expense: Expense = {id: 'e1', groupId: 'g1', description: 'Dinner', amount: 20, currency: 'CHF', paidByUserId: 'mina', date: '2026-08-23T12:00:00.000Z'};
+  const forged: Split[] = [
+    {id: 's-mina', expenseId: 'e1', userId: 'mina', amount: 10, status: 'confirmed'},
+    {id: 's-leo', expenseId: 'e1', userId: 'leo', amount: 10, status: 'cleared'},
+  ];
+  const unchanged = reducer(state, {type: 'ADD_EXPENSE', payload: {expense, splits: forged}});
+  assert.equal(unchanged, state);
+  assert.equal(unchanged.expenses.e1, undefined);
+});
+
 test('a returned payer action can only advance its bound request', () => {
   let state = createCleanState();
   state = reducer(state, {type: 'ADD_USER', payload: {user: {id: 'mina', name: 'Mina'}}});
@@ -169,10 +184,13 @@ test('current-user identity migration atomically preserves typed money reference
       expense: {id: 'meal', groupId: 'dinner', description: 'Dinner', amount: 20, currency: 'CHF', paidByUserId: localId, date: '2026-08-11T18:00:00.000Z'},
       splits: [
         {id: 'meal-mina', expenseId: 'meal', userId: localId, amount: 10, status: 'confirmed'},
-        {id: 'meal-leo', expenseId: 'meal', userId: 'leo', amount: 10, status: 'confirmed'},
+        {id: 'meal-leo', expenseId: 'meal', userId: 'leo', amount: 10, status: 'open'},
       ],
     },
   });
+  state = reducer(state, {type: 'SEND_REQUEST', payload: {splitId: 'meal-leo'}});
+  state = reducer(state, {type: 'MARK_PAID', payload: {splitId: 'meal-leo', userId: 'leo'}});
+  state = reducer(state, {type: 'CONFIRM_RECEIVED', payload: {splitId: 'meal-leo', currentUserId: localId}});
   state = reducer(state, {type: 'ADD_PAYMENT_METHOD', payload: {method: {id: 'cash-mina', userId: localId, type: 'cash', details: 'Cash'}}});
   state = reducer(state, {type: 'SAVE_RECORD', payload: {recordId: 'receipt', groupId: 'dinner', savedAt: '2026-08-11T19:00:00.000Z'}});
 

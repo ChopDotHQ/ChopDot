@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppStateProvider, useAppState } from './state/AppStateContext';
 import { Welcome } from './components/Welcome';
 import { GuestSetup } from './components/GuestSetup';
@@ -45,7 +45,7 @@ import {
   parseStandalonePayerRequest,
   StandalonePayerRequest as StandalonePayerRequestData,
 } from './requestLinks';
-import { bootstrapFromUrl, type RecipientBoundBootstrapV1 } from './membership/recipientBoundBootstrap';
+import { bootstrapFromUrl, type RecipientBoundBootstrap } from './membership/recipientBoundBootstrap';
 import {limitedNoAppActionFromUrl} from './membership/limitedNoAppActionLink';
 import type {SignedLimitedNoAppActionV1} from './membership/limitedNoAppAction';
 import { AppState } from './types';
@@ -53,26 +53,45 @@ import {CaptureSource, ReceiptDraftStatus} from './capture/receiptDraft';
 import {GroupRecoveryEntry, type GroupRecoveryEntryDependencies} from './components/recovery/GroupRecoveryEntry';
 import {recoveryGroupFromUrl} from './recovery/recoveryLink';
 import {DinnerJourneyEntry, type DinnerJourneyEntryDependencies} from './components/journey/DinnerJourneyEntry';
+import {ReceiptFirstStart, type ReviewableReceiptDraft} from './components/ReceiptFirstStart';
+import {ChooseGroupForDraft} from './components/ChooseGroupForDraft';
+import {ModeIntro} from './components/ModeIntro';
+import {NamedModeWorkspace} from './components/NamedModeWorkspace';
+import type {GroupMode} from './types';
+import type {AcceptedMembershipGrantResolver, CanonicalAuthorityEventEnvelopeV1} from './core/authority/productionAuthority';
+import type {ProductionAuthorityDependencies} from './state/AppStateContext';
+import type {CanonicalEventV1, CanonicalGroupStateV1} from './core/moneyEventKernel';
+import {GroupProtectionEntry, type ProductAccountRecoveryActions} from './components/recovery/GroupProtectionEntry';
+import {OrganizerMemberEntry, type ProductAccountOrganizerActions} from './components/membership/OrganizerMemberEntry';
+import {RemoveMemberEntry, type ProductAccountMemberRemovalActions} from './components/membership/RemoveMemberEntry';
+import {canManageCanonicalMembership} from './membership/membershipManagementVisibility';
 
 type View = 
   | { name: 'welcome' }
-  | { name: 'guest_setup' }
+  | { name: 'guest_setup', draft?: ReviewableReceiptDraft }
   | { name: 'home' }
+  | { name: 'receipt_start', returnTo: 'welcome' | 'home' }
+  | { name: 'choose_group_for_draft', draft: ReviewableReceiptDraft }
+  | { name: 'mode_intro', mode: GroupMode }
   | { name: 'state_proof' }
-  | { name: 'create_group' }
+  | { name: 'create_group', mode?: GroupMode, draft?: ReviewableReceiptDraft }
   | { name: 'group_detail', groupId: string }
+  | { name: 'group_payments', groupId: string }
   | { name: 'close_group', groupId: string }
   | { name: 'settle_up', groupId: string }
-  | { name: 'capture_spend', groupId: string, draftAmount?: number, draftTitle?: string, draftSource?: CaptureSource, draftReceiptStatus?: ReceiptDraftStatus, draftFileName?: string }
-  | { name: 'review_split', groupId: string, amount: number, title: string, source: CaptureSource, receiptStatus?: ReceiptDraftStatus, fileName?: string }
+  | { name: 'capture_spend', groupId: string, draftAmount?: string, draftTitle?: string, draftSource?: CaptureSource, draftReceiptStatus?: ReceiptDraftStatus, draftFileName?: string, spendCardTransactionId?: string }
+  | { name: 'review_split', groupId: string, amount: string, title: string, source: CaptureSource, receiptStatus?: ReceiptDraftStatus, fileName?: string, spendCardTransactionId?: string }
   | { name: 'request_payment', groupId: string, memberId: string }
   | { name: 'payer_view', groupId: string, memberId: string }
   | { name: 'standalone_payer_request', request: StandalonePayerRequestData, groupId: string, memberId: string }
-  | { name: 'membership_bootstrap', bootstrap: RecipientBoundBootstrapV1 }
+  | { name: 'membership_bootstrap', bootstrap: RecipientBoundBootstrap }
   | { name: 'limited_no_app_action', request: SignedLimitedNoAppActionV1 }
   | { name: 'bounded_entry_unavailable', kind: 'invitation' | 'request' | 'group' }
   | { name: 'membership_organizer' }
   | { name: 'group_recovery', groupId: string }
+  | { name: 'group_protection', groupId: string }
+  | { name: 'organizer_member', groupId: string }
+  | { name: 'remove_member', groupId: string }
   | { name: 'dinner_journey' }
   | { name: 'saved_record', recordId: string }
   | { name: 'profile' }
@@ -88,10 +107,26 @@ export interface AppDependencies {
   membershipOrganizerEntry?: MembershipOrganizerEntryAdapter;
   groupRecovery?: GroupRecoveryEntryDependencies;
   dinnerJourney?: DinnerJourneyEntryDependencies;
+  acceptedMemberships?: AcceptedMembershipGrantResolver;
+  authority?: ProductionAuthorityDependencies;
+  productAccount?: {
+    request(authority: {
+      readCanonicalGroup(groupId: string): Promise<CanonicalGroupStateV1 | null>;
+      readAcceptedEvents(groupId: string): Promise<CanonicalEventV1[]>;
+      acceptCanonicalEvent(envelope: CanonicalAuthorityEventEnvelopeV1): Promise<void>;
+      importRecoveredEvents(events: CanonicalEventV1[]): Promise<'applied' | 'duplicate'>;
+      readGroupOrigin(groupId: string): Promise<CanonicalEventV1 | null>;
+      runMembershipAuthority(command: import('./core/authority/productionAuthority').MembershipAuthorityCommandV1): Promise<CanonicalGroupStateV1 | null>;
+    }): Promise<{participantId: string; displayName: string; accountPublicKeyHex: string; recovery: ProductAccountRecoveryActions; organizer: ProductAccountOrganizerActions; removal: ProductAccountMemberRemovalActions}>;
+  };
 }
 
 function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
-  const { state, dispatch } = useAppState();
+  const { state, dispatch, readCanonicalGroup, readAcceptedEvents, readGroupOrigin, runMembershipAuthority, acceptCanonicalEvent, importRecoveredEvents } = useAppState();
+  const [accountRecovery, setAccountRecovery] = useState<ProductAccountRecoveryActions | null>(null);
+  const [accountOrganizer, setAccountOrganizer] = useState<ProductAccountOrganizerActions | null>(null);
+  const [accountRemoval, setAccountRemoval] = useState<ProductAccountMemberRemovalActions | null>(null);
+  const [managedMembershipGroupId, setManagedMembershipGroupId] = useState<string | null>(null);
   const getEntryView = (): View => {
     const payerRoute = getPayerRequestEntryView(state);
     if (payerRoute) {
@@ -107,6 +142,10 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
         groupId: standaloneRoute.groupId,
         memberId: standaloneRoute.memberId,
       };
+    }
+
+    if (window.location.hash.includes('chopdot-contact=')) {
+      return {name: 'friends'};
     }
 
     if (!state.currentUserId) {
@@ -135,6 +174,59 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
     return { name: 'home' };
   };
   const [view, setView] = useState<View>(getEntryView);
+  const reconnectAttemptedRef = useRef(false);
+  const visibleGroupId = ['group_detail', 'group_payments'].includes(view.name) && 'groupId' in view ? view.groupId : null;
+
+  useEffect(() => {
+    let active = true;
+    setManagedMembershipGroupId(null);
+    const participantId = state.currentUserId;
+    const accountPublicKeyHex = participantId ? state.users[participantId]?.accountPublicKeyHex : undefined;
+    if (!visibleGroupId || !accountOrganizer || !accountRemoval || !participantId || !accountPublicKeyHex) return () => { active = false; };
+    void readCanonicalGroup(visibleGroupId).then(canonical => {
+      if (active && canManageCanonicalMembership({state: canonical, participantId, accountPublicKeyHex})) {
+        setManagedMembershipGroupId(visibleGroupId);
+      }
+    }).catch(() => undefined);
+    return () => { active = false; };
+  }, [accountOrganizer, accountRemoval, readCanonicalGroup, state.currentUserId, state.users, visibleGroupId]);
+
+  const connectProductAccount = useCallback(async () => {
+    if (!dependencies?.productAccount) throw new Error('Product Account is unavailable.');
+    const identity = await dependencies.productAccount.request({readCanonicalGroup, readAcceptedEvents, readGroupOrigin, runMembershipAuthority, acceptCanonicalEvent, importRecoveredEvents});
+    setAccountRecovery(identity.recovery);
+    setAccountOrganizer(identity.organizer);
+    setAccountRemoval(identity.removal);
+    const current = state.currentUserId ? state.users[state.currentUserId] : null;
+    if (current) {
+      dispatch({type: 'MIGRATE_CURRENT_USER_IDENTITY', payload: {
+        fromUserId: current.id,
+        toUserId: identity.participantId,
+        accountPublicKeyHex: identity.accountPublicKeyHex,
+      }});
+    } else {
+      dispatch({type: 'ADD_USER', payload: {user: {
+        id: identity.participantId,
+        name: identity.displayName,
+        accountPublicKeyHex: identity.accountPublicKeyHex,
+      }}});
+      dispatch({type: 'SET_CURRENT_USER', payload: {userId: identity.participantId}});
+    }
+    const bootstrap = parseMembershipBootstrapEntry();
+    if (bootstrap) {
+      setView({name: 'membership_bootstrap', bootstrap});
+    } else {
+      const entry = getEntryView();
+      setView(entry.name === 'welcome' ? {name: 'home'} : entry);
+    }
+  }, [acceptCanonicalEvent, dependencies?.productAccount, dispatch, importRecoveredEvents, readAcceptedEvents, readCanonicalGroup, readGroupOrigin, runMembershipAuthority, state.currentUserId, state.users]);
+
+  useEffect(() => {
+    const current = state.currentUserId ? state.users[state.currentUserId] : null;
+    if (!current?.accountPublicKeyHex || accountRecovery || !dependencies?.productAccount || reconnectAttemptedRef.current) return;
+    reconnectAttemptedRef.current = true;
+    void connectProductAccount().catch(() => undefined);
+  }, [accountRecovery, connectProductAccount, dependencies?.productAccount, state.currentUserId, state.users]);
 
   const isDev = new URLSearchParams(window.location.search).get("dev") === "1";
   const backView = getBackView(view);
@@ -173,7 +265,7 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
   }, [dependencies?.membershipOrganizerEntry]);
 
   if (view.name === 'state_proof') {
-    if (!isDev) return <Home onGoToStateProof={() => setView({ name: 'home' })} onStartGroup={() => setView({ name: 'home' })} onGoToGroup={() => setView({ name: 'home' })} onGoToProfile={() => setView({ name: 'home' })} />;
+    if (!isDev) return <Home onGoToStateProof={() => setView({ name: 'home' })} onStartGroup={() => setView({ name: 'home' })} onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})} onStartMode={() => setView({name: 'home'})} onGoToGroup={() => setView({ name: 'home' })} onGoToProfile={() => setView({ name: 'home' })} />;
     return <StateProof onBack={() => setView(getEntryView())} />;
   }
 
@@ -195,6 +287,18 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
     return <GroupRecoveryEntry groupId={view.groupId} dependencies={dependencies?.groupRecovery} onClose={() => setView({name: 'home'})} />;
   }
 
+  if (view.name === 'group_protection' && accountRecovery) {
+    return <GroupProtectionEntry groupId={view.groupId} actions={accountRecovery} onClose={() => setView({name: 'group_detail', groupId: view.groupId})} />;
+  }
+
+  if (view.name === 'organizer_member' && accountOrganizer) {
+    return <OrganizerMemberEntry groupId={view.groupId} groupName={state.groups[view.groupId]?.name ?? 'This group'} actions={accountOrganizer} onClose={() => setView({name: 'group_detail', groupId: view.groupId})} />;
+  }
+
+  if (view.name === 'remove_member' && accountRemoval) {
+    return <RemoveMemberEntry groupId={view.groupId} actions={accountRemoval} onClose={() => setView({name: 'group_detail', groupId: view.groupId})} />;
+  }
+
   if (view.name === 'dinner_journey') {
     return <DinnerJourneyEntry dependencies={dependencies?.dinnerJourney} onClose={() => setView({name: 'welcome'})} />;
   }
@@ -211,24 +315,98 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
     return <MembershipOrganizerEntry adapter={dependencies.membershipOrganizerEntry} onClose={() => setView({name: 'home'})} />;
   }
 
+  if (view.name === 'receipt_start') {
+    return (
+      <ReceiptFirstStart
+        currency={state.currency}
+        onBack={() => setView(view.returnTo === 'home' ? {name: 'home'} : {name: 'welcome'})}
+        onContinue={draft => setView(state.currentUserId
+          ? {name: 'choose_group_for_draft', draft}
+          : {name: 'guest_setup', draft})}
+      />
+    );
+  }
+
+  if (view.name === 'friends' && !state.currentUserId) {
+    return <Friends onBack={() => setView({name: 'welcome'})} />;
+  }
+
   if (!state.currentUserId) {
     if (view.name === 'guest_setup') {
-      return <GuestSetup onBack={() => setView({ name: 'welcome' })} onComplete={() => setView({ name: 'home' })} />;
+      return <GuestSetup onBack={() => setView(view.draft ? {name: 'receipt_start', returnTo: 'welcome'} : {name: 'welcome'})} onComplete={() => setView(view.draft ? {name: 'choose_group_for_draft', draft: view.draft} : { name: 'home' })} />;
     }
-    return <Welcome onGuest={() => setView(dependencies?.dinnerJourney ? {name: 'dinner_journey'} : { name: 'guest_setup' })} />;
+    return <Welcome
+      onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'welcome'})}
+      onGuest={() => setView(dependencies?.dinnerJourney ? {name: 'dinner_journey'} : { name: 'guest_setup' })}
+      onUseProductAccount={dependencies?.productAccount ? connectProductAccount : undefined}
+    />;
   }
 
   let content;
   
-  if (view.name === 'create_group') {
-    content = <CreateGroup onBack={() => setView({ name: 'home' })} onCreated={(groupId) => setView({ name: 'group_detail', groupId })} />;
+  if (view.name === 'choose_group_for_draft') {
+    content = (
+      <ChooseGroupForDraft
+        draft={view.draft}
+        onBack={() => setView({name: 'receipt_start', returnTo: 'home'})}
+        onChoose={groupId => setView({
+          name: 'review_split',
+          groupId,
+          amount: view.draft.amount,
+          title: view.draft.title,
+          source: view.draft.source,
+          receiptStatus: view.draft.receiptStatus,
+          fileName: view.draft.fileName,
+        })}
+        onCreate={() => setView({name: 'create_group', mode: 'normal_pot', draft: view.draft})}
+      />
+    );
+  } else if (view.name === 'mode_intro') {
+    content = <ModeIntro mode={view.mode} onBack={() => setView({name: 'home'})} onStart={() => setView({name: 'create_group', mode: view.mode})} />;
+  } else if (view.name === 'create_group') {
+    content = <CreateGroup mode={view.mode} onBack={() => setView(view.draft ? {name: 'choose_group_for_draft', draft: view.draft} : { name: 'home' })} onCreated={(groupId) => setView(view.draft ? {
+      name: 'review_split',
+      groupId,
+      amount: view.draft.amount,
+      title: view.draft.title,
+      source: view.draft.source,
+      receiptStatus: view.draft.receiptStatus,
+      fileName: view.draft.fileName,
+    } : { name: 'group_detail', groupId })} />;
   } else if (view.name === 'group_detail') {
-    content = <GroupDetail 
-      groupId={view.groupId} 
-      onBack={() => setView({ name: 'home' })} 
-      onAddSpend={() => setView({ name: 'capture_spend', groupId: view.groupId })}
-      onCloseGroup={() => setView({ name: 'close_group', groupId: view.groupId })}
-      onGoToSettleUp={() => setView({ name: 'settle_up', groupId: view.groupId })}
+    const mode = state.groups[view.groupId]?.mode ?? 'normal_pot';
+    const canManageMembers = managedMembershipGroupId === view.groupId;
+    content = ['spend_card', 'savings_circle', 'emergency_pot', 'community_fund'].includes(mode) ? (
+      <NamedModeWorkspace
+        groupId={view.groupId}
+        onBack={() => setView({name: 'home'})}
+        onSplitPurchase={draft => setView({name: 'capture_spend', groupId: view.groupId, draftAmount: draft.amount, draftTitle: draft.title, draftSource: 'receipt', draftReceiptStatus: 'needs_review', spendCardTransactionId: draft.transactionId})}
+        onOpenPayments={() => setView({name: 'group_payments', groupId: view.groupId})}
+        onManageMembers={canManageMembers ? () => setView({name: 'group_payments', groupId: view.groupId}) : undefined}
+      />
+    ) : (
+      <GroupDetail
+        groupId={view.groupId}
+        onBack={() => setView({ name: 'home' })}
+        onAddSpend={() => setView({ name: 'capture_spend', groupId: view.groupId })}
+        onCloseGroup={() => setView({ name: 'close_group', groupId: view.groupId })}
+        onGoToSettleUp={() => setView({ name: 'settle_up', groupId: view.groupId })}
+        onProtectGroup={accountRecovery ? () => setView({name: 'group_protection', groupId: view.groupId}) : undefined}
+        onInviteMember={canManageMembers && accountOrganizer ? () => setView({name: 'organizer_member', groupId: view.groupId}) : undefined}
+        onRemoveMember={canManageMembers && accountRemoval ? () => setView({name: 'remove_member', groupId: view.groupId}) : undefined}
+      />
+    );
+  } else if (view.name === 'group_payments') {
+    const canManageMembers = managedMembershipGroupId === view.groupId;
+    content = <GroupDetail
+      groupId={view.groupId}
+      onBack={() => setView({name: 'group_detail', groupId: view.groupId})}
+      onAddSpend={() => setView({name: 'capture_spend', groupId: view.groupId})}
+      onCloseGroup={() => setView({name: 'close_group', groupId: view.groupId})}
+      onGoToSettleUp={() => setView({name: 'settle_up', groupId: view.groupId})}
+      onProtectGroup={accountRecovery ? () => setView({name: 'group_protection', groupId: view.groupId}) : undefined}
+      onInviteMember={canManageMembers && accountOrganizer ? () => setView({name: 'organizer_member', groupId: view.groupId}) : undefined}
+      onRemoveMember={canManageMembers && accountRemoval ? () => setView({name: 'remove_member', groupId: view.groupId}) : undefined}
     />;
   } else if (view.name === 'settle_up') {
     content = <SettleUp
@@ -259,6 +437,7 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
         source: context.source,
         receiptStatus: context.receiptStatus,
         fileName: context.fileName,
+        spendCardTransactionId: view.spendCardTransactionId,
       })}
     />;
   } else if (view.name === 'review_split') {
@@ -267,6 +446,7 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
       amount={view.amount}
       title={view.title}
       source={view.source}
+      spendCardTransactionId={view.spendCardTransactionId}
       onBack={() => setView({
         name: 'capture_spend',
         groupId: view.groupId,
@@ -275,6 +455,7 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
         draftSource: view.source,
         draftReceiptStatus: view.receiptStatus,
         draftFileName: view.fileName,
+        spendCardTransactionId: view.spendCardTransactionId,
       })}
       onSave={() => setView({ name: 'group_detail', groupId: view.groupId })}
     />;
@@ -312,6 +493,8 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
       content = <Home 
         onGoToStateProof={() => setView({ name: 'home' })} 
         onStartGroup={() => setView({ name: 'home' })}
+        onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})}
+        onStartMode={() => setView({name: 'home'})}
         onGoToGroup={() => setView({ name: 'home' })}
         onGoToProfile={() => setView({ name: 'home' })}
       />;
@@ -322,6 +505,8 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
     content = <Home 
       onGoToStateProof={() => setView({ name: 'state_proof' })} 
       onStartGroup={() => setView({ name: 'create_group' })}
+      onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})}
+      onStartMode={(mode) => setView({name: 'mode_intro', mode})}
       onGoToGroup={(groupId) => setView({ name: 'group_detail', groupId })}
       onGoToProfile={() => setView({ name: 'profile' })}
     />;
@@ -337,23 +522,23 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
       {showBottomNav && (
         <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-[#0a0a0a] border-t border-gray-100 dark:border-[#1a1a1a] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)] transition-colors h-[72px] z-50">
           <div className="flex justify-around items-center h-full px-2">
-            <button onClick={() => setView({ name: 'home' })} className={`p-2 flex flex-col items-center transition-colors ${view.name === 'home' ? 'text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
+            <button onClick={() => setView({ name: 'home' })} className={`min-h-11 min-w-11 p-2 flex flex-col items-center transition-colors ${view.name === 'home' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`}>
               <HomeIcon className="w-6 h-6 mb-1" />
               <span className="text-[10px] font-medium">Home</span>
             </button>
-            <button onClick={() => setView({ name: 'friends' })} className={`p-2 flex flex-col items-center transition-colors ${view.name === 'friends' ? 'text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
+            <button onClick={() => setView({ name: 'friends' })} className={`min-h-11 min-w-11 p-2 flex flex-col items-center transition-colors ${view.name === 'friends' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`}>
               <Users className="w-6 h-6 mb-1" />
               <span className="text-[10px] font-medium">Friends</span>
             </button>
-            <button onClick={() => setView({ name: 'payment_methods' })} className={`p-2 flex flex-col items-center transition-colors ${view.name === 'payment_methods' ? 'text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
+            <button onClick={() => setView({ name: 'payment_methods' })} className={`min-h-11 min-w-11 p-2 flex flex-col items-center transition-colors ${view.name === 'payment_methods' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`}>
               <Wallet className="w-6 h-6 mb-1" />
               <span className="text-[10px] font-medium">Pay</span>
             </button>
-            <button onClick={() => setView({ name: 'history' })} className={`p-2 flex flex-col items-center transition-colors ${view.name === 'history' ? 'text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
+            <button onClick={() => setView({ name: 'history' })} className={`min-h-11 min-w-11 p-2 flex flex-col items-center transition-colors ${view.name === 'history' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`}>
               <HistoryIcon className="w-6 h-6 mb-1" />
               <span className="text-[10px] font-medium">History</span>
             </button>
-            <button onClick={() => setView({ name: 'settings' })} className={`p-2 flex flex-col items-center transition-colors ${view.name === 'settings' ? 'text-gray-900 dark:text-white' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>
+            <button onClick={() => setView({ name: 'settings' })} className={`min-h-11 min-w-11 p-2 flex flex-col items-center transition-colors ${view.name === 'settings' ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`}>
               <SettingsIcon className="w-6 h-6 mb-1" />
               <span className="text-[10px] font-medium">Settings</span>
             </button>
@@ -392,8 +577,14 @@ function ThemedLayout({dependencies}: {dependencies?: AppDependencies}) {
 function getBackView(view: View): View | null {
   switch (view.name) {
     case 'guest_setup':
-      return { name: 'welcome' };
+      return view.draft ? {name: 'receipt_start', returnTo: 'welcome'} : { name: 'welcome' };
     case 'create_group':
+      return view.draft ? {name: 'choose_group_for_draft', draft: view.draft} : {name: 'home'};
+    case 'receipt_start':
+      return {name: view.returnTo};
+    case 'choose_group_for_draft':
+      return {name: 'receipt_start', returnTo: 'home'};
+    case 'mode_intro':
     case 'profile':
     case 'friends':
     case 'payment_methods':
@@ -402,6 +593,8 @@ function getBackView(view: View): View | null {
       return { name: 'home' };
     case 'group_detail':
       return { name: 'home' };
+    case 'group_payments':
+      return {name: 'group_detail', groupId: view.groupId};
     case 'settle_up':
     case 'close_group':
     case 'capture_spend':
@@ -414,6 +607,9 @@ function getBackView(view: View): View | null {
     case 'bounded_entry_unavailable':
     case 'membership_organizer':
     case 'group_recovery':
+    case 'group_protection':
+    case 'organizer_member':
+    case 'remove_member':
     case 'dinner_journey':
       return null;
     case 'review_split':
@@ -425,6 +621,7 @@ function getBackView(view: View): View | null {
         draftSource: view.source,
         draftReceiptStatus: view.receiptStatus,
         draftFileName: view.fileName,
+        spendCardTransactionId: view.spendCardTransactionId,
       };
     case 'saved_record':
       return { name: 'home' };
@@ -463,11 +660,10 @@ function getPayerRequestEntryView(state: AppState): View | null {
 }
 
 function hasKnownLocalPayerRoute(state: AppState): boolean {
-  const route = parsePayerRequestRoute();
-  return Boolean(route && state.groups[route.groupId] && state.users[route.memberId]);
+  return getPayerRequestEntryView(state) !== null;
 }
 
-function parseMembershipBootstrapEntry(): RecipientBoundBootstrapV1 | null {
+function parseMembershipBootstrapEntry(): RecipientBoundBootstrap | null {
   if (!window.location.hash.includes('chopdot-invite=')) return null;
   try {
     return bootstrapFromUrl(window.location.href);
@@ -496,7 +692,9 @@ function parseRecoveryEntry(): string | null {
 
 export default function App({dependencies}: {dependencies?: AppDependencies} = {}) {
   return (
-    <AppStateProvider>
+    <AppStateProvider
+      authorityDependencies={dependencies?.authority ?? {acceptedMemberships: dependencies?.acceptedMemberships}}
+    >
       <ThemedLayout dependencies={dependencies} />
     </AppStateProvider>
   );

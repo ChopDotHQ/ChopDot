@@ -112,7 +112,7 @@ test('a checkpoint does not replace event authority and closed history remains i
   const postClose = await event({
     eventId: '10-late', commandId: 'c10', expectedVersion: 9, parentEventId: '09-close',
     actorId: 'mina', actorAccountPublicKeyHex: minaKey, actorRole: 'organizer',
-    eventType: 'SHARE_ADJUSTED', payload: {shareId: 'share-leo', kind: 'fee', delta: moneyFromDecimal('1.00', 'CHF'), reason: 'late'},
+    eventType: 'SHARE_ADJUSTED', payload: {shareId: 'share:e1:leo', kind: 'fee', delta: moneyFromDecimal('1.00', 'CHF'), reason: 'late'},
   });
   const recovery = service(archive, locators, [...events.slice(4), postClose]);
   const envelope = await createAccountBoundGroupKeyEnvelope(metadata('leo', leoKey, 2), groupKey, entropy('leo-account'));
@@ -165,12 +165,12 @@ async function dinnerEvents(): Promise<CanonicalEventV1[]> {
   const rows: Array<Omit<CanonicalEventInput, 'groupId' | 'occurredAt'>> = [
     {eventId:'01-create',commandId:'c1',expectedVersion:0,parentEventId:null,actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'GROUP_CREATED',payload:{name:'Zurich Dinner',organizerId:'mina',members:[{participantId:'mina',accountPublicKeyHex:minaKey,role:'organizer'},{participantId:'leo',accountPublicKeyHex:leoKey,role:'member'},{participantId:'nina',accountPublicKeyHex:ninaKey,role:'member'}]}},
     {eventId:'02-expense',commandId:'c2',expectedVersion:1,parentEventId:'01-create',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'EXPENSE_ADDED',payload:{expenseId:'e1',description:'Dinner',paidBy:'mina',total:moneyFromDecimal('120.00','CHF'),allocations:[{participantId:'mina',amount:moneyFromDecimal('40.00','CHF')},{participantId:'leo',amount:moneyFromDecimal('40.00','CHF')},{participantId:'nina',amount:moneyFromDecimal('40.00','CHF')}]}},
-    {eventId:'03-request-leo',commandId:'c3',expectedVersion:2,parentEventId:'02-expense',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_REQUESTED',payload:{shareId:'share-leo'}},
-    {eventId:'04-request-nina',commandId:'c4',expectedVersion:3,parentEventId:'03-request-leo',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_REQUESTED',payload:{shareId:'share-nina'}},
-    {eventId:'05-paid-leo',commandId:'c5',expectedVersion:4,parentEventId:'04-request-nina',actorId:'leo',actorAccountPublicKeyHex:leoKey,actorRole:'member',eventType:'SHARE_MARKED_PAID',payload:{shareId:'share-leo'}},
-    {eventId:'06-received-leo',commandId:'c6',expectedVersion:5,parentEventId:'05-paid-leo',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_RECEIVED',payload:{shareId:'share-leo'}},
-    {eventId:'07-paid-nina',commandId:'c7',expectedVersion:6,parentEventId:'06-received-leo',actorId:'nina',actorAccountPublicKeyHex:ninaKey,actorRole:'member',eventType:'SHARE_MARKED_PAID',payload:{shareId:'share-nina'}},
-    {eventId:'08-received-nina',commandId:'c8',expectedVersion:7,parentEventId:'07-paid-nina',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_RECEIVED',payload:{shareId:'share-nina'}},
+    {eventId:'03-request-leo',commandId:'c3',expectedVersion:2,parentEventId:'02-expense',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_REQUESTED',payload:{shareId:'share:e1:leo'}},
+    {eventId:'04-request-nina',commandId:'c4',expectedVersion:3,parentEventId:'03-request-leo',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_REQUESTED',payload:{shareId:'share:e1:nina'}},
+    {eventId:'05-paid-leo',commandId:'c5',expectedVersion:4,parentEventId:'04-request-nina',actorId:'leo',actorAccountPublicKeyHex:leoKey,actorRole:'member',eventType:'SHARE_MARKED_PAID',payload:{shareId:'share:e1:leo'}},
+    {eventId:'06-received-leo',commandId:'c6',expectedVersion:5,parentEventId:'05-paid-leo',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_RECEIVED',payload:{shareId:'share:e1:leo'}},
+    {eventId:'07-paid-nina',commandId:'c7',expectedVersion:6,parentEventId:'06-received-leo',actorId:'nina',actorAccountPublicKeyHex:ninaKey,actorRole:'member',eventType:'SHARE_MARKED_PAID',payload:{shareId:'share:e1:nina'}},
+    {eventId:'08-received-nina',commandId:'c8',expectedVersion:7,parentEventId:'07-paid-nina',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'SHARE_RECEIVED',payload:{shareId:'share:e1:nina'}},
     {eventId:'09-close',commandId:'c9',expectedVersion:8,parentEventId:'08-received-nina',actorId:'mina',actorAccountPublicKeyHex:minaKey,actorRole:'organizer',eventType:'GROUP_CLOSED',payload:{recordId:'record-dinner'}},
   ];
   return Promise.all(rows.map(event));

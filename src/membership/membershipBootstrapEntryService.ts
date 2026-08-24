@@ -1,11 +1,13 @@
 import type {KeyValueStorage} from '../environment/livePayerSync.ts';
 import type {AccountMessageSigner, AccountMessageVerifier} from './groupKeyHandoff.ts';
 import type {MembershipGrant} from './membershipLifecycle.ts';
+import type {MembershipDeliveryAcknowledgement} from './membershipDeliveryOutbox.ts';
 import {
   decodeRecipientBoundBootstrap,
   encodeRecipientBoundBootstrap,
+  organizerGrantFromVerifiedBootstrap,
   verifyRecipientBoundBootstrap,
-  type RecipientBoundBootstrapV1,
+  type RecipientBoundBootstrap,
 } from './recipientBoundBootstrap.ts';
 import {
   TrustedContactInvitationCoordinator,
@@ -22,7 +24,7 @@ const INBOX_KEY = 'chopdot-membership-bootstrap-inbox-v1';
 export interface VerifiedOrganizerAuthority {
   grant: MembershipGrant;
   proof: {
-    source: 'external_trust_registry' | 'preview_fixture';
+    source: 'external_trust_registry' | 'signed_group_origin' | 'preview_fixture';
     proofId: string;
     verifiedAt: string;
   };
@@ -43,7 +45,7 @@ export interface MembershipBootstrapEntryServiceOptions {
     signer: AccountMessageSigner;
   };
   storage: KeyValueStorage;
-  organizerAuthority: VerifiedOrganizerAuthorityResolver;
+  organizerAuthority?: VerifiedOrganizerAuthorityResolver;
   delivery: MembershipEventDelivery;
   pendingAcceptances: PendingAcceptanceVault;
   protectedKeys: ProtectedGroupKeySink;
@@ -73,6 +75,7 @@ export class MembershipBootstrapEntryService {
   private readonly inbox: MembershipBootstrapInbox;
   private readonly coordinator: TrustedContactInvitationCoordinator;
   private readonly accountPublicKeyHex: string;
+  private readonly originOrganizerGrants = new Map<string, MembershipGrant>();
 
   constructor(private readonly options: MembershipBootstrapEntryServiceOptions) {
     this.accountPublicKeyHex = normalizeAccountKey(options.actor.accountPublicKeyHex);
@@ -106,7 +109,7 @@ export class MembershipBootstrapEntryService {
   }
 
   async enter(
-    bootstrap: RecipientBoundBootstrapV1,
+    bootstrap: RecipientBoundBootstrap,
     now = new Date().toISOString(),
   ): Promise<MembershipBootstrapEntryOutcome> {
     return this.enterInternal(bootstrap, now, true);
@@ -119,7 +122,7 @@ export class MembershipBootstrapEntryService {
     const restored: string[] = [];
     const rejected: Array<{eventId: string; status: Exclude<MembershipBootstrapEntryOutcome['status'], 'ready'>}> = [];
     for (const record of this.inbox.listForAccount(this.accountPublicKeyHex)) {
-      let bootstrap: RecipientBoundBootstrapV1;
+      let bootstrap: RecipientBoundBootstrap;
       try {
         bootstrap = decodeRecipientBoundBootstrap(record.encodedBootstrap);
       } catch {
@@ -155,6 +158,10 @@ export class MembershipBootstrapEntryService {
     return this.coordinator.flush();
   }
 
+  acknowledgeDelivery(acknowledgement: MembershipDeliveryAcknowledgement) {
+    return this.coordinator.acknowledgeDelivery(acknowledgement);
+  }
+
   async receive(input: {
     roomId: string;
     peer: string;
@@ -169,7 +176,7 @@ export class MembershipBootstrapEntryService {
   }
 
   private async enterInternal(
-    bootstrap: RecipientBoundBootstrapV1,
+    bootstrap: RecipientBoundBootstrap,
     now: string,
     persist: boolean,
   ): Promise<MembershipBootstrapEntryOutcome> {
@@ -188,6 +195,8 @@ export class MembershipBootstrapEntryService {
       now,
       verifier: this.options.verifier,
     })) return {status: 'invalid'};
+    const originGrant = organizerGrantFromVerifiedBootstrap(bootstrap);
+    if (originGrant) this.originOrganizerGrants.set(originGrant.groupId, originGrant);
     if (!await this.resolveOrganizerRoot({
       groupId: invitation.groupId,
       organizerId: invitation.inviterId,
@@ -212,10 +221,12 @@ export class MembershipBootstrapEntryService {
     organizerId: string;
     organizerAccountPublicKeyHex: string;
   }): Promise<MembershipGrant | null> {
-    const resolution = await this.options.organizerAuthority.resolve(input);
+    const origin = this.originOrganizerGrants.get(input.groupId);
+    if (origin && organizerRootMatches(origin, input)) return origin;
+    const resolution = await this.options.organizerAuthority?.resolve(input);
     if (
       !resolution
-      || resolution.proof.source !== 'external_trust_registry'
+      || !['external_trust_registry', 'signed_group_origin'].includes(resolution.proof.source)
       || !resolution.proof.proofId.trim()
       || !isTimestamp(resolution.proof.verifiedAt)
       || !organizerRootMatches(resolution.grant, input)

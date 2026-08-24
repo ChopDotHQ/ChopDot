@@ -176,6 +176,24 @@ test('account recovery entropy is delegated to the host and copied', async () =>
   assert.equal(derived[0], 11);
 });
 
+test('account recovery rejects an overlong context before calling the host', async () => {
+  let derivations = 0;
+  const bridge = new PolkadotHostBridge({
+    sdkLoader: async () => fakeSdk({
+      deriveEntropy: async () => {
+        derivations += 1;
+        return {ok: true, value: new Uint8Array(32)};
+      },
+    }),
+  });
+
+  await assert.rejects(
+    () => bridge.deriveAccountEntropy(new Uint8Array(33)),
+    /between 1 and 32 bytes/u,
+  );
+  assert.equal(derivations, 0);
+});
+
 test('account recovery entropy fails closed outside the host', async () => {
   let derivations = 0;
   const bridge = new PolkadotHostBridge({

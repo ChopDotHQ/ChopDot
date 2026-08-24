@@ -4,6 +4,7 @@ import { getInitials } from '../utils';
 import { getCurrencySymbol } from '../utils';
 import { Split } from '../types';
 import { Screen, ScreenHeader, ScreenContent, BottomAction, Button, MoneyAmount } from './primitives';
+import {createMemberCapability, hashMemberCapability} from '../environment/livePayerSync';
 
 export function RequestPayment({ 
   groupId, 
@@ -16,7 +17,7 @@ export function RequestPayment({
   onBack: () => void; 
   onSend: () => void;
 }) {
-  const { state, dispatch } = useAppState();
+  const { state, runAuthority, authorityBusy, authorityError } = useAppState();
   
   const group = state.groups[groupId];
   const member = state.users[memberId];
@@ -31,10 +32,18 @@ export function RequestPayment({
   
   const amountOwed = openSplits.reduce((sum, s) => sum + s.amount, 0);
 
-  const handleSend = () => {
-    openSplits.forEach(s => {
-      dispatch({ type: 'SEND_REQUEST', payload: { splitId: s.id } });
-    });
+  const handleSend = async () => {
+    if (authorityBusy) return;
+    const requestId = `req-${crypto.randomUUID()}`;
+    const createdAt = new Date().toISOString();
+    const expiresAt = new Date(Date.parse(createdAt) + 24 * 60 * 60 * 1000).toISOString();
+    const requestEntryCapability = createMemberCapability();
+    const capabilityHash = await hashMemberCapability(requestEntryCapability);
+    for (const split of openSplits) {
+      if (!await runAuthority({type: 'SEND_REQUEST', payload: {
+        splitId: split.id, requestId, createdAt, expiresAt, capabilityHash, requestEntryCapability,
+      }})) return;
+    }
     onSend();
   };
 
@@ -74,12 +83,13 @@ export function RequestPayment({
         <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mt-8">
           Requested by {currentUser.name}
         </p>
+        {authorityError && <p role="alert" className="mt-3 text-sm font-medium text-red-600 dark:text-red-400">{authorityError}</p>}
       </ScreenContent>
 
       <BottomAction>
-        <Button variant="primary" fullWidth onClick={handleSend} className="h-14 text-lg shadow-sm">
+        <Button variant="primary" fullWidth onClick={() => void handleSend()} disabled={authorityBusy || openSplits.length === 0} className="h-14 text-lg shadow-sm">
           <Send className="w-5 h-5 mr-2" />
-          Send / Copy link
+          {authorityBusy ? 'Preparing safely…' : 'Send / Copy link'}
         </Button>
       </BottomAction>
     </Screen>

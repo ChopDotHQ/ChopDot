@@ -24,5 +24,19 @@ export type {
   ChopEventV1,
   ChopFrontierV1,
 } from './moneyEventKernel.ts';
+export {
+  MODE_WORKFLOW_EVENT_TYPES_V1,
+  createRedactedModeRecordV1,
+  initialModeStateV1,
+  isModeWorkflowEventTypeV1,
+} from './modeWorkflows.ts';
+export type {
+  CanonicalModeStateV1,
+  ModeWorkflowCommandV1,
+  ModeWorkflowEventPayloadV1,
+  ModeWorkflowEventTypeV1,
+  ModeWorkflowPayloadByTypeV1,
+  RedactedModeRecordV1,
+} from './modeWorkflows.ts';
 export {MODE_POLICIES_V1, modePolicyV1} from './modePolicy.ts';
 export type {ChopModeV1, ModePolicyV1} from './modePolicy.ts';

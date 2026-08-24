@@ -32,7 +32,8 @@ export async function createAccountBoundGroupKeyEnvelope(
 
   try {
     const context = envelopeContext(metadata);
-    const entropy = await deriveRequiredEntropy(provider, context);
+    const entropyContext = await hostEntropyContext(context);
+    const entropy = await deriveRequiredEntropy(provider, entropyContext);
     const wrappingKey = await deriveWrappingKey(entropy, context);
     const iv = crypto.getRandomValues(new Uint8Array(12));
     const ciphertext = await crypto.subtle.encrypt(
@@ -68,7 +69,8 @@ export async function openAccountBoundGroupKeyEnvelope(
 
   try {
     const context = envelopeContext(canonicalEnvelope);
-    const entropy = await deriveRequiredEntropy(provider, context);
+    const entropyContext = await hostEntropyContext(context);
+    const entropy = await deriveRequiredEntropy(provider, entropyContext);
     const wrappingKey = await deriveWrappingKey(entropy, context);
     const plaintext = await crypto.subtle.decrypt(
       {name: 'AES-GCM', iv: base64UrlToBytes(envelope.iv), additionalData: context},
@@ -86,6 +88,18 @@ export async function openAccountBoundGroupKeyEnvelope(
 export function accountBoundGroupKeyContext(metadata: GroupKeyEnvelopeMetadata): Uint8Array {
   assertMetadata(metadata);
   return envelopeContext(metadata);
+}
+
+/**
+ * The host entropy RFC accepts a context key of at most 32 bytes. ChopDot
+ * authenticates the complete canonical metadata as AES-GCM AAD and HKDF info,
+ * while this domain-separated digest is the bounded account-entropy selector.
+ */
+export async function accountBoundGroupKeyEntropyContext(
+  metadata: GroupKeyEnvelopeMetadata,
+): Promise<Uint8Array> {
+  assertMetadata(metadata);
+  return hostEntropyContext(envelopeContext(metadata));
 }
 
 function canonicalMetadata(metadata: GroupKeyEnvelopeMetadata): GroupKeyEnvelopeMetadata {
@@ -108,6 +122,10 @@ function envelopeContext(metadata: GroupKeyEnvelopeMetadata): Uint8Array {
     value.recipientAccountPublicKeyHex,
     value.keyVersion,
   ]));
+}
+
+async function hostEntropyContext(context: Uint8Array): Promise<Uint8Array> {
+  return new Uint8Array(await crypto.subtle.digest('SHA-256', context));
 }
 
 async function deriveRequiredEntropy(

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useReducer, useRef, useState, ReactNode, Dispatch } from 'react';
 import { Action } from './store';
 import { AppState } from '../types';
-import {verifyPasPaymentReceipt} from '../payments/pasWallet';
+import {verifyFinalizedPasPaymentReference, verifyPasPaymentReceipt} from '../payments/pasWallet';
 import { createCleanState, reducer } from './store';
 import { appStorage } from '../environment';
 import {
@@ -32,6 +32,31 @@ import {
   restoreDeferredSharedEvents,
   sharedSessionKey,
 } from '../environment/sharedActionDelivery';
+import {
+  ProductionAuthority,
+  createCanonicalAuthorityEventEnvelope,
+  isCanonicalAuthorityEventAck,
+  isCanonicalAuthorityEventEnvelope,
+  isProductionAuthorityAction,
+  type CanonicalAuthorityEventAckV1,
+  type ExpenseCorrectionAuthorityCommandV1,
+  type ModeAuthorityCommandV1,
+  type ProductionAuthorityAction,
+  type AcceptedMembershipGrantResolver,
+  type AuthorityGroupAccessProvisioner,
+  type AuthorityAppendResult,
+  type AuthorityIdentity,
+  type MembershipAuthorityCommandV1,
+  type MembershipAuthorityMutationResolver,
+  type CanonicalAuthorityEventEnvelopeV1,
+} from '../core/authority/productionAuthority';
+import type {CanonicalEventV1, CanonicalGroupStateV1} from '../core/moneyEventKernel';
+import {executeMembershipAuthorityMutation} from './membershipAuthorityExecution';
+import {
+  BrowserAuthorityIdentityResolver,
+  IndexedDbAuthorityJournalStore,
+  verifyParticipantSignature,
+} from '../core/authority/browserAuthority';
 
 type SessionStatus = 'off' | 'connecting' | 'ready' | 'error';
 
@@ -40,6 +65,18 @@ interface AppStateContextValue {
   dispatch: Dispatch<Action>;
   hostParticipant: HostParticipant | null;
   sessionStatus: SessionStatus;
+  authorityStatus: 'checking' | 'ready' | 'error';
+  authorityError?: string;
+  authorityBusy: boolean;
+  runAuthority: (action: ProductionAuthorityAction) => Promise<boolean>;
+  runModeAuthority: (command: ModeAuthorityCommandV1) => Promise<CanonicalGroupStateV1 | null>;
+  runExpenseCorrectionAuthority: (command: ExpenseCorrectionAuthorityCommandV1) => Promise<CanonicalGroupStateV1 | null>;
+  runMembershipAuthority: (command: MembershipAuthorityCommandV1) => Promise<CanonicalGroupStateV1 | null>;
+  readCanonicalGroup: (groupId: string) => Promise<CanonicalGroupStateV1 | null>;
+  readAcceptedEvents: (groupId: string) => Promise<CanonicalEventV1[]>;
+  readGroupOrigin: (groupId: string) => Promise<CanonicalEventV1 | null>;
+  acceptCanonicalEvent: (envelope: CanonicalAuthorityEventEnvelopeV1) => Promise<void>;
+  importRecoveredEvents: (events: CanonicalEventV1[]) => Promise<'applied' | 'duplicate'>;
 }
 
 const AppStateContext = createContext<AppStateContextValue | null>(null);
@@ -60,10 +97,25 @@ declare global {
   }
 }
 
-export function AppStateProvider({ children }: { children: ReactNode }) {
+export interface ProductionAuthorityDependencies {
+  acceptedMemberships?: AcceptedMembershipGrantResolver;
+  membershipChanges?: MembershipAuthorityMutationResolver;
+  groupAccess?: AuthorityGroupAccessProvisioner;
+  resolveExternalIdentity?: (participantId: string, expectedPublicKeyHex?: string) => Promise<AuthorityIdentity | null>;
+  canonicalDelivery?: {
+    publish(event: CanonicalEventV1, state: CanonicalGroupStateV1): Promise<void>;
+    publishMembershipJoin?(events: CanonicalEventV1[], state: CanonicalGroupStateV1, recipientId: string): Promise<void>;
+    publishMembershipRemoval?(events: CanonicalEventV1[], participantId: string): Promise<void>;
+  };
+}
+
+export function AppStateProvider({ children, authorityDependencies }: { children: ReactNode; authorityDependencies?: ProductionAuthorityDependencies }) {
   const [state, baseDispatch] = useReducer(reducer, undefined, loadInitialState);
   const [hostParticipant, setHostParticipant] = useState<HostParticipant | null>(null);
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>('off');
+  const [authorityStatus, setAuthorityStatus] = useState<'checking' | 'ready' | 'error'>('checking');
+  const [authorityError, setAuthorityError] = useState<string>();
+  const [authorityPending, setAuthorityPending] = useState(0);
   const stateRef = useRef(state);
   const connectionRef = useRef<HostSessionConnection | null>(null);
   const liveGroupConnectionsRef = useRef(new Map<string, HostSessionConnection>());
@@ -81,7 +133,50 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const validatingEventsRef = useRef(new Set<string>());
   const outboxFlushRef = useRef<Promise<void> | null>(null);
   const outboxFlushRequestedRef = useRef(false);
+  const authorityDeliveryFlushRef = useRef<Promise<void> | null>(null);
+  const receiveCanonicalAuthorityRef = useRef<(envelope: HostSessionEnvelope, signerHex?: string, session?: HostSessionConfig) => void>(() => undefined);
   const observerRef = useRef({status: 'off' as SessionStatus, received: 0, applied: 0, rejected: 0, deferred: restoredPendingEvents.size, published: 0, lastError: undefined as string | undefined, lastRejection: undefined as string | undefined});
+  const managedGroupIdsRef = useRef(new Set<string>());
+  const authorityQueueRef = useRef(Promise.resolve());
+  const authorityVaultRef = useRef<IndexedDbAuthorityJournalStore | null>(null);
+  const authorityRef = useRef<ProductionAuthority | null>(null);
+
+  if (!authorityRef.current) {
+    const vault = new IndexedDbAuthorityJournalStore();
+    authorityVaultRef.current = vault;
+    const identities = new BrowserAuthorityIdentityResolver(vault, async participantId => {
+      const external = await authorityDependencies?.resolveExternalIdentity?.(participantId);
+      if (external) return external;
+      const connection = [connectionRef.current, ...liveGroupConnectionsRef.current.values()]
+        .find(candidate => candidate?.participant.userId === participantId);
+      if (!connection) return null;
+      return {
+        participantId,
+        publicKeyHex: connection.participant.publicKeyHex,
+        signer: {sign: bytes => connection.signBytes(bytes)},
+      };
+    });
+    authorityRef.current = new ProductionAuthority({
+      journal: vault,
+      identities,
+      verify: verifyParticipantSignature,
+      memberships: authorityDependencies?.acceptedMemberships,
+      membershipChanges: authorityDependencies?.membershipChanges,
+      groupAccess: authorityDependencies?.groupAccess,
+      verifyFinalizedPayment: async request => {
+        if (request.amount.currency !== 'PAS' || request.amount.exponent > 18) {
+          throw new Error('This finalized payment route supports exact PAS shares only.');
+        }
+        const amountBaseUnits = (BigInt(request.amount.minorUnits) * (10n ** BigInt(18 - request.amount.exponent))).toString();
+        return verifyFinalizedPasPaymentReference({
+          txHash: request.reference,
+          from: request.payerAddress,
+          to: request.receiverAddress,
+          amountBaseUnits,
+        });
+      },
+    });
+  }
 
   const updateObserver = useCallback((changes: Partial<typeof observerRef.current>) => {
     observerRef.current = {...observerRef.current, ...changes};
@@ -93,14 +188,52 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     processedEventLedgerRef.current.record(eventId, outcome);
   }, []);
 
-  const apply = useCallback((action: Action) => {
+  const apply = useCallback((action: Action): boolean => {
+    if (isProductionAuthorityAction(action)) {
+      // Legacy transport envelopes do not carry their canonical ChopEventV1
+      // signature. They are delivery hints only and can never mutate shared
+      // money, whether or not this device has hydrated the group already.
+      return false;
+    }
     const nextState = reducer(stateRef.current, action);
     stateRef.current = nextState;
     // Persist the state before recording the event as processed. On restart a
     // processed ledger entry must never outrun the projection it represents.
-    appStorage.write(STORAGE_KEY, JSON.stringify(nextState));
+    persistProjectionCache(nextState, managedGroupIdsRef.current);
     baseDispatch(action);
+    return true;
   }, []);
+
+  const replaceAuthorityProjection = useCallback((nextState: AppState) => {
+    stateRef.current = nextState;
+    persistProjectionCache(nextState, managedGroupIdsRef.current);
+    baseDispatch({type: 'REPLACE_AUTHORITY_PROJECTION', payload: {state: nextState}});
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const authority = authorityRef.current!;
+    const vault = authorityVaultRef.current!;
+    void vault.listGroupIds()
+      .then(groupIds => {
+        groupIds.forEach(groupId => managedGroupIdsRef.current.add(groupId));
+        return authority.hydrate(stateRef.current);
+      })
+      .then(nextState => {
+        if (cancelled) return;
+        replaceAuthorityProjection(nextState);
+        setAuthorityError(undefined);
+        setAuthorityStatus('ready');
+      })
+      .catch(reason => {
+        if (cancelled) return;
+        const message = reason instanceof Error ? reason.message : String(reason);
+        setAuthorityError(message);
+        setAuthorityStatus('error');
+        updateObserver({lastError: message});
+      });
+    return () => { cancelled = true; };
+  }, [replaceAuthorityProjection, updateObserver]);
 
   const deferEnvelope = useCallback((envelope: SharedActionEnvelope, signerHex?: string): boolean => {
     try {
@@ -138,11 +271,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         const decision = authorizeSharedAction(stateRef.current, envelope);
         if (decision === 'defer') continue;
         if (decision === 'apply') {
-          apply(envelope.action);
-          markProcessed(eventId, 'applied');
+          const applied = apply(envelope.action);
+          markProcessed(eventId, applied ? 'applied' : 'rejected');
           deferredEventInboxRef.current.remove(eventId);
           pendingEventsRef.current.delete(eventId);
-          observerRef.current.applied += 1;
+          if (applied) observerRef.current.applied += 1;
+          else observerRef.current.rejected += 1;
           madeProgress = true;
         } else {
           markProcessed(eventId, 'rejected');
@@ -186,10 +320,15 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }
 
     if (decision === 'apply') {
-      apply(signedEnvelope.action);
-      markProcessed(envelope.eventId, 'applied');
-      observerRef.current.applied += 1;
-      retryPending();
+      const applied = apply(signedEnvelope.action);
+      markProcessed(envelope.eventId, applied ? 'applied' : 'rejected');
+      if (applied) {
+        observerRef.current.applied += 1;
+        retryPending();
+      } else {
+        observerRef.current.rejected += 1;
+        observerRef.current.lastRejection = `canonical-event-required:${envelope.action.type}:${envelope.actorUserId}`;
+      }
     } else {
       markProcessed(envelope.eventId, 'rejected');
       observerRef.current.rejected += 1;
@@ -198,7 +337,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }
   }, [apply, deferEnvelope, markProcessed, retryPending, updateObserver]);
 
-  const receiveEnvelope = useCallback((envelope: HostSessionEnvelope, signerHex?: string) => {
+  const receiveEnvelope = useCallback((envelope: HostSessionEnvelope, signerHex?: string, session?: HostSessionConfig) => {
+    if (isCanonicalAuthorityEventEnvelope(envelope) || isCanonicalAuthorityEventAck(envelope)) {
+      receiveCanonicalAuthorityRef.current(envelope, signerHex, session);
+      return;
+    }
     if (isPayerMarkedPaidEnvelope(envelope)) {
       if (seenEventsRef.current.has(envelope.eventId) || validatingEventsRef.current.has(envelope.eventId)) return;
       validatingEventsRef.current.add(envelope.eventId);
@@ -220,11 +363,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
               statementSignerHex: result.statementSignerHex,
             },
           });
-          result.splitIds.forEach(splitId => {
-            apply({type: 'MARK_PAID', payload: {splitId, userId: envelope.memberId}});
-          });
-          markProcessed(envelope.eventId, 'applied');
-          observerRef.current.applied += 1;
+          const applied = result.splitIds.every(splitId => apply({type: 'MARK_PAID', payload: {splitId, userId: envelope.memberId}}));
+          markProcessed(envelope.eventId, applied ? 'applied' : 'rejected');
+          if (applied) observerRef.current.applied += 1;
+          else {
+            observerRef.current.rejected += 1;
+            observerRef.current.lastRejection = `canonical-event-required:MARK_PAID:${envelope.memberId}`;
+          }
           updateObserver(observerRef.current);
         })
         .catch(reason => {
@@ -280,6 +425,75 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }
     return liveGroupConnectionsRef.current.get(key) ?? null;
   }, []);
+
+  const flushAuthorityDeliveryOutbox = useCallback((): Promise<void> => {
+    if (authorityDeliveryFlushRef.current) return authorityDeliveryFlushRef.current;
+    const operation = authorityVaultRef.current!.listAuthorityDeliveries()
+      .then(async items => {
+        for (const item of items) {
+          const connection = connectionForSession(item.session);
+          if (!connection) continue;
+          await publishWithRetry(connection, item.envelope);
+        }
+      })
+      .finally(() => { authorityDeliveryFlushRef.current = null; });
+    authorityDeliveryFlushRef.current = operation;
+    return operation;
+  }, [connectionForSession]);
+
+  const drainAuthorityInbox = useCallback(async (): Promise<void> => {
+    const vault = authorityVaultRef.current!;
+    let progressed = true;
+    while (progressed) {
+      progressed = false;
+      for (const pending of await vault.listPendingAuthorityInbox()) {
+        try {
+          const result = await authorityRef.current!.accept(stateRef.current, pending.envelope);
+          managedGroupIdsRef.current.add(result.canonicalState.groupId);
+          replaceAuthorityProjection(result.state);
+          await vault.markAuthorityInboxTerminal(pending.inboxId, 'applied');
+          const participantId = stateRef.current.currentUserId;
+          const connection = participantId ? connectionForSession(pending.session) : null;
+          if (participantId && connection && result.canonicalState.members[participantId]) {
+            const ack: CanonicalAuthorityEventAckV1 = {
+              v: 1, kind: 'chopdot-authority-ack', groupId: result.canonicalState.groupId,
+              eventId: result.event.eventId, acknowledgingParticipantId: participantId,
+              occurredAt: new Date().toISOString(),
+            };
+            await publishWithRetry(connection, ack);
+          }
+          progressed = result.outcome === 'applied';
+        } catch (reason) {
+          const message = reason instanceof Error ? reason.message : String(reason);
+          if (/depends on group history/u.test(message)) continue;
+          await vault.markAuthorityInboxTerminal(pending.inboxId, 'rejected');
+          updateObserver({lastError: message, lastRejection: `canonical-authority:${pending.envelope.event.eventId}`});
+        }
+      }
+    }
+  }, [connectionForSession, replaceAuthorityProjection, updateObserver]);
+
+  const receiveCanonicalAuthority = useCallback((envelope: HostSessionEnvelope, signerHex?: string, session?: HostSessionConfig) => {
+    if (isCanonicalAuthorityEventAck(envelope)) {
+      void authorityQueueRef.current.then(async () => {
+        const expectedKey = await authorityRef.current!.memberAccountPublicKey(envelope.groupId, envelope.acknowledgingParticipantId);
+        if (!expectedKey || normalizeSigner(signerHex ?? '') !== normalizeSigner(expectedKey)) {
+          updateObserver({lastRejection: `authority-ack:${envelope.eventId}`});
+          return;
+        }
+        await authorityVaultRef.current!.acknowledgeAuthorityDelivery(envelope.eventId, envelope.acknowledgingParticipantId);
+      });
+      return;
+    }
+    if (!isCanonicalAuthorityEventEnvelope(envelope) || !session) return;
+    authorityQueueRef.current = authorityQueueRef.current
+      .then(async () => {
+        await authorityVaultRef.current!.rememberAuthorityInbox(envelope, session);
+        await drainAuthorityInbox();
+      })
+      .catch(reason => updateObserver({lastError: reason instanceof Error ? reason.message : String(reason)}));
+  }, [drainAuthorityInbox, updateObserver]);
+  receiveCanonicalAuthorityRef.current = receiveCanonicalAuthority;
 
   const flushSharedActionOutbox = useCallback((): Promise<void> => {
     if (outboxFlushRef.current) {
@@ -368,14 +582,201 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }
   }, [apply, flushSharedActionOutbox, markProcessed]);
 
+  const queueAcceptedAuthorityDelivery = useCallback(async (before: AppState, result: AuthorityAppendResult): Promise<void> => {
+    if (authorityDependencies?.canonicalDelivery) {
+      await authorityDependencies.canonicalDelivery.publish(result.event, result.canonicalState);
+      return;
+    }
+    const sessions = new Map<string, HostSessionConfig>();
+    if (querySessionRef.current) sessions.set(sharedSessionKey(querySessionRef.current), querySessionRef.current);
+    const legacySession = before.groups[result.canonicalState.groupId]?.liveSession;
+    if (legacySession) sessions.set(sharedSessionKey(legacySession), legacySession);
+    const recipients = Object.values(result.canonicalState.members)
+      .filter(member => member.active !== false && member.participantId !== result.event.actorId)
+      .map(member => member.participantId);
+    for (const session of sessions.values()) {
+      await authorityVaultRef.current!.enqueueAuthorityDelivery({
+        groupId: result.canonicalState.groupId,
+        eventId: result.event.eventId,
+        session,
+        envelope: createCanonicalAuthorityEventEnvelope(result.event),
+        recipientIds: recipients,
+      });
+    }
+  }, [authorityDependencies?.canonicalDelivery]);
+
+  const runAuthority = useCallback((action: ProductionAuthorityAction): Promise<boolean> => {
+    setAuthorityPending(current => current + 1);
+    const operation = authorityQueueRef.current
+      .then(async () => {
+        const before = stateRef.current;
+        const result = await authorityRef.current!.append(before, action);
+        managedGroupIdsRef.current.add(result.canonicalState.groupId);
+        await queueAcceptedAuthorityDelivery(before, result);
+        replaceAuthorityProjection(result.state);
+        setAuthorityError(undefined);
+        await flushAuthorityDeliveryOutbox();
+        return true;
+      })
+      .catch(reason => {
+        const message = reason instanceof Error ? reason.message : String(reason);
+        setAuthorityError(message);
+        updateObserver({lastError: message, lastRejection: `authority:${action.type}`});
+        return false;
+      })
+      .finally(() => setAuthorityPending(current => Math.max(0, current - 1)));
+    authorityQueueRef.current = operation.then(() => undefined);
+    return operation;
+  }, [flushAuthorityDeliveryOutbox, queueAcceptedAuthorityDelivery, replaceAuthorityProjection, updateObserver]);
+
+  const runModeAuthority = useCallback((command: ModeAuthorityCommandV1): Promise<CanonicalGroupStateV1 | null> => {
+    setAuthorityPending(current => current + 1);
+    const operation = authorityQueueRef.current
+      .then(async () => {
+        const before = stateRef.current;
+        const result = await authorityRef.current!.appendMode(before, command);
+        managedGroupIdsRef.current.add(result.canonicalState.groupId);
+        await queueAcceptedAuthorityDelivery(before, result);
+        replaceAuthorityProjection(result.state);
+        setAuthorityError(undefined);
+        await flushAuthorityDeliveryOutbox();
+        return structuredClone(result.canonicalState);
+      })
+      .catch(reason => {
+        const message = reason instanceof Error ? reason.message : String(reason);
+        setAuthorityError(message);
+        updateObserver({lastError: message, lastRejection: `authority:${command.eventType}`});
+        return null;
+      })
+      .finally(() => setAuthorityPending(current => Math.max(0, current - 1)));
+    authorityQueueRef.current = operation.then(() => undefined);
+    return operation;
+  }, [flushAuthorityDeliveryOutbox, queueAcceptedAuthorityDelivery, replaceAuthorityProjection, updateObserver]);
+
+  const runExpenseCorrectionAuthority = useCallback((command: ExpenseCorrectionAuthorityCommandV1): Promise<CanonicalGroupStateV1 | null> => {
+    setAuthorityPending(current => current + 1);
+    const operation = authorityQueueRef.current
+      .then(async () => {
+        const before = stateRef.current;
+        const result = await authorityRef.current!.appendExpenseCorrection(before, command);
+        managedGroupIdsRef.current.add(result.canonicalState.groupId);
+        await queueAcceptedAuthorityDelivery(before, result);
+        replaceAuthorityProjection(result.state);
+        setAuthorityError(undefined);
+        await flushAuthorityDeliveryOutbox();
+        return structuredClone(result.canonicalState);
+      })
+      .catch(reason => {
+        const message = reason instanceof Error ? reason.message : String(reason);
+        setAuthorityError(message);
+        updateObserver({lastError: message, lastRejection: 'authority:EXPENSE_CORRECTED'});
+        return null;
+      })
+      .finally(() => setAuthorityPending(current => Math.max(0, current - 1)));
+    authorityQueueRef.current = operation.then(() => undefined);
+    return operation;
+  }, [flushAuthorityDeliveryOutbox, queueAcceptedAuthorityDelivery, replaceAuthorityProjection, updateObserver]);
+
+  const readCanonicalGroup = useCallback(async (groupId: string): Promise<CanonicalGroupStateV1 | null> => {
+    await authorityQueueRef.current;
+    return authorityRef.current!.readCanonicalGroup(groupId);
+  }, []);
+
+  const runMembershipAuthority = useCallback((command: MembershipAuthorityCommandV1): Promise<CanonicalGroupStateV1 | null> => {
+    setAuthorityPending(current => current + 1);
+    const operation = authorityQueueRef.current
+      .then(async () => {
+        const before = stateRef.current;
+        const canonical = await executeMembershipAuthorityMutation({
+          authority: authorityRef.current!,
+          base: before,
+          command,
+          onDurable(nextState, nextCanonical) {
+            managedGroupIdsRef.current.add(nextCanonical.groupId);
+            replaceAuthorityProjection(nextState);
+          },
+          async deliverJoin(events, next, participantId) {
+            if (!authorityDependencies?.canonicalDelivery?.publishMembershipJoin) throw new Error('New-member history delivery is unavailable.');
+            await authorityDependencies.canonicalDelivery.publishMembershipJoin(events, next, participantId);
+          },
+          async deliverRemoval(events, participantId) {
+            if (!authorityDependencies?.canonicalDelivery?.publishMembershipRemoval) throw new Error('Safe member-removal delivery is unavailable.');
+            await authorityDependencies.canonicalDelivery.publishMembershipRemoval(events, participantId);
+          },
+          deliverOther: (prior, result) => queueAcceptedAuthorityDelivery(prior, result),
+        });
+        setAuthorityError(undefined);
+        await flushAuthorityDeliveryOutbox();
+        return canonical;
+      })
+      .catch(reason => {
+        const message = reason instanceof Error ? reason.message : String(reason);
+        setAuthorityError(message);
+        updateObserver({lastError: message, lastRejection: `authority:membership:${command.type}`});
+        return null;
+      })
+      .finally(() => setAuthorityPending(current => Math.max(0, current - 1)));
+    authorityQueueRef.current = operation.then(() => undefined);
+    return operation;
+  }, [authorityDependencies?.canonicalDelivery, flushAuthorityDeliveryOutbox, queueAcceptedAuthorityDelivery, replaceAuthorityProjection, updateObserver]);
+
+  const readAcceptedEvents = useCallback(async (groupId: string): Promise<CanonicalEventV1[]> => {
+    await authorityQueueRef.current;
+    return authorityRef.current!.readAcceptedEvents(groupId);
+  }, []);
+
+  const readGroupOrigin = useCallback(async (groupId: string): Promise<CanonicalEventV1 | null> => {
+    await authorityQueueRef.current;
+    return authorityRef.current!.readGroupOrigin(groupId);
+  }, []);
+
+  const acceptCanonicalEvent = useCallback(async (envelope: CanonicalAuthorityEventEnvelopeV1): Promise<void> => {
+    const operation = authorityQueueRef.current.then(async () => {
+      const result = await authorityRef.current!.accept(stateRef.current, envelope);
+      managedGroupIdsRef.current.add(result.canonicalState.groupId);
+      replaceAuthorityProjection(result.state);
+      setAuthorityError(undefined);
+    });
+    authorityQueueRef.current = operation;
+    return operation;
+  }, [replaceAuthorityProjection]);
+
+  const importRecoveredEvents = useCallback(async (events: CanonicalEventV1[]): Promise<'applied' | 'duplicate'> => {
+    const operation = authorityQueueRef.current.then(async () => {
+      const result = await authorityRef.current!.importRecoveredEvents(stateRef.current, events);
+      managedGroupIdsRef.current.add(result.canonicalState.groupId);
+      replaceAuthorityProjection(result.state);
+      setAuthorityError(undefined);
+      return result.outcome;
+    });
+    authorityQueueRef.current = operation.then(() => undefined);
+    return operation;
+  }, [replaceAuthorityProjection]);
+
   const dispatch = useCallback<Dispatch<Action>>((action) => {
     if (action.type === 'RESET_TO_CLEAN') {
-      sharedActionOutboxRef.current.clear();
-      processedEventLedgerRef.current.clear();
-      seenEventsRef.current.clear();
-      deferredEventInboxRef.current.clear();
-      pendingEventsRef.current.clear();
-      apply(action);
+      authorityQueueRef.current = authorityQueueRef.current
+        .then(async () => {
+          await authorityRef.current!.clear();
+          managedGroupIdsRef.current.clear();
+          sharedActionOutboxRef.current.clear();
+          processedEventLedgerRef.current.clear();
+          seenEventsRef.current.clear();
+          deferredEventInboxRef.current.clear();
+          pendingEventsRef.current.clear();
+          const nextState = reducer(stateRef.current, action);
+          replaceAuthorityProjection(nextState);
+          setAuthorityError(undefined);
+        })
+        .catch(reason => {
+          const message = reason instanceof Error ? reason.message : String(reason);
+          setAuthorityError(message);
+          updateObserver({lastError: message});
+        });
+      return;
+    }
+    if (isProductionAuthorityAction(action)) {
+      void runAuthority(action);
       return;
     }
     if (!isSharedAction(action)) {
@@ -422,11 +823,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         setSessionStatus('error');
         updateObserver({status: 'error', lastError});
       });
-  }, [apply, connectionForSession, flushSharedActionOutbox, markProcessed, updateObserver]);
+  }, [apply, connectionForSession, flushSharedActionOutbox, markProcessed, replaceAuthorityProjection, runAuthority, updateObserver]);
 
   useEffect(() => {
     stateRef.current = state;
-    appStorage.write(STORAGE_KEY, JSON.stringify(state));
+    persistProjectionCache(state, managedGroupIdsRef.current);
     retryPending();
   }, [retryPending, state]);
 
@@ -440,7 +841,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     setSessionStatus('connecting');
     updateObserver({status: 'connecting'});
-    void connectHostSession({config, onEnvelope: receiveEnvelope})
+    void connectHostSession({config, onEnvelope: (envelope, signerHex) => receiveEnvelope(envelope, signerHex, config)})
       .then(connection => {
         if (cancelled) {
           connection.close();
@@ -453,6 +854,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           if (cancelled) return;
           setSessionStatus('ready');
           updateObserver({status: 'ready'});
+          void flushAuthorityDeliveryOutbox();
         });
       })
       .catch(reason => {
@@ -467,7 +869,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       connectionRef.current?.close();
       connectionRef.current = null;
     };
-  }, [ensureParticipantIdentity, receiveEnvelope, updateObserver]);
+  }, [ensureParticipantIdentity, flushAuthorityDeliveryOutbox, receiveEnvelope, updateObserver]);
 
   useEffect(() => {
     const queryConfig = parseHostSessionConfig();
@@ -497,7 +899,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       if (liveGroupConnectionsRef.current.has(key)) return;
       const connection = await connectHostSession({
         config: {roomId: session.roomId, secret: session.secret},
-        onEnvelope: receiveEnvelope,
+        onEnvelope: (envelope, signerHex) => receiveEnvelope(envelope, signerHex, {roomId: session.roomId, secret: session.secret}),
       });
       if (cancelled) {
         connection.close();
@@ -512,6 +914,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         if (cancelled) return;
         setSessionStatus('ready');
         updateObserver({status: 'ready'});
+        void flushAuthorityDeliveryOutbox();
       })
       .catch(reason => {
         if (cancelled) return;
@@ -525,20 +928,55 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       for (const connection of liveGroupConnectionsRef.current.values()) connection.close();
       liveGroupConnectionsRef.current.clear();
     };
-  }, [ensureParticipantIdentity, liveGroupSessionFingerprint, receiveEnvelope, updateObserver]);
+  }, [ensureParticipantIdentity, flushAuthorityDeliveryOutbox, liveGroupSessionFingerprint, receiveEnvelope, updateObserver]);
 
   useEffect(() => {
     const retryWhenOnline = () => {
       void flushSharedActionOutbox();
+      void flushAuthorityDeliveryOutbox();
     };
     window.addEventListener('online', retryWhenOnline);
     return () => window.removeEventListener('online', retryWhenOnline);
-  }, [flushSharedActionOutbox]);
+  }, [flushAuthorityDeliveryOutbox, flushSharedActionOutbox]);
 
-  return <AppStateContext.Provider value={{ state, dispatch, hostParticipant, sessionStatus }}>{children}</AppStateContext.Provider>;
+  useEffect(() => {
+    if (authorityStatus !== 'ready') return;
+    authorityQueueRef.current = authorityQueueRef.current.then(drainAuthorityInbox);
+    void flushAuthorityDeliveryOutbox();
+  }, [authorityStatus, drainAuthorityInbox, flushAuthorityDeliveryOutbox]);
+
+  if (authorityStatus === 'checking') {
+    return <div role="status" className="min-h-dvh bg-white px-6 py-16 text-center text-sm font-medium text-gray-600 dark:bg-gray-950 dark:text-gray-300">Checking your groups…</div>;
+  }
+  if (authorityStatus === 'error') {
+    return (
+      <div role="alert" className="min-h-dvh bg-white px-6 py-16 text-center text-gray-900 dark:bg-gray-950 dark:text-white">
+        <h1 className="text-xl font-semibold">ChopDot could not safely open this device.</h1>
+        <p className="mx-auto mt-3 max-w-sm text-sm text-gray-600 dark:text-gray-300">Your shared groups were not changed. Reload to try again.</p>
+      </div>
+    );
+  }
+  return <AppStateContext.Provider value={{
+    state,
+    dispatch,
+    hostParticipant,
+    sessionStatus,
+    authorityStatus,
+    authorityBusy: authorityPending > 0,
+    runAuthority,
+    runModeAuthority,
+    runExpenseCorrectionAuthority,
+    runMembershipAuthority,
+    readCanonicalGroup,
+    readAcceptedEvents,
+    readGroupOrigin,
+    acceptCanonicalEvent,
+    importRecoveredEvents,
+    ...(authorityError ? {authorityError} : {}),
+  }}>{children}</AppStateContext.Provider>;
 }
 
-async function publishWithRetry(connection: HostSessionConnection, envelope: SharedActionEnvelope): Promise<void> {
+async function publishWithRetry(connection: HostSessionConnection, envelope: HostSessionEnvelope): Promise<void> {
   let lastError: unknown;
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
@@ -584,6 +1022,24 @@ export function useAppState() {
   const context = useContext(AppStateContext);
   if (!context) throw new Error('useAppState must be used within AppStateProvider');
   return context;
+}
+
+function persistProjectionCache(state: AppState, managedGroupIds: ReadonlySet<string>): void {
+  const cached = structuredClone(state);
+  const managedExpenseIds = new Set(
+    Object.values(cached.expenses)
+      .filter(expense => managedGroupIds.has(expense.groupId))
+      .map(expense => expense.id),
+  );
+  for (const groupId of managedGroupIds) delete cached.groups[groupId];
+  for (const expenseId of managedExpenseIds) delete cached.expenses[expenseId];
+  for (const [splitId, split] of Object.entries(cached.splits)) {
+    if (managedExpenseIds.has(split.expenseId)) delete cached.splits[splitId];
+  }
+  for (const [recordId, record] of Object.entries(cached.savedRecords)) {
+    if (managedGroupIds.has(record.groupId)) delete cached.savedRecords[recordId];
+  }
+  appStorage.write(STORAGE_KEY, JSON.stringify(cached));
 }
 
 function loadInitialState(): AppState {

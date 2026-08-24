@@ -16,6 +16,13 @@ import {
   type ReceiptConfirmedNotice,
 } from './livePayerSync.ts';
 import {PolkadotHostBridge, type PolkadotHostIdentity} from './polkadotHostBridge.ts';
+import {
+  assertCanonicalAuthorityEventEnvelope,
+  isCanonicalAuthorityEventAck,
+  isCanonicalAuthorityEventEnvelope,
+  type CanonicalAuthorityEventAckV1,
+  type CanonicalAuthorityEventEnvelopeV1,
+} from '../core/authority/productionAuthority.ts';
 
 const SESSION_PARAM = 'chopSession';
 const SECRET_PARAM = 'chopKey';
@@ -42,7 +49,7 @@ export interface SharedActionEnvelope {
   action: SharedAction;
 }
 
-export type HostSessionEnvelope = SharedActionEnvelope | PayerMarkedPaidEnvelope | ReceiptConfirmedEnvelope | ReceiptConfirmedNotice;
+export type HostSessionEnvelope = SharedActionEnvelope | PayerMarkedPaidEnvelope | ReceiptConfirmedEnvelope | ReceiptConfirmedNotice | CanonicalAuthorityEventEnvelopeV1 | CanonicalAuthorityEventAckV1;
 
 export interface HostSessionConfig {
   roomId: string;
@@ -193,6 +200,11 @@ export function assertSharedActionEnvelope(value: unknown): asserts value is Sha
 }
 
 export function assertHostSessionEnvelope(value: unknown): asserts value is HostSessionEnvelope {
+  if (isCanonicalAuthorityEventEnvelope(value)) {
+    assertCanonicalAuthorityEventEnvelope(value);
+    return;
+  }
+  if (isCanonicalAuthorityEventAck(value)) return;
   if (isRecord(value) && value.kind === 'chopdot-payer-marked-paid') {
     assertPayerMarkedPaidEnvelope(value);
     return;
@@ -651,6 +663,18 @@ export async function connectHostSession({
       channel = await openChannel();
     },
     publish: async envelope => {
+      if (isCanonicalAuthorityEventAck(envelope)) {
+        const packet = await encryptSessionValue(config.secret, envelope);
+        return channel.publish(packet, `authority-ack/${envelope.eventId}/${envelope.acknowledgingParticipantId}`);
+      }
+      if (isCanonicalAuthorityEventEnvelope(envelope)) {
+        const chunks = authorityEventChunks(envelope);
+        const results = await Promise.all(chunks.map(async (chunk, index) => {
+          const packet = await encryptSessionValue(config.secret, chunk);
+          return channel.publish(packet, `authority/${envelope.event.eventId}/${index}`);
+        }));
+        return results.every(Boolean);
+      }
       if (isReceiptConfirmedEnvelope(envelope)) {
         const packet = await encryptSessionValue(config.secret, toReceiptConfirmedWire(envelope));
         return channel.publish(packet, `receipt/${envelope.requestId}`);
@@ -692,6 +716,16 @@ export async function connectHostSession({
       }
     },
   };
+}
+
+function authorityEventChunks(envelope: CanonicalAuthorityEventEnvelopeV1): EncryptedActionChunk[] {
+  assertCanonicalAuthorityEventEnvelope(envelope);
+  const serialized = JSON.stringify(envelope);
+  const parts = Array.from({length: Math.ceil(serialized.length / CHUNK_TEXT_LENGTH)}, (_, index) => (
+    serialized.slice(index * CHUNK_TEXT_LENGTH, (index + 1) * CHUNK_TEXT_LENGTH)
+  ));
+  if (parts.length === 0 || parts.length > MAX_CHUNKS) throw new Error('Canonical authority event exceeds the session size limit.');
+  return parts.map((part, index) => ({kind: 'chopdot-action-chunk', messageId: `authority:${envelope.event.eventId}`, index, total: parts.length, part}));
 }
 
 function isSelfRegistrationEnvelope(envelope: SharedActionEnvelope): boolean {
@@ -889,14 +923,15 @@ function uuidFromBytes(value: Uint8Array): string {
 }
 
 function paymentStatusCode(status: string): number {
-  const values = ['open', 'request_sent', 'marked_paid', 'confirmed'];
+  // Preserve v1 codes 0-3; `cleared` was appended so older packets remain decodable.
+  const values = ['open', 'request_sent', 'marked_paid', 'confirmed', 'cleared'];
   const code = values.indexOf(status);
   if (code < 0) throw new Error('Invalid payment status.');
   return code;
 }
 
-function paymentStatusFromCode(code: number): 'open' | 'request_sent' | 'marked_paid' | 'confirmed' {
-  const values = ['open', 'request_sent', 'marked_paid', 'confirmed'] as const;
+function paymentStatusFromCode(code: number): 'open' | 'request_sent' | 'marked_paid' | 'confirmed' | 'cleared' {
+  const values = ['open', 'request_sent', 'marked_paid', 'confirmed', 'cleared'] as const;
   const status = values[code];
   if (!status) throw new Error('Invalid payment status code.');
   return status;

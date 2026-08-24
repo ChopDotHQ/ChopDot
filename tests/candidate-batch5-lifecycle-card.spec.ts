@@ -17,10 +17,9 @@ test('actual App uses one state-faithful card through the full dinner lifecycle'
   const leo=await actor(browser,bus,'leo',{width:390,height:844});
   const nina=await actor(browser,bus,'nina',{width:390,height:844});
   try{
-    await expect(mina.page.getByText('Preview',{exact:true})).toBeVisible();
-    await expectCard(mina.page,'preview','Ready to review');
-    await expectOnePrimary(mina.page,'Review this spend');
-    await expectActionInViewport(mina.page,'Review this spend');
+    await expect(mina.page.getByRole('heading',{name:'Start with the receipt.'})).toBeVisible();
+    await expectOnePrimary(mina.page,'Scan a receipt');
+    await expectActionInViewport(mina.page,'Scan a receipt');
     await mina.page.screenshot({path:path.join(proofDir,'01-preview-desktop-1280x720.png')});
 
     await openJourney(mina.page); await openJourney(leo.page); await openJourney(nina.page);
@@ -83,8 +82,8 @@ test('actual App uses one state-faithful card through the full dinner lifecycle'
     const observations={
       schemaVersion:1,
       journey:'Mina reviews one CHF 120 dinner, Leo and Nina act, Mina confirms and saves one record.',
-      oneNextAction:'Review this spend',
-      previewLabelVisible:true,
+      oneNextAction:'Scan a receipt',
+      previewLabelVisible:false,
       previewCreatedMoneyState:false,
       lifecycleStates:['payment_requested','marked_paid','needs_confirmation','sending','ready_to_close','closed'],
       amount:'CHF 120.00',
@@ -101,7 +100,7 @@ test('actual App uses one state-faithful card through the full dinner lifecycle'
 test('actual App gives loading and unavailable states clear safe stops',async({browser})=>{
   const loading=await browser.newPage({viewport:{width:390,height:844}});
   await loading.goto('http://127.0.0.1:4177/tests/fixtures/candidateBatch5HardStatesApp.html?state=loading');
-  await loading.getByRole('button',{name:/Review this spend/u}).click();
+  await loading.getByRole('button',{name:'Continue as guest'}).click();
   await expect(loading.getByRole('heading',{name:'Opening your dinner…'})).toBeVisible();
   await expect(loading.getByTestId('spending-card-loading')).toBeVisible();
   await loading.screenshot({path:path.join(proofDir,'10-loading-mobile-390x844.png')});
@@ -109,7 +108,7 @@ test('actual App gives loading and unavailable states clear safe stops',async({b
 
   const unavailable=await browser.newPage({viewport:{width:390,height:844}});
   await unavailable.goto('http://127.0.0.1:4177/tests/fixtures/candidateBatch5HardStatesApp.html?state=unavailable');
-  await unavailable.getByRole('button',{name:/Review this spend/u}).click();
+  await unavailable.getByRole('button',{name:'Continue as guest'}).click();
   await expect(unavailable.getByRole('heading',{name:'This dinner can’t be opened'})).toBeVisible();
   await expectCard(unavailable,'unavailable','Unavailable');
   await expectOnePrimary(unavailable,'Close');
@@ -147,7 +146,7 @@ async function actor(browser:Browser,bus:BrowserDinnerBus,id:ActorId,viewport:{w
   return{id,context,page};
 }
 
-async function openJourney(page:Page){await page.getByRole('button',{name:/Review this spend/u}).click()}
+async function openJourney(page:Page){await page.getByRole('button',{name:'Continue as guest'}).click()}
 
 class BrowserDinnerBus{
   private rows:CanonicalEventV1[]=[]; private pages=new Map<ActorId,Page>();

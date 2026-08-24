@@ -80,6 +80,9 @@ test('Mina can mix an existing-contact invite with one Nina link/QR bootstrap wi
     bootstrap, now: '2026-08-12T12:03:00.000Z',
   })).outcome, 'idempotent');
   assert.equal(Object.keys(h.nina.state.events).length, acceptedEventCount);
+  const restored = await h.nina.restore('2026-08-12T12:03:30.000Z');
+  assert.equal(restored.deferred.length, 0);
+  assert.equal(h.nina.state.lifecycle.invitations['invite-nina'].inviteeId, 'nina');
   assert.equal(h.nina.state.lifecycle.memberships[`${h.groupId}:nina`], undefined);
 
   await h.nina.acceptInvitation({

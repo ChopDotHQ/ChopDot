@@ -19,7 +19,6 @@ test('composition reports missing trust and key-vault capabilities instead of in
     chatFactory: async () => null,
   });
   assert.deepEqual(result, {status: 'blocked', blockers: [
-    'trusted_organizer_resolver_unavailable',
     'durable_pending_key_vault_unavailable',
     'host_identity_unavailable',
     'chat_unavailable',

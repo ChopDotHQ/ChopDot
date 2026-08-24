@@ -202,7 +202,7 @@ export function buildGroupInviteUrl(
     splits: splits.map((sp) => {
       const paidBy = source.expenses[sp.expenseId]?.paidByUserId;
       const isSelfSplit = paidBy !== undefined && paidBy === sp.userId;
-      const status = sp.status === 'confirmed' && !isSelfSplit
+      const status = (sp.status === 'confirmed' && !isSelfSplit) || sp.status === 'cleared'
         ? 'marked_paid'
         : (sp.status as GroupInviteSplit['status']);
       return { id: sp.id, expenseId: sp.expenseId, userId: sp.userId, amount: sp.amount, status };

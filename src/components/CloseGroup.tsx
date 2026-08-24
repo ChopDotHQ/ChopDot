@@ -3,6 +3,7 @@ import { useAppState } from '../state/AppStateContext';
 import { getCurrencySymbol } from '../utils';
 import { Expense, Split } from '../types';
 import { Screen, ScreenHeader, ScreenContent, BottomAction, Button } from './primitives';
+import {modeCopy} from './productModes';
 
 
 
@@ -15,11 +16,12 @@ export function CloseGroup({
   onBack: () => void;
   onFinish: (recordId: string) => void;
 }) {
-  const { state, dispatch } = useAppState();
+  const { state, runAuthority, authorityBusy, authorityError } = useAppState();
   const group = state.groups[groupId];
   const sym = getCurrencySymbol(state.currency);
 
   if (!group) return null;
+  const copy = modeCopy(group);
 
   // Calculate open amounts
   const expenses = (Object.values(state.expenses) as Expense[]).filter(e => e.groupId === groupId);
@@ -28,23 +30,23 @@ export function CloseGroup({
   const openSplits = splits.filter(s => s.status !== 'confirmed');
   const openAmount = openSplits.reduce((sum, s) => sum + s.amount, 0);
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     if (group.closedRecordId) {
       onFinish(group.closedRecordId);
       return;
     }
     const recordId = `sr-${Date.now()}`;
-    dispatch({ type: 'SAVE_RECORD', payload: { recordId, groupId, savedAt: new Date().toISOString() } });
-    onFinish(recordId);
+    const saved = await runAuthority({ type: 'SAVE_RECORD', payload: { recordId, groupId, savedAt: new Date().toISOString() } });
+    if (saved) onFinish(recordId);
   };
 
   return (
     <Screen>
-      <ScreenHeader title="Finish Group" onBack={onBack} />
+      <ScreenHeader title={copy.closeAction} onBack={onBack} />
 
       <ScreenContent className="p-6 space-y-6">
         <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 text-center transition-colors">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Ready to close {group.name}?</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Ready to save {group.name}?</h2>
           
           {openAmount > 0 ? (
             <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-2xl">
@@ -55,7 +57,7 @@ export function CloseGroup({
                 {sym}{openAmount.toFixed(2)} unpaid
               </p>
               <p className="text-xs text-orange-700/70 dark:text-orange-400/70 mt-2">
-                You can finish the group now, but unpaid amounts will be saved as open in your summary.
+                Finish after every amount is resolved or explicitly corrected. Open money is never hidden in a closed record.
               </p>
             </div>
           ) : (
@@ -69,12 +71,13 @@ export function CloseGroup({
               </p>
             </div>
           )}
+          {authorityError && <p role="alert" className="mt-4 text-sm font-medium text-red-600 dark:text-red-400">{authorityError}</p>}
         </div>
       </ScreenContent>
 
       <BottomAction>
-        <Button onClick={handleFinish} fullWidth disabled={openAmount > 0}>
-          {group.closedRecordId ? 'View saved summary' : 'Finish and save summary'}
+        <Button onClick={() => void handleFinish()} fullWidth disabled={openAmount > 0 || authorityBusy}>
+          {authorityBusy ? 'Saving safely…' : group.closedRecordId ? 'View saved summary' : 'Finish and save summary'}
         </Button>
       </BottomAction>
     </Screen>

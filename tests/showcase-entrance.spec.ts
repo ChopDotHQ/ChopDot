@@ -6,14 +6,10 @@ const proofDir = path.resolve('proof/chopdot-candidate-2026-08-12/screenshots');
 const appUrl = 'http://127.0.0.1:4177';
 
 async function expectEntrance(page: Page) {
-  await expect(page.getByText('Preview', {exact: true})).toBeVisible();
-  await expect(page.getByRole('heading', {name: 'Zurich Dinner'})).toBeVisible();
-  await expect(page.getByText('CHF 120', {exact: true})).toBeVisible();
-  await expect(page.getByText('Mina', {exact: true})).toBeVisible();
-  await expect(page.getByText('Leo', {exact: true})).toBeVisible();
-  await expect(page.getByText('Nina', {exact: true})).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Start with the receipt.'})).toBeVisible();
+  await expect(page.getByText('Scanning makes a local draft. Nothing is shared yet.')).toBeVisible();
 
-  const action = page.getByRole('button', {name: /Review this spend/u});
+  const action = page.getByRole('button', {name: 'Scan a receipt'});
   await expect(action).toBeVisible();
   await expect(action).toBeEnabled();
 
@@ -46,7 +42,7 @@ test('mobile entrance routes through the existing guest action without creating 
   await expectEntrance(page);
   await page.screenshot({path: path.join(proofDir, '02-entrance-mobile-390x844.png'), fullPage: false});
 
-  await page.getByRole('button', {name: /Review this spend/u}).click();
+  await page.getByRole('button', {name: 'Continue as guest'}).click();
   await expect(page.getByRole('heading', {name: 'What should we call you?'})).toBeVisible();
   await expect(page.getByText('Zurich Dinner')).toHaveCount(0);
   await page.screenshot({path: path.join(proofDir, '03-existing-guest-action-mobile.png'), fullPage: false});

@@ -66,10 +66,10 @@ export async function createEncryptedGroupCheckpoint(input: {
   }
   const issuer = projected.state.members[input.issuerId];
   if (
-    projected.state.organizerId !== input.issuerId
-    || issuer?.role !== 'organizer'
+    !issuer
+    || issuer.active === false
     || issuer.accountPublicKeyHex !== input.issuerAccountPublicKeyHex
-  ) throw new Error('Only the account-bound organizer may issue a checkpoint.');
+  ) throw new Error('Only an active account-bound member may issue their checkpoint.');
 
   const sourceEventIds = [...projected.state.eventIds];
   const frontierHash = await checkpointFrontierHash(input.acceptedEvents);
@@ -143,12 +143,11 @@ export async function openEncryptedGroupCheckpoint(input: {
   }
   const issuer = projected.state.members[checkpoint.issuerId];
   const recipient = Object.values(projected.state.members).find(member => member.accountPublicKeyHex === input.expectedRecipientAccountPublicKeyHex);
-  if (!recipient) throw new Error('Checkpoint is not accessible to this group member.');
+  if (!recipient || recipient.active === false) throw new Error('Checkpoint is not accessible to this active group member.');
   if (
     projected.state.groupId !== checkpoint.groupId
-    || projected.state.organizerId !== checkpoint.issuerId
     || issuer?.accountPublicKeyHex !== checkpoint.issuerAccountPublicKeyHex
-    || issuer.role !== 'organizer'
+    || issuer.active === false
     || projected.state.version !== checkpoint.projectionVersion
     || canonicalJson(projected.state.eventIds) !== canonicalJson(checkpoint.sourceEventIds)
     || projected.stateHash !== checkpoint.stateHash

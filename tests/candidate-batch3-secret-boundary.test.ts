@@ -18,7 +18,7 @@ test('money export stays exact, partitioned, and free of payment custody fields'
 
 test('minimum-disclosure export omits Product Account keys, signatures, and recovery material', () => {
   const amount=moneyFromDecimal('120.00','CHF');
-  const state:CanonicalGroupStateV1={v:1,groupId:'g-dinner',name:'Zurich Dinner',version:2,currentEventId:'02-expense',organizerId:'mina',members:{mina:{participantId:'mina',accountPublicKeyHex:`0x${'11'.repeat(32)}`,role:'organizer'}},expenses:{e1:{expenseId:'e1',description:'Dinner',paidBy:'mina',originalTotal:amount,total:amount,revisions:[]}},shares:{'share-mina':{shareId:'share-mina',expenseId:'e1',participantId:'mina',originalAmount:amount,amount,status:'open',adjustments:[]}},closed:null,successorRecords:[],eventIds:['01-create','02-expense']};
+  const state:CanonicalGroupStateV1={v:1,groupId:'g-dinner',name:'Zurich Dinner',version:2,currentEventId:'02-expense',organizerId:'mina',members:{mina:{participantId:'mina',accountPublicKeyHex:`0x${'11'.repeat(32)}`,role:'organizer'}},expenses:{e1:{expenseId:'e1',description:'Dinner',paidBy:'mina',originalTotal:amount,total:amount,revisions:[]}},shares:{'share:e1:mina':{shareId:'share:e1:mina',expenseId:'e1',participantId:'mina',originalAmount:amount,amount,status:'open',adjustments:[]}},closed:null,successorRecords:[],eventIds:['01-create','02-expense']};
   const exported=createRedactedGroupExport(state,`0x${'ab'.repeat(32)}`);
   const serialized=JSON.stringify(exported);
   assert.equal(serialized.includes('accountPublicKeyHex'),false);

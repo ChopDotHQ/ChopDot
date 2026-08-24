@@ -11,7 +11,7 @@ export interface RecoveryAccessResolver {
   resolve(input: {groupId: string; actor: RecoveryActor}): Promise<null | {
     productId: string;
     minimumKeyVersion: number;
-    keyEnvelope: GroupKeyEnvelopeV1;
+    keyEnvelope?: GroupKeyEnvelopeV1;
     entropy: Parameters<GroupRecoveryService['recover']>[0]['entropy'];
   }>;
 }
@@ -52,7 +52,7 @@ export class RecoveryEntryService {
         participantId: this.options.actor.participantId,
         accountPublicKeyHex: this.options.actor.accountPublicKeyHex,
         minimumKeyVersion: access.minimumKeyVersion,
-        keyEnvelope: access.keyEnvelope,
+        ...(access.keyEnvelope ? {keyEnvelope: access.keyEnvelope} : {}),
         entropy: access.entropy,
       });
       const currencyTotals = recovered.state.closed?.currencyTotals

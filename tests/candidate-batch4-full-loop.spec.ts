@@ -101,8 +101,8 @@ async function actor(browser:Browser,bus:BrowserDinnerBus,id:ActorId,viewport:{w
 }
 
 async function openJourney(page:Page){
-  await expect(page.getByRole('button',{name:/Review this spend/u})).toBeVisible();
-  await page.getByRole('button',{name:/Review this spend/u}).click();
+  await expect(page.getByRole('button',{name:'Continue as guest'})).toBeVisible();
+  await page.getByRole('button',{name:'Continue as guest'}).click();
 }
 
 class BrowserDinnerBus{

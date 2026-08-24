@@ -2,7 +2,6 @@ import {cryptoWaitReady, sr25519PairFromSeed, sr25519Sign} from '@polkadot/util-
 import type {KeyValueStorage} from '../../src/environment/livePayerSync.ts';
 import type {AccountMessageSigner} from '../../src/membership/groupKeyHandoff.ts';
 import type {MembershipGrant} from '../../src/membership/membershipLifecycle.ts';
-import {createSignedMembershipEvent} from '../../src/membership/signedMembershipEvents.ts';
 import {
   TrustedContactInvitationCoordinator,
   type MembershipEventDelivery,
@@ -156,17 +155,12 @@ export async function createMembershipInvitationPreviewCeremony(input: {
       await leo.flush();
     },
     async decline() {
-      const event = await createSignedMembershipEvent({
+      await leo.declineInvitation({
+        invitationId,
         eventId: 'event-decline-leo',
-        actorId: 'leo',
-        actorAccountPublicKeyHex: leoAccount,
-        occurredAt: '2026-08-12T12:02:00.000Z',
-        event: {type: 'INVITATION_DECLINED', invitationId},
-        signer: signer(leoPair),
+        declinedAt: '2026-08-12T12:02:00.000Z',
       });
-      const local = await leo.receive({roomId, peer: 'local-leo', event});
-      const remote = await mina.receive({roomId, peer: 'local-leo', event});
-      if (local.outcome === 'rejected' || remote.outcome === 'rejected') throw new Error(local.reason ?? remote.reason);
+      await leo.flush();
     },
     grant,
     retryGrant: grant,
