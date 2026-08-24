@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-22  
 **Programme:** Programme A product delivery, constrained by Programme B native truth  
-**Status:** active execution; local product implementation and assurance accepted, native candidate freeze next
+**Status:** active execution; frozen candidate staged on Products Devnet; identical-CAR Paseo promotion and complete ownership handoff in progress
 **Target worktree:** `/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch`  
 **Target branch at review:** `codex/chopdot-v1-launch`  
 **Target HEAD at review:** `3519a894efbcee5144ecb0bcb9ebc44b888a0e7f`  
@@ -773,8 +773,122 @@ The KG does not make the plan true. It makes accepted evidence recallable.
 
 ## 15. Immediate next move
 
-Close Wave 0 with isolated dependencies, committed contact provenance, product
-cards, source wiki/ADRs, native playbooks, evidence, and an exact-worktree graph
-refresh. In parallel, independently review the bounded Wave 1 core and Wave 3
-recovery slices, then wire the accepted authority through the production
-entrypoint before candidate construction.
+Promote the already-frozen CAR to Paseo without rebuilding it. Because the
+installed phone build can sign Products Devnet but cannot obtain a Paseo
+Statement Store allowance, use the approved public testnet worker only for the
+Paseo writes. Keep that worker as owner until the base content, root manifest,
+`app` subname, executable content, and executable manifest have all passed
+independent readback. Then reassign `app.chopdotapp01.dot` to Devinson first,
+transfer `chopdotapp01.dot` second, and require registrar-owner, registry-owner,
+resolver, text-record, contenthash, CAR/CID, transaction, gateway, and browser
+readback before reporting `user_owned=true`.
+
+## 16. Post-freeze Paseo worker-handoff amendment (2026-08-24)
+
+### Facts
+
+- Candidate commit `cd61093b2af158ca1ba08f26c84c732f30007d4d`, tree
+  `3b4b2807ed02880fdc3fea060f576548fcdc1dcb`, build ID
+  `chopdot-cd61093b2af1-68ce7c04192f`, CAR SHA-256
+  `b9fa8263b7f83c05a32547803078db1bbb47c232c5fc8d07b4f8f5657a34a6ae`,
+  and CID `bafybeifuwlobydydh2ezprm57qix6s6xwnm47fy3u6zvsnghd27i6cdztq`
+  are frozen. Tooling-only commits SHALL NOT rebuild or rewrite those bytes.
+- Products Devnet publication and browser proof are complete for that CID.
+- Two Paseo pairings reached the phone's exact `Device connected` state, while
+  a bounded cross-environment check found the same account has a Devnet
+  Statement Store allowance and no Paseo allowance. This is an environment
+  contour limitation, not an operator-action failure.
+- The public testnet worker is mapped, funded, eligible for the fallback label,
+  and the observed Paseo transfer floor is zero. Its credential is intentionally
+  package-public, so the only accepted use is one uninterrupted
+  publish-to-handoff command with final triple-owner proof.
+- `polkadot-app-deploy@0.13.1` transfers the registrar token before its later
+  manifest publication and its standalone transfer command handles only base
+  registrar tokens. A base-only transfer would leave the worker owning the
+  mutable `app` registry node and is therefore a release-blocking authority
+  failure.
+- Current official `polkadot-app-deploy` source defines subname handoff through
+  `DOTNS_REGISTRY.setSubnodeOwner`: the parent owner reassigns the child because
+  subnames are not ERC-721 tokens. DotNS intentionally resets the child's
+  resolver during reassignment. The still-parent-owning worker must therefore
+  follow the ownership change with parent-authorized `setSubnodeResolver` to
+  the anchored content resolver before transferring the base token. The pinned
+  runtime lacks this complete command, so release tooling must backport the two
+  reviewed registry calls and prove their exact calldata and finalized effects.
+
+### Scope in
+
+- Add a fail-closed, isolated worker-promotion runner for the existing frozen
+  CAR and pinned environment/config anchors.
+- Require a built-ins-only bootstrap, an externally approved clean tooling
+  commit and ordered source aggregate, a fresh lockfile-only install outside
+  ChopDot ancestry, snapshotted inputs, and an environment allowlist before any
+  release dependency executes.
+- Keep worker DotNS authority through all base and manifest writes; never use
+  the vendor's early automatic handoff.
+- Validate the candidate commit/tree/CAR/release manifest separately from the
+  later clean tooling commit and record both identities.
+- Independently read back base registrar owner, base registry owner, `app`
+  registry owner, both resolvers, both contenthash values, and both manifest
+  text records before handoff.
+- Reassign `app.<label>.dot` to the explicit Devinson H160 while the worker
+  still owns the parent, then restore the anchored resolver through the
+  parent-authorized `setSubnodeResolver` path; prefer one atomic batch and
+  verify the finalized child owner, resolver, unchanged contenthash, and
+  unchanged executable text.
+- Transfer `<label>.dot` to the same explicit H160 only after the child check;
+  verify registrar and registry ownership again and require the worker to own
+  neither node.
+- Record transaction hashes, finalized blocks, exact CAR/CID, before/after
+  owners, command result, and live surface evidence without recording a
+  mnemonic or session credential.
+- Require exact finalized transaction/block/inclusion/success/calldata proof
+  for every DotNS mutation. Report Bulletin storage under its honest narrower
+  boundary: finalized CID presence and immutable gateway byte equality, not
+  per-transaction attribution unavailable from the pinned API.
+- Add negative tests for wrong recipient, wrong environment/domain/CAR/hash,
+  dirty worktree, partial manifest, transfer-order reversal, third-party owner,
+  residual worker ownership, and missing finalized readback.
+
+### Scope out
+
+- No dependency upgrade, app-source change, candidate rebuild, replacement
+  CAR, mainnet write, user private key, new account ceremony, or architecture
+  change.
+- No `user_owned` or completion claim when only the base name or only the app
+  subname has moved.
+
+### Ordered release contract
+
+```text
+verify clean exact worktree + tooling commit
+-> verify the externally pinned ordered tooling aggregate
+-> materialize tracked inputs from that commit, copy only hash-verified ignored candidate artifacts, and install the lockfile in a fresh out-of-tree runtime
+-> reconstruct and verify the frozen CAR and every manifested file
+-> verify pinned package/environment/config/code anchors
+-> read-only verify worker identity, funding, mapping, eligibility, and label availability at a finalized head
+-> in one uninterrupted command, publish the exact input CAR and icon with worker ownership
+-> prove finalized immutable Bulletin CIDs and exact gateway bytes
+-> publish root/app manifests with the same worker and prove exact finalized transactions
+-> verify worker owns base registry/registrar and app node; verify CID + records
+-> atomically transfer app subname and restore its anchored resolver
+-> verify finalized child owner + resolver + unchanged content/manifest
+-> transfer base name to Devinson; verify finalized owner change
+-> verify Devinson owns registrar, base registry, and app registry nodes
+-> verify identical CID/records through direct gateway, .paseo.li, .dot.li, and Desktop
+-> record evidence, commit/push tooling and evidence, refresh Repo Graph/KGv2
+```
+
+Any failure before the first transfer leaves the worker-owned candidate
+unaccepted and reparable by rerunning the same idempotent release command. Any
+failure between child and base transfer is an explicit partial-handoff
+incident: the same command may verify the exact records and finish only the
+remaining base transfer. No separate operator pause is planned while the
+package-public worker owns the name. Do not report ownership until all three
+owner reads equal Devinson. A failed or ambiguous final readback is a hard
+stop, not a reason to weaken the verifier.
+
+A retry after lost acknowledgement may prove an already-landed operation by
+exact finalized owner/resolver/content/manifest state. That branch SHALL state
+that prior transaction attribution was not recovered; it SHALL NOT promote
+state readback into a historical transaction-receipt claim.

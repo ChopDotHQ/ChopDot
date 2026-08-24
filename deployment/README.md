@@ -171,7 +171,7 @@ RELEASE_EXPECTED_DEVINSON_OWNER=${RELEASE_EXPECTED_DEVINSON_OWNER} \
 RELEASE_SIGNED_IN_ADDRESS=${RELEASE_SIGNED_IN_ADDRESS} \
 RELEASE_CAR_SHA256=${RELEASE_CAR_SHA256} \
 ./scripts/deploy-locked.sh \
-  --input-car=${RELEASE_CAR} ${RELEASE_DOMAIN} \
+  --input-car ${RELEASE_CAR} ${RELEASE_DOMAIN} \
   --env ${RELEASE_ENV} \
   --environment-file deployment/pad-environments-2026-08-23.json \
   --config polkadot-app-deploy.config.ts \
@@ -206,6 +206,89 @@ subname, contenthash, and text-record writes and rechecks its EVM address before
 those writes. The vendor executable and publisher remain unedited, private pool
 and DotNS overrides are forbidden, and all three adapted-runtime hashes are
 recorded and independently recomputed during live readback.
+
+### Paseo public-worker fallback for the frozen candidate
+
+The direct-owner route remains the default. For the 2026-08-24 frozen
+candidate, bounded pairing proved that Devinson's installed phone contour can
+sign Products Devnet but has no Paseo Statement Store allowance. The accepted
+fallback is therefore a separately attested post-freeze tool; it does not alter
+`release.json`, rebuild the candidate, or produce another CAR.
+
+The fallback uses only the pinned package's public testnet worker. That key is
+publicly known, so the testnet availability risk is accepted only for one
+uninterrupted `release` command; separate publish and handoff commands are
+forbidden. The runner keeps the worker as owner until the exact input CAR,
+root/app contenthash, icon, root
+manifest, executable manifest, and both anchored resolvers have passed readback.
+It then performs the authority handoff in this order:
+
+1. atomically call parent-authorized `setSubnodeOwner` and
+   `setSubnodeResolver` for `app.chopdotapp01.dot`;
+2. prove the app owner is Devinson, its resolver is restored, and its content
+   and executable text are unchanged;
+3. transfer the base registrar token to Devinson;
+4. prove `registrar.ownerOf(baseNode)`, `registry.owner(baseNode)`, and
+   `registry.owner(appNode)` all equal Devinson and the worker owns none.
+
+The resolver restoration is mandatory: DotNS intentionally resets a subname's
+resolver during reassignment. Base-only transfer, child-only transfer, or a
+child transfer with the default reverse resolver is not `user_owned`.
+
+After the worker tooling commit is clean and independently reviewed, use the
+same explicit variables for every phase:
+
+```text
+DO_NOT_TRACK=1
+PAD_UPDATE_CHECK=0
+RELEASE_ENV=paseo-next-v2
+RELEASE_DOMAIN=chopdotapp01.dot
+RELEASE_EXPECTED_DEVINSON_OWNER=0xb76021eefd3932c51dec30fe9c681984d72f923e
+RELEASE_CAR_SHA256=b9fa8263b7f83c05a32547803078db1bbb47c232c5fc8d07b4f8f5657a34a6ae
+RELEASE_TOOLING_COMMIT=<the independently reviewed tooling commit>
+RELEASE_TOOLING_AGGREGATE_SHA256=<the independently reviewed ordered source aggregate>
+```
+
+First run `identity` from the clean tooling commit and independently review its
+commit and aggregate. Export those two exact values above. Then preserve the
+complete outputs of the read-only preflight, the sole uninterrupted release,
+and the final readback:
+
+```text
+npm run release:paseo-worker -- identity
+npm run release:paseo-worker -- preflight
+npm run release:paseo-worker -- release
+npm run release:paseo-worker -- verify-final
+```
+
+`identity`, `preflight`, and `verify-final` are read-only. `release` uploads the
+exact existing CAR and icon, publishes the exact manifests, proves the worker
+state, performs the reviewed app-owner/resolver batch, transfers the base, and
+proves final user ownership without yielding control between phases. It is
+idempotent for exact worker-owned or partially handed-off state and rejects a
+third-party owner.
+
+The bootstrap imports Node built-ins only until it has proved the exact root,
+clean commit, ordered tooling aggregate, frozen candidate identity, and Git
+ancestry. It then snapshots the candidate and tooling into a temporary root
+outside ChopDot, performs a fresh lockfile-only `npm ci --ignore-scripts`, and
+runs with an explicit environment allowlist. Tracked inputs are materialized
+with `git archive` from the approved tooling commit; only the ignored frozen
+CAR and directory are copied separately, then reverified byte-for-byte. DotNS
+writes require a finalized
+transaction hash/block, independent block inclusion, `ExtrinsicSuccess`, and
+exact contract calldata. The pinned Bulletin APIs do not expose finalized
+transaction receipts; storage evidence is therefore stated more narrowly as
+finalized CID presence plus immutable direct-gateway byte equality for every
+release file and the icon. The public worker phrase is imported from the
+attested package and never appears in arguments, environment, evidence, or
+operator logs.
+
+If a write finalized but its acknowledgement was lost, a retry may encounter
+the already-landed owner or resolver state. That branch is labelled with a
+narrower boundary: exact finalized owner/resolver/content/manifest state is
+accepted, but historical transaction attribution is not reconstructed or
+claimed.
 
 ## Independent live readback and promotion evidence
 

@@ -15,6 +15,8 @@
     "verify:dot-host:strict": "DOT_RELEASE_STRICT=1 DOT_RELEASE_LIVE=1 node scripts/verify-dot-host.mjs",
     "release:record-promotion": "node scripts/record-dot-host-promotion.mjs",
     "release:readback": "node scripts/readback-dot-host-release.mjs",
+    "release:paseo-worker": "./scripts/run-worker-paseo-release.sh",
+    "test:paseo-worker-release": "node --test scripts/worker-paseo-release.test.mjs scripts/worker-paseo-release-driver.test.mjs",
     "deploy:tool:verify": "node scripts/verify-locked-polkadot-app-deploy.mjs",
     "deploy:preflight:devnet": "node scripts/preflight-dotns-environment.mjs --environment=devnet",
     "deploy:preflight:paseo": "node scripts/preflight-dotns-environment.mjs --environment=paseo-next-v2",

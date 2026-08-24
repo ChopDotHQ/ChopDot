@@ -23,3 +23,19 @@ independently read-back promotion attestation binds those exact embedded bytes
 to the CAR SHA-256, root/app CID, finalized update transactions, live owners,
 and gateway byte hashes. Stage and public bytes must match. A maintenance CID
 is the rollback target.
+
+When an independently attested testnet worker is required, ownership proof is
+triple rather than inferred: the registrar's base token owner, the registry's
+base-node owner, and every executable-subname owner must all equal the explicit
+user address. Subname reassignment must also restore and re-read the anchored
+resolver without changing contenthash or manifest text before the base token
+moves. The worker must retain no mutable node authority afterward.
+
+A shared public testnet worker may be used only within one uninterrupted
+publish-to-handoff command. The command must start from an externally pinned,
+clean tooling commit and ordered source aggregate, install the lockfile into a
+fresh isolated runtime, and use an environment allowlist. Distinguish finalized
+DotNS transaction proof from Bulletin's narrower finalized-CID plus immutable
+gateway-byte proof; do not call the latter transaction attribution.
+When a retry observes an already-landed write, record exact finalized state as
+the retry boundary and do not imply a historical transaction receipt.
