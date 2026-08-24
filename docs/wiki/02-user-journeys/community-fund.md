@@ -1,5 +1,12 @@
 # Community fund journey
 
+**Kind:** decision
+**Status:** active
+**Owner:** product
+**Last reviewed:** 2026-08-24
+**Applies to:** `chopdot-v1-launch`
+**Sources:** P-008, DC-004, One Chop Core tests
+
 GIVEN roles, contributions, and a bounded proposal, WHEN the configured
 threshold approves release and the recipient or steward confirms handoff, THEN
 the group records a readable report. Reject, expiry, amendment, recovery, and

@@ -5,23 +5,27 @@ from __future__ import annotations
 
 import json
 import os
+import hashlib
 import subprocess
 import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
 
 WORKTREE = Path("/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch").resolve()
-AUTOBOTS = Path("/Users/devinsonpena/.codex/worktrees/24f9/AutoBots").resolve()
+AUTOBOTS_SOURCE = Path("/Users/devinsonpena/.codex/worktrees/24f9/AutoBots").resolve()
+AUTOBOTS_COMMIT = "15577d8e15ec98e14dc7f20ce1525ceb68d8ed75"
+AUTOBOTS_TOOL_HASHES = {
+    "agentops/runners/kg_preflight.py": "cda747f0737c372a8121715cff8fb36539b8e411ca9f75cc8aa95e3abf0627ba",
+    "agentops/runners/repo_graph_v1.py": "015648c5acd7c6ac210b8b64a9b8ce8711ce9b0dc1ec083aa89663d42edf1275",
+}
 REPO_ID = "chopdot-v1-launch"
 ARTIFACT_ROOT = WORKTREE / "artifacts" / "agentops"
 PROOF_PATH = WORKTREE / "docs/release/2026-08-24-recovery-head-index-live-proof.md"
-
-sys.path.insert(0, str(AUTOBOTS))
-
-from agentops.runners.kg_preflight import build_kg_preflight  # noqa: E402
-from agentops.runners.repo_graph_v1 import deploy_repo  # noqa: E402
-
+CONTEXT_PATH = WORKTREE / "product/context-authority.json"
+LIVE_FINDING_PATH = WORKTREE / "docs/release/2026-08-24-live-first-use-findings.md"
+RELEASE_STATE_PATH = WORKTREE / "docs/release/current-release-state.json"
 
 MANIFEST = {
     "schema_version": "1.0",
@@ -33,9 +37,18 @@ MANIFEST = {
         "include": [
             "PRODUCT_TRUTH.md",
             "README.md",
+            "AGENTS.md",
+            "PROJECT_DIRECTIVES.md",
             "package.json",
             "package-lock.json",
+            ".knowns/tasks",
+            "product/**",
+            "docs/CHOPDOT_OPERATING_LOOPS.md",
+            "docs/CHOPDOT_LOOP_RUNNER.md",
+            "docs/adr/**",
+            "docs/wiki/**",
             "docs/release/**",
+            "docs/superpowers/plans/2026-08-24-context-authority-and-live-first-use-repair.md",
             "docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
             "docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.json",
             "deployment/README.md",
@@ -52,8 +65,8 @@ MANIFEST = {
         "source": ["src/**", "scripts/**", "contracts/**"],
         "tests": ["**/*.test.*", "**/*.spec.*", "contracts/**/test/**"],
         "specs": ["docs/superpowers/plans/**"],
-        "decisions": ["PRODUCT_TRUTH.md", "docs/release/**"],
-        "tasks": ["docs/superpowers/plans/**"],
+        "decisions": ["PRODUCT_TRUTH.md", "product/**", "docs/adr/**", "docs/release/**"],
+        "tasks": ["product/cards.md", "product/roadmap.md", ".knowns/tasks", "docs/superpowers/plans/**"],
         "evidence": [
             "docs/release/**",
             "deployment/recovery-head-index/**",
@@ -72,6 +85,12 @@ MANIFEST = {
     },
     "critical_paths": [
         "PRODUCT_TRUTH.md",
+        "product/context-authority.json",
+        "product/cards.md",
+        "product/decisions.md",
+        "docs/adr/0004-context-authority-and-cited-recall.md",
+        "docs/release/current-release-state.json",
+        "docs/release/2026-08-24-live-first-use-findings.md",
         "docs/release/2026-08-24-local-release-assurance.md",
         "docs/release/2026-08-24-recovery-head-index-live-proof.md",
         "deployment/recovery-head-index/devnet.json",
@@ -98,6 +117,21 @@ QUERIES = {
     "authority_boundary": (
         "recovery contract bounded non-authority index no admin upgrade membership money custody"
     ),
+    "context_authority": (
+        "ChopDot exact worktree context authority hierarchy Cockpit priority KGv2 cited recall only"
+    ),
+    "live_first_use": (
+        "ChopDot live first use guest group creation blocker overloaded Home candidate ineligible promotion"
+    ),
+}
+
+REQUIRED_QUERY_SOURCE = {
+    "devnet": PROOF_PATH,
+    "paseo": PROOF_PATH,
+    "identical_code": PROOF_PATH,
+    "authority_boundary": PROOF_PATH,
+    "context_authority": CONTEXT_PATH,
+    "live_first_use": LIVE_FINDING_PATH,
 }
 
 
@@ -111,21 +145,152 @@ def write_json(path: Path, payload: object) -> None:
 
 def git(*args: str) -> str:
     return subprocess.check_output(
-        ["git", "-C", str(WORKTREE), *args], text=True
+        ["/usr/bin/git", "-C", str(WORKTREE), *args], text=True
     ).strip()
 
 
-def main() -> int:
+def sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
+
+
+def require_clean_exact_worktree() -> dict[str, object]:
     if Path.cwd().resolve() != WORKTREE:
         raise RuntimeError(f"Run from exact worktree: {WORKTREE}")
-    if not PROOF_PATH.exists():
-        raise RuntimeError(f"Release proof is missing: {PROOF_PATH}")
+    root = Path(git("rev-parse", "--show-toplevel")).resolve()
+    branch = git("branch", "--show-current")
+    head = git("rev-parse", "HEAD")
+    tree = git("rev-parse", "HEAD^{tree}")
+    status = git("status", "--porcelain=v1", "--untracked-files=all")
+    if root != WORKTREE:
+        raise RuntimeError(f"Git root differs from exact worktree: {root}")
+    if branch != "codex/chopdot-v1-launch":
+        raise RuntimeError(f"Branch differs from release branch: {branch}")
+    if status:
+        raise RuntimeError(
+            "AgentOps refresh refuses staged, modified, or untracked paths before any import or durable write:\n"
+            + status
+        )
+    for required in [PROOF_PATH, CONTEXT_PATH, LIVE_FINDING_PATH, RELEASE_STATE_PATH]:
+        if not required.exists():
+            raise RuntimeError(f"Required release/context evidence is missing: {required}")
+    return {"root": str(root), "branch": branch, "head": head, "tree": tree, "status": []}
+
+
+def attest_autobots_source() -> None:
+    if not AUTOBOTS_SOURCE.is_dir():
+        raise RuntimeError(f"Pinned AgentOps source checkout is missing: {AUTOBOTS_SOURCE}")
+    subprocess.run(
+        ["/usr/bin/git", "-C", str(AUTOBOTS_SOURCE), "cat-file", "-e", f"{AUTOBOTS_COMMIT}^{{commit}}"],
+        check=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    for relative, expected in AUTOBOTS_TOOL_HASHES.items():
+        committed = subprocess.check_output(
+            ["/usr/bin/git", "-C", str(AUTOBOTS_SOURCE), "show", f"{AUTOBOTS_COMMIT}:{relative}"]
+        )
+        if sha256_bytes(committed) != expected:
+            raise RuntimeError(f"Pinned AgentOps tool hash differs for {relative}")
+
+
+def attest_snapshot_tree(target: Path, label: str) -> None:
+    head = subprocess.check_output(
+        ["/usr/bin/git", "-C", str(target), "rev-parse", "HEAD"], text=True
+    ).strip()
+    if head != AUTOBOTS_COMMIT:
+        raise RuntimeError(f"{label} commit differs from the pin")
+    status = subprocess.check_output(
+        ["/usr/bin/git", "-C", str(target), "status", "--porcelain=v1", "--untracked-files=all"],
+        text=True,
+    ).strip()
+    if status:
+        raise RuntimeError(f"{label} is dirty")
+    flags = subprocess.check_output(
+        ["/usr/bin/git", "-C", str(target), "ls-files", "-v"], text=True
+    ).splitlines()
+    if any(line and (line[0].islower() or line.startswith("S ")) for line in flags):
+        raise RuntimeError(f"{label} contains assume-unchanged or skip-worktree index flags")
+    tree = subprocess.check_output(
+        ["/usr/bin/git", "-C", str(target), "ls-tree", "-r", "-z", "--full-tree", "HEAD"]
+    )
+    for record in tree.split(b"\0"):
+        if not record:
+            continue
+        metadata, encoded_path = record.split(b"\t", 1)
+        mode, object_type, expected_oid = metadata.decode("ascii").split(" ")
+        if object_type != "blob":
+            raise RuntimeError(f"{label} contains unsupported tracked object type {object_type}")
+        relative = encoded_path.decode("utf-8", errors="surrogateescape")
+        target_path = target / relative
+        info = target_path.lstat()
+        if mode == "120000":
+            if not target_path.is_symlink():
+                raise RuntimeError(f"{label} tracked mode differs from HEAD for {relative}")
+            contents = os.readlink(os.fsencode(target_path))
+        else:
+            if not target_path.is_file() or target_path.is_symlink():
+                raise RuntimeError(f"{label} tracked mode differs from HEAD for {relative}")
+            expected_executable = mode == "100755"
+            if bool(info.st_mode & 0o111) != expected_executable:
+                raise RuntimeError(f"{label} executable mode differs from HEAD for {relative}")
+            contents = target_path.read_bytes()
+        header = f"blob {len(contents)}\0".encode("ascii")
+        actual_oid = hashlib.sha1(header + contents).hexdigest()
+        if actual_oid != expected_oid:
+            raise RuntimeError(f"{label} tracked bytes differ from HEAD for {relative}")
+    for relative, expected in AUTOBOTS_TOOL_HASHES.items():
+        if sha256_bytes((target / relative).read_bytes()) != expected:
+            raise RuntimeError(f"{label} tool hash differs for {relative}")
+
+
+def materialize_autobots_snapshot(target: Path) -> None:
+    subprocess.run(
+        [
+            "/usr/bin/git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "clone",
+            "--no-hardlinks",
+            "--no-checkout",
+            str(AUTOBOTS_SOURCE),
+            str(target),
+        ],
+        check=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    subprocess.run(
+        [
+            "/usr/bin/git",
+            "-C",
+            str(target),
+            "-c",
+            "core.hooksPath=/dev/null",
+            "checkout",
+            "--detach",
+            AUTOBOTS_COMMIT,
+        ],
+        check=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    attest_snapshot_tree(target, "Isolated AgentOps snapshot")
+
+
+def isolated_main(autobots: Path, source_identity: dict[str, object]) -> int:
+    attest_snapshot_tree(autobots, "Isolated AgentOps child runtime")
+    sys.path.insert(0, str(autobots))
+    from agentops.runners.kg_preflight import build_kg_preflight
+    from agentops.runners.repo_graph_v1 import deploy_repo
 
     os.environ["AGENTOPS_CONTEXT_GRAPH_MODE"] = "v2"
     os.environ["AGENTOPS_CG2_REPO_ROOT_CHOPDOT_V1_LAUNCH"] = str(WORKTREE)
 
     deployment = deploy_repo(MANIFEST, apply=True, portfolio_tier="product")
-    report_root = AUTOBOTS / "agentops/reports/repo_graph_v1/repos" / REPO_ID
+    report_root = autobots / "agentops/reports/repo_graph_v1/repos" / REPO_ID
     graph = json.loads((report_root / "graph.json").read_text(encoding="utf-8"))
     packet = json.loads(
         (report_root / "context_packet.json").read_text(encoding="utf-8")
@@ -149,6 +314,35 @@ def main() -> int:
         recalled = v2.get("packet", {})
         facts = recalled.get("facts", [])
         citations = recalled.get("citations", [])
+        citation_bindings = []
+        for citation in citations:
+            source_ref = citation.get("source_ref")
+            source_path = Path(source_ref).resolve() if source_ref else None
+            verification = citation.get("verification", {})
+            verification_checks = verification.get("checks", {})
+            inside_exact_root = bool(
+                source_path
+                and source_path != WORKTREE
+                and str(source_path).startswith(str(WORKTREE) + os.sep)
+            )
+            actual_hash = (
+                sha256_bytes(source_path.read_bytes())
+                if inside_exact_root and source_path.is_file()
+                else None
+            )
+            citation_bindings.append(
+                {
+                    "source_ref": source_ref,
+                    "inside_exact_root": inside_exact_root,
+                    "verification_checks": verification_checks,
+                    "verification_all_true": bool(verification_checks)
+                    and all(value is True for value in verification_checks.values()),
+                    "recorded_source_hash": citation.get("source_hash"),
+                    "actual_source_hash": actual_hash,
+                    "source_hash_matches": bool(actual_hash)
+                    and citation.get("source_hash") == actual_hash,
+                }
+            )
         all_facts.extend(facts)
         all_citations.extend(citations)
         query_summaries[name] = {
@@ -161,9 +355,9 @@ def main() -> int:
             "packet_digest": recalled.get("packet_digest"),
             "rejected_candidate_count": recalled.get("rejected_candidate_count"),
             "degradation": recalled.get("degradation", []),
+            "citation_bindings": citation_bindings,
         }
 
-    proof_ref = str(PROOF_PATH)
     exact_prefix = str(WORKTREE) + os.sep
     query_checks = {}
     for name, summary in query_summaries.items():
@@ -173,11 +367,16 @@ def main() -> int:
             "fallback_unused": read_path.get("fallback_used") is False,
             "facts_nonempty": summary["fact_count"] > 0,
             "citations_nonempty": summary["citation_count"] > 0,
-            "release_proof_cited": proof_ref in summary["source_refs"],
+            "required_source_cited": str(REQUIRED_QUERY_SOURCE[name])
+            in summary["source_refs"],
             "all_citations_exact_root": all(
                 str(source).startswith(exact_prefix)
                 for source in summary["source_refs"]
             ),
+            "all_citation_verification_checks_true": bool(summary["citation_bindings"])
+            and all(item["verification_all_true"] for item in summary["citation_bindings"]),
+            "all_citation_source_hashes_current": bool(summary["citation_bindings"])
+            and all(item["source_hash_matches"] for item in summary["citation_bindings"]),
         }
 
     checks = {
@@ -188,20 +387,49 @@ def main() -> int:
         == "codex/chopdot-v1-launch",
         "exact_head": graph.get("identity", {}).get("commit") == git("rev-parse", "HEAD"),
         "clean_tree": graph.get("identity", {}).get("dirty") is False,
+        "packet_branch_matches_graph": packet.get("branch") == graph.get("identity", {}).get("branch"),
+        "packet_commit_matches_graph": packet.get("commit") == graph.get("identity", {}).get("commit"),
+        "packet_graph_digest_matches": packet.get("graph_digest") == graph.get("graph_digest"),
         "proof_in_graph": any(
             item.get("source_path") == str(PROOF_PATH.relative_to(WORKTREE))
             for item in graph.get("entities", [])
         ),
-        "all_queries_pass": all(
-            all(query.values()) for query in query_checks.values()
+        "context_sources_in_graph": all(
+            any(
+                item.get("source_path") == str(source.relative_to(WORKTREE))
+                for item in graph.get("entities", [])
+            )
+            for source in [CONTEXT_PATH, LIVE_FINDING_PATH, RELEASE_STATE_PATH]
         ),
+        "all_queries_pass": all(all(query.values()) for query in query_checks.values()),
     }
-    status = "pass" if all(checks.values()) else "fail"
+    core_pass = all(checks.values())
+    kg_lineage = {
+        "repo_root": str(WORKTREE),
+        "branch": source_identity["branch"],
+        "commit": source_identity["head"],
+        "repo_graph_packet_digest": packet.get("packet_digest"),
+        "public_recall_exposes_commit_lineage": False,
+        "reason": "Context Graph v2 public recalled facts and citations do not expose an event commit or Repo Graph packet identity, so exact-commit recall cannot be proven.",
+    }
+    kg_known = False
+    status = "partial" if core_pass else "fail"
     result = {
-        "schema_version": 1,
+        "schema": "chopdot.release-agentops-verification.v2",
+        "schema_version": 2,
         "kind": "chopdot_release_agentops_verification",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "status": status,
+        "kg_known": kg_known,
+        "kg_lineage": kg_lineage,
+        "source_identity": source_identity,
+        "agentops_runtime": {
+            "source_checkout": str(AUTOBOTS_SOURCE),
+            "commit": AUTOBOTS_COMMIT,
+            "snapshot_root": str(autobots),
+            "tool_hashes": AUTOBOTS_TOOL_HASHES,
+            "python": sys.version,
+        },
         "checks": checks,
         "query_checks": query_checks,
         "queries": query_summaries,
@@ -243,8 +471,60 @@ def main() -> int:
     write_json(ARTIFACT_ROOT / "release-kgv2-recall.json", preflights)
     write_json(ARTIFACT_ROOT / "release-agentops-verification.json", result)
     print(json.dumps(result, indent=2, sort_keys=True))
-    return 0 if status == "pass" else 2
+    return 2
+
+
+def main() -> int:
+    source_identity = require_clean_exact_worktree()
+    if len(sys.argv) == 3 and sys.argv[1] == "--isolated-run":
+        if sys.flags.isolated != 1:
+            raise RuntimeError("The AgentOps child entrypoint requires Python isolated mode")
+        for variable in ["PYTHONPATH", "PYTHONHOME", "PYTHONSTARTUP", "PYTHONUSERBASE"]:
+            if variable in os.environ:
+                raise RuntimeError(f"The AgentOps child environment still contains {variable}")
+        for variable in ["PYTHONDONTWRITEBYTECODE", "PYTHONNOUSERSITE", "PYTHONSAFEPATH"]:
+            if os.environ.get(variable) != "1":
+                raise RuntimeError(f"The AgentOps child environment is missing {variable}=1")
+        snapshot = Path(sys.argv[2]).resolve()
+        supplied_identity = json.loads(
+            os.environ.get("CHOPDOT_AGENTOPS_SOURCE_IDENTITY", "{}")
+        )
+        if supplied_identity != source_identity:
+            raise RuntimeError("Parent and isolated child exact-worktree identities differ")
+        return isolated_main(snapshot, source_identity)
+
+    if len(sys.argv) != 1:
+        raise RuntimeError("No arguments are accepted for the operator entrypoint")
+    attest_autobots_source()
+    with tempfile.TemporaryDirectory(prefix="chopdot-agentops-") as temporary:
+        snapshot = (Path(temporary) / "runtime").resolve()
+        materialize_autobots_snapshot(snapshot)
+        environment = os.environ.copy()
+        for variable in ["PYTHONPATH", "PYTHONHOME", "PYTHONSTARTUP", "PYTHONUSERBASE"]:
+            environment.pop(variable, None)
+        environment.update(
+            {
+                "CHOPDOT_AGENTOPS_SOURCE_IDENTITY": json.dumps(
+                    source_identity, sort_keys=True
+                ),
+                "PYTHONDONTWRITEBYTECODE": "1",
+                "PYTHONNOUSERSITE": "1",
+                "PYTHONSAFEPATH": "1",
+                "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+            }
+        )
+        child = subprocess.run(
+            [sys.executable, "-I", str(Path(__file__).resolve()), "--isolated-run", str(snapshot)],
+            cwd=WORKTREE,
+            env=environment,
+            check=False,
+        )
+        return child.returncode
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except Exception as error:  # fail closed before a traceback obscures the gate
+        print(f"ChopDot AgentOps refresh refused: {error}", file=sys.stderr)
+        raise SystemExit(1)

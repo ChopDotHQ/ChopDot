@@ -1,5 +1,12 @@
 # Normal pot, trip, and couple journey
 
+**Kind:** decision
+**Status:** active
+**Owner:** product
+**Last reviewed:** 2026-08-24
+**Applies to:** `chopdot-v1-launch`
+**Sources:** P-012, P-022, DC-001, DC-007
+
 GIVEN Mina paid for a group, WHEN she scans or imports the receipt and reviews
 the draft, THEN only her signed action creates the expense and exact splits.
 Supported browsers may extract text on-device to prefill that draft. The image

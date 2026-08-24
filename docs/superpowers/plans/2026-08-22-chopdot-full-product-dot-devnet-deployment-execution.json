@@ -2,17 +2,21 @@
   "schema_version": 1,
   "kind": "chopdot_full_product_dot_devnet_execution_plan",
   "date": "2026-08-22",
-  "target": {
-    "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
-    "branch_at_review": "codex/chopdot-v1-launch",
-    "head_at_review": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f"
-  },
+  "status": "superseded_for_current_routing",
+  "superseded_on": "2026-08-24",
+  "superseded_by": "docs/superpowers/plans/2026-08-24-context-authority-and-live-first-use-repair.md",
   "authority": {
+    "current_state": "historical_time_sliced_record",
     "product_law": "PRODUCT_TRUTH.md",
     "core": "participant-held append-only signed ChopEventV1 log reduced by One Chop Core",
     "chain_role": "rail_and_distribution_door",
     "supabase_v1": "rejected",
     "publication": "fresh_human_action_time_approval_required"
+  },
+  "target": {
+    "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+    "branch_at_review": "codex/chopdot-v1-launch",
+    "head_at_review": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f"
   },
   "product_loop": ["Catch", "Management", "Payout", "History"],
   "release_dimensions": [

@@ -1,5 +1,12 @@
 # Participant-held architecture
 
+**Kind:** decision
+**Status:** active
+**Owner:** architecture
+**Last reviewed:** 2026-08-24
+**Applies to:** `chopdot-v1-launch`
+**Sources:** PRODUCT_TRUTH.md, DEC-002, DEC-003, ADR 0001
+
 ChopDot has no operated authority database. Canonical truth is an append-only
 `ChopEventV1` log signed by participants and interpreted by One Chop Core with
 exact `MoneyV1` values. Encrypted local storage is a replayable projection.
@@ -15,8 +22,10 @@ private backend follows from the authority model; it is not the product pitch.
 ## Product Account composition
 
 Receipt scanning and bounded guest use remain available before account
-ceremony. **Use my Product Account** is an explicit user action. Once chosen,
-the host account signer becomes that participant's authority identity and the
+ceremony. When a shared signed action needs an account, ChopDot establishes it
+behind one plain-language action describing the user's outcome. `Product
+Account` remains internal adapter terminology. Once the user accepts setup, the
+host account signer becomes that participant's authority identity and the
 organizer's initial group key is created once, wrapped to the account, and
 stored only in `DurableMembershipKeyEnvelopeRegistry`.
 

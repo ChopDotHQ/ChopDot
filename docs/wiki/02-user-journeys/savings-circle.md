@@ -1,5 +1,12 @@
 # Savings circle journey
 
+**Kind:** decision
+**Status:** active
+**Owner:** product
+**Last reviewed:** 2026-08-24
+**Applies to:** `chopdot-v1-launch`
+**Sources:** P-006, DC-004, production-entrypoint mode tests
+
 GIVEN accepted order and round rules, WHEN participants contribute and the
 recipient confirms payout evidence, THEN the circle advances exactly once.
 Delay, default, correction, replacement, exit, recovery, and cycle close remain

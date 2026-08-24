@@ -1,0 +1,123 @@
+{
+  "schema": "chopdot.release-state.v1",
+  "kind": "measurement",
+  "status": "active",
+  "owner": "release-integrator",
+  "observed_at": "2026-08-24",
+  "applies_to": "chopdot-v1-launch",
+  "authority": "Machine-readable current release verdicts only; this cannot change product intent or replace immutable bytes and live readback.",
+  "branch": "codex/chopdot-v1-launch",
+  "candidate": {
+    "commit": "cd61093b2af158ca1ba08f26c84c732f30007d4d",
+    "tree": "3b4b2807ed02880fdc3fea060f576548fcdc1dcb",
+    "build_id": "chopdot-cd61093b2af1-68ce7c04192f",
+    "car_sha256": "b9fa8263b7f83c05a32547803078db1bbb47c232c5fc8d07b4f8f5657a34a6ae",
+    "outer_cid": "bafybeifuwlobydydh2ezprm57qix6s6xwnm47fy3u6zvsnghd27i6cdztq",
+    "inner_app_cid": "bafybeiejtx4iarex7lfsl6azal3dwx4xgrsxliwvxh7u4pgcdaz66wfrrq",
+    "public_url": "https://chopdotapp01.dot.li/?chainBackend=rpc-gateway",
+    "identity_evidence": {
+      "path": "docs/release/frozen-candidate-cd61093b-evidence.json",
+      "sha256": "6ecff7aed5f5b3e887fd3c1f6820a2e356c3da0fae2a08b7af310ede579ddb7e"
+    }
+  },
+  "verdicts": {
+    "implemented": "partial",
+    "tested": "failed",
+    "committed": true,
+    "pushed": true,
+    "candidate_built": true,
+    "storage_uploaded": true,
+    "staged": false,
+    "promoted": false,
+    "byte_reachable": true,
+    "user_journey_reachable": false,
+    "user_owned": false,
+    "user_proven": false,
+    "kg_known": false
+  },
+  "verdict_notes": {
+    "implemented": "The frozen source contains broad product capability, but the first shared-group journey is incomplete.",
+    "tested": "Local suites passed for the frozen source, while live first-use product acceptance failed.",
+    "committed": "The frozen candidate commit and matching tree exist in this repository.",
+    "pushed": "The candidate commit is an ancestor of origin/codex/chopdot-v1-launch.",
+    "candidate_built": "The CAR identity is bound to a tracked evidence record and locally available bytes.",
+    "storage_uploaded": "A fresh direct read from the pinned Paseo IPFS gateway matched the complete CAR byte count and SHA-256.",
+    "staged": "No accepted DotNS stage/name mutation is established for this candidate.",
+    "promoted": "No public-testnet promotion is established and P0/P1 blockers prohibit it.",
+    "byte_reachable": "The pinned direct Paseo IPFS gateway returned the exact CAR bytes.",
+    "user_journey_reachable": "The guest-to-shared-group path fails live with no visible recovery action.",
+    "user_owned": "No accepted release-name transfer and ownership readback is recorded.",
+    "user_proven": "No real organizer and two-participant acceptance is recorded.",
+    "kg_known": "The latest stored graph predates the governance repair and live first-use evidence."
+  },
+  "verdict_evidence": {
+    "committed": {
+      "path": "docs/release/frozen-candidate-cd61093b-evidence.json",
+      "sha256": "6ecff7aed5f5b3e887fd3c1f6820a2e356c3da0fae2a08b7af310ede579ddb7e"
+    },
+    "pushed": {
+      "path": "docs/release/frozen-candidate-cd61093b-evidence.json",
+      "sha256": "6ecff7aed5f5b3e887fd3c1f6820a2e356c3da0fae2a08b7af310ede579ddb7e"
+    },
+    "candidate_built": {
+      "path": "docs/release/frozen-candidate-cd61093b-evidence.json",
+      "sha256": "6ecff7aed5f5b3e887fd3c1f6820a2e356c3da0fae2a08b7af310ede579ddb7e"
+    },
+    "storage_uploaded": {
+      "path": "docs/release/frozen-candidate-cd61093b-evidence.json",
+      "sha256": "6ecff7aed5f5b3e887fd3c1f6820a2e356c3da0fae2a08b7af310ede579ddb7e"
+    },
+    "byte_reachable": {
+      "path": "docs/release/frozen-candidate-cd61093b-evidence.json",
+      "sha256": "6ecff7aed5f5b3e887fd3c1f6820a2e356c3da0fae2a08b7af310ede579ddb7e"
+    }
+  },
+  "blockers": [
+    {
+      "severity": "P0",
+      "card": "P-035",
+      "evidence": "docs/release/2026-08-24-live-first-use-findings.md",
+      "evidence_sha256": "e1e6b46449bdd5d960682d0ee494b8034e6286b1738569f8d2168fae73daf621",
+      "summary": "Guest group creation reaches a later account-authority rejection with no visible recovery path."
+    },
+    {
+      "severity": "P1",
+      "card": "P-022",
+      "evidence": "docs/release/2026-08-24-live-first-use-findings.md",
+      "evidence_sha256": "e1e6b46449bdd5d960682d0ee494b8034e6286b1738569f8d2168fae73daf621",
+      "summary": "Empty Home is a duplicated dashboard rather than one clear next action."
+    }
+  ],
+  "kgv2": {
+    "requested_read_path": "v2",
+    "active_read_path": "context_graph_v2",
+    "runtime": {
+      "kind": "current_interpreter",
+      "python": "/Users/devinsonpena/Documents/AutoBots/proofmap/.venv/bin/python"
+    },
+    "fallback_used": false,
+    "fact_count": 17,
+    "citation_count": 17,
+    "cited_source_paths": [
+      "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/release/2026-08-24-recovery-head-index-live-proof.md",
+      "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/contracts/recovery-head-index/test/RecoveryHeadIndex.behavior.cjs",
+      "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/tests/named-mode-multi-account-production-entrypoint.spec.ts",
+      "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/src/membership/limitedNoAppActionService.test.ts",
+      "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/src/components/membership/membershipInvitationView.test.ts",
+      "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/src/membership/membershipLifecycle.test.ts",
+      "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/src/recovery/recoveryKit.test.ts",
+      "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/tests/membership-invitation-ui.spec.ts"
+    ],
+    "repo_root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+    "branch": "codex/chopdot-v1-launch",
+    "latest_packet_commit": "cd61093b2af158ca1ba08f26c84c732f30007d4d",
+    "graph_digest": "6e0a524d3436a83983e5202a4253aa6b9b46aa5cf73890b94ce83003d5f30464",
+    "packet_digest": "a5789e89db9ae318ebdd41a54cd8bd5dcf82098f8fc1c9ce0a27e703d183530a",
+    "current_outcome_known": false,
+    "stale_reasons": [
+      "The stored packet predates the release-tool commits, governance repair, and live first-use finding.",
+      "The stored recall does not cite the context authority manifest, ADR 0004, or live blocker evidence."
+    ]
+  },
+  "next_required_outcome": "Repair P-035 and P-022, prove the production entrypoint and real screens, then freeze a new immutable candidate."
+}

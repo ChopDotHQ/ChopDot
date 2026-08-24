@@ -1,15 +1,18 @@
 # Active ChopDot tasks
 
-PROGRAMME=A+B participant-held-public-beta
+Generated operator handoff from `product/cards.md`; do not edit or use this
+read model to reprioritize the Cockpit.
 
-- [ ] Close Wave 0 governance, isolation, evidence, and exact-worktree KGv2.
-- [ ] Wire One Chop Core into `src/main.tsx` production composition.
-- [ ] Complete identity, encrypted delivery, recovery, and revocation.
-- [ ] Complete and prove normal pot, receipt, Spend Card, savings circle,
-      emergency pot, and community fund production journeys.
-- [ ] Freeze one deterministic CAR, stage on Products Devnet, promote unchanged,
-      verify every supported public-testnet surface, and transfer DotNS ownership.
-- [ ] Record independent real-organizer/two-participant acceptance.
+- [ ] P-035 [building] priority 100: Create my group
+- [ ] P-022 [building] priority 90: Scan a receipt
+- [ ] P-034 [building] priority 70: Review this draft
+- [ ] P-032 [building] priority 60: Restore my groups
+- [ ] P-012 [building] priority 50: Scan a receipt
+- [ ] P-030 [blocked] priority 95: Prove the repaired candidate
+- [ ] P-005 [blocked] priority 40: Match a receipt
+- [ ] P-006 [blocked] priority 39: Record this contribution
+- [ ] P-007 [blocked] priority 38: Contribute privately
+- [ ] P-008 [blocked] priority 37: Review the proposal
 
 Completion dimensions remain separate: implemented, tested, committed, pushed,
 candidate_built, staged, promoted, reachable, user_owned, user_proven, kg_known.

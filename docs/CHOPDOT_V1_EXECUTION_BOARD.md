@@ -1,6 +1,14 @@
 # ChopDot v1 Execution Board
 
+> **Kind:** historical measurement
+> **Status:** snapshot only; not current after 2026-08-23
+> **Current route:** `docs/release/current-release-state.json` plus the Cockpit
+> source cards
+
 Updated: 2026-08-22
+
+Every row and next-step item below is preserved as an observation from that
+date. It is not current routing or current KG/release evidence.
 
 ## Evidence state
 
@@ -26,7 +34,9 @@ Updated: 2026-08-22
 | Future-mode behavior maps | OPEN | Spend Card, savings circle, emergency pot, and community fund have zero generated paths |
 | Savings-circle donor diligence | OPEN | CircleCredit is a live registry row only; source/license/protocol/runtime remain unverified |
 
-## Next plan re-review order
+## Historical order recorded on 2026-08-22
+
+The snapshot proposed the following order at that time:
 
 1. Start Wave 0 in
    `docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md`.
@@ -45,8 +55,7 @@ and `/10` product score before code.
 
 ## Documentation impact
 
-This work adds source research and architecture planning documents. The exact
-launch worktree lacks the current generated `docs/wiki/` and `docs/adr/`
-system; those sources must be reconciled when this branch is integrated into
-the current canonical documentation tree. No wiki files were copied from
-another checkout.
+At this snapshot, the launch worktree lacked the then-current generated
+`docs/wiki/` and `docs/adr/` system. Those sources have since been reconciled
+inside the exact launch worktree; the current state must be read from the
+context manifest, Cockpit, and release-state record rather than this board.

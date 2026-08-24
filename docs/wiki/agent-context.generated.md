@@ -1,11 +1,20 @@
 # ChopDot Agent Context
 
+**Kind:** read-model
+**Status:** generated
+**Owner:** wiki-generator
+**Last reviewed:** 2026-08-24
+**Applies to:** chopdot-v1-launch
+**Authority:** navigation only; it cannot override law, Cockpit source, exact source evidence, release readback, or cited recall
+
 Generated read model. It is navigation, not product authority.
 
-- Product truth SHA-256: `ac94d47190feee47ad08daef87743e8ad3c17034f9a4fc6908d189924ffa0365`
-- Product cards SHA-256: `2f12c19a65341b9a17a81b05504692ab7691d122efb75270ce835d93d617b59c`
-- Product decisions SHA-256: `e1b60a1f03bc5bec46dc1ce7b31a0dbf536a47015538fa2916d18100abfa9b11`
-- Active cards: P-034, P-032, P-035, P-012, P-022, P-030
+- Product truth SHA-256: `d5ea94b3b89f682d7b7ab76f580102316c25b0366c52b9b5a851a5ab7162bba6`
+- Product cards SHA-256: `07b26ba2624f98968528e8b7357f04841a77510bb1ad36ff8caeeaaf5a0a2bf2`
+- Product decisions SHA-256: `ab5a29c28558e4942e35074b39a2fb8e11dfa46a4151fe4540bff3157451f321`
+- Current release state SHA-256: `937339a90c008e8d7a57cee5b18a8619e2816aee93527ddfddb821cedc0a634d`
+- Active cards: P-035, P-022, P-034, P-032, P-012
+- Explicit next card: P-035 — Create my group
 - Product loop: Catch -> Management -> Payout -> History
 - First product action: Scan a receipt
 - Authority: participant-held signed events
@@ -13,8 +22,11 @@ Generated read model. It is navigation, not product authority.
 
 Read in order:
 
-1. [Product truth](../../PRODUCT_TRUTH.md)
-2. [Current product state](00-start-here/current-product-state.md)
-3. [Architecture](01-product-truth/participant-held-architecture.md)
-4. [One Chop Core](03-state-models/one-chop-core.md)
-5. [Release checklist](07-quality/release-checklist.md)
+1. [Context authority](../../product/context-authority.json)
+2. [Product truth](../../PRODUCT_TRUTH.md)
+3. [Product cards](../../product/cards.md)
+4. [Current release state](../release/current-release-state.json)
+5. [Current product state](00-start-here/current-product-state.md)
+6. [Architecture](01-product-truth/participant-held-architecture.md)
+7. [One Chop Core](03-state-models/one-chop-core.md)
+8. [Release checklist](07-quality/release-checklist.md)

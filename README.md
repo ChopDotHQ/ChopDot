@@ -1,61 +1,73 @@
-# ChopDot Portable Shell Trial
+# ChopDot public-beta launch worktree
 
-This branch is an isolated candidate shell for testing whether one clean
-ChopDot journey can run across multiple mini-app environments without forking
-the product experience.
+**Kind:** measurement
+**Status:** active
+**Owner:** release integrator
+**Last reviewed:** 2026-08-24
+**Applies to:** chopdot-v1-launch
+**Authority:** human orientation only; it cannot override product law, Cockpit source, or release evidence
 
-It is not the production ChopDot repo and should not be merged wholesale.
+This exact worktree is the governed implementation and release train for the
+no-private-backend ChopDot public beta. It grew from an earlier portable-shell
+trial, but it now contains the production entrypoint, participant-held signed
+authority, receipt capture, normal pots, Spend Card, savings circle, emergency
+pot, community fund, recovery, testnet payment, and `.dot` release tooling.
+The historical `PORTABLE_SHELL_TRIAL.md` is evidence of that earlier scope, not
+the current product or release contract.
 
-## Product Spine
-
-The shell keeps one simple group-money loop:
-
-```text
-Guest setup
--> Create group
--> Add spend
--> Review split
--> Settle up
--> Payer marks paid
--> Organizer confirms received
--> Finish group
--> History
-```
-
-## Trial Rule
-
-This branch exists to test portability, not to add product complexity.
-
-Scope in:
-
-- mobile web shell
-- clean local state journey
-- environment capability seams
-- screenshots per environment
-- one product flow across hosts
-
-Scope out:
-
-- real payments
-- wallet integrations
-- OCR or receipt scanning
-- backend sync
-- savings, emergency, or community fund flows
-- environment-specific product forks
-
-## Run Locally
+## Start here
 
 ```bash
-npm install
+npm ci
+npm run context:validate
+npm run product:query -- "next"
+npm run product:validate
+npm run wiki:validate
 npm run dev
 ```
 
-## Verify
+The exact routing hierarchy is in `product/context-authority.json`. Do not read
+the canonical `/Users/devinsonpena/ChopDot` checkout as current source for this
+release.
 
-```bash
-npm run lint
-npm run build
+## Product spine
+
+```text
+Catch -> Management -> Payout -> History
 ```
 
-See [PORTABLE_SHELL_TRIAL.md](./PORTABLE_SHELL_TRIAL.md) for the full trial
-contract and falsifiers.
+The first product action is **Scan a receipt**. Receipt capture creates a local
+draft; reviewed participant-signed actions change shared state. Claimed paid,
+cleared, receiver-confirmed, released, and closed states remain distinct.
+
+## Current release status
+
+The prior frozen public candidate is immutable and byte-reachable, but it is
+not eligible for promotion after a live guest group-creation blocker and
+overloaded empty-Home finding. The current next work is P-035 followed by
+P-022. Source must be repaired and a new deterministic candidate must be
+frozen; release-tool retries cannot repair product bytes.
+
+Track these separately:
+
+`implemented`, `tested`, `committed`, `pushed`, `candidate_built`, `staged`,
+`promoted`, `reachable`, `user_owned`, `user_proven`, `kg_known`.
+
+## Verification
+
+The bounded command order and stop conditions are documented in
+`docs/CHOPDOT_LOOP_RUNNER.md`. Common entrypoints:
+
+```bash
+npx tsc --noEmit
+npm run build
+npm run build:dot-host
+npm run e2e:dot-host-preview
+npm run security:baseline
+npm run test:node
+npx playwright test
+```
+
+Passing local tests is not deployment or user proof. Live evidence must name
+the exact commit, tree, build ID, CAR hash, CID, network, owner, URL, and user
+journey.

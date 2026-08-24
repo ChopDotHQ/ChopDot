@@ -1,16 +1,23 @@
 # Release checklist
 
+**Kind:** guardrail
+**Status:** active
+**Owner:** release assurance
+**Last reviewed:** 2026-08-24
+**Applies to:** `chopdot-v1-launch`
+**Sources:** DC-005, DC-006, current-release-state.json
+
 The candidate must independently prove: implemented, tested, committed, pushed,
 candidate built, staged, promoted, reachable, user owned, user proven, and KG
 known. Fixture-only tests cannot prove the release: Playwright must exercise
 `src/main.tsx` across separate contexts, responsive sizes, offline/restart,
 wrong actors, recovery, accessibility, privacy, and every named mode.
 
-The current accepted local-source status and exact verification counts are
-recorded in `docs/release/2026-08-24-local-release-assurance.md`. That record
-sets implemented, locally tested, committed, and pushed independently from the
-still-false candidate, stage, promotion, reachability, ownership, real-user,
-and KG-recall booleans.
+The machine-readable current release verdict is
+`docs/release/current-release-state.json`. The earlier
+`docs/release/2026-08-24-local-release-assurance.md` remains a historical
+exact-commit measurement; it must not be treated as current after later source,
+candidate, live-user, or KG evidence.
 
 The embedded `release.json` binds the commit, tree, dependency and compiler
 inputs, build ID, chain geneses, recovery-contract source/ABI/artifacts, and the

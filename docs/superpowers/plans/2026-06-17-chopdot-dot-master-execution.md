@@ -1,13 +1,19 @@
 # ChopDot.dot programme routing record
 
+**Kind:** decision
+**Status:** historical
+**Owner:** release-integrator
+**Last reviewed:** 2026-08-24
+**Applies to:** chopdot-v1-launch
+**Authority:** historical native programme context only; the current context manifest, Cockpit, release state, and active plan win
+
 The historical June 2026 programme plan in the canonical checkout is stale and
 contains an earlier two-kernel/Supabase direction. It was reviewed as context,
 not copied into this release tree.
 
-For this branch, the active master execution authority is
-[`2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md`](./2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md),
-as amended by `product/decisions.md` and the user-approved 2026-08-23 all-hands
-release order.
+For this branch, the current route is `product/context-authority.json`, which
+names the 2026-08-24 context-authority and live-first-use repair plan. The
+2026-08-22 plan remains a historical execution record, not current authority.
 
 ## Product end state
 
@@ -18,10 +24,12 @@ Polkadot is a distribution and evidence rail, not product authority.
 
 ## Status board
 
-- Programme A: active; immutable candidate not yet built or published.
-- Programme B: active constraint; signed events, exact money, encrypted
-  recovery, and carrier boundaries are being integrated.
-- Contact capability: provenance and focused tests pass; committed separately.
-- One Chop Core: local contract slice implemented and tested; production wiring
-  remains open.
-- Public release: not yet staged, promoted, transferred, or user-proven.
+- Programme A: an immutable candidate was built and its bytes uploaded, but a
+  live first-use P0 and Home-hierarchy P1 make it ineligible for promotion.
+- Programme B: participant-held authority remains the active architectural
+  constraint; exact current implementation status belongs to source/tests and
+  `docs/release/current-release-state.json`.
+- Contact capability: committed historical evidence exists; current integration
+  status belongs to the Cockpit and exact source tests.
+- Public release: byte-reachable is not user-reachable; promotion, ownership,
+  KG knowledge, and real-user proof remain false in the current release record.

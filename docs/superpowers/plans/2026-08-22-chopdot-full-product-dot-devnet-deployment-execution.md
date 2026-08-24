@@ -1,8 +1,15 @@
 # ChopDot full-product `.dot` Devnet deployment execution plan
 
+> **Kind:** historical decision and execution record
+> **Status:** superseded for current routing on 2026-08-24 by
+> `2026-08-24-context-authority-and-live-first-use-repair.md`
+> **Authority:** retains time-sliced requirements and evidence, but status
+> statements inside this append-only record are not current release truth.
+
 **Date:** 2026-08-22  
 **Programme:** Programme A product delivery, constrained by Programme B native truth  
-**Status:** active execution; frozen candidate staged on Products Devnet; identical-CAR Paseo promotion and complete ownership handoff in progress
+**Status:** historical/superseded
+**Status observed on 2026-08-22:** frozen candidate staged on Products Devnet; identical-CAR Paseo promotion and complete ownership handoff was then recorded as in progress
 **Target worktree:** `/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch`  
 **Target branch at review:** `codex/chopdot-v1-launch`  
 **Target HEAD at review:** `3519a894efbcee5144ecb0bcb9ebc44b888a0e7f`  

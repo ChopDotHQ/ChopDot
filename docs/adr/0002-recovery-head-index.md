@@ -1,6 +1,11 @@
 # ADR 0002: RecoveryHeadIndex is the sole custom contract
 
-Status: accepted for public beta, 2026-08-23.
+**Kind:** decision
+**Status:** active
+**Owner:** architecture
+**Last reviewed:** 2026-08-24
+**Applies to:** chopdot-v1-launch
+**Authority:** dated recovery architecture decision subordinate to product law and explicit supersession
 
 The contract records only owner, stream, sequence, and checkpoint digest with
 compare-and-swap advancement. It deliberately has no admin, upgrade, delegate,

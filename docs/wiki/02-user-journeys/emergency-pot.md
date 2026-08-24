@@ -1,5 +1,12 @@
 # Emergency pot journey
 
+**Kind:** decision
+**Status:** active
+**Owner:** product
+**Last reviewed:** 2026-08-24
+**Applies to:** `chopdot-v1-launch`
+**Sources:** P-007, DC-004, privacy and mode tests
+
 GIVEN a private request with trusted roles and a threshold, WHEN the threshold
 approves release and the recipient confirms what arrived, THEN the group keeps
 a minimally disclosed record. Reasons, recipient details, secrets, and recovery

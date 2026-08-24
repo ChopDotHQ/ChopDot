@@ -1,5 +1,12 @@
 # One Chop Core
 
+**Kind:** decision
+**Status:** active
+**Owner:** core authority
+**Last reviewed:** 2026-08-24
+**Applies to:** `chopdot-v1-launch`
+**Sources:** P-034, DEC-002, ADR 0001, exact-money/event tests
+
 `MoneyV1` stores bounded integer minor units and an explicit currency.
 `ChopEventV1` has canonical domain-separated signing bytes, actor, stream,
 sequence, expected frontier, payload, and version. Replay validates identifiers,

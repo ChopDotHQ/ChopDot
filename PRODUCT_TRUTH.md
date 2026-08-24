@@ -1,5 +1,12 @@
 # ChopDot — Product Truth
 
+**Kind:** law
+**Status:** active
+**Owner:** founder
+**Last reviewed:** 2026-08-24
+**Applies to:** all-chopdot
+**Authority:** product invariants only; it cannot select current work or claim implementation or deployment
+
 **This file is short on purpose.** It holds only what stays true regardless of
 stack, host, chain, or roadmap. If something can be revisited without ChopDot
 losing its meaning, it does not belong here — it belongs in a dated decision or
@@ -67,7 +74,7 @@ not.
 | **Which rail first** | Open. Decided by what real groups actually use. |
 | **Which wedge — trips or money cultures** | Not a binary. One mode-aware engine serves both; they differ in recruiting, stakes and rails. |
 | **Polkadot-native programme (G0–G8)** | Open. Serves the lowest-ranked user value; `.dot` is one door. |
-| **Which "source of truth" system wins** | Unresolved. `docs/adr/`, `docs/wiki/`, `product/`, and `.knowns/tasks` all claim it. |
+| **Which planning/context system wins** | Not product law. The `chopdot-v1-launch` release currently uses the dated hierarchy in `product/context-authority.json` and ADR 0004. That decision is revocable without changing ChopDot's meaning. |
 
 ---
 

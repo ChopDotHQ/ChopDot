@@ -1,5 +1,12 @@
 # Capture and native lane map
 
+**Kind:** guardrail
+**Status:** active
+**Owner:** product-assurance
+**Last reviewed:** 2026-08-24
+**Applies to:** chopdot-v1-launch
+**Authority:** conditional capture-to-native routing guardrail subordinate to current cards and product law
+
 Receipt capture starts locally before account ceremony. Photo/import/link/OCR
 creates a reviewable draft and changes no shared truth. Mina's reviewed signed
 event is the authority boundary.

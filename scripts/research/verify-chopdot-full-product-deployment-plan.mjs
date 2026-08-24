@@ -26,6 +26,10 @@ const check = (id, pass, details) => checks.push({ id, pass: Boolean(pass), deta
 
 check('exact-target-root', root === manifest.target.root, { expected: manifest.target.root, actual: root });
 check('manifest-kind', manifest.kind === 'chopdot_full_product_dot_devnet_execution_plan', manifest.kind);
+check('historical-routing-status', manifest.status === 'superseded_for_current_routing' && Boolean(manifest.superseded_by), {
+  status: manifest.status,
+  superseded_by: manifest.superseded_by,
+});
 check('no-supabase-decision', manifest.authority.supabase_v1 === 'rejected' && markdown.includes('Supabase is not part of the v1 runtime or recovery design'), manifest.authority.supabase_v1);
 check('participant-held-authority', manifest.authority.core.includes('participant-held') && markdown.includes('participant-held append-only signed event log'), manifest.authority.core);
 check('four-pillar-loop', JSON.stringify(manifest.product_loop) === JSON.stringify(['Catch', 'Management', 'Payout', 'History']), manifest.product_loop);
@@ -116,6 +120,9 @@ const failedChecks = checks.filter((item) => !item.pass);
 const result = {
   schema_version: 1,
   kind: 'chopdot_full_product_deployment_plan_verification',
+  authority: 'historical_bundle_consistency_only',
+  current_routing_eligible: false,
+  superseded_by: manifest.superseded_by,
   generated_at: new Date().toISOString(),
   status: failedChecks.length === 0 ? 'pass' : 'fail',
   target: manifest.target,

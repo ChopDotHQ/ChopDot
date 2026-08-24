@@ -1,5 +1,12 @@
 # ChopDot Wiki Index
 
+**Kind:** read-model
+**Status:** generated
+**Owner:** wiki-generator
+**Last reviewed:** 2026-08-24
+**Applies to:** chopdot-v1-launch
+**Authority:** navigation only; source wiki pages own their claims
+
 Generated from source pages. Update the linked source, then run `npm run wiki:sync`.
 
 - [00-start-here/current-product-state](00-start-here/current-product-state.md)

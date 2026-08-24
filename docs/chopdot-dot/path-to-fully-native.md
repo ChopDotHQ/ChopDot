@@ -1,6 +1,11 @@
 # Path to participant-held native delivery
 
-Status: active launch path, 2026-08-23.
+**Kind:** decision
+**Status:** active
+**Owner:** product-assurance
+**Last reviewed:** 2026-08-24
+**Applies to:** chopdot-v1-launch
+**Authority:** conditional native architecture path; it cannot claim current implementation, deployment, or user reachability
 
 ## Definition
 

@@ -1,5 +1,9 @@
 # ChopDot local public-beta assurance record
 
+> **Kind:** historical exact-commit measurement
+> **Status:** superseded as current state by `current-release-state.json`
+> **Authority:** retains the verification result for its named commit only
+
 Verified: 2026-08-24T09:20:32Z  
 Exclusive root: `/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch`  
 Branch: `codex/chopdot-v1-launch`  

@@ -1,11 +1,20 @@
 # ADR 0003: Promote one immutable testnet artifact
 
-Status: accepted for public beta, 2026-08-23.
+**Kind:** decision
+**Status:** active
+**Owner:** release-integrator
+**Last reviewed:** 2026-08-24
+**Applies to:** chopdot-v1-launch
+**Authority:** dated release architecture decision; current blockers and release state determine eligibility
 
 Build once from a clean commit. Stage the resulting CAR on Products Devnet,
 verify it, and promote the identical CAR to every supported public-testnet
 surface. A source fix creates a new commit and CAR; promotion never rebuilds.
 DotNS ownership is transferred only after live verification.
+
+The candidate frozen on 2026-08-24 is immutable and byte-reachable but not
+promotion-eligible because live first-use acceptance failed. A repair requires
+a new commit, CAR, and CID; this ADR does not authorize retrying the old bytes.
 
 Post-freeze release tooling may be committed after the candidate only when it
 attests the frozen candidate and the later clean tooling commit separately and

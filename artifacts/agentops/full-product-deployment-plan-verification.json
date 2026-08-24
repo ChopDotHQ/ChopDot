@@ -1,7 +1,10 @@
 {
   "schema_version": 1,
   "kind": "chopdot_full_product_deployment_plan_verification",
-  "generated_at": "2026-08-23T12:43:11.578Z",
+  "authority": "historical_bundle_consistency_only",
+  "current_routing_eligible": false,
+  "superseded_by": "docs/superpowers/plans/2026-08-24-context-authority-and-live-first-use-repair.md",
+  "generated_at": "2026-08-24T15:13:24.447Z",
   "status": "pass",
   "target": {
     "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
@@ -10,8 +13,8 @@
   },
   "actual_root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
   "counts": {
-    "checks": 33,
-    "passed": 33,
+    "checks": 34,
+    "passed": 34,
     "failed": 0,
     "feature_families": 15,
     "cards": 35,
@@ -22,10 +25,10 @@
     "release_dimensions": 8
   },
   "hashes": {
-    "plan_markdown_sha256": "4c6d75644137ad4153e255d293e7c0ac138078808d04f4349a2fef4b4051b914",
-    "plan_manifest_sha256": "6c08d1919b30cd10b775ab360a20a042e2ab16dd9ce8de279eb1bd809177b563",
+    "plan_markdown_sha256": "b78ae09b4e0d7e807da7bb54dbb0480d05a70673d0609bb2aec9a46e4bd98a0b",
+    "plan_manifest_sha256": "3d82594c543c274a89cfa0af0d3c3ed772841a06688e2e141b314c7ed22b9666",
     "source_matrix_sha256": "f0f37486f7887d7b16bf3dd95921797fb6b1358b4cc0c8a15fb44f6fe4c13298",
-    "ordered_plan_bundle_sha256": "502dcff37e3bc6e9421073073c90a0e9d14251c70256e49f35d99b6bbe9d2976"
+    "ordered_plan_bundle_sha256": "cca6c9a5727361a7f5127b1bfd5cceaa2799fd9534d0aa983217026fb0a23852"
   },
   "planned_native_script_state": {
     "build:dot-host": true,
@@ -46,6 +49,14 @@
       "id": "manifest-kind",
       "pass": true,
       "details": "chopdot_full_product_dot_devnet_execution_plan"
+    },
+    {
+      "id": "historical-routing-status",
+      "pass": true,
+      "details": {
+        "status": "superseded_for_current_routing",
+        "superseded_by": "docs/superpowers/plans/2026-08-24-context-authority-and-live-first-use-repair.md"
+      }
     },
     {
       "id": "no-supabase-decision",

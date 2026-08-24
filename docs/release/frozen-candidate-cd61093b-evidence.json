@@ -1,0 +1,42 @@
+{
+  "schema": "chopdot.frozen-candidate-evidence.v1",
+  "kind": "measurement",
+  "status": "immutable-record",
+  "owner": "release-integrator",
+  "observed_at": "2026-08-24T15:04:40Z",
+  "applies_to": "chopdot-v1-launch",
+  "authority": "Exact frozen-candidate identity and immutable-byte observations only; this is not promotion, ownership, or usable-product proof.",
+  "commit": "cd61093b2af158ca1ba08f26c84c732f30007d4d",
+  "tree": "3b4b2807ed02880fdc3fea060f576548fcdc1dcb",
+  "build_id": "chopdot-cd61093b2af1-68ce7c04192f",
+  "car_sha256": "b9fa8263b7f83c05a32547803078db1bbb47c232c5fc8d07b4f8f5657a34a6ae",
+  "outer_cid": "bafybeifuwlobydydh2ezprm57qix6s6xwnm47fy3u6zvsnghd27i6cdztq",
+  "inner_app_cid": "bafybeiejtx4iarex7lfsl6azal3dwx4xgrsxliwvxh7u4pgcdaz66wfrrq",
+  "car_path": "deployment/releases/chopdot-cd61093b2af1-68ce7c04192f.car",
+  "readbacks": [
+    {
+      "surface": "paseo-pinned-direct-ipfs",
+      "url": "https://paseo-bulletin-next-ipfs.polkadot.io/ipfs/bafybeifuwlobydydh2ezprm57qix6s6xwnm47fy3u6zvsnghd27i6cdztq",
+      "observed_at": "2026-08-24T15:04:40Z",
+      "command": "curl --fail --silent --show-error --location --max-time 60 <url> --output <mktemp>; wc -c <file>; shasum -a 256 <file>",
+      "bytes": 2234529,
+      "sha256": "b9fa8263b7f83c05a32547803078db1bbb47c232c5fc8d07b4f8f5657a34a6ae",
+      "result": "pass"
+    }
+  ],
+  "sources": [
+    {
+      "path": "docs/release/2026-08-24-live-first-use-findings.md",
+      "sha256": "e1e6b46449bdd5d960682d0ee494b8034e6286b1738569f8d2168fae73daf621"
+    },
+    {
+      "path": "scripts/lib/worker-paseo-release.mjs",
+      "sha256": "ba2dd27c2a38fbcca2866783bc0e52a29542b4469e81f8f3a828c84577cc6525"
+    }
+  ],
+  "limits": [
+    "No DotNS promotion or ownership mutation is established by this record.",
+    "Live first-use acceptance failed, so byte reachability is not user-journey reachability.",
+    "A source repair requires a new commit, CAR, CID, and evidence record."
+  ]
+}
