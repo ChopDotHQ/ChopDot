@@ -24,6 +24,35 @@ export const LOCKED_PAD = Object.freeze({
   runtimeAggregateSha256: '804d0831a28d280665dbd5d3480df14229b640bedfcadaa198fd236f689c2c7d',
   runtimeVersionOutputSha256: 'e5a9b32c19b237e0f9ce98774fc0b71eb3e0922bfb2d7c6cc8e9f34875888363',
 });
+export const LOCKED_STORAGE_MODE = 'shared-testnet-pool';
+export const LOCKED_STORAGE_POOL_ACCOUNT_INDEX = 2;
+
+export function createDirectOwnerCliSource(source) {
+  const importNeedle = 'import * as readline from "readline";';
+  const deployNeedle = '  const result = await deploy(buildDir, domain, {';
+  const poolSizeNeedle = '    poolSize: flags.poolSize,';
+  for (const needle of [importNeedle, deployNeedle, poolSizeNeedle]) {
+    if (source.split(needle).length !== 2) {
+      throw new Error(`Official deploy CLI adapter expected exactly one source anchor: ${needle}`);
+    }
+  }
+  if (source.includes('chopdotStorageAccount') || source.includes('storageSigner:')) {
+    throw new Error('Official deploy CLI already contains a storage-signer path; the locked adapter requires review.');
+  }
+  return source
+    .replace(importNeedle, `${importNeedle}\nimport { derivePoolAccounts } from "../dist/index.js";`)
+    .replace(
+      deployNeedle,
+      `  const chopdotStorageAccount = derivePoolAccounts(flags.poolSize ?? 10)[${LOCKED_STORAGE_POOL_ACCOUNT_INDEX}];\n`
+        + '  if (!chopdotStorageAccount) throw new Error("Pinned ChopDot shared testnet storage account is unavailable.");\n'
+        + deployNeedle,
+    )
+    .replace(
+      poolSizeNeedle,
+      `${poolSizeNeedle}\n    storageSigner: chopdotStorageAccount.signer,\n`
+        + '    storageSignerAddress: chopdotStorageAccount.address,',
+    );
+}
 
 const ROOT_MANIFEST_ABI = [
   'function ownerOf(uint256 tokenId) view returns (address)',
@@ -652,6 +681,9 @@ export function parseDeployLog(logBytes, expected) {
     || header.whoamiAddress?.toLowerCase() !== expected.expectedOwner?.toLowerCase()
     || !/^[0-9a-f]{64}$/.test(header.whoamiOutputSha256 ?? '')
     || header.ownershipMode !== 'direct-devinson'
+    || header.storageMode !== LOCKED_STORAGE_MODE
+    || header.storagePoolAccountIndex !== LOCKED_STORAGE_POOL_ACCOUNT_INDEX
+    || !/^[0-9a-f]{64}$/.test(header.adaptedExecutableSha256 ?? '')
     || !/^[0-9a-f]{64}$/.test(header.packageAggregateSha256 ?? '')
     || header.runtimePackages !== LOCKED_PAD.runtimePackages
     || header.runtimeFiles !== LOCKED_PAD.runtimeFiles
@@ -898,7 +930,13 @@ export async function generateReadbackEvidence({root, environment, domain, car, 
   if (release.dirty) throw new Error('Live release readback refuses a dirty candidate.');
   const carEvidence = await inspectCar(carPath.absolute, releaseBytes, release);
   const logBytes = await readFile(deployLogPath.absolute);
-  const cli = await withIsolatedDeploymentRuntime(root);
+  const cli = await withIsolatedDeploymentRuntime(root, async ({root: isolatedRoot, evidence}) => {
+    const officialExecutableBytes = await readFile(path.join(isolatedRoot, LOCKED_PAD.bin), 'utf8');
+    return {
+      ...evidence,
+      adaptedExecutableSha256: sha256(createDirectOwnerCliSource(officialExecutableBytes)),
+    };
+  });
   const log = parseDeployLog(logBytes, {
     environment,
     domain,
@@ -917,6 +955,7 @@ export async function generateReadbackEvidence({root, environment, domain, car, 
     || log.header.runtimePackages !== cli.runtimePackages
     || log.header.runtimeFiles !== cli.runtimeFiles
     || log.header.runtimeAggregateSha256 !== cli.runtimeAggregateSha256
+    || log.header.adaptedExecutableSha256 !== cli.adaptedExecutableSha256
     || log.header.releaseJsonSha256 !== sha256(releaseBytes)
     || log.header.environmentFileSha256 !== release.polkadotAppDeploy?.environmentFileSha256
   ) {

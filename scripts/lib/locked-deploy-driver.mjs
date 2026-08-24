@@ -1,11 +1,14 @@
 import {execFileSync, spawnSync} from 'node:child_process';
-import {readFile} from 'node:fs/promises';
+import {readFile, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import {
   LOCKED_PAD,
+  LOCKED_STORAGE_MODE,
+  LOCKED_STORAGE_POOL_ACCOUNT_INDEX,
   assertDomain,
+  createDirectOwnerCliSource,
   inspectCar,
   safeRepoPath,
   sha256,
@@ -19,10 +22,13 @@ const CONFIG_FILE = 'polkadot-app-deploy.config.ts';
 const FORBIDDEN_ENV = [
   'IPFS_CID', 'PAD_DUMP_CAR', 'PAD_ENV_FILE', 'PAD_GH_PAGES_REPO',
   'GH_PAGES_MIRROR', 'BULLETIN_RPC', 'MNEMONIC', 'SEED', 'PRIVATE_KEY',
+  'BULLETIN_POOL_MNEMONIC', 'BULLETIN_POOL_ACCOUNT_INDEX', 'BULLETIN_POOL_SIZE',
+  'DOTNS_RPC', 'DOTNS_MNEMONIC', 'DOTNS_KEY_URI',
   'NODE_OPTIONS', 'NODE_PATH',
 ];
 const VALUE_FLAGS = new Set(['env', 'environment-file', 'config', 'tag', 'dump-car', 'input-car']);
 const BOOLEAN_FLAGS = new Set(['js-merkle', 'no-transfer-to-signedin-user']);
+const DIRECT_OWNER_CLI_NAME = 'chopdot-direct-owner-deploy.mjs';
 
 function normalizedAddress(value, label) {
   if (!/^0x[0-9a-f]{40}$/i.test(value ?? '')) throw new Error(`${label} must be an explicit H160 address.`);
@@ -123,6 +129,10 @@ export async function validateLockedDeployInvocation({root, argv, env}) {
   if (ownershipMode !== 'direct-devinson') {
     throw new Error('RELEASE_OWNERSHIP_MODE must be direct-devinson so executable-manifest writes remain authorized after content publication.');
   }
+  const storageMode = env.RELEASE_STORAGE_MODE;
+  if (storageMode !== LOCKED_STORAGE_MODE) {
+    throw new Error(`RELEASE_STORAGE_MODE must be ${LOCKED_STORAGE_MODE} so Bulletin upload cannot block direct DotNS ownership.`);
+  }
 
   const {options, positionals} = parseLockedDeployArgs(argv);
   if (options.get('env') !== environment) throw new Error('CLI --env must equal RELEASE_ENV.');
@@ -155,7 +165,18 @@ export async function validateLockedDeployInvocation({root, argv, env}) {
       throw new Error('RELEASE_CAR_SHA256 must exactly approve the fully validated Devnet CAR.');
     }
   }
-  return {environment, mode, domain, expectedOwner, signedInAddress, ownershipMode, release, releaseBytes, carEvidence};
+  return {
+    environment,
+    mode,
+    domain,
+    expectedOwner,
+    signedInAddress,
+    ownershipMode,
+    storageMode,
+    release,
+    releaseBytes,
+    carEvidence,
+  };
 }
 
 async function main() {
@@ -197,6 +218,10 @@ async function main() {
   if (actualSignedInAddress !== validated.expectedOwner || actualSignedInAddress !== validated.signedInAddress) {
     throw new Error('CLI whoami address does not equal the explicitly approved Devinson owner.');
   }
+  const officialExecutable = path.join(runtimeRoot, LOCKED_PAD.bin);
+  const adaptedExecutable = path.join(path.dirname(officialExecutable), DIRECT_OWNER_CLI_NAME);
+  const adaptedExecutableBytes = Buffer.from(createDirectOwnerCliSource(await readFile(officialExecutable, 'utf8')));
+  await writeFile(adaptedExecutable, adaptedExecutableBytes, {mode: 0o500, flag: 'wx'});
   const header = {
     schema: 'chopdot.locked-pad-attestation.v2',
     package: tool.package,
@@ -215,6 +240,9 @@ async function main() {
     whoamiAddress: actualSignedInAddress,
     whoamiOutputSha256: sha256(whoamiOutput.trim()),
     ownershipMode: validated.ownershipMode,
+    storageMode: validated.storageMode,
+    storagePoolAccountIndex: LOCKED_STORAGE_POOL_ACCOUNT_INDEX,
+    adaptedExecutableSha256: sha256(adaptedExecutableBytes),
     environmentFileSha256: validated.release.polkadotAppDeploy.environmentFileSha256,
     releaseJsonSha256: sha256(validated.releaseBytes),
     buildId: validated.release.buildId,
@@ -223,7 +251,7 @@ async function main() {
     source,
   };
   console.log(`CHOPDOT_LOCKED_PAD ${JSON.stringify(header)}`);
-  const result = spawnSync(process.execPath, [path.join(runtimeRoot, LOCKED_PAD.bin), ...argv], {
+  const result = spawnSync(process.execPath, [adaptedExecutable, ...argv], {
     cwd: root,
     env: childEnv,
     stdio: 'inherit',

@@ -125,6 +125,7 @@ RELEASE_ENV=devnet
 RELEASE_DOMAIN=chopdotapp01.dot
 RELEASE_COMMAND_MODE=stage
 RELEASE_OWNERSHIP_MODE=direct-devinson
+RELEASE_STORAGE_MODE=shared-testnet-pool
 RELEASE_EXPECTED_DEVINSON_OWNER=<public H160 confirmed with Devinson>
 RELEASE_SIGNED_IN_ADDRESS=${RELEASE_EXPECTED_DEVINSON_OWNER}
 BUILD_ID=<the exact dist-dot-host/release.json buildId>
@@ -136,6 +137,7 @@ DO_NOT_TRACK=1 PAD_UPDATE_CHECK=0 \
 RELEASE_ENV=${RELEASE_ENV} RELEASE_DOMAIN=${RELEASE_DOMAIN} \
 RELEASE_COMMAND_MODE=${RELEASE_COMMAND_MODE} \
 RELEASE_OWNERSHIP_MODE=${RELEASE_OWNERSHIP_MODE} \
+RELEASE_STORAGE_MODE=${RELEASE_STORAGE_MODE} \
 RELEASE_EXPECTED_DEVINSON_OWNER=${RELEASE_EXPECTED_DEVINSON_OWNER} \
 RELEASE_SIGNED_IN_ADDRESS=${RELEASE_SIGNED_IN_ADDRESS} \
 ./scripts/deploy-locked.sh \
@@ -155,6 +157,7 @@ Promotion consumes those exact CAR bytes and cannot rebuild:
 RELEASE_ENV=paseo-next-v2
 RELEASE_COMMAND_MODE=promote
 RELEASE_OWNERSHIP_MODE=direct-devinson
+RELEASE_STORAGE_MODE=shared-testnet-pool
 RELEASE_CAR_SHA256=<sha256 of the validated Devnet CAR>
 PASEO_LOG=deployment/readbacks/${BUILD_ID}.paseo-next-v2.deploy.log
 set -o pipefail
@@ -163,6 +166,7 @@ DO_NOT_TRACK=1 PAD_UPDATE_CHECK=0 \
 RELEASE_ENV=${RELEASE_ENV} RELEASE_DOMAIN=${RELEASE_DOMAIN} \
 RELEASE_COMMAND_MODE=${RELEASE_COMMAND_MODE} \
 RELEASE_OWNERSHIP_MODE=${RELEASE_OWNERSHIP_MODE} \
+RELEASE_STORAGE_MODE=${RELEASE_STORAGE_MODE} \
 RELEASE_EXPECTED_DEVINSON_OWNER=${RELEASE_EXPECTED_DEVINSON_OWNER} \
 RELEASE_SIGNED_IN_ADDRESS=${RELEASE_SIGNED_IN_ADDRESS} \
 RELEASE_CAR_SHA256=${RELEASE_CAR_SHA256} \
@@ -187,6 +191,15 @@ before any write. Never clear or replace a user's session silently merely to
 obtain worker ownership.
 
 Login and signing are user ceremonies. Record only the public recipient address.
+
+The pinned CLI probes a missing personal Bulletin allowance before it exposes a
+shared-pool switch. The locked runner therefore creates a hashed temporary
+adapter from the already-attested official executable when
+`RELEASE_STORAGE_MODE=shared-testnet-pool`. It injects only the package's public
+testnet pool signer (pinned account index 2) for Bulletin bytes; the unchanged
+session signer still owns and signs every DotNS write. The vendor executable is
+not edited, private pool overrides are forbidden, and both executable hashes
+are recorded in the deployment header.
 
 ## Independent live readback and promotion evidence
 

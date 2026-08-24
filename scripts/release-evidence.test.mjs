@@ -13,6 +13,7 @@ import {
   LOCKED_PAD,
   assertSuccessfulExtrinsic,
   buildInstalledDeploymentRuntimeManifest,
+  createDirectOwnerCliSource,
   inspectCar,
   parseDeployLog,
   safeRepoPath,
@@ -46,6 +47,9 @@ const header = {
   whoamiAddress: `0x${'12'.repeat(20)}`,
   whoamiOutputSha256: 'cc'.repeat(32),
   ownershipMode: 'direct-devinson',
+  storageMode: 'shared-testnet-pool',
+  storagePoolAccountIndex: 2,
+  adaptedExecutableSha256: 'ad'.repeat(32),
   source: {
     commit: 'dd'.repeat(20),
     tree: 'ee'.repeat(20),
@@ -304,9 +308,29 @@ test('locked deploy rejects dangerous environment overrides before any deploymen
     DO_NOT_TRACK: '1', PAD_UPDATE_CHECK: '0', RELEASE_ENV: 'devnet', RELEASE_COMMAND_MODE: 'stage',
     RELEASE_DOMAIN: 'chopdotapp01.dot', RELEASE_EXPECTED_DEVINSON_OWNER: header.expectedDevinsonOwner,
     RELEASE_SIGNED_IN_ADDRESS: header.expectedDevinsonOwner, RELEASE_OWNERSHIP_MODE: 'direct-devinson',
+    RELEASE_STORAGE_MODE: 'shared-testnet-pool',
     IPFS_CID: cid,
   };
   await assert.rejects(() => validateLockedDeployInvocation({root: directory, argv: [], env}), /IPFS_CID/);
+  const {IPFS_CID: _ignored, ...approvedEnv} = env;
+  await assert.rejects(
+    () => validateLockedDeployInvocation({root: directory, argv: [], env: {...approvedEnv, RELEASE_STORAGE_MODE: ''}}),
+    /RELEASE_STORAGE_MODE/u,
+  );
+  await assert.rejects(
+    () => validateLockedDeployInvocation({
+      root: directory,
+      argv: [],
+      env: {...approvedEnv, BULLETIN_POOL_ACCOUNT_INDEX: '0'},
+    }),
+    /BULLETIN_POOL_ACCOUNT_INDEX/u,
+  );
+  for (const name of ['BULLETIN_POOL_SIZE', 'DOTNS_RPC', 'DOTNS_MNEMONIC', 'DOTNS_KEY_URI']) {
+    await assert.rejects(
+      () => validateLockedDeployInvocation({root: directory, argv: [], env: {...approvedEnv, [name]: 'attacker-controlled'}}),
+      new RegExp(name, 'u'),
+    );
+  }
 });
 
 test('locked release requires Devinson-direct DotNS authority through manifest publication', async () => {
@@ -320,6 +344,7 @@ test('locked release requires Devinson-direct DotNS authority through manifest p
     RELEASE_EXPECTED_DEVINSON_OWNER: header.expectedDevinsonOwner,
     RELEASE_SIGNED_IN_ADDRESS: header.expectedDevinsonOwner,
     RELEASE_OWNERSHIP_MODE: 'transfer-to-devinson',
+    RELEASE_STORAGE_MODE: 'shared-testnet-pool',
   };
   const argv = [
     'dist-dot-host',
@@ -343,6 +368,34 @@ test('locked release requires Devinson-direct DotNS authority through manifest p
     }),
     /requires --no-transfer-to-signedin-user/u,
   );
+});
+
+test('direct-owner adapter separates shared Bulletin storage from phone DotNS authority', async () => {
+  const source = [
+    'import * as readline from "readline";',
+    'async function main() {',
+    '  const result = await deploy(buildDir, domain, {',
+    '    poolSize: flags.poolSize,',
+    '  });',
+    '}',
+  ].join('\n');
+  const adapted = createDirectOwnerCliSource(source);
+  assert.match(adapted, /derivePoolAccounts\(flags\.poolSize \?\? 10\)\[2\]/u);
+  assert.match(adapted, /storageSigner: chopdotStorageAccount\.signer/u);
+  assert.match(adapted, /storageSignerAddress: chopdotStorageAccount\.address/u);
+  assert.equal(adapted.includes('transferToSignedInUser'), false);
+  assert.throws(() => createDirectOwnerCliSource(source.replace('poolSize: flags.poolSize,', '')), /source anchor/u);
+
+  const officialPath = path.join(root, LOCKED_PAD.bin);
+  const officialSource = await readFile(officialPath, 'utf8');
+  const officialHash = sha256(officialSource);
+  const adaptedOfficial = createDirectOwnerCliSource(officialSource);
+  assert.equal(sha256(await readFile(officialPath)), officialHash);
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'chopdot-adapted-cli-'));
+  const adaptedPath = path.join(directory, 'adapted.mjs');
+  await writeFile(adaptedPath, adaptedOfficial);
+  const syntax = spawnSync(process.execPath, ['--check', adaptedPath], {encoding: 'utf8'});
+  assert.equal(syntax.status, 0, syntax.stderr);
 });
 
 async function makeCar(fileRecords) {
