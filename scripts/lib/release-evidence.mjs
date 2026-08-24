@@ -37,6 +37,42 @@ const CONTENT_RESOLVER_ABI = [
   'function text(bytes32 node, string key) view returns (string)',
 ];
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+const DEPLOY_METADATA_PATH = '.bulletin-deploy/manifest.json';
+let orderedCarToolsPromise;
+
+async function orderedCarTools() {
+  if (!orderedCarToolsPromise) {
+    const deployEntry = import.meta.resolve(`${LOCKED_PAD.package}/deploy`);
+    const internalModule = new URL('./chunk-7W5KOX5X.js', deployEntry);
+    orderedCarToolsPromise = import(internalModule.href).then((module) => {
+      if (
+        typeof module.rebuildOrderedCarFromBytes !== 'function'
+        || typeof module.computeStorageCid !== 'function'
+      ) {
+        throw new Error('Pinned deployment runtime lacks ordered-CAR reconstruction tools.');
+      }
+      return module;
+    });
+  }
+  return orderedCarToolsPromise;
+}
+
+async function computeBulletinStorageCid(chunks) {
+  const chunkInfo = [];
+  for (const chunk of chunks) {
+    const digest = await multiformatsSha256.digest(chunk);
+    chunkInfo.push({cid: CID.create(1, 0x55, digest), len: chunk.byteLength});
+  }
+  const fileData = new UnixFS({
+    type: 'file',
+    blockSizes: chunkInfo.map((entry) => BigInt(entry.len)),
+  });
+  const dagBytes = dagPB.encode(dagPB.prepare({
+    Data: fileData.marshal(),
+    Links: chunkInfo.map((entry) => ({Name: '', Tsize: entry.len, Hash: entry.cid})),
+  }));
+  return CID.create(1, dagPB.code, await multiformatsSha256.digest(dagBytes)).toString();
+}
 
 export function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
@@ -446,7 +482,7 @@ async function reconstructUnixFs(reader, rootCid) {
         const name = link.Name ?? '';
         if (!name || name.includes('/') || name === '.' || name === '..' || names.has(name)) throw new Error('CAR directory contains an unsafe or duplicate name.');
         names.add(name);
-        entries.push({name, value: await decode(link.Hash)});
+        entries.push({name, cid: link.Hash.toString(), value: await decode(link.Hash)});
       }
       const value = {kind: 'directory', entries};
       decoded.set(key, value);
@@ -473,7 +509,7 @@ async function reconstructUnixFs(reader, rootCid) {
       if (entry.value.kind === 'directory') flatten(entry.value, entryPath);
       else {
         if (files.has(entryPath)) throw new Error(`CAR contains duplicate file path ${entryPath}.`);
-        files.set(entryPath, entry.value.bytes);
+        files.set(entryPath, {bytes: entry.value.bytes, cid: entry.cid});
       }
     }
   }
@@ -492,29 +528,103 @@ export async function inspectCar(carPath, releaseBytes, release = JSON.parse(rel
   if (roots.length !== 1) throw new Error('Promotion CAR must contain exactly one root CID.');
   const rootCid = CID.parse(roots[0].toString()).toString();
   const reconstructed = await reconstructUnixFs(reader, roots[0]);
-  const expectedPaths = new Set([...release.files.map((entry) => entry.path), 'release.json']);
-  if (reconstructed.files.size !== expectedPaths.size) throw new Error('CAR UnixFS file count differs from release manifest plus release.json.');
+  const expectedProductFiles = [
+    ...release.files,
+    {path: 'release.json', bytes: releaseBytes.byteLength, sha256: sha256(releaseBytes)},
+  ];
+  const expectedPaths = new Set(expectedProductFiles.map((entry) => entry.path));
+  if (reconstructed.files.size !== expectedPaths.size + 1) {
+    throw new Error('CAR UnixFS file count differs from the release files plus exact deploy metadata.');
+  }
+  const metadataRecord = reconstructed.files.get(DEPLOY_METADATA_PATH);
+  if (!metadataRecord) throw new Error(`CAR lacks ${DEPLOY_METADATA_PATH}.`);
+  let deployMetadata;
+  try {
+    deployMetadata = JSON.parse(metadataRecord.bytes.toString('utf8'));
+  } catch (error) {
+    throw new Error(`CAR ${DEPLOY_METADATA_PATH} is not valid JSON: ${error.message}`);
+  }
+  const deployedAt = Date.parse(deployMetadata.deployed_at);
+  if (
+    deployMetadata.version !== 3
+    || deployMetadata.framework !== 'vite'
+    || !(deployMetadata.previous_contenthash === null || typeof deployMetadata.previous_contenthash === 'string')
+    || !Number.isFinite(deployedAt)
+    || !deployMetadata.files
+    || typeof deployMetadata.files !== 'object'
+    || Array.isArray(deployMetadata.files)
+    || !Array.isArray(deployMetadata.stableBlockOrder)
+    || !Array.isArray(deployMetadata.blocks)
+    || !deployMetadata.chunks
+    || typeof deployMetadata.chunks !== 'object'
+    || Array.isArray(deployMetadata.chunks)
+  ) {
+    throw new Error(`CAR ${DEPLOY_METADATA_PATH} has an invalid v3 deployment manifest shape.`);
+  }
+  if (deployMetadata.previous_contenthash !== null) CID.parse(deployMetadata.previous_contenthash);
+  const metadataPaths = Object.keys(deployMetadata.files).sort();
+  if (JSON.stringify(metadataPaths) !== JSON.stringify([...expectedPaths].sort())) {
+    throw new Error(`CAR ${DEPLOY_METADATA_PATH} does not index exactly the immutable release files.`);
+  }
   const verifiedFiles = [];
-  for (const entry of [...release.files, {path: 'release.json', bytes: releaseBytes.byteLength, sha256: sha256(releaseBytes)}]) {
+  for (const entry of expectedProductFiles) {
     const observed = reconstructed.files.get(entry.path);
-    if (!observed || observed.byteLength !== entry.bytes || sha256(observed) !== entry.sha256) {
+    if (!observed || observed.bytes.byteLength !== entry.bytes || sha256(observed.bytes) !== entry.sha256) {
       throw new Error(`CAR UnixFS bytes differ for ${entry.path}.`);
     }
+    const metadataEntry = deployMetadata.files[entry.path];
+    if (
+      !metadataEntry
+      || metadataEntry.size !== entry.bytes
+      || metadataEntry.cid !== observed.cid
+      || !['stable', 'volatile'].includes(metadataEntry.type)
+    ) {
+      throw new Error(`CAR ${DEPLOY_METADATA_PATH} entry differs for ${entry.path}.`);
+    }
+    CID.parse(metadataEntry.cid);
     expectedPaths.delete(entry.path);
-    verifiedFiles.push({path: entry.path, bytes: observed.byteLength, sha256: sha256(observed)});
+    verifiedFiles.push({path: entry.path, bytes: observed.bytes.byteLength, sha256: sha256(observed.bytes)});
   }
   for (const observedPath of reconstructed.files.keys()) {
-    if (!new Set([...release.files.map((entry) => entry.path), 'release.json']).has(observedPath)) throw new Error(`CAR contains unmanifested file ${observedPath}.`);
+    if (!new Set([...expectedProductFiles.map((entry) => entry.path), DEPLOY_METADATA_PATH]).has(observedPath)) {
+      throw new Error(`CAR contains unmanifested file ${observedPath}.`);
+    }
+  }
+  const {rebuildOrderedCarFromBytes, computeStorageCid} = await orderedCarTools();
+  const orderedCar = await rebuildOrderedCarFromBytes(bytes, deployMetadata.stableBlockOrder);
+  if (
+    orderedCar.carBytes.byteLength !== bytes.byteLength
+    || sha256(orderedCar.carBytes) !== sha256(bytes)
+  ) {
+    throw new Error('Pinned deployer cannot reconstruct the exact ordered CAR bytes.');
+  }
+  const storageCid = await computeBulletinStorageCid(orderedCar.chunks);
+  if (storageCid !== computeStorageCid(orderedCar.chunks)) {
+    throw new Error('Independent Bulletin storage CID differs from the pinned deployer prediction.');
   }
   verifiedFiles.sort((a, b) => a.path.localeCompare(b.path));
   return {
     bytes: bytes.byteLength,
     sha256: sha256(bytes),
-    rootCid,
+    rootCid: storageCid,
+    unixFsRootCid: rootCid,
+    storageChunks: orderedCar.chunks.length,
+    orderedCarReproduced: true,
     blocks: reconstructed.blocks,
     reachableBlocks: reconstructed.reachableBlocks,
     releaseJsonBytesObserved: true,
     allManifestedFilesValidated: true,
+    deployMetadata: {
+      path: DEPLOY_METADATA_PATH,
+      bytes: metadataRecord.bytes.byteLength,
+      sha256: sha256(metadataRecord.bytes),
+      cid: metadataRecord.cid,
+      version: deployMetadata.version,
+      previousContenthash: deployMetadata.previous_contenthash,
+      deployedAt: deployMetadata.deployed_at,
+      framework: deployMetadata.framework,
+      fileCount: metadataPaths.length,
+    },
     files: verifiedFiles,
     filesAggregateSha256: sha256(verifiedFiles.map((entry) => `${entry.path}\0${entry.sha256}\n`).join('')),
   };
@@ -541,7 +651,7 @@ export function parseDeployLog(logBytes, expected) {
     || header.signedInAddress?.toLowerCase() !== expected.expectedOwner?.toLowerCase()
     || header.whoamiAddress?.toLowerCase() !== expected.expectedOwner?.toLowerCase()
     || !/^[0-9a-f]{64}$/.test(header.whoamiOutputSha256 ?? '')
-    || !['transfer-to-devinson', 'direct-devinson'].includes(header.ownershipMode)
+    || header.ownershipMode !== 'direct-devinson'
     || !/^[0-9a-f]{64}$/.test(header.packageAggregateSha256 ?? '')
     || header.runtimePackages !== LOCKED_PAD.runtimePackages
     || header.runtimeFiles !== LOCKED_PAD.runtimeFiles

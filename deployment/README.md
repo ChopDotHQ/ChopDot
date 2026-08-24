@@ -124,7 +124,7 @@ Devnet while preserving the complete CLI output as evidence:
 RELEASE_ENV=devnet
 RELEASE_DOMAIN=chopdotapp01.dot
 RELEASE_COMMAND_MODE=stage
-RELEASE_OWNERSHIP_MODE=transfer-to-devinson
+RELEASE_OWNERSHIP_MODE=direct-devinson
 RELEASE_EXPECTED_DEVINSON_OWNER=<public H160 confirmed with Devinson>
 RELEASE_SIGNED_IN_ADDRESS=${RELEASE_EXPECTED_DEVINSON_OWNER}
 BUILD_ID=<the exact dist-dot-host/release.json buildId>
@@ -145,7 +145,8 @@ RELEASE_SIGNED_IN_ADDRESS=${RELEASE_SIGNED_IN_ADDRESS} \
   --config polkadot-app-deploy.config.ts \
   --js-merkle \
   --dump-car=${RELEASE_CAR} \
-  --tag ${BUILD_ID} 2>&1 | tee ${DEVNET_LOG}
+  --tag ${BUILD_ID} \
+  --no-transfer-to-signedin-user 2>&1 | tee ${DEVNET_LOG}
 ```
 
 Promotion consumes those exact CAR bytes and cannot rebuild:
@@ -153,6 +154,7 @@ Promotion consumes those exact CAR bytes and cannot rebuild:
 ```text
 RELEASE_ENV=paseo-next-v2
 RELEASE_COMMAND_MODE=promote
+RELEASE_OWNERSHIP_MODE=direct-devinson
 RELEASE_CAR_SHA256=<sha256 of the validated Devnet CAR>
 PASEO_LOG=deployment/readbacks/${BUILD_ID}.paseo-next-v2.deploy.log
 set -o pipefail
@@ -169,24 +171,20 @@ RELEASE_CAR_SHA256=${RELEASE_CAR_SHA256} \
   --env ${RELEASE_ENV} \
   --environment-file deployment/pad-environments-2026-08-23.json \
   --config polkadot-app-deploy.config.ts \
-  --tag ${BUILD_ID} 2>&1 | tee ${PASEO_LOG}
+  --tag ${BUILD_ID} \
+  --no-transfer-to-signedin-user 2>&1 | tee ${PASEO_LOG}
 ```
 
 ### Ownership semantics
 
-Do not infer ownership behavior from the flag name. In the pinned CLI, a fresh
-deploy while signed in normally uses a local worker and then transfers the new
-name to the signed-in account. `--no-transfer-to-signedin-user` does **not** keep
-the worker as owner; it makes the signed-in phone/session signer perform the
-DotNS transactions directly. Before staging, run the locked CLI's `whoami` and
-make an explicit choice:
-
-- use `transfer-to-devinson` with no ownership flag when the worker should hand
-  the name to the explicitly confirmed signed-in address;
-- use `direct-devinson` and add `--no-transfer-to-signedin-user` when the
-  confirmed signed-in account should execute the writes directly;
-- never clear or replace a user's session silently merely to obtain worker
-  ownership.
+Do not infer ownership behavior from the flag name. In the pinned CLI,
+`--no-transfer-to-signedin-user` makes the signed-in phone/session signer
+perform the DotNS transactions directly. That mode is mandatory for this
+release: executable-manifest publication occurs after content publication, so
+a worker that transfers the name first is no longer authorized to finish the
+resolver and text-record writes. The locked wrapper rejects the transfer mode
+before any write. Never clear or replace a user's session silently merely to
+obtain worker ownership.
 
 Login and signing are user ceremonies. Record only the public recipient address.
 
@@ -203,6 +201,13 @@ arguments. The locked wrapper accepts only two command shapes:
   UnixFS DAG, verifies every release-manifested path and byte hash, rejects
   unreachable/unmanifested blocks, and requires `RELEASE_CAR_SHA256` before it
   invokes the CLI.
+
+The official three-section CAR adds exactly one internal path,
+`.bulletin-deploy/manifest.json`. The verifier permits only that deploy metadata
+file, requires its v3 index to match every immutable release path, reproduces
+the exact ordered CAR bytes, and independently derives the outer Bulletin
+storage CID. That published storage CID is kept distinct from the CAR's inner
+UnixFS directory root.
 
 Both modes require `DO_NOT_TRACK=1`, `PAD_UPDATE_CHECK=0`, the reviewed config
 and environment files, one explicit ownership mode, and an explicit public

@@ -120,8 +120,8 @@ export async function validateLockedDeployInvocation({root, argv, env}) {
   const signedInAddress = normalizedAddress(env.RELEASE_SIGNED_IN_ADDRESS, 'RELEASE_SIGNED_IN_ADDRESS');
   if (signedInAddress !== expectedOwner) throw new Error('Signed-in public address must equal the explicitly approved Devinson owner.');
   const ownershipMode = env.RELEASE_OWNERSHIP_MODE;
-  if (!['transfer-to-devinson', 'direct-devinson'].includes(ownershipMode)) {
-    throw new Error('RELEASE_OWNERSHIP_MODE must be transfer-to-devinson or direct-devinson.');
+  if (ownershipMode !== 'direct-devinson') {
+    throw new Error('RELEASE_OWNERSHIP_MODE must be direct-devinson so executable-manifest writes remain authorized after content publication.');
   }
 
   const {options, positionals} = parseLockedDeployArgs(argv);
@@ -133,7 +133,7 @@ export async function validateLockedDeployInvocation({root, argv, env}) {
     throw new Error('Deploy must use the reviewed worktree-local environment and config files exactly.');
   }
   const noTransfer = options.has('no-transfer-to-signedin-user');
-  if ((ownershipMode === 'direct-devinson') !== noTransfer) throw new Error('Ownership flag conflicts with RELEASE_OWNERSHIP_MODE.');
+  if (!noTransfer) throw new Error('Direct Devinson ownership requires --no-transfer-to-signedin-user.');
 
   const releaseBytes = await readFile(path.join(root, 'dist-dot-host/release.json'));
   const release = JSON.parse(releaseBytes);

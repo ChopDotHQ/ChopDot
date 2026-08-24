@@ -23,6 +23,7 @@ import {
 import {parseLockedDeployArgs, parseWhoamiAddress, validateLockedDeployInvocation} from './lib/locked-deploy-driver.mjs';
 import {assertCanonicalReceipt, assertStaleRejectedForOwner} from './lib/recovery-head-verification.mjs';
 import {extractGitArchive} from './lib/git-archive-snapshot.mjs';
+import {rebuildOrderedCarFromBytes} from '../node_modules/@polkadot-community-foundation/polkadot-app-deploy/dist/chunk-7W5KOX5X.js';
 
 const root = process.cwd();
 const cid = CID.createV1(raw.code, await mfSha256.digest(new TextEncoder().encode('candidate'))).toString();
@@ -44,7 +45,7 @@ const header = {
   signedInAddress: `0x${'12'.repeat(20)}`,
   whoamiAddress: `0x${'12'.repeat(20)}`,
   whoamiOutputSha256: 'cc'.repeat(32),
-  ownershipMode: 'transfer-to-devinson',
+  ownershipMode: 'direct-devinson',
   source: {
     commit: 'dd'.repeat(20),
     tree: 'ee'.repeat(20),
@@ -302,10 +303,46 @@ test('locked deploy rejects dangerous environment overrides before any deploymen
   const env = {
     DO_NOT_TRACK: '1', PAD_UPDATE_CHECK: '0', RELEASE_ENV: 'devnet', RELEASE_COMMAND_MODE: 'stage',
     RELEASE_DOMAIN: 'chopdotapp01.dot', RELEASE_EXPECTED_DEVINSON_OWNER: header.expectedDevinsonOwner,
-    RELEASE_SIGNED_IN_ADDRESS: header.expectedDevinsonOwner, RELEASE_OWNERSHIP_MODE: 'transfer-to-devinson',
+    RELEASE_SIGNED_IN_ADDRESS: header.expectedDevinsonOwner, RELEASE_OWNERSHIP_MODE: 'direct-devinson',
     IPFS_CID: cid,
   };
   await assert.rejects(() => validateLockedDeployInvocation({root: directory, argv: [], env}), /IPFS_CID/);
+});
+
+test('locked release requires Devinson-direct DotNS authority through manifest publication', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'chopdot-direct-owner-'));
+  const env = {
+    DO_NOT_TRACK: '1',
+    PAD_UPDATE_CHECK: '0',
+    RELEASE_ENV: 'devnet',
+    RELEASE_COMMAND_MODE: 'stage',
+    RELEASE_DOMAIN: 'chopdotapp01.dot',
+    RELEASE_EXPECTED_DEVINSON_OWNER: header.expectedDevinsonOwner,
+    RELEASE_SIGNED_IN_ADDRESS: header.expectedDevinsonOwner,
+    RELEASE_OWNERSHIP_MODE: 'transfer-to-devinson',
+  };
+  const argv = [
+    'dist-dot-host',
+    'chopdotapp01.dot',
+    '--env=devnet',
+    '--environment-file=deployment/pad-environments-2026-08-23.json',
+    '--config=polkadot-app-deploy.config.ts',
+    '--js-merkle',
+    '--dump-car=deployment/releases/candidate.car',
+    '--tag=candidate',
+  ];
+  await assert.rejects(
+    () => validateLockedDeployInvocation({root: directory, argv, env}),
+    /must be direct-devinson/u,
+  );
+  await assert.rejects(
+    () => validateLockedDeployInvocation({
+      root: directory,
+      argv,
+      env: {...env, RELEASE_OWNERSHIP_MODE: 'direct-devinson'},
+    }),
+    /requires --no-transfer-to-signedin-user/u,
+  );
 });
 
 async function makeCar(fileRecords) {
@@ -329,6 +366,50 @@ async function makeCar(fileRecords) {
   return Buffer.concat(chunks);
 }
 
+async function makeDeployerCar(fileRecords, mutateManifest = (value) => value) {
+  const blocks = new Map();
+  const blockstore = {
+    async put(cidValue, bytes) { blocks.set(cidValue.toString(), {cid: cidValue, bytes}); },
+    async get(cidValue) { return blocks.get(cidValue.toString())?.bytes; },
+  };
+  const inputPaths = new Set(fileRecords.map((entry) => entry.path));
+  const fileCids = new Map();
+  for await (const entry of importer(fileRecords.map((entry) => ({path: entry.path, content: entry.bytes})), blockstore, {
+    cidVersion: 1,
+    rawLeaves: true,
+    wrapWithDirectory: true,
+  })) {
+    if (inputPaths.has(entry.path)) fileCids.set(entry.path, entry.cid.toString());
+  }
+  assert.equal(fileCids.size, fileRecords.length);
+  const deployManifest = mutateManifest({
+    version: 3,
+    previous_contenthash: null,
+    deployed_at: '2026-08-24T00:00:00.000Z',
+    framework: 'vite',
+    files: Object.fromEntries(fileRecords.map((entry) => [entry.path, {
+      cid: fileCids.get(entry.path),
+      type: 'volatile',
+      size: entry.bytes.byteLength,
+    }])),
+    stableBlockOrder: [],
+    blocks: [],
+    chunks: {},
+  });
+  const unordered = await makeCar([
+    ...fileRecords,
+    {
+      path: '.bulletin-deploy/manifest.json',
+      bytes: Buffer.from(JSON.stringify(deployManifest)),
+    },
+  ]);
+  const ordered = await rebuildOrderedCarFromBytes(
+    unordered,
+    deployManifest.stableBlockOrder,
+  );
+  return Buffer.from(ordered.carBytes);
+}
+
 test('CAR proof reconstructs every UnixFS file and rejects a manifested hash mismatch', async () => {
   const directory = await mkdtemp(path.join(os.tmpdir(), 'chopdot-car-test-'));
   const appBytes = Buffer.from('console.log("real")');
@@ -337,22 +418,35 @@ test('CAR proof reconstructs every UnixFS file and rejects a manifested hash mis
   };
   correctRelease.contentSha256 = sha256(`assets/app.js\0${correctRelease.files[0].sha256}\n`);
   const correctReleaseBytes = Buffer.from(`${JSON.stringify(correctRelease)}\n`);
-  const correctCar = await makeCar([
+  const correctFiles = [
     {path: 'assets/app.js', bytes: appBytes},
     {path: 'release.json', bytes: correctReleaseBytes},
-  ]);
+  ];
+  const correctCar = await makeDeployerCar(correctFiles);
   const correctCarPath = path.join(directory, 'correct.car');
   await writeFile(correctCarPath, correctCar);
   const verified = await inspectCar(correctCarPath, correctReleaseBytes, correctRelease);
   assert.equal(verified.allManifestedFilesValidated, true);
   assert.equal(verified.files.length, 2);
+  assert.equal(verified.deployMetadata.path, '.bulletin-deploy/manifest.json');
+
+  const invalidMetadataCar = await makeDeployerCar(correctFiles, (manifest) => {
+    manifest.files['assets/app.js'].size += 1;
+    return manifest;
+  });
+  const invalidMetadataPath = path.join(directory, 'invalid-metadata.car');
+  await writeFile(invalidMetadataPath, invalidMetadataCar);
+  await assert.rejects(
+    () => inspectCar(invalidMetadataPath, correctReleaseBytes, correctRelease),
+    /bulletin-deploy\/manifest\.json entry differs/u,
+  );
 
   const release = {
     files: [{path: 'assets/app.js', bytes: appBytes.byteLength, sha256: '00'.repeat(32)}],
   };
   release.contentSha256 = sha256(`assets/app.js\0${release.files[0].sha256}\n`);
   const releaseBytes = Buffer.from(`${JSON.stringify(release)}\n`);
-  const carBytes = await makeCar([
+  const carBytes = await makeDeployerCar([
     {path: 'assets/app.js', bytes: appBytes},
     {path: 'release.json', bytes: releaseBytes},
   ]);
