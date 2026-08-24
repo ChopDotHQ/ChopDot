@@ -161,6 +161,8 @@ check(verificationInputs?.hardhatParityScriptSha256 === sha256(await readFile(pa
 check(verificationInputs?.deploymentScriptSha256 === sha256(await readFile(path.join(root, 'scripts/recovery-head-deployment.mjs'))), 'release live recovery deployment verifier hash is stale');
 check(verificationInputs?.verificationLibrarySha256 === sha256(await readFile(path.join(root, 'scripts/lib/recovery-head-verification.mjs'))), 'release recovery verification library hash is stale');
 check(verificationInputs?.releaseToolingTestSha256 === sha256(await readFile(path.join(root, 'scripts/release-evidence.test.mjs'))), 'release recovery verification regression hash is stale');
+check(verificationInputs?.rebuildVerifierSha256 === sha256(await readFile(path.join(root, 'scripts/verify-dot-host-rebuild.mjs'))), 'release deterministic rebuild verifier hash is stale');
+check(verificationInputs?.archiveSnapshotLibrarySha256 === sha256(await readFile(path.join(root, 'scripts/lib/git-archive-snapshot.mjs'))), 'release source snapshot library hash is stale');
 check(verificationInputs?.behaviorConfigSha256 === sha256(await readFile(path.join(root, 'contracts/recovery-head-index/hardhat.behavior.config.cjs'))), 'release Solidity behavior config hash is stale');
 check(verificationInputs?.behaviorTestSha256 === sha256(await readFile(path.join(root, 'contracts/recovery-head-index/test/RecoveryHeadIndex.behavior.cjs'))), 'release Solidity behavior test hash is stale');
 

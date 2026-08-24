@@ -223,7 +223,9 @@ equal nonzero owner is never accepted as user ownership.
 `release.json` includes deterministic `sbom.json` and `licenses.json` evidence
 derived from the exact lockfile. `npm run verify:dot-host:rebuild` builds into
 two fresh output directories and requires both outputs and the candidate to be
-byte-identical. The locally installed deployment CLI attestation covers all
+byte-identical. Each tracked source archive is streamed directly into its own
+`tar` extractor, so repository size cannot exhaust Node's synchronous child-
+process output buffer. The locally installed deployment CLI attestation covers all
 package-owned files (not only the launcher), package integrity, and runtime
 version output.
 

@@ -4,6 +4,7 @@ import {mkdir, mkdtemp, readFile, readdir} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
+import {extractGitArchive} from './lib/git-archive-snapshot.mjs';
 
 const root = process.cwd();
 function sha256(bytes) { return createHash('sha256').update(bytes).digest('hex'); }
@@ -55,8 +56,7 @@ if (dirty) throw new Error('Strict release rebuild requires a clean exact worktr
 async function sourceSnapshot(name) {
   const directory = path.join(isolatedRoot, name);
   await mkdir(directory);
-  const archive = execFileSync('git', ['archive', '--format=tar', 'HEAD'], {cwd: root});
-  execFileSync('tar', ['-xf', '-', '-C', directory], {input: archive});
+  await extractGitArchive({source: root, destination: directory});
   return directory;
 }
 const firstSource = await sourceSnapshot('first-source');
@@ -78,7 +78,7 @@ if (fromCandidate.length) throw new Error(`Output-isolated rebuild differs from 
 console.log(JSON.stringify({
   status: 'pass',
   mode: 'two-output-isolated-rebuilds',
-  sourceIsolation: 'two-independent-git-archive-head-snapshots-with-independent-lockfile-installs',
+  sourceIsolation: 'two-independent-streamed-git-archive-head-snapshots-with-independent-lockfile-installs',
   files: first.length,
   aggregateSha256: sha256(first.map((entry) => `${entry.path}\0${entry.sha256}\n`).join('')),
 }, null, 2));

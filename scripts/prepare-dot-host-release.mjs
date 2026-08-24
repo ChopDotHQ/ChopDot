@@ -246,6 +246,8 @@ const release = {
       deploymentScriptSha256: sha256(await readFile(path.join(root, 'scripts/recovery-head-deployment.mjs'))),
       verificationLibrarySha256: sha256(await readFile(path.join(root, 'scripts/lib/recovery-head-verification.mjs'))),
       releaseToolingTestSha256: sha256(await readFile(path.join(root, 'scripts/release-evidence.test.mjs'))),
+      rebuildVerifierSha256: sha256(await readFile(path.join(root, 'scripts/verify-dot-host-rebuild.mjs'))),
+      archiveSnapshotLibrarySha256: sha256(await readFile(path.join(root, 'scripts/lib/git-archive-snapshot.mjs'))),
       behaviorConfigSha256: sha256(await readFile(path.join(root, 'contracts/recovery-head-index/hardhat.behavior.config.cjs'))),
       behaviorTestSha256: sha256(await readFile(path.join(root, 'contracts/recovery-head-index/test/RecoveryHeadIndex.behavior.cjs'))),
       strictCommands: [

@@ -22,6 +22,7 @@ import {
 } from './lib/release-evidence.mjs';
 import {parseLockedDeployArgs, parseWhoamiAddress, validateLockedDeployInvocation} from './lib/locked-deploy-driver.mjs';
 import {assertCanonicalReceipt, assertStaleRejectedForOwner} from './lib/recovery-head-verification.mjs';
+import {extractGitArchive} from './lib/git-archive-snapshot.mjs';
 
 const root = process.cwd();
 const cid = CID.createV1(raw.code, await mfSha256.digest(new TextEncoder().encode('candidate'))).toString();
@@ -138,6 +139,29 @@ test('runtime closure hashing includes transitive installed bytes and rejects an
     writeFile(path.join(ancestorDependency, 'package.json'), JSON.stringify({name: 'dependency', version: '1.0.0'})),
   ]);
   await assert.rejects(() => buildInstalledDeploymentRuntimeManifest(escapedRoot), /escaped worktree-local node_modules/u);
+});
+
+test('release source snapshots stream archives larger than the Node sync buffer', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'chopdot-git-archive-'));
+  const source = path.join(directory, 'source');
+  const destination = path.join(directory, 'destination');
+  await Promise.all([mkdir(source), mkdir(destination)]);
+  for (const args of [
+    ['init', '--quiet'],
+    ['config', 'user.name', 'ChopDot release test'],
+    ['config', 'user.email', 'release-test@chopdot.invalid'],
+  ]) {
+    const result = spawnSync('git', args, {cwd: source, encoding: 'utf8'});
+    assert.equal(result.status, 0, result.stderr);
+  }
+  const largeBytes = Buffer.alloc(2 * 1024 * 1024, 0x61);
+  await writeFile(path.join(source, 'large.bin'), largeBytes);
+  for (const args of [['add', 'large.bin'], ['commit', '--quiet', '-m', 'fixture']]) {
+    const result = spawnSync('git', args, {cwd: source, encoding: 'utf8'});
+    assert.equal(result.status, 0, result.stderr);
+  }
+  await extractGitArchive({source, destination});
+  assert.deepEqual(await readFile(path.join(destination, 'large.bin')), largeBytes);
 });
 
 test('shape-only CID arguments without a locked deploy log cannot become evidence', () => {
