@@ -11,17 +11,23 @@ import * as raw from 'multiformats/codecs/raw';
 import {sha256 as mfSha256} from 'multiformats/hashes/sha2';
 import {
   LOCKED_PAD,
+  DIRECT_OWNER_MANIFEST_NAME,
+  DIRECT_OWNER_RUNTIME_NAME,
+  LOCKED_MANIFEST_PUBLISH_MODULE,
   assertSuccessfulExtrinsic,
   buildInstalledDeploymentRuntimeManifest,
   createDirectOwnerCliSource,
+  createDirectOwnerManifestPublishSource,
   inspectCar,
   parseDeployLog,
   safeRepoPath,
   sha256,
   verifyReleaseDirectory,
   verifyLockedDeploymentCli,
+  withIsolatedDeploymentRuntime,
 } from './lib/release-evidence.mjs';
 import {parseLockedDeployArgs, parseWhoamiAddress, validateLockedDeployInvocation} from './lib/locked-deploy-driver.mjs';
+import {requireDirectOwnerSession} from './lib/direct-owner-runtime.mjs';
 import {assertCanonicalReceipt, assertStaleRejectedForOwner} from './lib/recovery-head-verification.mjs';
 import {extractGitArchive} from './lib/git-archive-snapshot.mjs';
 import {rebuildOrderedCarFromBytes} from '../node_modules/@polkadot-community-foundation/polkadot-app-deploy/dist/chunk-7W5KOX5X.js';
@@ -30,7 +36,7 @@ const root = process.cwd();
 const cid = CID.createV1(raw.code, await mfSha256.digest(new TextEncoder().encode('candidate'))).toString();
 const carRoot = cid;
 const header = {
-  schema: 'chopdot.locked-pad-attestation.v2',
+  schema: 'chopdot.locked-pad-attestation.v3',
   package: LOCKED_PAD.package,
   version: LOCKED_PAD.version,
   integrity: LOCKED_PAD.integrity,
@@ -50,6 +56,8 @@ const header = {
   storageMode: 'shared-testnet-pool',
   storagePoolAccountIndex: 2,
   adaptedExecutableSha256: 'ad'.repeat(32),
+  directOwnerRuntimeSha256: 'ae'.repeat(32),
+  adaptedManifestPublisherSha256: 'af'.repeat(32),
   source: {
     commit: 'dd'.repeat(20),
     tree: 'ee'.repeat(20),
@@ -370,32 +378,105 @@ test('locked release requires Devinson-direct DotNS authority through manifest p
   );
 });
 
-test('direct-owner adapter separates shared Bulletin storage from phone DotNS authority', async () => {
-  const source = [
-    'import * as readline from "readline";',
-    'async function main() {',
-    '  const result = await deploy(buildDir, domain, {',
-    '    poolSize: flags.poolSize,',
-    '  });',
-    '}',
-  ].join('\n');
-  const adapted = createDirectOwnerCliSource(source);
-  assert.match(adapted, /derivePoolAccounts\(flags\.poolSize \?\? 10\)\[2\]/u);
-  assert.match(adapted, /storageSigner: chopdotStorageAccount\.signer/u);
-  assert.match(adapted, /storageSignerAddress: chopdotStorageAccount\.address/u);
-  assert.equal(adapted.includes('transferToSignedInUser'), false);
-  assert.throws(() => createDirectOwnerCliSource(source.replace('poolSize: flags.poolSize,', '')), /source anchor/u);
-
+test('direct-owner adapter separates shared Bulletin storage from exact phone DotNS authority', async () => {
   const officialPath = path.join(root, LOCKED_PAD.bin);
   const officialSource = await readFile(officialPath, 'utf8');
   const officialHash = sha256(officialSource);
   const adaptedOfficial = createDirectOwnerCliSource(officialSource);
+  assert.match(adaptedOfficial, /requireDirectOwnerSession/u);
+  assert.match(adaptedOfficial, /signer: chopdotSession\.signer/u);
+  assert.match(adaptedOfficial, /signerAddress: chopdotSession\.addresses\.productAddress/u);
+  assert.match(adaptedOfficial, /derivePoolAccounts\(flags\.poolSize \?\? 10\)\[2\]/u);
+  assert.match(adaptedOfficial, /storageSigner: chopdotStorageAccount\.signer/u);
+  assert.match(adaptedOfficial, /storageSignerAddress: chopdotStorageAccount\.address/u);
+  assert.match(adaptedOfficial, /chopdot-direct-owner-publish\.mjs/u);
+  assert.throws(() => createDirectOwnerCliSource(officialSource.replace('    poolSize: flags.poolSize,', '')), /source anchor/u);
   assert.equal(sha256(await readFile(officialPath)), officialHash);
   const directory = await mkdtemp(path.join(os.tmpdir(), 'chopdot-adapted-cli-'));
   const adaptedPath = path.join(directory, 'adapted.mjs');
   await writeFile(adaptedPath, adaptedOfficial);
   const syntax = spawnSync(process.execPath, ['--check', adaptedPath], {encoding: 'utf8'});
   assert.equal(syntax.status, 0, syntax.stderr);
+
+  const manifestPath = path.join(root, 'node_modules/@polkadot-community-foundation/polkadot-app-deploy/dist/chunk-VLRVCVNH.js');
+  const manifestSource = await readFile(manifestPath, 'utf8');
+  const adaptedManifest = createDirectOwnerManifestPublishSource(manifestSource);
+  assert.match(adaptedManifest, /signer: opts\.signer/u);
+  assert.match(adaptedManifest, /signerAddress: opts\.signerAddress/u);
+  assert.match(adaptedManifest, /Manifest DotNS signer differs from the approved direct owner/u);
+  const adaptedManifestPath = path.join(directory, 'manifest.mjs');
+  await writeFile(adaptedManifestPath, adaptedManifest);
+  const manifestSyntax = spawnSync(process.execPath, ['--check', adaptedManifestPath], {encoding: 'utf8'});
+  assert.equal(manifestSyntax.status, 0, manifestSyntax.stderr);
+});
+
+test('direct-owner runtime rejects missing or changed sessions before the deploy callback', async () => {
+  const expectedOwner = `0x${'12'.repeat(20)}`;
+  let writes = 0;
+  const guardedDeploy = async authClient => {
+    const session = await requireDirectOwnerSession(authClient, expectedOwner);
+    writes++;
+    return session;
+  };
+  await assert.rejects(
+    () => guardedDeploy({getSessionSigner: async () => null}),
+    /disappeared after whoami/u,
+  );
+  assert.equal(writes, 0);
+
+  let destroyed = 0;
+  await assert.rejects(
+    () => guardedDeploy({
+      getSessionSigner: async () => ({
+        address: 'product-address',
+        addresses: {productAddress: 'product-address', productH160: `0x${'34'.repeat(20)}`},
+        signer: {},
+        destroy() { destroyed++; },
+      }),
+    }),
+    /identity changed after whoami/u,
+  );
+  assert.equal(writes, 0);
+  assert.equal(destroyed, 1);
+
+  const valid = {
+    address: 'product-address',
+    addresses: {productAddress: 'product-address', productH160: expectedOwner},
+    signer: {},
+    destroy() {},
+  };
+  assert.equal(await guardedDeploy({getSessionSigner: async () => valid}), valid);
+  assert.equal(writes, 1);
+});
+
+test('direct-owner executable and manifest publisher load in a fresh locked runtime', async () => {
+  await withIsolatedDeploymentRuntime(root, async ({root: isolatedRoot, childEnv}) => {
+    const packageBin = path.dirname(path.join(isolatedRoot, LOCKED_PAD.bin));
+    const officialSource = await readFile(path.join(isolatedRoot, LOCKED_PAD.bin), 'utf8');
+    const manifestSource = await readFile(path.join(isolatedRoot, LOCKED_MANIFEST_PUBLISH_MODULE), 'utf8');
+    const runtimeBytes = await readFile(path.join(root, 'scripts/lib/direct-owner-runtime.mjs'));
+    const cliPath = path.join(packageBin, 'chopdot-direct-owner-deploy.mjs');
+    const runtimePath = path.join(packageBin, DIRECT_OWNER_RUNTIME_NAME);
+    const manifestPath = path.join(path.dirname(path.join(isolatedRoot, LOCKED_MANIFEST_PUBLISH_MODULE)), DIRECT_OWNER_MANIFEST_NAME);
+    await Promise.all([
+      writeFile(cliPath, createDirectOwnerCliSource(officialSource)),
+      writeFile(runtimePath, runtimeBytes),
+      writeFile(manifestPath, createDirectOwnerManifestPublishSource(manifestSource)),
+    ]);
+    const help = spawnSync(process.execPath, [cliPath, '--help'], {
+      cwd: isolatedRoot,
+      env: childEnv,
+      encoding: 'utf8',
+    });
+    assert.equal(help.status, 0, help.stderr);
+    assert.match(help.stdout, /polkadot-app-deploy v0\.13\.1/u);
+    const manifestLoad = spawnSync(process.execPath, [manifestPath], {
+      cwd: isolatedRoot,
+      env: childEnv,
+      encoding: 'utf8',
+    });
+    assert.equal(manifestLoad.status, 0, manifestLoad.stderr);
+  });
 });
 
 async function makeCar(fileRecords) {

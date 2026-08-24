@@ -124,6 +124,7 @@ for (const [pathField, hashField, expectedPath] of [
   ['bootstrapFile', 'bootstrapFileSha256', 'scripts/run-locked-polkadot-app-deploy.mjs'],
   ['driverFile', 'driverFileSha256', 'scripts/lib/locked-deploy-driver.mjs'],
   ['evidenceLibraryFile', 'evidenceLibraryFileSha256', 'scripts/lib/release-evidence.mjs'],
+  ['directOwnerRuntimeFile', 'directOwnerRuntimeFileSha256', 'scripts/lib/direct-owner-runtime.mjs'],
 ]) {
   check(
     release.polkadotAppDeploy?.launcher?.[pathField] === expectedPath

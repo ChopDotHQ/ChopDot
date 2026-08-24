@@ -26,31 +26,119 @@ export const LOCKED_PAD = Object.freeze({
 });
 export const LOCKED_STORAGE_MODE = 'shared-testnet-pool';
 export const LOCKED_STORAGE_POOL_ACCOUNT_INDEX = 2;
+export const DIRECT_OWNER_RUNTIME_NAME = 'chopdot-direct-owner-runtime.mjs';
+export const DIRECT_OWNER_MANIFEST_NAME = 'chopdot-direct-owner-publish.mjs';
+export const LOCKED_MANIFEST_PUBLISH_MODULE = 'node_modules/@polkadot-community-foundation/polkadot-app-deploy/dist/chunk-VLRVCVNH.js';
 
 export function createDirectOwnerCliSource(source) {
   const importNeedle = 'import * as readline from "readline";';
   const deployNeedle = '  const result = await deploy(buildDir, domain, {';
   const poolSizeNeedle = '    poolSize: flags.poolSize,';
-  for (const needle of [importNeedle, deployNeedle, poolSizeNeedle]) {
+  const manifestImportNeedle = '    const { tryLoadProductConfig, publishManifest } = await import("../dist/index.js");';
+  const manifestOptionsNeedle = '          mnemonic: flags.mnemonic,\n          derivationPath: flags.derivationPath,';
+  const successNeedle = '  if (!flags.help && !flags.version) {\n    try { writeRunState({ status: "succeeded", endedAt: Date.now() }); } catch {}';
+  for (const needle of [
+    importNeedle,
+    deployNeedle,
+    poolSizeNeedle,
+    manifestImportNeedle,
+    manifestOptionsNeedle,
+    successNeedle,
+  ]) {
     if (source.split(needle).length !== 2) {
       throw new Error(`Official deploy CLI adapter expected exactly one source anchor: ${needle}`);
     }
   }
-  if (source.includes('chopdotStorageAccount') || source.includes('storageSigner:')) {
-    throw new Error('Official deploy CLI already contains a storage-signer path; the locked adapter requires review.');
+  if (source.includes('chopdotStorageAccount') || source.includes('storageSigner:') || source.includes('chopdotSession')) {
+    throw new Error('Official deploy CLI already contains a signer-adapter path; the locked adapter requires review.');
   }
   return source
-    .replace(importNeedle, `${importNeedle}\nimport { derivePoolAccounts } from "../dist/index.js";`)
+    .replace(
+      importNeedle,
+      `${importNeedle}\nimport { derivePoolAccounts } from "../dist/index.js";\n`
+        + 'import { getAuthClient } from "../dist/auth-config.js";\n'
+        + `import { requireDirectOwnerSession } from "./${DIRECT_OWNER_RUNTIME_NAME}";`,
+    )
     .replace(
       deployNeedle,
-      `  const chopdotStorageAccount = derivePoolAccounts(flags.poolSize ?? 10)[${LOCKED_STORAGE_POOL_ACCOUNT_INDEX}];\n`
+      '  const chopdotExpectedOwner = process.env.RELEASE_EXPECTED_DEVINSON_OWNER;\n'
+        + '  const chopdotAuthClient = await getAuthClient(flags.env ?? DEFAULT_ENV_ID);\n'
+        + '  const chopdotSession = await requireDirectOwnerSession(\n'
+        + '    chopdotAuthClient,\n'
+        + '    chopdotExpectedOwner,\n'
+        + '    message => new NonRetryableError(message),\n'
+        + '  );\n'
+        + '  const chopdotConfirmPhoneReady = ({ label, attempt }) => new Promise((resolve, reject) => {\n'
+        + '    console.log(`\\n   Check your phone → ${label}${attempt >= 2 ? ` (attempt ${attempt})` : ""}`);\n'
+        + '    console.log("   Press Y when ready (Ctrl-C to abort):");\n'
+        + '    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });\n'
+        + '    let settled = false;\n'
+        + '    const settle = fn => { if (!settled) { settled = true; rl.close(); fn(); } };\n'
+        + '    rl.on("close", () => settle(() => reject(new Error("aborted by user"))));\n'
+        + '    const ask = () => rl.question("   > ", line => {\n'
+        + '      if (["y", ""].includes(line.trim().toLowerCase())) settle(resolve); else ask();\n'
+        + '    });\n'
+        + '    ask();\n'
+        + '  });\n'
+        + `  const chopdotStorageAccount = derivePoolAccounts(flags.poolSize ?? 10)[${LOCKED_STORAGE_POOL_ACCOUNT_INDEX}];\n`
         + '  if (!chopdotStorageAccount) throw new Error("Pinned ChopDot shared testnet storage account is unavailable.");\n'
         + deployNeedle,
     )
     .replace(
       poolSizeNeedle,
-      `${poolSizeNeedle}\n    storageSigner: chopdotStorageAccount.signer,\n`
+      `${poolSizeNeedle}\n    signer: chopdotSession.signer,\n`
+        + '    signerAddress: chopdotSession.addresses.productAddress,\n'
+        + '    storageSigner: chopdotStorageAccount.signer,\n'
         + '    storageSignerAddress: chopdotStorageAccount.address,',
+    )
+    .replace(
+      manifestImportNeedle,
+      '    const { tryLoadProductConfig } = await import("../dist/index.js");\n'
+        + `    const { publishManifest } = await import("../dist/${DIRECT_OWNER_MANIFEST_NAME}");`,
+    )
+    .replace(
+      manifestOptionsNeedle,
+      `${manifestOptionsNeedle}\n          signer: chopdotSession.signer,\n`
+        + '          signerAddress: chopdotSession.addresses.productAddress,\n'
+        + '          expectedOwner: chopdotExpectedOwner,\n'
+        + '          confirmPhoneReady: chopdotConfirmPhoneReady,',
+    )
+    .replace(successNeedle, `  chopdotSession.destroy();\n\n${successNeedle}`);
+}
+
+export function createDirectOwnerManifestPublishSource(source) {
+  const shimNeedle = [
+    '  const deployOptsShim = {',
+    '    mnemonic: opts.mnemonic,',
+    '    derivationPath: opts.derivationPath',
+    '  };',
+  ].join('\n');
+  const connectNeedle = '  await dotns.connect(connectOpts);';
+  for (const needle of [shimNeedle, connectNeedle]) {
+    if (source.split(needle).length !== 2) {
+      throw new Error(`Official manifest publisher adapter expected exactly one source anchor: ${needle}`);
+    }
+  }
+  if (source.includes('opts.signerAddress') || source.includes('expectedOwner')) {
+    throw new Error('Official manifest publisher already contains an owner-signer path; the locked adapter requires review.');
+  }
+  return source
+    .replace(
+      shimNeedle,
+      [
+        '  const deployOptsShim = {',
+        '    signer: opts.signer,',
+        '    signerAddress: opts.signerAddress',
+        '  };',
+      ].join('\n'),
+    )
+    .replace(
+      connectNeedle,
+      '  await dotns.connect({...connectOpts, phoneSigner: true, confirmPhoneReady: opts.confirmPhoneReady});\n'
+        + '  if (dotns.evmAddress?.toLowerCase() !== String(opts.expectedOwner ?? "").toLowerCase()) {\n'
+        + '    dotns.disconnect();\n'
+        + '    throw new NonRetryableError("Manifest DotNS signer differs from the approved direct owner.");\n'
+        + '  }',
     );
 }
 
@@ -669,7 +757,7 @@ export function parseDeployLog(logBytes, expected) {
   if (!headerLine) throw new Error('Deploy log lacks the locked-CLI attestation header.');
   const header = JSON.parse(headerLine.slice('CHOPDOT_LOCKED_PAD '.length));
   if (
-    header.schema !== 'chopdot.locked-pad-attestation.v2'
+    header.schema !== 'chopdot.locked-pad-attestation.v3'
     || header.package !== LOCKED_PAD.package
     || header.version !== LOCKED_PAD.version
     || header.integrity !== LOCKED_PAD.integrity
@@ -684,6 +772,8 @@ export function parseDeployLog(logBytes, expected) {
     || header.storageMode !== LOCKED_STORAGE_MODE
     || header.storagePoolAccountIndex !== LOCKED_STORAGE_POOL_ACCOUNT_INDEX
     || !/^[0-9a-f]{64}$/.test(header.adaptedExecutableSha256 ?? '')
+    || !/^[0-9a-f]{64}$/.test(header.directOwnerRuntimeSha256 ?? '')
+    || !/^[0-9a-f]{64}$/.test(header.adaptedManifestPublisherSha256 ?? '')
     || !/^[0-9a-f]{64}$/.test(header.packageAggregateSha256 ?? '')
     || header.runtimePackages !== LOCKED_PAD.runtimePackages
     || header.runtimeFiles !== LOCKED_PAD.runtimeFiles
@@ -932,9 +1022,12 @@ export async function generateReadbackEvidence({root, environment, domain, car, 
   const logBytes = await readFile(deployLogPath.absolute);
   const cli = await withIsolatedDeploymentRuntime(root, async ({root: isolatedRoot, evidence}) => {
     const officialExecutableBytes = await readFile(path.join(isolatedRoot, LOCKED_PAD.bin), 'utf8');
+    const officialManifestPublisherBytes = await readFile(path.join(isolatedRoot, LOCKED_MANIFEST_PUBLISH_MODULE), 'utf8');
     return {
       ...evidence,
       adaptedExecutableSha256: sha256(createDirectOwnerCliSource(officialExecutableBytes)),
+      directOwnerRuntimeSha256: sha256(await readFile(path.join(root, 'scripts/lib/direct-owner-runtime.mjs'))),
+      adaptedManifestPublisherSha256: sha256(createDirectOwnerManifestPublishSource(officialManifestPublisherBytes)),
     };
   });
   const log = parseDeployLog(logBytes, {
@@ -956,6 +1049,8 @@ export async function generateReadbackEvidence({root, environment, domain, car, 
     || log.header.runtimeFiles !== cli.runtimeFiles
     || log.header.runtimeAggregateSha256 !== cli.runtimeAggregateSha256
     || log.header.adaptedExecutableSha256 !== cli.adaptedExecutableSha256
+    || log.header.directOwnerRuntimeSha256 !== cli.directOwnerRuntimeSha256
+    || log.header.adaptedManifestPublisherSha256 !== cli.adaptedManifestPublisherSha256
     || log.header.releaseJsonSha256 !== sha256(releaseBytes)
     || log.header.environmentFileSha256 !== release.polkadotAppDeploy?.environmentFileSha256
   ) {

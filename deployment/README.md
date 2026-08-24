@@ -196,10 +196,16 @@ The pinned CLI probes a missing personal Bulletin allowance before it exposes a
 shared-pool switch. The locked runner therefore creates a hashed temporary
 adapter from the already-attested official executable when
 `RELEASE_STORAGE_MODE=shared-testnet-pool`. It injects only the package's public
-testnet pool signer (pinned account index 2) for Bulletin bytes; the unchanged
-session signer still owns and signs every DotNS write. The vendor executable is
-not edited, private pool overrides are forbidden, and both executable hashes
-are recorded in the deployment header.
+testnet pool signer (pinned account index 2) for Bulletin bytes. Before any
+deployment work, a separate tracked guard reloads the session, requires its
+Product H160 to equal `RELEASE_EXPECTED_DEVINSON_OWNER`, and injects that exact
+signer into the base DotNS deploy. Missing, changed, or malformed sessions abort
+instead of reaching the vendor's development-signer fallback. A separately
+hashed manifest-publisher adapter carries the same signer into resolver,
+subname, contenthash, and text-record writes and rechecks its EVM address before
+those writes. The vendor executable and publisher remain unedited, private pool
+and DotNS overrides are forbidden, and all three adapted-runtime hashes are
+recorded and independently recomputed during live readback.
 
 ## Independent live readback and promotion evidence
 

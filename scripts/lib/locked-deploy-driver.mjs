@@ -5,10 +5,14 @@ import process from 'node:process';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import {
   LOCKED_PAD,
+  DIRECT_OWNER_MANIFEST_NAME,
+  DIRECT_OWNER_RUNTIME_NAME,
+  LOCKED_MANIFEST_PUBLISH_MODULE,
   LOCKED_STORAGE_MODE,
   LOCKED_STORAGE_POOL_ACCOUNT_INDEX,
   assertDomain,
   createDirectOwnerCliSource,
+  createDirectOwnerManifestPublishSource,
   inspectCar,
   safeRepoPath,
   sha256,
@@ -92,6 +96,7 @@ async function verifyCurrentReleaseSource(root, release, releaseBytes) {
     ['bootstrapFile', 'bootstrapFileSha256', 'scripts/run-locked-polkadot-app-deploy.mjs'],
     ['driverFile', 'driverFileSha256', 'scripts/lib/locked-deploy-driver.mjs'],
     ['evidenceLibraryFile', 'evidenceLibraryFileSha256', 'scripts/lib/release-evidence.mjs'],
+    ['directOwnerRuntimeFile', 'directOwnerRuntimeFileSha256', 'scripts/lib/direct-owner-runtime.mjs'],
   ]) {
     if (launcher?.[pathField] !== expectedPath
       || sha256(await readFile(path.join(root, expectedPath))) !== launcher?.[hashField]) {
@@ -221,9 +226,18 @@ async function main() {
   const officialExecutable = path.join(runtimeRoot, LOCKED_PAD.bin);
   const adaptedExecutable = path.join(path.dirname(officialExecutable), DIRECT_OWNER_CLI_NAME);
   const adaptedExecutableBytes = Buffer.from(createDirectOwnerCliSource(await readFile(officialExecutable, 'utf8')));
+  const directOwnerRuntimeBytes = await readFile(path.join(driverDirectory, 'direct-owner-runtime.mjs'));
+  const directOwnerRuntime = path.join(path.dirname(officialExecutable), DIRECT_OWNER_RUNTIME_NAME);
+  const officialManifestPublisher = path.join(runtimeRoot, LOCKED_MANIFEST_PUBLISH_MODULE);
+  const adaptedManifestPublisher = path.join(path.dirname(officialManifestPublisher), DIRECT_OWNER_MANIFEST_NAME);
+  const adaptedManifestPublisherBytes = Buffer.from(
+    createDirectOwnerManifestPublishSource(await readFile(officialManifestPublisher, 'utf8')),
+  );
+  await writeFile(directOwnerRuntime, directOwnerRuntimeBytes, {mode: 0o400, flag: 'wx'});
+  await writeFile(adaptedManifestPublisher, adaptedManifestPublisherBytes, {mode: 0o400, flag: 'wx'});
   await writeFile(adaptedExecutable, adaptedExecutableBytes, {mode: 0o500, flag: 'wx'});
   const header = {
-    schema: 'chopdot.locked-pad-attestation.v2',
+    schema: 'chopdot.locked-pad-attestation.v3',
     package: tool.package,
     version: tool.version,
     integrity: tool.integrity,
@@ -243,6 +257,8 @@ async function main() {
     storageMode: validated.storageMode,
     storagePoolAccountIndex: LOCKED_STORAGE_POOL_ACCOUNT_INDEX,
     adaptedExecutableSha256: sha256(adaptedExecutableBytes),
+    directOwnerRuntimeSha256: sha256(directOwnerRuntimeBytes),
+    adaptedManifestPublisherSha256: sha256(adaptedManifestPublisherBytes),
     environmentFileSha256: validated.release.polkadotAppDeploy.environmentFileSha256,
     releaseJsonSha256: sha256(validated.releaseBytes),
     buildId: validated.release.buildId,

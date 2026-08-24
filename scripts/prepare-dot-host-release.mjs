@@ -228,6 +228,8 @@ const release = {
       driverFileSha256: sha256(await readFile(path.join(root, 'scripts/lib/locked-deploy-driver.mjs'))),
       evidenceLibraryFile: 'scripts/lib/release-evidence.mjs',
       evidenceLibraryFileSha256: sha256(await readFile(path.join(root, 'scripts/lib/release-evidence.mjs'))),
+      directOwnerRuntimeFile: 'scripts/lib/direct-owner-runtime.mjs',
+      directOwnerRuntimeFileSha256: sha256(await readFile(path.join(root, 'scripts/lib/direct-owner-runtime.mjs'))),
     },
   },
   recoveryHeadIndex: {

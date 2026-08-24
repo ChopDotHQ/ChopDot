@@ -7,6 +7,7 @@ import process from 'node:process';
 
 const DRIVER_SOURCE = 'scripts/lib/locked-deploy-driver.mjs';
 const EVIDENCE_SOURCE = 'scripts/lib/release-evidence.mjs';
+const DIRECT_OWNER_RUNTIME_SOURCE = 'scripts/lib/direct-owner-runtime.mjs';
 const CONFIG_FILE = 'polkadot-app-deploy.config.ts';
 
 function sha256(value) {
@@ -65,6 +66,7 @@ async function verifyBuiltinsOnlySourceGate(root) {
     ['bootstrapFile', 'bootstrapFileSha256', 'scripts/run-locked-polkadot-app-deploy.mjs'],
     ['driverFile', 'driverFileSha256', DRIVER_SOURCE],
     ['evidenceLibraryFile', 'evidenceLibraryFileSha256', EVIDENCE_SOURCE],
+    ['directOwnerRuntimeFile', 'directOwnerRuntimeFileSha256', DIRECT_OWNER_RUNTIME_SOURCE],
   ];
   for (const [pathField, hashField, expectedPath] of launcherFiles) {
     if (launcher?.[pathField] !== expectedPath
@@ -77,6 +79,7 @@ async function verifyBuiltinsOnlySourceGate(root) {
     ['package-lock.json', 'package-lock.json'],
     [DRIVER_SOURCE, 'runner/locked-deploy-driver.mjs'],
     [EVIDENCE_SOURCE, 'runner/release-evidence.mjs'],
+    [DIRECT_OWNER_RUNTIME_SOURCE, 'runner/direct-owner-runtime.mjs'],
   ];
   return {
     release,
@@ -115,6 +118,7 @@ async function main() {
       copyFile(path.join(root, 'package-lock.json'), path.join(canonicalIsolatedRoot, 'package-lock.json')),
       copyFile(path.join(root, DRIVER_SOURCE), path.join(runner, 'locked-deploy-driver.mjs')),
       copyFile(path.join(root, EVIDENCE_SOURCE), path.join(runner, 'release-evidence.mjs')),
+      copyFile(path.join(root, DIRECT_OWNER_RUNTIME_SOURCE), path.join(runner, 'direct-owner-runtime.mjs')),
     ]);
     for (const copied of copiedSources) {
       if (sha256(await readFile(path.join(canonicalIsolatedRoot, copied.targetPath))) !== copied.sha256) {
