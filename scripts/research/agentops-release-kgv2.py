@@ -16,6 +16,7 @@ from pathlib import Path
 WORKTREE = Path("/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch").resolve()
 AUTOBOTS_SOURCE = Path("/Users/devinsonpena/.codex/worktrees/24f9/AutoBots").resolve()
 AUTOBOTS_COMMIT = "15577d8e15ec98e14dc7f20ce1525ceb68d8ed75"
+NODE_BIN = Path("/opt/homebrew/bin/node").resolve()
 AUTOBOTS_TOOL_HASHES = {
     "agentops/runners/kg_preflight.py": "cda747f0737c372a8121715cff8fb36539b8e411ca9f75cc8aa95e3abf0627ba",
     "agentops/runners/repo_graph_v1.py": "015648c5acd7c6ac210b8b64a9b8ce8711ce9b0dc1ec083aa89663d42edf1275",
@@ -495,6 +496,8 @@ def main() -> int:
 
     if len(sys.argv) != 1:
         raise RuntimeError("No arguments are accepted for the operator entrypoint")
+    if not NODE_BIN.is_file():
+        raise RuntimeError(f"Required Node runtime is missing: {NODE_BIN}")
     attest_autobots_source()
     with tempfile.TemporaryDirectory(prefix="chopdot-agentops-") as temporary:
         snapshot = (Path(temporary) / "runtime").resolve()
@@ -510,7 +513,7 @@ def main() -> int:
                 "PYTHONDONTWRITEBYTECODE": "1",
                 "PYTHONNOUSERSITE": "1",
                 "PYTHONSAFEPATH": "1",
-                "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+                "PATH": f"{NODE_BIN.parent}:/usr/bin:/bin:/usr/sbin:/sbin",
             }
         )
         child = subprocess.run(
