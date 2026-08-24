@@ -4,6 +4,7 @@ import {mkdtemp, mkdir, rm} from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import {blake2AsHex} from '@polkadot/util-crypto';
+import {encodeFunctionData} from 'viem';
 import {
   DEVINSON_OWNER,
   PASEO_WORKER,
@@ -16,6 +17,7 @@ import {
   verifyFinalizedTransactions,
 } from './lib/worker-paseo-release.mjs';
 import {
+  REGISTRAR_CONTROLLER_ABI,
   assertRecipientRetryState,
   publicationCalls,
   readSystemAccountNonce,
@@ -35,6 +37,21 @@ const exactState = {
   appContentCid: RELEASE_ROOT_CID,
   ...manifests,
 };
+
+test('registrar controller ABI is JSON-shaped for the pinned viem encoder', () => {
+  const encoded = encodeFunctionData({
+    abi: REGISTRAR_CONTROLLER_ABI,
+    functionName: 'makeCommitment',
+    args: [{
+      label: 'chopdotapp01',
+      owner: PASEO_WORKER.h160,
+      secret: `0x${'11'.repeat(32)}`,
+      reserved: false,
+    }],
+  });
+  assert.match(encoded, /^0x[0-9a-f]+$/u);
+  assert.ok(REGISTRAR_CONTROLLER_ABI.every(entry => entry.type === 'function' && typeof entry.name === 'string'));
+});
 
 function sha256(bytes) {
   return createHash('sha256').update(bytes).digest('hex');

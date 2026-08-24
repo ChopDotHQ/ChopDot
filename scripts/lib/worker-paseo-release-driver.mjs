@@ -69,11 +69,21 @@ const PERSONHOOD_ABI = Object.freeze([
 const POP_RULES_ABI = Object.freeze([
   'function transferFloor(string name,address from,address to) view returns (uint256)',
 ]);
-const REGISTRAR_CONTROLLER_ABI = Object.freeze([
-  'function makeCommitment((string label,address owner,bytes32 secret,bool reserved) registration) view returns (bytes32)',
-  'function commit(bytes32 commitment)',
-  'function commitments(bytes32 commitment) view returns (uint256)',
-  'function register((string label,address owner,bytes32 secret,bool reserved) registration) payable',
+export const REGISTRAR_CONTROLLER_ABI = Object.freeze([
+  {inputs: [{name: 'registration', type: 'tuple', components: [
+    {name: 'label', type: 'string'},
+    {name: 'owner', type: 'address'},
+    {name: 'secret', type: 'bytes32'},
+    {name: 'reserved', type: 'bool'},
+  ]}], name: 'makeCommitment', outputs: [{name: '', type: 'bytes32'}], stateMutability: 'view', type: 'function'},
+  {inputs: [{name: 'commitment', type: 'bytes32'}], name: 'commit', outputs: [], stateMutability: 'nonpayable', type: 'function'},
+  {inputs: [{name: 'commitment', type: 'bytes32'}], name: 'commitments', outputs: [{name: '', type: 'uint256'}], stateMutability: 'view', type: 'function'},
+  {inputs: [{name: 'registration', type: 'tuple', components: [
+    {name: 'label', type: 'string'},
+    {name: 'owner', type: 'address'},
+    {name: 'secret', type: 'bytes32'},
+    {name: 'reserved', type: 'bool'},
+  ]}], name: 'register', outputs: [], stateMutability: 'payable', type: 'function'},
 ]);
 
 const deployEntry = fileURLToPath(import.meta.resolve('@polkadot-community-foundation/polkadot-app-deploy/deploy'));
@@ -323,6 +333,7 @@ async function preflight(verified, environment) {
   if (baseOwner && ownership.baseRegistryOwner.toLowerCase() !== baseOwner) {
     throw new Error('Base registrar and registry owners differ.');
   }
+  const registrarControllerProbe = await probeWorkerRegistrarController(environment);
   return {
     readOnly: true,
     worker: {
@@ -335,6 +346,7 @@ async function preflight(verified, environment) {
     ownership,
     transferFeeWei: transferFeeWei.toString(),
     resolverProbe,
+    registrarControllerProbe,
     assetHubFinalizedHead: substrate.finalizedHead,
     endpoint: environment.anchored.evidence,
     candidate: {buildId: verified.release.buildId, carSha256: verified.car.sha256, cid: verified.car.rootCid},
@@ -358,6 +370,34 @@ async function connectWorker(environment) {
     throw new Error('Pinned package default worker identity changed.');
   }
   return dotns;
+}
+
+async function probeWorkerRegistrarController(environment) {
+  const dotns = await connectWorker(environment);
+  try {
+    const commitment = await dotns.contractCall(
+      environment.pinned.contracts.DOTNS_REGISTRAR_CONTROLLER,
+      REGISTRAR_CONTROLLER_ABI,
+      'makeCommitment',
+      [{
+        label: releaseNodes().label,
+        owner: PASEO_WORKER.h160,
+        secret: `0x${randomBytes(32).toString('hex')}`,
+        reserved: false,
+      }],
+    );
+    if (!/^0x[0-9a-f]{64}$/iu.test(commitment)) {
+      throw new Error('Registrar controller returned an invalid commitment shape.');
+    }
+    return {
+      readOnly: true,
+      contract: environment.pinned.contracts.DOTNS_REGISTRAR_CONTROLLER,
+      functionSelector: new ethers.utils.Interface(REGISTRAR_CONTROLLER_ABI).getSighash('makeCommitment'),
+      resultBytes: 32,
+    };
+  } finally {
+    dotns.disconnect();
+  }
 }
 
 async function waitForFinalizedStorage(client, cids) {
