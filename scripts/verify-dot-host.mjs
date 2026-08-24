@@ -158,6 +158,9 @@ check(release.recoveryHeadIndex?.artifactSetSha256 === pvm.artifactSetSha256, 'r
 const verificationInputs = release.recoveryHeadIndex?.verificationInputs;
 check(verificationInputs?.compileScriptSha256 === sha256(await readFile(path.join(root, 'scripts/compile-recovery-head-pvm.mjs'))), 'release compile verifier hash is stale');
 check(verificationInputs?.hardhatParityScriptSha256 === sha256(await readFile(path.join(root, 'scripts/verify-hardhat-pvm.mjs'))), 'release Hardhat parity verifier hash is stale');
+check(verificationInputs?.deploymentScriptSha256 === sha256(await readFile(path.join(root, 'scripts/recovery-head-deployment.mjs'))), 'release live recovery deployment verifier hash is stale');
+check(verificationInputs?.verificationLibrarySha256 === sha256(await readFile(path.join(root, 'scripts/lib/recovery-head-verification.mjs'))), 'release recovery verification library hash is stale');
+check(verificationInputs?.releaseToolingTestSha256 === sha256(await readFile(path.join(root, 'scripts/release-evidence.test.mjs'))), 'release recovery verification regression hash is stale');
 check(verificationInputs?.behaviorConfigSha256 === sha256(await readFile(path.join(root, 'contracts/recovery-head-index/hardhat.behavior.config.cjs'))), 'release Solidity behavior config hash is stale');
 check(verificationInputs?.behaviorTestSha256 === sha256(await readFile(path.join(root, 'contracts/recovery-head-index/test/RecoveryHeadIndex.behavior.cjs'))), 'release Solidity behavior test hash is stale');
 
@@ -174,6 +177,7 @@ if (strict) {
       ['run', 'contract:verify:pvm'],
       ['run', 'contract:hardhat:pvm'],
       ['run', 'test:recovery-contract:behavior'],
+      ['run', 'test:release-tooling'],
       ['run', 'security:runtime-boundary'],
       ['run', 'verify:dot-host:rebuild'],
     ]) {

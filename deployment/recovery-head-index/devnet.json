@@ -1,0 +1,71 @@
+{
+  "schema": "chopdot.recovery-head-index-deployment.v1",
+  "environment": "devnet",
+  "label": "Products Devnet on the public Paseo Asset Hub",
+  "assetHubWss": "wss://asset-hub-paseo-rpc.n.dwellir.com",
+  "ethRpc": "https://services.polkadothub-rpc.com/testnet",
+  "environmentIdentity": "environment-specific DotNS code set read through the same ETH RPC endpoint",
+  "endpointCodeAnchorSha256": "88081a51748318a27932289130264663647e06dccac8626e76937652b4d4a7b1",
+  "endpointCodeAnchors": {
+    "DOTNS_CONTENT_RESOLVER": {
+      "address": "0x326bdE29315199c814B1c58b431D84D16EA5cE41",
+      "bytes": 130,
+      "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"
+    },
+    "DOTNS_PROTOCOL_REGISTRY": {
+      "address": "0xEdb3e17649ABccc69e6fab4cc640bc578C47AbeA",
+      "bytes": 130,
+      "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"
+    },
+    "DOTNS_REGISTRAR": {
+      "address": "0x7f0dF075cc8B7FE7218E90fFC5a553450dB120F3",
+      "bytes": 130,
+      "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"
+    },
+    "DOTNS_REGISTRAR_CONTROLLER": {
+      "address": "0x45fDEa4Ad7b8607Fc22DBC3DBE3cD8b350F8bede",
+      "bytes": 130,
+      "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"
+    },
+    "DOTNS_REGISTRY": {
+      "address": "0x527b08a640b527a3dae0C4BE04D7344E430B6E50",
+      "bytes": 130,
+      "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"
+    },
+    "DOTNS_RESOLVER": {
+      "address": "0xC28796526Bf3E9295f09655a1001F30f77AfCF0D",
+      "bytes": 130,
+      "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"
+    },
+    "POP_RULES": {
+      "address": "0x2181a14081fF2D4477BAA8FB1aEB4C9c44F5F2b0",
+      "bytes": 130,
+      "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"
+    },
+    "STORE_FACTORY": {
+      "address": "0xD81DC23FAa69B311C1FC553Ea63798772e7D253D",
+      "bytes": 4858,
+      "sha256": "d14db10492be157a519672d35dfce68bfc21bb82744d79c487a014954de19f12"
+    }
+  },
+  "assetHubGenesis": "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2",
+  "chainName": "Paseo Asset Hub",
+  "chainId": 420420417,
+  "paraId": 1000,
+  "pvmBytecodeSha256": "f73520ea129a07dc5827ce3826fb730930ce4a2a2081bb7b5a3665c243b2b9b2",
+  "pvmBytecodeBytes": 5561,
+  "compilerManifestSha256": "2302b5050a52aef067ea6b63a6cb5067f475d7a7c0ef031e9c8ac9ff5b3205ff",
+  "sourceSha256": "2da5178aaa0066512f5e742b43d46597665d474f251e9b860b48a247322781cb",
+  "abiSha256": "fdd95bedb42457a020f387b430f0e1d861efaa5204119069b8b56d5ca9ec42b1",
+  "buildInputsSha256": "86d645e9f5247dcca97c7cb033cce9bf7a7035ba766be9432c9a1878158e4ae0",
+  "artifactSetSha256": "5be85f677aca6279f4a0f4e04e9b389855805a40141e75076eaabe95734f5af9",
+  "address": "0x391DBCF8267f6AeCd4BE5DD84039dF588EC337EC",
+  "signerAddress": "0xdbaa910b82509c0F8896310FeB2dCA2A0f0c0f8B",
+  "transactionHash": "0x2d49753699012b494a0b71979ee0a0ec1e5acb95bc78b2c2ba8722424b93eade",
+  "blockNumber": 12603206,
+  "blockHash": "0x4ad0b1745ae3d4f09fc8dee7b940bdde7c5483e95c86b159ee0d1ddfc77d87b2",
+  "gasUsed": "823110",
+  "readbackBytecodeSha256": "f73520ea129a07dc5827ce3826fb730930ce4a2a2081bb7b5a3665c243b2b9b2",
+  "readbackBytes": 5561,
+  "recordedAt": "2026-08-24T09:50:50.637Z"
+}

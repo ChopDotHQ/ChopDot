@@ -81,6 +81,10 @@ and covers initial/advance, stale compare-and-swap rejection, owner/stream
 isolation, and empty-input rejection. PVM byte identity is independently checked
 through both supported compiler paths. A live PVM deployment is not proven until
 strict verification reads the deployed bytes back from both exact endpoints.
+The release manifest also hashes the live deployment script, its caller/finality
+verification library, and the release-tooling regression suite. Live finality
+rechecks the exact transaction receipt and block hash so an orphaned receipt
+cannot become accepted release evidence.
 
 `scripts/recovery-head-deployment.mjs --write` is deliberately not an npm
 shortcut. It additionally requires a scoped testnet-only

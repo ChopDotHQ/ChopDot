@@ -4,6 +4,7 @@ import path from 'node:path';
 import process from 'node:process';
 import {ethers} from 'ethers';
 import {verifyEnvironmentAnchors} from './lib/release-evidence.mjs';
+import {assertCanonicalReceipt, assertStaleRejectedForOwner} from './lib/recovery-head-verification.mjs';
 
 const root = process.cwd();
 const targetsPath = path.join(root, 'deployment/recovery-head-index-targets.json');
@@ -174,11 +175,15 @@ if (mode === 'verify-behavior') {
     || (current.sequence.eq(evidence.after.sequence) && current.digest.toLowerCase() !== evidence.after.digest.toLowerCase())) {
     throw new Error('Live PVM head rolled back behind the recorded behavior proof.');
   }
-  let staleRejected = false;
-  try {
-    await contract.callStatic.advanceHead(evidence.stream, evidence.before.sequence, evidence.before.digest, ethers.utils.keccak256(ethers.utils.toUtf8Bytes('stale-readback')));
-  } catch { staleRejected = true; }
-  if (!staleRejected) throw new Error('Live PVM stale compare-and-swap is no longer rejected.');
+  await assertStaleRejectedForOwner({
+    contract,
+    owner: evidence.signerAddress,
+    stream: evidence.stream,
+    sequence: evidence.before.sequence,
+    digest: evidence.before.digest,
+    nextDigest: ethers.utils.keccak256(ethers.utils.toUtf8Bytes('stale-readback')),
+    errorMessage: 'Live PVM stale compare-and-swap is no longer rejected.',
+  });
   const [isolatedOwnerHead, isolatedStreamHead] = await Promise.all([
     contract.readHead(evidence.otherOwner, evidence.stream),
     contract.readHead(evidence.signerAddress, evidence.isolatedStream),
@@ -187,7 +192,7 @@ if (mode === 'verify-behavior') {
     || !isolatedStreamHead.sequence.isZero() || isolatedStreamHead.digest !== ethers.constants.HashZero) {
     throw new Error('Live PVM behavior isolation readback failed.');
   }
-  const finalized = await waitForFinalizedBlock(provider, receipt.blockNumber);
+  const finalized = await waitForFinalizedTransaction(provider, receipt);
   console.log(JSON.stringify({status: 'pass', mode, writeEnabled: false, address, transactionHash: receipt.transactionHash, finalized, assertions: evidence.assertions}, null, 2));
   process.exit(0);
 }
@@ -246,7 +251,7 @@ if (mode === 'prove') {
     || !event.sequence.eq(after.sequence) || event.digest.toLowerCase() !== nextDigest.toLowerCase()) {
     throw new Error('Live PVM HeadAdvanced event differs from state readback.');
   }
-  const finalizedBlock = await waitForFinalizedBlock(provider, receipt.blockNumber);
+  const finalizedBlock = await waitForFinalizedTransaction(provider, receipt);
   const evidence = {
     schema: 'chopdot.recovery-head-index-live-behavior.v1',
     ...attestation,
@@ -317,14 +322,16 @@ await mkdir(evidenceDirectory, {recursive: true});
 await writeFile(path.join(evidenceDirectory, `${environment}.json`), `${JSON.stringify(evidence, null, 2)}\n`);
 console.log(JSON.stringify({status: 'pass', mode, writeEnabled: true, evidence}, null, 2));
 
-async function waitForFinalizedBlock(providerValue, minimumNumber) {
-  for (let attempt = 0; attempt < 45; attempt += 1) {
+async function waitForFinalizedTransaction(providerValue, transactionReceipt) {
+  for (let attempt = 0; attempt < 120; attempt += 1) {
     const block = await providerValue.send('eth_getBlockByNumber', ['finalized', false]);
     const number = Number.parseInt(block?.number ?? '', 16);
-    if (Number.isSafeInteger(number) && number >= minimumNumber && /^0x[0-9a-f]{64}$/iu.test(block?.hash ?? '')) {
+    if (Number.isSafeInteger(number) && number >= transactionReceipt.blockNumber && /^0x[0-9a-f]{64}$/iu.test(block?.hash ?? '')) {
+      const canonicalReceipt = await providerValue.getTransactionReceipt(transactionReceipt.transactionHash);
+      assertCanonicalReceipt(canonicalReceipt, transactionReceipt);
       return {number, hash: block.hash};
     }
     await new Promise(resolve => setTimeout(resolve, 2_000));
   }
-  throw new Error(`Live PVM transaction block ${minimumNumber} did not become independently finalized in time.`);
+  throw new Error(`Live PVM transaction block ${transactionReceipt.blockNumber} did not become independently finalized in time.`);
 }

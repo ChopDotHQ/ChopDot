@@ -21,6 +21,7 @@ import {
   verifyLockedDeploymentCli,
 } from './lib/release-evidence.mjs';
 import {parseLockedDeployArgs, parseWhoamiAddress, validateLockedDeployInvocation} from './lib/locked-deploy-driver.mjs';
+import {assertCanonicalReceipt, assertStaleRejectedForOwner} from './lib/recovery-head-verification.mjs';
 
 const root = process.cwd();
 const cid = CID.createV1(raw.code, await mfSha256.digest(new TextEncoder().encode('candidate'))).toString();
@@ -217,6 +218,57 @@ test('indexed transaction proof requires System.ExtrinsicSuccess and rejects fai
   const success = {phase: {type: 'ApplyExtrinsic', value: 2}, event: {type: 'System', value: {type: 'ExtrinsicSuccess', value: {}}}};
   assert.doesNotThrow(() => assertSuccessfulExtrinsic([success], 2));
   assert.throws(() => assertSuccessfulExtrinsic([{...success, event: {type: 'System', value: {type: 'ExtrinsicFailed', value: {}}}}], 2), /ExtrinsicSuccess/u);
+});
+
+test('recovery-head readback verifies stale rejection as the recorded owner', async () => {
+  const owner = `0x${'12'.repeat(20)}`;
+  let observed;
+  const contract = {
+    callStatic: {
+      async advanceHead(...args) {
+        observed = args;
+        throw new Error('stale');
+      },
+    },
+  };
+  await assertStaleRejectedForOwner({
+    contract,
+    owner,
+    stream: `0x${'34'.repeat(32)}`,
+    sequence: '0',
+    digest: `0x${'00'.repeat(32)}`,
+    nextDigest: `0x${'56'.repeat(32)}`,
+    errorMessage: 'stale write was accepted',
+  });
+  assert.deepEqual(observed.at(-1), {from: owner});
+
+  await assert.rejects(
+    () => assertStaleRejectedForOwner({
+      contract: {callStatic: {advanceHead: async () => undefined}},
+      owner,
+      stream: `0x${'34'.repeat(32)}`,
+      sequence: '0',
+      digest: `0x${'00'.repeat(32)}`,
+      nextDigest: `0x${'56'.repeat(32)}`,
+      errorMessage: 'stale write was accepted',
+    }),
+    /stale write was accepted/u,
+  );
+});
+
+test('recovery-head finality rejects an orphaned or changed receipt', () => {
+  const expected = {
+    status: 1,
+    transactionHash: `0x${'12'.repeat(32)}`,
+    blockNumber: 42,
+    blockHash: `0x${'34'.repeat(32)}`,
+  };
+  assert.doesNotThrow(() => assertCanonicalReceipt({...expected}, expected));
+  assert.throws(() => assertCanonicalReceipt(null, expected), /no longer canonical/u);
+  assert.throws(
+    () => assertCanonicalReceipt({...expected, blockHash: `0x${'56'.repeat(32)}`}, expected),
+    /no longer canonical/u,
+  );
 });
 
 test('locked deploy rejects dangerous environment overrides before any deployment work', async () => {

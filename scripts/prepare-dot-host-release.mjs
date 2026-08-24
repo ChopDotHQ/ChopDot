@@ -243,12 +243,16 @@ const release = {
     verificationInputs: {
       compileScriptSha256: sha256(await readFile(path.join(root, 'scripts/compile-recovery-head-pvm.mjs'))),
       hardhatParityScriptSha256: sha256(await readFile(path.join(root, 'scripts/verify-hardhat-pvm.mjs'))),
+      deploymentScriptSha256: sha256(await readFile(path.join(root, 'scripts/recovery-head-deployment.mjs'))),
+      verificationLibrarySha256: sha256(await readFile(path.join(root, 'scripts/lib/recovery-head-verification.mjs'))),
+      releaseToolingTestSha256: sha256(await readFile(path.join(root, 'scripts/release-evidence.test.mjs'))),
       behaviorConfigSha256: sha256(await readFile(path.join(root, 'contracts/recovery-head-index/hardhat.behavior.config.cjs'))),
       behaviorTestSha256: sha256(await readFile(path.join(root, 'contracts/recovery-head-index/test/RecoveryHeadIndex.behavior.cjs'))),
       strictCommands: [
         'npm run contract:verify:pvm',
         'npm run contract:hardhat:pvm',
-        'npm run test:recovery-contract:behavior'
+        'npm run test:recovery-contract:behavior',
+        'npm run test:release-tooling'
       ],
     },
     targetGeneses: Object.fromEntries(
