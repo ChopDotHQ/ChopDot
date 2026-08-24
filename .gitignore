@@ -39,3 +39,11 @@ deployment/readbacks/*.json
 # Keeping the PNG corpus outside Git avoids rewriting historical proof packs on
 # every deterministic browser run.
 artifacts/release/
+
+# Exact-worktree KGv2 release packets are generated after a clean commit and
+# describe that commit. Keep the self-referential run outputs outside the
+# candidate tree so their creation cannot make the candidate dirty. The final
+# handoff may force-add the verified packets after release readback.
+artifacts/agentops/release-agentops-verification.json
+artifacts/agentops/release-kgv2-recall.json
+artifacts/agentops/release-repo-graph-packet.json
