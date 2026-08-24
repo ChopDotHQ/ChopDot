@@ -18,6 +18,7 @@ import {
 import {
   assertRecipientRetryState,
   publicationCalls,
+  readSystemAccountNonce,
 } from './lib/worker-paseo-release-driver.mjs';
 import {assertIsolatedRuntimePath} from './run-worker-paseo-release.mjs';
 
@@ -181,6 +182,20 @@ test('Bulletin proof requires exactly every expected finalized CID', () => {
   assert.throws(() => assertFinalizedStorageProof(observed.slice(0, 1), expected), /cid-b/u);
   assert.throws(() => assertFinalizedStorageProof([...observed, {cid: 'cid-c', present: true, block: 12, index: 2}], expected), /unexpected/u);
   assert.throws(() => assertFinalizedStorageProof([{...observed[0], present: null}, observed[1]], expected), /cid-a/u);
+});
+
+test('Bulletin nonce reads are bound to the supplied current-chain API', async () => {
+  const calls = [];
+  const unsafeApi = {query: {System: {Account: {getValue: async ss58 => {
+    calls.push(ss58);
+    return {nonce: 11930};
+  }}}}};
+  assert.equal(await readSystemAccountNonce(unsafeApi, PASEO_WORKER.ss58), 11930);
+  assert.deepEqual(calls, [PASEO_WORKER.ss58]);
+  await assert.rejects(() => readSystemAccountNonce(
+    {query: {System: {Account: {getValue: async () => ({nonce: Number.MAX_SAFE_INTEGER + 1})}}}},
+    PASEO_WORKER.ss58,
+  ), /invalid system nonce/u);
 });
 
 test('direct gateway proof covers every file and rejects one-byte drift', async () => {

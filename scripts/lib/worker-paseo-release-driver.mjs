@@ -386,6 +386,15 @@ async function withGatewayRetry(action) {
   throw lastError;
 }
 
+export async function readSystemAccountNonce(unsafeApi, ss58) {
+  const account = await unsafeApi.query.System.Account.getValue(ss58);
+  const nonce = Number(account?.nonce);
+  if (!Number.isSafeInteger(nonce) || nonce < 0) {
+    throw new Error(`Bulletin returned an invalid system nonce for ${ss58}.`);
+  }
+  return nonce;
+}
+
 async function uploadFrozenStorage(root, verified, environment) {
   const poolAccount = derivePoolAccounts(10)[2];
   if (!poolAccount) throw new Error('Pinned shared Bulletin pool account is unavailable.');
@@ -407,6 +416,10 @@ async function uploadFrozenStorage(root, verified, environment) {
       signer: poolAccount.signer,
       ss58: poolAccount.address,
       gateway: environment.pinned.ipfs,
+      // polkadot-app-deploy@0.13.1 otherwise reads its compiled-in legacy
+      // Paseo Bulletin endpoint here, even when an exact current client was
+      // supplied above. Bind nonce reads to the same pinned unsafe API.
+      fetchNonce: (_endpoints, ss58) => readSystemAccountNonce(unsafeApi, ss58),
     });
     if (storage.storageCid !== RELEASE_ROOT_CID) throw new Error('Bulletin stored a CID other than the frozen release CID.');
     const iconCid = await storeFile(verified.iconBytes, {
