@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-22  
 **Programme:** Programme A product delivery, constrained by Programme B native truth  
-**Status:** active execution; Wave 0 and bounded Wave 1--3 slices in progress  
+**Status:** active execution; local product implementation and assurance accepted, native candidate freeze next
 **Target worktree:** `/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch`  
 **Target branch at review:** `codex/chopdot-v1-launch`  
 **Target HEAD at review:** `3519a894efbcee5144ecb0bcb9ebc44b888a0e7f`  
@@ -21,12 +21,15 @@ exact-money, delivery, confirmation, recovery, privacy, and history laws. The
 `.dot` Devnet is the first native distribution door and one payment/identity
 environment; it is not ChopDot's product authority or permanent substrate.
 
-The current worktree is a strong implementation candidate, not a releasable
-full product. Its README still calls it a portable-shell trial, four named
-modes have no generated behavior paths, fresh-device recovery and real-host
-convergence remain open, the Product SDK family needs a compatibility spike,
-and no exact candidate has been built, published, reached, or walked by real
-first-time participants during this planning task.
+The launch branch now contains the signed exact-money core, verified contacts
+and membership lifecycle, encrypted delivery and recovery, receipt-first normal
+journey, Spend Card, savings circle, emergency pot, community fund, native
+release tooling, and the bounded recovery contract. The accepted source tree is
+committed and pushed, and the current local release suite passes. No clean
+content-addressed candidate has yet been frozen from the accepted commit, and
+nothing in this plan treats contract preflight, local host preview, agent
+acceptance, or a passing test fixture as publication, reachability, ownership,
+or real-person proof.
 
 This train is deliberately larger than a demo shortcut. It keeps one ordinary
 dinner journey as the integration spine while requiring an honest out-of-box
@@ -105,20 +108,21 @@ generic form dump.
 
 | Root | Use | Trust boundary |
 | --- | --- | --- |
-| Launch worktree | Only implementation/deployment target | Dirty with untracked launch/research work; no commit contains this plan |
+| Launch worktree | Only implementation/deployment target | Clean accepted branch; current status is recorded in `docs/release/2026-08-24-local-release-assurance.md` |
 | Canonical `/Users/devinsonpena/ChopDot` | Read-only cockpit/product input | Different dirty branch/HEAD; not launch-worktree implementation evidence |
 | Feature inheritance matrix | 15 families, 35 cards, 42 paths, analog grades | Registry-only rows remain discovery, not source/runtime proof |
 | Platform adoption decisions | Bounded adapter decisions and experiments | Does not authorize packages, contracts, registry writes, or publication |
 | Native runtime report | Dated regression inventory/gate definitions | June lab evidence is not fresh real-host promotion evidence |
 
-### 3.3 Honest starting status
+### 3.3 Current release status
 
 | Dimension | Current state | Required state |
 | --- | --- | --- |
 | Planned | PASS after this plan validates | Remains traceable to cards and paths |
-| Implemented | PARTIAL | All work packages integrated in one candidate |
-| Tested | PARTIAL/local | All exact-candidate local, simulator, browser, security, recovery, and live-host gates pass |
-| Committed | NO for current untracked work | Exact reviewed tree committed on release branch |
+| Implemented | YES for the bounded public-beta source scope | All work packages integrated in one candidate |
+| Tested | YES for accepted local source; 334 Node and 74 release-browser tests pass | Exact-candidate rebuild, simulator, browser, security, recovery, and live-host gates pass |
+| Committed | YES at `1a44c4ceced4ed75168d86d28a5b924925a0c5e6` | Exact reviewed tree committed on release branch |
+| Pushed | YES to `origin/codex/chopdot-v1-launch` | Remote branch retains the accepted commit |
 | Merged | NO evidence | Reviewed release commit in selected canonical branch |
 | Candidate built | NO | Byte-identified `dist-dot-host` artifact and CAR/CID |
 | Published/deployed | NO | Human-approved DotNS/registry mapping to reviewed CID |
