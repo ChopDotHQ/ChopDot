@@ -204,13 +204,13 @@ test('five people complete the real ChopDot group journey from isolated Polkadot
     }
     await capture(mina, '01-onboarded');
 
-    await mina.frame.getByRole('button', {name: 'Start with a group'}).click();
+    await mina.frame.getByRole('button', {name: 'New group'}).click();
     await mina.frame.getByPlaceholder('e.g. Weekend Trip').fill('Friday Crew');
     for (const payer of payers) {
       await mina.frame.getByLabel('Friend name').fill(payer.person);
       await mina.frame.getByRole('button', {name: 'Add friend'}).click();
     }
-    await mina.frame.getByRole('button', {name: 'Create group'}).click();
+    await mina.frame.getByRole('button', {name: 'Create my group'}).click();
     await waitForSubmitted(mina, 1);
     expect(await relayNewStatements(participants)).toBeGreaterThanOrEqual(1);
     for (const participant of participants) {

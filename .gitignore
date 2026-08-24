@@ -14,6 +14,10 @@ playwright-report/
 # Local agent scratch space is never release or product evidence.
 output/working_memory/
 
+# Local screenshot review is summarized with hashes in committed acceptance
+# reports. The raw captures are regenerated per viewport and remain local.
+output/playwright/
+
 # Batch 6 evidence is generated against the frozen source commit and kept
 # outside that commit so the candidate fingerprint remains exact and clean.
 proof/chopdot-candidate-2026-08-12/test-results/chopdot-b6-*/

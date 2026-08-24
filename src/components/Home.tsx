@@ -1,5 +1,4 @@
 import {
-  ArrowRight,
   Camera,
   ChevronRight,
   HeartHandshake,
@@ -8,14 +7,13 @@ import {
   ReceiptText,
   RefreshCw,
   ShieldCheck,
-  Sparkles,
   UsersRound,
 } from 'lucide-react';
 import {useAppState} from '../state/AppStateContext';
 import {getGroupTotal, getMemberBalance} from '../state/store';
 import type {Group, GroupMode, Split} from '../types';
 import {getCurrencySymbol, getInitials} from '../utils';
-import {PRODUCT_MODES, PRODUCT_MODE_ORDER, groupMode, modeCopy} from './productModes';
+import {groupMode, modeCopy} from './productModes';
 
 const modeIcons = {
   normal_pot: UsersRound,
@@ -28,17 +26,13 @@ const modeIcons = {
 } satisfies Record<GroupMode, typeof UsersRound>;
 
 export function Home({
-  onGoToStateProof: _onGoToStateProof,
   onStartGroup,
   onScanReceipt,
-  onStartMode,
   onGoToGroup,
   onGoToProfile,
 }: {
-  onGoToStateProof: () => void;
   onStartGroup: () => void;
   onScanReceipt: () => void;
-  onStartMode: (mode: GroupMode) => void;
   onGoToGroup: (groupId: string) => void;
   onGoToProfile: () => void;
 }) {
@@ -90,18 +84,9 @@ export function Home({
           </div>
 
           {openGroups.length === 0 ? (
-            <div className="py-6 text-center">
-              <Sparkles className="mx-auto h-7 w-7 text-[#e6007a]" aria-hidden="true" />
-              <p className="mt-3 font-semibold">No group spending yet</p>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">Scan first, or add the people now.</p>
-              <button
-                type="button"
-                onClick={onStartGroup}
-                className="mt-4 min-h-12 rounded-full border border-gray-300 bg-white px-6 text-sm font-semibold shadow-sm dark:border-gray-700 dark:bg-gray-900"
-              >
-                Start with a group
-              </button>
-            </div>
+            <p className="py-5 text-sm text-gray-600 dark:text-gray-300">
+              No groups yet.
+            </p>
           ) : (
             <div className="mt-3 space-y-3">
               {openGroups.map(group => {
@@ -140,33 +125,6 @@ export function Home({
               })}
             </div>
           )}
-        </section>
-
-        <section aria-labelledby="ways-title" className="border-t border-gray-200 py-7 dark:border-gray-800">
-          <h2 id="ways-title" className="text-lg font-bold tracking-[-0.03em]">Start something together</h2>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">Same clear pay, confirm and save flow—shaped for the group.</p>
-          <div className="mt-4 divide-y divide-gray-200 border-y border-gray-200 dark:divide-gray-800 dark:border-gray-800">
-            {PRODUCT_MODE_ORDER.map(mode => {
-              const copy = PRODUCT_MODES[mode];
-              const Icon = modeIcons[mode];
-              return (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => onStartMode(mode)}
-                  className="flex min-h-[4.4rem] w-full items-center gap-3 py-3 text-left"
-                  aria-label={`Open ${copy.label}`}
-                >
-                  <Icon className="h-5 w-5 shrink-0 text-[#e6007a]" aria-hidden="true" />
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-semibold text-gray-950 dark:text-white">{copy.label}</span>
-                    <span className="mt-0.5 block truncate text-sm text-gray-600 dark:text-gray-300">{copy.nextAction}</span>
-                  </span>
-                  <ArrowRight className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
-                </button>
-              );
-            })}
-          </div>
         </section>
       </div>
     </main>

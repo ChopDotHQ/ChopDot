@@ -105,13 +105,13 @@ test('five people pay PAS from their own wallet through the visible hosted app',
     await capture(mina, '02-mina-wallet-connected');
     await mina.frame.getByRole('button', {name: 'Back'}).click();
 
-    await mina.frame.getByRole('button', {name: 'Start with a group'}).click();
+    await mina.frame.getByRole('button', {name: 'New group'}).click();
     await mina.frame.getByPlaceholder('e.g. Weekend Trip').fill('Friday Crew');
     for (const payer of payers) {
       await mina.frame.getByLabel('Friend name').fill(payer.person);
       await mina.frame.getByRole('button', {name: 'Add friend'}).click();
     }
-    await mina.frame.getByRole('button', {name: 'Create group'}).click();
+    await mina.frame.getByRole('button', {name: 'Create my group'}).click();
     await waitForPublished(mina, 1);
     await relayUntilQuiet(participants);
 

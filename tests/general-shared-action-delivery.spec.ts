@@ -43,11 +43,11 @@ test('a direct-entry organizer migrates safely and publishes through the stored 
     await frame.getByRole('button', {name: 'Continue as guest'}).click();
     await frame.getByPlaceholder('Display name').fill('Mina');
     await frame.getByRole('button', {name: 'Continue as Mina'}).click();
-    await frame.getByRole('button', {name: 'Start with a group'}).click();
+    await frame.getByRole('button', {name: 'New group'}).click();
     await frame.getByPlaceholder('e.g. Weekend Trip').fill('Zurich Dinner');
     await frame.getByLabel('Friend name').fill('Leo');
     await frame.getByRole('button', {name: 'Add friend'}).click();
-    await frame.getByRole('button', {name: 'Create group'}).click();
+    await frame.getByRole('button', {name: 'Create my group'}).click();
     await frame.getByRole('button', {name: 'Add spend'}).click();
     await frame.getByRole('button', {name: 'Enter amount instead'}).click();
     await frame.getByPlaceholder('0.00').fill('120');

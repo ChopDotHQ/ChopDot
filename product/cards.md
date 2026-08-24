@@ -66,9 +66,9 @@ blocker: P0-live-first-use
 blocked_by: none
 reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
-evidence_type: measurement
-evidence: docs/release/2026-08-24-live-first-use-findings.md
-evidence_sha256: e1e6b46449bdd5d960682d0ee494b8034e6286b1738569f8d2168fae73daf621
+evidence_type: test
+evidence: docs/release/2026-08-24-p035-p022-local-acceptance.md
+evidence_sha256: d6214f60eacb9f2b7a1c9aea381a878be321cd2d680ee7a9b194f7beca5fc3ec
 pillar: Management
 journey: Mina creates and shares one group without understanding account infrastructure, then brings Leo in intentionally.
 next_action: Create my group
@@ -90,7 +90,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/capture-truth.spec.ts
-evidence_sha256: 2f74daa02da039d82aace3e718825880ba1e500274d127764b87bcd12c6c62f9
+evidence_sha256: f335fcf523e5b0f1f7f103dd64fed7f6ee661868fb22b96edf16362bf533145d
 pillar: Catch
 journey: Mina just paid and needs ChopDot to capture the receipt so the group gets the right next action.
 next_action: Scan a receipt
@@ -110,9 +110,9 @@ blocker: P1-live-home-hierarchy
 blocked_by: none
 reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
-evidence_type: measurement
-evidence: docs/release/2026-08-24-live-first-use-findings.md
-evidence_sha256: e1e6b46449bdd5d960682d0ee494b8034e6286b1738569f8d2168fae73daf621
+evidence_type: test
+evidence: docs/release/2026-08-24-p035-p022-local-acceptance.md
+evidence_sha256: d6214f60eacb9f2b7a1c9aea381a878be321cd2d680ee7a9b194f7beca5fc3ec
 pillar: Catch -> Management -> Payout -> History
 journey: Mina, Leo and Nina finish one dinner without bookkeeping ambiguity.
 next_action: Scan a receipt
@@ -134,7 +134,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: 2b50cfeecd49c4c64dd60d9f3829e39b304c3ecc736a94cfbe116989b3701f98
+evidence_sha256: ca16cae0d567f0ad5567a24c1487e045f3ffad00d51d772f69079baf380ed61b
 pillar: Catch
 journey: Mina imports a card transaction, attaches its receipt and shares the right amounts.
 next_action: Match a receipt
@@ -156,7 +156,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: 2b50cfeecd49c4c64dd60d9f3829e39b304c3ecc736a94cfbe116989b3701f98
+evidence_sha256: ca16cae0d567f0ad5567a24c1487e045f3ffad00d51d772f69079baf380ed61b
 pillar: Management -> Payout -> History
 journey: A savings circle completes one contribution and payout round transparently.
 next_action: Record this contribution
@@ -178,7 +178,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: 2b50cfeecd49c4c64dd60d9f3829e39b304c3ecc736a94cfbe116989b3701f98
+evidence_sha256: ca16cae0d567f0ad5567a24c1487e045f3ffad00d51d772f69079baf380ed61b
 pillar: Management -> Payout -> History
 journey: A trusted group helps urgently without exposing the private reason.
 next_action: Contribute privately
@@ -200,7 +200,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: 2b50cfeecd49c4c64dd60d9f3829e39b304c3ecc736a94cfbe116989b3701f98
+evidence_sha256: ca16cae0d567f0ad5567a24c1487e045f3ffad00d51d772f69079baf380ed61b
 pillar: Management -> Payout -> History
 journey: A community agrees how to use shared contributions and records the handoff.
 next_action: Review the proposal

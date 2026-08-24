@@ -8,7 +8,10 @@ import {appStorage} from './environment/index.ts';
 import {composeHostMembershipCapabilities, type MembershipCapabilityComposition} from './environment/membershipCapabilityComposition.ts';
 import {membershipKey} from './membership/membershipLifecycle.ts';
 import {PolkadotHostBridge} from './environment/polkadotHostBridge.ts';
-import {ProductionAccountAuthorityRuntime} from './environment/productionAccountAuthorityRuntime.ts';
+import {
+  createDeferredProductAccountActivation,
+  ProductionAccountAuthorityRuntime,
+} from './environment/productionAccountAuthorityRuntime.ts';
 import {DurableMembershipKeyEnvelopeRegistry} from './membership/membershipKeyEnvelopeRegistry.ts';
 import {MembershipRegistryGroupAccessProvisioner} from './core/authority/groupAccessProvisioner.ts';
 import {createHostCanonicalEventChatTransport} from './environment/canonicalEventChatTransport.ts';
@@ -54,12 +57,12 @@ const productAccount = {
       storage: appStorage,
       entropy: accountBridge,
     });
-    accountAuthority.attachIdentity({
+    const runtimeIdentity = {
       participantId: identity.username,
       publicKeyHex: accountPublicKeyHex,
       signer: {sign: bytes => identity.signBytes!(bytes)},
-    });
-    accountAuthority.attachGroupAccess(new MembershipRegistryGroupAccessProvisioner(keyEnvelopes));
+    };
+    const runtimeGroupAccess = new MembershipRegistryGroupAccessProvisioner(keyEnvelopes);
     let canonicalDelivery: CanonicalEventDeliveryService | null = null;
     const transport = await createHostCanonicalEventChatTransport().catch(() => null);
     if (transport) {
@@ -76,32 +79,7 @@ const productAccount = {
         },
         transport,
       });
-      accountAuthority.attachDelivery({
-        async publish(event, state) {
-          await delivery.queueAcceptedEvent(event, state);
-          await delivery.flush();
-        },
-        async publishMembershipJoin(events, state, recipientId) {
-          await delivery.queueHistoryForRecipient({events, state, recipientId});
-          await delivery.flush();
-        },
-        async publishMembershipRemoval(events, participantId) {
-          await delivery.queueMembershipRemoval({events, participantId});
-          await delivery.flush();
-        },
-      });
       canonicalDelivery = delivery;
-      activeAccountCanonicalDelivery = delivery;
-      accountDeliverySubscription?.unsubscribe();
-      accountDeliverySubscription = transport.subscribe(input => {
-        if (input.message.kind === 'acknowledgement') {
-          void delivery.receiveAcknowledgement(input.roomId, input.message.acknowledgement);
-          return;
-        }
-        void delivery.receiveEnvelope({roomId: input.roomId, envelope: input.message.envelope})
-          .then(result => transport.sendAcknowledgement(input.roomId, result.ack))
-          .catch(() => undefined);
-      });
     }
     const recovery = new ProductionRecoveryCoordinator({
       productId: identity.productId,
@@ -124,26 +102,99 @@ const productAccount = {
       roomForGroup: groupId => canonicalDelivery!.bindingForGroup(groupId)?.roomId ?? null,
       delivery: removalTransport,
     }) : null;
-    if (removalCoordinator && removalTransport) {
-      accountAuthority.attachMembershipAuthority({
-        resolve: async () => null,
-        authorize: (command, actorId, currentState) => removalCoordinator.authorize(command, actorId, currentState),
-      });
-      accountRemovalSubscription?.unsubscribe();
-      accountRemovalSubscription = removalTransport.subscribe(input => {
-        void removalCoordinator.receive(input.roomId, input.message).catch(() => undefined);
-      });
-    }
+    const removalAuthority = removalCoordinator ? {
+      resolve: async () => null,
+      authorize: (command: MembershipAuthorityCommandV1, actorId: string, currentState?: CanonicalGroupStateV1) => removalCoordinator.authorize(command, actorId, currentState),
+    } : null;
     const contacts = hostStorage ? new VerifiedContactRepository(new HostLocalStorageJsonStorage(hostStorage)) : null;
     let latestRooms: Array<{roomId: string; participatingAs: string}> = [];
     let roomSubscription: {unsubscribe(): void} | null = null;
-    if (membershipTransport?.subscribeRooms) {
-      roomSubscription = membershipTransport.subscribeRooms(rooms => { latestRooms = rooms; });
-    }
+    let activatedDeliverySubscription: {unsubscribe(): void} | null = null;
+    let activatedRemovalSubscription: {unsubscribe(): void} | null = null;
+    const runtimeDelivery = canonicalDelivery ? {
+      async publish(event: import('./core/moneyEventKernel.ts').CanonicalEventV1, state: CanonicalGroupStateV1) {
+        await canonicalDelivery!.queueAcceptedEvent(event, state);
+        await canonicalDelivery!.flush();
+      },
+      async publishMembershipJoin(events: import('./core/moneyEventKernel.ts').CanonicalEventV1[], state: CanonicalGroupStateV1, recipientId: string) {
+        await canonicalDelivery!.queueHistoryForRecipient({events, state, recipientId});
+        await canonicalDelivery!.flush();
+      },
+      async publishMembershipRemoval(events: import('./core/moneyEventKernel.ts').CanonicalEventV1[], participantId: string) {
+        await canonicalDelivery!.queueMembershipRemoval({events, participantId});
+        await canonicalDelivery!.flush();
+      },
+    } : undefined;
+    const activation = createDeferredProductAccountActivation({
+      runtime: accountAuthority,
+      identity: runtimeIdentity,
+      groupAccess: runtimeGroupAccess,
+      ...(removalAuthority ? {membershipAuthority: removalAuthority} : {}),
+      ...(runtimeDelivery ? {delivery: runtimeDelivery} : {}),
+      activateSideEffects() {
+        let nextDeliverySubscription: {unsubscribe(): void} | null = null;
+        let nextRemovalSubscription: {unsubscribe(): void} | null = null;
+        let nextRoomSubscription: {unsubscribe(): void} | null = null;
+        try {
+          if (transport && canonicalDelivery) {
+            const delivery = canonicalDelivery;
+            nextDeliverySubscription = transport.subscribe(input => {
+              if (input.message.kind === 'acknowledgement') {
+                void delivery.receiveAcknowledgement(input.roomId, input.message.acknowledgement);
+                return;
+              }
+              void delivery.receiveEnvelope({roomId: input.roomId, envelope: input.message.envelope})
+                .then(result => transport.sendAcknowledgement(input.roomId, result.ack))
+                .catch(() => undefined);
+            });
+          }
+          if (removalCoordinator && removalTransport) {
+            nextRemovalSubscription = removalTransport.subscribe(input => {
+              void removalCoordinator.receive(input.roomId, input.message).catch(() => undefined);
+            });
+          }
+          if (membershipTransport?.subscribeRooms) {
+            nextRoomSubscription = membershipTransport.subscribeRooms(rooms => { latestRooms = rooms; });
+          }
+        } catch (reason) {
+          nextDeliverySubscription?.unsubscribe();
+          nextRemovalSubscription?.unsubscribe();
+          nextRoomSubscription?.unsubscribe();
+          throw reason;
+        }
+
+        accountDeliverySubscription?.unsubscribe();
+        accountRemovalSubscription?.unsubscribe();
+        accountMembershipSubscription?.unsubscribe();
+        accountMembershipSubscription = null;
+        accountDeliverySubscription = nextDeliverySubscription;
+        accountRemovalSubscription = nextRemovalSubscription;
+        activatedDeliverySubscription = nextDeliverySubscription;
+        activatedRemovalSubscription = nextRemovalSubscription;
+        roomSubscription = nextRoomSubscription;
+        activeAccountCanonicalDelivery = canonicalDelivery;
+      },
+      discardSideEffects() {
+        accountMembershipSubscription?.unsubscribe();
+        accountMembershipSubscription = null;
+        if (accountDeliverySubscription === activatedDeliverySubscription) accountDeliverySubscription = null;
+        if (accountRemovalSubscription === activatedRemovalSubscription) accountRemovalSubscription = null;
+        activatedDeliverySubscription?.unsubscribe();
+        activatedRemovalSubscription?.unsubscribe();
+        roomSubscription?.unsubscribe();
+        if (activeAccountCanonicalDelivery === canonicalDelivery) activeAccountCanonicalDelivery = null;
+        activatedDeliverySubscription = null;
+        activatedRemovalSubscription = null;
+        roomSubscription = null;
+      },
+    });
+
     return {
       participantId: identity.username,
       displayName: identity.username,
       accountPublicKeyHex,
+      activate: activation.activate,
+      discard: activation.discard,
       recovery: {
         async protect(groupId: string) { await recovery.publish(groupId); },
         async recover(groupId: string) {
@@ -335,6 +386,10 @@ function ProductionApp() {
   let dependencies: AppDependencies | undefined;
   dependencies = {
     productAccount,
+    groupCreation: {
+      storage: appStorage,
+      readiness: accountAuthority,
+    },
     authority: {
       acceptedMemberships: accountAuthority,
       membershipChanges: accountAuthority,

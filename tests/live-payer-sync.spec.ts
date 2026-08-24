@@ -72,14 +72,14 @@ test('Leo marks paid once and Mina updates automatically without a return link',
     await mina.frame.getByLabel('Select currency').selectOption('CHF');
     await mina.frame.getByRole('button', {name: 'Back'}).click();
 
-    await mina.frame.getByRole('button', {name: 'Start with a group'}).click();
+    await mina.frame.getByRole('button', {name: 'New group'}).click();
     await mina.frame.getByPlaceholder('e.g. Weekend Trip').fill('Zurich Dinner');
     await mina.frame.getByLabel('Friend name').fill('Leo');
     await mina.frame.getByRole('button', {name: 'Add friend'}).click();
     await mina.frame.getByLabel('Friend name').fill(' Leo ');
     await mina.frame.getByRole('button', {name: 'Add friend'}).click();
     await expect(mina.frame.getByRole('alert')).toHaveText('Leo is already in this group.');
-    await mina.frame.getByRole('button', {name: 'Create group'}).click();
+    await mina.frame.getByRole('button', {name: 'Create my group'}).click();
     await mina.frame.getByRole('button', {name: 'Add spend'}).click();
     await mina.frame.getByRole('button', {name: 'Enter amount instead'}).click();
     await mina.frame.getByPlaceholder('0.00').fill('120');

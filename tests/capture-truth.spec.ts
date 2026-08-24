@@ -76,7 +76,7 @@ async function createOrganizerGroup(page: Frame) {
   await page.getByRole('button', {name: 'New group'}).click();
   await page.getByPlaceholder('e.g. Weekend Trip').fill('Weekend Trip');
   await expect(page.getByLabel('Friend name')).toHaveCount(0);
-  await page.getByRole('button', {name: 'Create group'}).click();
+  await page.getByRole('button', {name: 'Create my group'}).click();
 }
 
 async function expenseCount(page: Frame) {

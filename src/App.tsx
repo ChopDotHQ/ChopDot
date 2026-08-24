@@ -65,6 +65,12 @@ import {GroupProtectionEntry, type ProductAccountRecoveryActions} from './compon
 import {OrganizerMemberEntry, type ProductAccountOrganizerActions} from './components/membership/OrganizerMemberEntry';
 import {RemoveMemberEntry, type ProductAccountMemberRemovalActions} from './components/membership/RemoveMemberEntry';
 import {canManageCanonicalMembership} from './membership/membershipManagementVisibility';
+import {
+  GroupCreationEntryService,
+  type GroupCreationInputV1,
+  type SharedGroupCreationReadiness,
+} from './membership/groupCreationEntryService';
+import type {KeyValueStorage} from './environment/livePayerSync';
 
 type View = 
   | { name: 'welcome' }
@@ -109,6 +115,10 @@ export interface AppDependencies {
   dinnerJourney?: DinnerJourneyEntryDependencies;
   acceptedMemberships?: AcceptedMembershipGrantResolver;
   authority?: ProductionAuthorityDependencies;
+  groupCreation?: {
+    storage: KeyValueStorage;
+    readiness: SharedGroupCreationReadiness;
+  };
   productAccount?: {
     request(authority: {
       readCanonicalGroup(groupId: string): Promise<CanonicalGroupStateV1 | null>;
@@ -117,12 +127,21 @@ export interface AppDependencies {
       importRecoveredEvents(events: CanonicalEventV1[]): Promise<'applied' | 'duplicate'>;
       readGroupOrigin(groupId: string): Promise<CanonicalEventV1 | null>;
       runMembershipAuthority(command: import('./core/authority/productionAuthority').MembershipAuthorityCommandV1): Promise<CanonicalGroupStateV1 | null>;
-    }): Promise<{participantId: string; displayName: string; accountPublicKeyHex: string; recovery: ProductAccountRecoveryActions; organizer: ProductAccountOrganizerActions; removal: ProductAccountMemberRemovalActions}>;
+    }): Promise<{
+      participantId: string;
+      displayName: string;
+      accountPublicKeyHex: string;
+      activate(): void;
+      discard(): void;
+      recovery: ProductAccountRecoveryActions;
+      organizer: ProductAccountOrganizerActions;
+      removal: ProductAccountMemberRemovalActions;
+    }>;
   };
 }
 
 function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
-  const { state, dispatch, readCanonicalGroup, readAcceptedEvents, readGroupOrigin, runMembershipAuthority, acceptCanonicalEvent, importRecoveredEvents } = useAppState();
+  const { state, bindProductAccountIdentity, runAuthority, readCanonicalGroup, readAcceptedEvents, readGroupOrigin, runMembershipAuthority, acceptCanonicalEvent, importRecoveredEvents } = useAppState();
   const [accountRecovery, setAccountRecovery] = useState<ProductAccountRecoveryActions | null>(null);
   const [accountOrganizer, setAccountOrganizer] = useState<ProductAccountOrganizerActions | null>(null);
   const [accountRemoval, setAccountRemoval] = useState<ProductAccountMemberRemovalActions | null>(null);
@@ -191,35 +210,56 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
     return () => { active = false; };
   }, [accountOrganizer, accountRemoval, readCanonicalGroup, state.currentUserId, state.users, visibleGroupId]);
 
-  const connectProductAccount = useCallback(async () => {
+  const connectProductAccount = useCallback(async ({preserveView = false}: {preserveView?: boolean} = {}) => {
     if (!dependencies?.productAccount) throw new Error('Product Account is unavailable.');
     const identity = await dependencies.productAccount.request({readCanonicalGroup, readAcceptedEvents, readGroupOrigin, runMembershipAuthority, acceptCanonicalEvent, importRecoveredEvents});
+    if (!bindProductAccountIdentity(identity)) {
+      identity.discard();
+      throw new Error('ChopDot could not connect this account to the current person.');
+    }
+    try {
+      identity.activate();
+    } catch (reason) {
+      identity.discard();
+      throw reason;
+    }
     setAccountRecovery(identity.recovery);
     setAccountOrganizer(identity.organizer);
     setAccountRemoval(identity.removal);
-    const current = state.currentUserId ? state.users[state.currentUserId] : null;
-    if (current) {
-      dispatch({type: 'MIGRATE_CURRENT_USER_IDENTITY', payload: {
-        fromUserId: current.id,
-        toUserId: identity.participantId,
-        accountPublicKeyHex: identity.accountPublicKeyHex,
-      }});
-    } else {
-      dispatch({type: 'ADD_USER', payload: {user: {
-        id: identity.participantId,
-        name: identity.displayName,
-        accountPublicKeyHex: identity.accountPublicKeyHex,
-      }}});
-      dispatch({type: 'SET_CURRENT_USER', payload: {userId: identity.participantId}});
+    if (!preserveView) {
+      const bootstrap = parseMembershipBootstrapEntry();
+      if (bootstrap) {
+        setView({name: 'membership_bootstrap', bootstrap});
+      } else {
+        const entry = getEntryView();
+        setView(entry.name === 'welcome' ? {name: 'home'} : entry);
+      }
     }
-    const bootstrap = parseMembershipBootstrapEntry();
-    if (bootstrap) {
-      setView({name: 'membership_bootstrap', bootstrap});
-    } else {
-      const entry = getEntryView();
-      setView(entry.name === 'welcome' ? {name: 'home'} : entry);
+    return {participantId: identity.participantId};
+  }, [acceptCanonicalEvent, bindProductAccountIdentity, dependencies?.productAccount, importRecoveredEvents, readAcceptedEvents, readCanonicalGroup, readGroupOrigin, runMembershipAuthority]);
+
+  const createSharedGroup = useCallback(async (input: GroupCreationInputV1): Promise<boolean> => {
+    const composition = dependencies?.groupCreation;
+    let participantId = state.currentUserId;
+    if (!composition || !participantId) return false;
+
+    if (!composition.readiness.sharedGroupCreationAccount(participantId)) {
+      if (!dependencies?.productAccount) return false;
+      participantId = (await connectProductAccount({preserveView: true})).participantId;
     }
-  }, [acceptCanonicalEvent, dependencies?.productAccount, dispatch, importRecoveredEvents, readAcceptedEvents, readCanonicalGroup, readGroupOrigin, runMembershipAuthority, state.currentUserId, state.users]);
+
+    const service = new GroupCreationEntryService({
+      participantId,
+      storage: composition.storage,
+      readiness: composition.readiness,
+      authority: {
+        appendShared: ({action}) => runAuthority(action),
+        readCanonicalGroup,
+      },
+    });
+    const result = await service.createOrResume({...input, intent: 'shared'});
+    return result.status === 'shared_group_created';
+  }, [connectProductAccount, dependencies?.groupCreation, dependencies?.productAccount, readCanonicalGroup, runAuthority, state.currentUserId]);
 
   useEffect(() => {
     const current = state.currentUserId ? state.users[state.currentUserId] : null;
@@ -265,7 +305,7 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
   }, [dependencies?.membershipOrganizerEntry]);
 
   if (view.name === 'state_proof') {
-    if (!isDev) return <Home onGoToStateProof={() => setView({ name: 'home' })} onStartGroup={() => setView({ name: 'home' })} onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})} onStartMode={() => setView({name: 'home'})} onGoToGroup={() => setView({ name: 'home' })} onGoToProfile={() => setView({ name: 'home' })} />;
+    if (!isDev) return <Home onStartGroup={() => setView({ name: 'home' })} onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})} onGoToGroup={() => setView({ name: 'home' })} onGoToProfile={() => setView({ name: 'home' })} />;
     return <StateProof onBack={() => setView(getEntryView())} />;
   }
 
@@ -338,7 +378,7 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
     return <Welcome
       onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'welcome'})}
       onGuest={() => setView(dependencies?.dinnerJourney ? {name: 'dinner_journey'} : { name: 'guest_setup' })}
-      onUseProductAccount={dependencies?.productAccount ? connectProductAccount : undefined}
+      onUseProductAccount={dependencies?.productAccount ? async () => { await connectProductAccount(); } : undefined}
     />;
   }
 
@@ -364,15 +404,23 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
   } else if (view.name === 'mode_intro') {
     content = <ModeIntro mode={view.mode} onBack={() => setView({name: 'home'})} onStart={() => setView({name: 'create_group', mode: view.mode})} />;
   } else if (view.name === 'create_group') {
-    content = <CreateGroup mode={view.mode} onBack={() => setView(view.draft ? {name: 'choose_group_for_draft', draft: view.draft} : { name: 'home' })} onCreated={(groupId) => setView(view.draft ? {
-      name: 'review_split',
-      groupId,
-      amount: view.draft.amount,
-      title: view.draft.title,
-      source: view.draft.source,
-      receiptStatus: view.draft.receiptStatus,
-      fileName: view.draft.fileName,
-    } : { name: 'group_detail', groupId })} />;
+    content = (
+      <CreateGroup
+        mode={view.mode}
+        onBack={() => setView(view.draft ? {name: 'choose_group_for_draft', draft: view.draft} : { name: 'home' })}
+        onPrepareSharedAction={dependencies?.productAccount ? () => connectProductAccount({preserveView: true}) : undefined}
+        onCreateSharedGroup={dependencies?.groupCreation ? createSharedGroup : undefined}
+        onCreated={(groupId) => setView(view.draft ? {
+          name: 'review_split',
+          groupId,
+          amount: view.draft.amount,
+          title: view.draft.title,
+          source: view.draft.source,
+          receiptStatus: view.draft.receiptStatus,
+          fileName: view.draft.fileName,
+        } : { name: 'group_detail', groupId })}
+      />
+    );
   } else if (view.name === 'group_detail') {
     const mode = state.groups[view.groupId]?.mode ?? 'normal_pot';
     const canManageMembers = managedMembershipGroupId === view.groupId;
@@ -491,10 +539,8 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
   } else if (view.name === 'style_guide') {
     if (!isDev) {
       content = <Home 
-        onGoToStateProof={() => setView({ name: 'home' })} 
         onStartGroup={() => setView({ name: 'home' })}
         onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})}
-        onStartMode={() => setView({name: 'home'})}
         onGoToGroup={() => setView({ name: 'home' })}
         onGoToProfile={() => setView({ name: 'home' })}
       />;
@@ -503,10 +549,8 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
     }
   } else {
     content = <Home 
-      onGoToStateProof={() => setView({ name: 'state_proof' })} 
       onStartGroup={() => setView({ name: 'create_group' })}
       onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})}
-      onStartMode={(mode) => setView({name: 'mode_intro', mode})}
       onGoToGroup={(groupId) => setView({ name: 'group_detail', groupId })}
       onGoToProfile={() => setView({ name: 'profile' })}
     />;
@@ -567,7 +611,7 @@ function ThemedLayout({dependencies}: {dependencies?: AppDependencies}) {
 
   return (
     <div className={`min-h-[100dvh] ${state.theme === 'dark' ? 'dark bg-gray-900' : 'bg-gray-50'} flex items-center justify-center sm:py-10 transition-colors`}>
-      <div className={`app-shell-frame w-full sm:max-w-[375px] ${state.theme === 'dark' ? 'bg-gray-950 border-gray-900' : 'bg-gray-50 border-gray-200'} sm:rounded-3xl sm:shadow-2xl overflow-hidden relative flex flex-col font-sans sm:border transition-colors`}>
+      <div className={`app-shell-frame w-full sm:max-w-[640px] lg:max-w-[720px] ${state.theme === 'dark' ? 'bg-gray-950 border-gray-900' : 'bg-gray-50 border-gray-200'} sm:rounded-3xl sm:shadow-2xl overflow-hidden relative flex flex-col font-sans sm:border transition-colors`}>
         <AppRouter dependencies={dependencies} />
       </div>
     </div>

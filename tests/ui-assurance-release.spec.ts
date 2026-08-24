@@ -80,7 +80,7 @@ test('real Product Account authority reaches Home, group cards, and every named 
     await page.setViewportSize({width: 390, height: 844});
     await frame.getByRole('button', {name: 'New group'}).click();
     await frame.getByPlaceholder('e.g. Weekend Trip').fill('Mina pot');
-    await frame.getByRole('button', {name: 'Create group'}).click();
+    await frame.getByRole('button', {name: 'Create my group'}).click();
     await openCreatedGroupIfHome(frame, 'Mina pot', 'Mina pot');
     await frame.getByLabel('Back').click();
     await expect(frame.getByRole('button', {name: 'Open Mina pot'})).toBeVisible();
@@ -89,11 +89,10 @@ test('real Product Account authority reaches Home, group cards, and every named 
     for (const mode of modeCases) {
       frame = currentProductFrame(page);
       await page.setViewportSize({width: 390, height: 844});
-      await frame.getByRole('button', {name: `Open ${mode.label}`, exact: true}).click();
-      await expect(frame.getByRole('button', {name: mode.start, exact: true})).toBeVisible();
-      await frame.getByRole('button', {name: mode.start, exact: true}).click();
+      await frame.getByRole('button', {name: 'New group'}).click();
+      await frame.getByLabel('What is it for?').selectOption({label: mode.label});
       await expect(frame.getByPlaceholder('e.g. Weekend Trip')).toHaveValue(mode.group);
-      await frame.getByRole('button', {name: 'Create group'}).click();
+      await frame.getByRole('button', {name: 'Create my group'}).click();
       await openCreatedGroupIfHome(frame, mode.group, mode.heading);
       observations.push(...await captureHostedSurface(page, frame, `mode-${slug(mode.label)}`));
       await page.setViewportSize({width: 390, height: 844});
@@ -408,7 +407,7 @@ async function openProductAccount(browser: Browser, account: DevAccountName): Pr
   ).toBe('connected');
   let frame = page.frames().find(candidate => candidate !== page.mainFrame());
   if (!frame) throw new Error(`${account} product frame did not attach.`);
-  await frame.getByRole('button', {name: 'Use my Product Account'}).click();
+  await frame.getByRole('button', {name: 'Continue with my account'}).click();
   await expect(frame.getByText(new RegExp(`Hey, ${account}`, 'iu'))).toBeVisible({timeout: 15_000});
   await page.waitForTimeout(1_000);
   frame = currentProductFrame(page);

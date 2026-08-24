@@ -57,12 +57,18 @@ import {
   IndexedDbAuthorityJournalStore,
   verifyParticipantSignature,
 } from '../core/authority/browserAuthority';
+import {rotateGroupCreationSession} from '../membership/groupCreationSessionDraft';
 
 type SessionStatus = 'off' | 'connecting' | 'ready' | 'error';
 
 interface AppStateContextValue {
   state: AppState;
   dispatch: Dispatch<Action>;
+  bindProductAccountIdentity: (identity: {
+    participantId: string;
+    displayName: string;
+    accountPublicKeyHex: string;
+  }) => boolean;
   hostParticipant: HostParticipant | null;
   sessionStatus: SessionStatus;
   authorityStatus: 'checking' | 'ready' | 'error';
@@ -755,6 +761,7 @@ export function AppStateProvider({ children, authorityDependencies }: { children
 
   const dispatch = useCallback<Dispatch<Action>>((action) => {
     if (action.type === 'RESET_TO_CLEAN') {
+      rotateGroupCreationSession();
       authorityQueueRef.current = authorityQueueRef.current
         .then(async () => {
           await authorityRef.current!.clear();
@@ -824,6 +831,45 @@ export function AppStateProvider({ children, authorityDependencies }: { children
         updateObserver({status: 'error', lastError});
       });
   }, [apply, connectionForSession, flushSharedActionOutbox, markProcessed, replaceAuthorityProjection, runAuthority, updateObserver]);
+
+  const bindProductAccountIdentity = useCallback((identity: {
+    participantId: string;
+    displayName: string;
+    accountPublicKeyHex: string;
+  }): boolean => {
+    const participantId = identity.participantId.trim();
+    const accountPublicKeyHex = identity.accountPublicKeyHex.trim().toLowerCase();
+    if (!participantId || !/^0x[0-9a-f]{64}$/u.test(accountPublicKeyHex)) return false;
+
+    const before = stateRef.current;
+    if (before.currentUserId) {
+      const action: Action = {type: 'MIGRATE_CURRENT_USER_IDENTITY', payload: {
+        fromUserId: before.currentUserId,
+        toUserId: participantId,
+        accountPublicKeyHex,
+      }};
+      const expected = reducer(before, action);
+      const expectedUser = expected.users[participantId];
+      if (expected.currentUserId !== participantId
+        || expectedUser?.accountPublicKeyHex?.toLowerCase() !== accountPublicKeyHex) return false;
+      apply(action);
+    } else {
+      const existing = before.users[participantId];
+      if (existing && existing.accountPublicKeyHex?.toLowerCase() !== accountPublicKeyHex) return false;
+      if (!existing) {
+        apply({type: 'ADD_USER', payload: {user: {
+          id: participantId,
+          name: identity.displayName,
+          accountPublicKeyHex,
+        }}});
+      }
+      apply({type: 'SET_CURRENT_USER', payload: {userId: participantId}});
+    }
+
+    const accepted = stateRef.current.users[participantId];
+    return stateRef.current.currentUserId === participantId
+      && accepted?.accountPublicKeyHex?.toLowerCase() === accountPublicKeyHex;
+  }, [apply]);
 
   useEffect(() => {
     stateRef.current = state;
@@ -959,6 +1005,7 @@ export function AppStateProvider({ children, authorityDependencies }: { children
   return <AppStateContext.Provider value={{
     state,
     dispatch,
+    bindProductAccountIdentity,
     hostParticipant,
     sessionStatus,
     authorityStatus,

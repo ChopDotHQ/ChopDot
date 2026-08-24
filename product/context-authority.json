@@ -56,7 +56,7 @@
       "freshness_days": 14,
       "applies_to": "chopdot-v1-launch",
       "authority": "current product jobs, priorities, scope, blockers, and acceptance state",
-      "sha256": "07b26ba2624f98968528e8b7357f04841a77510bb1ad36ff8caeeaaf5a0a2bf2"
+      "sha256": "8b3f1de935d2e7f241c3f8c2bc7be4df67e5f3127c290b39c043f64dc01b6c2b"
     },
     {
       "path": "product/decisions.md",
@@ -144,7 +144,7 @@
       "freshness_days": 14,
       "applies_to": "chopdot-v1-launch",
       "authority": "navigation only; it cannot override law, Cockpit source, exact source evidence, release readback, or cited recall",
-      "sha256": "b55989552c85fde8531a7534bd7ee824f536637e093232755a2737edff340e92"
+      "sha256": "92afd30b01ff4ff04ce87665c2be18505f67000b150fee8f496c9f87fcf38d71"
     }
   ],
   "conditional_routes": [

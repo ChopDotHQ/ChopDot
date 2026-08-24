@@ -21,7 +21,7 @@ test('actual router retires legacy joinGroup snapshot auto-import', async ({page
   })).toString('base64url');
 
   await page.goto(`${baseUrl}?joinGroup=${legacy}`);
-  await expect(page.getByText('No group spending yet')).toBeVisible();
+  await expect(page.getByText('No groups yet.')).toBeVisible();
   const persisted = await page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
   expect(persisted.groups).toEqual({});
   expect(persisted.expenses).toEqual({});

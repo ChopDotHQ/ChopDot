@@ -20,11 +20,11 @@ test('Mina can add a forgotten expense after sending Leo a request', async ({pag
   await page.getByRole('button', {name: 'Continue as guest'}).click();
   await page.getByPlaceholder('Display name').fill('Mina');
   await page.getByRole('button', {name: 'Continue as Mina'}).click();
-  await page.getByRole('button', {name: 'Start with a group'}).click();
+  await page.getByRole('button', {name: 'New group'}).click();
   await page.getByPlaceholder('e.g. Weekend Trip').fill('Test Payment');
   await page.getByLabel('Friend name').fill('Leo');
   await page.getByRole('button', {name: 'Add friend'}).click();
-  await page.getByRole('button', {name: 'Create group'}).click();
+  await page.getByRole('button', {name: 'Create my group'}).click();
 
   await page.getByRole('button', {name: 'Add spend'}).click();
   await page.getByRole('button', {name: 'Enter amount instead'}).click();

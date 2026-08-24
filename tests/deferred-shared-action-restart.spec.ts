@@ -90,11 +90,11 @@ test('a causally early shared action survives receiver restart and converges lat
     }, stateKey)).toBe(true);
 
     const leoBaseline = await leo.page.evaluate(() => window.__TEST_HOST__.getSubmittedStatements().length);
-    await leo.frame.getByRole('button', {name: 'Start with a group'}).click();
+    await leo.frame.getByRole('button', {name: 'New group'}).click();
     await leo.frame.getByPlaceholder('e.g. Weekend Trip').fill('Restart Dinner');
     await leo.frame.getByLabel('Friend name').fill('Mina');
     await leo.frame.getByRole('button', {name: 'Add friend'}).click();
-    await leo.frame.getByRole('button', {name: 'Create group'}).click();
+    await leo.frame.getByRole('button', {name: 'Create my group'}).click();
     await expect(leo.frame.getByText('Restart Dinner', {exact: true})).toBeVisible();
     await expect.poll(() => leo.page.evaluate(
       baseline => window.__TEST_HOST__.getSubmittedStatements().length > baseline,

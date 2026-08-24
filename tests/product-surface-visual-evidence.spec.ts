@@ -29,13 +29,15 @@ test('capture receipt-first product evidence at mobile and desktop widths', asyn
     await frame.getByRole('button', {name: 'New group'}).click();
     await frame.getByPlaceholder('e.g. Weekend Trip').fill('Zurich Dinner');
     await expect(frame.getByLabel('Friend name')).toHaveCount(0);
-    await frame.getByRole('button', {name: 'Create group'}).click();
+    await frame.getByRole('button', {name: 'Create my group'}).click();
+    await expect(frame.getByRole('heading', {name: 'Zurich Dinner'})).toBeVisible({timeout: 15_000});
     await frame.getByLabel('Back').click();
     await expect(frame.getByRole('heading', {name: 'Start with the receipt.'})).toBeVisible();
     await frame.locator('#root').screenshot({path: `${evidenceRoot}/03-home-group-card-mobile.png`});
 
     for (const mode of ['Trip', 'Couple', 'Spend Card', 'Savings circle', 'Emergency pot', 'Community fund']) {
-      await frame.getByRole('button', {name: `Open ${mode}`}).click();
+      await frame.getByRole('button', {name: 'New group'}).click();
+      await frame.getByLabel('What is it for?').selectOption({label: mode});
       await frame.locator('#root').screenshot({path: `${evidenceRoot}/mode-${slug(mode)}-mobile.png`});
       await frame.getByLabel('Back').click();
     }

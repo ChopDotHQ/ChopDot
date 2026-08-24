@@ -16,7 +16,7 @@ test('src/main.tsx creates and spends from the durable signed authority journal'
     await frame.getByRole('button', {name: 'New group'}).click();
     await frame.getByPlaceholder('e.g. Weekend Trip').fill('Zurich dinner');
     await expect(frame.getByLabel('Friend name')).toHaveCount(0);
-    await frame.getByRole('button', {name: 'Create group'}).click();
+    await frame.getByRole('button', {name: 'Create my group'}).click();
     await expect(frame.getByRole('heading', {name: 'Zurich dinner'})).toBeVisible();
 
     await frame.getByRole('button', {name: /Add spend/u}).click();

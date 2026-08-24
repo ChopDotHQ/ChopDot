@@ -63,9 +63,9 @@ for (const mode of cases) {
     const product = await openHostedProduct(browser);
     const {frame} = product;
     try {
-      await frame.getByRole('button', {name: `Open ${mode.label}`}).click();
-      await frame.getByRole('button', {name: mode.create}).click();
-      await frame.getByRole('button', {name: 'Create group'}).click();
+      await frame.getByRole('button', {name: 'New group'}).click();
+      await frame.getByLabel('What is it for?').selectOption({label: mode.label});
+      await frame.getByRole('button', {name: 'Create my group'}).click();
 
       await expect(frame.getByRole('heading', {name: mode.firstHeading})).toBeVisible();
       await mode.fill(frame);
@@ -187,9 +187,9 @@ test('community fund reaches explicit immutable close through src/main.tsx', asy
 
 async function openNamedMode(browser: Browser, label: string, createLabel: string): Promise<HostedProductAccount> {
   const product = await openHostedProduct(browser);
-  await product.frame.getByRole('button', {name: `Open ${label}`}).click();
-  await product.frame.getByRole('button', {name: createLabel}).click();
-  await product.frame.getByRole('button', {name: 'Create group'}).click();
+  await product.frame.getByRole('button', {name: 'New group'}).click();
+  await product.frame.getByLabel('What is it for?').selectOption({label});
+  await product.frame.getByRole('button', {name: 'Create my group'}).click();
   return product;
 }
 

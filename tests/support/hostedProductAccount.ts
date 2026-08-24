@@ -37,7 +37,7 @@ export async function openHostedProduct(
   ).toBe('connected');
   let frame = currentProductFrame(page);
   if (input.bindAccount !== false) {
-    await frame.getByRole('button', {name: 'Use my Product Account'}).click();
+    await frame.getByRole('button', {name: 'Continue with my account'}).click();
     await expect(frame.getByText(new RegExp(`Hey, ${account}`, 'iu'))).toBeVisible({timeout: 15_000});
     await page.waitForTimeout(1_000);
     frame = currentProductFrame(page);
@@ -58,8 +58,8 @@ export async function refreshHostedProduct(product: HostedProductAccount): Promi
     {timeout: 15_000},
   ).toBe('connected');
   let frame = currentProductFrame(product.page);
-  if (await frame.getByRole('button', {name: 'Use my Product Account'}).count()) {
-    await frame.getByRole('button', {name: 'Use my Product Account'}).click();
+  if (await frame.getByRole('button', {name: 'Continue with my account'}).count()) {
+    await frame.getByRole('button', {name: 'Continue with my account'}).click();
   }
   await product.page.waitForTimeout(1_000);
   frame = currentProductFrame(product.page);

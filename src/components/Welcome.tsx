@@ -50,7 +50,7 @@ export function Welcome({onGuest, onScanReceipt, onUseProductAccount}: {onGuest:
           className="mt-3 flex min-h-12 w-full items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-black/10 transition-colors hover:bg-gray-50 disabled:opacity-60 dark:bg-gray-900 dark:text-white dark:ring-white/15"
         >
           <UserRound className="mr-2 h-4 w-4" aria-hidden="true" />
-          {accountState === 'connecting' ? 'Opening your account…' : 'Use my Product Account'}
+          {accountState === 'connecting' ? 'Opening your account…' : 'Continue with my account'}
         </button>
       )}
 

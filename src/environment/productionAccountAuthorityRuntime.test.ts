@@ -1,11 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import {ProductionAccountAuthorityRuntime} from './productionAccountAuthorityRuntime.ts';
+import {
+  createDeferredProductAccountActivation,
+  ProductionAccountAuthorityRuntime,
+} from './productionAccountAuthorityRuntime.ts';
 
 const account = `0x${'11'.repeat(32)}`;
 
 test('stable account authority seams fail closed before explicit attachment and route after attachment', async () => {
   const runtime = new ProductionAccountAuthorityRuntime();
+  assert.equal(runtime.sharedGroupCreationAccount('mina'), null);
   assert.equal(await runtime.resolveExternalIdentity('mina'), null);
   assert.equal(await runtime.resolve('group', 'leo'), null);
   assert.equal(await runtime.authorize({groupId: 'group', type: 'add', grant: {
@@ -20,17 +24,22 @@ test('stable account authority seams fail closed before explicit attachment and 
 
   const identity = {participantId: 'mina', publicKeyHex: account, signer: {sign: async () => new Uint8Array(64)}};
   runtime.attachIdentity(identity);
+  assert.equal(runtime.sharedGroupCreationAccount('mina'), null);
   runtime.attachGroupAccess({async provision() { return {keyVersion: 1, groupKeyEnvelopeId: `sha256:${'bb'.repeat(32)}`}; }});
   runtime.attachMembershipAuthority({
     async resolve() { return null; },
     async authorize() { return true; },
   });
   assert.equal((await runtime.resolveExternalIdentity('mina'))?.publicKeyHex, account);
+  assert.deepEqual(runtime.sharedGroupCreationAccount('mina'), {accountPublicKeyHex: account});
+  assert.equal(runtime.sharedGroupCreationAccount('leo'), null);
   assert.equal(await runtime.authorize({groupId: 'group', type: 'rotate_key', nextKeyVersion: 2, groupKeyEnvelopeIds: {}}, 'mina'), true);
   assert.equal((await runtime.provision({
     groupId: 'group', organizerId: 'mina', organizerAccountPublicKeyHex: account,
     eventId: 'origin', acceptedAt: '2026-08-23T12:00:00.000Z', signer: identity.signer,
   })).keyVersion, 1);
+  runtime.detachAccount();
+  assert.equal(runtime.sharedGroupCreationAccount('mina'), null);
 });
 
 test('canonical delivery does not fall back to legacy secrets when active recipients exist', async () => {
@@ -54,4 +63,29 @@ test('canonical delivery does not fall back to legacy secrets when active recipi
   runtime.attachDelivery({async publish(value) { published.push(value.eventId); }});
   await runtime.publish(event, state);
   assert.deepEqual(published, ['origin']);
+});
+
+test('a cancelled or rejected Product Account candidate attaches no signer or group capability', async () => {
+  const runtime = new ProductionAccountAuthorityRuntime();
+  let sideEffects = 0;
+  const candidate = createDeferredProductAccountActivation({
+    runtime,
+    identity: {participantId: 'mina', publicKeyHex: account, signer: {sign: async () => new Uint8Array(64)}},
+    groupAccess: {async provision() { return {keyVersion: 1, groupKeyEnvelopeId: `sha256:${'bb'.repeat(32)}`}; }},
+    activateSideEffects() { sideEffects += 1; },
+    discardSideEffects() { sideEffects -= 1; },
+  });
+
+  candidate.discard();
+  assert.equal(sideEffects, 0);
+  assert.equal(candidate.isActive(), false);
+  assert.equal(runtime.sharedGroupCreationAccount('mina'), null);
+  assert.equal(await runtime.resolveExternalIdentity('mina'), null);
+
+  candidate.activate();
+  assert.equal(sideEffects, 1);
+  assert.deepEqual(runtime.sharedGroupCreationAccount('mina'), {accountPublicKeyHex: account});
+  candidate.discard();
+  assert.equal(sideEffects, 0);
+  assert.equal(runtime.sharedGroupCreationAccount('mina'), null);
 });

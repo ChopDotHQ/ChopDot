@@ -21,11 +21,11 @@ test('fresh-device payer synchronizes a scoped action through the live dot host'
     await minaApp.getByRole('button', {name: 'Continue as guest'}).click();
     await minaApp.getByPlaceholder('Display name').fill('Mina');
     await minaApp.getByRole('button', {name: 'Continue as Mina'}).click();
-    await minaApp.getByRole('button', {name: 'Start with a group'}).click();
+    await minaApp.getByRole('button', {name: 'New group'}).click();
     await minaApp.getByPlaceholder('e.g. Weekend Trip').fill('Friday Crew Live');
     await minaApp.getByLabel('Friend name').fill('Leo');
     await minaApp.getByRole('button', {name: 'Add friend'}).click();
-    await minaApp.getByRole('button', {name: 'Create group'}).click();
+    await minaApp.getByRole('button', {name: 'Create my group'}).click();
     await minaApp.getByRole('button', {name: 'Add spend'}).click();
     await minaApp.getByPlaceholder('0.00').fill('30');
     await minaApp.getByPlaceholder('e.g. Dinner at Gusto').fill('Dinner');
@@ -47,7 +47,7 @@ test('fresh-device payer synchronizes a scoped action through the live dot host'
     await expect(leoApp.getByText('Your share', {exact: true})).toBeVisible();
     await expect(leoApp.getByRole('button', {name: 'I paid Mina'})).toBeVisible();
     await expect(leoApp.getByRole('button', {name: 'Confirm received'})).toHaveCount(0);
-    await expect(leoApp.getByRole('button', {name: 'Start with a group'})).toHaveCount(0);
+    await expect(leoApp.getByRole('button', {name: 'New group'})).toHaveCount(0);
     await leo.screenshot({path: path.join(proofDirectory, '02-leo-payment-request.png')});
 
     await leoApp.getByRole('button', {name: 'I paid Mina'}).click();

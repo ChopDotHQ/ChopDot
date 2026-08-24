@@ -16,3 +16,14 @@ image-first draft open for manual correction.
 Payment requests, payer claims, cleared evidence, receiver confirmation, and
 group close remain separate events. Trip and couple presets change labels and
 defaults, not authority.
+
+GIVEN Mina began locally as a guest, WHEN she chooses **New group**, enters a
+name, and presses **Create my group**, THEN ChopDot completes account binding
+before proposing canonical `CREATE_GROUP`, preserves the exact draft and
+candidate across rejection/retry/reload, and adds only Mina as organizer. A
+tab-local owner keeps the unfinished private name from crossing an app-data
+reset, and neither an append response nor local completed marker can replace
+exact canonical readback. Leo is not a member until a later recipient-bound
+invitation, acceptance, and organizer grant. Normal, trip, couple, Spend Card,
+savings circle, emergency pot, and community fund choices live inside New
+group rather than competing on Home.

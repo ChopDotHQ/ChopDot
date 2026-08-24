@@ -53,9 +53,9 @@ test('savings organizer grants and removes signed membership with account-bound 
     const relay = createChatRelay(mina, leo);
     expect(roomId).toBe('wave6-savings-room');
     expect(await relay.flush()).toBe(0);
-    await mina.frame.getByRole('button', {name: 'Open Savings circle'}).click();
-    await mina.frame.getByRole('button', {name: 'Start a savings circle'}).click();
-    await mina.frame.getByRole('button', {name: 'Create group'}).click();
+    await mina.frame.getByRole('button', {name: 'New group'}).click();
+    await mina.frame.getByLabel('What is it for?').selectOption('savings_circle');
+    await mina.frame.getByRole('button', {name: 'Create my group'}).click();
     await expect(mina.frame.getByRole('heading', {name: 'Set the circle rules.'})).toBeVisible();
     await expect(mina.frame.getByRole('button', {name: 'Manage members'})).toBeVisible();
     await inviteAcceptedMember({organizer: mina, invitee: leo, relay, groupName: 'Savings circle'});
@@ -213,14 +213,12 @@ test('Spend Card separate-account proof creates the group and grants signed memb
     leo.frame = currentProductFrame(leo.page);
     await expect(mina.frame.getByText(/Hey, Alice/iu)).toBeVisible({timeout: 15_000});
     await expect(leo.frame.getByText(/Hey, Bob/iu)).toBeVisible({timeout: 15_000});
-    await expect(mina.frame.getByRole('button', {name: 'Open Spend Card'})).toBeVisible({timeout: 15_000});
-    await mina.frame.getByRole('button', {name: 'Open Spend Card'}).click();
-    await expect(mina.frame.getByRole('heading', {name: 'Spend Card'})).toBeVisible({timeout: 15_000});
-    await expect(mina.frame.getByRole('button', {name: 'Start Spend Card'})).toBeVisible({timeout: 15_000});
-    await mina.frame.getByRole('button', {name: 'Start Spend Card'}).click();
-    await expect(mina.frame.getByRole('heading', {name: 'New Spend Card'})).toBeVisible({timeout: 15_000});
-    await expect(mina.frame.getByRole('button', {name: 'Create group'})).toBeVisible({timeout: 15_000});
-    await mina.frame.getByRole('button', {name: 'Create group'}).click();
+    await expect(mina.frame.getByRole('button', {name: 'New group'})).toBeVisible({timeout: 15_000});
+    await mina.frame.getByRole('button', {name: 'New group'}).click();
+    await mina.frame.getByLabel('What is it for?').selectOption('spend_card');
+    await expect(mina.frame.getByRole('heading', {name: 'New group'})).toBeVisible({timeout: 15_000});
+    await expect(mina.frame.getByRole('button', {name: 'Create my group'})).toBeVisible({timeout: 15_000});
+    await mina.frame.getByRole('button', {name: 'Create my group'}).click();
     await expect(mina.frame.getByRole('heading', {name: 'Add the card purchase.'})).toBeVisible({timeout: 15_000});
     await expect(mina.frame.getByRole('button', {name: 'Manage members'})).toBeVisible();
     await inviteAcceptedMember({organizer: mina, invitee: leo, relay, groupName: 'Spend Card'});
@@ -246,7 +244,7 @@ test('normal group payment keeps signed membership, marked-paid evidence, and re
     await mina.frame.getByRole('button', {name: 'New group'}).click();
     await mina.frame.getByPlaceholder('e.g. Weekend Trip').fill('Zurich dinner');
     await expect(mina.frame.getByLabel('Friend name')).toHaveCount(0);
-    await mina.frame.getByRole('button', {name: 'Create group'}).click();
+    await mina.frame.getByRole('button', {name: 'Create my group'}).click();
     await expect(mina.frame.getByRole('heading', {name: 'Zurich dinner'})).toBeVisible();
     await inviteAcceptedMember({organizer: mina, invitee: leo, relay, groupName: 'Zurich dinner'});
 
@@ -544,7 +542,7 @@ async function openParticipant(browser: Browser, account: DevAccountName): Promi
   await expect.poll(() => page.evaluate(() => window.__TEST_HOST__.getConnectionStatus()), {timeout: 15_000}).toBe('connected');
   const frame = page.frames().find(candidate => candidate !== page.mainFrame());
   if (!frame) throw new Error(`${account} product frame did not attach.`);
-  await frame.getByRole('button', {name: 'Use my Product Account'}).click();
+  await frame.getByRole('button', {name: 'Continue with my account'}).click();
   await expect(frame.getByText(`Hey, ${account}`)).toBeVisible();
   return {account, server, page, frame, diagnostics};
 }

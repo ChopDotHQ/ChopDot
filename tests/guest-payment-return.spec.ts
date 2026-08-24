@@ -20,11 +20,11 @@ test('Leo keeps one scoped paid action pending when the live host is unavailable
     await mina.getByRole('button', {name: 'Continue as guest'}).click();
     await mina.getByPlaceholder('Display name').fill('Mina');
     await mina.getByRole('button', {name: 'Continue as Mina'}).click();
-    await mina.getByRole('button', {name: 'Start with a group'}).click();
+    await mina.getByRole('button', {name: 'New group'}).click();
     await mina.getByPlaceholder('e.g. Weekend Trip').fill('Friday Crew');
     await mina.getByLabel('Friend name').fill('Leo');
     await mina.getByRole('button', {name: 'Add friend'}).click();
-    await mina.getByRole('button', {name: 'Create group'}).click();
+    await mina.getByRole('button', {name: 'Create my group'}).click();
     await mina.getByRole('button', {name: 'Add spend'}).click();
     await mina.getByRole('button', {name: 'Enter amount instead'}).click();
     await mina.getByPlaceholder('0.00').fill('30');
@@ -42,7 +42,7 @@ test('Leo keeps one scoped paid action pending when the live host is unavailable
     await expect(leo.getByText('$15.00', {exact: true})).toBeVisible();
     await expect(leo.getByText('Your share', {exact: true})).toBeVisible();
     await expect(leo.getByRole('button', {name: 'I paid Mina'})).toBeVisible();
-    await expect(leo.getByRole('button', {name: 'Start with a group'})).toHaveCount(0);
+    await expect(leo.getByRole('button', {name: 'New group'})).toHaveCount(0);
     await leo.locator('#root').screenshot({path: path.join(proofDirectory, '01-leo-fresh-device-request.png')});
 
     await leo.getByRole('button', {name: 'I paid Mina'}).click();

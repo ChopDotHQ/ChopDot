@@ -50,7 +50,7 @@ test('a Product Account reviews and signs the captured receipt into one organize
     await frame.getByRole('button', {name: 'Add the people'}).click();
     await frame.getByPlaceholder('e.g. Weekend Trip').fill('Zurich Dinner');
     await expect(frame.getByLabel('Friend name')).toHaveCount(0);
-    await frame.getByRole('button', {name: 'Create group'}).click();
+    await frame.getByRole('button', {name: 'Create my group'}).click();
 
     await expect(frame.getByRole('heading', {name: 'Review split'})).toBeVisible();
     await expect(frame.getByText(/120\.00/u).first()).toBeVisible();
@@ -78,12 +78,11 @@ for (const modeCase of modeCases) {
     const product = await openHostedProduct(browser, {viewport: {width: 390, height: 844}});
     const {frame} = product;
     try {
-      await frame.getByRole('button', {name: `Open ${modeCase.open}`}).click();
-      await expect(frame.getByRole('heading', {name: modeCase.intro})).toBeVisible();
-      await frame.getByRole('button', {name: modeCase.start}).click();
+      await frame.getByRole('button', {name: 'New group'}).click();
+      await frame.getByLabel('What is it for?').selectOption(modeCase.mode);
       await expect(frame.getByPlaceholder('e.g. Weekend Trip')).toHaveValue(modeCase.group);
       await expect(frame.getByLabel('Friend name')).toHaveCount(0);
-      await frame.getByRole('button', {name: 'Create group'}).click();
+      await frame.getByRole('button', {name: 'Create my group'}).click();
 
       await expect(frame.getByText(new RegExp(modeCase.next, 'i')).first()).toBeVisible();
       const storedMode = await firstAuthorityJournalMode(frame);
@@ -102,7 +101,7 @@ test('group creation exposes no typed-name path into shared authority', async ({
     await frame.getByPlaceholder('e.g. Weekend Trip').fill('Friday dinner');
     await expect(frame.getByLabel('Friend name')).toHaveCount(0);
     await expect(frame.getByRole('button', {name: 'Add friend'})).toHaveCount(0);
-    await frame.getByRole('button', {name: 'Create group'}).click();
+    await frame.getByRole('button', {name: 'Create my group'}).click();
     await expect(frame.getByRole('button', {name: 'Invite a member'})).toBeVisible();
     await expect(frame.getByRole('button', {name: 'Remove a member'})).toBeVisible();
   } finally {

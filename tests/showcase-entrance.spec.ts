@@ -50,6 +50,6 @@ test('mobile entrance routes through the existing guest action without creating 
   await page.getByPlaceholder('Display name').fill('Mina');
   await page.getByRole('button', {name: 'Continue as Mina'}).click();
   await expect(page.getByText('Hey, Mina')).toBeVisible();
-  await expect(page.getByText('No group spending yet')).toBeVisible();
+  await expect(page.getByText('No groups yet.')).toBeVisible();
   await page.screenshot({path: path.join(proofDir, '04-guest-home-no-fake-state-mobile.png'), fullPage: false});
 });
