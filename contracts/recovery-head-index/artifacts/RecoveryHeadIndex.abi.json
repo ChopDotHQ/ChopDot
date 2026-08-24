@@ -1,0 +1,121 @@
+[
+  {
+    "inputs": [],
+    "name": "EmptyDigest",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "EmptyStream",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "actualSequence",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "actualDigest",
+        "type": "bytes32"
+      }
+    ],
+    "name": "HeadMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SequenceExhausted",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "stream",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint64",
+        "name": "sequence",
+        "type": "uint64"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "digest",
+        "type": "bytes32"
+      }
+    ],
+    "name": "HeadAdvanced",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "stream",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint64",
+        "name": "expectedSequence",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "expectedDigest",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "nextDigest",
+        "type": "bytes32"
+      }
+    ],
+    "name": "advanceHead",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "stream",
+        "type": "bytes32"
+      }
+    ],
+    "name": "readHead",
+    "outputs": [
+      {
+        "internalType": "uint64",
+        "name": "sequence",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "digest",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

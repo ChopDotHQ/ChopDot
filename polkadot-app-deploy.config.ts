@@ -1,17 +1,22 @@
 type PolkadotAppDeployConfig<T> = T;
 
 const defineConfig = <T>(config: PolkadotAppDeployConfig<T>): PolkadotAppDeployConfig<T> => config;
+const releaseDomain = process.env.RELEASE_DOMAIN;
+
+if (!releaseDomain || !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.dot$/.test(releaseDomain)) {
+  throw new Error('RELEASE_DOMAIN must be the exact lowercase .dot name being published.');
+}
 
 export default defineConfig({
-  domain: process.env.POLKADOT_APP_DEPLOY_DOMAIN ?? 'chopdot-shell-proof.dot',
+  domain: releaseDomain,
   displayName: 'ChopDot',
   description: 'Split shared spending, collect payments, and keep one clear group record.',
-  icon: {path: '../../public/assets/Logos/choptdot_whitebackground.png', format: 'png'},
+  icon: {path: './dist-dot-host/chopdot-icon.png', format: 'png'},
   executables: [
     {
       kind: 'app',
-      path: './dist',
-      appVersion: [0, 5, 6],
+      path: './dist-dot-host',
+      appVersion: [0, 1, 0],
     },
   ],
 });

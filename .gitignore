@@ -26,3 +26,16 @@ proof/chopdot-candidate-2026-08-12/receipts/B6.json
 # final Batch 6 runner hashes and copies them into the candidate evidence pack.
 proof/guest-payment-offline/
 proof/live-payer-sync/
+
+# Immutable release evidence is generated only after the clean source commit is
+# frozen. The strict verifier reconstructs and hashes these exact paths; they
+# stay ignored during stage/promote so evidence creation cannot masquerade as a
+# source-tree change. Final handoff may force-add the verified records later.
+deployment/releases/*.car
+deployment/releases/*.promotion.json
+deployment/readbacks/*.json
+
+# Local visual-assurance captures are hashed into committed evidence reports.
+# Keeping the PNG corpus outside Git avoids rewriting historical proof packs on
+# every deterministic browser run.
+artifacts/release/

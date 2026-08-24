@@ -2,6 +2,10 @@ import {defineConfig} from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
+  // This tracked compatibility alias imports the canonical Batch 2 spec for an
+  // older focused harness. Collect the canonical file once in umbrella runs;
+  // Playwright correctly rejects spec-to-spec imports when both are collected.
+  testIgnore: 'membership-bootstrap-ui.spec.ts',
   timeout: 60_000,
   fullyParallel: false,
   workers: 1,
