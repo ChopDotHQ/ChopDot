@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.example/governance/evidence-packet.schema.json",
+  "title": "ChopDot supervision evidence packet",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "invariantId",
+    "level",
+    "result",
+    "recordedAt",
+    "candidate",
+    "checks"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "invariantId": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+$"
+    },
+    "level": {
+      "enum": [
+        "exact-candidate",
+        "real-host-chain",
+        "release"
+      ]
+    },
+    "result": {
+      "const": "pass"
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "candidate": {
+      "type": "object",
+      "required": [
+        "commit",
+        "clean",
+        "buildProfile",
+        "lockfiles"
+      ],
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "clean": {
+          "const": true
+        },
+        "buildProfile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lockfiles": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object"
+      }
+    },
+    "host": {
+      "type": "object"
+    },
+    "network": {
+      "type": "object"
+    },
+    "participants": {
+      "type": "array"
+    },
+    "finality": {
+      "type": "object"
+    },
+    "artifact": {
+      "type": "object"
+    },
+    "deployment": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}
