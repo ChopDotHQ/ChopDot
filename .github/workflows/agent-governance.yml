@@ -92,6 +92,7 @@ jobs:
             jq '{pull_request: {
                   number: .number,
                   body: (.body // ""),
+                  user: {login: .user.login},
                   base: {sha: .base.sha, ref: .base.ref, repo: {full_name: .base.repo.full_name}},
                   head: {sha: .head.sha, ref: .head.ref, repo: {full_name: .head.repo.full_name}}
                 }}' "$live_file" > "$event_file"
@@ -369,6 +370,7 @@ jobs:
           --output-directory="${{ runner.temp }}/pr-outcome"
           --workflow-run-id="${{ github.run_id }}"
           --workflow-run-attempt="${{ github.run_attempt }}"
+          --evaluator-identity="github-actions:pr-outcome:${{ github.run_id }}:${{ github.run_attempt }}"
           --job-results-json='{"agent-contract":"${{ needs.agent-contract.result }}","agent-runner":"${{ needs.agent-runner.result }}","knowledge-adapters":"${{ needs.knowledge-adapters.result }}","repo-governance":"${{ needs.repo-governance.result }}","application-fast-assurance":"${{ needs.application-fast-assurance.result }}"}'
           --json-out="${{ runner.temp }}/pr-outcome/generation.json"
       - name: Validate PR claims against generated outcome

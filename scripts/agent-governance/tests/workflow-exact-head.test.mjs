@@ -29,6 +29,7 @@ function runContext(overrides = {}) {
     number: 14,
     state: 'open',
     body: 'live body',
+    user: {login: 'fixture-author'},
     base: {sha: 'b'.repeat(40), ref: 'main', repo: {full_name: repository}},
     head: {sha: expectedHead, ref: branch, repo: {full_name: repository}},
     ...(overrides.live ?? {}),
@@ -103,6 +104,7 @@ test('dispatch runtime builds one exact live PR event bound to dispatched head a
   const event = JSON.parse(fs.readFileSync(value.eventPath));
   assert.equal(event.pull_request.number, 14);
   assert.equal(event.pull_request.body, 'live body');
+  assert.equal(event.pull_request.user.login, 'fixture-author');
   assert.equal(event.pull_request.base.sha, 'b'.repeat(40));
   assert.equal(event.pull_request.head.sha, 'a'.repeat(40));
   assert.equal(event.pull_request.head.ref, 'codex/chopdot-v1-launch');
@@ -158,6 +160,7 @@ test('PR outcome depends on all exact-head jobs and uses same-run external artif
   assert.deepEqual(parsed.jobs['pr-outcome'].permissions, {contents: 'read', 'id-token': 'write', attestations: 'write'});
   assert.match(parsed.jobs['pr-outcome'].block, /actions\/download-artifact@[0-9a-f]{40}/);
   assert.match(parsed.jobs['pr-outcome'].block, /generate-pr-outcome\.mjs/);
+  assert.match(parsed.jobs['pr-outcome'].block, /--evaluator-identity="github-actions:pr-outcome:\$\{\{ github\.run_id \}\}:\$\{\{ github\.run_attempt \}\}"/);
   assert.match(parsed.jobs['pr-outcome'].block, /--ci-outcome/);
   assert.match(parsed.jobs['pr-outcome'].block, /actions\/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8/);
   assert.match(parsed.jobs['pr-outcome'].block, /outcome-attestation\.jsonl/);

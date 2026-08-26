@@ -169,6 +169,22 @@ rank must all validate. Missing, stale, wrong-candidate, or weak artifacts make
 the assertion blocked or failed; they cannot be replaced with a manually
 entered score.
 
+Artifact hashes have two explicit domains. Each manifest entry records the
+raw-byte SHA-256 of one file. `ArtifactV1.sha256` records the SHA-256 of the
+ordered manifest, constructed from each `path + NUL + raw-file-hash` entry.
+These values normally differ even for a one-file artifact. Verify immutability
+by recomputing and comparing raw hashes to manifest entries, then recomputing
+and comparing the ordered aggregate to `ArtifactV1.sha256`; never compare the
+aggregate directly with a raw file hash.
+
+Deterministic commands are hard gates, independent of the assertion score.
+Every declared command must finish with its expected exit code. One failed,
+timed-out, unsafe, or otherwise non-passing command makes the evaluation
+`rejected` and the run `failed_verification`, even when all typed measurement
+assertions pass. Generated run evidence under `output/` is excluded from the
+production TypeScript project; a pilot script must be checked by its declared
+command rather than entering `npm run lint` by filesystem discovery.
+
 Run the deterministic and profile evaluator, then promote only an accepted,
 independently reviewed outcome:
 

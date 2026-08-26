@@ -142,7 +142,8 @@ export async function evaluateContractAssertions(contract, options = {}) {
   const passRate = total === 0 ? 0 : passed / total;
   const threshold = contract.evaluator.pass_threshold;
   const hardFailures = results.filter((entry) => entry.result !== 'pass' && contract.evaluator.hard_fail_assertion_ids.includes(entry.assertion_id)).map((entry) => entry.assertion_id);
-  const accepted = independence.accepted && failed === 0 && blocked === 0 && hardFailures.length === 0 && passRate >= threshold;
+  const deterministicCommandsPassed = commandResults.every((entry) => entry.passed);
+  const accepted = deterministicCommandsPassed && independence.accepted && failed === 0 && blocked === 0 && hardFailures.length === 0 && passRate >= threshold;
   const timestamp = options.evaluatedAt ?? nowIso();
   const evaluation = {
     evaluation_version: '1.0.0',

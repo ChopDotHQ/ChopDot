@@ -29,6 +29,20 @@ actor ID and actor kind together; delegated work uses `kind: agent`. Missing or
 unknown kinds fail closed so a self-authored run cannot gain apparent
 independence by being mislabeled as the human operator.
 
+Deterministic commands are hard acceptance gates, not informational attachments
+to a measurement score. Every declared command must pass with its expected
+exit code; a failure rejects evaluation even when all typed assertions pass.
+The generated `output/` evidence workspace is excluded from the production
+TypeScript project, so ignored pilot scripts cannot accidentally expand lint's
+source surface.
+
+Artifact hashing uses two named domains. A manifest entry stores one file's raw
+SHA-256, while `ArtifactV1.sha256` stores the SHA-256 of the ordered
+`path + NUL + raw-file-hash` manifest. Verification compares like with like:
+raw bytes to the manifest entry, then the reconstructed ordered manifest to the
+aggregate. A raw hash differing from the aggregate is expected and is not, by
+itself, mutation evidence.
+
 Product Cockpit checkpoints may cite reviewed outcome packets but the runner
 cannot reprioritize cards, alter product scores, or change `PRODUCT_TRUTH.md`.
 The packet binds a clean product candidate. A later evidence-only commit may

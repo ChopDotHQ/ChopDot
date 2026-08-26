@@ -35,6 +35,40 @@ test('recorded typed measurement evidence produces exact pass counts', async () 
   assert.ok(result.assertions.every((entry) => entry.evidence_artifact_ids.includes(evidence.artifact.artifact_id)));
 });
 
+test('a failed deterministic command rejects otherwise passing typed measurements', async () => {
+  const root = await fixtureRoot();
+  const contract = fixtureContract(root, {
+    evaluator: {
+      deterministic_commands: [{
+        id: 'CHECK-FAIL',
+        command: `${process.execPath} --check definitely-missing-agent-eval-file.mjs`,
+        cwd: root,
+        expected_exit_code: 0,
+        timeout_seconds: 10,
+      }],
+    },
+  });
+  const { run_directory: runDirectory } = await startRun(contract, {
+    runsRoot: path.join(root, 'runs'),
+    observedIdentity: fixturePreflightIdentity(contract),
+  });
+  const evidence = await recordPassingMeasurementEvidence(root, runDirectory, contract);
+  const result = await recordEvaluation(runDirectory, contract, {
+    evaluatorIdentity: 'reviewer-agent',
+    measurements: evidence.measurements,
+  });
+
+  assert.deepEqual(result.counts, { total: 5, passed: 5, failed: 0, blocked: 0 });
+  assert.equal(result.command_results[0].passed, false);
+  assert.notEqual(result.command_results[0].exit_code, 0);
+  assert.equal(result.accepted, false);
+  assert.equal(result.verdict, 'rejected');
+
+  const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+  assert.equal(snapshot.status, 'failed_verification');
+  assert.equal(snapshot.evaluations[0].verdict, 'rejected');
+});
+
 test('measurement binding rejects nonexistent evidence IDs, wrong candidates, and insufficient levels', async () => {
   const missing = await started();
   const missingEvidence = await recordPassingMeasurementEvidence(missing.root, missing.runDirectory, missing.contract);

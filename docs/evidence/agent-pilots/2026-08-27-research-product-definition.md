@@ -41,14 +41,19 @@ different evaluation run; product definition requires a different actor.
 Both first attempts ended `failed_verification`; neither was promoted as an
 accepted outcome.
 
-- The research artifact recorded SHA-256
+- The research artifact recorded the ordered manifest aggregate SHA-256
   `7cb19169a5ab0bb3d06732686fde15010d7a0eed0c77b8957cf59bd16e05c666`,
-  while independent readback found
+  while the single file's raw-byte SHA-256 was
   `f3c91441f63d3a634fcdee52d106f06f63dee3526982d5837c3330a5b3754c68`.
-- The product-definition artifact recorded SHA-256
+- The product-definition artifact recorded the ordered manifest aggregate
+  SHA-256
   `eefef141f078ffe6e9eaf6f9a260bf74b72dca811df363184b9f30544238187a`,
-  while independent readback found
+  while the single file's raw-byte SHA-256 was
   `a4f45339b83fc816ce0f098308b981ccde9226b52620eec5b534aedae8bcfd5a`.
+- Those pairs do not prove post-record mutation. `ArtifactV1.sha256` hashes the
+  ordered `path + NUL + raw-file-hash` manifest; each manifest entry separately
+  records the raw file SHA-256. The two hash domains are expected to differ and
+  must be recomputed and compared only like-for-like.
 - Both recorded artifacts were bound to a candidate whose Git status contained
   this then-untracked evidence file. That cannot satisfy the policy meaning of
   `exact-candidate`, which requires a clean commit and tree.
@@ -71,9 +76,10 @@ No tracked repo file, `package.json`, or `package-lock.json` changed, but the
 fetch exceeded the intended bounded pilot workflow and must not be repeated.
 
 The next attempts SHALL start only after this failure evidence is committed,
-shall build the measurement evidence before recording its artifact, shall not
-mutate the artifact afterward, and shall be independently evaluated against
-the same clean candidate identity.
+shall build immutable typed measurement evidence before recording its artifact,
+shall verify both raw-file hashes and the ordered manifest aggregate in their
+own domains, and shall be independently evaluated against the same clean
+candidate identity.
 
 ## Second fail-closed discovery
 
@@ -90,3 +96,22 @@ for template-derived contracts, and documents that labels alone do not prove
 independence. Fresh focused and complete runner verification passed 115/115
 tests. The next real round must use `--created-by-kind=agent` and a genuinely
 different evaluator.
+
+## Third fail-closed discovery
+
+Implementation successor run
+`run_paos_implementation_20260827_003_successor_01` was incorrectly recorded as
+`succeeded`. Its evaluation
+`evaluation_71a75e93-93d7-4ec1-9bd4-2f5dbcbbe917` reported five passing typed
+assertions, but deterministic `CHECK-001` (`npm run agent:ci -- --json`) exited
+1. The evaluator calculated `deterministic_command_failures: 1` but omitted it
+from the acceptance predicate, so the passing measurement bindings produced a
+false green. That run and any outcome derived from it are invalid evidence and
+must not be promoted.
+
+The failed command also exposed a containment defect: TypeScript lint could
+discover ignored pilot scripts under `output/working_memory/`. The repair makes
+every declared deterministic command a hard acceptance gate and excludes the
+generated `output/` tree from the production TypeScript project. A non-zero or
+unexpected deterministic-command exit now makes evaluation `rejected` and the
+run `failed_verification`, even when every typed outcome assertion passes.
