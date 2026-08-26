@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { parseArgs } from './lib.mjs';
 
 const REQUIRED_JOBS = new Map([
+  ['pr-context', 'PR context'],
   ['agent-contract', 'Agent contract'],
   ['agent-runner', 'Agent runner'],
   ['knowledge-adapters', 'Knowledge adapters'],
@@ -16,6 +17,7 @@ const REQUIRED_JOBS = new Map([
 ]);
 
 const REQUIRED_RUN_TOKENS = new Map([
+  ['pr-context', ['gh api --method GET', 'pull_request_number', 'SELECTED_REF_NAME', 'pr-event.json']],
   ['agent-contract', ['scripts/agent-system/cli.mjs validate', 'scripts/agent-system/cli.mjs instruction-validate', 'core-contract.test.mjs']],
   ['agent-runner', ['ledger-runner.test.mjs', 'effects-approvals.test.mjs', 'evaluator-outcome.test.mjs', 'fail-closed.test.mjs']],
   ['knowledge-adapters', ['knowledge-adapters.test.mjs', 'adapters-compat-cli.test.mjs']],
@@ -115,6 +117,7 @@ function parseJob(block) {
     name: fields.name ?? null, fields, permissions, needs, steps,
     uses: steps.map((step) => step.fields.uses).filter(Boolean),
     exact_checkout_refs: checkoutSteps.filter((step) => step.with.ref === '${{ env.EXPECTED_SHA }}').length,
+    full_history_checkouts: checkoutSteps.filter((step) => step.with['fetch-depth'] === '0').length,
     checkout_count: checkoutSteps.length,
     exact_head_assertions: assertionSteps.length,
     block: block.map((entry) => entry.raw).join('\n'),
@@ -143,10 +146,34 @@ export function parseWorkflowStructure(source) {
   const envStart = parsedEntries.findIndex((entry) => entry.indent === 0 && keyValue(entry.text)?.key === 'env');
   const envExpected = envStart >= 0 && parsedEntries.slice(envStart + 1).some((entry) => entry.indent === 2 && keyValue(entry.text)?.key === 'EXPECTED_SHA'
     && keyValue(entry.text)?.value === '${{ github.event.pull_request.head.sha || github.sha }}');
+  const envBranch = envStart >= 0 && parsedEntries.slice(envStart + 1).some((entry) => entry.indent === 2 && keyValue(entry.text)?.key === 'EXPECTED_BRANCH'
+    && keyValue(entry.text)?.value === '${{ github.event.pull_request.head.ref || github.ref_name }}');
+  const dispatchInputs = {};
+  const dispatchStart = parsedEntries.findIndex((entry) => entry.indent === 2 && keyValue(entry.text)?.key === 'workflow_dispatch');
+  if (dispatchStart >= 0) {
+    let currentInput = null;
+    let inOptions = false;
+    for (let index = dispatchStart + 1; index < parsedEntries.length; index += 1) {
+      const entry = parsedEntries[index];
+      if (entry.indent <= 2) break;
+      const pair = keyValue(entry.text);
+      if (entry.indent === 6 && pair && !pair.value) {
+        currentInput = pair.key;
+        dispatchInputs[currentInput] = { fields: {}, options: [] };
+        inOptions = false;
+      } else if (entry.indent === 8 && pair && currentInput) {
+        dispatchInputs[currentInput].fields[pair.key] = pair.value;
+        inOptions = pair.key === 'options';
+      } else if (entry.indent === 10 && entry.text.startsWith('- ') && currentInput && inOptions) {
+        dispatchInputs[currentInput].options.push(scalar(entry.text.slice(2)));
+      }
+    }
+  }
   return {
-    jobs, permissions,
+    jobs, permissions, workflow_dispatch_inputs: dispatchInputs,
     permissions_contents_read: permissions.contents === 'read' && Object.keys(permissions).length === 1,
     expected_sha_expression: envExpected,
+    expected_branch_expression: envBranch,
     pull_request_trigger: triggers.has('pull_request'),
     workflow_dispatch_trigger: triggers.has('workflow_dispatch'),
   };
@@ -157,24 +184,37 @@ export function validateWorkflow(source) {
   const errors = [];
   const warnings = [];
   let checks = 0;
-  checks += 3;
+  checks += 8;
   if (!parsed.permissions_contents_read) errors.push('Workflow permissions must be exactly contents: read with no broadened permissions');
   if (!parsed.expected_sha_expression) errors.push('Workflow must derive EXPECTED_SHA from the PR event head or github.sha');
+  if (!parsed.expected_branch_expression) errors.push('Workflow must derive EXPECTED_BRANCH from the PR head branch or dispatched branch');
   if (!parsed.pull_request_trigger || !parsed.workflow_dispatch_trigger) errors.push('Workflow must support pull_request and workflow_dispatch');
+  const dispatchMode = parsed.workflow_dispatch_inputs.dispatch_mode;
+  const prNumber = parsed.workflow_dispatch_inputs.pull_request_number;
+  if (dispatchMode?.fields.required !== 'true' || dispatchMode.fields.type !== 'choice' || dispatchMode.fields.default !== 'pr_validation'
+    || JSON.stringify(dispatchMode.options) !== JSON.stringify(['pr_validation', 'release_enforcement'])) {
+    errors.push('workflow_dispatch must require the exact pr_validation/release_enforcement mode choice with pr_validation default');
+  }
+  if (prNumber?.fields.type !== 'string' || prNumber.fields.required !== 'false') errors.push('workflow_dispatch pull_request_number must be an optional string with fail-closed runtime enforcement');
+  if (parsed.workflow_dispatch_inputs.enforce_release) errors.push('Legacy enforce_release input can bypass the mutually exclusive dispatch mode');
+  if (!parsed.workflow_dispatch_inputs.outcome_packet || !parsed.workflow_dispatch_inputs.approval_record) errors.push('Release evidence inputs must remain explicit for release_enforcement mode');
   for (const [id, expectedName] of REQUIRED_JOBS) {
     const job = parsed.jobs[id];
     checks += 1;
     if (!job) { errors.push(`Missing workflow job ${id}`); continue; }
-    checks += 6;
+    checks += 7;
     if (job.name !== expectedName) errors.push(`${id} must use stable job name ${expectedName}`);
     if (job.checkout_count !== 1 || job.exact_checkout_refs !== 1) errors.push(`${id} must checkout EXPECTED_SHA exactly once`);
+    if (job.full_history_checkouts !== 1) errors.push(`${id} must fetch full candidate history exactly once`);
     if (job.exact_head_assertions !== 1) errors.push(`${id} must assert the checked-out head exactly once`);
     if (Object.hasOwn(job.fields, 'continue-on-error')) errors.push(`${id} cannot declare continue-on-error`);
     if (!['release-enforcement', 'pr-outcome'].includes(id) && job.fields.if) errors.push(`${id} cannot be conditionally skipped`);
     if (isFalseCondition(job.fields.if)) errors.push(`${id} is structurally disabled`);
     const allowedJobPermissions = id === 'pr-outcome'
       ? {contents: 'read', 'id-token': 'write', attestations: 'write'}
-      : {};
+      : id === 'pr-context'
+        ? {contents: 'read', 'pull-requests': 'read'}
+        : {};
     for (const [permission, level] of Object.entries(job.permissions)) {
       checks += 1;
       if (allowedJobPermissions[permission] !== level) errors.push(`${id} broadens permission ${permission}: ${level}`);
@@ -189,7 +229,10 @@ export function validateWorkflow(source) {
       if (isFalseCondition(step.fields.if)) errors.push(`${id} step ${index + 1} is structurally disabled`);
       if (step.fields.if) {
         const allowedAlways = step.fields.if === 'always()' && /^(Publish|Upload)/.test(step.fields.name ?? '');
-        const allowedPullRequest = step.fields.if === "github.event_name == 'pull_request'" && /pull-request/i.test(step.fields.name ?? '');
+        const allowedPullRequest = [
+          "github.event_name == 'pull_request'",
+          "github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'pr_validation')",
+        ].includes(step.fields.if) && /pull-request/i.test(step.fields.name ?? '');
         if (!allowedAlways && !allowedPullRequest) errors.push(`${id} step ${index + 1} cannot be conditionally skipped`);
       }
     }
@@ -211,10 +254,35 @@ export function validateWorkflow(source) {
   }
   const release = parsed.jobs['release-enforcement'];
   const prOutcome = parsed.jobs['pr-outcome'];
-  const requiredNeeds = ['agent-contract', 'agent-runner', 'knowledge-adapters', 'repo-governance', 'application-fast-assurance'];
-  checks += 3;
-  if (prOutcome?.fields.if !== "github.event_name == 'pull_request'") errors.push('PR outcome must run only on moving pull requests');
+  const prContext = parsed.jobs['pr-context'];
+  const repoGovernance = parsed.jobs['repo-governance'];
+  const coreNeeds = ['agent-contract', 'agent-runner', 'knowledge-adapters', 'repo-governance', 'application-fast-assurance'];
+  const requiredNeeds = ['pr-context', ...coreNeeds];
+  const prValidationCondition = "github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'pr_validation')";
+  checks += 9;
+  if (prOutcome?.fields.if !== prValidationCondition) errors.push('PR outcome must run only for pull_request or exact pr_validation dispatch mode');
   if (JSON.stringify(prOutcome?.needs ?? []) !== JSON.stringify(requiredNeeds)) errors.push('PR outcome must need all five exact-head jobs in canonical order');
+  if (JSON.stringify(repoGovernance?.needs ?? []) !== JSON.stringify(['pr-context'])) errors.push('Repo governance must need the exact PR context job');
+  const contextCommand = prContext?.steps.map((step) => step.run).filter(Boolean).join('\n') ?? '';
+  for (const token of [
+    '=~ ^[1-9][0-9]*$', '[[ "$SELECTED_REF_TYPE" == "branch" ]]', 'repos/$REPOSITORY/pulls/$DISPATCH_PR_NUMBER',
+    '.number == $number', '.state == "open"', '.base.repo.full_name == $repo',
+    '.head.repo.full_name == $repo', '.head.sha == $head', '.head.ref == $branch',
+    '.base.sha | test("^[0-9a-f]{40}$")', '.head.sha | test("^[0-9a-f]{40}$")',
+    'release_enforcement cannot carry a pull_request_number',
+  ]) {
+    if (!contextCommand.includes(token)) errors.push(`PR context lacks fail-closed live binding: ${token}`);
+  }
+  if (!prContext?.steps.some((step) => step.fields.uses?.startsWith('actions/upload-artifact@') && step.with.name === 'pr-context-${{ github.run_id }}')) errors.push('PR context must upload one same-run exact event artifact');
+  const repoContextDownloads = repoGovernance?.steps.filter((step) => step.fields.uses?.startsWith('actions/download-artifact@') && step.with.name === 'pr-context-${{ github.run_id }}') ?? [];
+  if (repoContextDownloads.length !== 1) errors.push('Repo governance must download exactly one same-run PR context');
+  else {
+    const download = repoContextDownloads[0];
+    if (download.with.path !== '${{ runner.temp }}/pr-context-input') errors.push('Repo governance PR context must download outside the Git checkout');
+    for (const override of ['run-id', 'github-token', 'repository']) if (Object.hasOwn(download.with, override)) errors.push(`Repo governance cannot override PR-context ${override}`);
+  }
+  const repoExecutable = repoGovernance?.steps.map((step) => step.run).filter(Boolean).join('\n') ?? '';
+  if (!repoExecutable.includes('--event-path="${{ runner.temp }}/pr-context-input/pr-event.json"')) errors.push('Repo governance must validate the exact same-run PR event');
   const downloads = prOutcome?.steps.filter((step) => step.fields.uses?.startsWith('actions/download-artifact@')) ?? [];
   if (downloads.length !== 1) errors.push('PR outcome must have exactly one same-run evidence download');
   else {
@@ -226,7 +294,7 @@ export function validateWorkflow(source) {
     for (const override of ['run-id', 'github-token', 'repository']) if (Object.hasOwn(download.with, override)) errors.push(`PR outcome cannot override download-artifact ${override}`);
   }
   const prExecutable = prOutcome?.steps.map((step) => step.run).filter(Boolean).join('\n') ?? '';
-  for (const job of requiredNeeds) {
+  for (const job of coreNeeds) {
     checks += 1;
     if (!prExecutable.includes(`needs.${job}.result`)) errors.push(`PR outcome must bind the same-run result for ${job}`);
   }
@@ -242,7 +310,9 @@ export function validateWorkflow(source) {
   }
   if (!prExecutable.includes('steps.attest-outcome.outputs.bundle-path')) errors.push('PR outcome must retain the exact attestation bundle emitted by the signing step');
   if (prOutcome?.block.includes('$GOVERNANCE_REPORT_ROOT/pr-outcome')) errors.push('PR outcome evidence must not dirty the candidate checkout');
-  if (release?.fields.if !== "github.event_name == 'workflow_dispatch' && inputs.enforce_release") errors.push('Release enforcement must be manual and explicit');
+  if (!prExecutable.includes('pr-context-${{ github.run_id }}/pr-event.json')) errors.push('PR outcome must consume the exact same-run PR event artifact');
+  if (release?.fields.if !== "github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'release_enforcement' && inputs.pull_request_number == ''") errors.push('Release enforcement must be mutually exclusive from PR dispatch validation');
+  if (JSON.stringify(release?.needs ?? []) !== JSON.stringify(['pr-context'])) errors.push('Release enforcement must need the mode and PR-number context gate');
   if (release?.fields.environment !== 'public-testnet-release') errors.push('Release enforcement must use the protected release environment');
   if (!release?.steps.some((step) => step.run.includes('scripts/agent-governance/enforce-release.mjs'))) errors.push('Release enforcement must run the fail-closed evidence validator');
   if (release?.block.includes('CI_GENERATED')) errors.push('Release enforcement cannot use CI_GENERATED evidence');

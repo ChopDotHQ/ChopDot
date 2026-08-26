@@ -42,6 +42,13 @@ KGv2, Repo Graph, exact-source, and future knowledge backends operate behind
 the Knowledge Context Port. Backend identity, runtime, fallback, freshness,
 facts, citations, and exact scope remain visible in receipts.
 
+GitHub's ordinary pull-request event is immutable. When it is stale or no fresh
+run attaches, an operator may dispatch `pr_validation` on the exact PR head
+branch with its positive PR number. The workflow accepts only a live open PR in
+the same repository whose head SHA and branch match that dispatch, then gives
+the same context artifact to repo governance and PR outcome. This mode cannot
+activate the separate environment-gated `release_enforcement` path.
+
 Local run ledgers and unredacted traces are ignored and excluded from product
 release bytes. Built text assets also undergo secret, absolute-path,
 prompt/session, email, transcript, and runtime-ledger signature scans. Every

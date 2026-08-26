@@ -28,6 +28,33 @@ const agentEvidenceLevels = new Set([
   'local-blocked',
 ]);
 
+export function checkoutIdentityFailures(manifest, observed, environment = {}) {
+  const failures = [];
+  const actualRoot = path.resolve(String(observed.root ?? ''));
+  const actualBranch = String(observed.branch ?? '');
+  const actualHead = String(observed.head ?? '');
+  const githubMode = environment.GITHUB_ACTIONS === 'true';
+  if (!githubMode) {
+    if (actualRoot !== path.resolve(String(manifest.exact_root ?? ''))) failures.push(`context root mismatch: ${observed.root ?? 'missing'} != ${manifest.exact_root ?? 'missing'}`);
+    if (!actualBranch || actualBranch !== manifest.branch) failures.push(`context branch mismatch: ${actualBranch || '<detached>'} != ${manifest.branch ?? 'missing'}`);
+    return { mode: 'local', failures, canonical_root: manifest.exact_root, declared_branch: actualBranch };
+  }
+
+  const expectedSha = String(environment.EXPECTED_SHA ?? '');
+  const expectedBranch = String(environment.EXPECTED_BRANCH ?? '');
+  const workspace = String(environment.GITHUB_WORKSPACE ?? '');
+  const runId = String(environment.GITHUB_RUN_ID ?? '');
+  const eventName = String(environment.GITHUB_EVENT_NAME ?? '');
+  if (!/^[0-9a-f]{40}$/u.test(expectedSha)) failures.push('GitHub context validation requires EXPECTED_SHA as a full 40-character Git SHA');
+  else if (actualHead !== expectedSha) failures.push(`GitHub context HEAD mismatch: ${actualHead || 'missing'} != ${expectedSha}`);
+  if (!expectedBranch) failures.push('GitHub context validation requires EXPECTED_BRANCH');
+  else if (expectedBranch !== manifest.branch) failures.push(`GitHub context branch mismatch: ${expectedBranch} != ${manifest.branch ?? 'missing'}`);
+  if (!workspace || path.resolve(workspace) !== actualRoot) failures.push('GitHub context validation requires GITHUB_WORKSPACE to equal the actual checkout root');
+  if (!/^[1-9][0-9]*$/u.test(runId)) failures.push('GitHub context validation requires a numeric GITHUB_RUN_ID');
+  if (!['pull_request', 'workflow_dispatch'].includes(eventName)) failures.push('GitHub context validation allows only pull_request or workflow_dispatch events');
+  return { mode: 'github', failures, canonical_root: manifest.exact_root, declared_branch: expectedBranch };
+}
+
 function parseArgs(values) {
   const parsed = { _: [] };
   for (const value of values) {
@@ -505,6 +532,8 @@ async function decisionFailures(now = new Date()) {
 async function releaseStateFailures(cards, now = new Date()) {
   const failures = [];
   const tracked = await trackedFiles();
+  const context = await loadContextAuthority();
+  const canonicalRoot = path.resolve(context.exact_root);
   let release;
   try {
     release = JSON.parse(await readFile(path.join(root, 'docs/release/current-release-state.json'), 'utf8'));
@@ -623,7 +652,7 @@ async function releaseStateFailures(cards, now = new Date()) {
     if (schema !== expectedSchema) failures.push(`current release ${field} verdict evidence has the wrong schema`);
     if (field === 'kg_known') {
       if (parsedEvidence.kg_known !== true) failures.push('kg_known verdict evidence does not report kg_known=true');
-      if (parsedEvidence.source_identity?.root !== root || parsedEvidence.source_identity?.branch !== release.branch || parsedEvidence.source_identity?.head !== release.kgv2?.latest_packet_commit) failures.push('kg_known verdict evidence has the wrong exact-worktree identity');
+      if (parsedEvidence.source_identity?.root !== context.exact_root || parsedEvidence.source_identity?.branch !== release.branch || parsedEvidence.source_identity?.head !== release.kgv2?.latest_packet_commit) failures.push('kg_known verdict evidence has the wrong exact-worktree identity');
       if (parsedEvidence.repo_graph?.packet_digest !== release.kgv2?.packet_digest) failures.push('kg_known verdict evidence packet digest disagrees with current release state');
       if (parsedEvidence.fact_count !== release.kgv2?.fact_count || parsedEvidence.citation_count !== release.kgv2?.citation_count) failures.push('kg_known verdict evidence fact/citation counts disagree with current release state');
       const evidenceSources = [...new Set(parsedEvidence.citation_source_refs ?? [])].sort();
@@ -661,23 +690,26 @@ async function releaseStateFailures(cards, now = new Date()) {
     const selectedNext = rankCards(cards).find((card) => card.status === 'building')?.id;
     if (expectedNext !== selectedNext) failures.push(`selected next card ${selectedNext ?? 'none'} does not match highest-severity release blocker ${expectedNext ?? 'none'}`);
   }
-  const [{ stdout: head }, { stdout: actualBranch }] = await Promise.all([
+  const [{ stdout: head }, { stdout: actualBranch }, { stdout: actualRoot }] = await Promise.all([
     execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: root }),
     execFileAsync('git', ['branch', '--show-current'], { cwd: root }),
+    execFileAsync('git', ['rev-parse', '--show-toplevel'], { cwd: root }),
   ]);
-  if (release.branch !== actualBranch.trim()) failures.push(`current release branch ${release.branch ?? 'missing'} differs from the actual branch ${actualBranch.trim()}`);
+  const checkout = checkoutIdentityFailures(context, { root: actualRoot.trim(), branch: actualBranch.trim(), head: head.trim() }, process.env);
+  failures.push(...checkout.failures);
+  if (release.branch !== context.branch) failures.push(`current release branch ${release.branch ?? 'missing'} differs from the context authority branch ${context.branch ?? 'missing'}`);
   if (verdicts.pushed === true && /^[0-9a-f]{40}$/u.test(candidate.commit ?? '')) {
     await execFileAsync('git', ['merge-base', '--is-ancestor', candidate.commit, `origin/${release.branch}`], { cwd: root }).catch(() => failures.push('pushed=true but the candidate commit is not on the recorded origin branch'));
   }
   if (verdicts.kg_known === true) {
-    failures.push(...kgKnownShapeFailures(release.kgv2, { root, branch: actualBranch.trim(), head: head.trim() }));
+    failures.push(...kgKnownShapeFailures(release.kgv2, { root: context.exact_root, branch: context.branch, head: head.trim() }));
     for (const sourcePath of release.kgv2?.cited_source_paths ?? []) {
       const absoluteSource = path.resolve(String(sourcePath));
-      if (!path.isAbsolute(String(sourcePath)) || !insideRoot(absoluteSource)) {
+      const relativeSource = path.relative(canonicalRoot, absoluteSource);
+      if (!path.isAbsolute(String(sourcePath)) || !relativeSource || relativeSource.startsWith('..') || path.isAbsolute(relativeSource)) {
         failures.push(`kg_known cited source is outside the exact worktree: ${sourcePath}`);
         continue;
       }
-      const relativeSource = path.relative(root, absoluteSource);
       const sourceFailure = await trackedRegularFileFailure(relativeSource, tracked, `kg_known cited source ${sourcePath}`);
       if (sourceFailure) failures.push(sourceFailure);
     }
@@ -844,13 +876,18 @@ async function contextFailures(now = new Date()) {
   if (manifest.status !== 'active') failures.push('context authority manifest is not active');
   for (const field of ['owner', 'last_reviewed', 'exact_root', 'branch']) if (!manifest[field]) failures.push(`context authority manifest is missing ${field}`);
   if (daysSince(manifest.last_reviewed, now) < 0 || daysSince(manifest.last_reviewed, now) > 14) failures.push('context authority manifest review is future or older than 14 days');
-  const [{ stdout: actualRoot }, { stdout: actualBranch }, { stdout: trackedOutput }] = await Promise.all([
+  const [{ stdout: actualRoot }, { stdout: actualBranch }, { stdout: actualHead }, { stdout: trackedOutput }] = await Promise.all([
     execFileAsync('git', ['rev-parse', '--show-toplevel'], { cwd: root }),
     execFileAsync('git', ['branch', '--show-current'], { cwd: root }),
+    execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: root }),
     execFileAsync('git', ['ls-files'], { cwd: root }),
   ]);
-  if (path.resolve(actualRoot.trim()) !== path.resolve(manifest.exact_root)) failures.push(`context root mismatch: ${actualRoot.trim()} != ${manifest.exact_root}`);
-  if (actualBranch.trim() !== manifest.branch) failures.push(`context branch mismatch: ${actualBranch.trim()} != ${manifest.branch}`);
+  const checkout = checkoutIdentityFailures(manifest, {
+    root: actualRoot.trim(),
+    branch: actualBranch.trim(),
+    head: actualHead.trim(),
+  }, process.env);
+  failures.push(...checkout.failures);
 
   const validKinds = new Set(['law', 'decision', 'measurement', 'guardrail', 'exploration', 'read-model']);
   const validStatuses = new Set(['active', 'accepted', 'superseded', 'historical', 'generated']);

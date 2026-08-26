@@ -51,6 +51,12 @@ release evidence
   every required exact-head job passes. The pinned workflow signs the packet
   with GitHub build provenance and retains an offline bundle. Immutable release
   evidence never accepts the unauthenticated `CI_GENERATED` token.
+- A normal PR run uses its immutable GitHub event. A manual `pr_validation`
+  dispatch is the bounded recovery route for a stale or missing run: it fetches
+  one live open same-repository PR, binds its number/head/branch/repositories to
+  the exact dispatched commit, and supplies one same-run event artifact to repo
+  governance and PR outcome. It cannot overlap `release_enforcement`, which
+  rejects any PR number and remains environment-gated.
 - Strict release preparation accepts the external packet only with that
   attestation bundle. It verifies the exact repository, workflow, OIDC issuer,
   SLSA predicate, hosted runner, source commit, branch, tree, clean status, and

@@ -4,6 +4,7 @@ import {
   checkpointCardTransitionFailures,
   checkpointEvidencePathFailures,
   checkpointProvenanceFailures,
+  checkoutIdentityFailures,
   conditionalRouteKeyFailures,
   kgKnownShapeFailures,
   markdownMetadataFailures,
@@ -33,6 +34,70 @@ const base = Object.freeze({
   authority: 'Signed event',
   scope: 'bounded',
   out: 'parallel authority',
+});
+
+const contextManifest = Object.freeze({
+  exact_root: '/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch',
+  branch: 'codex/chopdot-v1-launch',
+});
+const candidateHead = 'ab'.repeat(20);
+
+test('local context validation keeps exact root and non-detached branch mandatory', () => {
+  assert.deepEqual(checkoutIdentityFailures(contextManifest, {
+    root: contextManifest.exact_root,
+    branch: contextManifest.branch,
+    head: candidateHead,
+  }, {}).failures, []);
+  const wrongRoot = checkoutIdentityFailures(contextManifest, { root: '/tmp/checkout', branch: contextManifest.branch, head: candidateHead }, {
+    EXPECTED_SHA: candidateHead,
+    EXPECTED_BRANCH: contextManifest.branch,
+  });
+  assert.equal(wrongRoot.mode, 'local');
+  assert.ok(wrongRoot.failures.some((failure) => failure.includes('context root mismatch')));
+  const detached = checkoutIdentityFailures(contextManifest, { root: contextManifest.exact_root, branch: '', head: candidateHead }, {});
+  assert.ok(detached.failures.some((failure) => failure.includes('<detached>')));
+});
+
+test('GitHub context permits an ephemeral detached checkout only with full exact attestation', () => {
+  const observed = { root: '/home/runner/work/ChopDot/ChopDot', branch: '', head: candidateHead };
+  const environment = {
+    GITHUB_ACTIONS: 'true',
+    GITHUB_WORKSPACE: observed.root,
+    GITHUB_RUN_ID: '33020253817',
+    GITHUB_EVENT_NAME: 'workflow_dispatch',
+    EXPECTED_SHA: candidateHead,
+    EXPECTED_BRANCH: contextManifest.branch,
+  };
+  const result = checkoutIdentityFailures(contextManifest, observed, environment);
+  assert.equal(result.mode, 'github');
+  assert.equal(result.canonical_root, contextManifest.exact_root);
+  assert.equal(result.declared_branch, contextManifest.branch);
+  assert.deepEqual(result.failures, []);
+});
+
+test('GitHub context fails closed on missing, short, wrong, or unofficial attestation', () => {
+  const observed = { root: '/home/runner/work/ChopDot/ChopDot', branch: '', head: candidateHead };
+  const valid = {
+    GITHUB_ACTIONS: 'true', GITHUB_WORKSPACE: observed.root, GITHUB_RUN_ID: '33020253817',
+    GITHUB_EVENT_NAME: 'pull_request', EXPECTED_SHA: candidateHead, EXPECTED_BRANCH: contextManifest.branch,
+  };
+  for (const [field, value, fragment] of [
+    ['EXPECTED_SHA', undefined, 'full 40-character'],
+    ['EXPECTED_SHA', candidateHead.slice(0, 12), 'full 40-character'],
+    ['EXPECTED_SHA', 'cd'.repeat(20), 'HEAD mismatch'],
+    ['EXPECTED_BRANCH', undefined, 'requires EXPECTED_BRANCH'],
+    ['EXPECTED_BRANCH', 'main', 'branch mismatch'],
+    ['GITHUB_WORKSPACE', '/tmp/other', 'GITHUB_WORKSPACE'],
+    ['GITHUB_RUN_ID', '', 'numeric GITHUB_RUN_ID'],
+    ['GITHUB_EVENT_NAME', 'push', 'pull_request or workflow_dispatch'],
+  ]) {
+    const environment = { ...valid, [field]: value };
+    const failures = checkoutIdentityFailures(contextManifest, observed, environment).failures;
+    assert.ok(failures.some((failure) => failure.includes(fragment)), `${field}=${value ?? '<missing>'} did not fail for ${fragment}`);
+  }
+  const spoofed = checkoutIdentityFailures(contextManifest, observed, { ...valid, GITHUB_ACTIONS: 'false' });
+  assert.equal(spoofed.mode, 'local');
+  assert.ok(spoofed.failures.some((failure) => failure.includes('context root mismatch')));
 });
 
 test('next-card ranking ignores source order and selects explicit P0 priority', () => {

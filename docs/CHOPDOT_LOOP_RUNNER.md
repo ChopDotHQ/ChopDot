@@ -252,6 +252,31 @@ evaluation follows constant bindings, arrays/joins, concatenation, templates,
 `atob`, and `String.fromCharCode`. The scan also inspects canonical printable
 Base64/URL-safe Base64 so the named encoded and assembled evasions fail.
 
+Ordinary pull-request runs consume GitHub's immutable event payload. If that
+event is stale or GitHub does not attach a fresh run, the bounded fallback is a
+manual **PR validation** dispatch against the exact PR head branch:
+
+```bash
+gh workflow run agent-governance.yml \
+  --ref codex/chopdot-v1-launch \
+  -f dispatch_mode=pr_validation \
+  -f pull_request_number=13
+```
+
+The `PR context` job then reads the live open same-repository PR and requires
+its number, head SHA, head branch, and base/head repository identities to match
+the dispatched branch and commit. All jobs use full history while still
+checking out and asserting the exact SHA. Repo governance and `PR outcome`
+consume the same-run context artifact; the outcome still waits for every
+required exact-head job and receives the same provenance attestation. A tag,
+closed PR, fork, stale head, wrong branch, or invalid PR number fails closed.
+
+Manual PR validation and `release_enforcement` are mutually exclusive dispatch
+modes. PR validation cannot execute the release job. Release enforcement
+requires an empty PR number, the protected `public-testnet-release`
+environment, literal immutable outcome and approval records, and its existing
+readback gates.
+
 ## Commit and graph handoff
 
 ```bash

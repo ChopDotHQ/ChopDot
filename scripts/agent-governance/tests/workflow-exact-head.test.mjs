@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -8,14 +10,60 @@ import { parseWorkflowStructure, validateWorkflow } from '../validate-workflow.m
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const workflow = fs.readFileSync(path.join(root, '.github/workflows/agent-governance.yml'), 'utf8');
 const parsed = parseWorkflowStructure(workflow);
+const contextScript = parsed.jobs['pr-context'].steps.find((step) => step.fields.name === 'Resolve exact pull-request event').run;
 
-test('all seven jobs checkout and assert the exact event candidate', () => {
-  assert.equal(Object.keys(parsed.jobs).length, 7);
+function runContext(overrides = {}) {
+  const runnerTemp = fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-pr-context-'));
+  const bin = path.join(runnerTemp, 'bin');
+  fs.mkdirSync(bin);
+  const gh = path.join(bin, 'gh');
+  fs.writeFileSync(gh, '#!/bin/sh\ncat -- "$FAKE_PR_JSON"\n');
+  fs.chmodSync(gh, 0o755);
+  const eventPath = path.join(runnerTemp, 'github-event.json');
+  const originalEvent = overrides.originalEvent ?? {pull_request: {number: 14, body: 'original'}};
+  fs.writeFileSync(eventPath, `${JSON.stringify(originalEvent)}\n`);
+  const expectedHead = overrides.expectedHead ?? 'a'.repeat(40);
+  const repository = overrides.repository ?? 'Gizmotronn/ChopDot';
+  const branch = overrides.branch ?? 'codex/chopdot-v1-launch';
+  const live = {
+    number: 14,
+    state: 'open',
+    body: 'live body',
+    base: {sha: 'b'.repeat(40), ref: 'main', repo: {full_name: repository}},
+    head: {sha: expectedHead, ref: branch, repo: {full_name: repository}},
+    ...(overrides.live ?? {}),
+  };
+  const livePath = path.join(runnerTemp, 'fake-pr.json');
+  fs.writeFileSync(livePath, `${JSON.stringify(live)}\n`);
+  const script = contextScript.replaceAll('${{ runner.temp }}', runnerTemp);
+  const result = spawnSync('bash', ['-c', script], {
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      PATH: `${bin}:${process.env.PATH}`,
+      FAKE_PR_JSON: livePath,
+      GITHUB_EVENT_PATH: eventPath,
+      EVENT_NAME: overrides.eventName ?? 'workflow_dispatch',
+      DISPATCH_MODE: overrides.mode ?? 'pr_validation',
+      DISPATCH_PR_NUMBER: Object.hasOwn(overrides, 'number') ? String(overrides.number) : '14',
+      SELECTED_REF_NAME: branch,
+      SELECTED_REF_TYPE: overrides.refType ?? 'branch',
+      REPOSITORY: repository,
+      EXPECTED_SHA: expectedHead,
+    },
+  });
+  return {result, runnerTemp, eventPath: path.join(runnerTemp, 'pr-context/pr-event.json'), originalEvent};
+}
+
+test('all eight jobs checkout exact event candidate with full branch history', () => {
+  assert.equal(Object.keys(parsed.jobs).length, 8);
   for (const job of Object.values(parsed.jobs)) {
     assert.equal(job.exact_checkout_refs, 1);
+    assert.equal(job.full_history_checkouts, 1);
     assert.equal(job.exact_head_assertions, 1);
   }
   assert.equal(parsed.expected_sha_expression, true);
+  assert.equal(parsed.expected_branch_expression, true);
 });
 
 test('all third-party actions are pinned to full immutable SHAs', () => {
@@ -32,6 +80,73 @@ test('workflow has least permissions and all stable merge-boundary job names', (
   }
 });
 
+test('workflow dispatch exposes one fail-closed PR mode separate from release mode', () => {
+  assert.deepEqual(parsed.workflow_dispatch_inputs.dispatch_mode, {
+    fields: {
+      description: 'Select exact-PR validation or separately gated release enforcement',
+      required: 'true', default: 'pr_validation', type: 'choice', options: '',
+    },
+    options: ['pr_validation', 'release_enforcement'],
+  });
+  assert.equal(parsed.workflow_dispatch_inputs.pull_request_number.fields.type, 'string');
+  assert.equal(parsed.workflow_dispatch_inputs.pull_request_number.fields.required, 'false');
+  assert.equal(parsed.workflow_dispatch_inputs.enforce_release, undefined);
+  assert.deepEqual(parsed.jobs['pr-context'].permissions, {contents: 'read', 'pull-requests': 'read'});
+  assert.deepEqual(parsed.jobs['repo-governance'].needs, ['pr-context']);
+  assert.equal(parsed.jobs['pr-outcome'].fields.if, "github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'pr_validation')");
+  assert.equal(parsed.jobs['release-enforcement'].fields.if, "github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'release_enforcement' && inputs.pull_request_number == ''");
+});
+
+test('dispatch runtime builds one exact live PR event bound to dispatched head and branch', () => {
+  const value = runContext();
+  assert.equal(value.result.status, 0, value.result.stderr);
+  const event = JSON.parse(fs.readFileSync(value.eventPath));
+  assert.equal(event.pull_request.number, 14);
+  assert.equal(event.pull_request.body, 'live body');
+  assert.equal(event.pull_request.base.sha, 'b'.repeat(40));
+  assert.equal(event.pull_request.head.sha, 'a'.repeat(40));
+  assert.equal(event.pull_request.head.ref, 'codex/chopdot-v1-launch');
+  assert.equal(event.pull_request.head.repo.full_name, 'Gizmotronn/ChopDot');
+});
+
+test('dispatch runtime rejects missing PR number, tags, stale head, wrong branch/repo, and closed PR', () => {
+  const cases = [
+    {number: '', label: 'missing number'},
+    {number: '0', label: 'zero number'},
+    {number: '-1', label: 'negative number'},
+    {number: '14x', label: 'mixed number'},
+    {refType: 'tag', label: 'tag'},
+    {live: {number: 15}, label: 'different PR number'},
+    {live: {head: {sha: 'f'.repeat(40), ref: 'codex/chopdot-v1-launch', repo: {full_name: 'Gizmotronn/ChopDot'}}}, label: 'stale head'},
+    {live: {head: {sha: 'a'.repeat(40), ref: 'wrong-branch', repo: {full_name: 'Gizmotronn/ChopDot'}}}, label: 'wrong branch'},
+    {live: {head: {sha: 'a'.repeat(40), ref: 'codex/chopdot-v1-launch', repo: {full_name: 'fork/ChopDot'}}}, label: 'wrong head repo'},
+    {live: {base: {sha: 'b'.repeat(40), ref: 'main', repo: {full_name: 'other/ChopDot'}}}, label: 'wrong base repo'},
+    {live: {state: 'closed'}, label: 'closed PR'},
+  ];
+  for (const item of cases) {
+    const value = runContext(item);
+    assert.notEqual(value.result.status, 0, item.label);
+    assert.equal(fs.existsSync(value.eventPath), false, item.label);
+  }
+});
+
+test('dispatch release mode rejects a PR number and cannot create a PR event', () => {
+  const rejected = runContext({mode: 'release_enforcement', number: 14});
+  assert.notEqual(rejected.result.status, 0);
+  assert.equal(fs.existsSync(rejected.eventPath), false);
+
+  const explicitRelease = runContext({mode: 'release_enforcement', number: ''});
+  assert.equal(explicitRelease.result.status, 0, explicitRelease.result.stderr);
+  assert.equal(fs.existsSync(explicitRelease.eventPath), false);
+});
+
+test('pull_request runtime preserves the original event path behavior', () => {
+  const originalEvent = {pull_request: {number: 14, body: 'event-time body', base: {sha: 'b'.repeat(40)}, head: {sha: 'a'.repeat(40), ref: 'codex/chopdot-v1-launch'}}};
+  const value = runContext({eventName: 'pull_request', originalEvent, number: ''});
+  assert.equal(value.result.status, 0, value.result.stderr);
+  assert.deepEqual(JSON.parse(fs.readFileSync(value.eventPath)), originalEvent);
+});
+
 test('runner and adapter jobs cover evaluator, redaction, compatibility, and conformance suites', () => {
   assert.match(parsed.jobs['agent-runner'].block, /evaluator-outcome\.test\.mjs/);
   assert.match(parsed.jobs['knowledge-adapters'].block, /knowledge-adapters\.test\.mjs/);
@@ -39,7 +154,7 @@ test('runner and adapter jobs cover evaluator, redaction, compatibility, and con
 });
 
 test('PR outcome depends on all exact-head jobs and uses same-run external artifact ingress', () => {
-  assert.deepEqual(parsed.jobs['pr-outcome'].needs, ['agent-contract', 'agent-runner', 'knowledge-adapters', 'repo-governance', 'application-fast-assurance']);
+  assert.deepEqual(parsed.jobs['pr-outcome'].needs, ['pr-context', 'agent-contract', 'agent-runner', 'knowledge-adapters', 'repo-governance', 'application-fast-assurance']);
   assert.deepEqual(parsed.jobs['pr-outcome'].permissions, {contents: 'read', 'id-token': 'write', attestations: 'write'});
   assert.match(parsed.jobs['pr-outcome'].block, /actions\/download-artifact@[0-9a-f]{40}/);
   assert.match(parsed.jobs['pr-outcome'].block, /generate-pr-outcome\.mjs/);
@@ -77,13 +192,35 @@ test('structural validator rejects a job that checks out a moving ref', () => {
 
 test('release enforcement is manual, environment-gated, and fails through explicit evidence validation', () => {
   assert.match(workflow, /workflow_dispatch:/);
-  assert.match(workflow, /if: github\.event_name == 'workflow_dispatch' && inputs\.enforce_release/);
+  assert.match(workflow, /if: github\.event_name == 'workflow_dispatch' && inputs\.dispatch_mode == 'release_enforcement' && inputs\.pull_request_number == ''/);
   assert.match(workflow, /environment: public-testnet-release/);
   assert.match(workflow, /enforce-release\.mjs/);
   assert.match(workflow, /inputs\.outcome_packet/);
   assert.match(workflow, /inputs\.approval_record/);
   assert.match(parsed.jobs['release-enforcement'].block, /runner\.temp.*release-enforcement.*release-exact-head\.json/);
   assert.doesNotMatch(parsed.jobs['release-enforcement'].block, /CI_GENERATED/);
+});
+
+test('structural validator rejects dispatch paths that can overlap release or omit exact live bindings', () => {
+  const overlap = workflow.replace(
+    "if: github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'release_enforcement' && inputs.pull_request_number == ''",
+    "if: github.event_name == 'workflow_dispatch'",
+  );
+  const overlapResult = validateWorkflow(overlap);
+  assert.equal(overlapResult.ok, false);
+  assert(overlapResult.errors.some((error) => error.includes('mutually exclusive')));
+
+  for (const token of ['=~ ^[1-9][0-9]*$', '[[ "$SELECTED_REF_TYPE" == "branch" ]]', '.number == $number', '.state == "open"', '.head.sha == $head', '.head.ref == $branch', '.base.repo.full_name == $repo']) {
+    const weakened = workflow.replace(token, 'true');
+    const result = validateWorkflow(weakened);
+    assert.equal(result.ok, false, token);
+    assert(result.errors.some((error) => error.includes('fail-closed live binding')), token);
+  }
+
+  const legacy = workflow.replace('      dispatch_mode:', '      enforce_release:\n        required: false\n        type: boolean\n      dispatch_mode:');
+  const legacyResult = validateWorkflow(legacy);
+  assert.equal(legacyResult.ok, false);
+  assert(legacyResult.errors.some((error) => error.includes('Legacy enforce_release')));
 });
 
 test('commented job and assertion decoys do not satisfy structural validation', () => {
@@ -139,7 +276,7 @@ test('arbitrary step conditions cannot silently skip required execution', () => 
 test('broadened workflow or job permissions are rejected', () => {
   const broken = workflow
     .replace('permissions:\n  contents: read', 'permissions:\n  contents: write\n  actions: write')
-    .replace('    runs-on: ubuntu-latest', '    runs-on: ubuntu-latest\n    permissions:\n      pull-requests: write');
+    .replace('  agent-contract:\n    name: Agent contract\n    runs-on: ubuntu-latest', '  agent-contract:\n    name: Agent contract\n    runs-on: ubuntu-latest\n    permissions:\n      pull-requests: write');
   const result = validateWorkflow(broken);
   assert.equal(result.ok, false);
   assert(result.errors.some((error) => error.includes('exactly contents: read')));
