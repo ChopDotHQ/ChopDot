@@ -1,0 +1,31 @@
+{
+  "contract_version": "1.0.0",
+  "run_id": "run_research_example",
+  "created_at": "2026-08-26T12:00:00Z",
+  "created_by": { "id": "example-research-agent", "kind": "agent", "provider": "replaceable", "model": "unspecified" },
+  "loop_profile": { "id": "research", "version": "1.0.0", "path": "governance/agent-system/loops/research.v1.json" },
+  "task": { "title": "Bounded source comparison", "objective": "Answer one declared architecture question from a closed primary-source universe.", "deliverable": "ResearchDecisionPacketV1" },
+  "intent_type": "research",
+  "requirement_ids": ["RES-CITATIONS", "RES-COVERAGE", "RES-UNCERTAINTY", "RES-COUNTEREVIDENCE"],
+  "artifact_contract": { "artifact_types": ["ResearchDecisionPacketV1"], "required_paths": ["artifacts/agentops/outcomes/example/research-packet.json"], "format": "json", "version": "1.0.0", "hash_algorithm": "sha256" },
+  "expected_outcome": {
+    "statement": "Every material factual claim is cited and the declared research universe has complete recorded disposition.",
+    "assertions": [
+      { "id": "RES-CITATIONS", "description": "Material uncited claim count is zero.", "subject": "uncited_material_claim_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "source-only", "hard_fail": true },
+      { "id": "RES-COVERAGE", "description": "Declared universe coverage ratio equals one.", "subject": "coverage_ratio", "operator": "equals", "expected": 1, "minimum_evidence_level": "unit", "hard_fail": true },
+      { "id": "RES-UNCERTAINTY", "description": "Unlabelled inference count is zero.", "subject": "unlabelled_inference_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "source-only", "hard_fail": true },
+      { "id": "RES-COUNTEREVIDENCE", "description": "Counterevidence review is complete.", "subject": "counterevidence_review_complete", "operator": "truthy", "expected": true, "minimum_evidence_level": "source-only", "hard_fail": false }
+    ]
+  },
+  "scope": { "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "branch": "codex/chopdot-v1-launch", "starting_head": "74d81cba8edd7200246b837c5a31ec4f00456409", "starting_tree": "fc000c64fe3eeb0362ac11905d0d6afaadfb74c9", "in_paths": ["docs/research"], "out_paths": ["src"], "dirty_paths": ["docs/superpowers/plans/2026-08-26-portable-agent-outcome-system.md"] },
+  "authority": { "policy_ref": "governance/agent-system/policies/authority-boundaries.json", "allowed_reads": ["repo", "public_primary_sources"], "allowed_writes": ["artifacts/agentops/outcomes/example/research-packet.json"], "allowed_tools": ["shell_read", "web_read"], "external_effects": ["none"], "required_approvals": [] },
+  "context": { "governing_sources": [{ "path": "PRODUCT_TRUTH.md", "sha256": "d5ea94b3b89f682d7b7ab76f580102316c25b0366c52b9b5a851a5ab7162bba6", "authority_level": "product_law", "observed_at": "2026-08-26T12:00:00Z" }], "max_age_seconds": 86400, "conflict_policy": "block_same_level_conflict", "wrong_root_policy": "fail_closed" },
+  "architecture": { "mode": "evaluator_optimizer", "justification": "One creator and a different evaluation run are sufficient for bounded research." },
+  "budgets": { "max_iterations": 2, "max_retries": 1, "max_wall_seconds": 3600, "max_tool_calls": 60, "max_model_cost_usd": 10, "max_external_cost_usd": 0 },
+  "evaluator": { "rubric_refs": ["governance/agent-system/evals/rubrics/research.v1.json"], "deterministic_commands": [{ "id": "RES-VALIDATE", "command": "node scripts/agent-system/cli.mjs validate --json", "cwd": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "expected_exit_code": 0, "timeout_seconds": 60 }], "reviewer_independence": "different_run", "pass_threshold": 0.9, "hard_fail_assertion_ids": ["RES-CITATIONS", "RES-COVERAGE", "RES-UNCERTAINTY"] },
+  "environment_observations": [{ "id": "RES-SOURCES", "surface": "declared primary-source universe", "required_readback": ["source identities", "digests", "access status"], "minimum_evidence_level": "source-only" }],
+  "failure_outcome": { "required_fields": ["unsupported_claims", "missing_source_classes", "inaccessible_evidence", "conflicts", "smallest_decision-changing_research_step"], "same_blocker_limit": 2, "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_policy": { "port_version": "1.0.0", "preflight_required": true, "record_outcome": true, "verify_recall": true, "degraded_context_allowed": false, "disallowed_fallbacks": ["cross_root", "uncited"] },
+  "privacy_policy": { "prohibited_content": ["credentials", "personal data", "private prompts"], "redaction_required": true, "retention": "promote_redacted_outcome", "export_policy": "redacted_only" }
+}

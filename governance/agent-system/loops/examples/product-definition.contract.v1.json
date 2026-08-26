@@ -1,0 +1,28 @@
+{
+  "contract_version": "1.0.0",
+  "run_id": "run_product_definition_example",
+  "created_at": "2026-08-26T12:00:00Z",
+  "created_by": { "id": "example-product-agent", "kind": "agent", "provider": "replaceable", "model": "unspecified" },
+  "loop_profile": { "id": "product-definition", "version": "1.0.0", "path": "governance/agent-system/loops/product-definition.v1.json" },
+  "task": { "title": "Define one product journey", "objective": "Create a bounded product definition with one action, scenarios, authority, failures, and proof.", "deliverable": "ProductDefinitionPacketV1" },
+  "intent_type": "product_definition",
+  "requirement_ids": ["PROD-SCORE", "PROD-LAW", "PROD-TRACE", "PROD-FAILURE"],
+  "artifact_contract": { "artifact_types": ["ProductDefinitionPacketV1"], "required_paths": ["artifacts/agentops/outcomes/example/product-definition.json"], "format": "json", "version": "1.0.0", "hash_algorithm": "sha256" },
+  "expected_outcome": { "statement": "The product definition scores at least eight, preserves product law, and maps every requirement to a scenario and proof.", "assertions": [
+    { "id": "PROD-SCORE", "description": "Product score is at least eight.", "subject": "product_score", "operator": "count_gte", "expected": 8, "minimum_evidence_level": "unit", "hard_fail": true },
+    { "id": "PROD-LAW", "description": "Product law conflict count is zero.", "subject": "product_law_conflict_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "source-only", "hard_fail": true },
+    { "id": "PROD-TRACE", "description": "Unmapped requirement count is zero.", "subject": "unmapped_requirement_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "unit", "hard_fail": true },
+    { "id": "PROD-FAILURE", "description": "User-visible failure path is complete.", "subject": "failure_path_complete", "operator": "truthy", "expected": true, "minimum_evidence_level": "source-only", "hard_fail": true }
+  ] },
+  "scope": { "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "branch": "codex/chopdot-v1-launch", "starting_head": "74d81cba8edd7200246b837c5a31ec4f00456409", "starting_tree": "fc000c64fe3eeb0362ac11905d0d6afaadfb74c9", "in_paths": ["product"], "out_paths": ["src"], "dirty_paths": ["docs/superpowers/plans/2026-08-26-portable-agent-outcome-system.md"] },
+  "authority": { "policy_ref": "governance/agent-system/policies/authority-boundaries.json", "allowed_reads": ["product law", "Product Cockpit"], "allowed_writes": ["product card candidate", "evidence packet"], "allowed_tools": ["shell_read", "product_validator"], "external_effects": ["none"], "required_approvals": ["founder approval for product-law or strategy changes"] },
+  "context": { "governing_sources": [{ "path": "PRODUCT_TRUTH.md", "sha256": "d5ea94b3b89f682d7b7ab76f580102316c25b0366c52b9b5a851a5ab7162bba6", "authority_level": "product_law", "observed_at": "2026-08-26T12:00:00Z" }, { "path": "product/cards.md", "sha256": "8b3f1de935d2e7f241c3f8c2bc7be4df67e5f3127c290b39c043f64dc01b6c2b", "authority_level": "decision", "observed_at": "2026-08-26T12:00:00Z" }], "max_age_seconds": 86400, "conflict_policy": "block_same_level_conflict", "wrong_root_policy": "fail_closed" },
+  "architecture": { "mode": "evaluator_optimizer", "justification": "A product author and independent product evaluator are adequate for one journey definition." },
+  "budgets": { "max_iterations": 2, "max_retries": 1, "max_wall_seconds": 3600, "max_tool_calls": 50, "max_model_cost_usd": 10, "max_external_cost_usd": 0 },
+  "evaluator": { "rubric_refs": ["governance/agent-system/evals/rubrics/product-definition.v1.json"], "deterministic_commands": [{ "id": "PROD-VALIDATE", "command": "npm run product:validate", "cwd": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "expected_exit_code": 0, "timeout_seconds": 120 }], "reviewer_independence": "different_actor", "pass_threshold": 0.9, "hard_fail_assertion_ids": ["PROD-SCORE", "PROD-LAW", "PROD-TRACE", "PROD-FAILURE"] },
+  "environment_observations": [{ "id": "PROD-COCKPIT", "surface": "Product Cockpit source and generated read model", "required_readback": ["active card", "score", "validation result"], "minimum_evidence_level": "exact-candidate" }],
+  "failure_outcome": { "required_fields": ["rejected_assumptions", "unresolved_product_decision", "missing_failure_path", "founder_decision_required"], "same_blocker_limit": 2, "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_policy": { "port_version": "1.0.0", "preflight_required": true, "record_outcome": true, "verify_recall": true, "degraded_context_allowed": false, "disallowed_fallbacks": ["cross_root", "stale_product_context"] },
+  "privacy_policy": { "prohibited_content": ["credentials", "participant private data"], "redaction_required": true, "retention": "promote_redacted_outcome", "export_policy": "redacted_only" }
+}

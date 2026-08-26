@@ -62,7 +62,7 @@ async function render() {
 **Kind:** read-model
 **Status:** generated
 **Owner:** wiki-generator
-**Last reviewed:** 2026-08-24
+**Last reviewed:** 2026-08-26
 **Applies to:** chopdot-v1-launch
 **Authority:** navigation only; source wiki pages own their claims
 
@@ -75,7 +75,7 @@ ${pages.map((file) => `- [${path.relative(wikiRoot, file).replace(/\.md$/, '')}]
 **Kind:** read-model
 **Status:** generated
 **Owner:** wiki-generator
-**Last reviewed:** 2026-08-24
+**Last reviewed:** 2026-08-26
 **Applies to:** chopdot-v1-launch
 **Authority:** navigation only; it cannot override law, Cockpit source, exact source evidence, release readback, or cited recall
 
@@ -90,7 +90,7 @@ Generated read model. It is navigation, not product authority.
 - Product loop: Catch -> Management -> Payout -> History
 - First product action: Scan a receipt
 - Authority: participant-held signed events
-- Release boundary: DotNS, hosts, chains, caches, and KG are indexes or rails, never money or membership authority
+- Release boundary: DotNS, hosts, chains, caches, and knowledge backends are indexes or rails, never money or membership authority
 
 Read in order:
 
@@ -102,6 +102,7 @@ Read in order:
 6. [Architecture](01-product-truth/participant-held-architecture.md)
 7. [One Chop Core](03-state-models/one-chop-core.md)
 8. [Release checklist](07-quality/release-checklist.md)
+9. [Portable agent outcomes](07-quality/portable-agent-outcomes.md)
 `;
   return { index, context, count: pages.length };
 }

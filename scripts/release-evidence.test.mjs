@@ -14,16 +14,22 @@ import {
   DIRECT_OWNER_MANIFEST_NAME,
   DIRECT_OWNER_RUNTIME_NAME,
   LOCKED_MANIFEST_PUBLISH_MODULE,
+  assertAllowedReleaseFiles,
+  assertNoAgentRuntimeContent,
+  assertNoAgentRuntimeFiles,
+  assertViteAssetProvenance,
   assertSuccessfulExtrinsic,
   buildInstalledDeploymentRuntimeManifest,
   createDirectOwnerCliSource,
   createDirectOwnerManifestPublishSource,
+  createReleaseOutcomeReceipt,
   inspectCar,
   parseDeployLog,
   safeRepoPath,
   sha256,
   verifyReleaseDirectory,
   verifyLockedDeploymentCli,
+  verifyGithubOutcomeAttestation,
   withIsolatedDeploymentRuntime,
 } from './lib/release-evidence.mjs';
 import {parseLockedDeployArgs, parseWhoamiAddress, validateLockedDeployInvocation} from './lib/locked-deploy-driver.mjs';
@@ -78,6 +84,130 @@ const expectedLog = {
   directoryAggregateSha256: header.source.directory.aggregateSha256,
   directoryFiles: header.source.directory.files,
 };
+
+test('release boundary rejects local agent ledgers and unredacted traces', () => {
+  assert.equal(assertNoAgentRuntimeFiles([{path: 'assets/app.js'}, {path: 'runtime-security.json'}]), true);
+  for (const rejected of [
+    'output/agent-runs/run_001/events.jsonl',
+    'output/working_memory/checkpoint.json',
+    'evidence/unredacted/private.json',
+    'debug/raw-trace/run.json',
+    'debug/prompt-transcript/input.txt',
+  ]) assert.throws(() => assertNoAgentRuntimeFiles([{path: rejected}]), /local agent runtime material/u);
+  assert.equal(assertAllowedReleaseFiles([
+    {path: 'index.html'},
+    {path: 'assets/index-deadbeef.js'},
+    {path: 'assets/index-deadbeef.css'},
+    {path: 'agent-outcome-receipt.json'},
+  ]), true);
+  assert.throws(() => assertNoAgentRuntimeFiles([{path: 'assets/agent-session-deadbeef.js'}]), /local agent runtime material/u);
+  for (const rejected of ['assets/context.json', 'assets/transcript.json', 'assets/plain.js']) {
+    assert.throws(() => assertAllowedReleaseFiles([{path: rejected}]), /outside the build allowlist/u);
+  }
+  assert.equal(assertNoAgentRuntimeContent([
+    {path: 'assets/index-deadbeef.js', bytes: Buffer.from('console.log("safe release");')},
+  ]), true);
+  for (const [file, value] of [
+    ['assets/index-deadbeef.js', 'const source = "/Users/operator/private/outcome.json";'],
+    ['assets/index-deadbeef.js', 'const transcript = "output/agent-runs/run_001";'],
+    ['assets/index-deadbeef.js', 'const token = "gho_123456789012345678901234567890";'],
+    ['assets/telemetry-deadbeef.js', 'const systemPrompt = "hidden"; const toolCall = {};'],
+    ['assets/telemetry-deadbeef.js', 'const operator = "operator@private.example";'],
+    ['assets/sessionData-12345678.js', 'const conversationHistory = []; const privateInstruction = "hidden";'],
+    ['assets/sessionData-12345678.js', 'const payload = {convo:["private"],instructions:["hidden"]};'],
+    ['assets/sessionData-12345678.js', 'const a = "system" + "Prompt"; const b = "operator" + "@private.example";'],
+    ['assets/sessionData-12345678.js', `const encoded = "${Buffer.from('systemPrompt=hidden;operator@private.example').toString('base64')}";`],
+    ['assets/sessionData-12345678.js', 'const a = ["system", "Prompt"].join(""); const b = ["operator", "@private.example"].join("");'],
+    ['assets/sessionData-12345678.js', 'const a = "system".concat("Prompt"); const b = String.fromCharCode(111,112,101,114,97,116,111,114,64,112,114,105,118,97,116,101,46,101,120,97,109,112,108,101);'],
+  ]) assert.throws(() => assertNoAgentRuntimeContent([{path: file, bytes: Buffer.from(value)}]), /private agent\/runtime content/u);
+});
+
+test('release assets must equal the exact Vite-emitted build graph', () => {
+  const manifest = {
+    'index.html': {
+      file: 'assets/index-deadbeef.js',
+      css: ['assets/index-feedface.css'],
+      isEntry: true,
+      src: 'index.html',
+    },
+    'lazy.ts': {file: 'assets/lazy-cafebabe.js', isDynamicEntry: true, src: 'lazy.ts'},
+  };
+  const entries = [
+    {path: 'index.html'},
+    {path: 'assets/index-deadbeef.js'},
+    {path: 'assets/index-feedface.css'},
+    {path: 'assets/lazy-cafebabe.js'},
+  ];
+  assert.deepEqual(assertViteAssetProvenance(manifest, entries), [
+    'assets/index-deadbeef.js',
+    'assets/index-feedface.css',
+    'assets/lazy-cafebabe.js',
+  ]);
+  assert.throws(
+    () => assertViteAssetProvenance(manifest, [...entries, {path: 'assets/telemetry-12345678.js'}]),
+    /differ from the exact Vite build graph/u,
+  );
+  assert.throws(
+    () => assertViteAssetProvenance(manifest, entries.filter((entry) => entry.path !== 'assets/lazy-cafebabe.js')),
+    /differ from the exact Vite build graph/u,
+  );
+  assert.throws(
+    () => assertViteAssetProvenance({'index.html': {file: 'assets/plain.js', isEntry: true}}, [{path: 'assets/plain.js'}]),
+    /invalid index\.html\.file/u,
+  );
+});
+
+test('release outcome trust requires exact GitHub workflow attestation and emits only a minimal public receipt', () => {
+  const calls = [];
+  const verification = verifyGithubOutcomeAttestation({
+    outcomePath: '/tmp/outcome.json',
+    bundlePath: '/tmp/outcome-attestation.jsonl',
+    sourceCommit: '12'.repeat(20),
+    execute(command, args) {
+      calls.push({command, args});
+      return JSON.stringify([{verificationResult: {statement: {subject: [{digest: {sha256: 'ab'.repeat(32)}}]}}}]);
+    },
+  });
+  assert.equal(verification.verificationCount, 1);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].command, 'gh');
+  assert.deepEqual(calls[0].args.slice(0, 3), ['attestation', 'verify', '/tmp/outcome.json']);
+  for (const required of [
+    'ChopDotHQ/ChopDot',
+    'github.com/ChopDotHQ/ChopDot/.github/workflows/agent-governance.yml',
+    'https://slsa.dev/provenance/v1',
+    'https://token.actions.githubusercontent.com',
+    '12'.repeat(20),
+    '--deny-self-hosted-runners',
+  ]) assert.equal(calls[0].args.includes(required), true, `missing attestation policy ${required}`);
+
+  const outcome = {
+    root: '/Users/operator/private/worktree', branch: 'codex/chopdot-v1-launch',
+    ending_head: '12'.repeat(20), ending_tree: '34'.repeat(20), run_id: 'run_release_fixture_001',
+    packet_digest: '56'.repeat(32), terminal_state: 'succeeded',
+    requirements: [{requirement_id: 'PUBLIC', status: 'accepted', evaluation_ids: ['evaluation_release_fixture']}],
+    effects: [{effect_id: 'effect_release_fixture', state: 'verified'}],
+    evaluation_summary: {independent_review_satisfied: true},
+    limitations: ['private operator note that must not ship'],
+  };
+  const receipt = createReleaseOutcomeReceipt({
+    outcome,
+    outcomeBytes: Buffer.from(JSON.stringify(outcome)),
+    bundleBytes: Buffer.from('signed-bundle'),
+    commit: outcome.ending_head,
+    tree: outcome.ending_tree,
+    branch: outcome.branch,
+    verificationCount: verification.verificationCount,
+  });
+  const publicBytes = JSON.stringify(receipt);
+  assert.equal(receipt.schema, 'chopdot.release-agent-outcome-receipt.v1');
+  assert.equal(receipt.outcome.requirements.accepted, 1);
+  assert.equal(receipt.outcome.effects.verified, 1);
+  assert.equal(receipt.redaction.rawOutcomeEmbedded, false);
+  assert.doesNotMatch(publicBytes, /\/Users\/operator/u);
+  assert.doesNotMatch(publicBytes, /private operator note/u);
+  assert.doesNotMatch(publicBytes, /limitations/u);
+});
 
 test('the deployment package is exact, local, versioned, and integrity-pinned', async () => {
   const evidence = await verifyLockedDeploymentCli(root, {verifyRuntime: false});

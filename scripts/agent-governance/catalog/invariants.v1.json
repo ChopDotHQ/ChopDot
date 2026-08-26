@@ -1,0 +1,144 @@
+{
+  "catalog_version": "1.0.0",
+  "catalog_id": "chopdot-repository-invariants-v1",
+  "authority": "Evaluation assertions only. This catalog cannot select product priority or create participant, product-law, or release authority.",
+  "product_law": "PRODUCT_TRUTH.md",
+  "evidence_policy": "governance/agent-system/policies/evidence-levels.json",
+  "invariants": [
+    {
+      "id": "SETTLEMENT-INV-001",
+      "title": "Only the receiver closes manual or external payment",
+      "severity": "critical",
+      "source": "PRODUCT_TRUTH.md",
+      "source_anchor": "Manual or external payments **always** require receiver confirmation.",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["proof:full-loop", "test:host-wallet", "test:guest-link"]
+    },
+    {
+      "id": "MONEY-INV-001",
+      "title": "Canonical money is exact and conserved",
+      "severity": "critical",
+      "source": "docs/wiki/03-state-models/one-chop-core.md",
+      "source_anchor": "MoneyV1` stores bounded integer minor units",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["test:node"]
+    },
+    {
+      "id": "DATA-AUTHORITY-INV-001",
+      "title": "Participant signatures define authority",
+      "severity": "critical",
+      "source": "PRODUCT_TRUTH.md",
+      "source_anchor": "Authority comes from signatures",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["test:signed-membership", "test:gate0-foundation"]
+    },
+    {
+      "id": "FAILURE-INV-001",
+      "title": "Failure cannot masquerade as financial success",
+      "severity": "critical",
+      "source": "PAYMENT_INTENT_CONTRACT.md",
+      "source_anchor": "Mina's net position remains unchanged",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["test:guest-link", "test:host-wallet"]
+    },
+    {
+      "id": "IDENTITY-INV-001",
+      "title": "Recipient authority is explicitly verified",
+      "severity": "critical",
+      "source": "product/decision-contracts.md",
+      "source_anchor": "Contact verification never grants group membership.",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["test:signed-membership"]
+    },
+    {
+      "id": "RECOVERY-INV-001",
+      "title": "Recovery locates state but does not grant authority",
+      "severity": "critical",
+      "source": "docs/adr/0002-recovery-head-index.md",
+      "source_anchor": "It deliberately has no admin",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["test:recovery-contract"]
+    },
+    {
+      "id": "PRIVACY-INV-001",
+      "title": "Public systems never receive plaintext personal expense data",
+      "severity": "critical",
+      "source": "SECURITY_FOUNDATION.md",
+      "source_anchor": "Do not ship secrets in the browser bundle",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["security:baseline"]
+    },
+    {
+      "id": "PLATFORM-INV-001",
+      "title": "Core authority remains provider-neutral",
+      "severity": "high",
+      "source": "docs/adr/0005-portable-agent-outcome-system.md",
+      "source_anchor": "provider-neutral Knowledge Context Port",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["agent:validate"]
+    },
+    {
+      "id": "MIGRATION-INV-001",
+      "title": "Persisted financial state migrates safely",
+      "severity": "high",
+      "source": "docs/superpowers/plans/2026-08-20-one-chopdot-v1-launch.md",
+      "source_anchor": "schemas SHALL use migrations",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["test:node"]
+    },
+    {
+      "id": "UX-INV-001",
+      "title": "Normal users never meet protocol plumbing",
+      "severity": "high",
+      "source": "PRODUCT_TRUTH.md",
+      "source_anchor": "Normal UI shows no adapter",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["test:host-ui"]
+    },
+    {
+      "id": "ACCESSIBILITY-INV-001",
+      "title": "Core money journeys are operable on mobile and assistive technology",
+      "severity": "high",
+      "source": "docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
+      "source_anchor": "screen-reader names",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["test:host-ui"]
+    },
+    {
+      "id": "NETWORK-INV-001",
+      "title": "Network and asset provenance is exact",
+      "severity": "critical",
+      "source": "docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
+      "source_anchor": "Exact payer/receiver/amount/currency/network/finality",
+      "minimum_evidence": "real-host-chain",
+      "automated_checks": ["proof:host-capabilities", "verify:dot-host"]
+    },
+    {
+      "id": "PROVENANCE-INV-001",
+      "title": "Release proof binds the exact immutable candidate",
+      "severity": "critical",
+      "source": "docs/adr/0003-immutable-testnet-promotion.md",
+      "source_anchor": "Build once from a clean commit.",
+      "minimum_evidence": "release",
+      "automated_checks": ["build:dot-host", "e2e:dot-host-preview", "verify:dot-host"]
+    },
+    {
+      "id": "CUSTODY-GUARD-001",
+      "title": "Custody cannot be introduced incidentally",
+      "severity": "critical",
+      "source": "PRODUCT_TRUTH.md",
+      "source_anchor": "Custody / escrow",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": []
+    },
+    {
+      "id": "EVIDENCE-INV-001",
+      "title": "Claims never exceed their evidence",
+      "severity": "critical",
+      "source": "governance/agent-system/policies/evidence-levels.json",
+      "source_anchor": "A higher rank is scoped to its assertions and exact candidate",
+      "minimum_evidence": "exact-candidate",
+      "automated_checks": ["agent:validate"]
+    }
+  ]
+}

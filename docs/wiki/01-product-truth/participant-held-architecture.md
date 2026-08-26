@@ -12,9 +12,10 @@ ChopDot has no operated authority database. Canonical truth is an append-only
 exact `MoneyV1` values. Encrypted local storage is a replayable projection.
 
 Delivery services, Statement Store, Bulletin, contracts, chains, DotNS, IPFS,
-and KGv2 may carry, locate, or index evidence. None grants membership, moves
-money, confirms receipt, or rewrites the log. Contact verification proves a
-bounded contact ceremony only; an organizer-signed grant creates membership.
+and knowledge adapters may carry, locate, or index evidence. None grants
+membership, moves money, confirms receipt, or rewrites the log. Contact
+verification proves a bounded contact ceremony only; an organizer-signed grant
+creates membership.
 
 This is the positive launch architecture. The absence of Supabase or another
 private backend follows from the authority model; it is not the product pitch.

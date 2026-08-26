@@ -1,0 +1,29 @@
+{
+  "contract_version": "1.0.0",
+  "run_id": "run_security_authority_example",
+  "created_at": "2026-08-26T12:00:00Z",
+  "created_by": { "id": "example-security-reviewer", "kind": "agent", "provider": "replaceable", "model": "unspecified" },
+  "loop_profile": { "id": "security-authority", "version": "1.0.0", "path": "governance/agent-system/loops/security-authority.v1.json" },
+  "task": { "title": "Review one authority-critical patch", "objective": "Independently map authority changes and reject unresolved critical or high findings.", "deliverable": "SecurityAuthorityReviewV1" },
+  "intent_type": "security_authority",
+  "requirement_ids": ["SEC-CRITICAL", "SEC-HIGH", "SEC-AUTHORITY", "SEC-INDEPENDENCE", "SEC-EVIDENCE"],
+  "artifact_contract": { "artifact_types": ["SecurityAuthorityReviewV1", "FindingPacketV1"], "required_paths": ["artifacts/agentops/outcomes/example/security-review.json"], "format": "json", "version": "1.0.0", "hash_algorithm": "sha256" },
+  "expected_outcome": { "statement": "The affected critical boundaries have zero unresolved critical or high findings and are accepted by a different actor.", "assertions": [
+    { "id": "SEC-CRITICAL", "description": "Unresolved critical finding count is zero.", "subject": "unresolved_critical_finding_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+    { "id": "SEC-HIGH", "description": "Unresolved high finding count is zero.", "subject": "unresolved_high_finding_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+    { "id": "SEC-AUTHORITY", "description": "Unmapped authority delta count is zero.", "subject": "unmapped_authority_delta_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "source-only", "hard_fail": true },
+    { "id": "SEC-INDEPENDENCE", "description": "Reviewing actor is not the patch author.", "subject": "reviewer_is_author", "operator": "falsy", "expected": false, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+    { "id": "SEC-EVIDENCE", "description": "Unbounded security claim count is zero.", "subject": "unbounded_security_claim_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true }
+  ] },
+  "scope": { "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "branch": "codex/chopdot-v1-launch", "starting_head": "74d81cba8edd7200246b837c5a31ec4f00456409", "starting_tree": "fc000c64fe3eeb0362ac11905d0d6afaadfb74c9", "in_paths": ["governance/agent-system"], "out_paths": ["src"], "dirty_paths": ["docs/superpowers/plans/2026-08-26-portable-agent-outcome-system.md"] },
+  "authority": { "policy_ref": "governance/agent-system/policies/authority-boundaries.json", "allowed_reads": ["repo", "candidate evidence"], "allowed_writes": ["finding packet", "review verdict"], "allowed_tools": ["shell_read", "security_scanner"], "external_effects": ["none"], "required_approvals": ["external probing vulnerability publication or risk acceptance"] },
+  "context": { "governing_sources": [{ "path": "PRODUCT_TRUTH.md", "sha256": "d5ea94b3b89f682d7b7ab76f580102316c25b0366c52b9b5a851a5ab7162bba6", "authority_level": "product_law", "observed_at": "2026-08-26T12:00:00Z" }], "max_age_seconds": 86400, "conflict_policy": "block_same_level_conflict", "wrong_root_policy": "fail_closed" },
+  "architecture": { "mode": "single_agent", "justification": "One independent security reviewer is sufficient for this bounded read-only review." },
+  "budgets": { "max_iterations": 3, "max_retries": 2, "max_wall_seconds": 7200, "max_tool_calls": 100, "max_model_cost_usd": 20, "max_external_cost_usd": 0 },
+  "evaluator": { "rubric_refs": ["governance/agent-system/evals/rubrics/security-authority.v1.json"], "deterministic_commands": [{ "id": "SEC-SCAN", "command": "npm run security:baseline", "cwd": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "expected_exit_code": 0, "timeout_seconds": 600 }], "reviewer_independence": "different_actor", "pass_threshold": 1, "hard_fail_assertion_ids": ["SEC-CRITICAL", "SEC-HIGH", "SEC-AUTHORITY", "SEC-INDEPENDENCE", "SEC-EVIDENCE"] },
+  "environment_observations": [{ "id": "SEC-CANDIDATE", "surface": "exact affected candidate and trust boundaries", "required_readback": ["candidate digest", "authority delta", "finding counts"], "minimum_evidence_level": "exact-candidate" }],
+  "failure_outcome": { "required_fields": ["finding_ids", "affected_assets_actors_files", "reproduction", "impact", "required_remediation", "blocked_promotion_state"], "same_blocker_limit": 2, "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_policy": { "port_version": "1.0.0", "preflight_required": true, "record_outcome": true, "verify_recall": true, "degraded_context_allowed": false, "disallowed_fallbacks": ["cross_root", "uncited"] },
+  "privacy_policy": { "prohibited_content": ["credentials", "exploit secrets", "private participant data"], "redaction_required": true, "retention": "promote_redacted_outcome", "export_policy": "operator_approved" }
+}

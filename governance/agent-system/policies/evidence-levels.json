@@ -1,0 +1,26 @@
+{
+  "policy_version": "1.0.0",
+  "policy_id": "agent-evidence-levels-v1",
+  "kind": "evidence_level_policy",
+  "source_of_vocabulary": "governance/agent-system/taxonomy.json#evidenceLevels",
+  "ordered_levels": [
+    { "id": "source-only", "rank": 0, "promotable": true, "meaning": "Implementation or documentation exists; no execution proof.", "required_fields": ["source_path", "source_sha256", "root", "branch", "commit", "observed_at"] },
+    { "id": "unit", "rank": 1, "promotable": true, "meaning": "Focused deterministic or automated test executed.", "required_fields": ["command", "cwd", "candidate_digest", "exit_code", "exact_counts", "output_digest"] },
+    { "id": "simulated-integration", "rank": 2, "promotable": true, "meaning": "Integrated flow executed against local or simulated dependencies.", "required_fields": ["integration_surface", "dependency_identities", "candidate_digest", "exit_code", "exact_counts", "output_digest"] },
+    { "id": "simulated-host", "rank": 3, "promotable": true, "meaning": "Flow executed inside a host simulator; not real-host proof.", "required_fields": ["host_simulator", "host_simulator_version", "candidate_digest", "journey_result", "readback_digest"] },
+    { "id": "exact-candidate", "rank": 4, "promotable": true, "meaning": "Checks executed against the exact clean candidate commit, tree, and dependency locks.", "required_fields": ["root", "branch", "commit", "tree", "clean", "lockfile_digests", "commands", "exact_counts"] },
+    { "id": "real-host-chain", "rank": 5, "promotable": true, "meaning": "Flow executed on the named real host, network, or chain with exact provenance and required finality.", "required_fields": ["host", "network_or_chain", "genesis_or_environment_id", "candidate_digest", "finality", "readback_digest"] },
+    { "id": "live-user", "rank": 6, "promotable": true, "meaning": "Observed participant journey with consent and redacted evidence.", "required_fields": ["participant_count", "consent_record", "journey_ids", "candidate_digest", "redacted_evidence", "verdict"] },
+    { "id": "release", "rank": 7, "promotable": true, "meaning": "Published artifact is cryptographically tied to the exact candidate and deployment record.", "required_fields": ["commit", "tree", "build_id", "artifact_digest", "content_identity", "deployment_record", "live_readback"] },
+    { "id": "local-blocked", "rank": null, "promotable": false, "meaning": "Useful local evidence of an unresolved blocker; it cannot promote state.", "required_fields": ["blocker_identity", "local_observations", "checks_exhausted", "safe_next_action"] }
+  ],
+  "verification_stages": ["creator_check", "deterministic_evaluator", "independent_evaluator", "operator_observation"],
+  "promotion_rules": [
+    "Evidence may use only an ID declared by the accepted taxonomy.",
+    "local-blocked never promotes an outcome regardless of other scores.",
+    "A higher rank is scoped to its assertions and exact candidate; it does not upgrade unrelated claims.",
+    "Reviewer independence is recorded under evaluator independence, not encoded as an evidence level.",
+    "Knowledge recall cannot promote evidence.",
+    "User proof requires live-user evidence and cannot be inferred from real-host-chain or release evidence."
+  ]
+}

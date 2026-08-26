@@ -11,6 +11,7 @@ import {UnixFS} from 'ipfs-unixfs';
 import {CID} from 'multiformats/cid';
 import {sha256 as multiformatsSha256} from 'multiformats/hashes/sha2';
 import {createWsClient} from 'polkadot-api/ws';
+import {parseAst} from 'rollup/parseAst';
 
 export const LOCKED_PAD = Object.freeze({
   package: '@polkadot-community-foundation/polkadot-app-deploy',
@@ -29,6 +30,12 @@ export const LOCKED_STORAGE_POOL_ACCOUNT_INDEX = 2;
 export const DIRECT_OWNER_RUNTIME_NAME = 'chopdot-direct-owner-runtime.mjs';
 export const DIRECT_OWNER_MANIFEST_NAME = 'chopdot-direct-owner-publish.mjs';
 export const LOCKED_MANIFEST_PUBLISH_MODULE = 'node_modules/@polkadot-community-foundation/polkadot-app-deploy/dist/chunk-VLRVCVNH.js';
+export const RELEASE_OUTCOME_ATTESTATION_POLICY = Object.freeze({
+  repository: 'ChopDotHQ/ChopDot',
+  signerWorkflow: 'github.com/ChopDotHQ/ChopDot/.github/workflows/agent-governance.yml',
+  predicateType: 'https://slsa.dev/provenance/v1',
+  issuer: 'https://token.actions.githubusercontent.com',
+});
 
 export function createDirectOwnerCliSource(source) {
   const importNeedle = 'import * as readline from "readline";';
@@ -193,6 +200,277 @@ async function computeBulletinStorageCid(chunks) {
 
 export function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+export function assertNoAgentRuntimeFiles(entries) {
+  const forbidden = [
+    /(?:^|\/)agent[-_]session(?:[./_-]|$)/u,
+    /(?:^|\/)agent-runs(?:\/|$)/u,
+    /(?:^|\/)working[_-]memory(?:\/|$)/u,
+    /(?:^|\/)run-ledger(?:\/|$)/u,
+    /(?:^|\/)prompt-transcript(?:\/|$)/u,
+    /(?:^|\/)raw-trace(?:\/|$)/u,
+    /(?:^|\/)unredacted(?:\/|$)/u,
+    /\.jsonl$/u,
+  ];
+  const rejected = entries
+    .map((entry) => String(typeof entry === 'string' ? entry : entry?.path ?? ''))
+    .filter((file) => forbidden.some((pattern) => pattern.test(file.toLowerCase())));
+  if (rejected.length) throw new Error(`Release candidate contains local agent runtime material: ${rejected.join(', ')}`);
+  return true;
+}
+
+export function assertNoAgentRuntimeContent(entries) {
+  const forbidden = [
+    {name: 'macOS absolute user path', pattern: /\/Users\/[A-Za-z0-9._-]+\//u},
+    {name: 'Linux runner absolute user path', pattern: /\/home\/(?:runner|[A-Za-z0-9._-]+)\//u},
+    {name: 'agent run ledger', pattern: /(?:output\/agent-runs|run-ledger|working[_-]memory)/iu},
+    {name: 'private agent transcript', pattern: /(?:prompt[-_ ]transcript|raw[-_ ]trace|unredacted[-_ ](?:prompt|trace|receipt))/iu},
+    {name: 'agent prompt or tool-call payload', pattern: /(?:system[-_ ]?prompt|tool[-_ ]?call|private[-_ ]?(?:instruction|prompt))/iu, assetOnly: true},
+    {name: 'conversation or session payload', pattern: /(?:conversation[-_ ]?(?:history|transcript)|session[-_ ]?data)/iu, assetOnly: true},
+    {name: 'structured conversation or instruction payload', pattern: /(?:^|[,{;])\s*(?:["']?(?:convo|conversation|messages|instructions|prompt)["']?)\s*:/iu, assetOnly: true},
+    {name: 'structured agent role payload', pattern: /["']role["']\s*:\s*["'](?:system|assistant|tool)["']/iu, assetOnly: true},
+    {name: 'embedded email address', pattern: /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/iu, assetOnly: true},
+    {name: 'private key material', pattern: /-----BEGIN (?:OPENSSH|RSA|EC|DSA) PRIVATE KEY-----/u},
+    {name: 'GitHub credential', pattern: /(?:gh[opsu]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,})/u},
+  ];
+  const extractStaticStrings = (source) => {
+    let ast;
+    try {
+      ast = parseAst(source, {allowReturnOutsideFunction: true});
+    } catch (error) {
+      throw new Error(`Release JavaScript cannot be parsed for static privacy analysis: ${error.message}`);
+    }
+    const bindings = new Map();
+    const nodes = [];
+    const visit = (node) => {
+      if (!node || typeof node !== 'object') return;
+      if (typeof node.type === 'string') {
+        nodes.push(node);
+        if (node.type === 'VariableDeclarator' && node.id?.type === 'Identifier' && node.init) bindings.set(node.id.name, node.init);
+      }
+      for (const [key, value] of Object.entries(node)) {
+        if (['start', 'end', 'loc'].includes(key)) continue;
+        if (Array.isArray(value)) value.forEach(visit);
+        else if (value && typeof value === 'object') visit(value);
+      }
+    };
+    visit(ast);
+    const evaluate = (node, seen = new Set(), depth = 0) => {
+      if (!node || depth > 24) return undefined;
+      if (node.type === 'Literal' && ['string', 'number'].includes(typeof node.value)) return node.value;
+      if (node.type === 'Identifier' && bindings.has(node.name) && !seen.has(node.name)) {
+        return evaluate(bindings.get(node.name), new Set([...seen, node.name]), depth + 1);
+      }
+      if (node.type === 'ArrayExpression') {
+        const values = node.elements.map((entry) => evaluate(entry, seen, depth + 1));
+        return values.every((value) => ['string', 'number'].includes(typeof value)) ? values : undefined;
+      }
+      if (node.type === 'TemplateLiteral') {
+        const expressions = node.expressions.map((entry) => evaluate(entry, seen, depth + 1));
+        if (expressions.some((value) => !['string', 'number'].includes(typeof value))) return undefined;
+        return node.quasis.map((quasi, index) => `${quasi.value?.cooked ?? quasi.value?.raw ?? ''}${index < expressions.length ? expressions[index] : ''}`).join('');
+      }
+      if (node.type === 'BinaryExpression' && node.operator === '+') {
+        const left = evaluate(node.left, seen, depth + 1);
+        const right = evaluate(node.right, seen, depth + 1);
+        if (['string', 'number'].includes(typeof left) && ['string', 'number'].includes(typeof right)) return `${left}${right}`;
+      }
+      if (node.type === 'SequenceExpression') return evaluate(node.expressions.at(-1), seen, depth + 1);
+      if (node.type === 'ConditionalExpression' && node.test?.type === 'Literal') {
+        return evaluate(node.test.value ? node.consequent : node.alternate, seen, depth + 1);
+      }
+      if (node.type !== 'CallExpression') return undefined;
+      if (node.callee?.type === 'Identifier' && node.callee.name === 'atob' && node.arguments.length === 1) {
+        const encoded = evaluate(node.arguments[0], seen, depth + 1);
+        if (typeof encoded !== 'string') return undefined;
+        try { return Buffer.from(encoded, 'base64').toString('utf8'); } catch { return undefined; }
+      }
+      if (node.callee?.type !== 'MemberExpression' || node.callee.computed) return undefined;
+      const method = node.callee.property?.name;
+      const object = evaluate(node.callee.object, seen, depth + 1);
+      const args = node.arguments.map((entry) => evaluate(entry, seen, depth + 1));
+      if (method === 'join' && Array.isArray(object) && args.length <= 1 && (args.length === 0 || typeof args[0] === 'string')) return object.join(args[0] ?? ',');
+      if (method === 'concat' && typeof object === 'string' && args.every((value) => ['string', 'number'].includes(typeof value))) return object.concat(...args.map(String));
+      if (method === 'concat' && Array.isArray(object) && args.every((value) => Array.isArray(value) || ['string', 'number'].includes(typeof value))) return object.concat(...args);
+      if (method === 'fromCharCode' && node.callee.object?.type === 'Identifier' && node.callee.object.name === 'String' && args.every(Number.isInteger)) return String.fromCharCode(...args);
+      return undefined;
+    };
+    const strings = new Set();
+    for (const node of nodes) {
+      const value = evaluate(node);
+      const candidates = Array.isArray(value) ? value : [value];
+      for (const candidate of candidates) {
+        if (typeof candidate === 'string' && candidate.length >= 2 && candidate.length <= 100_000) strings.add(candidate);
+        if (strings.size > 50_000) throw new Error('Release JavaScript static-string surface exceeds the bounded privacy analysis limit.');
+      }
+    }
+    return [...strings];
+  };
+  const scanVariants = (input, staticStrings = []) => {
+    const variants = [input, ...staticStrings];
+    let folded = input;
+    for (let pass = 0; pass < 4; pass += 1) {
+      const next = folded.replace(
+        /(["'])([^"'\\\r\n]{1,256})\1\s*\+\s*(["'])([^"'\\\r\n]{1,256})\3/gu,
+        (_match, quote, left, _rightQuote, right) => `${quote}${left}${right}${quote}`,
+      );
+      if (next === folded) break;
+      folded = next;
+      variants.push(folded);
+    }
+    const encoded = new Set();
+    for (const source of variants) {
+      for (const match of source.matchAll(/(?<![A-Za-z0-9+/_-])[A-Za-z0-9+/_-]{16,65536}={0,2}(?![A-Za-z0-9+/_-])/gu)) {
+        encoded.add(match[0]);
+        if (encoded.size > 10_000) throw new Error('Release asset contains an excessive encoded-string surface.');
+      }
+    }
+    for (const token of encoded) {
+      const normalized = token.replaceAll('-', '+').replaceAll('_', '/');
+      if (normalized.length % 4 === 1) continue;
+      try {
+        const decoded = Buffer.from(normalized, 'base64');
+        const canonical = decoded.toString('base64').replace(/=+$/u, '');
+        if (canonical !== normalized.replace(/=+$/u, '')) continue;
+        const printable = [...decoded].filter((byte) => byte === 9 || byte === 10 || byte === 13 || (byte >= 32 && byte <= 126)).length;
+        if (decoded.length >= 8 && printable / decoded.length >= 0.85) variants.push(decoded.toString('utf8'));
+      } catch {
+        // Non-canonical candidates are not Base64 evidence.
+      }
+    }
+    return variants;
+  };
+  const rejected = [];
+  for (const entry of entries) {
+    const file = String(entry?.path ?? '');
+    const bytes = entry?.bytes;
+    if (!file || !bytes || !/\.(?:html|css|js|json|svg|txt)$/iu.test(file)) continue;
+    const value = Buffer.isBuffer(bytes) ? bytes.toString('utf8') : String(bytes);
+    const variants = scanVariants(value, file.startsWith('assets/') && file.endsWith('.js') ? extractStaticStrings(value) : []);
+    for (const rule of forbidden) {
+      if (rule.assetOnly && !file.startsWith('assets/')) continue;
+      if (variants.some((variant) => rule.pattern.test(variant))) rejected.push(`${file} (${rule.name})`);
+    }
+  }
+  if (rejected.length) throw new Error(`Release candidate contains private agent/runtime content: ${[...new Set(rejected)].join(', ')}`);
+  return true;
+}
+
+export function assertViteAssetProvenance(manifest, entries) {
+  if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
+    throw new Error('Vite build manifest must be one JSON object.');
+  }
+  const expected = new Set();
+  let entryPoints = 0;
+  const add = (file, label) => {
+    if (typeof file !== 'string' || !/^assets\/[A-Za-z0-9][A-Za-z0-9_.-]*-[A-Za-z0-9_-]{8,}\.(?:avif|css|js|png|svg|webp|woff2?)$/u.test(file)) {
+      throw new Error(`Vite build manifest contains an invalid ${label}: ${String(file)}`);
+    }
+    expected.add(file);
+  };
+  for (const [key, record] of Object.entries(manifest)) {
+    if (!record || typeof record !== 'object' || Array.isArray(record)) {
+      throw new Error(`Vite build manifest entry ${key} is malformed.`);
+    }
+    if (record.isEntry === true) entryPoints += 1;
+    if (record.file) add(record.file, `${key}.file`);
+    for (const field of ['css', 'assets']) {
+      if (record[field] === undefined) continue;
+      if (!Array.isArray(record[field])) throw new Error(`Vite build manifest entry ${key}.${field} must be an array.`);
+      for (const file of record[field]) add(file, `${key}.${field}`);
+    }
+  }
+  if (entryPoints !== 1 || expected.size < 1) {
+    throw new Error(`Vite build manifest requires one entry point and at least one emitted asset; observed ${entryPoints}/${expected.size}.`);
+  }
+  const actual = entries
+    .map((entry) => String(typeof entry === 'string' ? entry : entry?.path ?? ''))
+    .filter((file) => file.startsWith('assets/'))
+    .sort();
+  const declared = [...expected].sort();
+  if (JSON.stringify(actual) !== JSON.stringify(declared)) {
+    const undeclared = actual.filter((file) => !expected.has(file));
+    const missing = declared.filter((file) => !actual.includes(file));
+    throw new Error(`Release assets differ from the exact Vite build graph (undeclared: ${undeclared.join(', ') || 'none'}; missing: ${missing.join(', ') || 'none'}).`);
+  }
+  return declared;
+}
+
+export function assertAllowedReleaseFiles(entries) {
+  const exact = new Set([
+    'agent-outcome-receipt.json',
+    'chopdot-icon.png',
+    'index.html',
+    'licenses.json',
+    'runtime-security.json',
+    'sbom.json',
+  ]);
+  const asset = /^assets\/[A-Za-z0-9][A-Za-z0-9_.-]*-[A-Za-z0-9_-]{8,}\.(?:avif|css|js|png|svg|webp|woff2?)$/u;
+  const rejected = entries
+    .map((entry) => String(typeof entry === 'string' ? entry : entry?.path ?? ''))
+    .filter((file) => !exact.has(file) && !asset.test(file));
+  if (rejected.length) throw new Error(`Release candidate contains a file outside the build allowlist: ${rejected.join(', ')}`);
+  return true;
+}
+
+export function verifyGithubOutcomeAttestation({outcomePath, bundlePath, sourceCommit, execute = execFileSync}) {
+  if (!path.isAbsolute(outcomePath) || !path.isAbsolute(bundlePath)) {
+    throw new Error('Release outcome and attestation bundle paths must be absolute.');
+  }
+  if (!/^[0-9a-f]{40}$/u.test(sourceCommit ?? '')) throw new Error('Release outcome attestation requires an exact source commit.');
+  const output = execute('gh', [
+    'attestation', 'verify', outcomePath,
+    '--bundle', bundlePath,
+    '--repo', RELEASE_OUTCOME_ATTESTATION_POLICY.repository,
+    '--signer-workflow', RELEASE_OUTCOME_ATTESTATION_POLICY.signerWorkflow,
+    '--predicate-type', RELEASE_OUTCOME_ATTESTATION_POLICY.predicateType,
+    '--cert-oidc-issuer', RELEASE_OUTCOME_ATTESTATION_POLICY.issuer,
+    '--source-digest', sourceCommit,
+    '--deny-self-hosted-runners',
+    '--format', 'json',
+  ], {encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']});
+  const verification = JSON.parse(output);
+  if (!Array.isArray(verification) || verification.length !== 1) {
+    throw new Error(`GitHub must return exactly one verified release outcome attestation; observed ${Array.isArray(verification) ? verification.length : 'invalid JSON shape'}.`);
+  }
+  return {verificationCount: verification.length};
+}
+
+export function createReleaseOutcomeReceipt({outcome, outcomeBytes, bundleBytes, commit, tree, branch, verificationCount}) {
+  const accepted = (outcome.requirements ?? []).filter((entry) => entry.status === 'accepted').length;
+  const verifiedEffects = (outcome.effects ?? []).filter((entry) => entry.state === 'verified').length;
+  return {
+    schema: 'chopdot.release-agent-outcome-receipt.v1',
+    candidate: {branch, commit, tree},
+    outcome: {
+      runId: outcome.run_id,
+      packetDigest: outcome.packet_digest,
+      fileSha256: sha256(outcomeBytes),
+      terminalState: outcome.terminal_state,
+      requirements: {total: (outcome.requirements ?? []).length, accepted},
+      effects: {total: (outcome.effects ?? []).length, verified: verifiedEffects},
+    },
+    independentReview: {
+      satisfied: outcome.evaluation_summary?.independent_review_satisfied === true,
+      authority: 'github-hosted-five-job-exact-head-gate',
+    },
+    attestation: {
+      repository: RELEASE_OUTCOME_ATTESTATION_POLICY.repository,
+      signerWorkflow: RELEASE_OUTCOME_ATTESTATION_POLICY.signerWorkflow,
+      predicateType: RELEASE_OUTCOME_ATTESTATION_POLICY.predicateType,
+      sourceCommit: commit,
+      bundleSha256: sha256(bundleBytes),
+      verifiedAttestations: verificationCount,
+      selfHostedRunnerDenied: true,
+    },
+    redaction: {
+      policy: 'minimal-public-receipt-v1',
+      rawOutcomeEmbedded: false,
+      absoluteRootEmbedded: false,
+      arbitraryTextEmbedded: false,
+    },
+  };
 }
 
 export function parseArgument(name, argv = process.argv.slice(2)) {

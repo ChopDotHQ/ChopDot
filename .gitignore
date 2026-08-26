@@ -14,6 +14,11 @@ playwright-report/
 # Local agent scratch space is never release or product evidence.
 output/working_memory/
 
+# Portable Agent Outcome System run ledgers can contain prompts, intermediate
+# observations, and unreconciled effects. Only separately redacted and promoted
+# outcome packets under artifacts/agentops/outcomes may become repo evidence.
+output/agent-runs/
+
 # Local screenshot review is summarized with hashes in committed acceptance
 # reports. The raw captures are regenerated per viewport and remain local.
 output/playwright/

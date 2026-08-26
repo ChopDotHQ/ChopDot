@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/governance/agent-system/contracts/artifact.v1.schema.json",
+  "title": "Artifact V1",
+  "type": "object",
+  "required": ["artifact_version", "artifact_id", "run_id", "artifact_type", "path", "media_type", "byte_length", "sha256", "created_at", "created_by", "candidate_identity", "redaction_status"],
+  "properties": {
+    "artifact_version": { "const": "1.0.0" },
+    "artifact_id": { "type": "string", "pattern": "^artifact_[a-z0-9][a-z0-9_-]{5,95}$" },
+    "run_id": { "type": "string", "pattern": "^run_[a-z0-9][a-z0-9_-]{7,95}$" },
+    "artifact_type": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]+V1$" },
+    "path": { "type": "string", "minLength": 1 },
+    "media_type": { "type": "string", "pattern": "^[a-z0-9.+-]+/[a-zA-Z0-9.+-]+$" },
+    "byte_length": { "type": "integer", "minimum": 0 },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "created_by": { "type": "string", "minLength": 1 },
+    "candidate_identity": {
+      "type": "object",
+      "required": ["root", "branch", "commit", "tree", "git_status"],
+      "properties": {
+        "root": { "type": "string", "pattern": "^/" },
+        "branch": { "type": "string", "minLength": 1 },
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "git_status": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "redaction_status": { "enum": ["not_required", "pending", "passed", "rejected"] },
+    "source_artifact_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^artifact_" } }
+  },
+  "additionalProperties": false
+}

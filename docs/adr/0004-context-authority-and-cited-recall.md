@@ -3,10 +3,11 @@
 **Kind:** decision
 **Status:** accepted
 **Owner:** product and release integrator
-**Last reviewed:** 2026-08-24
+**Last reviewed:** 2026-08-26
 **Applies to:** `chopdot-v1-launch`
 **Authority:** dated context-governance decision subordinate to product law and explicit supersession
 **Decision date:** 2026-08-24
+**Partially superseded by:** ADR 0005 replaces backend-specific core vocabulary with the Knowledge Context Port; this ADR's authority order remains accepted
 **Supersedes:** competing claims that ADRs, wiki, `.knowns`, Cockpit read models,
 or KG independently form product truth
 
@@ -27,13 +28,14 @@ Adopt the machine-validated hierarchy in `product/context-authority.json`:
 2. current dated Cockpit source decisions;
 3. exact-commit source and test evidence;
 4. immutable release and live readback evidence;
-5. Repo Graph/KGv2 cited recall;
+5. cited recall through a conforming Knowledge Context adapter;
 6. supporting/historical/generated context.
 
-KGv2 is a recall and navigation layer. It does not create product facts. A KG
-claim is durable for the release only when active v2 returns citations from a
-Repo Graph packet whose exact root, branch, and commit match the accepted
-worktree outcome, with no fallback or stale reason.
+Knowledge backends are recall and navigation layers. They do not create product
+facts. A recalled claim is durable for an outcome only when the configured
+adapter returns cited facts whose exact root, branch, commit, and outcome digest
+match the accepted worktree outcome, with no disallowed fallback or stale
+reason. KGv2 and Repo Graph remain supported provider adapters.
 
 Generated views and `.knowns/tasks` are read models/operator handoff surfaces.
 They cannot reprioritize source cards. Historical material remains available

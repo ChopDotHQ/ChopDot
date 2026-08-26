@@ -31,6 +31,7 @@ async function build(source, directory) {
   });
   const commit = execFileSync('git', ['rev-parse', 'HEAD'], {cwd: root, encoding: 'utf8'}).trim();
   const tree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], {cwd: root, encoding: 'utf8'}).trim();
+  const branch = execFileSync('git', ['branch', '--show-current'], {cwd: root, encoding: 'utf8'}).trim();
   execFileSync(path.join(source, 'node_modules/.bin/vite'), ['build', '--outDir', directory, '--emptyOutDir'], {
     cwd: source,
     env: {...process.env, VITE_BUILD_PROFILE: 'dot-host'},
@@ -43,7 +44,10 @@ async function build(source, directory) {
       DOT_HOST_OUTPUT_DIR: directory,
       RELEASE_SOURCE_COMMIT: commit,
       RELEASE_SOURCE_TREE: tree,
+      RELEASE_SOURCE_BRANCH: branch,
       RELEASE_SOURCE_CLEAN: '1',
+      RELEASE_ARCHIVE_MODE: '1',
+      RELEASE_CANONICAL_ROOT: root,
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });

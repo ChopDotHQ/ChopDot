@@ -1,9 +1,18 @@
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {readFile, readdir, writeFile} from 'node:fs/promises';
+import {readFile, readdir, unlink, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
-import {withIsolatedDeploymentRuntime} from './lib/release-evidence.mjs';
+import {
+  assertAllowedReleaseFiles,
+  assertNoAgentRuntimeContent,
+  assertNoAgentRuntimeFiles,
+  assertViteAssetProvenance,
+  createReleaseOutcomeReceipt,
+  verifyGithubOutcomeAttestation,
+  withIsolatedDeploymentRuntime,
+} from './lib/release-evidence.mjs';
+import {validateOutcomePacket} from './agent-system/outcome.mjs';
 import {createSupplyChainEvidence} from './lib/supply-chain-evidence.mjs';
 import {createRuntimeSecurityEvidence} from './lib/runtime-security-evidence.mjs';
 
@@ -16,6 +25,7 @@ const targetPath = path.join(root, 'deployment/recovery-head-index-targets.json'
 const codeAnchorPath = path.join(root, 'deployment/dotns-code-anchors-2026-08-23.json');
 const deploymentConfigPath = path.join(root, 'polkadot-app-deploy.config.ts');
 const pvmManifestPath = path.join(root, 'contracts/recovery-head-index/artifacts/pvm-manifest.json');
+const viteManifestPath = path.join(output, 'vite-manifest.json');
 const officialEnvironment = {
   sha256: '18adfc1cf58e12ac51cf146ef0e7fe6998a188de4854e7eb8d563cecc49973ff',
   sourceCommit: 'd1cc36998c7f25ea4a194176d98883655995c855',
@@ -55,6 +65,8 @@ async function readJsonIfPresent(file) {
 }
 
 const iconBase64 = (await readFile(iconSourcePath, 'utf8')).trim();
+const {bytes: viteManifestBytes, value: viteManifest} = await readJson(viteManifestPath);
+await unlink(viteManifestPath);
 const icon = Buffer.from(iconBase64, 'base64');
 if (icon.toString('base64') !== iconBase64 || icon.subarray(1, 4).toString('ascii') !== 'PNG') {
   throw new Error('Release icon source is not canonical PNG base64.');
@@ -159,34 +171,114 @@ for (const environment of ['devnet', 'paseo-next-v2']) {
   };
 }
 
-const files = await walk(output);
-const manifest = [];
-for (const file of files) {
-  const bytes = await readFile(file);
-  manifest.push({path: path.relative(output, file), bytes: bytes.byteLength, sha256: sha256(bytes)});
+const sourceOverrideKeys = ['RELEASE_SOURCE_COMMIT', 'RELEASE_SOURCE_TREE', 'RELEASE_SOURCE_BRANCH', 'RELEASE_SOURCE_CLEAN'];
+const suppliedSourceOverrides = sourceOverrideKeys.filter((key) => process.env[key] !== undefined);
+if (suppliedSourceOverrides.length && suppliedSourceOverrides.length !== sourceOverrideKeys.length) {
+  throw new Error(`Release archive identity overrides must be supplied as one complete set: ${sourceOverrideKeys.join(', ')}.`);
 }
-const orderedManifest = manifest.map((entry) => `${entry.path}\0${entry.sha256}\n`).join('');
-const contentSha256 = sha256(orderedManifest);
-const commit = process.env.RELEASE_SOURCE_COMMIT ?? git('rev-parse', 'HEAD');
-const tree = process.env.RELEASE_SOURCE_TREE ?? git('rev-parse', 'HEAD^{tree}');
-const status = process.env.RELEASE_SOURCE_CLEAN === '1'
-  ? ''
-  : git('status', '--porcelain=v1', '--untracked-files=all');
+if (suppliedSourceOverrides.length && process.env.RELEASE_ARCHIVE_MODE !== '1') {
+  throw new Error('Release source identity overrides are accepted only in explicit RELEASE_ARCHIVE_MODE=1.');
+}
+const commit = suppliedSourceOverrides.length ? process.env.RELEASE_SOURCE_COMMIT : git('rev-parse', 'HEAD');
+const tree = suppliedSourceOverrides.length ? process.env.RELEASE_SOURCE_TREE : git('rev-parse', 'HEAD^{tree}');
+const branch = suppliedSourceOverrides.length ? process.env.RELEASE_SOURCE_BRANCH : git('branch', '--show-current');
+const canonicalSourceRoot = suppliedSourceOverrides.length ? process.env.RELEASE_CANONICAL_ROOT : root;
+const status = suppliedSourceOverrides.length ? '' : git('status', '--porcelain=v1', '--untracked-files=all');
+if (suppliedSourceOverrides.length && process.env.RELEASE_SOURCE_CLEAN !== '1') {
+  throw new Error('Release archive identity overrides require RELEASE_SOURCE_CLEAN=1 and later byte-for-byte rebuild comparison.');
+}
+if (!canonicalSourceRoot || !path.isAbsolute(canonicalSourceRoot)) {
+  throw new Error('Release archive mode requires an absolute RELEASE_CANONICAL_ROOT for provenance validation.');
+}
 if (!/^[0-9a-f]{40}$/u.test(commit) || !/^[0-9a-f]{40}$/u.test(tree)) {
   throw new Error('Release source commit/tree identity is invalid.');
 }
 const packageLockSha256 = sha256(await readFile(path.join(root, 'package-lock.json')));
+let agentOutcomeReceipt = null;
+const outcomeInputs = ['RELEASE_AGENT_OUTCOME', 'RELEASE_AGENT_OUTCOME_ATTESTATION'];
+const suppliedOutcomeInputs = outcomeInputs.filter((key) => process.env[key]);
+if (suppliedOutcomeInputs.length && suppliedOutcomeInputs.length !== outcomeInputs.length) {
+  throw new Error(`Release outcome trust inputs must be supplied together: ${outcomeInputs.join(', ')}.`);
+}
+if (suppliedOutcomeInputs.length) {
+  const outcomePath = path.resolve(root, process.env.RELEASE_AGENT_OUTCOME);
+  const attestationPath = path.resolve(root, process.env.RELEASE_AGENT_OUTCOME_ATTESTATION);
+  const outcomeBytes = await readFile(outcomePath);
+  const attestationBytes = await readFile(attestationPath);
+  const outcome = JSON.parse(outcomeBytes);
+  const outcomeValidation = validateOutcomePacket(outcome);
+  if (!outcomeValidation.valid) throw new Error(`Release agent outcome is not accepted: ${outcomeValidation.issues.join('; ')}`);
+  if (outcome.root !== canonicalSourceRoot || outcome.branch !== branch || outcome.ending_head !== commit || outcome.ending_tree !== tree || (outcome.git_status ?? []).length) {
+    throw new Error('Release agent outcome does not describe the exact clean candidate root, branch, commit, and tree.');
+  }
+  if (outcome.terminal_state !== 'succeeded' || outcome.evaluation_summary?.independent_review_satisfied !== true || outcome.effects?.some((effect) => effect.state !== 'verified')) {
+    throw new Error('Release agent outcome is not independently accepted or has unreconciled effects.');
+  }
+  const attestation = verifyGithubOutcomeAttestation({
+    outcomePath,
+    bundlePath: attestationPath,
+    sourceCommit: commit,
+  });
+  const receipt = createReleaseOutcomeReceipt({
+    outcome,
+    outcomeBytes,
+    bundleBytes: attestationBytes,
+    commit,
+    tree,
+    branch,
+    verificationCount: attestation.verificationCount,
+  });
+  const receiptBytes = Buffer.from(`${JSON.stringify(receipt, null, 2)}\n`);
+  const embeddedPath = path.join(output, 'agent-outcome-receipt.json');
+  await writeFile(embeddedPath, receiptBytes);
+  agentOutcomeReceipt = {
+    path: path.relative(output, embeddedPath),
+    sha256: sha256(receiptBytes),
+    packetDigest: outcome.packet_digest,
+    packetFileSha256: sha256(outcomeBytes),
+    attestationBundleSha256: sha256(attestationBytes),
+    runId: outcome.run_id,
+    verificationCount: attestation.verificationCount,
+    redactionPolicy: receipt.redaction.policy,
+  };
+} else if (await readFile(path.join(output, 'agent-outcome-receipt.json')).then(() => true).catch((error) => {
+  if (error?.code === 'ENOENT') return false;
+  throw error;
+})) {
+  throw new Error('Release output contains agent-outcome-receipt.json without trusted outcome and attestation inputs.');
+}
+const files = await walk(output);
+const manifest = [];
+const contentEntries = [];
+for (const file of files) {
+  const bytes = await readFile(file);
+  manifest.push({path: path.relative(output, file), bytes: bytes.byteLength, sha256: sha256(bytes)});
+  contentEntries.push({path: path.relative(output, file), bytes});
+}
+assertNoAgentRuntimeFiles(manifest);
+assertAllowedReleaseFiles(manifest);
+assertNoAgentRuntimeContent(contentEntries);
+const viteAssets = assertViteAssetProvenance(viteManifest, manifest);
+const orderedManifest = manifest.map((entry) => `${entry.path}\0${entry.sha256}\n`).join('');
+const contentSha256 = sha256(orderedManifest);
 const release = {
   schema: 'chopdot.release.v3',
   product: 'ChopDot',
   authority: 'participant-held signed ChopEventV1 log',
   commit,
   tree,
+  branch,
   dirty: Boolean(status),
   dirtyStatusSha256: status ? sha256(status) : null,
   buildId: `chopdot-${commit.slice(0, 12)}-${contentSha256.slice(0, 12)}`,
   contentSha256,
   packageLockSha256,
+  agentOutcomeReceipt,
+  viteBuild: {
+    tool: 'vite',
+    manifestSha256: sha256(viteManifestBytes),
+    assets: viteAssets.map((assetPath) => manifest.find((entry) => entry.path === assetPath)),
+  },
   supplyChain: {
     packageCount: supplyChain.packageCount,
     unknownLicenseCount: supplyChain.unknownLicenseCount,

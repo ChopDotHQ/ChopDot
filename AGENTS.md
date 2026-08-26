@@ -3,7 +3,7 @@
 **Kind:** guardrail
 **Status:** active
 **Owner:** release integrator
-**Last reviewed:** 2026-08-24
+**Last reviewed:** 2026-08-26
 **Applies to:** `/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch`
 
 This is work scaffolding, never product law. Do not use another ChopDot checkout
@@ -38,14 +38,34 @@ are navigation/read models and must never be edited as authority.
 - Cockpit source files: current revocable product intent and priority.
 - Source/tests: exact-commit implementation evidence.
 - Release artifacts and live readback: deployment evidence.
-- Repo Graph/KGv2: cited recall only; cross-root/branch/commit means
-  `kg_known=false`.
+- Knowledge Context adapters: cited recall only; backend identity remains in
+  evidence, and cross-root/branch/commit means knowledge is not verified.
 - Research, ADRs, old plans, `.knowns/tasks`, and agent skills: supporting or
   derived context only, according to their declared kind.
 
 If two sources at the same authority level conflict, stop the affected work,
 record the conflict in the governing card/decision, and resolve it there. Do
 not silently choose the newer-looking or more detailed file.
+
+## Portable agent outcome route
+
+For every non-trivial agent-created artifact, use the profile selected from
+`governance/agent-system/loops/`, create an `AgentLoopContractV1`, and execute
+it through `scripts/agent-system/cli.mjs`. The stable core is provider-neutral;
+KGv2, Repo Graph, exact-source, and mock KGv3 are adapters.
+
+Run these routing gates before claiming the agent system is usable:
+
+- `npm run agent:validate`
+- `npm run agent:instructions:validate`
+- `npm run agent:knowns:probe`
+- `npm run agent:knowledge:conformance`
+- `npm run agent:eval`
+- `npm run agent:ci`
+
+Outcome packets may supply evidence to Cockpit, PR, CI, release, and knowledge
+surfaces. They may not change product priority, product score, participant
+authority, or product law.
 
 ## Product/release loop
 
@@ -61,7 +81,7 @@ context validation
 -> regression
 -> evidence and checkpoint
 -> logical commit/push
--> Repo Graph/KGv2 refresh
+-> Knowledge Context record and exact-citation verification
 ```
 
 The current frozen public candidate has a live first-use blocker and must not

@@ -1,0 +1,34 @@
+{
+  "profile_version": "1.0.0",
+  "profile_id": "product-definition",
+  "profile_digest": "7729fdae55cc7e16e3b4f21fbd6bad79b5e57bae78e841ba731f32f0bc38e55f",
+  "kind": "agent_loop_profile",
+  "description": "Produces an accepted product card or specification with a measurable journey, authority boundary, failure behavior, and evidence plan.",
+  "contract_schema_ref": "../contracts/agent-loop-contract.v1.schema.json",
+  "artifact_contract": {
+    "artifact_types": ["ProductDefinitionPacketV1"],
+    "required_fields": ["user_journey", "one_next_action", "product_score", "requirements", "scenarios", "authority", "privacy", "failure_path", "screenshot_acceptance", "evidence_plan"],
+    "required_evidence_level": "unit"
+  },
+  "expected_outcome": {
+    "statement": "The product definition scores at least eight of ten, conflicts with no product law, and maps every bounded requirement to a scenario and proof method.",
+    "assertions": [
+      { "id": "PROD-SCORE", "description": "The friction, trust, clarity, and language product score is at least eight of ten.", "measurement": "product_score", "operator": "count_gte", "expected": 8, "minimum_evidence_level": "unit", "hard_fail": true },
+      { "id": "PROD-LAW", "description": "No requirement or scenario conflicts with PRODUCT_TRUTH.md.", "measurement": "product_law_conflict_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "source-only", "hard_fail": true },
+      { "id": "PROD-TRACE", "description": "Every requirement maps to at least one scenario and one proof method.", "measurement": "unmapped_requirement_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "unit", "hard_fail": true },
+      { "id": "PROD-FAILURE", "description": "The journey has a user-visible failure and recovery behavior.", "measurement": "failure_path_complete", "operator": "truthy", "expected": true, "minimum_evidence_level": "source-only", "hard_fail": true }
+    ]
+  },
+  "context_gate": { "exact_root": true, "freshness_required": true, "same_level_conflict": "blocked", "wrong_root": "blocked" },
+  "policy_refs": { "authority": "agent-authority-boundaries-v1", "evidence": "agent-evidence-levels-v1", "terminal_states": "agent-terminal-states-v1", "retry_budgets": "agent-retry-budgets-v1" },
+  "authority": { "default_class": "repo_local_write", "allowed_effects": ["write_card", "write_spec", "write_checkpoint_candidate"], "approval_required_effects": ["change_product_law", "change_strategy"], "critical_independent_review": false },
+  "budgets": { "retry_budget_id": "budget-product-definition-v1", "max_iterations": 2, "max_retries": 1, "same_blocker_limit": 2 },
+  "evaluator": { "rubric_path": "governance/agent-system/evals/rubrics/product-definition.v1.json", "deterministic_checks": ["product_score_check", "requirements_scenario_trace", "source_hierarchy_conflict_check"], "independence": "different_actor", "pass_threshold": 0.9, "hard_failures": ["PROD-SCORE", "PROD-LAW", "PROD-TRACE", "PROD-FAILURE"] },
+  "evidence": { "minimum_level": "unit", "required_artifacts": ["product_definition_packet", "traceability_report", "product_review"], "exact_counts_required": true, "candidate_identity_required": true },
+  "environment_observations": ["current Cockpit card and score", "product-law identity", "generated product read model after validation"],
+  "failure_packet": { "artifact_type": "ContinuationPacketV1", "required_fields": ["rejected_assumptions", "unresolved_product_decision", "missing_failure_path", "founder_decision_required"], "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_preflight": { "port": "KnowledgeContextPortV1", "preflight_required": true, "record_outcome": true, "verify_recall": true, "provider_neutral": true },
+  "repair_policy": { "changed_hypothesis_required": true, "scope_expansion": "new_contract", "same_blocker_limit": 2, "regression_required": true },
+  "example_contract_ref": "examples/product-definition.contract.v1.json"
+}

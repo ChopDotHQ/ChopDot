@@ -1,0 +1,49 @@
+{
+  "policy_version": "1.0.0",
+  "policy_id": "agent-terminal-states-v1",
+  "kind": "terminal_state_policy",
+  "states": [
+    {
+      "id": "succeeded",
+      "meaning": "Every required assertion passed for the exact candidate and all effects are verified.",
+      "required_evidence": ["accepted_evaluation", "artifact_hashes", "candidate_identity", "environment_readback", "effect_reconciliation"],
+      "may_promote_outcome": true
+    },
+    {
+      "id": "failed_verification",
+      "meaning": "An artifact exists but one or more required assertions failed.",
+      "required_evidence": ["failed_assertion_ids", "exact_check_counts", "commands_or_rubrics", "repair_history"],
+      "may_promote_outcome": false
+    },
+    {
+      "id": "blocked",
+      "meaning": "A same-level conflict or external condition prevents safe progress.",
+      "required_evidence": ["blocker_identity", "checks_exhausted", "current_impact", "safe_next_action"],
+      "may_promote_outcome": false
+    },
+    {
+      "id": "approval_required",
+      "meaning": "The next proposed effect exceeds the active authority envelope.",
+      "required_evidence": ["proposed_effect", "exact_target", "impact", "rollback_or_forward_repair", "readback_plan"],
+      "may_promote_outcome": false
+    },
+    {
+      "id": "budget_exhausted",
+      "meaning": "A declared iteration, retry, time, tool, model-cost, or external-cost budget ended.",
+      "required_evidence": ["budget_consumption", "best_known_state", "remaining_gap", "continuation_packet"],
+      "may_promote_outcome": false
+    },
+    {
+      "id": "cancelled",
+      "meaning": "An operator or orchestrator stopped the run.",
+      "required_evidence": ["cancelling_actor", "reason", "effect_reconciliation", "last_safe_checkpoint"],
+      "may_promote_outcome": false
+    }
+  ],
+  "invariants": [
+    "No unrecognized terminal state is success.",
+    "A missing required evidence item makes the claimed terminal state invalid.",
+    "Knowledge recall cannot change any terminal state.",
+    "A succeeded outcome contains no failed or blocked assertion and no unverified effect."
+  ]
+}

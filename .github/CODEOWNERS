@@ -1,0 +1,39 @@
+# ChopDot review routing. GitHub readback verified @Devpen787 and @Gizmotronn
+# have direct admin access on 2026-08-26. CODEOWNERS requests review; it does
+# not prove reviewer independence or branch enforcement.
+
+# Default coverage prevents an unowned path from silently entering the repo.
+* @Devpen787 @Gizmotronn
+
+# Product law and current product decisions.
+/PRODUCT_TRUTH.md @Devpen787 @Gizmotronn
+/product/ @Devpen787 @Gizmotronn
+
+# Portable agent contracts, runner, evaluations, and instruction surfaces.
+/governance/agent-system/ @Devpen787 @Gizmotronn
+/scripts/agent-system/ @Devpen787 @Gizmotronn
+/.github/CODEOWNERS @Devpen787 @Gizmotronn
+/.github/pull_request_template.md @Devpen787 @Gizmotronn
+/.github/workflows/ @Devpen787 @Gizmotronn
+/AGENTS.md @Devpen787 @Gizmotronn
+/CLAUDE.md @Devpen787 @Gizmotronn
+/.cursor/rules/ @Devpen787 @Gizmotronn
+/docs/CHOPDOT_OPERATING_LOOPS.md @Devpen787 @Gizmotronn
+/docs/CHOPDOT_LOOP_RUNNER.md @Devpen787 @Gizmotronn
+
+# Dated decisions, investigations, and release evidence.
+/docs/adr/ @Devpen787 @Gizmotronn
+/docs/investigations/ @Devpen787 @Gizmotronn
+/docs/release/ @Devpen787 @Gizmotronn
+/artifacts/agentops/outcomes/ @Devpen787 @Gizmotronn
+
+# Authority, money, membership, privacy, recovery, contracts, and release paths.
+/src/core/ @Devpen787 @Gizmotronn
+/src/contacts/ @Devpen787 @Gizmotronn
+/src/membership/ @Devpen787 @Gizmotronn
+/src/payments/ @Devpen787 @Gizmotronn
+/src/recovery/ @Devpen787 @Gizmotronn
+/src/environment/ @Devpen787 @Gizmotronn
+/contracts/ @Devpen787 @Gizmotronn
+/deployment/ @Devpen787 @Gizmotronn
+/scripts/ @Devpen787 @Gizmotronn

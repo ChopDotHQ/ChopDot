@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/governance/agent-system/contracts/effect-record.v1.schema.json",
+  "title": "Effect Record V1",
+  "type": "object",
+  "required": ["effect_version", "effect_id", "run_id", "requirement_id", "effect_type", "target", "normalized_parameters", "payload_digest", "idempotency_key", "scope", "risk", "expected_change", "authority_source", "approval_required", "state", "before_readback", "after_readback", "recovery_strategy", "created_at", "updated_at"],
+  "properties": {
+    "effect_version": { "const": "1.0.0" },
+    "effect_id": { "type": "string", "pattern": "^effect_[a-z0-9][a-z0-9_-]{5,95}$" },
+    "run_id": { "type": "string", "pattern": "^run_[a-z0-9][a-z0-9_-]{7,95}$" },
+    "requirement_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+$" },
+    "effect_type": { "enum": ["commit", "push", "pr_create", "pr_update", "repository_setting", "credential_use", "publish", "deploy", "chain_write", "message_send", "payment", "other"] },
+    "target": { "type": "string", "minLength": 1 },
+    "normalized_parameters": { "type": "object" },
+    "payload_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "idempotency_key": { "type": "string", "pattern": "^idem_[0-9a-f]{64}$" },
+    "scope": { "type": "string", "minLength": 1 },
+    "risk": { "enum": ["low", "medium", "high", "critical"] },
+    "expected_change": { "type": "string", "minLength": 8 },
+    "authority_source": { "type": "string", "minLength": 1 },
+    "approval_required": { "type": "boolean" },
+    "approval_id": { "type": "string", "pattern": "^approval_" },
+    "approval_expires_at": { "type": "string", "format": "date-time" },
+    "state": { "enum": ["planned", "approved", "dispatching", "observed", "verified", "failed", "unknown_needs_reconciliation"] },
+    "before_readback": { "$ref": "#/$defs/readback" },
+    "after_readback": { "$ref": "#/$defs/readback" },
+    "recovery_strategy": { "enum": ["rollback", "forward_repair", "manual_reconciliation", "not_applicable"] },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "readback": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["observed_at", "source", "digest", "status"],
+          "properties": {
+            "observed_at": { "type": "string", "format": "date-time" },
+            "source": { "type": "string", "minLength": 1 },
+            "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "status": { "enum": ["matches", "mismatch", "missing", "unknown"] }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "approval_required": { "const": true } } },
+      "then": { "required": ["approval_id", "approval_expires_at"] }
+    }
+  ],
+  "additionalProperties": false
+}

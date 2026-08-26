@@ -1,0 +1,34 @@
+{
+  "profile_version": "1.0.0",
+  "profile_id": "research",
+  "profile_digest": "c8958cd49c1d5ca095e76fa8aaafa1cf0b7ee1476af0c0dcd2008bf3afadcd9c",
+  "kind": "agent_loop_profile",
+  "description": "Produces a bounded, cited research decision packet without converting discovery or inference into fact.",
+  "contract_schema_ref": "../contracts/agent-loop-contract.v1.schema.json",
+  "artifact_contract": {
+    "artifact_types": ["ResearchDecisionPacketV1"],
+    "required_fields": ["question", "declared_universe", "source_catalog", "claims", "citations", "counterevidence", "uncertainty", "decision_implications", "coverage_limits"],
+    "required_evidence_level": "source-only"
+  },
+  "expected_outcome": {
+    "statement": "Every material claim is cited to admissible primary evidence or explicitly classified as inference or unknown within a declared research universe.",
+    "assertions": [
+      { "id": "RES-CITATIONS", "description": "Every factual material claim has at least one resolvable primary-source citation.", "measurement": "uncited_material_claim_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "source-only", "hard_fail": true },
+      { "id": "RES-COVERAGE", "description": "Coverage is measured against the declared universe and its explicit exclusions.", "measurement": "coverage_ratio", "operator": "equals", "expected": 1, "minimum_evidence_level": "unit", "hard_fail": true },
+      { "id": "RES-UNCERTAINTY", "description": "Inference and unknown statements are labelled separately from recalled or inspected facts.", "measurement": "unlabelled_inference_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "source-only", "hard_fail": true },
+      { "id": "RES-COUNTEREVIDENCE", "description": "Material counterevidence and disagreements are recorded or explicitly reported absent after search.", "measurement": "counterevidence_review_complete", "operator": "truthy", "expected": true, "minimum_evidence_level": "source-only", "hard_fail": false }
+    ]
+  },
+  "context_gate": { "exact_root": true, "freshness_required": true, "same_level_conflict": "blocked", "wrong_root": "blocked" },
+  "policy_refs": { "authority": "agent-authority-boundaries-v1", "evidence": "agent-evidence-levels-v1", "terminal_states": "agent-terminal-states-v1", "retry_budgets": "agent-retry-budgets-v1" },
+  "authority": { "default_class": "read_only", "allowed_effects": ["none"], "approval_required_effects": [], "critical_independent_review": false },
+  "budgets": { "retry_budget_id": "budget-research-v1", "max_iterations": 2, "max_retries": 1, "same_blocker_limit": 2 },
+  "evaluator": { "rubric_path": "governance/agent-system/evals/rubrics/research.v1.json", "deterministic_checks": ["citation_resolver", "source_identity_check", "freshness_check", "claim_coverage_check"], "independence": "different_run", "pass_threshold": 0.9, "hard_failures": ["RES-CITATIONS", "RES-COVERAGE", "RES-UNCERTAINTY"] },
+  "evidence": { "minimum_level": "source-only", "required_artifacts": ["research_packet", "source_catalog", "citation_resolution_report", "independent_synthesis_review"], "exact_counts_required": true, "candidate_identity_required": true },
+  "environment_observations": ["exact source paths and digests", "source publication or repository identity", "access and freshness failures"],
+  "failure_packet": { "artifact_type": "ContinuationPacketV1", "required_fields": ["unsupported_claims", "missing_source_classes", "inaccessible_evidence", "conflicts", "smallest_decision-changing_research_step"], "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_preflight": { "port": "KnowledgeContextPortV1", "preflight_required": true, "record_outcome": true, "verify_recall": true, "provider_neutral": true },
+  "repair_policy": { "changed_hypothesis_required": true, "scope_expansion": "new_contract", "same_blocker_limit": 2, "regression_required": false },
+  "example_contract_ref": "examples/research.contract.v1.json"
+}

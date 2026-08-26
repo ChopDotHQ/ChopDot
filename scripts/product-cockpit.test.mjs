@@ -1,9 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  checkpointCardTransitionFailures,
+  checkpointEvidencePathFailures,
+  checkpointProvenanceFailures,
   conditionalRouteKeyFailures,
   kgKnownShapeFailures,
   markdownMetadataFailures,
+  outcomePacketReferenceFailures,
   rankCards,
   releaseBlockerSetFailures,
   releaseVerdictDependencyFailures,
@@ -178,4 +182,105 @@ test('release verdicts reject string booleans, unsupported statuses, and missing
   assert.ok(failures.some((failure) => failure.includes('implemented must use the declared status enum')));
   assert.ok(failures.some((failure) => failure.includes('promoted must be boolean')));
   assert.ok(failures.some((failure) => failure.includes('kg_known must be boolean')));
+});
+
+test('outcome packet references reject unsuccessful, wrong-root, stale, and self-reviewed packets', () => {
+  const head = 'ab'.repeat(20);
+  const packet = {
+    outcome_version: '1.0.0',
+    root: '/exact/worktree',
+    branch: 'codex/chopdot-v1-launch',
+    ending_head: head,
+    run_id: 'run_cockpit_reference_001',
+    terminal_state: 'failed_verification',
+    evaluation_summary: {failed: 1, blocked: 0, hard_failures: ['ASSERT-FAIL'], independent_review_satisfied: false},
+    requirements: [{status: 'failed'}],
+    artifacts: [],
+    evidence_index: [],
+    effects: [{state: 'unknown_needs_reconciliation'}],
+    packet_digest: '00'.repeat(32),
+  };
+  const failures = outcomePacketReferenceFailures(packet, {
+    root: '/different/worktree',
+    branch: 'other-branch',
+    head: 'cd'.repeat(20),
+    runId: 'run_other_reference_001',
+  });
+  for (const fragment of ['terminal state is not succeeded', 'wrong exact worktree root', 'wrong branch', 'stale for the current HEAD', 'run ID disagrees', 'independent review']) {
+    assert.ok(failures.some((failure) => failure.includes(fragment)), `missing failure for ${fragment}`);
+  }
+});
+
+test('outcome-backed checkpoints bind canonical root, branch, candidate tree, and named card requirements', () => {
+  const tree = 'cd'.repeat(20);
+  const event = {git: {root: '/other/checkout', branch: 'other', tree: 'ef'.repeat(20)}};
+  const provenance = checkpointProvenanceFailures(event, {
+    root: '/exact/worktree',
+    branch: 'codex/chopdot-v1-launch',
+  }, tree);
+  for (const fragment of ['canonical exact worktree', 'canonical release branch', 'candidate commit']) {
+    assert.ok(provenance.some((failure) => failure.includes(fragment)), `missing provenance failure for ${fragment}`);
+  }
+  const packet = {
+    outcome_version: '1.0.0',
+    root: '/exact/worktree',
+    branch: 'codex/chopdot-v1-launch',
+    ending_head: 'ab'.repeat(20),
+    ending_tree: tree,
+    run_id: 'run_card_reference_001',
+    terminal_state: 'succeeded',
+    requirements: [{requirement_id: 'OTHER-REQ', status: 'accepted'}],
+    evaluation_summary: {independent_review_satisfied: true},
+  };
+  const failures = outcomePacketReferenceFailures(packet, {
+    root: packet.root,
+    branch: packet.branch,
+    head: packet.ending_head,
+    tree,
+    runId: packet.run_id,
+    cardIds: ['P-032'],
+  });
+  assert.ok(failures.some((failure) => failure.includes('named card requirement P-032')));
+});
+
+test('checkpoint evidence commits permit only the cited packet, evidence, card read model, and checkpoint files', () => {
+  const event = {
+    evidence: 'docs/investigations/pilot.md',
+    outcomePacket: 'artifacts/agentops/outcomes/run_pilot/outcome.json',
+  };
+  const accepted = [
+    '.knowns/tasks',
+    'product/board.html',
+    'product/cards.md',
+    'product/generated/product-resume.md',
+    'product/history/events/0003-p-032.json',
+    event.evidence,
+    event.outcomePacket,
+  ];
+  assert.deepEqual(checkpointEvidencePathFailures(accepted, event, 'product/history/events/0003-p-032.json'), []);
+  assert.ok(checkpointEvidencePathFailures([...accepted, 'src/App.tsx'], event, 'product/history/events/0003-p-032.json')
+    .some((failure) => failure.includes('non-evidence path src/App.tsx')));
+});
+
+test('checkpoint card transitions reject product-scope mutation and changes to unrelated cards', () => {
+  const before = [
+    {...base, id: 'P-032', status: 'building', blocker: 'P1-proof', blocked_by: 'P-035'},
+    {...base, id: 'P-035', status: 'building'},
+  ];
+  const valid = [
+    {...before[0], status: 'done', blocker: 'none', blocked_by: 'none', reviewed: '2026-08-26'},
+    before[1],
+  ];
+  const event = {state: 'done', cards: ['P-032']};
+  assert.deepEqual(checkpointCardTransitionFailures(before, valid, event), []);
+  const alteredScope = [{...valid[0], scope: 'new authority'}, valid[1]];
+  assert.ok(checkpointCardTransitionFailures(before, alteredScope, event)
+    .some((failure) => failure.includes('P-032.scope')));
+  const alteredOther = [valid[0], {...valid[1], status: 'done'}];
+  assert.ok(checkpointCardTransitionFailures(before, alteredOther, event)
+    .some((failure) => failure.includes('P-035.status')));
+  const buildingEvent = {state: 'building', cards: ['P-032']};
+  const clearedBlocker = [{...before[0], blocker: 'none', blocked_by: 'none', status: 'building'}, before[1]];
+  assert.ok(checkpointCardTransitionFailures(before, clearedBlocker, buildingEvent)
+    .some((failure) => failure.includes('P-032.blocker')));
 });

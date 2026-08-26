@@ -1,0 +1,14 @@
+{
+  "rubric_version": "1.0.0",
+  "rubric_id": "rubric-research-v1",
+  "profile_id": "research",
+  "score_range": { "minimum": 0, "maximum": 100 },
+  "pass_threshold": 90,
+  "hard_fail_rules": ["RES-CITATIONS", "RES-COVERAGE", "RES-UNCERTAINTY"],
+  "dimensions": [
+    { "id": "RES-CITATIONS", "weight": 35, "measurement": "Resolve every material factual claim to an admissible primary-source citation and exact source identity.", "full_credit": "Uncited material claim count equals zero and every citation resolves to its recorded digest.", "zero_credit": "At least one material claim is unsupported or cites only a generated summary.", "evidence_required": ["claim citation matrix", "citation resolution report"] },
+    { "id": "RES-COVERAGE", "weight": 25, "measurement": "Compare inspected source classes and records with the declared research universe.", "full_credit": "Coverage ratio equals one and all exclusions are explicitly recorded.", "zero_credit": "The universe is undeclared or any included source class is unaccounted for.", "evidence_required": ["source catalog", "coverage calculation"] },
+    { "id": "RES-UNCERTAINTY", "weight": 20, "measurement": "Count factual-sounding inferences or unknowns that are not labelled.", "full_credit": "Unlabelled inference and unknown count equals zero.", "zero_credit": "Any inference or unknown is presented as an inspected or recalled fact.", "evidence_required": ["claim classifications", "uncertainty register"] },
+    { "id": "RES-COUNTEREVIDENCE", "weight": 20, "measurement": "Independently inspect the counterevidence and disagreement section for the scoped decision.", "full_credit": "Every material disagreement is represented or the bounded search reports none with evidence.", "zero_credit": "Counterevidence was not sought or contrary evidence was omitted.", "evidence_required": ["counterevidence review", "independent synthesis verdict"] }
+  ]
+}

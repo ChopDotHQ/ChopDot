@@ -1,0 +1,15 @@
+{
+  "rubric_version": "1.0.0",
+  "rubric_id": "rubric-implementation-v1",
+  "profile_id": "implementation",
+  "score_range": { "minimum": 0, "maximum": 100 },
+  "pass_threshold": 90,
+  "hard_fail_rules": ["IMPL-REQUIREMENTS", "IMPL-FOCUSED", "IMPL-PRODUCTION", "IMPL-SCOPE", "IMPL-CRITICAL"],
+  "dimensions": [
+    { "id": "IMPL-REQUIREMENTS", "weight": 25, "measurement": "Join every declared requirement to an accepted assertion result for the exact patch digest.", "full_credit": "Unaccepted requirement count equals zero.", "zero_credit": "Any requirement is missing, skipped, or evaluated against another candidate.", "evidence_required": ["requirement evaluation matrix", "patch digest"] },
+    { "id": "IMPL-FOCUSED", "weight": 20, "measurement": "Run all declared focused checks and record exact pass fail skip counts.", "full_credit": "Failure and unexplained skip counts equal zero.", "zero_credit": "A focused check fails, is omitted, or is retried into green without repair.", "evidence_required": ["commands", "exact test counts", "output digests"] },
+    { "id": "IMPL-PRODUCTION", "weight": 20, "measurement": "Exercise the production entrypoint when the requirement affects runtime behavior.", "full_credit": "The declared journey passes the production entrypoint or a deterministic rule marks it non-applicable.", "zero_credit": "Fixture-only proof is substituted for applicable production behavior.", "evidence_required": ["production entrypoint trace", "candidate identity"] },
+    { "id": "IMPL-SCOPE", "weight": 15, "measurement": "Compare changed and dirty paths with contract write scope and starting attribution.", "full_credit": "Unattributed out-of-scope path count equals zero.", "zero_credit": "Any unrelated change is included or existing work is reverted.", "evidence_required": ["git status", "diff scope report"] },
+    { "id": "IMPL-CRITICAL", "weight": 20, "measurement": "Independently check affected authority, privacy, release, and security invariants.", "full_credit": "Critical regression count equals zero and required independent review is accepted.", "zero_credit": "A critical regression or self-approved critical package remains.", "evidence_required": ["regression suite", "independent review"] }
+  ]
+}

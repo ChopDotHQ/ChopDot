@@ -6,10 +6,16 @@ import process from 'node:process';
 import {CID} from 'multiformats/cid';
 import {
   inspectCar,
+  assertAllowedReleaseFiles,
+  assertNoAgentRuntimeContent,
+  assertNoAgentRuntimeFiles,
+  createReleaseOutcomeReceipt,
   sha256,
+  verifyGithubOutcomeAttestation,
   withIsolatedDeploymentRuntime,
   verifyReadbackEvidence,
 } from './lib/release-evidence.mjs';
+import {validateOutcomePacket} from './agent-system/outcome.mjs';
 import {createSupplyChainEvidence} from './lib/supply-chain-evidence.mjs';
 import {createRuntimeSecurityEvidence} from './lib/runtime-security-evidence.mjs';
 
@@ -58,9 +64,11 @@ const supplyChain = await createSupplyChainEvidence(root);
 const runtimeSecurity = await createRuntimeSecurityEvidence(root);
 const runtimeSecurityBytes = Buffer.from(`${JSON.stringify(runtimeSecurity, null, 2)}\n`);
 const actual = [];
+const contentEntries = [];
 for (const file of await walk(output)) {
   const bytes = await readFile(file);
   actual.push({path: path.relative(output, file), bytes: bytes.byteLength, sha256: sha256(bytes)});
+  contentEntries.push({path: path.relative(output, file), bytes});
 }
 const aggregate = sha256(actual.map((entry) => `${entry.path}\0${entry.sha256}\n`).join(''));
 const currentCommit = git('rev-parse', 'HEAD');
@@ -74,6 +82,7 @@ const officialEnvironment = {
 
 check(release.schema === 'chopdot.release.v3', 'release.json is not chopdot.release.v3');
 check(release.commit === currentCommit && release.tree === currentTree, 'release source commit/tree is stale');
+check(release.branch === git('branch', '--show-current'), 'release source branch is stale');
 check(release.packageLockSha256 === sha256(packageLockBytes), 'release package-lock hash is stale');
 check(release.supplyChain?.packageCount === supplyChain.packageCount, 'release SBOM package count is stale');
 check(release.supplyChain?.unknownLicenseCount === supplyChain.unknownLicenseCount, 'release license inventory count is stale');
@@ -85,6 +94,17 @@ check(release.runtimeSecurity?.suspectBrowserInputs === 0, 'release browser grap
 check(release.runtimeSecurity?.sha256 === sha256(runtimeSecurityBytes) && release.runtimeSecurity?.bytes === runtimeSecurityBytes.byteLength, 'release runtime security evidence is stale');
 check(JSON.stringify(actual) === JSON.stringify(release.files), 'file manifest does not match release.json');
 check(aggregate === release.contentSha256, 'content aggregate does not match release.json');
+const actualViteAssets = actual.filter((entry) => entry.path.startsWith('assets/'));
+check(release.viteBuild?.tool === 'vite' && /^[0-9a-f]{64}$/u.test(release.viteBuild?.manifestSha256 ?? ''), 'release lacks exact Vite build-manifest identity');
+check(JSON.stringify(release.viteBuild?.assets) === JSON.stringify(actualViteAssets), 'release assets differ from the recorded exact Vite build graph');
+try {
+  assertNoAgentRuntimeFiles(actual);
+  assertAllowedReleaseFiles(actual);
+  assertNoAgentRuntimeContent(contentEntries);
+  check(true, 'release candidate excludes local agent runtime material');
+} catch (error) {
+  check(false, error.message);
+}
 check(!actual.some((entry) => entry.path.endsWith('.map')), 'source maps remain in dot-host output');
 const index = await readFile(path.join(output, 'index.html'), 'utf8');
 check(index.includes('<title>ChopDot</title>'), 'index title is not ChopDot');
@@ -173,6 +193,43 @@ if (!strict) {
 }
 
 if (strict) {
+  check(Boolean(release.agentOutcomeReceipt), 'strict release lacks a trusted redacted agent outcome receipt');
+  if (release.agentOutcomeReceipt) {
+    try {
+      if (!process.env.RELEASE_AGENT_OUTCOME || !process.env.RELEASE_AGENT_OUTCOME_ATTESTATION) {
+        throw new Error('strict verification requires RELEASE_AGENT_OUTCOME and RELEASE_AGENT_OUTCOME_ATTESTATION');
+      }
+      const outcomePath = path.resolve(root, process.env.RELEASE_AGENT_OUTCOME);
+      const attestationPath = path.resolve(root, process.env.RELEASE_AGENT_OUTCOME_ATTESTATION);
+      const outcomeBytes = await readFile(outcomePath);
+      const attestationBytes = await readFile(attestationPath);
+      const outcome = JSON.parse(outcomeBytes);
+      const outcomeValidation = validateOutcomePacket(outcome);
+      check(outcomeValidation.valid, `release agent outcome is malformed: ${outcomeValidation.issues.join('; ')}`);
+      const attestation = verifyGithubOutcomeAttestation({outcomePath, bundlePath: attestationPath, sourceCommit: release.commit});
+      const expectedReceipt = createReleaseOutcomeReceipt({
+        outcome,
+        outcomeBytes,
+        bundleBytes: attestationBytes,
+        commit: release.commit,
+        tree: release.tree,
+        branch: release.branch,
+        verificationCount: attestation.verificationCount,
+      });
+      const receiptBytes = await readFile(path.join(output, release.agentOutcomeReceipt.path));
+      const receipt = JSON.parse(receiptBytes);
+      check(sha256(receiptBytes) === release.agentOutcomeReceipt.sha256, 'release agent outcome receipt hash is stale');
+      check(JSON.stringify(receipt) === JSON.stringify(expectedReceipt), 'release agent outcome receipt differs from the verified minimal public receipt');
+      check(sha256(outcomeBytes) === release.agentOutcomeReceipt.packetFileSha256, 'release agent outcome source hash is stale');
+      check(sha256(attestationBytes) === release.agentOutcomeReceipt.attestationBundleSha256, 'release agent outcome attestation bundle hash is stale');
+      check(outcome.packet_digest === release.agentOutcomeReceipt.packetDigest, 'release agent outcome packet digest is stale');
+      check(outcome.root === root && outcome.branch === release.branch && outcome.ending_head === release.commit && outcome.ending_tree === release.tree && !(outcome.git_status ?? []).length, 'release agent outcome has the wrong exact clean candidate identity');
+      check(outcome.terminal_state === 'succeeded' && outcome.evaluation_summary?.independent_review_satisfied === true && !outcome.effects?.some((effect) => effect.state !== 'verified'), 'release agent outcome is not independently accepted or has unreconciled effects');
+      check(receipt.redaction?.rawOutcomeEmbedded === false && receipt.redaction?.absoluteRootEmbedded === false && receipt.redaction?.arbitraryTextEmbedded === false, 'release agent outcome receipt is not privacy-minimal');
+    } catch (error) {
+      failures.push(`strict release cannot validate its trusted agent outcome receipt: ${error.message}`);
+    }
+  }
   check(live, 'strict release verification requires DOT_RELEASE_LIVE=1; use npm run verify:dot-host:strict');
   check(!release.dirty, 'strict release was built from a dirty worktree');
   if (!failures.length) {

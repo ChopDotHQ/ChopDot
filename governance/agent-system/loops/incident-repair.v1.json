@@ -1,0 +1,35 @@
+{
+  "profile_version": "1.0.0",
+  "profile_id": "incident-repair",
+  "profile_digest": "da075886a3f16026d14a37093786a23d2281f38d83a0c22a7b061a2e29077cb8",
+  "kind": "agent_loop_profile",
+  "description": "Reproduces or bounds a reported live failure, repairs the originating source defect, and proves the exact path without retrying an immutable candidate into success.",
+  "contract_schema_ref": "../contracts/agent-loop-contract.v1.schema.json",
+  "artifact_contract": {
+    "artifact_types": ["IncidentPacketV1", "RegressionCaseV1", "RepairEvidencePacketV1"],
+    "required_fields": ["reporter_observation", "source_candidate_identity", "reproduction_status", "hypotheses", "root_cause", "repair", "regression_case", "local_readback", "live_readback"],
+    "required_evidence_level": "simulated-integration"
+  },
+  "expected_outcome": {
+    "statement": "The failure is reproduced or bounded as observation-only, the originating source defect is repaired, and the exact path passes local and authorized affected-surface verification with a regression case.",
+    "assertions": [
+      { "id": "INC-BOUNDARY", "description": "The incident is classified as reproduced or observation-only with evidence of that boundary.", "measurement": "reproduction_status", "operator": "one_of", "expected": ["reproduced", "observation_only"], "minimum_evidence_level": "source-only", "hard_fail": true },
+      { "id": "INC-IDENTITY", "description": "Reported, deployed, and repaired candidate identities are explicit and not conflated.", "measurement": "missing_candidate_identity_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+      { "id": "INC-REPAIR", "description": "The originating defect has a focused passing regression case.", "measurement": "focused_regression_failure_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "unit", "hard_fail": true },
+      { "id": "INC-LIVE", "description": "The affected live path is independently verified when authorized or remains explicitly not verified.", "measurement": "live_verification_status", "operator": "one_of", "expected": ["passed", "not_authorized_and_reported_false"], "minimum_evidence_level": "simulated-integration", "hard_fail": true },
+      { "id": "INC-HYPOTHESIS", "description": "Every repair retry changed the hypothesis or implementation target.", "measurement": "unchanged_hypothesis_retry_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true }
+    ]
+  },
+  "context_gate": { "exact_root": true, "freshness_required": true, "same_level_conflict": "blocked", "wrong_root": "blocked" },
+  "policy_refs": { "authority": "agent-authority-boundaries-v1", "evidence": "agent-evidence-levels-v1", "terminal_states": "agent-terminal-states-v1", "retry_budgets": "agent-retry-budgets-v1" },
+  "authority": { "default_class": "repo_local_write", "allowed_effects": ["reproduce_locally", "write_in_scope_repair", "add_regression_case", "run_local_readback"], "approval_required_effects": ["deploy", "publish", "credential_use", "live_write", "rollback"], "critical_independent_review": true },
+  "budgets": { "retry_budget_id": "budget-incident-repair-v1", "max_iterations": 3, "max_retries": 2, "same_blocker_limit": 3 },
+  "evaluator": { "rubric_path": "governance/agent-system/evals/rubrics/incident-repair.v1.json", "deterministic_checks": ["candidate_identity_check", "focused_regression", "hypothesis_change_check", "immutable_candidate_check", "live_readback_check"], "independence": "different_actor", "pass_threshold": 0.9, "hard_failures": ["INC-BOUNDARY", "INC-IDENTITY", "INC-REPAIR", "INC-LIVE", "INC-HYPOTHESIS"] },
+  "evidence": { "minimum_level": "simulated-integration", "required_artifacts": ["incident_packet", "reproduction_trace", "repair_diff", "regression_case", "readback_evidence"], "exact_counts_required": true, "candidate_identity_required": true },
+  "environment_observations": ["reported surface identity", "deployed versus source identity", "local exact path", "affected live path when authorized"],
+  "failure_packet": { "artifact_type": "BlockerPacketV1", "required_fields": ["disproved_hypotheses", "unreconciled_environment_state", "current_user_impact", "workaround_boundary", "next_authority_needed"], "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_preflight": { "port": "KnowledgeContextPortV1", "preflight_required": true, "record_outcome": true, "verify_recall": true, "provider_neutral": true },
+  "repair_policy": { "changed_hypothesis_required": true, "scope_expansion": "new_contract", "same_blocker_limit": 3, "regression_required": true },
+  "example_contract_ref": "examples/incident-repair.contract.v1.json"
+}

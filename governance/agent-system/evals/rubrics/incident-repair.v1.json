@@ -1,0 +1,15 @@
+{
+  "rubric_version": "1.0.0",
+  "rubric_id": "rubric-incident-repair-v1",
+  "profile_id": "incident-repair",
+  "score_range": { "minimum": 0, "maximum": 100 },
+  "pass_threshold": 90,
+  "hard_fail_rules": ["INC-BOUNDARY", "INC-IDENTITY", "INC-REPAIR", "INC-LIVE", "INC-HYPOTHESIS"],
+  "dimensions": [
+    { "id": "INC-BOUNDARY", "weight": 15, "measurement": "Classify the original report from direct reproduction evidence.", "full_credit": "Status is reproduced or explicitly observation-only with the observed evidence retained.", "zero_credit": "A screen observation is reported as a reproduced source defect without reproduction.", "evidence_required": ["reporter evidence", "reproduction trace"] },
+    { "id": "INC-IDENTITY", "weight": 20, "measurement": "Record and compare reported, deployed, source, repair, and live-readback candidate identities.", "full_credit": "Missing or conflated candidate identity count equals zero.", "zero_credit": "Evidence from one candidate is used to claim another candidate is repaired.", "evidence_required": ["candidate identity table", "build and content digests"] },
+    { "id": "INC-REPAIR", "weight": 25, "measurement": "Run the focused regression that reproduces the originating defect against the repaired source.", "full_credit": "Focused regression failures equal zero and the unfixed control fails as expected.", "zero_credit": "The defect is not covered or only a broad green suite is reported.", "evidence_required": ["regression case", "control result", "repair result"] },
+    { "id": "INC-LIVE", "weight": 20, "measurement": "Read back the exact affected surface after authorized publication or report live verification false.", "full_credit": "Live status is passed with matching candidate identity, or false with an explicit approval blocker.", "zero_credit": "Live success is inferred from local source or an unauthorized write occurs.", "evidence_required": ["live readback", "approval or blocker record"] },
+    { "id": "INC-HYPOTHESIS", "weight": 20, "measurement": "Compare consecutive repair hypotheses and implementation targets.", "full_credit": "Unchanged-hypothesis retry count equals zero.", "zero_credit": "A failed action is repeated without changed evidence or hypothesis.", "evidence_required": ["repair directives", "budget consumption"] }
+  ]
+}

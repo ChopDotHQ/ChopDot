@@ -1,0 +1,14 @@
+{
+  "rubric_version": "1.0.0",
+  "rubric_id": "rubric-product-definition-v1",
+  "profile_id": "product-definition",
+  "score_range": { "minimum": 0, "maximum": 100 },
+  "pass_threshold": 90,
+  "hard_fail_rules": ["PROD-SCORE", "PROD-LAW", "PROD-TRACE", "PROD-FAILURE"],
+  "dimensions": [
+    { "id": "PROD-SCORE", "weight": 25, "measurement": "Read the recorded friction, trust, clarity, and language subscores and calculate the total.", "full_credit": "The total is at least eight of ten and each subscore is evidenced.", "zero_credit": "The total is below eight or is asserted without component scores.", "evidence_required": ["product gate", "score calculation"] },
+    { "id": "PROD-LAW", "weight": 30, "measurement": "Compare each requirement and scenario with the exact PRODUCT_TRUTH.md identity.", "full_credit": "Product-law conflict count equals zero and the inspected source digest is recorded.", "zero_credit": "Any conflict remains or the source identity is missing.", "evidence_required": ["product-law digest", "independent conflict review"] },
+    { "id": "PROD-TRACE", "weight": 25, "measurement": "Join requirement IDs to GIVEN WHEN THEN scenarios and proof methods.", "full_credit": "Unmapped requirement count equals zero and every scenario has a measurable THEN.", "zero_credit": "Any requirement lacks a scenario or proof method.", "evidence_required": ["traceability matrix", "scenario validation"] },
+    { "id": "PROD-FAILURE", "weight": 20, "measurement": "Inspect the user-visible failure, recovery, authority, and privacy paths.", "full_credit": "Failure and recovery are actionable and preserve authority and privacy boundaries.", "zero_credit": "The failure path is missing, silent, or requires infrastructure diagnosis.", "evidence_required": ["failure scenario", "product review"] }
+  ]
+}

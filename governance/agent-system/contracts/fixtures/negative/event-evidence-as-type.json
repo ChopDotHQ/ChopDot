@@ -1,0 +1,13 @@
+{
+  "event_version": "1.0.0",
+  "run_id": "run_negative_event",
+  "sequence": 0,
+  "event_id": "event_negative_event",
+  "event_type": "source-only",
+  "timestamp": "2026-08-26T12:00:00Z",
+  "actor": { "id": "runner", "kind": "deterministic_runner" },
+  "previous_digest": null,
+  "payload": {},
+  "payload_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+  "event_digest": "0000000000000000000000000000000000000000000000000000000000000000"
+}

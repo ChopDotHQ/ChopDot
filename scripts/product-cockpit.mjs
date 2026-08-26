@@ -5,6 +5,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
+import { validateOutcomePacket } from './agent-system/outcome.mjs';
 
 const root = process.cwd();
 const execFileAsync = promisify(execFile);
@@ -15,6 +16,17 @@ const boardPath = path.join(root, 'product/board.html');
 const tasksPath = path.join(root, '.knowns/tasks');
 const historyPath = path.join(root, 'product/history/events');
 const screenshotPath = path.join(root, 'artifacts/product/cockpit.png');
+const agentEvidenceLevels = new Set([
+  'source-only',
+  'unit',
+  'simulated-integration',
+  'simulated-host',
+  'exact-candidate',
+  'real-host-chain',
+  'live-user',
+  'release',
+  'local-blocked',
+]);
 
 function parseArgs(values) {
   const parsed = { _: [] };
@@ -208,6 +220,57 @@ async function trackedFiles() {
   return new Set(stdout.split('\n').filter(Boolean));
 }
 
+async function gitJsonSource(commit, relative) {
+  const { stdout } = await execFileAsync('git', ['show', `${commit}:${relative}`], { cwd: root, maxBuffer: 10 * 1024 * 1024 });
+  return stdout;
+}
+
+async function workingTreeChangedPaths(candidate) {
+  const [{ stdout: tracked }, { stdout: untracked }] = await Promise.all([
+    execFileAsync('git', ['diff', '--name-only', candidate, '--'], { cwd: root }),
+    execFileAsync('git', ['ls-files', '--others', '--exclude-standard'], { cwd: root }),
+  ]);
+  return [...new Set([...tracked.split('\n'), ...untracked.split('\n')].filter(Boolean))].sort();
+}
+
+async function checkpointLineageFailures(event, checkpointRelative) {
+  const failures = [];
+  const candidate = event?.git?.head;
+  if (!/^[0-9a-f]{40}$/u.test(String(candidate ?? ''))) return ['checkpoint candidate HEAD is invalid'];
+  await execFileAsync('git', ['cat-file', '-e', `${candidate}^{commit}`], { cwd: root })
+    .catch(() => failures.push('checkpoint candidate commit does not exist'));
+  if (failures.length) return failures;
+
+  const { stdout: introductionOutput } = await execFileAsync('git', ['log', '--diff-filter=A', '--format=%H', '--', checkpointRelative], { cwd: root });
+  const introductions = introductionOutput.split('\n').filter(Boolean);
+  if (introductions.length > 1) failures.push('checkpoint path has more than one introduction commit');
+  const introduction = introductions[0];
+  let changedPaths;
+  let afterCardsText;
+  if (introduction) {
+    await execFileAsync('git', ['merge-base', '--is-ancestor', candidate, introduction], { cwd: root })
+      .catch(() => failures.push('checkpoint candidate is not an ancestor of its evidence commit'));
+    const [{ stdout: diffPaths }, introducedEvent] = await Promise.all([
+      execFileAsync('git', ['diff', '--name-only', candidate, introduction, '--'], { cwd: root }),
+      gitJsonSource(introduction, checkpointRelative),
+    ]);
+    changedPaths = diffPaths.split('\n').filter(Boolean);
+    if (introducedEvent !== await readFile(path.resolve(root, checkpointRelative), 'utf8')) failures.push('checkpoint event changed after its introduction commit');
+    afterCardsText = await gitJsonSource(introduction, 'product/cards.md');
+  } else {
+    const { stdout: currentHead } = await execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: root });
+    if (candidate !== currentHead.trim()) failures.push('uncommitted checkpoint evidence must target the current HEAD');
+    changedPaths = await workingTreeChangedPaths(candidate);
+    afterCardsText = await readFile(cardsPath, 'utf8');
+  }
+  failures.push(...checkpointEvidencePathFailures(changedPaths, event, checkpointRelative));
+
+  const beforeCardsText = await gitJsonSource(candidate, 'product/cards.md').catch(() => null);
+  if (!beforeCardsText) failures.push('checkpoint candidate does not contain product/cards.md');
+  else failures.push(...checkpointCardTransitionFailures(parseCards(beforeCardsText), parseCards(afterCardsText), event));
+  return [...new Set(failures)];
+}
+
 export function releaseBlockerSetFailures(cards, blockers = []) {
   const failures = [];
   const expected = cards
@@ -251,6 +314,84 @@ export function releaseVerdictDependencyFailures(verdicts) {
   if (verdicts.user_proven === true && verdicts.user_journey_reachable !== true) failures.push('user_proven=true requires user_journey_reachable=true');
   if (verdicts.tested === 'failed' && (verdicts.user_journey_reachable === true || verdicts.user_proven === true)) failures.push('failed testing cannot coexist with user journey reachability or user proof');
   return failures;
+}
+
+export function outcomePacketReferenceFailures(packet, expected = {}) {
+  const failures = [];
+  const validation = validateOutcomePacket(packet ?? {});
+  for (const issue of validation.issues) failures.push(`outcome packet: ${issue}`);
+  if (packet?.root !== expected.root) failures.push('outcome packet has the wrong exact worktree root');
+  if (packet?.branch !== expected.branch) failures.push('outcome packet has the wrong branch');
+  if (packet?.ending_head !== expected.head) failures.push('outcome packet is stale for the current HEAD');
+  if (expected.tree && packet?.ending_tree !== expected.tree) failures.push('outcome packet has the wrong candidate tree');
+  if (expected.runId && packet?.run_id !== expected.runId) failures.push('outcome packet run ID disagrees with the checkpoint');
+  const requirements = new Map((packet?.requirements ?? []).map((entry) => [entry.requirement_id, entry.status]));
+  for (const cardId of expected.cardIds ?? []) {
+    if (requirements.get(cardId) !== 'accepted') failures.push(`outcome packet does not accept the named card requirement ${cardId}`);
+  }
+  if (packet?.evaluation_summary?.independent_review_satisfied !== true) failures.push('outcome packet lacks required independent review');
+  return [...new Set(failures)];
+}
+
+export function checkpointProvenanceFailures(event, expected, candidateTree) {
+  const failures = [];
+  if (event?.git?.root !== expected.root) failures.push('checkpoint root does not match the canonical exact worktree');
+  if (event?.git?.branch !== expected.branch) failures.push('checkpoint branch does not match the canonical release branch');
+  if (!candidateTree || event?.git?.tree !== candidateTree) failures.push('checkpoint tree does not match its candidate commit');
+  return failures;
+}
+
+const checkpointEvidencePaths = new Set([
+  '.knowns/tasks',
+  'product/board.html',
+  'product/cards.md',
+  'product/generated/product-resume.md',
+]);
+
+export function checkpointEvidencePathFailures(changedPaths, event, checkpointPath) {
+  const allowed = new Set([
+    ...checkpointEvidencePaths,
+    checkpointPath,
+    event?.evidence,
+    event?.outcomePacket,
+  ].filter(Boolean));
+  return [...new Set(changedPaths)]
+    .filter((changedPath) => !allowed.has(changedPath))
+    .map((changedPath) => `checkpoint evidence commit changes non-evidence path ${changedPath}`);
+}
+
+export function checkpointCardTransitionFailures(beforeCards, afterCards, event) {
+  const failures = [];
+  const beforeById = new Map(beforeCards.map((card) => [card.id, card]));
+  const afterById = new Map(afterCards.map((card) => [card.id, card]));
+  const referenced = new Set(event?.cards ?? []);
+  const allowedFields = event?.state === 'done'
+    ? new Set(['status', 'reviewed', 'blocked_by', 'blocker'])
+    : new Set(['status', 'reviewed']);
+  const ids = new Set([...beforeById.keys(), ...afterById.keys()]);
+  for (const id of ids) {
+    const before = beforeById.get(id);
+    const after = afterById.get(id);
+    if (!before || !after) {
+      failures.push(`checkpoint evidence commit adds or removes card ${id}`);
+      continue;
+    }
+    const keys = new Set([...Object.keys(before), ...Object.keys(after)]);
+    for (const key of keys) {
+      if (key === '_parse_errors' || before[key] === after[key]) continue;
+      if (!referenced.has(id) || !allowedFields.has(key)) failures.push(`checkpoint evidence commit changes unauthorized card field ${id}.${key}`);
+    }
+    if (!referenced.has(id)) continue;
+    if (event?.state === 'done') {
+      if (!['building', 'blocked'].includes(before.status) || after.status !== 'done') failures.push(`checkpoint ${id} must transition building|blocked -> done`);
+      if (after.blocker !== 'none' || after.blocked_by !== 'none') failures.push(`completed checkpoint ${id} must clear blocker and blocked_by`);
+    } else if (event?.state === 'building') {
+      if (!['ready', 'blocked', 'building'].includes(before.status) || after.status !== 'building') failures.push(`checkpoint ${id} must transition ready|blocked|building -> building`);
+    } else if (before.status !== after.status) {
+      failures.push(`checkpoint state ${event?.state ?? 'missing'} cannot change ${id}.status`);
+    }
+  }
+  return [...new Set(failures)];
 }
 
 export function conditionalRouteKeyFailures(routes = []) {
@@ -388,6 +529,8 @@ async function releaseStateFailures(cards, now = new Date()) {
     await execFileAsync('git', ['cat-file', '-e', `${candidate.commit}^{commit}`], { cwd: root }).catch(() => failures.push('current release candidate commit does not exist'));
     const candidateTree = await execFileAsync('git', ['rev-parse', `${candidate.commit}^{tree}`], { cwd: root }).then(({ stdout }) => stdout.trim()).catch(() => null);
     if (candidateTree && candidateTree !== candidate.tree) failures.push('current release candidate tree does not match the candidate commit');
+    await execFileAsync('git', ['merge-base', '--is-ancestor', candidate.commit, 'HEAD'], { cwd: root })
+      .catch(() => failures.push('current release candidate is not an ancestor of the current release branch HEAD'));
   }
   const verdicts = release.verdicts ?? {};
   failures.push(...releaseVerdictShapeFailures(verdicts, release.verdict_notes));
@@ -546,6 +689,7 @@ async function releaseStateFailures(cards, now = new Date()) {
 async function historyFailures(cards) {
   const failures = [];
   const tracked = await trackedFiles();
+  const context = await loadContextAuthority();
   const ids = new Set(cards.map((card) => card.id));
   const files = (await readdir(historyPath).catch(() => [])).filter((file) => file.endsWith('.json')).sort();
   for (const [index, file] of files.entries()) {
@@ -567,6 +711,39 @@ async function historyFailures(cards) {
       if (event.schema === 'chopdot.product.checkpoint.v2') {
         if (!/^[0-9a-f]{64}$/u.test(event.evidenceSha256 ?? '')) failures.push(`${file}: v2 evidence SHA-256 is invalid`);
         else if (!evidenceFailure && sha256(await readFile(path.resolve(root, event.evidence))) !== event.evidenceSha256) failures.push(`${file}: v2 evidence SHA-256 is stale`);
+      }
+    }
+    if (event.outcomePacket || event.agentRunId || event.evidenceLevel || event.independentReview) {
+      if (!event.outcomePacket || !event.agentRunId || !event.evidenceLevel || !event.independentReview) {
+        failures.push(`${file}: agent outcome reference is incomplete`);
+        continue;
+      }
+      if (!agentEvidenceLevels.has(event.evidenceLevel)) failures.push(`${file}: invalid agent evidence level ${event.evidenceLevel}`);
+      if (event.independentReview?.satisfied !== true || typeof event.independentReview?.reviewerId !== 'string' || !event.independentReview.reviewerId) {
+        failures.push(`${file}: agent outcome reference lacks a satisfied independent reviewer`);
+      }
+      const outcomeFailure = await trackedRegularFileFailure(event.outcomePacket, tracked, `${file}: outcome packet`);
+      if (outcomeFailure) failures.push(outcomeFailure);
+      else {
+        const outcomeBytes = await readFile(path.resolve(root, event.outcomePacket));
+        if (sha256(outcomeBytes) !== event.outcomePacketSha256) failures.push(`${file}: outcome packet SHA-256 is stale`);
+        let packet;
+        try { packet = JSON.parse(outcomeBytes.toString('utf8')); } catch { failures.push(`${file}: outcome packet is invalid JSON`); }
+        const candidateTree = /^[0-9a-f]{40}$/u.test(String(event.git?.head ?? ''))
+          ? await execFileAsync('git', ['rev-parse', `${event.git.head}^{tree}`], { cwd: root }).then(({ stdout }) => stdout.trim()).catch(() => null)
+          : null;
+        failures.push(...checkpointProvenanceFailures(event, { root: context.exact_root, branch: context.branch }, candidateTree)
+          .map((failure) => `${file}: ${failure}`));
+        if (packet) failures.push(...outcomePacketReferenceFailures(packet, {
+          root: event.git?.root,
+          branch: event.git?.branch,
+          head: event.git?.head,
+          tree: candidateTree,
+          runId: event.agentRunId,
+          cardIds: event.state === 'done' ? event.cards : [],
+        }).map((failure) => `${file}: ${failure}`));
+        failures.push(...(await checkpointLineageFailures(event, path.join('product/history/events', file)))
+          .map((failure) => `${file}: ${failure}`));
       }
     }
   }
@@ -839,6 +1016,7 @@ async function setStatus(command, args) {
   const expected = command === 'start' ? ['ready', 'blocked', 'building'] : ['building', 'blocked'];
   if (!expected.includes(card.status)) throw new Error(`${id} cannot ${command} from ${card.status}`);
   if (command === 'finish' && !args.evidence) throw new Error(`${id} finish requires --evidence=PATH`);
+  if (command === 'finish' && args['outcome-packet']) await validatedOutcomeReference(args, true);
   if (command === 'start' && card.status === 'blocked') {
     const blockerIds = String(card.blocked_by).split(',').map((value) => value.trim()).filter((value) => value && value !== 'none');
     const unresolved = blockerIds.filter((blockerId) => cards.find((candidate) => candidate.id === blockerId)?.status !== 'done');
@@ -881,6 +1059,9 @@ async function checkpoint(args, forcedState) {
     execFileAsync('git', ['branch', '--show-current'], { cwd: root }),
     execFileAsync('git', ['status', '--short'], { cwd: root }),
   ]);
+  const outcomeReference = args['outcome-packet']
+    ? await validatedOutcomeReference(args, forcedState === 'done', { head: head.trim(), tree: tree.trim(), branch: branch.trim() })
+    : undefined;
   const payload = {
     schema: 'chopdot.product.checkpoint.v2',
     sequence: Number(sequence),
@@ -899,11 +1080,61 @@ async function checkpoint(args, forcedState) {
       tree: tree.trim(),
       dirtyPaths: status.split('\n').filter(Boolean),
     },
+    agentRunId: outcomeReference?.packet.run_id ?? args['agent-run-id'],
+    outcomePacket: outcomeReference?.path,
+    outcomePacketSha256: outcomeReference?.sha256,
+    evidenceLevel: args['evidence-level'],
+    independentReview: args['independent-review'] ? {
+      reviewerId: String(args['independent-review']),
+      satisfied: outcomeReference?.packet.evaluation_summary?.independent_review_satisfied === true,
+    } : undefined,
   };
   const slug = cards.join('-').toLowerCase() || 'release';
   const target = path.join(historyPath, `${sequence}-${slug}.json`);
+  if (outcomeReference) {
+    const lineageFailures = await checkpointLineageFailures(payload, path.relative(root, target));
+    if (lineageFailures.length) throw new Error(lineageFailures.join('\n'));
+  }
   await writeFile(target, `${JSON.stringify(payload, null, 2)}\n`, { flag: 'wx' });
   console.log(`Recorded ${path.relative(root, target)}.`);
+}
+
+async function validatedOutcomeReference(args, required, observedIdentity) {
+  const relative = String(args['outcome-packet'] ?? '');
+  if (!relative) {
+    if (required) throw new Error('finishing with an agent outcome requires --outcome-packet=PATH');
+    return undefined;
+  }
+  if (!args['agent-run-id']) throw new Error('outcome reference requires --agent-run-id=run_...');
+  if (!args['evidence-level'] || !agentEvidenceLevels.has(String(args['evidence-level']))) {
+    throw new Error('outcome reference requires one canonical --evidence-level');
+  }
+  if (!args['independent-review']) throw new Error('outcome reference requires --independent-review=REVIEWER_ID');
+  const tracked = await trackedFiles();
+  const sourceFailure = await trackedRegularFileFailure(relative, tracked, 'outcome packet');
+  if (sourceFailure) throw new Error(sourceFailure);
+  const bytes = await readFile(path.resolve(root, relative));
+  let packet;
+  try { packet = JSON.parse(bytes.toString('utf8')); } catch { throw new Error('outcome packet is invalid JSON'); }
+  let identity = observedIdentity;
+  if (!identity) {
+    const [{ stdout: head }, { stdout: branch }] = await Promise.all([
+      execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: root }),
+      execFileAsync('git', ['branch', '--show-current'], { cwd: root }),
+    ]);
+    const { stdout: tree } = await execFileAsync('git', ['rev-parse', 'HEAD^{tree}'], { cwd: root });
+    identity = { head: head.trim(), tree: tree.trim(), branch: branch.trim() };
+  }
+  const failures = outcomePacketReferenceFailures(packet, {
+    root,
+    branch: identity.branch,
+    head: identity.head,
+    tree: identity.tree,
+    runId: String(args['agent-run-id']),
+    cardIds: required ? String(args.cards ?? args.id ?? '').split(',').map((value) => value.trim()).filter(Boolean) : [],
+  });
+  if (failures.length) throw new Error(failures.join('\n'));
+  return { path: relative, sha256: sha256(bytes), packet };
 }
 
 async function screenshot() {

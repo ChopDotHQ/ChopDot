@@ -24,5 +24,6 @@ acceptance as deployment.
 
 The release is complete only when implementation, production-entrypoint tests,
 commit, push, immutable build, Devnet stage, byte-identical public promotion,
-reachability, user ownership, real participant use, and exact-worktree KGv2
-recall are each proved separately.
+reachability, user ownership, real participant use, and exact-worktree cited
+knowledge recall are each proved separately. The backend and version remain
+visible in the knowledge receipt.

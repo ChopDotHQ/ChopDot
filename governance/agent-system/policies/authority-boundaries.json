@@ -1,0 +1,44 @@
+{
+  "policy_version": "1.0.0",
+  "policy_id": "agent-authority-boundaries-v1",
+  "kind": "authority_boundary_policy",
+  "classes": [
+    {
+      "id": "read_only",
+      "allowed": ["read_repo", "read_local_evidence", "read_public_source", "run_non_mutating_check"],
+      "approval_required": [],
+      "effect_record_required": false
+    },
+    {
+      "id": "repo_local_write",
+      "allowed": ["write_in_scope_file", "run_formatter", "run_local_test", "create_redacted_evidence"],
+      "approval_required": [],
+      "effect_record_required": false
+    },
+    {
+      "id": "repository_effect",
+      "allowed": ["commit", "push", "pr_create", "pr_update"],
+      "approval_required": ["approval_required_when_not_explicitly_in_operator_envelope"],
+      "effect_record_required": true
+    },
+    {
+      "id": "external_effect",
+      "allowed": ["credential_use", "message_send", "faucet_request", "testnet_write"],
+      "approval_required": ["explicit_action_time_authority_or_active_envelope"],
+      "effect_record_required": true
+    },
+    {
+      "id": "critical_external_effect",
+      "allowed": ["repository_setting", "merge", "publish", "deploy", "name_transfer", "mainnet_write", "payment"],
+      "approval_required": ["explicit_action_time_approval", "independent_review", "rollback_or_forward_repair_plan"],
+      "effect_record_required": true
+    }
+  ],
+  "forbidden_authority_claims": [
+    "An agent, knowledge backend, graph packet, test, or CI job cannot create participant, membership, organizer, money, recovery, or product-law authority.",
+    "An approval cannot be widened beyond its recorded target, payload digest, expiry, and conditions.",
+    "An unknown external effect cannot be blindly redispatched.",
+    "The author cannot close their own critical security, authority, money, privacy, recovery, credential, or release package."
+  ],
+  "effect_requirements": ["normalized_parameters", "payload_digest", "idempotency_key", "authority_source", "before_readback", "after_readback", "recovery_strategy"]
+}

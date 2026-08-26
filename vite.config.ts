@@ -4,6 +4,7 @@ import path from 'path';
 import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
+  const dotHost = process.env.VITE_BUILD_PROFILE === 'dot-host';
   return {
     plugins: [react(), tailwindcss()],
     resolve: {
@@ -11,6 +12,9 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
+    build: dotHost ? {
+      manifest: 'vite-manifest.json',
+    } : undefined,
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.

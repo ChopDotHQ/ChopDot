@@ -1,0 +1,16 @@
+{
+  "rubric_version": "1.0.0",
+  "rubric_id": "rubric-release-outcome-v1",
+  "profile_id": "release-outcome",
+  "score_range": { "minimum": 0, "maximum": 100 },
+  "pass_threshold": 100,
+  "hard_fail_rules": ["REL-CLEAN", "REL-DETERMINISTIC", "REL-BYTES", "REL-SURFACES", "REL-EFFECTS", "REL-USER"],
+  "dimensions": [
+    { "id": "REL-CLEAN", "weight": 15, "measurement": "Compare the candidate manifest with the clean commit, tree, lockfile digests, and build environment.", "full_credit": "Every declared identity matches and Git status is clean.", "zero_credit": "The candidate source, tree, lockfile, or dirty state is uncertain.", "evidence_required": ["release manifest", "git identity", "lockfile digests"] },
+    { "id": "REL-DETERMINISTIC", "weight": 15, "measurement": "Rebuild from the clean candidate and compare artifact digests.", "full_credit": "Rebuild and candidate digests are identical.", "zero_credit": "Digests differ or rebuild evidence is absent.", "evidence_required": ["candidate digest", "rebuild digest", "build command"] },
+    { "id": "REL-BYTES", "weight": 20, "measurement": "Compare staged and promoted content identities with the reviewed candidate.", "full_credit": "Candidate, stage, and promotion identities are identical.", "zero_credit": "A rebuild occurs between stage and promotion or any identity differs.", "evidence_required": ["stage readback", "promotion readback", "candidate identity"] },
+    { "id": "REL-SURFACES", "weight": 20, "measurement": "Independently read every required host and gateway surface.", "full_credit": "Failed surface count equals zero and each reads the expected build and content identity.", "zero_credit": "Any required surface is missing, stale, or verified only indirectly.", "evidence_required": ["surface inventory", "independent readbacks"] },
+    { "id": "REL-EFFECTS", "weight": 15, "measurement": "Reconcile every release effect from planned state through environmental readback.", "full_credit": "Unknown, failed, or unreconciled effect count equals zero.", "zero_credit": "Any release effect is unknown or blindly retried.", "evidence_required": ["effect ledger", "approval records", "readbacks"] },
+    { "id": "REL-USER", "weight": 15, "measurement": "Inspect independent implemented, tested, promoted, reachable, owned, and user-proven verdict fields.", "full_credit": "All dimensions are present and user-proven cites real participant evidence or remains false.", "zero_credit": "Reachability, agent evidence, or fixture evidence is substituted for real participant proof.", "evidence_required": ["release verdicts", "user acceptance evidence"] }
+  ]
+}
