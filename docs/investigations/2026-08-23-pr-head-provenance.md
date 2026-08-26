@@ -114,3 +114,19 @@ identities appropriate to the claim.
    missing event payload, skipped jobs, and moving-body snapshot races.
 4. Record branch/ruleset readback separately before `ci_enforced` or
    `branch_protected` becomes true.
+
+## 2026-08-27 live PR #13 retry observation
+
+Run `33019750114` checked out exact head
+`6cd0e092e662e5b421c28914cb4bfef5f7ea6390`. Agent contract, agent runner,
+knowledge adapters, and application fast assurance passed. Repo governance
+failed because the `synchronize` event retained the earlier empty PR body; the
+final outcome correctly skipped. Updating the live PR body after the push did
+not change that immutable event payload.
+
+An empty follow-up commit `0fee2b6f9c5d2e021d69b42dd74ff5bee9a69e77`
+changed no tree bytes but did not produce a new governance run. Therefore the
+bounded retry is a non-empty documentation commit made only after the governed
+body passes local validation. That push must produce a fresh `synchronize`
+event, and the entire exact-head workflow must pass; rerunning
+`33019750114` would reuse stale event evidence and is not acceptable proof.
