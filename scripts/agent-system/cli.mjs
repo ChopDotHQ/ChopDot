@@ -70,6 +70,7 @@ Core commands:
   validate --contract FILE [--expected-root ROOT]
   contract-new --output FILE --root ROOT --run-id run_<id>
     --branch NAME --starting-head SHA --starting-tree SHA
+    [--created-by ACTOR_ID --created-by-kind human|agent|deterministic_runner|external_system]
     [--intent-type TYPE] [--requirements A,B] [--in-paths A,B]
     [--out-paths A,B] [--allowed-writes A,B]
     [--deterministic-commands "node --test file,npm run check"]
@@ -157,12 +158,20 @@ export async function main(argv = process.argv.slice(2)) {
     }
     case 'contract-new': {
       const output = path.resolve(requireOption(options, 'output'));
+      const hasCreatorId = options.created_by !== undefined;
+      const hasCreatorKind = options.created_by_kind !== undefined;
+      if (hasCreatorId !== hasCreatorKind) throw new Error('--created-by and --created-by-kind must be provided together');
+      if (hasCreatorKind && !['human', 'agent', 'deterministic_runner', 'external_system'].includes(options.created_by_kind)) {
+        throw new Error(`Unsupported --created-by-kind: ${options.created_by_kind}`);
+      }
+      const creator = hasCreatorId ? { id: String(options.created_by), kind: String(options.created_by_kind) } : null;
       let contract;
       if (options.from) {
         contract = await readJson(path.resolve(options.from));
         contract = {
           ...contract,
           run_id: options.run_id ?? contract.run_id,
+          ...(creator ? { created_by: creator } : {}),
           scope: {
             ...contract.scope,
             root,
@@ -180,7 +189,7 @@ export async function main(argv = process.argv.slice(2)) {
           task: options.task,
           objective: options.objective,
           deliverable: options.deliverable,
-          createdBy: options.created_by,
+          ...(creator ? { createdBy: creator } : {}),
           intentType: options.intent_type,
           requirementIds: commaList(options.requirements).length ? commaList(options.requirements) : undefined,
           inPaths: commaList(options.in_paths).length ? commaList(options.in_paths) : undefined,

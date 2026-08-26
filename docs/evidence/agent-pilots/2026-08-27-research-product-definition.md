@@ -74,3 +74,19 @@ The next attempts SHALL start only after this failure evidence is committed,
 shall build the measurement evidence before recording its artifact, shall not
 mutate the artifact afterward, and shall be independently evaluated against
 the same clean candidate identity.
+
+## Second fail-closed discovery
+
+The `_002` pilot round stopped before evaluation because `contract-new`
+accepted a creator ID but silently defaulted its kind to `human`. That made
+agent-authored contracts claim a human creator and could weaken the practical
+meaning of `different_actor` or `different_run`. All five started `_002` runs
+were terminated as `failed_verification`; their continuations remain in
+`output/working_memory/` and none was promoted.
+
+The runner repair makes `--created-by` and `--created-by-kind` an inseparable
+pair, accepts only the contract actor vocabulary, supports truthful overrides
+for template-derived contracts, and documents that labels alone do not prove
+independence. Fresh focused and complete runner verification passed 115/115
+tests. The next real round must use `--created-by-kind=agent` and a genuinely
+different evaluator.

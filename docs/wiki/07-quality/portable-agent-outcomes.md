@@ -24,6 +24,11 @@ the canonical progression from source-only through release, with
 `local-blocked` remaining non-promotable. Reviewer independence is recorded
 separately from evidence strength.
 
+Creator identity is also explicit evidence. Contract creation requires an
+actor ID and actor kind together; delegated work uses `kind: agent`. Missing or
+unknown kinds fail closed so a self-authored run cannot gain apparent
+independence by being mislabeled as the human operator.
+
 Product Cockpit checkpoints may cite reviewed outcome packets but the runner
 cannot reprioritize cards, alter product scores, or change `PRODUCT_TRUTH.md`.
 The packet binds a clean product candidate. A later evidence-only commit may

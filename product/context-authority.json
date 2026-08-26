@@ -133,7 +133,7 @@
       "freshness_days": 30,
       "applies_to": "chopdot-v1-launch",
       "authority": "commands and stop conditions only",
-      "sha256": "55a207c7457a421ec8dbb9d51226b665423e5914f8aa6e4a8725a0c022848ffd"
+      "sha256": "24ff2cfff538db4e7a66996fd696228867ca606eaf10bc8810067485c900a428"
     },
     {
       "path": "docs/wiki/agent-context.generated.md",

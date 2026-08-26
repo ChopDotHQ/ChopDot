@@ -149,3 +149,30 @@ test('CLI help exposes the complete lifecycle surface', () => {
   const result = spawnSync(process.execPath, [cli, 'help'], { encoding: 'utf8' });
   for (const command of ['run-checkpoint', 'run-observe', 'run-artifact', 'run-budget', 'run-repair', 'run-terminate', 'effect-plan', 'approval-record', 'effect-readback', 'continuation-promote']) assert.match(result.stdout, new RegExp(command));
 });
+
+test('CLI contract-new preserves explicit agent creator identity', async () => {
+  const root = await fixtureRoot();
+  const cli = path.resolve('scripts/agent-system/cli.mjs');
+  const output = path.join(root, 'agent-contract.json');
+  const result = spawnSync(process.execPath, [
+    cli, 'contract-new', '--output', output, '--root', root,
+    '--run-id', 'run_cli_creator_identity', '--branch', 'fixture',
+    '--starting-head', 'a'.repeat(40), '--starting-tree', 'b'.repeat(40),
+    '--created-by', 'pilot-agent', '--created-by-kind', 'agent', '--json',
+  ], { encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.deepEqual(JSON.parse(result.stdout).contract.created_by, { id: 'pilot-agent', kind: 'agent' });
+});
+
+test('CLI contract-new rejects ambiguous creator identity', async () => {
+  const root = await fixtureRoot();
+  const cli = path.resolve('scripts/agent-system/cli.mjs');
+  const result = spawnSync(process.execPath, [
+    cli, 'contract-new', '--output', path.join(root, 'bad-contract.json'), '--root', root,
+    '--run-id', 'run_cli_creator_missing_kind', '--branch', 'fixture',
+    '--starting-head', 'a'.repeat(40), '--starting-tree', 'b'.repeat(40),
+    '--created-by', 'pilot-agent', '--json',
+  ], { encoding: 'utf8' });
+  assert.equal(result.status, 1);
+  assert.match(JSON.parse(result.stdout).error.message, /must be provided together/);
+});

@@ -134,6 +134,22 @@ Did the handoff preserve exact state, failures, blockers, and next action?
 Record this as `trajectory_checked: pass|fail|partial` with cited evidence.
 It is not a substitute for application tests or release/user verdicts.
 
+Contract creator identity is part of the independence boundary. A delegated
+agent run must declare both fields explicitly:
+
+```bash
+npm run agent:contract:new -- \
+  --created-by=research-agent-01 \
+  --created-by-kind=agent \
+  # plus the bounded contract fields
+```
+
+`--created-by` and `--created-by-kind` are an inseparable pair. The CLI rejects
+an omitted or unknown kind instead of silently labelling an agent as a human
+operator. The later evaluator identity must be genuinely different when the
+profile requires `different_actor` or `different_run`; changing only the label
+does not establish independence.
+
 The measurement file is typed and evidence-bound. A bare scalar is invalid.
 Each rubric subject names its value, canonical evidence level, and one or more
 artifact IDs already recorded by the same run, for example:
