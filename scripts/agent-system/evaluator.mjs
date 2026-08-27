@@ -211,9 +211,10 @@ export async function recordEvaluation(runDirectory, contract, options = {}) {
   const evidenceFile = path.join(runDirectory, 'evidence', `${evaluation.evaluation_id}.commands.json`);
   await writeJsonAtomic(evidenceFile, redactValue({ command_results: evaluation.command_results, command_measurement_conflicts: evaluation.command_measurement_conflicts, measurement_binding_results: measurementResolution.results, candidate_identity: persistedCandidateIdentity(candidateAfter), candidate_digest: candidateAfter.candidate_digest }));
   const evidenceBytes = await readFile(evidenceFile);
+  const evidencePath = path.relative(contractRoot(contract), evidenceFile).split(path.sep).join('/');
   const evidenceArtifact = {
     artifact_version: '1.0.0', artifact_id: evidenceId, run_id: contract.run_id,
-    artifact_type: 'TestEvidencePacketV1', path: evidenceFile,
+    artifact_type: 'TestEvidencePacketV1', path: evidencePath,
     media_type: 'application/json', byte_length: evidenceBytes.length, sha256: sha256(evidenceBytes),
     created_at: evaluation.finished_at, created_by: evaluation.evaluator.id,
     candidate_identity: persistedCandidateIdentity(candidateAfter),
@@ -236,9 +237,10 @@ export async function recordEvaluation(runDirectory, contract, options = {}) {
   const evaluationRecordFile = path.join(runDirectory, 'evidence', `${evaluation.evaluation_id}.evaluation.json`);
   await writeJsonAtomic(evaluationRecordFile, redactValue(persistedEvaluation));
   const evaluationRecordBytes = await readFile(evaluationRecordFile);
+  const evaluationRecordPath = path.relative(contractRoot(contract), evaluationRecordFile).split(path.sep).join('/');
   const evaluationRecordArtifact = {
     artifact_version: '1.0.0', artifact_id: evaluationRecordId, run_id: contract.run_id,
-    artifact_type: 'EvaluationRecordV1', path: evaluationRecordFile,
+    artifact_type: 'EvaluationRecordV1', path: evaluationRecordPath,
     media_type: 'application/json', byte_length: evaluationRecordBytes.length, sha256: sha256(evaluationRecordBytes),
     created_at: evaluation.finished_at, created_by: evaluation.evaluator.id,
     candidate_identity: persistedCandidateIdentity(candidateAfter),

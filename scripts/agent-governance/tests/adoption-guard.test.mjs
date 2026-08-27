@@ -553,7 +553,7 @@ test('tampered runner ledger, evaluation, and command evidence each fail governe
   });
   await t.test('evaluation record', async () => {
     const value = await fixture();
-    fs.writeFileSync(value.packet.evaluation_index[0].path, JSON.stringify({ forged: true }));
+    fs.writeFileSync(path.resolve(value.root, value.packet.evaluation_index[0].path), JSON.stringify({ forged: true }));
     const receipt = await validateAcceptance({
       root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
       outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
@@ -565,7 +565,7 @@ test('tampered runner ledger, evaluation, and command evidence each fail governe
   await t.test('command evidence', async () => {
     const value = await fixture();
     const command = value.packet.artifacts.find((entry) => entry.artifact_id === value.provenance.command_evidence.artifact_id);
-    fs.writeFileSync(command.path, JSON.stringify({ command_results: [] }));
+    fs.writeFileSync(path.resolve(value.root, command.path), JSON.stringify({ command_results: [] }));
     const receipt = await validateAcceptance({
       root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
       outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],

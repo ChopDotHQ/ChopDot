@@ -84,9 +84,15 @@ test('same-run exact-head reports generate a valid external OutcomePacketV1', as
   assert.equal(validateOutcomePacket(result.packet).valid, true);
   assert.equal(result.packet.ending_head, value.head);
   assert.equal(result.packet.ending_tree, value.tree);
+  assert.equal(result.packet.starting_head, value.head);
+  assert.equal(result.packet.starting_tree, value.tree);
   assert.equal(fs.realpathSync(result.packet.root), fs.realpathSync(value.root));
   assert.equal(result.packet.branch, 'codex/test');
   assert.equal(result.packet.evaluation_summary.independent_review_satisfied, true);
+  for (const artifact of result.packet.artifacts) {
+    assert.equal(path.isAbsolute(artifact.path), false);
+    assert.equal(fs.existsSync(path.join(value.root, artifact.path)), true, artifact.path);
+  }
   const contract = JSON.parse(fs.readFileSync(result.contract_path));
   assert.equal(validateAgentContract(contract, { expectedRoot: fs.realpathSync(value.root) }).valid, true);
   assert.equal(digestContract(contract), result.packet.contract_digest);
@@ -112,7 +118,7 @@ test('same-run exact-head reports generate a valid external OutcomePacketV1', as
   });
   assert.equal(evidence.independence.basis, 'deterministic_evaluator_identity_does_not_alias_pr_submitter_or_any_base_to_head_commit_author_or_committer');
   assert.equal(evidence.independence.satisfied, true);
-  const evaluation = JSON.parse(fs.readFileSync(result.packet.evaluation_index[0].path));
+  const evaluation = JSON.parse(fs.readFileSync(path.resolve(value.root, result.packet.evaluation_index[0].path)));
   assert.equal(validateGovernanceInstance(evaluation, 'evaluation.v1.schema.json').valid, true);
   assert.equal(evaluation.evaluator.id, identities.evaluatorIdentity);
   assert.equal(evaluation.independence, 'different_actor');
