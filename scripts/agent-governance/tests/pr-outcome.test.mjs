@@ -116,6 +116,9 @@ test('same-run exact-head reports generate a valid external OutcomePacketV1', as
   assert.equal(validateGovernanceInstance(evaluation, 'evaluation.v1.schema.json').valid, true);
   assert.equal(evaluation.evaluator.id, identities.evaluatorIdentity);
   assert.equal(evaluation.independence, 'different_actor');
+  const executionAttestation = JSON.parse(fs.readFileSync(result.execution_attestation_path));
+  assert.equal(evaluation.started_at, executionAttestation.evaluated_at);
+  assert.equal(evaluation.finished_at, executionAttestation.evaluated_at);
   assert.equal(result.packet.evaluation_index.length, 1);
   assert.equal(fs.existsSync(result.runner_provenance_path), true);
   assert.equal(fs.existsSync(path.join(result.run_directory, 'events.jsonl')), true);
@@ -127,7 +130,7 @@ test('same-run exact-head reports generate a valid external OutcomePacketV1', as
   assert.equal(events.some((event) => event.event_type === 'evaluation_finished'), true);
   assert.equal(events.at(-1).payload.terminal_state, 'succeeded');
   assert.equal(evaluation.evaluation_id.startsWith('evaluation_ci_'), false);
-  assert.equal(JSON.parse(fs.readFileSync(result.execution_attestation_path)).provider, 'github-actions-oidc');
+  assert.equal(executionAttestation.provider, 'github-actions-oidc');
   assert.match(result.packet.limitations[0], /does not prove human or CODEOWNER review/);
 });
 

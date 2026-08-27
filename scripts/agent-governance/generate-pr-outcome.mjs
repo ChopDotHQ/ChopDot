@@ -233,7 +233,13 @@ export async function generatePrOutcome({
   fs.writeFileSync(measurementPath, `${JSON.stringify(measurementDocument, null, 2)}\n`);
   const measurementArtifact = (await recordArtifact(runDirectory, acceptanceContract, path.relative(actualRoot, measurementPath), { artifactType: 'MeasurementEvidenceV1', actor: evaluatorIdentity })).artifact;
   const bindings = Object.fromEntries(Object.entries(measurementDocument.measurements).map(([subject, measurement]) => [subject, { value: measurement.value, evidence_level: measurement.evidence_level, evidence_artifact_ids: [measurementArtifact.artifact_id] }]));
-  const evaluation = await recordEvaluation(runDirectory, acceptanceContract, { evaluatorIdentity, evaluatorKind: 'deterministic', evaluatorVersion: 'github-actions-pr-outcome-v1', measurements: bindings });
+  const evaluation = await recordEvaluation(runDirectory, acceptanceContract, {
+    evaluatorIdentity,
+    evaluatorKind: 'deterministic',
+    evaluatorVersion: 'github-actions-pr-outcome-v1',
+    measurements: bindings,
+    evaluatedAt: createdAt,
+  });
   if (!evaluation.accepted) throw new Error(`Fresh deterministic PR evaluation failed: ${evaluation.counts.failed} failed, ${evaluation.counts.blocked} blocked`);
   await terminate(runDirectory, runId, 'succeeded', { evaluation_id: evaluation.evaluation_id }, evaluatorIdentity);
   const runnerProvenancePath = path.join(outputDirectory, 'runner-provenance.json');
