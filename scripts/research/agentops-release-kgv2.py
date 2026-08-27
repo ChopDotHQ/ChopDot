@@ -64,6 +64,7 @@ MANIFEST = {
             "scripts/lib/recovery-head-verification.mjs",
             "scripts/agent-governance/**",
             "scripts/agent-system/**",
+            "scripts/research/agentops-release-kgv2.py",
             "scripts/prepare-dot-host-release.mjs",
             "scripts/recovery-head-deployment.mjs",
             "scripts/release-evidence.test.mjs",
@@ -101,6 +102,7 @@ MANIFEST = {
         "docs/adr/0005-portable-agent-outcome-system.md",
         "docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md",
         ".github/workflows/agent-governance.yml",
+        "scripts/research/agentops-release-kgv2.py",
         "docs/release/current-release-state.json",
         "docs/release/2026-08-24-live-first-use-findings.md",
         "docs/release/2026-08-24-local-release-assurance.md",
@@ -318,14 +320,19 @@ def isolated_main(autobots: Path, source_identity: dict[str, object]) -> int:
     attest_snapshot_tree(autobots, "Isolated AgentOps child runtime")
     sys.path.insert(0, str(autobots))
     from agentops.runners.kg_preflight import build_kg_preflight
-    from agentops.runners.repo_graph_v1 import deploy_repo
+    from agentops.runners import repo_graph_v1 as repo_graph_runner
 
     os.environ["AGENTOPS_CONTEXT_GRAPH_MODE"] = "v2"
     os.environ["AGENTOPS_CG2_REPO_ROOT_CHOPDOT_V1_LAUNCH"] = str(WORKTREE)
 
-    deployment = deploy_repo(MANIFEST, apply=True, portfolio_tier="product")
     artifact_root = resolve_artifact_root()
-    report_root = autobots / "agentops/reports/repo_graph_v1/repos" / REPO_ID
+    repo_graph_runtime_root = artifact_root / "repo-graph-runtime"
+    repo_graph_runner.REPORT_ROOT = repo_graph_runtime_root / "reports"
+    repo_graph_runner.STATE_ROOT = repo_graph_runtime_root / "state"
+    deployment = repo_graph_runner.deploy_repo(
+        MANIFEST, apply=True, portfolio_tier="product"
+    )
+    report_root = repo_graph_runner.REPORT_ROOT / "repos" / REPO_ID
     graph = json.loads((report_root / "graph.json").read_text(encoding="utf-8"))
     packet = json.loads(
         (report_root / "context_packet.json").read_text(encoding="utf-8")
