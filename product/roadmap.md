@@ -18,10 +18,11 @@
 5. Run independent visual, accessibility, privacy, security, contract, recovery,
    performance, offline, responsive, and release assurance against the repaired
    tree.
-6. Establish and read back the required branch ruleset, commit logical slices,
-   push the release branch, and keep PR merge outside this release envelope.
-7. Freeze one deterministic candidate; the broken frozen candidate is not
-   eligible for promotion.
+6. Enforce and read back the governed `main` merge boundary plus non-destructive
+   release-branch continuity rules, commit logical slices, push the release
+   branch, and keep PR merge outside this release envelope.
+7. Freeze one deterministic candidate, then fully lock and read back the release
+   branch; the broken frozen candidate is not eligible for promotion.
 8. Deploy and verify the same bounded recovery contract behavior on Products
    Devnet and Paseo before publishing the frontend name.
 9. Stage one CAR/CID on Products Devnet and promote those identical bytes to

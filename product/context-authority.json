@@ -89,7 +89,7 @@
       "freshness_days": 14,
       "applies_to": "chopdot-v1-launch",
       "authority": "current ordering only; Cockpit card priority is the machine-routed next action",
-      "sha256": "72c967b6f3c4f7860dfe3fe3a76493a7de2c976fec9fbb735158a3b89f63dca0"
+      "sha256": "03b6eeab5af033b564e18b13cead9423d3e898f36e3a2dc10b981ee69be01fef"
     },
     {
       "path": "docs/release/current-release-state.json",
@@ -111,7 +111,7 @@
       "freshness_days": 14,
       "applies_to": "chopdot-v1-launch",
       "authority": "current full public-testnet execution route; it cannot change product law or expand the recorded external approval envelope",
-      "sha256": "6533a3ea7019025405b53e54d409de35855c2b323cfa3425b64d5f19828a5730"
+      "sha256": "4bcdb193790217cf50f83b30611b9501c78cd4625c03d4fe8dbaada789aea714"
     },
     {
       "path": "docs/CHOPDOT_OPERATING_LOOPS.md",

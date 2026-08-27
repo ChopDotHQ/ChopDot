@@ -212,12 +212,19 @@ permit an architecture change or a success claim.
 
 - **Owner:** release integrator and repository administrator.
 - **Expected outcome:** every dirty path is classified; logical commits are
-  pushed; PR #13 describes the exact head; required checks and stale-review
-  controls are installed and read back; no merge occurs.
-- **Evidence:** Git status, commit/tree, remote ref, PR fields, ruleset packet,
-  ruleset readback, and CI run IDs.
-- **Failure/exit:** bypass actors, excluded governed refs, advisory checks, or a
-  moving unproven head block candidate use.
+  pushed; PR #13 describes the exact head; `main` requires the named checks,
+  CODEOWNER approval, last-push approval, stale-review dismissal, resolved
+  conversations, and current-base validation. The still-moving release branch
+  rejects force-push and deletion but remains writable for the remaining gates.
+  Both rulesets are installed and read back; no merge occurs.
+- **Evidence:** Git status, commit/tree, remote ref, PR fields, separate governed
+  merge-boundary and release-continuity packets, ruleset readbacks, and CI run
+  IDs.
+- **Failure/exit:** bypass actors, excluded governed refs, advisory `main`
+  checks, destructive release-branch mutation, or a moving unproven head block
+  candidate use. Full pull-request enforcement on the release branch is deferred
+  only until the immutable freeze in Gate 17 so governance cannot deadlock the
+  remaining authorized commits.
 
 ### 8. Portable knowledge synchronization
 
@@ -329,12 +336,15 @@ permit an architecture change or a success claim.
 - **Owner:** release integrator.
 - **Expected outcome:** a clean commit produces `dist-dot-host`, manifest,
   `release.json`, SBOM/licenses, genesis-to-contract map, build ID, CAR, CID, and
-  reproducible rebuild with the same aggregate.
+  reproducible rebuild with the same aggregate. After its final push and
+  exact-current CI proof, the release branch is upgraded from continuity rules
+  to the same full governed merge boundary and read back before staging.
 - **Evidence:** commit/tree, dependency versions, file hashes, CAR SHA-256,
   root/app CIDs, simulator/host preview, and clean rebuild comparison.
 - **Failure/exit:** source change, dirty path, non-determinism, stale deploy
-  environment, or preview failure creates a new candidate; bytes are never
-  patched after freeze.
+  environment, preview failure, or a release branch that remains directly
+  writable creates or blocks the candidate; bytes are never patched after
+  freeze.
 
 ### 18. Recovery contract on both networks
 
