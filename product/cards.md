@@ -23,8 +23,8 @@ blocked_by: none
 reviewed: 2026-08-27
 applies_to: chopdot-v1-launch
 evidence_type: measurement
-evidence: docs/release/2026-08-27-p034-share-adjustment-authority.md
-evidence_sha256: 03316a84dfbf9a4c3e4009439e2b340bebad41cdf870dd17e0ada59d6b0d1234
+evidence: docs/release/2026-08-27-p034-closeout-successor-authority.md
+evidence_sha256: ea27d0d81e986d73b742892f0c706dcd9ea7c3fbb3451daf258ebcfb4b4894d1
 pillar: Management
 journey: Mina reviews one exact group-money action and every participant derives the same state.
 next_action: Review this draft

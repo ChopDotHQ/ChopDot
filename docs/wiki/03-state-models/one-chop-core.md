@@ -55,3 +55,11 @@ Settled or waived shares cannot gain a new unresolved amount while retaining a
 resolved status. Historical V1 `correction` adjustment facts remain replayable,
 but the production command boundary requires the explicit reviewed expense-
 correction path for new corrections.
+
+Closed records are also immutable. A late expense or correction cannot rewrite
+the original close or saved totals; the current organizer must append a signed
+`SUCCESSOR_RECORD_CREATED` event that identifies the exact predecessor record
+and explains why a successor exists. The event advances the same canonical
+frontier. An exact retry after delivery failure returns the original durable
+event without a second signature, event, or frontier change, while conflicting
+reuse of the successor identifier fails closed.
