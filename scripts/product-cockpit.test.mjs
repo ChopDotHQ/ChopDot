@@ -184,6 +184,28 @@ test('GitHub context permits an ephemeral detached checkout only with full exact
   assert.deepEqual(result.failures, []);
 });
 
+test('GitHub context permits an exact PR head targeting the manifest branch', () => {
+  const observed = { root: '/home/runner/work/ChopDot/ChopDot', branch: '', head: candidateHead };
+  const environment = {
+    GITHUB_ACTIONS: 'true',
+    GITHUB_WORKSPACE: observed.root,
+    GITHUB_RUN_ID: '33119252695',
+    GITHUB_EVENT_NAME: 'pull_request',
+    EXPECTED_SHA: candidateHead,
+    EXPECTED_BRANCH: 'codex/agent-loop-ci-hook-repair',
+    EXPECTED_BASE_BRANCH: contextManifest.branch,
+  };
+  assert.deepEqual(checkoutIdentityFailures(contextManifest, observed, environment).failures, []);
+  assert.ok(checkoutIdentityFailures(contextManifest, observed, {
+    ...environment,
+    EXPECTED_BASE_BRANCH: 'main',
+  }).failures.some((failure) => failure.includes('branch mismatch')));
+  assert.ok(checkoutIdentityFailures(contextManifest, observed, {
+    ...environment,
+    GITHUB_EVENT_NAME: 'workflow_dispatch',
+  }).failures.some((failure) => failure.includes('branch mismatch')));
+});
+
 test('GitHub context fails closed on missing, short, wrong, or unofficial attestation', () => {
   const observed = { root: '/home/runner/work/ChopDot/ChopDot', branch: '', head: candidateHead };
   const valid = {

@@ -47,13 +47,17 @@ export function checkoutIdentityFailures(manifest, observed, environment = {}) {
 
   const expectedSha = String(environment.EXPECTED_SHA ?? '');
   const expectedBranch = String(environment.EXPECTED_BRANCH ?? '');
+  const expectedBaseBranch = String(environment.EXPECTED_BASE_BRANCH ?? '');
   const workspace = String(environment.GITHUB_WORKSPACE ?? '');
   const runId = String(environment.GITHUB_RUN_ID ?? '');
   const eventName = String(environment.GITHUB_EVENT_NAME ?? '');
   if (!/^[0-9a-f]{40}$/u.test(expectedSha)) failures.push('GitHub context validation requires EXPECTED_SHA as a full 40-character Git SHA');
   else if (actualHead !== expectedSha) failures.push(`GitHub context HEAD mismatch: ${actualHead || 'missing'} != ${expectedSha}`);
   if (!expectedBranch) failures.push('GitHub context validation requires EXPECTED_BRANCH');
-  else if (expectedBranch !== manifest.branch) failures.push(`GitHub context branch mismatch: ${expectedBranch} != ${manifest.branch ?? 'missing'}`);
+  else if (expectedBranch !== manifest.branch) {
+    const targetsManifestBranch = eventName === 'pull_request' && expectedBaseBranch === manifest.branch;
+    if (!targetsManifestBranch) failures.push(`GitHub context branch mismatch: ${expectedBranch} != ${manifest.branch ?? 'missing'}`);
+  }
   if (!workspace || path.resolve(workspace) !== actualRoot) failures.push('GitHub context validation requires GITHUB_WORKSPACE to equal the actual checkout root');
   if (!/^[1-9][0-9]*$/u.test(runId)) failures.push('GitHub context validation requires a numeric GITHUB_RUN_ID');
   if (!['pull_request', 'workflow_dispatch'].includes(eventName)) failures.push('GitHub context validation allows only pull_request or workflow_dispatch events');
