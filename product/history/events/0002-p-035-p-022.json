@@ -9,7 +9,7 @@
   "summary": "P-035 and P-022 local first-use repair passed final authority, security, and 79-test browser regression",
   "evidence": "docs/release/2026-08-24-p035-p022-local-acceptance.md",
   "evidenceQuality": "strong",
-  "evidenceSha256": "d6214f60eacb9f2b7a1c9aea381a878be321cd2d680ee7a9b194f7beca5fc3ec",
+  "evidenceSha256": "1661dd02fb212419e2c866bcfadf95c70cb968aa581cae2b2559e162623889c8",
   "source": "product/cards.md",
   "sourceSha256": "8b3f1de935d2e7f241c3f8c2bc7be4df67e5f3127c290b39c043f64dc01b6c2b",
   "git": {

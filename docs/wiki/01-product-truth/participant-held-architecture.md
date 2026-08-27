@@ -1,10 +1,11 @@
 # Participant-held architecture
 
-**Kind:** decision
+**Kind:** reference
 **Status:** active
 **Owner:** architecture
 **Last reviewed:** 2026-08-24
 **Applies to:** `chopdot-v1-launch`
+**Authority:** scoped architecture reference derived from Product Truth, current Cockpit decisions and contracts, ADRs, and exact implementation evidence; it cannot override them
 **Sources:** PRODUCT_TRUTH.md, DEC-002, DEC-003, ADR 0001
 
 ChopDot has no operated authority database. Canonical truth is an append-only

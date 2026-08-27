@@ -3,8 +3,9 @@
 **Kind:** guardrail
 **Status:** active
 **Owner:** agent-systems integrator
-**Last reviewed:** 2026-08-26
+**Last reviewed:** 2026-08-27
 **Applies to:** `chopdot-v1-launch`
+**Authority:** scoped agent-process guardrail subordinate to Product Truth, current Cockpit decisions and contracts, ADRs, and exact outcome evidence; it grants no product, participant, or release authority
 **Sources:** ADR 0005, agent-system taxonomy, portable execution plan
 
 Material agent work starts from a versioned `AgentLoopContractV1` with a
@@ -24,6 +25,31 @@ the canonical progression from source-only through release, with
 `local-blocked` remaining non-promotable. Reviewer independence is recorded
 separately from evidence strength.
 
+Acceptance is governed by the versioned adoption policy. A material path is
+not complete because an agent says it followed a loop: Product Cockpit finish,
+the tracked pre-push check, exact-head PR acceptance, and release enforcement
+require a fresh context receipt, applicable contract, exact candidate outcome,
+hashed aligned `EvaluationV1` verdict, a replayable `RunnerProvenanceV1`, a
+GitHub OIDC execution attestation, re-hashed cited evidence, the canonical Git
+changed-path manifest, and exact-digest knowledge recall. Normal work uses the
+contract-start-to-outcome-end range. Pull-request acceptance uses the
+event-bound base-to-head range recorded by the same-run PR evidence because its
+acceptance contract is explicitly a post-hoc verifier, not evidence that the
+original implementation began from that contract.
+The resulting acceptance receipt is `governed`, `ungoverned`, or `unverified`;
+only `governed` is promotable. The remote PR/release gate remains authoritative
+because a local Git hook can always be bypassed.
+
+The adoption policy is pinned by digest inside the guard and cannot disable
+these requirements. Exact recall may supersede an older release-state snapshot
+only when the recall itself is durable, current, exact-candidate bound, and its
+citation bytes re-hash to a durable exact-source record outside the supplied
+outcome. Product completion stores the full receipt in history, including the
+fresh context, runner and external-execution bindings, and requires exactly one
+completion checkpoint for each done card. Validation reopens those referenced
+bytes and replays the digest-chained runner proof; a plausible receipt summary
+is not durable proof.
+
 Creator identity is also explicit evidence. Contract creation requires an
 actor ID and actor kind together; delegated work uses `kind: agent`. Missing or
 unknown kinds fail closed so a self-authored run cannot gain apparent
@@ -32,6 +58,10 @@ independence by being mislabeled as the human operator.
 Deterministic commands are hard acceptance gates, not informational attachments
 to a measurement score. Every declared command must pass with its expected
 exit code; a failure rejects evaluation even when all typed assertions pass.
+This proves independent deterministic execution only. A human or agent product,
+security, or release review is a separate claim and requires evidence outside
+candidate-authored bytes, such as protected GitHub review or protected-
+environment readback.
 The generated `output/` evidence workspace is excluded from the production
 TypeScript project, so ignored pilot scripts cannot accidentally expand lint's
 source surface.

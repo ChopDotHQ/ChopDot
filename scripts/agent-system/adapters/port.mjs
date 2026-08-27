@@ -48,7 +48,11 @@ export function validateKnowledgeReceipt(value, expectedOperation) {
   if (!value.receipt_id?.startsWith('knowledge_receipt_') || typeof value.accepted !== 'boolean') throw new Error('Invalid receipt state');
   for (const field of ['rejected_reasons', 'stored_artifact_digests', 'facts', 'citations', 'source_identities', 'mismatches', 'stale_reasons']) if (!Array.isArray(value[field])) throw new Error(`Receipt missing array ${field}`);
   if (expectedOperation === 'record_outcome' && value.accepted && (!value.durable_record_id || !/^[0-9a-f]{64}$/.test(value.stored_packet_digest ?? ''))) throw new Error('Accepted record receipt lacks durable identity');
-  if (expectedOperation === 'verify_recall' && value.accepted && (value.mismatches.length || value.stale_reasons.length)) throw new Error('Recall cannot be accepted with mismatches or stale reasons');
+  if (expectedOperation === 'verify_recall' && value.accepted) {
+    if (value.mismatches.length || value.stale_reasons.length) throw new Error('Recall cannot be accepted with mismatches or stale reasons');
+    if (!value.durable_record_id || !/^[0-9a-f]{64}$/u.test(value.stored_packet_digest ?? '')) throw new Error('Accepted recall lacks durable record identity');
+    if (value.stored_packet_digest !== value.current_outcome_digest) throw new Error('Accepted recall durable digest differs from current outcome');
+  }
   return true;
 }
 
@@ -90,6 +94,8 @@ export async function runKnowledgeAdapterConformance(adapter, fixture = {}) {
     requirements: [{ requirement_id: 'FIXTURE-REQ', status: 'accepted', evaluation_ids: ['evaluation_fixture001'] }],
     artifacts: [{ artifact_id: 'artifact_fixture001', path: 'fixture/outcome.json', sha256: digest }],
     evaluation_summary: { evaluation_ids: ['evaluation_fixture001'], total_assertions: 1, passed: 1, failed: 0, blocked: 0, hard_failures: [], score: 1, threshold: 1, independent_review_satisfied: true },
+    evaluation_index: [{ artifact_id: 'artifact_fixture001', path: 'fixture/outcome.json', sha256: digest }],
+    runner_provenance: { provenance_id: 'runner_provenance_fixture001', provenance_digest: 'e'.repeat(64), ledger_head_digest: 'f'.repeat(64), event_count: 1, evaluation_digest: '1'.repeat(64) },
     effects: [], approvals: [], evidence_index: [{ artifact_id: 'artifact_fixture001', path: 'fixture/outcome.json', sha256: digest }],
     limitations: [], terminal_state: 'succeeded', knowledge_receipts: ['knowledge_receipt_fixture001'], created_at: '2026-08-26T12:00:00Z', packet_digest: null,
   };

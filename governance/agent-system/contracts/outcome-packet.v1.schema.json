@@ -4,7 +4,7 @@
   "title": "Outcome Packet V1",
   "$comment": "For terminal_state=succeeded, the semantic validator MUST additionally enforce evaluation_summary.passed == evaluation_summary.total_assertions and evaluation_summary.score >= evaluation_summary.threshold. JSON Schema cannot compare sibling numeric properties.",
   "type": "object",
-  "required": ["outcome_version", "outcome_id", "run_id", "contract_digest", "root", "branch", "starting_head", "starting_tree", "ending_head", "ending_tree", "git_status", "requirements", "artifacts", "evaluation_summary", "effects", "approvals", "evidence_index", "limitations", "terminal_state", "knowledge_receipts", "created_at", "packet_digest"],
+  "required": ["outcome_version", "outcome_id", "run_id", "contract_digest", "root", "branch", "starting_head", "starting_tree", "ending_head", "ending_tree", "git_status", "requirements", "artifacts", "evaluation_summary", "evaluation_index", "effects", "approvals", "evidence_index", "limitations", "terminal_state", "knowledge_receipts", "created_at", "packet_digest"],
   "properties": {
     "outcome_version": { "const": "1.0.0" },
     "outcome_id": { "type": "string", "pattern": "^outcome_[a-z0-9][a-z0-9_-]{5,95}$" },
@@ -48,6 +48,24 @@
       },
       "additionalProperties": false
     },
+    "evaluation_index": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/artifact_ref" }
+    },
+    "runner_provenance": {
+      "type": "object",
+      "required": ["provenance_id", "provenance_digest", "ledger_head_digest", "event_count", "evaluation_digest"],
+      "properties": {
+        "provenance_id": { "type": "string", "pattern": "^runner_provenance_" },
+        "provenance_digest": { "$ref": "#/$defs/digest" },
+        "ledger_head_digest": { "$ref": "#/$defs/digest" },
+        "event_count": { "type": "integer", "minimum": 1 },
+        "evaluation_digest": { "$ref": "#/$defs/digest" }
+      },
+      "additionalProperties": false
+    },
     "effects": {
       "type": "array",
       "items": {
@@ -87,6 +105,7 @@
     {
       "if": { "properties": { "terminal_state": { "const": "succeeded" } } },
       "then": {
+        "required": ["runner_provenance"],
         "properties": {
           "evaluation_summary": {
             "properties": {

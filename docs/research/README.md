@@ -7,6 +7,19 @@ Research artifacts in this directory separate four evidence levels:
 3. bounded ChopDot architecture decisions;
 4. runtime or graph verification executed against this exact worktree.
 
+## Conventional group-money product benchmark
+
+- Consolidated launch-worktree source:
+  [`../../product/benchmark-baseline.md`](../../product/benchmark-baseline.md)
+
+The benchmark source records stable category-baseline IDs, conventional and
+null workflows, source provenance, freshness, candidate ChopDot
+differentiation, explicit omissions, and the open E2 same-task queue. It keeps
+the 2026-05-14/2026-06-23 public-source research at `E1`; it does not represent
+that research as hands-on competitor proof or current ChopDot implementation.
+The Products Devnet catalog below is a platform-capability catalog and does not
+replace this conventional product benchmark.
+
 ## Products Devnet catalog
 
 - Human report: `RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md`
@@ -49,8 +62,9 @@ them.
 - AgentOps verification summary:
   `../../artifacts/agentops/feature-inheritance-agentops-verification.json`
 
-This matrix maps all 35 current cockpit cards and all 42 current generated
-behavior paths. It intentionally records that Spend Card, savings circle,
+This historical 2026-08-22 matrix mapped the 35 cards and 42 generated behavior
+paths in a separate canonical-checkout snapshot at that time; those counts are
+not current launch-worktree inventory. It intentionally recorded that Spend Card, savings circle,
 emergency pot, and community fund are present as future journey families but
 have zero generated paths. A registry-only analog such as CircleCredit remains
 a discovery lead until its source, license, protocol, and runtime are audited.

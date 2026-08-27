@@ -41,16 +41,39 @@ function fixture() {
   };
   fs.writeFileSync(path.join(root, 'evidence/release.json'), `${JSON.stringify(releaseEvidence)}\n`);
   const evidenceDigest = sha256File(path.join(root, 'evidence/release.json'));
+  const evaluation = {
+    evaluation_version: '1.0.0', evaluation_id: 'evaluation_release_fixture', run_id: runId,
+    candidate_digest: digestObject({ root: candidateRoot, branch, commit: head, tree, git_status: [] }),
+    candidate_identity: { root: candidateRoot, branch, commit: head, tree, git_status: [] },
+    started_at: '2026-08-26T12:00:00.000Z', finished_at: '2026-08-26T12:00:00.000Z',
+    evaluator: { id: 'release-reviewer', kind: 'human', version: 'fixture-v1' }, independence: 'different_actor',
+    assertions: [{ assertion_id: 'RELEASE-W9', result: 'pass', evidence_level: 'release', observed: true, expected: true, evidence_artifact_ids: ['artifact_release_fixture'] }],
+    counts: { total: 1, passed: 1, failed: 0, blocked: 0 }, score: 1, threshold: 1,
+    hard_failures: [], verdict: 'accepted', evidence_artifact_ids: ['artifact_release_fixture'],
+  };
+  fs.writeFileSync(path.join(root, 'evidence/evaluation.json'), `${JSON.stringify(evaluation)}\n`);
+  const evaluationDigest = sha256File(path.join(root, 'evidence/evaluation.json'));
   const packet = {
     outcome_version: '1.0.0', outcome_id: 'outcome_release_fixture', run_id: runId,
     contract_digest: contractDigest, root: candidateRoot, branch,
     starting_head: head, starting_tree: tree, ending_head: head, ending_tree: tree, git_status: [],
     requirements: [{ requirement_id: 'RELEASE-W9', status: 'accepted', evaluation_ids: ['evaluation_release_fixture'] }],
-    artifacts: [{ artifact_id: 'artifact_release_fixture', path: 'evidence/release.json', sha256: evidenceDigest }],
+    artifacts: [
+      { artifact_id: 'artifact_release_fixture', path: 'evidence/release.json', sha256: evidenceDigest },
+      { artifact_id: 'artifact_release_evaluation', path: 'evidence/evaluation.json', sha256: evaluationDigest },
+    ],
     evaluation_summary: { evaluation_ids: ['evaluation_release_fixture'], total_assertions: 1, passed: 1, failed: 0, blocked: 0, hard_failures: [], score: 1, threshold: 1, independent_review_satisfied: true },
+    evaluation_index: [{ artifact_id: 'artifact_release_evaluation', path: 'evidence/evaluation.json', sha256: evaluationDigest }],
+    runner_provenance: {
+      provenance_id: 'runner_provenance_release_fixture', provenance_digest: 'b'.repeat(64),
+      ledger_head_digest: 'c'.repeat(64), event_count: 7, evaluation_digest: 'e'.repeat(64),
+    },
     effects: [{ effect_id: effectId, state: 'verified', readback_digest: digestObject(liveReadback) }],
     approvals: [approvalId],
-    evidence_index: [{ artifact_id: 'artifact_release_fixture', path: 'evidence/release.json', sha256: evidenceDigest }],
+    evidence_index: [
+      { artifact_id: 'artifact_release_fixture', path: 'evidence/release.json', sha256: evidenceDigest },
+      { artifact_id: 'artifact_release_evaluation', path: 'evidence/evaluation.json', sha256: evaluationDigest },
+    ],
     limitations: [], terminal_state: 'succeeded', knowledge_receipts: ['knowledge_receipt_release_fixture'], created_at: '2026-08-26T12:00:00.000Z',
   };
   packet.packet_digest = digestObject(packet);

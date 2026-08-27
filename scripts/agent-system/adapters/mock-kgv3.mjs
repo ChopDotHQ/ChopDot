@@ -38,6 +38,9 @@ export function createMockKgv3Adapter() {
       const candidateMatches = Boolean(match) && match.root === scopeInput.root && match.branch === scopeInput.branch && match.ending_head === scopeInput.commit;
       return receiptBase('verify_recall', {
         ...metadata, accepted: candidateMatches, rejected_reasons: candidateMatches ? [] : ['recall_mismatch'],
+        durable_record_id: candidateMatches ? `memory:${expectedDigest}` : null,
+        stored_packet_digest: candidateMatches ? expectedDigest : null,
+        stored_artifact_digests: candidateMatches ? (match.artifacts ?? []).map((entry) => entry.sha256).filter(Boolean) : [],
         facts: candidateMatches ? [{ fact_id: 'fact_mock_recall_1', statement: `Outcome ${expectedDigest} recalled`, citation_ids: ['citation_mock_recall_1'] }] : [],
         citations: candidateMatches ? [{ citation_id: 'citation_mock_recall_1', source_identity_id: 'source_mock_recall_1', path: `memory://kgv3/outcome/${expectedDigest}`, sha256: expectedDigest }] : [],
         source_identities: candidateMatches ? [{ source_identity_id: 'source_mock_recall_1', root: scopeInput.root, branch: scopeInput.branch, commit: scopeInput.commit, path: `memory://kgv3/outcome/${expectedDigest}`, sha256: expectedDigest }] : [],

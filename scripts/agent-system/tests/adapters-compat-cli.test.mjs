@@ -89,12 +89,24 @@ test('knowns directory consumer reports ENOTDIR and must exit non-zero', async (
 
 test('instruction validation accepts one authority entrypoint and all commands', async () => {
   const root = await fixtureRoot();
-  const references = ['PRODUCT_TRUTH.md', 'docs/CHOPDOT_OPERATING_LOOPS.md', 'docs/CHOPDOT_LOOP_RUNNER.md', 'product/cards.md', 'product/decisions.md', 'product/decision-contracts.md', 'product/roadmap.md'];
+  const references = ['PRODUCT_TRUTH.md', 'docs/CHOPDOT_OPERATING_LOOPS.md', 'docs/CHOPDOT_LOOP_RUNNER.md', 'product/cards.md', 'product/decisions.md', 'product/decision-contracts.md', 'product/roadmap.md', 'governance/agent-system/instructions/chopdot-product-judgment.md', 'governance/agent-system/instructions/chopdot-frontend-design.md'];
   await writeFile(path.join(root, 'AGENTS.md'), references.join('\n'));
   await writeFile(path.join(root, 'CLAUDE.md'), 'Follow AGENTS.md.');
   const commands = ['agent:validate', 'agent:contract:new', 'agent:run:start', 'agent:run:resume', 'agent:run:status', 'agent:run:cancel', 'agent:run:terminate', 'agent:evaluate', 'agent:outcome:promote', 'agent:continuation:promote', 'agent:knowledge:preflight', 'agent:knowledge:record', 'agent:knowledge:verify', 'agent:eval', 'agent:ci'];
   await writeFile(path.join(root, 'package.json'), JSON.stringify({ scripts: Object.fromEntries(commands.map((name) => [name, 'true'])) }));
   assert.equal((await validateInstructionSurfaces(root)).valid, true);
+});
+
+test('instruction validation fails closed when the tracked frontend method is not routed', async () => {
+  const root = await fixtureRoot();
+  const references = ['PRODUCT_TRUTH.md', 'docs/CHOPDOT_OPERATING_LOOPS.md', 'docs/CHOPDOT_LOOP_RUNNER.md', 'product/cards.md', 'product/decisions.md', 'product/decision-contracts.md', 'product/roadmap.md', 'governance/agent-system/instructions/chopdot-product-judgment.md'];
+  await writeFile(path.join(root, 'AGENTS.md'), references.join('\n'));
+  await writeFile(path.join(root, 'CLAUDE.md'), 'Follow AGENTS.md.');
+  const commands = ['agent:validate', 'agent:contract:new', 'agent:run:start', 'agent:run:resume', 'agent:run:status', 'agent:run:cancel', 'agent:run:terminate', 'agent:evaluate', 'agent:outcome:promote', 'agent:continuation:promote', 'agent:knowledge:preflight', 'agent:knowledge:record', 'agent:knowledge:verify', 'agent:eval', 'agent:ci'];
+  await writeFile(path.join(root, 'package.json'), JSON.stringify({ scripts: Object.fromEntries(commands.map((name) => [name, 'true'])) }));
+  const result = await validateInstructionSurfaces(root);
+  assert.equal(result.valid, false);
+  assert.ok(result.issues.some((entry) => entry.code === 'MISSING_REFERENCE' && entry.message.endsWith('chopdot-frontend-design.md')));
 });
 
 test('CLAUDE independent stale stack claim is rejected', async () => {

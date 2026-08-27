@@ -1,34 +1,250 @@
 {
   "profile_version": "1.0.0",
   "profile_id": "product-definition",
-  "profile_digest": "7729fdae55cc7e16e3b4f21fbd6bad79b5e57bae78e841ba731f32f0bc38e55f",
+  "profile_digest": "d9f95e2c309b5201326ebc1c5416defaeb380acc3c508db710357cf9417b69a5",
   "kind": "agent_loop_profile",
-  "description": "Produces an accepted product card or specification with a measurable journey, authority boundary, failure behavior, and evidence plan.",
+  "description": "Produces an accepted category-baseline-first product definition and comparative priority verdict with honest benchmark evidence, a state-scoped action, ChopDot differentiation, bounded experiments, and an objective outcome contract.",
   "contract_schema_ref": "../contracts/agent-loop-contract.v1.schema.json",
   "artifact_contract": {
     "artifact_types": ["ProductDefinitionPacketV1"],
-    "required_fields": ["user_journey", "one_next_action", "product_score", "requirements", "scenarios", "authority", "privacy", "failure_path", "screenshot_acceptance", "evidence_plan"],
+    "required_fields": [
+      "independent_first_view",
+      "benchmark_source_identity",
+      "category_baseline_requirement_ids",
+      "category_baseline_dispositions",
+      "benchmark_evidence_grades",
+      "e2_evidence_gaps",
+      "layer_order",
+      "chopdot_differentiators",
+      "experiment_hypotheses",
+      "intentional_exclusions",
+      "cockpit_comparison",
+      "user_journey",
+      "user_state",
+      "one_next_action",
+      "action_scope",
+      "product_score_components",
+      "expected_outcome",
+      "success_evidence",
+      "failure_outcome",
+      "accountable_owner",
+      "exit_condition",
+      "priority_basis",
+      "alternatives_not_now",
+      "requirements",
+      "scenarios",
+      "authority",
+      "privacy",
+      "failure_path",
+      "screenshot_acceptance",
+      "evidence_plan"
+    ],
     "required_evidence_level": "unit"
   },
   "expected_outcome": {
-    "statement": "The product definition scores at least eight of ten, conflicts with no product law, and maps every bounded requirement to a scenario and proof method.",
+    "statement": "The selected package maps and resolves every applicable category-baseline requirement before layering a measurable ChopDot differentiator or bounded experiment, preserves E1, E2, and ChopDot proof boundaries, is independently and comparatively justified, scopes one action to one observed state, satisfies product law and the product gate, and maps every requirement to a scenario and proof method.",
     "assertions": [
-      { "id": "PROD-SCORE", "description": "The friction, trust, clarity, and language product score is at least eight of ten.", "measurement": "product_score", "operator": "count_gte", "expected": 8, "minimum_evidence_level": "unit", "hard_fail": true },
-      { "id": "PROD-LAW", "description": "No requirement or scenario conflicts with PRODUCT_TRUTH.md.", "measurement": "product_law_conflict_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "source-only", "hard_fail": true },
-      { "id": "PROD-TRACE", "description": "Every requirement maps to at least one scenario and one proof method.", "measurement": "unmapped_requirement_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "unit", "hard_fail": true },
-      { "id": "PROD-FAILURE", "description": "The journey has a user-visible failure and recovery behavior.", "measurement": "failure_path_complete", "operator": "truthy", "expected": true, "minimum_evidence_level": "source-only", "hard_fail": true }
+      {
+        "id": "PROD-BASELINE",
+        "description": "Every applicable category-baseline requirement has an explicit accepted disposition and exact benchmark reference before product acceptance.",
+        "measurement": "unresolved_required_baseline_count",
+        "operator": "count_equals",
+        "expected": 0,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-EVIDENCE",
+        "description": "E1 public-source evidence is never reported as E2 hands-on proof or as exact-candidate ChopDot proof.",
+        "measurement": "benchmark_evidence_overclaim_count",
+        "operator": "count_equals",
+        "expected": 0,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-LAYERING",
+        "description": "Category basics precede differentiation and experiments, and no score, fixture, scenario, or differentiator substitutes for an unresolved baseline requirement.",
+        "measurement": "product_layer_violation_count",
+        "operator": "count_equals",
+        "expected": 0,
+        "minimum_evidence_level": "unit",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-SCORE",
+        "description": "The evidenced friction, trust, clarity, and language product score is at least eight of ten and is not used as baseline, evidence, or ranking proof.",
+        "measurement": "product_score",
+        "operator": "count_gte",
+        "expected": 8,
+        "minimum_evidence_level": "unit",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-LAW",
+        "description": "No requirement, baseline disposition, priority claim, differentiator, experiment, or scenario conflicts with PRODUCT_TRUTH.md.",
+        "measurement": "product_law_conflict_count",
+        "operator": "count_equals",
+        "expected": 0,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-TRACE",
+        "description": "Every requirement maps to at least one scenario and one proof method.",
+        "measurement": "unmapped_requirement_count",
+        "operator": "count_equals",
+        "expected": 0,
+        "minimum_evidence_level": "unit",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-FAILURE",
+        "description": "The journey has a user-visible failure and recovery behavior that preserves authority, privacy, and accepted baseline fallback.",
+        "measurement": "failure_path_complete",
+        "operator": "truthy",
+        "expected": true,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-INDEPENDENT",
+        "description": "An independent first view of user state, job, action, outcome, authority, and risk exists before the ranked Cockpit recommendation is accepted.",
+        "measurement": "independent_first_view_complete",
+        "operator": "truthy",
+        "expected": true,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-OUTCOME-CONTRACT",
+        "description": "Expected outcome, proving evidence, failure outcome, accountable owner, and retry or exit condition are complete.",
+        "measurement": "priority_outcome_contract_complete",
+        "operator": "truthy",
+        "expected": true,
+        "minimum_evidence_level": "unit",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-CONTEXT",
+        "description": "The action names one bounded user or operator state and is not asserted as universal across ChopDot.",
+        "measurement": "contextual_action_scope_valid",
+        "operator": "truthy",
+        "expected": true,
+        "minimum_evidence_level": "unit",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-COMPARE",
+        "description": "The priority verdict explains why the selected package is now and at least the next two eligible alternatives are not now.",
+        "measurement": "compared_alternative_count",
+        "operator": "count_gte",
+        "expected": 2,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      }
     ]
   },
-  "context_gate": { "exact_root": true, "freshness_required": true, "same_level_conflict": "blocked", "wrong_root": "blocked" },
-  "policy_refs": { "authority": "agent-authority-boundaries-v1", "evidence": "agent-evidence-levels-v1", "terminal_states": "agent-terminal-states-v1", "retry_budgets": "agent-retry-budgets-v1" },
-  "authority": { "default_class": "repo_local_write", "allowed_effects": ["write_card", "write_spec", "write_checkpoint_candidate"], "approval_required_effects": ["change_product_law", "change_strategy"], "critical_independent_review": false },
-  "budgets": { "retry_budget_id": "budget-product-definition-v1", "max_iterations": 2, "max_retries": 1, "same_blocker_limit": 2 },
-  "evaluator": { "rubric_path": "governance/agent-system/evals/rubrics/product-definition.v1.json", "deterministic_checks": ["product_score_check", "requirements_scenario_trace", "source_hierarchy_conflict_check"], "independence": "different_actor", "pass_threshold": 0.9, "hard_failures": ["PROD-SCORE", "PROD-LAW", "PROD-TRACE", "PROD-FAILURE"] },
-  "evidence": { "minimum_level": "unit", "required_artifacts": ["product_definition_packet", "traceability_report", "product_review"], "exact_counts_required": true, "candidate_identity_required": true },
-  "environment_observations": ["current Cockpit card and score", "product-law identity", "generated product read model after validation"],
-  "failure_packet": { "artifact_type": "ContinuationPacketV1", "required_fields": ["rejected_assumptions", "unresolved_product_decision", "missing_failure_path", "founder_decision_required"], "continuation_required": true },
+  "context_gate": {
+    "exact_root": true,
+    "freshness_required": true,
+    "same_level_conflict": "blocked",
+    "wrong_root": "blocked"
+  },
+  "policy_refs": {
+    "authority": "agent-authority-boundaries-v1",
+    "evidence": "agent-evidence-levels-v1",
+    "terminal_states": "agent-terminal-states-v1",
+    "retry_budgets": "agent-retry-budgets-v1"
+  },
+  "authority": {
+    "default_class": "repo_local_write",
+    "allowed_effects": ["write_card", "write_spec", "write_checkpoint_candidate"],
+    "approval_required_effects": ["change_product_law", "change_strategy", "intentionally_exclude_category_baseline"],
+    "critical_independent_review": true
+  },
+  "budgets": {
+    "retry_budget_id": "budget-product-definition-v1",
+    "max_iterations": 2,
+    "max_retries": 1,
+    "same_blocker_limit": 2
+  },
+  "evaluator": {
+    "rubric_path": "governance/agent-system/evals/rubrics/product-definition.v1.json",
+    "deterministic_checks": [
+      "benchmark_packet_semantics_check",
+      "product_score_check",
+      "requirements_scenario_trace",
+      "source_hierarchy_conflict_check",
+      "priority_outcome_contract_check",
+      "contextual_action_scope_check",
+      "alternative_comparison_check"
+    ],
+    "independence": "different_actor",
+    "pass_threshold": 0.9,
+    "hard_failures": [
+      "PROD-BASELINE",
+      "PROD-EVIDENCE",
+      "PROD-LAYERING",
+      "PROD-SCORE",
+      "PROD-LAW",
+      "PROD-TRACE",
+      "PROD-FAILURE",
+      "PROD-INDEPENDENT",
+      "PROD-OUTCOME-CONTRACT",
+      "PROD-CONTEXT",
+      "PROD-COMPARE"
+    ]
+  },
+  "evidence": {
+    "minimum_level": "unit",
+    "required_artifacts": [
+      "product_definition_packet",
+      "benchmark_baseline_coverage",
+      "benchmark_evidence_boundary",
+      "independent_first_view",
+      "priority_comparison",
+      "traceability_report",
+      "product_review"
+    ],
+    "exact_counts_required": true,
+    "candidate_identity_required": true
+  },
+  "environment_observations": [
+    "exact product-law identity",
+    "exact benchmark-baseline identity, requirement IDs, and evidence states",
+    "independent first view before Cockpit comparison",
+    "current Cockpit card and prioritization contract",
+    "generated product read model after validation"
+  ],
+  "failure_packet": {
+    "artifact_type": "ContinuationPacketV1",
+    "required_fields": [
+      "rejected_assumptions",
+      "missing_baseline_requirement_ids",
+      "unresolved_baseline_dispositions",
+      "benchmark_evidence_overclaims",
+      "open_e2_evidence_gaps",
+      "unresolved_product_decision",
+      "missing_priority_evidence",
+      "missing_failure_path",
+      "founder_decision_required"
+    ],
+    "continuation_required": true
+  },
   "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
-  "knowledge_preflight": { "port": "KnowledgeContextPortV1", "preflight_required": true, "record_outcome": true, "verify_recall": true, "provider_neutral": true },
-  "repair_policy": { "changed_hypothesis_required": true, "scope_expansion": "new_contract", "same_blocker_limit": 2, "regression_required": true },
+  "knowledge_preflight": {
+    "port": "KnowledgeContextPortV1",
+    "preflight_required": true,
+    "record_outcome": true,
+    "verify_recall": true,
+    "provider_neutral": true
+  },
+  "repair_policy": {
+    "changed_hypothesis_required": true,
+    "scope_expansion": "new_contract",
+    "same_blocker_limit": 2,
+    "regression_required": true
+  },
   "example_contract_ref": "examples/product-definition.contract.v1.json"
 }

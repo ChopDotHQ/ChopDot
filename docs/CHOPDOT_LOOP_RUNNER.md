@@ -3,7 +3,7 @@
 **Kind:** guardrail
 **Status:** active
 **Owner:** release integrator
-**Last reviewed:** 2026-08-26
+**Last reviewed:** 2026-08-27
 **Applies to:** `chopdot-v1-launch`
 **Authority:** commands and stop conditions only
 
@@ -24,11 +24,23 @@ npm run context:validate
 npm run product:query -- "next"
 npm run product:validate
 npm run wiki:validate
+npm run agent:context:receipt -- --require-governed --profile=implementation \
+  --json-out=output/working_memory/context-receipt.json
 ```
 
 Stop if the root/branch differs, context validation fails, generated views are
 stale, the selected next card disagrees with explicit priority, or dirty paths
 cannot be attributed.
+
+The receipt command exits non-zero with `--require-governed` when the context
+manifest, authority hash, root, branch, or freshness gate fails. Do not replace
+it with a prose hydration claim.
+
+For product or UI work, also inspect the selected card's `delivery_phase`,
+`benchmark_requirements`, `differentiated_outcome`, and
+`benchmark_evidence_state`. `product/benchmark-baseline.md` is the stable-ID
+source. An E1 source row is a hypothesis/floor, not an E2 hands-on result or an
+E3 ChopDot production result.
 
 ## Declare and start a bounded agent run
 
@@ -103,6 +115,56 @@ Direct `succeeded` termination is forbidden. Success is reachable only through
 accepted evaluation, trajectory grading, a clean ending candidate, and outcome
 promotion.
 
+## Acceptance and push gate
+
+Before Product Cockpit finish or a governed push, provide the exact accepted
+inputs to the shared guard:
+
+```bash
+npm run agent:acceptance:guard -- \
+  --surface=governed_push \
+  --changed-paths="path/one,path/two" \
+  --outcome=artifacts/agentops/outcomes/RUN/outcome.json \
+  --contract=output/working_memory/RUN-contract.json \
+  --knowledge-receipt=output/working_memory/RUN-recall.json \
+  --context-receipt=output/working_memory/context-receipt.json \
+  --profile=implementation \
+  --evidence-level=exact-candidate \
+  --expected-sha="$(git rev-parse HEAD)" \
+  --expected-tree="$(git rev-parse 'HEAD^{tree}')" \
+  --expected-branch="$(git branch --show-current)"
+```
+
+`npm install`/`npm ci` runs the tracked hook installer. Confirm it with
+`npm run agent:hooks:check`. The pre-push hook consumes the same inputs through
+`CHOPDOT_OUTCOME_PACKET`, `CHOPDOT_LOOP_CONTRACT`,
+`CHOPDOT_KNOWLEDGE_RECEIPT`, `CHOPDOT_CONTEXT_RECEIPT`, and
+`CHOPDOT_LOOP_PROFILE`, plus `CHOPDOT_EVIDENCE_LEVEL`. `--no-verify` can skip only this early local feedback;
+the required PR job regenerates an exact-candidate acceptance contract and
+OutcomePacket, recalls the exact digest, and runs the same guard remotely.
+
+`--changed-paths` is not trusted classification input. It must equal the
+ordered canonical Git diff for the applicable independently bound range;
+mismatch is a typed failure and the manifest digest is recorded in the
+acceptance receipt. Ordinary surfaces use contract start through outcome end.
+PR merge acceptance instead uses the base/head range recorded in same-run PR
+evidence, because the CI-generated contract is a post-hoc exact-candidate
+verifier and cannot prove original task-start lineage. The verdict must bind a
+schema-valid, hashed `EvaluationV1` artifact and replayable
+`RunnerProvenanceV1`. A summary Boolean is not execution or review evidence.
+
+For `product:finish`, also pass `--outcome-packet`, `--contract`,
+`--knowledge-receipt`, `--runner-provenance`, `--run-directory`,
+`--execution-attestation`, `--context-receipt`, `--agent-run-id`,
+`--evidence-level`, and `--independent-review`. A done checkpoint without a
+governed acceptance receipt fails `product:validate`. The full receipt, not
+only its ID, is persisted in the append-only checkpoint. Validation re-hashes
+and reopens its cited contract, outcome, durable recall, runner provenance,
+run directory and execution attestation, then replays the runner ledger. A
+`done` card must have exactly one completed checkpoint; a non-done card must
+have none. Failed finish/checkpoint/refresh work restores the prior card state
+and removes the just-created checkpoint.
+
 ## Focused package
 
 Use the package's exact tests plus:
@@ -115,6 +177,12 @@ npm run build
 For user-facing work also run the production-entrypoint Playwright file, open
 the actual app, and capture mobile and desktop first/action/error/after states.
 Selectors alone do not close a product card.
+
+Before that proof begins, map the bounded job to its applicable category
+baseline IDs, name the ChopDot differentiated outcome, and isolate experiments
+that may fail without removing the baseline. A conventional product or null
+workflow that wins the same task is recorded as a product gap; it is not
+explained away by a product score or infrastructure advantage.
 
 ## Grade the execution trajectory
 
@@ -186,7 +254,8 @@ production TypeScript project; a pilot script must be checked by its declared
 command rather than entering `npm run lint` by filesystem discovery.
 
 Run the deterministic and profile evaluator, then promote only an accepted,
-independently reviewed outcome:
+runner-proven outcome. Do not describe a distinct evaluator identity as human
+or agent review unless a protected external review record proves that claim:
 
 ```bash
 npm run agent:evaluate -- \
@@ -211,6 +280,10 @@ npm run product:cockpit:visual-review
 ```
 
 Generated files are outputs. Update their source and regenerate them.
+Changes to the product baseline or delivery phase also require the relevant
+P-013/card fields, dated decision contract, source wiki page, context-authority
+hash, and deterministic benchmark-validation cases. Never edit generated Wiki,
+Cockpit, or task read models as the repair.
 
 For an outcome-backed Cockpit finish, first commit and verify the product
 candidate. Generate the outcome for that clean candidate, stage the redacted
@@ -302,6 +375,10 @@ checking out and asserting the exact SHA. Repo governance and `PR outcome`
 consume the same-run context artifact; the outcome still waits for every
 required exact-head job and receives the same provenance attestation. A tag,
 closed PR, fork, stale head, wrong branch, or invalid PR number fails closed.
+The generated PR contract is deliberately restricted to the canonical
+`implementation` profile because the five generic exact-head jobs do not prove
+specialized product-definition, UX, security, research, incident, or release
+outcomes. Those profiles require their own aligned contract and evaluation.
 
 Manual PR validation and `release_enforcement` are mutually exclusive dispatch
 modes. PR validation cannot execute the release job. Release enforcement
@@ -321,9 +398,16 @@ configured Knowledge Context adapter:
 
 ```bash
 npm run agent:knowledge:preflight -- --adapter=exact-source --json
+node scripts/agent-system/cli.mjs knowledge-read --adapter=repo-graph --packet=PATH --question="What exact candidate evidence is current?" --required-sources=PATH --json
 npm run agent:knowledge:record -- --adapter=exact-source --outcome=PATH --json
-npm run agent:knowledge:verify -- --adapter=exact-source --outcome=PATH --json
+npm run agent:knowledge:verify -- --adapter=exact-source --outcome-digest=SHA256 --json
 ```
+
+`knowledge-read` validates the provider-neutral context schema, exact
+root/branch/commit source identities, freshness, source hashes, and every
+required citation before returning success. `knowledge-record` durably records
+an accepted outcome packet. `knowledge-verify` proves recall of that packet by
+its immutable outcome digest; an outcome file path is not a recall identity.
 
 Report backend receipts, direct observations, and newly executed verification
 separately. KGv2 and Repo Graph remain named adapters; their results cannot be
@@ -338,6 +422,11 @@ npm run agent:knowledge:conformance
 npm run agent:eval
 npm run agent:ci
 ```
+
+`agent:eval` runs the tracked default suite at
+`governance/agent-system/evals/suites/core.v1.json`. Use
+`node scripts/agent-system/cli.mjs eval --suite PATH` only for an explicitly
+named additional suite; a missing suite is a failure, never a green skip.
 
 No green skip is allowed for a missing configured tool, stale output, malformed
 contract, wrong candidate identity, or absent release evidence.

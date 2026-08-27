@@ -1,15 +1,20 @@
 import { createHash } from 'node:crypto';
 import { execFile } from 'node:child_process';
-import { lstat, mkdir, readFile, readdir, realpath, stat, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, readFile, readdir, realpath, stat, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
+import { canonicalGitChangedPaths, replayAcceptanceReceipt, validateAcceptance } from './agent-governance/adoption-guard.mjs';
+import { digestObject } from './agent-governance/lib.mjs';
 import { validateOutcomePacket } from './agent-system/outcome.mjs';
+import { validateGovernanceInstance } from './agent-system/schema.mjs';
+import { blockerSeverity, nextBuildingProductCard, rankProductCards } from './product-card-ranking.mjs';
 
 const root = process.cwd();
 const execFileAsync = promisify(execFile);
 const cardsPath = path.join(root, 'product/cards.md');
+const benchmarkBaselinePath = path.join(root, 'product/benchmark-baseline.md');
 const contextAuthorityPath = path.join(root, 'product/context-authority.json');
 const resumePath = path.join(root, 'product/generated/product-resume.md');
 const boardPath = path.join(root, 'product/board.html');
@@ -99,23 +104,73 @@ export function parseCards(markdown) {
   });
 }
 
-function blockerSeverity(value) {
-  const label = String(value);
-  if (label === 'P0' || /^P0-[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(label)) return 3;
-  if (label === 'P1' || /^P1-[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(label)) return 2;
-  if (label === 'P2' || /^P2-[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(label)) return 1;
-  return 0;
+export const requiredBenchmarkIds = Object.freeze([
+  'BASE-ENTRY-01',
+  'BASE-GROUP-01',
+  'BASE-EXPENSE-01',
+  'BASE-CAPTURE-01',
+  'BASE-SPLIT-01',
+  'BASE-STATUS-01',
+  'BASE-PAY-01',
+  'BASE-EXCEPTION-01',
+  'BASE-CURRENCY-01',
+  'BASE-OFFLINE-01',
+  'BASE-HISTORY-01',
+  'BASE-EXPORT-01',
+  'BASE-ACCESS-01',
+  'MODE-SPEND-01',
+  'MODE-SAVINGS-01',
+  'MODE-EMERGENCY-01',
+  'MODE-COMMUNITY-01',
+]);
+
+export function parseBenchmarkIds(markdown) {
+  return [...String(markdown).matchAll(/^\|\s*((?:BASE|MODE)-[A-Z0-9-]+)\s*\|/gmu)].map((match) => match[1]);
 }
 
-const statusRank = Object.freeze({ building: 3, ready: 2, blocked: 1, done: 0 });
+export function benchmarkBaselineFailures(markdown) {
+  const failures = [];
+  failures.push(...markdownMetadataFailures(String(markdown)).map((failure) => `benchmark baseline: ${failure}`));
+  const ids = parseBenchmarkIds(markdown);
+  const unique = new Set(ids);
+  for (const id of requiredBenchmarkIds) if (!unique.has(id)) failures.push(`benchmark baseline is missing ${id}`);
+  for (const id of unique) if (!requiredBenchmarkIds.includes(id)) failures.push(`benchmark baseline has unknown outcome id ${id}`);
+  for (const id of unique) if (ids.filter((candidate) => candidate === id).length > 1) failures.push(`benchmark baseline repeats ${id}`);
+  if (!/E1[^\n]*(?:source|public)/iu.test(markdown) || !/E2[^\n]*(?:hands-on|same-journey|walkthrough)/iu.test(markdown)) {
+    failures.push('benchmark baseline must define E1 source review and E2 hands-on same-journey evidence separately');
+  }
+  for (const line of String(markdown).split('\n').filter((candidate) => /^\|\s*(?:BASE|MODE)-[A-Z0-9-]+\s*\|/u.test(candidate))) {
+    const columns = line.split('|').slice(1, -1).map((value) => value.trim());
+    const id = columns[0] ?? 'unknown';
+    if (columns.length < 6) failures.push(`benchmark baseline row ${id} must contain outcome, comparator, evidence state, E2 status, and treatment`);
+    if (!/`E[01]-[^`]+`/u.test(columns[3] ?? '')) failures.push(`benchmark baseline row ${id} must declare an E0 or E1 evidence state`);
+    if (!/not executed/iu.test(columns[4] ?? '')) failures.push(`benchmark baseline row ${id} must preserve its open E2 status`);
+  }
+  if (!/stale[^\n]*(?:E1|source)|(?:E1|source)[^\n]*stale/iu.test(markdown) || !/refresh/iu.test(markdown)) failures.push('benchmark baseline must expose stale E1 evidence and its refresh requirement');
+  if (!/competitive-gap-decisions-2026-06-23\.md/iu.test(markdown) || !/superseded by DEC-009 and DEC-010/iu.test(markdown)) failures.push('benchmark baseline must quarantine the historical receipt-first priority decision');
+  for (const term of ['add expense', 'who paid', 'who owes', 'settle up', 'recipient confirmed', 'group summary']) {
+    if (!String(markdown).toLowerCase().includes(term)) failures.push(`benchmark baseline category-language floor is missing ${term}`);
+  }
+  return failures;
+}
 
 export function rankCards(cards) {
-  return [...cards].sort((left, right) =>
-    (statusRank[right.status] ?? -1) - (statusRank[left.status] ?? -1)
-    || blockerSeverity(right.blocker) - blockerSeverity(left.blocker)
-    || Number(right.priority) - Number(left.priority)
-    || String(left.id).localeCompare(String(right.id))
-  );
+  return rankProductCards(cards);
+}
+
+export function nextBuildingCard(cards) {
+  return nextBuildingProductCard(cards);
+}
+
+export function activeProductCardFromMarkdown(markdown) {
+  const card = nextBuildingCard(parseCards(markdown));
+  if (!card) return null;
+  return {
+    id: card.id,
+    status: card.status,
+    priority: Number(card.priority),
+    operator_next_action: card.operator_next_action ?? null,
+  };
 }
 
 function escapeHtml(value) {
@@ -132,35 +187,48 @@ function statusDetail(card) {
   return 'no blocker';
 }
 
-function generatedViews(cards) {
+export function generatedViews(cards) {
   const ranked = rankCards(cards);
   const active = ranked.filter((card) => card.status === 'building');
   const ready = ranked.filter((card) => card.status === 'ready');
   const blocked = ranked.filter((card) => card.status === 'blocked');
   const done = ranked.filter((card) => card.status === 'done');
-  const next = active[0] ?? ready[0] ?? blocked[0];
+  const next = nextBuildingCard(cards) ?? ready[0] ?? blocked[0];
   const resume = `# ChopDot Product Resume
 
 Generated from \`product/cards.md\`; do not edit this read model directly.
 
 - Active release: participant-held, local-first public beta.
-- First action: **Scan a receipt**.
+- Current operator priority: ${next?.id ?? 'release acceptance'} — ${next?.title ?? 'Verify release'}.
+- Operator next action: **${next?.operator_next_action ?? 'Verify release'}**.
+- Bounded participant/card action: **${next?.next_action ?? 'Verify release'}**.
+- Action audience and scope: ${next?.audience ?? 'operator'} — ${next?.action_scope ?? 'release acceptance'}.
+- Delivery phase: ${next?.delivery_phase ?? 'unknown'}.
+- Category baseline: ${next?.benchmark_requirements ?? 'unknown'} (${next?.benchmark_evidence_state ?? 'unknown'}).
+- ChopDot differentiator: ${next?.differentiated_outcome ?? 'unknown'}.
 - Active cards: ${active.map((card) => card.id).join(', ') || 'none'}.
 - Ready cards: ${ready.map((card) => card.id).join(', ') || 'none'}.
 - Blocked cards: ${blocked.map((card) => card.id).join(', ') || 'none'}.
 - Completed cards: ${done.map((card) => card.id).join(', ') || 'none'}.
 - Current implementation: partial until production-entrypoint, release, and user evidence close every card.
-- Next gate: ${next?.id ?? 'release acceptance'} — ${next?.next_action ?? 'Verify release'}.
-- Next selection: explicit status, blocker severity, and priority from \`product/cards.md\`; never source-file order.
+- Expected outcome: ${next?.expected_outcome ?? 'Every release gate is independently proven'}.
+- Priority basis: ${next?.priority_basis ?? 'No active product card remains'}.
+- Next selection: explicit status, blocker severity, reviewed priority basis, and outcome contract from \`product/cards.md\`; never source-file order.
+- Product score is an admission gate, not ranking evidence. A card action never becomes one universal action for every user.
 - Falsifier: any second authority, raw group secret, fixture-only release proof, or different stage/public fingerprint stops promotion.
 `;
 
   const cardHtml = ranked.map((card) => `
       <article class="card" data-status="${escapeHtml(card.status)}">
-        <div class="eyebrow">${escapeHtml(card.id)} · priority ${escapeHtml(card.priority)} · ${escapeHtml(card.pillar)}</div>
+        <div class="eyebrow">${escapeHtml(card.id)} · priority ${escapeHtml(card.priority)} · ${escapeHtml(card.delivery_phase)} · ${escapeHtml(card.audience)}</div>
         <h2>${escapeHtml(card.title)}</h2>
         <p>${escapeHtml(card.journey)}</p>
         <div class="action">${escapeHtml(card.next_action)}</div>
+        <p><strong>Operator:</strong> ${escapeHtml(card.operator_next_action)}</p>
+        <p><strong>Scope:</strong> ${escapeHtml(card.action_scope)}</p>
+        <p><strong>Baseline:</strong> ${escapeHtml(card.benchmark_requirements)} · ${escapeHtml(card.benchmark_evidence_state)}</p>
+        <p><strong>Differentiator:</strong> ${escapeHtml(card.differentiated_outcome)}</p>
+        <p><strong>Expected:</strong> ${escapeHtml(card.expected_outcome)}</p>
         <footer><span>${escapeHtml(card.status)} · ${escapeHtml(statusDetail(card))}</span><span>${escapeHtml(card.score)}</span></footer>
       </article>`).join('');
 
@@ -174,7 +242,7 @@ Generated from \`product/cards.md\`; do not edit this read model directly.
 Generated operator handoff from \`product/cards.md\`; do not edit or use this
 read model to reprioritize the Cockpit.
 
-${ranked.filter((card) => card.status !== 'done').map((card) => `- [ ] ${card.id} [${card.status}] priority ${card.priority}: ${card.next_action}`).join('\n')}
+${ranked.filter((card) => card.status !== 'done').map((card) => `- [ ] ${card.id} [${card.status}] priority ${card.priority}: ${card.operator_next_action}\n  - Bounded card action: ${card.next_action}\n  - Audience/scope: ${card.audience} — ${card.action_scope}\n  - Delivery phase: ${card.delivery_phase}\n  - Category baseline: ${card.benchmark_requirements} (${card.benchmark_evidence_state})\n  - ChopDot differentiator: ${card.differentiated_outcome}\n  - Expected outcome: ${card.expected_outcome}\n  - Exit: ${card.exit_condition}`).join('\n')}
 
 Completion dimensions remain separate: implemented, tested, committed, pushed,
 candidate_built, staged, promoted, reachable, user_owned, user_proven, kg_known.
@@ -245,6 +313,35 @@ async function trackedRegularFileFailure(relative, tracked, label) {
 async function trackedFiles() {
   const { stdout } = await execFileAsync('git', ['ls-files'], { cwd: root });
   return new Set(stdout.split('\n').filter(Boolean));
+}
+
+async function trackedDirectoryFailures(relative, tracked, label) {
+  const failures = [];
+  if (!relative || path.isAbsolute(relative)) return [`${label}: path must be worktree-relative`];
+  const lexical = path.resolve(root, relative);
+  if (!insideRoot(lexical)) return [`${label}: path must resolve inside the exact worktree`];
+  const info = await lstat(lexical).catch(() => null);
+  if (!info) return [`${label}: directory is missing`];
+  if (info.isSymbolicLink()) return [`${label}: symlinks are not accepted`];
+  if (!info.isDirectory()) return [`${label}: path is not a directory`];
+  const physical = await realpath(lexical).catch(() => null);
+  if (!physical || !insideRoot(physical)) return [`${label}: real path escapes the exact worktree`];
+  let regularFileCount = 0;
+  async function visit(directory) {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const absolute = path.join(directory, entry.name);
+      const relativePath = path.relative(root, absolute);
+      if (entry.isSymbolicLink()) failures.push(`${label}: ${relativePath} is a symlink`);
+      else if (entry.isDirectory()) await visit(absolute);
+      else if (entry.isFile()) {
+        regularFileCount += 1;
+        if (!tracked.has(relativePath)) failures.push(`${label}: ${relativePath} is not tracked`);
+      } else failures.push(`${label}: ${relativePath} is not a regular file`);
+    }
+  }
+  await visit(lexical);
+  if (!regularFileCount) failures.push(`${label}: directory contains no tracked evidence files`);
+  return failures;
 }
 
 async function gitJsonSource(commit, relative) {
@@ -421,6 +518,90 @@ export function checkpointCardTransitionFailures(beforeCards, afterCards, event)
   return [...new Set(failures)];
 }
 
+export function checkpointAcceptanceFailures(event) {
+  const failures = [];
+  const receipt = event?.acceptanceReceipt;
+  if (!receipt) return ['completed checkpoint lacks the full immutable acceptance receipt'];
+  const schema = validateGovernanceInstance(receipt, 'acceptance-receipt.v1.schema.json');
+  failures.push(...schema.issues.map((issue) => `acceptance receipt: ${issue.path} ${issue.message}`));
+  const { receipt_digest: recordedDigest, ...unsignedReceipt } = receipt;
+  if (recordedDigest !== digestObject(unsignedReceipt)) failures.push('acceptance receipt digest does not match its content');
+  if (receipt.verdict !== 'governed') failures.push('completed checkpoint acceptance verdict is not governed');
+  if (receipt.surface !== 'product_finish') failures.push('completed checkpoint acceptance surface must be product_finish');
+  for (const [key, expected] of Object.entries({
+    root: event?.git?.root,
+    branch: event?.git?.branch,
+    commit: event?.git?.head,
+    tree: event?.git?.tree,
+  })) {
+    if (receipt.candidate?.[key] !== expected) failures.push(`acceptance receipt candidate ${key} disagrees with the checkpoint`);
+  }
+  if (receipt.outcomes?.length !== 1) failures.push('completed checkpoint acceptance must bind exactly one outcome');
+  else {
+    if (receipt.outcomes[0].path !== event?.outcomePacket) failures.push('acceptance receipt outcome path disagrees with the checkpoint');
+    if (receipt.outcomes[0].sha256 !== event?.outcomePacketSha256) failures.push('acceptance receipt outcome SHA-256 disagrees with the checkpoint');
+  }
+  if (receipt.knowledge_receipts?.length !== 1) failures.push('completed checkpoint acceptance must bind exactly one knowledge recall receipt');
+  if (receipt.profiles?.length !== 1) failures.push('completed checkpoint acceptance must bind exactly one loop profile');
+  if (!receipt.changed_paths?.length) failures.push('completed checkpoint acceptance has no canonical changed paths');
+  if (event?.acceptance?.receiptId !== receipt.receipt_id
+    || event?.acceptance?.receiptDigest !== receipt.receipt_digest
+    || event?.acceptance?.verdict !== receipt.verdict
+    || event?.acceptance?.surface !== receipt.surface) {
+    failures.push('completed checkpoint acceptance summary disagrees with the full receipt');
+  }
+  return [...new Set(failures)];
+}
+
+export async function checkpointAcceptanceDurabilityFailures(event, options = {}) {
+  const receipt = event?.acceptanceReceipt;
+  if (!receipt) return ['completed checkpoint lacks the full immutable acceptance receipt'];
+  const tracked = options.tracked ?? await trackedFiles();
+  const failures = [];
+  const fileRecords = [
+    ['contract', receipt.contracts],
+    ['outcome', receipt.outcomes],
+    ['runner provenance', receipt.runner_provenance],
+    ['execution attestation', receipt.execution_attestations],
+    ['knowledge recall receipt', receipt.knowledge_receipts],
+  ];
+  for (const [label, records] of fileRecords) {
+    if (!Array.isArray(records) || records.length !== 1) {
+      failures.push(`acceptance receipt must bind exactly one ${label}`);
+      continue;
+    }
+    const failure = await trackedRegularFileFailure(records[0]?.path, tracked, `acceptance ${label}`);
+    if (failure) failures.push(failure);
+  }
+  for (const record of receipt.knowledge_receipts ?? []) {
+    const failure = await trackedRegularFileFailure(record?.cited_source_path, tracked, 'acceptance durable knowledge source');
+    if (failure) failures.push(failure);
+  }
+  for (const record of receipt.runner_provenance ?? []) {
+    failures.push(...await trackedDirectoryFailures(record?.run_directory, tracked, 'acceptance runner directory'));
+  }
+  if (!failures.length) {
+    const replay = await (options.replay ?? replayAcceptanceReceipt)(root, receipt, options.replayOptions ?? {});
+    if (replay.valid !== true) failures.push(...(replay.issues ?? ['acceptance receipt replay did not return a valid verdict']));
+  }
+  return [...new Set(failures)];
+}
+
+export function completionEventBijectionFailures(cards, events) {
+  const failures = [];
+  const counts = new Map(cards.map((card) => [card.id, 0]));
+  for (const event of events) {
+    if (event?.state !== 'done') continue;
+    for (const id of event.cards ?? []) counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+  for (const card of cards) {
+    const count = counts.get(card.id) ?? 0;
+    if (card.status === 'done' && count !== 1) failures.push(`${card.id}: done status requires exactly one completed checkpoint; found ${count}`);
+    if (card.status !== 'done' && count !== 0) failures.push(`${card.id}: non-done status has ${count} completed checkpoint(s)`);
+  }
+  return failures;
+}
+
 export function conditionalRouteKeyFailures(routes = []) {
   const failures = [];
   const seen = new Set();
@@ -433,11 +614,20 @@ export function conditionalRouteKeyFailures(routes = []) {
   return failures;
 }
 
-export function validateCards(cards, now = new Date()) {
+export function validateCards(cards, now = new Date(), benchmarkIds = null) {
   const failures = [];
   const ids = new Set();
   const activePriorities = new Map();
-  const requiredFields = ['status', 'priority', 'blocker', 'blocked_by', 'reviewed', 'applies_to', 'evidence_type', 'evidence', 'evidence_sha256', 'pillar', 'journey', 'next_action', 'score', 'authority', 'scope', 'out'];
+  const requiredFields = [
+    'status', 'priority', 'blocker', 'blocked_by', 'reviewed', 'applies_to',
+    'evidence_type', 'evidence', 'evidence_sha256', 'pillar', 'journey',
+    'next_action', 'operator_next_action', 'audience', 'action_scope', 'action_scope_universal',
+    'delivery_phase', 'benchmark_requirements', 'differentiated_outcome',
+    'benchmark_evidence_state', 'benchmark_scope', 'score', 'expected_outcome',
+    'success_evidence', 'failure_outcome', 'accountable_owner',
+    'exit_condition', 'priority_basis', 'alternatives_not_now', 'authority',
+    'scope', 'out',
+  ];
   const allowedFields = new Set(['id', 'title', '_parse_errors', ...requiredFields]);
   for (const card of cards) {
     for (const failure of card._parse_errors ?? []) failures.push(`${card.id ?? 'unknown'}: ${failure}`);
@@ -449,6 +639,34 @@ export function validateCards(cards, now = new Date()) {
     for (const field of Object.keys(card)) if (!allowedFields.has(field)) failures.push(`${card.id}: unknown field ${field}`);
     const score = Number.parseInt(card.score, 10);
     if (!Number.isFinite(score) || score < 8 || score > 10) failures.push(`${card.id}: score must be 8/10..10/10`);
+    if (!['participant', 'operator'].includes(card.audience)) failures.push(`${card.id}: audience must be participant or operator`);
+    if (card.action_scope_universal !== 'false') failures.push(`${card.id}: action_scope_universal must be false`);
+    if (/^(?:all|everyone|everybody|universal)$/iu.test(String(card.action_scope).trim()) || /\b(?:all|any|every|everyone|universal)\b(?:\s+[\p{L}\p{N}-]+){0,4}\s+\b(?:users?|participants?|people|persons?|states?|routes?|screens?|journeys?|audiences?)\b/iu.test(String(card.action_scope).trim())) failures.push(`${card.id}: action_scope must name a bounded user or operator state, not a universal audience`);
+    if (!['phase-0-grounding', 'phase-1-baseline', 'phase-2-differentiation', 'phase-3-modes', 'phase-4-release', 'phase-5-real-use'].includes(card.delivery_phase)) failures.push(`${card.id}: invalid delivery_phase ${card.delivery_phase}`);
+    if (!['not-applicable-internal', 'e1-source-reviewed-e2-open', 'e1-stale-refresh-required-e2-open', 'e2-hands-on', 'not-applicable-operator'].includes(card.benchmark_evidence_state)) failures.push(`${card.id}: invalid benchmark_evidence_state ${card.benchmark_evidence_state}`);
+    if (!['applies', 'defines-registry', 'operator-not-applicable'].includes(card.benchmark_scope)) failures.push(`${card.id}: invalid benchmark_scope ${card.benchmark_scope}`);
+    const benchmarkReference = String(card.benchmark_requirements ?? '').trim();
+    const notApplicable = benchmarkReference.startsWith('not-applicable:');
+    if (notApplicable && card.audience !== 'operator') failures.push(`${card.id}: participant-facing cards must cite applicable benchmark outcomes`);
+    if (card.benchmark_scope === 'defines-registry' && !(notApplicable && card.audience === 'operator' && card.delivery_phase === 'phase-0-grounding')) failures.push(`${card.id}: defines-registry is restricted to the phase-0 operator benchmark package`);
+    if (card.benchmark_scope === 'operator-not-applicable' && !(notApplicable && card.audience === 'operator' && ['phase-4-release', 'phase-5-real-use'].includes(card.delivery_phase) && card.benchmark_evidence_state === 'not-applicable-operator')) failures.push(`${card.id}: operator-not-applicable is restricted to phase-4 or phase-5 operator work with matching evidence state`);
+    if (card.benchmark_scope === 'applies' && notApplicable) failures.push(`${card.id}: applicable benchmark scope must cite stable outcome IDs`);
+    if (card.benchmark_scope === 'applies' && String(card.benchmark_evidence_state).startsWith('not-applicable-')) failures.push(`${card.id}: applicable benchmark scope cannot use a not-applicable evidence state`);
+    if (notApplicable && !['defines-registry', 'operator-not-applicable'].includes(card.benchmark_scope)) failures.push(`${card.id}: not-applicable benchmark requirements need an explicit registry or operator package role`);
+    if (card.audience === 'operator' && !/\b(?:operator|integrator|evaluator|reviewer|product team|release team|assurance|steward)\b/iu.test(`${card.journey} ${card.action_scope}`)) failures.push(`${card.id}: operator cards must name an operator role in journey or action_scope`);
+    if (card.audience === 'participant' && /^(?:release integrator|product evaluator|operator|reviewer|assurance|steward)\b/iu.test(String(card.action_scope).trim())) failures.push(`${card.id}: participant cards cannot use an operator action_scope`);
+    if (!notApplicable) {
+      const references = benchmarkReference.split(',').map((value) => value.trim()).filter(Boolean);
+      if (references.length === 0) failures.push(`${card.id}: benchmark_requirements must cite at least one stable outcome id`);
+      for (const reference of references) {
+        if (!/^(?:BASE|MODE)-[A-Z0-9-]+$/u.test(reference)) failures.push(`${card.id}: invalid benchmark requirement ${reference}`);
+        else if (benchmarkIds && !benchmarkIds.has(reference)) failures.push(`${card.id}: benchmark requirement ${reference} is not defined by product/benchmark-baseline.md`);
+      }
+    }
+    if (card.status === 'done' && /^e1-/u.test(String(card.benchmark_evidence_state))) failures.push(`${card.id}: E1 evidence with E2 open cannot support done status`);
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(String(card.accountable_owner))) failures.push(`${card.id}: accountable_owner must be a canonical lowercase slug`);
+    const comparedAlternatives = new Set(String(card.alternatives_not_now).match(/P-\d+/gu) ?? []);
+    if (comparedAlternatives.size < 2) failures.push(`${card.id}: alternatives_not_now must name at least two distinct Cockpit cards`);
     if (!['ready', 'building', 'blocked', 'done'].includes(card.status)) failures.push(`${card.id}: invalid status ${card.status}`);
     if (card.blocker !== 'none' && !/^P[012]-[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(String(card.blocker))) failures.push(`${card.id}: blocker must be none or a canonical P0/P1/P2 slug`);
     const priority = Number(card.priority);
@@ -467,7 +685,7 @@ export function validateCards(cards, now = new Date()) {
     if (card.status === 'blocked' && card.blocked_by === 'none') failures.push(`${card.id}: blocked card must name blocked_by`);
     if (card.status !== 'blocked' && card.blocked_by !== 'none') failures.push(`${card.id}: only blocked cards may name blocked_by`);
   }
-  for (const required of ['P-034', 'P-032', 'P-035', 'P-012', 'P-022', 'P-005', 'P-006', 'P-007', 'P-008', 'P-030']) {
+  for (const required of ['P-034', 'P-032', 'P-035', 'P-013', 'P-012', 'P-022', 'P-005', 'P-006', 'P-007', 'P-008', 'P-030']) {
     if (!ids.has(required)) failures.push(`missing release card ${required}`);
   }
   for (const card of cards.filter((candidate) => candidate.blocked_by && candidate.blocked_by !== 'none')) {
@@ -506,6 +724,14 @@ async function cardEvidenceFailures(cards) {
   return failures;
 }
 
+async function benchmarkState() {
+  const markdown = await readFile(benchmarkBaselinePath, 'utf8').catch(() => '');
+  return {
+    ids: new Set(parseBenchmarkIds(markdown)),
+    failures: markdown ? benchmarkBaselineFailures(markdown) : ['product/benchmark-baseline.md is missing'],
+  };
+}
+
 async function decisionFailures(now = new Date()) {
   const failures = [];
   const markdown = await readFile(path.join(root, 'product/decisions.md'), 'utf8').catch(() => '');
@@ -522,8 +748,11 @@ async function decisionFailures(now = new Date()) {
     const date = section.match(/^- Date: (\d{4}-\d{2}-\d{2})$/mu)?.[1];
     const age = daysSince(date, now);
     if (age < 0 || age > 90) failures.push(`${id ?? heading}: decision date is future or older than 90 days without review`);
+    if (id === 'DEC-001' && /The first product action is/iu.test(section)) failures.push('DEC-001: a Catch-route decision may not declare one universal product action');
+    if (id === 'DEC-009' && !/one obvious action per observed\s+user state or\s+operator state/iu.test(section)) failures.push('DEC-009: contextual action selection wording is missing');
+    if (id === 'DEC-010' && (!/category baseline/iu.test(section) || !/E1/iu.test(section) || !/E2/iu.test(section))) failures.push('DEC-010: category baseline and E1/E2 evidence boundary are missing');
   }
-  for (const required of ['DEC-001', 'DEC-002', 'DEC-003', 'DEC-004', 'DEC-005', 'DEC-006', 'DEC-007']) {
+  for (const required of ['DEC-001', 'DEC-002', 'DEC-003', 'DEC-004', 'DEC-005', 'DEC-006', 'DEC-007', 'DEC-008', 'DEC-009', 'DEC-010']) {
     if (!ids.has(required)) failures.push(`missing decision ${required}`);
   }
   return failures;
@@ -724,6 +953,7 @@ async function historyFailures(cards) {
   const context = await loadContextAuthority();
   const ids = new Set(cards.map((card) => card.id));
   const files = (await readdir(historyPath).catch(() => [])).filter((file) => file.endsWith('.json')).sort();
+  const events = [];
   for (const [index, file] of files.entries()) {
     let event;
     try {
@@ -732,6 +962,7 @@ async function historyFailures(cards) {
       failures.push(`${file}: invalid JSON: ${error instanceof Error ? error.message : String(error)}`);
       continue;
     }
+    events.push(event);
     if (event.sequence !== index + 1 || !file.startsWith(String(index + 1).padStart(4, '0'))) failures.push(`${file}: history sequence is not contiguous`);
     if (!['chopdot.product.checkpoint.v1', 'chopdot.product.checkpoint.v2'].includes(event.schema)) failures.push(`${file}: unsupported checkpoint schema ${event.schema}`);
     for (const id of event.cards ?? []) if (!ids.has(id)) failures.push(`${file}: unknown card ${id}`);
@@ -778,7 +1009,13 @@ async function historyFailures(cards) {
           .map((failure) => `${file}: ${failure}`));
       }
     }
+    if (event.state === 'done') {
+      failures.push(...checkpointAcceptanceFailures(event).map((failure) => `${file}: ${failure}`));
+      failures.push(...(await checkpointAcceptanceDurabilityFailures(event, { tracked }))
+        .map((failure) => `${file}: ${failure}`));
+    }
   }
+  failures.push(...completionEventBijectionFailures(cards, events));
   return failures;
 }
 
@@ -960,9 +1197,11 @@ async function contextFailures(now = new Date()) {
 }
 
 async function governanceFailures(cards) {
+  const benchmark = await benchmarkState();
   return [
     ...await contextFailures(),
-    ...validateCards(cards),
+    ...benchmark.failures,
+    ...validateCards(cards, new Date(), benchmark.ids),
     ...await cardEvidenceFailures(cards),
     ...await decisionFailures(),
     ...await releaseStateFailures(cards),
@@ -1001,7 +1240,8 @@ async function validateContext() {
 
 async function refresh() {
   const { cards } = await load();
-  const failures = [...await contextFailures(), ...validateCards(cards), ...await cardEvidenceFailures(cards), ...await decisionFailures(), ...await releaseStateFailures(cards), ...await historyFailures(cards)];
+  const benchmark = await benchmarkState();
+  const failures = [...await contextFailures(), ...benchmark.failures, ...validateCards(cards, new Date(), benchmark.ids), ...await cardEvidenceFailures(cards), ...await decisionFailures(), ...await releaseStateFailures(cards), ...await historyFailures(cards)];
   if (failures.length) throw new Error(failures.join('\n'));
   const views = generatedViews(cards);
   await mkdir(path.dirname(resumePath), { recursive: true });
@@ -1028,7 +1268,7 @@ async function validate() {
     process.exitCode = 1;
     return;
   }
-  console.log(`Product cockpit valid (${cards.length} cards, all product scores >= 8/10).`);
+  console.log(`Product cockpit valid (${cards.length} cards; product admission gates and prioritization outcome contracts are present).`);
 }
 
 async function query(args) {
@@ -1037,9 +1277,9 @@ async function query(args) {
   if (failures.length) throw new Error(failures.join('\n'));
   const queryText = args._.join(' ').toLowerCase();
   const selected = queryText === 'next'
-    ? rankCards(cards).filter((card) => card.status === 'building').slice(0, 1)
+    ? [nextBuildingCard(cards)].filter(Boolean)
     : cards.filter((card) => JSON.stringify(card).toLowerCase().includes(queryText));
-  console.log(selected.map((card) => `${card.id} [${card.status}] ${card.title}\n  Next: ${card.next_action}`).join('\n'));
+  console.log(selected.map((card) => `${card.id} [${card.status}] ${card.title}\n  Operator priority action: ${card.next_action}\n  Audience/scope: ${card.audience} — ${card.action_scope}\n  Expected outcome: ${card.expected_outcome}\n  Priority basis: ${card.priority_basis}\n  Alternatives not now: ${card.alternatives_not_now}`).join('\n'));
 }
 
 async function setStatus(command, args) {
@@ -1053,7 +1293,49 @@ async function setStatus(command, args) {
   const expected = command === 'start' ? ['ready', 'blocked', 'building'] : ['building', 'blocked'];
   if (!expected.includes(card.status)) throw new Error(`${id} cannot ${command} from ${card.status}`);
   if (command === 'finish' && !args.evidence) throw new Error(`${id} finish requires --evidence=PATH`);
-  if (command === 'finish' && args['outcome-packet']) await validatedOutcomeReference(args, true);
+  let acceptanceReceipt;
+  if (command === 'finish') {
+    for (const field of ['outcome-packet', 'contract', 'knowledge-receipt', 'runner-provenance', 'run-directory', 'execution-attestation', 'context-receipt', 'agent-run-id', 'evidence-level', 'independent-review']) {
+      if (!args[field]) throw new Error(`${id} finish requires --${field}=...`);
+    }
+    const tracked = await trackedFiles();
+    for (const [field, label] of [
+      ['contract', 'finish contract'],
+      ['knowledge-receipt', 'finish knowledge receipt'],
+      ['runner-provenance', 'finish runner provenance'],
+      ['execution-attestation', 'finish execution attestation'],
+      ['context-receipt', 'finish context receipt'],
+    ]) {
+      if (!args[field]) continue;
+      const failure = await trackedRegularFileFailure(String(args[field]), tracked, label);
+      if (failure) throw new Error(failure);
+    }
+    const runnerDirectoryFailures = await trackedDirectoryFailures(String(args['run-directory']), tracked, 'finish runner directory');
+    if (runnerDirectoryFailures.length) throw new Error(runnerDirectoryFailures.join('\n'));
+    const outcome = await validatedOutcomeReference(args, true);
+    const [{ stdout: head }, { stdout: tree }, { stdout: branch }] = await Promise.all([
+      execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: root }),
+      execFileAsync('git', ['rev-parse', 'HEAD^{tree}'], { cwd: root }),
+      execFileAsync('git', ['branch', '--show-current'], { cwd: root }),
+    ]);
+    acceptanceReceipt = await validateAcceptance({
+      root,
+      surface: 'product_finish',
+      changedPaths: canonicalGitChangedPaths(root, outcome.packet.starting_head, outcome.packet.ending_head),
+      outcomePaths: [outcome.path],
+      contractPaths: [String(args.contract)],
+      knowledgeReceiptPaths: [String(args['knowledge-receipt'])],
+      runnerProvenancePaths: [String(args['runner-provenance'])],
+      runDirectories: [String(args['run-directory'])],
+      executionAttestationPaths: [String(args['execution-attestation'])],
+      expectedCommit: head.trim(),
+      expectedTree: tree.trim(),
+      expectedBranch: branch.trim(),
+      contextReceiptPath: args['context-receipt'] ? String(args['context-receipt']) : null,
+      evidenceLevel: String(args['evidence-level']),
+    });
+    if (acceptanceReceipt.verdict !== 'governed') throw new Error(acceptanceReceipt.failures.join('\n'));
+  }
   if (command === 'start' && card.status === 'blocked') {
     const blockerIds = String(card.blocked_by).split(',').map((value) => value.trim()).filter((value) => value && value !== 'none');
     const unresolved = blockerIds.filter((blockerId) => cards.find((candidate) => candidate.id === blockerId)?.status !== 'done');
@@ -1068,9 +1350,17 @@ async function setStatus(command, args) {
     .replace(/^blocked_by: .*$/mu, 'blocked_by: none')
     .replace(/^blocker: .*$/mu, 'blocker: none'));
   if (updated === markdown && card.status !== next) throw new Error(`Could not update ${id}`);
-  await writeFile(cardsPath, updated);
-  await checkpoint({ ...args, cards: id, summary: args.summary ?? `${id} ${next}` }, next);
-  await refresh();
+  let checkpointTarget;
+  try {
+    await writeFile(cardsPath, updated);
+    checkpointTarget = await checkpoint({ ...args, cards: id, summary: args.summary ?? `${id} ${next}`, acceptanceReceipt }, next);
+    await refresh();
+  } catch (error) {
+    await writeFile(cardsPath, markdown);
+    if (checkpointTarget) await unlink(checkpointTarget).catch(() => {});
+    await refresh().catch(() => {});
+    throw error;
+  }
 }
 
 async function checkpoint(args, forcedState) {
@@ -1125,6 +1415,13 @@ async function checkpoint(args, forcedState) {
       reviewerId: String(args['independent-review']),
       satisfied: outcomeReference?.packet.evaluation_summary?.independent_review_satisfied === true,
     } : undefined,
+    acceptance: args.acceptanceReceipt ? {
+      receiptId: args.acceptanceReceipt.receipt_id,
+      receiptDigest: args.acceptanceReceipt.receipt_digest,
+      verdict: args.acceptanceReceipt.verdict,
+      surface: args.acceptanceReceipt.surface,
+    } : undefined,
+    acceptanceReceipt: args.acceptanceReceipt,
   };
   const slug = cards.join('-').toLowerCase() || 'release';
   const target = path.join(historyPath, `${sequence}-${slug}.json`);
@@ -1134,6 +1431,7 @@ async function checkpoint(args, forcedState) {
   }
   await writeFile(target, `${JSON.stringify(payload, null, 2)}\n`, { flag: 'wx' });
   console.log(`Recorded ${path.relative(root, target)}.`);
+  return target;
 }
 
 async function validatedOutcomeReference(args, required, observedIdentity) {

@@ -4,7 +4,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { readFile, readdir } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { createContract, digestContract } from './contract.mjs';
-import { readJson, writeJsonAtomic } from './core.mjs';
+import { readJson, sha256, writeJsonAtomic } from './core.mjs';
 import { evaluateContractAssertions, gradeTrajectory, recordEvaluation } from './evaluator.mjs';
 import { recordRepairDirective } from './evaluator.mjs';
 import { runEvaluationSuite } from './eval-runner.mjs';
@@ -21,7 +21,7 @@ import { createExactSourceAdapter } from './adapters/exact-source.mjs';
 import { createRepoGraphAdapter } from './adapters/repo-graph.mjs';
 import { createKgv2Adapter } from './adapters/kgv2.mjs';
 import { createMockKgv3Adapter } from './adapters/mock-kgv3.mjs';
-import { runKnowledgeAdapterConformance, validateKnowledgeRecall } from './adapters/port.mjs';
+import { runKnowledgeAdapterConformance, validateKnowledgeContext, validateKnowledgeRecall } from './adapters/port.mjs';
 
 function parseArguments(argv) {
   const [command, ...rest] = argv;
@@ -31,8 +31,12 @@ function parseArguments(argv) {
     if (!argument.startsWith('--')) { options._.push(argument); continue; }
     const [rawKey, inline] = argument.slice(2).split('=', 2);
     const key = rawKey.replace(/-/g, '_');
-    if (inline !== undefined) options[key] = inline;
-    else if (rest[index + 1] && !rest[index + 1].startsWith('--')) options[key] = rest[++index];
+    const assign = (value) => {
+      if (key === 'required_sources' && options[key] !== undefined) options[key] = [options[key], value].flat();
+      else options[key] = value;
+    };
+    if (inline !== undefined) assign(inline);
+    else if (rest[index + 1] && !rest[index + 1].startsWith('--')) assign(rest[++index]);
     else options[key] = true;
   }
   return { command, options };
@@ -89,7 +93,8 @@ Core commands:
   evaluate --run-dir DIR [--measurements-json TYPED_BINDINGS|--measurements-file FILE] [--finalize]
   outcome-promote --run-dir DIR --output FILE
   continuation-promote --run-dir DIR --output FILE [--next-bounded-task TEXT]
-  knowledge-preflight|knowledge-record|knowledge-verify
+  knowledge-preflight|knowledge-read|knowledge-record|knowledge-verify
+    knowledge-read --adapter NAME --question TEXT [--required-sources A,B] [--required-sources C]
   eval --suite FILE | knowns-probe | instruction-validate | ci
 
 All commands support --json. Effectful commands support --dry-run.`;
@@ -381,6 +386,42 @@ export async function main(argv = process.argv.slice(2)) {
       const adapter = await loadAdapter(options);
       result = await adapter.health();
       if (!result.accepted || result.fallback_status === 'unavailable') exitCode = 1;
+      break;
+    }
+    case 'knowledge-read': {
+      const adapter = await loadAdapter(options);
+      const scope = gitIdentity(root);
+      const requiredSources = commaList(options.required_sources);
+      const context = await adapter.read_context(scope, requireOption(options, 'question'), options.authority_policy ?? 'exact-root-cited-sources');
+      const failures = [];
+      try { validateKnowledgeContext(context); } catch (error) { failures.push(error.message); }
+      if (context.freshness?.status !== 'fresh' || context.stale_reasons?.length) failures.push(`context_stale:${(context.stale_reasons ?? []).join(',')}`);
+      const sourceIdentities = new Map((context.source_identities ?? []).map((entry) => [entry.source_identity_id, entry]));
+      for (const source of context.source_identities ?? []) {
+        if (path.resolve(source.root) !== scope.root || source.branch !== scope.branch || source.commit !== scope.commit) failures.push(`source_candidate_mismatch:${source.source_identity_id}`);
+      }
+      const citationIds = new Set();
+      for (const citation of context.citations ?? []) {
+        citationIds.add(citation.citation_id);
+        const source = sourceIdentities.get(citation.source_identity_id);
+        if (!source) failures.push(`citation_source_missing:${citation.citation_id}`);
+        else if (path.resolve(citation.path) !== path.resolve(source.path) || citation.sha256 !== source.sha256) failures.push(`citation_source_mismatch:${citation.citation_id}`);
+      }
+      for (const fact of context.facts ?? []) for (const citationId of fact.citation_ids ?? []) if (!citationIds.has(citationId)) failures.push(`fact_citation_missing:${fact.fact_id}:${citationId}`);
+      const citedPaths = new Set((context.citations ?? []).map((entry) => path.resolve(entry.path)));
+      for (const requiredSource of requiredSources) {
+        const expected = path.resolve(root, requiredSource);
+        const relative = path.relative(root, expected);
+        if (relative.startsWith('..') || path.isAbsolute(relative)) failures.push(`required_source_cross_root:${requiredSource}`);
+        else if (!citedPaths.has(expected)) failures.push(`required_source_not_cited:${requiredSource}`);
+        else {
+          const citation = (context.citations ?? []).find((entry) => path.resolve(entry.path) === expected);
+          try { if (citation.sha256 !== sha256(await readFile(expected))) failures.push(`required_source_hash_mismatch:${requiredSource}`); }
+          catch { failures.push(`required_source_missing:${requiredSource}`); }
+        }
+      }
+      result = { ...context, accepted: failures.length === 0, validation_errors: failures, required_sources: requiredSources };
+      if (failures.length) exitCode = 1;
       break;
     }
     case 'knowledge-record': {

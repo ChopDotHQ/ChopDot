@@ -25,6 +25,8 @@ export async function probeKnownsCompatibility(root, options = {}) {
 const REQUIRED_AGENT_REFERENCES = [
   'PRODUCT_TRUTH.md', 'docs/CHOPDOT_OPERATING_LOOPS.md', 'docs/CHOPDOT_LOOP_RUNNER.md',
   'product/cards.md', 'product/decisions.md', 'product/decision-contracts.md', 'product/roadmap.md',
+  'governance/agent-system/instructions/chopdot-product-judgment.md',
+  'governance/agent-system/instructions/chopdot-frontend-design.md',
 ];
 
 const REQUIRED_COMMANDS = [

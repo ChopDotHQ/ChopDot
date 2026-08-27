@@ -19,6 +19,7 @@ import { recordArtifact } from '../artifacts.mjs';
 import { fixtureContract, fixturePreflightIdentity, fixtureRoot, passingMeasurements, recordPassingMeasurementEvidence } from './helpers.mjs';
 
 const PROFILES = ['research', 'product-definition', 'implementation', 'ux-creation', 'security-authority', 'incident-repair', 'release-outcome'];
+const EXPECTED_ASSERTION_COUNT = PROFILES.reduce((count, profileId) => count + loadLoopProfile(profileId).expected_outcome.assertions.length, 0);
 
 test('Draft 2020 instance validation rejects unknown hostile contract fields', async () => {
   const root = await fixtureRoot();
@@ -73,16 +74,35 @@ test('all seven contract factories load their profile artifacts, assertions, eva
     assert.deepEqual(contract.failure_outcome.required_fields, profile.failure_packet.required_fields, profileId);
     assertionCount += contract.expected_outcome.assertions.length;
   }
-  assert.equal(assertionCount, 34);
+  assert.equal(assertionCount, EXPECTED_ASSERTION_COUNT);
 });
 
-test('all 34 profile assertions block on raw measurements and pass with recorded typed evidence', async () => {
+test('product and UX contracts cannot omit the executable benchmark semantic gate', () => {
+  for (const [profileId, commandId] of [['product-definition', 'PROD-BENCHMARK-SEMANTICS'], ['ux-creation', 'UX-BENCHMARK-SEMANTICS']]) {
+    const contract = createContract({
+      root: process.cwd(),
+      loopProfile: profileId,
+      branch: 'codex/test',
+      startingHead: 'a'.repeat(40),
+      startingTree: 'b'.repeat(40),
+      deterministicCommands: [],
+    });
+    const command = contract.evaluator.deterministic_commands.find((entry) => entry.id === commandId);
+    assert.ok(command, `${profileId} is missing ${commandId}`);
+    assert.match(command.command, /benchmark-semantics\.mjs/u);
+    contract.evaluator.deterministic_commands = [];
+    assert.ok(validateAgentContract(contract).issues.some((entry) => entry.code === 'required_semantic_gate'));
+  }
+});
+
+test('all current profile assertions block on raw measurements and pass with recorded typed evidence', async () => {
   let blocked = 0;
   let passed = 0;
   for (const profileId of PROFILES) {
     const root = await fixtureRoot();
     const contract = fixtureContract(root, { loop_profile: { id: profileId, version: '1.0.0', path: `governance/agent-system/loops/${profileId}.v1.json` } });
     const { run_directory: runDirectory } = await startRun(contract, { runsRoot: path.join(root, 'runs'), observedIdentity: fixturePreflightIdentity(contract) });
+    contract.evaluator.deterministic_commands = [];
     const missing = await evaluateContractAssertions(contract, { evaluatorIdentity: 'independent-reviewer', measurements: passingMeasurements(contract) });
     blocked += missing.counts.blocked;
     assert.equal(missing.accepted, false, profileId);
@@ -91,8 +111,8 @@ test('all 34 profile assertions block on raw measurements and pass with recorded
     passed += supplied.counts.passed;
     assert.equal(supplied.accepted, true, profileId);
   }
-  assert.equal(blocked, 34);
-  assert.equal(passed, 34);
+  assert.equal(blocked, EXPECTED_ASSERTION_COUNT);
+  assert.equal(passed, EXPECTED_ASSERTION_COUNT);
 });
 
 test('all seven persisted rubrics execute their dimensions and fail on absent observations', () => {

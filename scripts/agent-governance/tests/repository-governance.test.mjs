@@ -23,6 +23,7 @@ function fixtureRoot() {
   copy('scripts/agent-system');
   copy('package.json');
   copy('.github/workflows/agent-governance.yml');
+  copy('.githooks/pre-push');
   const catalog = JSON.parse(fs.readFileSync(path.join(root, 'scripts/agent-governance/catalog/invariants.v1.json')));
   for (const invariant of catalog.invariants) {
     const file = path.join(root, invariant.source);

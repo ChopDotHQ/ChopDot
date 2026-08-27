@@ -6,6 +6,7 @@ import { assertRedacted, redactValue } from './redact.mjs';
 import { contractRoot, digestContract } from './contract.mjs';
 import { validateGovernanceInstance } from './schema.mjs';
 import { assertCurrentCandidate, validateCandidateIdentity } from './candidate.mjs';
+import { generateRunnerProvenance, verifyRunnerProvenance } from './provenance.mjs';
 
 function latestEvaluation(snapshot) { return snapshot.evaluations.at(-1) ?? null; }
 
@@ -44,6 +45,9 @@ export function buildOutcomePacket(contract, snapshot, options = {}) {
   if (!currentValidation.valid) throw new Error(`Outcome candidate rejected: ${currentValidation.issues.join('; ')}`);
   const evaluation = latestEvaluation(snapshot);
   const artifacts = snapshot.artifacts.map(artifactRef);
+  const evaluationIndex = snapshot.artifacts
+    .filter((artifact) => artifact.artifact_type === 'EvaluationRecordV1')
+    .map(artifactRef);
   const trajectory = gradeTrajectory(snapshot, contract);
   if (snapshot.terminal_state === 'succeeded' && !trajectory.accepted) throw new Error('Succeeded run has an unacceptable trajectory');
   const packet = {
@@ -71,6 +75,14 @@ export function buildOutcomePacket(contract, snapshot, options = {}) {
       hard_failures: [], score: 0, threshold: contract.evaluator.pass_threshold,
       independent_review_satisfied: false,
     },
+    evaluation_index: evaluationIndex,
+    ...(options.runnerProvenance ? { runner_provenance: {
+      provenance_id: options.runnerProvenance.provenance_id,
+      provenance_digest: options.runnerProvenance.provenance_digest,
+      ledger_head_digest: options.runnerProvenance.ledger.head_digest,
+      event_count: options.runnerProvenance.ledger.event_count,
+      evaluation_digest: options.runnerProvenance.evaluation.evaluation_digest,
+    } } : {}),
     effects: Object.values(snapshot.effects).map((effect) => ({
       effect_id: effect.effect_id,
       state: effect.state === 'verified' || effect.state === 'failed' ? effect.state : 'unknown_needs_reconciliation',
@@ -96,6 +108,8 @@ export function validateOutcomePacket(packet) {
   if (packet.requirements?.some((entry) => entry.status !== 'accepted')) issues.push('requirements remain open');
   if (!packet.artifacts?.length) issues.push('artifacts are missing');
   if (!packet.evidence_index?.length) issues.push('evidence index is missing');
+  if (!packet.evaluation_index?.length) issues.push('evaluation index is missing');
+  if (!packet.runner_provenance) issues.push('runner provenance is missing');
   if (packet.effects?.some((effect) => effect.state !== 'verified')) issues.push('effects remain unreconciled');
   const summary = packet.evaluation_summary;
   if (summary && summary.passed + summary.failed + summary.blocked !== summary.total_assertions) issues.push('evaluation counts do not sum to total assertions');
@@ -161,7 +175,10 @@ export async function promoteOutcome(runDirectory, contract, outputFile, options
     const validation = validateCandidateIdentity(evaluation.candidate_identity, { expectedRoot: contractRoot(contract), expectedBranch: contract.scope.branch, requireClean: true });
     if (!validation.valid || validation.candidate_digest !== currentDigest || evaluation.candidate_digest !== currentDigest) throw new Error(`Evaluation ${evaluation.evaluation_id} does not prove the clean current candidate`);
   }
-  const packet = buildOutcomePacket(contract, snapshot, { ...options, candidateIdentity: candidate, requireClean: true });
+  const runnerProvenance = options.runnerProvenance ?? await generateRunnerProvenance(runDirectory, contract, { snapshot });
+  const packet = buildOutcomePacket(contract, snapshot, { ...options, candidateIdentity: candidate, requireClean: true, runnerProvenance });
+  const provenanceVerification = await verifyRunnerProvenance(runDirectory, contract, runnerProvenance, packet);
+  if (!provenanceVerification.valid) throw new Error(`Runner provenance cannot be verified: ${provenanceVerification.issues.join('; ')}`);
   const validation = validateOutcomePacket(packet);
   if (!validation.valid) throw new Error(`Outcome cannot be promoted: ${validation.issues.join('; ')}`);
   const redacted = redactValue(packet);

@@ -71,7 +71,7 @@ packet family.
 | Profile | Required artifact | Objective outcome | Critical independent review |
 |---|---|---|---|
 | Research | cited decision or research packet | every material claim has admissible citations and uncertainty labels | required when a product, security, legal, or release decision depends on it |
-| Product Definition | accepted card/spec/journey | score at least 8/10, no product-law conflict, testable scenarios and failure path | product assurance |
+| Product Definition | comparative priority verdict plus accepted card/spec/journey | independent first view, contextual action and complete outcome contract; score at least 8/10 as admission only; no product-law conflict; testable scenarios and failure path | product assurance |
 | Implementation | verified patch | requirements pass focused and production-entrypoint checks with attributed dirty paths | required for critical authority, money, privacy, recovery, or release code |
 | UX Creation | accepted real-screen journey | one obvious next action plus first/action/error/recovery/after evidence | product and accessibility assurance |
 | Security and Authority | threat/finding/verdict packet | zero unresolved critical/high findings in affected boundaries | reviewer must differ from implementer |
@@ -164,7 +164,7 @@ readback. It does not claim arbitrary external side effects are exactly once.
 |---|---|
 | `docs/CHOPDOT_OPERATING_LOOPS.md` context loop | Context Preflight Gate |
 | agent execution contract prose | `AgentLoopContractV1` |
-| product package loop | Product Definition, Implementation, and UX Loop composition |
+| product package loop | Product Portfolio Judgment, then Product Definition, Implementation, and UX Loop composition |
 | live failure loop | Incident Repair Agent Loop |
 | release loop | Release Outcome Pipeline |
 | KGv2/Repo Graph loop | Knowledge Context Port plus adapters |
@@ -203,17 +203,60 @@ Until the repository ruleset and its required checks are present and read back,
 review ownership remains a declared process requirement rather than enforced
 repository state.
 
+## Adoption boundary
+
+`policies/adoption-boundary.v1.json` is the executable routing policy for
+acceptance, not a product-priority source. It defaults tracked repository paths
+to governed profiles and requires context, contract, exact-candidate outcome,
+runner provenance, external execution, evidence-byte, and knowledge-recall
+proof at the applicable
+Product Cockpit, push, PR, and release surfaces.
+
+`scripts/agent-governance/adoption-guard.mjs` emits `ContextReceiptV1` and
+`AcceptanceReceiptV1`. The tracked pre-push hook provides local feedback.
+Product Cockpit, the exact-head PR outcome job, and release enforcement call the
+same guard. The guard pins the reviewed routing-policy digest, derives the
+changed-path manifest from the applicable Git range, and requires a hashed
+`EvaluationV1`, replayable `RunnerProvenanceV1`, GitHub OIDC execution
+attestation, and byte-valid exact-outcome recall backed by a durable cited
+record. Ordinary surfaces use contract start through outcome end; PR merge
+uses the same-run event-bound pull-request base through candidate head.
+A stale legacy release snapshot cannot override a valid exact-candidate recall;
+an absent, rejected, stale, cross-candidate, or citation-invalid recall still
+fails closed.
+
+PR acceptance generates a real, schema-validated **implementation** verifier
+contract at the exact candidate. It is explicitly post-hoc: it does not prove
+that the underlying work started from that contract, pretend the CI runner
+authored the product work, or fabricate a product, UX, security, research, or
+release profile from generic CI checks. Original task-contract lineage is a
+separate future-work requirement and cannot be retroactively asserted for this
+bootstrap adoption change. Specialized work must arrive with its own aligned
+evaluated outcome before that separate claim can be accepted.
+
+Product completion writes the full immutable `AcceptanceReceiptV1` into the
+append-only Cockpit checkpoint. Validation re-hashes that receipt, reopens its
+cited evidence, replays the digest-chained runner proof, binds it to the
+checkpoint candidate and outcome, and requires an exact one-to-one mapping
+between every `done` card and one completed checkpoint.
+
+Deterministic evaluator separation proves independent execution, not human or
+agent judgment. Product, security, and release review require their own
+protected evidence outside candidate-authored bytes. Files below
+`docs/release/` are documentation and historical evidence; editing them is not
+a live release effect. The executable release boundary is the protected GitHub
+environment plus the release-enforcement workflow and external readback.
+
 ## Implementation status
 
-Wave 0 establishes the ADR, taxonomy, ownership targets, and PR reconciliation.
-The following remain false until later waves provide their named proof:
+Source implementation and local verification are separate from remote
+adoption. The runner, contracts, profiles, evaluators, knowledge adapters,
+Cockpit integration, workflow validation, and adoption guard exist in this
+worktree. They become remotely enforced only when the accepted commit is pushed
+and the protected required checks/ruleset are read back against that commit.
+They become operationally adopted only when real packages repeatedly produce
+governed receipts and escaped-drift cases enter the evaluation suite.
 
-`contracts_built`, `runner_built`, `durable_resume_proven`,
-`effects_reconciled`, `evaluators_built`, `loop_profiles_built`,
-`knowledge_portable`, `kg_adapter_verified`, `repo_graph_adapter_verified`,
-`cockpit_integrated`, `ci_enforced`, `branch_protected`, `pilots_passed`,
-`documentation_coherent`, `independently_reviewed`, and `adopted`.
-
-The source files in this directory must never be used to report those verdicts
-true without the corresponding command results, environmental observations,
-and evidence packets.
+Never infer `branch_protected`, `ci_enforced`, `adopted`, `kg_known`, or any
+product/release verdict from these source files alone. Cite the current command,
+workflow run, ruleset readback, and exact outcome evidence.

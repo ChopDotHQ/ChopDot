@@ -1,16 +1,19 @@
 import { readJson } from './core.mjs';
 import { validateAgentContract, validateLoopProfile, validatePolicyCatalog } from './validate.mjs';
+import { validateBenchmarkPacket } from './benchmark-semantics.mjs';
 
 export async function runEvaluationCase(testCase, options = {}) {
   let result;
   if (testCase.kind === 'contract_validation') result = validateAgentContract(testCase.input, { expectedRoot: testCase.expected_root });
   else if (testCase.kind === 'profile_validation') result = validateLoopProfile(testCase.input);
   else if (testCase.kind === 'policy_validation') result = validatePolicyCatalog(testCase.input, testCase.policy_kind);
+  else if (testCase.kind === 'benchmark_packet_validation') result = await validateBenchmarkPacket(testCase.input, { root: options.root ?? process.cwd(), packetType: testCase.packet_type });
   else if (typeof options.handlers?.[testCase.kind] === 'function') result = await options.handlers[testCase.kind](testCase.input, testCase);
   else return { id: testCase.id, passed: false, reason: `unknown_case_kind:${testCase.kind}` };
   const actual = result.valid ?? result.accepted ?? result.passed;
-  const passed = actual === testCase.expected_valid;
-  return { id: testCase.id, kind: testCase.kind, passed, expected_valid: testCase.expected_valid, actual, result };
+  const issueMatched = !testCase.expected_issue_code || result.issues?.some((entry) => entry.code === testCase.expected_issue_code);
+  const passed = actual === testCase.expected_valid && issueMatched;
+  return { id: testCase.id, kind: testCase.kind, passed, expected_valid: testCase.expected_valid, expected_issue_code: testCase.expected_issue_code ?? null, actual, issue_matched: issueMatched, result };
 }
 
 export async function runEvaluationSuite(suiteOrFile, options = {}) {

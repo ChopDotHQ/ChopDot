@@ -1,9 +1,13 @@
 # Products Devnet Catalog and KGv2 Provenance Gate
 
-Date: 2026-08-22
-Programme: B — native capability research and provenance support
-Owner: Codex
-Status: complete (catalog and KG gate; deployment remains out of scope)
+**Kind:** historical research plan
+**Status:** complete time-sliced catalog and KGv2 gate; deployment remained out of scope
+**Owner:** product-research
+**Observed at:** 2026-08-22
+**Applies to:** the source identities and KGv2 runtime recorded by the resulting packet
+**Authority:** historical research provenance only; portable current knowledge routing is resolved at read time
+
+**Programme:** B — native capability research and provenance support
 
 ## Goal
 

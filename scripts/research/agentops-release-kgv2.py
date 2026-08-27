@@ -29,6 +29,32 @@ PROOF_PATH = WORKTREE / "docs/release/2026-08-24-recovery-head-index-live-proof.
 CONTEXT_PATH = WORKTREE / "product/context-authority.json"
 LIVE_FINDING_PATH = WORKTREE / "docs/release/2026-08-24-live-first-use-findings.md"
 RELEASE_STATE_PATH = WORKTREE / "docs/release/current-release-state.json"
+GATE9_EVIDENCE_PATH = (
+    WORKTREE / "docs/release/2026-08-27-p034-legacy-assessment-quarantine.md"
+)
+GATE9_PLAN_PATH = (
+    WORKTREE
+    / "docs/superpowers/plans/2026-08-27-gate9-legacy-assessment-quarantine.md"
+)
+GATE9_SOURCE_PATHS = [
+    WORKTREE / "src/core/legacyMoneyMigration.ts",
+    WORKTREE / "src/core/authority/browserAuthority.ts",
+    WORKTREE / "src/state/AppStateContext.tsx",
+]
+GATE9_TEST_PATHS = [
+    WORKTREE / "tests/candidate-batch3-money-migration.test.ts",
+    WORKTREE / "tests/candidate-batch3-legacy-assessment-indexeddb.spec.ts",
+    WORKTREE / "tests/named-mode-multi-account-production-entrypoint.spec.ts",
+]
+GATE9_PATHS_BY_ROLE = {
+    "source": GATE9_SOURCE_PATHS,
+    "test": GATE9_TEST_PATHS,
+    "evidence": [GATE9_EVIDENCE_PATH],
+    "plan": [GATE9_PLAN_PATH],
+}
+GATE9_PATHS = [
+    path for paths in GATE9_PATHS_BY_ROLE.values() for path in paths
+]
 
 MANIFEST = {
     "schema_version": "1.0",
@@ -54,7 +80,9 @@ MANIFEST = {
             "docs/adr/**",
             "docs/wiki/**",
             "docs/release/**",
+            "docs/release/2026-08-27-p034-legacy-assessment-quarantine.md",
             "docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md",
+            "docs/superpowers/plans/2026-08-27-gate9-legacy-assessment-quarantine.md",
             "docs/superpowers/plans/2026-08-24-context-authority-and-live-first-use-repair.md",
             "docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
             "docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.json",
@@ -70,15 +98,39 @@ MANIFEST = {
             "scripts/release-evidence.test.mjs",
             "scripts/verify-dot-host.mjs",
             "src/main.tsx",
+            "src/core/legacyMoneyMigration.ts",
+            "src/core/authority/browserAuthority.ts",
+            "src/state/AppStateContext.tsx",
             "src/recovery/**",
+            "tests/candidate-batch3-money-migration.test.ts",
+            "tests/candidate-batch3-legacy-assessment-indexeddb.spec.ts",
+            "tests/named-mode-multi-account-production-entrypoint.spec.ts",
         ],
-        "source": ["src/**", "scripts/**", "contracts/**"],
-        "tests": ["**/*.test.*", "**/*.spec.*", "contracts/**/test/**"],
-        "specs": ["docs/superpowers/plans/**"],
+        "source": [
+            "src/**",
+            "scripts/**",
+            "contracts/**",
+            "src/core/legacyMoneyMigration.ts",
+            "src/core/authority/browserAuthority.ts",
+            "src/state/AppStateContext.tsx",
+        ],
+        "tests": [
+            "**/*.test.*",
+            "**/*.spec.*",
+            "contracts/**/test/**",
+            "tests/candidate-batch3-money-migration.test.ts",
+            "tests/candidate-batch3-legacy-assessment-indexeddb.spec.ts",
+            "tests/named-mode-multi-account-production-entrypoint.spec.ts",
+        ],
+        "specs": [
+            "docs/superpowers/plans/**",
+            "docs/superpowers/plans/2026-08-27-gate9-legacy-assessment-quarantine.md",
+        ],
         "decisions": ["PRODUCT_TRUTH.md", "product/**", "docs/adr/**", "docs/release/**"],
         "tasks": ["product/cards.md", "product/roadmap.md", ".knowns/tasks", "docs/superpowers/plans/**"],
         "evidence": [
             "docs/release/**",
+            "docs/release/2026-08-27-p034-legacy-assessment-quarantine.md",
             "deployment/recovery-head-index/**",
         ],
         "generated": ["contracts/recovery-head-index/artifacts/**"],
@@ -107,6 +159,14 @@ MANIFEST = {
         "docs/release/2026-08-24-live-first-use-findings.md",
         "docs/release/2026-08-24-local-release-assurance.md",
         "docs/release/2026-08-24-recovery-head-index-live-proof.md",
+        "docs/release/2026-08-27-p034-legacy-assessment-quarantine.md",
+        "docs/superpowers/plans/2026-08-27-gate9-legacy-assessment-quarantine.md",
+        "src/core/legacyMoneyMigration.ts",
+        "src/core/authority/browserAuthority.ts",
+        "src/state/AppStateContext.tsx",
+        "tests/candidate-batch3-money-migration.test.ts",
+        "tests/candidate-batch3-legacy-assessment-indexeddb.spec.ts",
+        "tests/named-mode-multi-account-production-entrypoint.spec.ts",
         "deployment/recovery-head-index/devnet.json",
         "deployment/recovery-head-index/devnet.behavior.json",
         "deployment/recovery-head-index/paseo-next-v2.json",
@@ -132,7 +192,12 @@ QUERIES = {
         "recovery contract bounded non-authority index no admin upgrade membership money custody"
     ),
     "context_authority": (
-        "product/context-authority.json authority hierarchy current"
+        "product/context-authority.json chopdot.context-authority.v1 exact_root "
+        "authority_order default_read_order conditional_routes"
+    ),
+    "gate9_legacy_assessment": (
+        "P-034 Gate 9 legacy assessment quarantine re-digested 10-to-20 CHF "
+        "semantic forgery encrypted IndexedDB zero authority creation"
     ),
     "live_first_use": (
         "ChopDot live first use guest group creation blocker overloaded Home candidate ineligible promotion"
@@ -151,6 +216,7 @@ REQUIRED_QUERY_SOURCE = {
     "identical_code": PROOF_PATH,
     "authority_boundary": PROOF_PATH,
     "context_authority": CONTEXT_PATH,
+    "gate9_legacy_assessment": GATE9_EVIDENCE_PATH,
     "live_first_use": LIVE_FINDING_PATH,
     "full_release_route": WORKTREE
     / "docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md",
@@ -189,6 +255,135 @@ def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def gate9_source_bindings() -> list[dict[str, str]]:
+    bindings = []
+    for role, paths in GATE9_PATHS_BY_ROLE.items():
+        for source_path in paths:
+            resolved = source_path.resolve()
+            if resolved == WORKTREE or WORKTREE not in resolved.parents:
+                raise RuntimeError(
+                    f"Gate 9 {role} source escapes the exact worktree: {resolved}"
+                )
+            if not resolved.is_file():
+                raise RuntimeError(f"Gate 9 {role} source is missing: {resolved}")
+            bindings.append(
+                {
+                    "role": role,
+                    "path": str(resolved.relative_to(WORKTREE)),
+                    "source_ref": str(resolved),
+                    "sha256": sha256_bytes(resolved.read_bytes()),
+                }
+            )
+    return bindings
+
+
+def query_passed(query_checks: dict[str, dict[str, bool]], name: str) -> bool:
+    checks = query_checks.get(name, {})
+    return bool(checks) and all(value is True for value in checks.values())
+
+
+def build_knowledge_status(
+    query_checks: dict[str, dict[str, bool]],
+) -> dict[str, object]:
+    legacy_queries_pass = bool(query_checks) and all(
+        query_passed(query_checks, name) for name in QUERIES
+    )
+    context_authority_pass = query_passed(query_checks, "context_authority")
+    gate9_source_pass = query_passed(query_checks, "gate9_legacy_assessment")
+    gate9_read_gate_pass = context_authority_pass and gate9_source_pass
+    gate9_reasons = [
+        "portable_record_outcome_not_executed",
+        "portable_verify_recall_not_executed",
+        "legacy_context_graph_v2_does_not_expose_exact_outcome_commit_lineage",
+    ]
+    if not context_authority_pass:
+        gate9_reasons.insert(0, "context_authority_required_source_not_recalled")
+    if not gate9_source_pass:
+        gate9_reasons.insert(0, "gate9_required_source_not_recalled")
+    return {
+        "legacy_context_graph_v2_read": {
+            "scope": "global_release_read_queries",
+            "status": "passed" if legacy_queries_pass else "failed",
+            "all_queries_pass": legacy_queries_pass,
+            "does_not_prove_portable_kg_known": True,
+        },
+        "portable_knowledge": {
+            "global_release": {
+                "kg_known": False,
+                "status": "not_proven",
+                "reasons": [
+                    "portable_record_outcome_not_executed",
+                    "portable_verify_recall_not_executed",
+                    "legacy_context_graph_v2_does_not_expose_exact_outcome_commit_lineage",
+                ],
+            },
+            "gate9_legacy_assessment": {
+                "kg_known": False,
+                "status": (
+                    "read_gate_passed_record_and_recall_required"
+                    if gate9_read_gate_pass
+                    else "required_source_recall_failed"
+                ),
+                "legacy_v2_read_gate_pass": gate9_read_gate_pass,
+                "required_queries": [
+                    "context_authority",
+                    "gate9_legacy_assessment",
+                ],
+                "reasons": gate9_reasons,
+            },
+        },
+    }
+
+
+def build_port_facts(
+    source_bindings: list[dict[str, str]],
+) -> list[dict[str, object]]:
+    evidence_ref = str(GATE9_EVIDENCE_PATH)
+    implementation_refs = [
+        item["source_ref"]
+        for item in source_bindings
+        if item["role"] in {"source", "test"}
+    ]
+    gate9_refs = [item["source_ref"] for item in source_bindings]
+    return [
+        {
+            "statement": "The Repo Graph packet describes the exact clean ChopDot launch worktree, branch, commit, and tree.",
+            "confidence": 1,
+            "source_refs": gate9_refs,
+        },
+        {
+            "statement": "The active release route contains 21 separately evidenced gates through identical public-testnet promotion, ownership, real-user proof, rollback, and portable cited recall.",
+            "confidence": 1,
+            "source_refs": [
+                str(
+                    WORKTREE
+                    / "docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md"
+                )
+            ],
+        },
+        {
+            "statement": "Knowledge recall is an operational evidence layer and does not create product, participant, membership, money, recovery, or release authority.",
+            "confidence": 1,
+            "source_refs": [str(CONTEXT_PATH)],
+        },
+        {
+            "statement": "The accepted Gate 9 legacy-assessment slice deterministically quarantines ambiguous pre-authority projections and creates no shared authority.",
+            "confidence": 1,
+            "source_refs": [evidence_ref, *implementation_refs],
+        },
+        {
+            "statement": "Gate 9 legacy-assessment evidence reports 21 focused Node tests, 2 real IndexedDB browser tests, 5 named-mode production-entrypoint tests, and a final independent verdict of zero P0 and zero P1 findings.",
+            "confidence": 1,
+            "source_refs": [evidence_ref],
+        },
+        {
+            "statement": "The Gate 9 legacy-assessment slice is accepted, while P-034 remains building and the whole release is not thereby complete or portable-knowledge-known.",
+            "confidence": 1,
+            "source_refs": [evidence_ref, str(GATE9_PLAN_PATH)],
+        },
+    ]
+
+
 def require_clean_exact_worktree() -> dict[str, object]:
     if Path.cwd().resolve() != WORKTREE:
         raise RuntimeError(f"Run from exact worktree: {WORKTREE}")
@@ -206,7 +401,13 @@ def require_clean_exact_worktree() -> dict[str, object]:
             "AgentOps refresh refuses staged, modified, or untracked paths before any import or durable write:\n"
             + status
         )
-    for required in [PROOF_PATH, CONTEXT_PATH, LIVE_FINDING_PATH, RELEASE_STATE_PATH]:
+    for required in [
+        PROOF_PATH,
+        CONTEXT_PATH,
+        LIVE_FINDING_PATH,
+        RELEASE_STATE_PATH,
+        *GATE9_PATHS,
+    ]:
         if not required.exists():
             raise RuntimeError(f"Required release/context evidence is missing: {required}")
     return {"root": str(root), "branch": branch, "head": head, "tree": tree, "status": []}
@@ -346,6 +547,7 @@ def isolated_main(autobots: Path, source_identity: dict[str, object]) -> int:
     packet = json.loads(
         (report_root / "context_packet.json").read_text(encoding="utf-8")
     )
+    gate9_bindings = gate9_source_bindings()
 
     preflights = {}
     query_summaries = {}
@@ -457,9 +659,17 @@ def isolated_main(autobots: Path, source_identity: dict[str, object]) -> int:
             )
             for source in [CONTEXT_PATH, LIVE_FINDING_PATH, RELEASE_STATE_PATH]
         ),
+        "gate9_sources_in_graph": all(
+            any(
+                item.get("source_path") == str(source.relative_to(WORKTREE))
+                for item in graph.get("entities", [])
+            )
+            for source in GATE9_PATHS
+        ),
         "all_queries_pass": all(all(query.values()) for query in query_checks.values()),
     }
     core_pass = all(checks.values())
+    knowledge_status = build_knowledge_status(query_checks)
     kg_lineage = {
         "repo_root": str(WORKTREE),
         "branch": source_identity["branch"],
@@ -468,7 +678,10 @@ def isolated_main(autobots: Path, source_identity: dict[str, object]) -> int:
         "public_recall_exposes_commit_lineage": False,
         "reason": "Context Graph v2 public recalled facts and citations do not expose an event commit or Repo Graph packet identity, so exact-commit recall cannot be proven.",
     }
-    kg_known = False
+    kg_known = knowledge_status["portable_knowledge"]["global_release"]["kg_known"]
+    gate9_kg_known = knowledge_status["portable_knowledge"][
+        "gate9_legacy_assessment"
+    ]["kg_known"]
     status = "partial" if core_pass else "fail"
     result = {
         "schema": "chopdot.release-agentops-verification.v2",
@@ -477,6 +690,9 @@ def isolated_main(autobots: Path, source_identity: dict[str, object]) -> int:
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "status": status,
         "kg_known": kg_known,
+        "kg_known_scope": "global_release",
+        "gate9_kg_known": gate9_kg_known,
+        "knowledge_status": knowledge_status,
         "kg_lineage": kg_lineage,
         "source_identity": source_identity,
         "agentops_runtime": {
@@ -535,20 +751,15 @@ def isolated_main(autobots: Path, source_identity: dict[str, object]) -> int:
         "dirty_paths": [],
         "graph_digest": graph.get("graph_digest"),
         "repo_graph_packet_digest": packet.get("packet_digest"),
-        "facts": [
-            {
-                "statement": "The Repo Graph packet describes the exact clean ChopDot launch worktree, branch, commit, and tree.",
-                "confidence": 1,
-            },
-            {
-                "statement": "The active release route contains 21 separately evidenced gates through identical public-testnet promotion, ownership, real-user proof, rollback, and portable cited recall.",
-                "confidence": 1,
-            },
-            {
-                "statement": "Knowledge recall is an operational evidence layer and does not create product, participant, membership, money, recovery, or release authority.",
-                "confidence": 1,
-            },
+        "knowledge_scope": "gate9_legacy_assessment",
+        "portable_kg_known": gate9_kg_known,
+        "knowledge_status": knowledge_status["portable_knowledge"][
+            "gate9_legacy_assessment"
         ],
+        "current_outcome_digest": None,
+        "source_paths": [item["source_ref"] for item in gate9_bindings],
+        "source_bindings": gate9_bindings,
+        "facts": build_port_facts(gate9_bindings),
         "stale_reasons": [],
     }
     write_json(artifact_root / "release-repo-graph-packet.json", packet_artifact)

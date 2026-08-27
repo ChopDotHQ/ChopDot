@@ -73,9 +73,16 @@ portable Knowledge Context Port, not a backend version called KGv2 or KGv3.
 
 ## Product gate
 
+Every user-facing package first maps its applicable stable outcomes from
+`product/benchmark-baseline.md`, names the ChopDot differentiated outcome,
+separates bounded experiments, and preserves its current E1/E2/E3 evidence
+state. No single scenario or score is the product-wide gate.
+
+The following is the bounded P-012 Catch example only:
+
 ```text
 User journey:
-"I am Mina; I just paid for the group and need ChopDot to capture the receipt
+"I just paid for the group and need ChopDot to capture the receipt
 so everyone gets the right next action."
 
 One next action: Scan a receipt
@@ -86,8 +93,10 @@ Language: 1/1
 Total: 9/10 PASS
 ```
 
+This action applies when the observed participant state contains a receipt or
+spend to capture; it is not the universal Home action or operator priority.
 Scanning may begin locally before account ceremony. No membership or money
-mutation occurs until Mina reviews and signs. Camera/OCR failure retains an
+mutation occurs until the responsible participant reviews and signs. Camera/OCR failure retains an
 image-first or manually correctable draft.
 
 ## Architecture and approval locks
@@ -271,16 +280,21 @@ permit an architecture change or a success claim.
 - **Failure/exit:** plaintext secret, revoked future access, same-browser-only
   recovery, or hidden retention failure is release-blocking.
 
-### 12. Receipt-first product shell
+### 12. Contextual first-use product shell
 
 - **Owner:** product/UX.
-- **Expected outcome:** Home has one dominant Scan a receipt action, prioritized
-  group cards, one New Group path, plain account setup, and actionable failure
-  states on mobile and desktop.
+- **Expected outcome:** Home exposes one dominant working action for the
+  observed participant state, prioritized group cards, one New Group path,
+  plain account setup, and actionable failure states on mobile and desktop.
+  A participant entering Catch with a spend sees Scan a receipt; a participant
+  starting the first shared group sees Create my group. Neither action is a
+  universal Home default.
 - **Evidence:** production-entrypoint click-through, real screenshots at required
-  widths, accessibility tree, and first-time product review.
+  widths, accessibility tree, state/action matrix, and first-time product
+  review.
 - **Failure/exit:** dashboard, lab, ledger, protocol language, duplicate action,
-  or dead-end creation returns to design/implementation.
+  universal-action drift, or dead-end creation returns to
+  design/implementation.
 
 ### 13. Normal product journey
 
@@ -397,22 +411,14 @@ permit an architecture change or a success claim.
   An external personhood blocker uses the fallback name and keeps branded-name
   migration open instead of blocking the usable public beta.
 
-## Status at adoption
+## Historical snapshot at plan adoption
 
-- Gate 1: completed on clean commit
-  `0d15013871818d109a7493f2a90db4d81fcdc379`.
-- Gate 2: source repair, focused tests, full governance tests, and independent
-  review completed locally. The exact-current PR OutcomePacket remains pending
-  branch push and hosted CI readback in Gate 7; therefore Gate 2 is not yet
-  complete.
-- Gates 3-5: completed on that clean commit with independently accepted profile,
-  implementation, and security successors.
-- Gate 6: active.
-- Gates 7-21: pending their stated evidence.
-- Current public bytes remain the older broken candidate and are not promotion
-  evidence for this plan.
+The original adoption snapshot was taken before the category-baseline repair
+and is intentionally not maintained here. This plan defines ordered gates; it
+does not own current completion state. Never infer a current gate verdict from
+this section or from the age of the plan.
 
-Current status after adoption belongs to Git, Product Cockpit, immutable
+Current status belongs to Git, Product Cockpit, immutable
 OutcomePackets, `docs/release/current-release-state.json`, live readback, and
 portable recall. This plan must not be used as proof that its own steps ran.
 

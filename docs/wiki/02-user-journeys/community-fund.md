@@ -1,10 +1,11 @@
 # Community fund journey
 
-**Kind:** decision
+**Kind:** reference
 **Status:** active
 **Owner:** product
 **Last reviewed:** 2026-08-24
 **Applies to:** `chopdot-v1-launch`
+**Authority:** scoped journey reference derived from Product Truth, current Cockpit decisions and contracts, ADRs, and exact mode evidence; it cannot set priority or release status
 **Sources:** P-008, DC-004, One Chop Core tests
 
 GIVEN roles, contributions, and a bounded proposal, WHEN the configured

@@ -1,10 +1,11 @@
 # Native boundaries
 
-**Kind:** decision
+**Kind:** reference
 **Status:** active
 **Owner:** native release
 **Last reviewed:** 2026-08-24
 **Applies to:** `chopdot-v1-launch`
+**Authority:** scoped native-boundary reference derived from Product Truth, current Cockpit decisions and contracts, ADRs, and exact network evidence; it cannot claim implementation or release status
 **Sources:** DEC-003, DEC-005, ADR 0002, ADR 0003
 
 Programme A publishes a usable immutable frontend. Programme B proves that

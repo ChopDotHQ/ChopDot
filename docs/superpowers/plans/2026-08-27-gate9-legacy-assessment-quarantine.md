@@ -1,5 +1,12 @@
 # Gate 9 legacy assessment and quarantine change pack
 
+**Kind:** implementation plan
+**Status:** active bounded change pack
+**Owner:** core-authority
+**Last reviewed:** 2026-08-27
+**Applies to:** `chopdot-v1-launch`
+**Authority:** bounded implementation routing only; Product Truth, current Cockpit, context manifest, and release state win
+
 ## Goal
 
 Make every pre-authority local group deterministic and honestly reviewable
@@ -28,6 +35,9 @@ payment, or closeout history.
   digest plus authority-context digest.
 - Production bootstrap wiring and a read-only context result.
 - Unit, restart/idempotency, corruption, and bootstrap tests.
+- Exact-head portable knowledge record and recall for the accepted source,
+  tests, and evidence. This is operational evidence only and cannot promote a
+  legacy projection or create product authority.
 
 ## Scope out
 
@@ -76,6 +86,14 @@ payment, or closeout history.
    data SHALL NOT enter that packet.
 8. Invalid or corrupt assessment storage SHALL fail visibly and SHALL NOT
    weaken the authority boundary.
+9. After the accepted source and evidence are committed, a clean exact-worktree
+   Repo Graph packet SHALL cite the implementation, focused Node proof,
+   real-browser proof, this change pack, and the accepted evidence file by
+   current SHA-256. A valid independently accepted `OutcomePacketV1` SHALL be
+   durably recorded and recalled through the provider-neutral Knowledge Context
+   Port at the same root, branch, commit, and tree. Missing required citations,
+   wrong lineage, stale state, fallback, or outcome-digest mismatch SHALL keep
+   the scoped knowledge verdict false.
 
 ## GIVEN / WHEN / THEN
 
@@ -98,6 +116,9 @@ payment, or closeout history.
 - GIVEN an operator later chooses promotion, WHEN participant ceremonies have
   not supplied signed origin/membership/payer events, THEN the system stops at
   review and cannot claim migration complete.
+- GIVEN a graph packet from another root, branch, commit, tree, or source hash,
+  WHEN the Gate 9 outcome is read, recorded, or recalled, THEN the portable
+  knowledge verifier rejects it and `gate9_kg_known` remains false.
 
 ## Expected evidence
 
@@ -108,10 +129,16 @@ payment, or closeout history.
 - Full Node, TypeScript, build, wiki, Cockpit, and diff checks.
 - Independent security/authority review with repairs and final verdict.
 - Evidence packet, checkpoint, Repo Graph refresh, and cited recall status.
+- Knowledge read, durable-record, and recall receipts bound to the accepted
+  outcome digest; legacy KGv2 read status is reported separately from the
+  provider-neutral scoped verdict.
 
 ## Failure and exit
 
 Any fabricated authority, inferred currency, partial group import, plaintext
 assessment, journal collision, nondeterministic digest, or false ready state
 blocks this slice. The slice exits only when production bootstrap is wired,
-tests prove zero authority creation, and independent review has no P0/P1.
+tests prove zero authority creation, independent review has no P0/P1, and the
+accepted exact-head outcome has current cited record-and-recall proof. A legacy
+KG backend that cannot expose commit lineage remains explicitly partial rather
+than being treated as a substitute for the portable verdict.

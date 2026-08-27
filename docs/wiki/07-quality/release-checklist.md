@@ -3,8 +3,9 @@
 **Kind:** guardrail
 **Status:** active
 **Owner:** release assurance
-**Last reviewed:** 2026-08-24
+**Last reviewed:** 2026-08-27
 **Applies to:** `chopdot-v1-launch`
+**Authority:** scoped release-assurance guardrail subordinate to Product Truth, current Cockpit decisions and contracts, ADRs, and exact candidate and live evidence
 **Sources:** DC-005, DC-006, current-release-state.json
 
 The candidate must independently prove: implemented, tested, committed, pushed,
@@ -12,6 +13,35 @@ candidate built, staged, promoted, reachable, user owned, user proven, and
 knowledge known through exact cited recall. Fixture-only tests cannot prove the release: Playwright must exercise
 `src/main.tsx` across separate contexts, responsive sizes, offline/restart,
 wrong actors, recovery, accessibility, privacy, and every named mode.
+
+The protected release job additionally requires an applicable
+`AgentLoopContractV1`, exact-candidate `OutcomePacketV1`, exact-digest Knowledge
+Context verify-recall receipt, replayable `RunnerProvenanceV1`, its persisted
+run directory, and a consumed single-use approval bound to the same
+candidate/outcome/effect. The current protected-environment job mints a GitHub
+OIDC execution attestation and reads back the required reviewer and self-review
+protection before it runs the shared adoption guard. It must emit a `governed`
+release acceptance receipt. Missing release evidence is a failing job, never a
+skipped green path.
+
+The release caller supplies the canonical Git changed-path manifest derived
+from the accepted contract/outcome range; a synthetic release-state path cannot
+stand in for the candidate. The independent evaluation must be an indexed,
+hashed `EvaluationV1`, and the knowledge receipt must cite the exact outcome
+through a durable exact-source record outside the caller-supplied outcome
+artifact. Repository source proves only the intended gate. The protected GitHub
+environment, required reviewer, branch ruleset, and exact workflow run must be
+read back separately before remote release enforcement is claimed.
+The environment uses an explicit two-branch deployment allowlist:
+`main` and `codex/chopdot-v1-launch`. A generic “protected branches” setting is
+insufficient because it can allow every branch when no matching classic branch
+protection exists. The release verifier reads back the exact allowlist.
+
+GitHub administrators are an explicit external authority boundary. If the
+environment setting **Allow administrators to bypass configured protection
+rules** is enabled, the release loop is protected for ordinary execution but is
+not literally unavoidable to repository administrators; the wake-up verdict
+must say so until that setting is disabled and read back.
 
 The machine-readable current release verdict is
 `docs/release/current-release-state.json`. The earlier

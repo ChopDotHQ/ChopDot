@@ -27,6 +27,111 @@ const REQUIRED_RUN_TOKENS = new Map([
   ['release-enforcement', ['scripts/agent-governance/enforce-release.mjs']],
 ]);
 
+const PR_GUARD_CONTEXT_ARGS = Object.freeze([
+  '--surface=pr_merge',
+  '--profile="$profile"',
+  '--json-out="output/agent-runs/ci-pr-outcome/context-receipt.json"',
+]);
+
+const PR_RUN_DIRECTORY_ASSIGNMENT = `run_directory="$(jq -r '.run_directory' output/agent-runs/ci-pr-outcome/generation.json)"`;
+
+const PR_GUARD_ACCEPT_ARGS = Object.freeze([
+  '--surface=pr_merge',
+  '--changed-paths="$changed_paths"',
+  '--outcome="output/agent-runs/ci-pr-outcome/outcome.json"',
+  '--contract="output/agent-runs/ci-pr-outcome/acceptance-contract.json"',
+  '--knowledge-receipt="output/agent-runs/ci-pr-outcome/knowledge-recall.json"',
+  '--execution-attestation="output/agent-runs/ci-pr-outcome/execution-attestation.json"',
+  '--runner-provenance="output/agent-runs/ci-pr-outcome/runner-provenance.json"',
+  '--run-directory="$run_directory"',
+  '--context-receipt="output/agent-runs/ci-pr-outcome/context-receipt.json"',
+  '--profile="$profile"',
+  '--evidence-level=exact-candidate',
+  '--expected-sha="$EXPECTED_SHA"',
+  '--expected-tree="$(git rev-parse "$EXPECTED_SHA^{tree}")"',
+  '--expected-branch="$EXPECTED_BRANCH"',
+  '--json-out="output/agent-runs/ci-pr-outcome/acceptance-receipt.json"',
+]);
+
+const REQUIRED_DIRECT_INVOCATIONS = Object.freeze([
+  {
+    job: 'pr-outcome',
+    step: 'Record and recall the exact PR outcome',
+    command: 'node scripts/agent-system/cli.mjs knowledge-record',
+    exactInvocation: 'node scripts/agent-system/cli.mjs knowledge-record --adapter=exact-source --outcome="output/agent-runs/ci-pr-outcome/outcome.json" --json > "output/agent-runs/ci-pr-outcome/knowledge-record.json"',
+  },
+  {
+    job: 'pr-outcome',
+    step: 'Record and recall the exact PR outcome',
+    command: 'node scripts/agent-system/cli.mjs knowledge-verify',
+    exactInvocation: 'node scripts/agent-system/cli.mjs knowledge-verify --adapter=exact-source --outcome-digest="$outcome_digest" --json > "output/agent-runs/ci-pr-outcome/knowledge-recall.json"',
+  },
+  {
+    job: 'repo-governance',
+    step: 'Validate repository invariants and provider independence',
+    command: 'node scripts/agent-governance/validate-repository.mjs',
+    args: [
+      '--expected-sha="$EXPECTED_SHA"',
+      '--json-out="$GOVERNANCE_REPORT_ROOT/repository.json"',
+      '--md-out="$GOVERNANCE_REPORT_ROOT/repository.md"',
+    ],
+    exactWithArgs: true,
+  },
+  ...['lint', 'build', 'test:node', 'security:baseline'].map((script) => ({
+    job: 'application-fast-assurance',
+    step: 'Typecheck, build, focused Node suite, and security baseline',
+    command: `npm run ${script}`,
+    exact: true,
+  })),
+  {
+    job: 'pr-outcome',
+    step: 'Generate external exact-candidate OutcomePacketV1',
+    command: 'node scripts/agent-governance/generate-pr-outcome.mjs',
+    args: [
+      '--event-path="${{ runner.temp }}/agent-governance-input/pr-context-${{ github.run_id }}/pr-event.json"',
+      '--evidence-root="${{ runner.temp }}/agent-governance-input"',
+      '--output-directory="output/agent-runs/ci-pr-outcome"',
+      '--workflow-run-id="${{ github.run_id }}"',
+      '--workflow-run-attempt="${{ github.run_attempt }}"',
+      '--evaluator-identity="github-actions:pr-outcome:${{ github.run_id }}:${{ github.run_attempt }}"',
+      "--job-results-json='{\"agent-contract\":\"${{ needs.agent-contract.result }}\",\"agent-runner\":\"${{ needs.agent-runner.result }}\",\"knowledge-adapters\":\"${{ needs.knowledge-adapters.result }}\",\"repo-governance\":\"${{ needs.repo-governance.result }}\",\"application-fast-assurance\":\"${{ needs.application-fast-assurance.result }}\"}'",
+      '--json-out="output/agent-runs/ci-pr-outcome/generation.json"',
+    ],
+    exactWithArgs: true,
+  },
+  {
+    job: 'release-enforcement',
+    step: 'Generate current protected-environment execution attestation',
+    command: 'node scripts/agent-governance/execution-attestation.mjs create',
+    args: [
+      '--expected-sha="$EXPECTED_SHA"',
+      '--expected-branch="$EXPECTED_BRANCH"',
+      '--json-out="${{ runner.temp }}/release-enforcement/execution-attestation.json"',
+    ],
+    exactWithArgs: true,
+    env: {GH_TOKEN: '${{ github.token }}'},
+  },
+  {
+    job: 'release-enforcement',
+    step: 'Enforce approved immutable release evidence',
+    command: 'node scripts/agent-governance/enforce-release.mjs',
+    args: [
+      '--outcome="${{ inputs.outcome_packet }}"',
+      '--approval="${{ inputs.approval_record }}"',
+      '--contract="${{ inputs.loop_contract }}"',
+      '--knowledge-receipt="${{ inputs.knowledge_receipt }}"',
+      '--runner-provenance="${{ inputs.runner_provenance }}"',
+      '--run-directory="${{ inputs.run_directory }}"',
+      '--execution-attestation="${{ runner.temp }}/release-enforcement/execution-attestation.json"',
+      '--expected-sha="$EXPECTED_SHA"',
+      '--json-out="${{ runner.temp }}/release-enforcement/release.json"',
+      '--md-out="${{ runner.temp }}/release-enforcement/release.md"',
+    ],
+    exactWithArgs: true,
+    env: {GH_TOKEN: '${{ github.token }}'},
+  },
+]);
+
 function stripYamlComment(line) {
   let single = false;
   let double = false;
@@ -63,9 +168,116 @@ function isFalseCondition(value) {
   return compact === 'false' || compact === '0' || compact === '${{false}}' || compact.includes('&&false}}');
 }
 
+function directAdoptionGuardInvocations(run) {
+  const logicalLines = [];
+  let pending = '';
+  for (const raw of String(run ?? '').split('\n')) {
+    const line = stripYamlComment(raw).trim();
+    if (!line) continue;
+    pending = `${pending}${pending ? ' ' : ''}${line}`;
+    if (pending.endsWith('\\')) {
+      pending = pending.slice(0, -1).trimEnd();
+      continue;
+    }
+    logicalLines.push(pending);
+    pending = '';
+  }
+  if (pending) logicalLines.push(pending);
+  return logicalLines.filter((line) => /^node\s+scripts\/agent-governance\/adoption-guard\.mjs\s+(?:context|accept)(?:\s|$)/u.test(line));
+}
+
+function executableStepCommands(step) {
+  const lines = String(step?.run ?? '').split('\n').map((line) => stripYamlComment(line).trim()).filter(Boolean);
+  if (step?.fields.run === '>-' || step?.fields.run === '>') return lines.length ? [lines.join(' ')] : [];
+  const commands = [];
+  let pending = '';
+  for (const line of lines) {
+    pending = `${pending}${pending ? ' ' : ''}${line}`;
+    if (pending.endsWith('\\')) {
+      pending = pending.slice(0, -1).trimEnd();
+      continue;
+    }
+    commands.push(pending);
+    pending = '';
+  }
+  if (pending) commands.push(pending);
+  return commands;
+}
+
+function shellWeakeningReason(step, invocation) {
+  const source = String(step?.run ?? '');
+  if (/^\s*(?:if|elif|else|fi|case|esac|while|until|for|select|function)\b/gmu.test(source)
+    || /^\s*[A-Za-z_][A-Za-z0-9_]*\s*\(\s*\)\s*\{/gmu.test(source)) return 'shell control flow';
+  if (/^\s*(?:set\s+\+e|trap\b)/gmu.test(source)) return 'shell error suppression';
+  if (/\|\||&&|[;&]|(?<!\|)\|(?!\|)/u.test(invocation)) return 'shell chaining, backgrounding, or failure masking';
+  return null;
+}
+
+function requireDirectInvocation(job, specification, errors) {
+  const steps = job?.steps.filter((step) => step.fields.name === specification.step) ?? [];
+  if (steps.length !== 1) {
+    errors.push(`${specification.job} must contain exactly one ${specification.step} step`);
+    return;
+  }
+  const step = steps[0];
+  if (step.fields.if) errors.push(`${specification.job} required command ${specification.command} cannot be conditionally skipped`);
+  for (const [key, value] of Object.entries(specification.env ?? {})) {
+    if (step.env?.[key] !== value) errors.push(`${specification.job} required command ${specification.command} requires ${key}: ${value}`);
+  }
+  const exactInvocation = specification.exactInvocation
+    ?? (specification.exactWithArgs ? [specification.command, ...(specification.args ?? [])].join(' ') : null);
+  const candidates = executableStepCommands(step).filter((line) => exactInvocation
+    ? line === exactInvocation
+    : specification.exact ? line === specification.command
+    : line === specification.command || line.startsWith(`${specification.command} `));
+  if (candidates.length !== 1) {
+    errors.push(`${specification.job} must directly execute exactly one ${specification.command}`);
+    return;
+  }
+  const invocation = candidates[0];
+  const weakening = shellWeakeningReason(step, invocation);
+  if (weakening) errors.push(`${specification.job} required command ${specification.command} is weakened by ${weakening}`);
+  for (const argument of specification.args ?? []) {
+    if (!invocation.includes(argument)) errors.push(`${specification.job} required command ${specification.command} lacks proof argument: ${argument}`);
+  }
+}
+
+function requireDirectGuardInvocation(job, subcommand, requiredArgs, errors) {
+  const steps = job?.steps.filter((step) => step.fields.name === 'Enforce governed PR acceptance') ?? [];
+  if (steps.length !== 1) {
+    errors.push('PR outcome must contain exactly one Enforce governed PR acceptance step');
+    return;
+  }
+  if (/^\s*(?:if|elif|else|fi|case|esac|while|until|for|select|function)\b/gmu.test(steps[0].run)) {
+    errors.push('PR adoption guard step cannot place proof execution behind shell control flow');
+  }
+  const invocations = directAdoptionGuardInvocations(steps[0].run)
+    .filter((line) => line.startsWith(`node scripts/agent-governance/adoption-guard.mjs ${subcommand}`));
+  if (invocations.length !== 1) {
+    errors.push(`PR adoption guard must directly execute exactly one ${subcommand} invocation`);
+    return;
+  }
+  const invocation = invocations[0];
+  const executableLines = String(steps[0].run).split('\n').map((line) => stripYamlComment(line).trim()).filter(Boolean);
+  if (subcommand === 'accept') {
+    const runDirectoryAssignments = executableLines.filter((line) => /^(?:(?:export|readonly|declare|typeset)\s+)?run_directory=/u.test(line));
+    if (runDirectoryAssignments.length !== 1 || runDirectoryAssignments[0] !== PR_RUN_DIRECTORY_ASSIGNMENT) {
+      errors.push(`PR adoption guard accept must bind its runner directory with exactly: ${PR_RUN_DIRECTORY_ASSIGNMENT}`);
+    }
+  }
+  if (subcommand === 'accept' && executableLines.at(-1) !== invocation) errors.push('PR adoption guard accept invocation must be the final executable command');
+  if (/\|\||;\s*(?:true|:)\b/u.test(invocation)) errors.push(`PR adoption guard ${subcommand} invocation cannot mask failure`);
+  for (const argument of requiredArgs) {
+    if (!invocation.includes(argument)) errors.push(`PR adoption guard ${subcommand} invocation lacks required proof argument: ${argument}`);
+  }
+  const expectedInvocation = `node scripts/agent-governance/adoption-guard.mjs ${subcommand} ${requiredArgs.join(' ')}`;
+  if (invocation !== expectedInvocation) errors.push(`PR adoption guard ${subcommand} must match the exact canonical invocation`);
+}
+
 function parseStep(block, start, end) {
-  const step = { fields: {}, with: {}, run: '', line: block[start].line };
+  const step = { fields: {}, with: {}, env: {}, run: '', line: block[start].line };
   let inWith = false;
+  let inEnv = false;
   for (let index = start; index < end; index += 1) {
     const entry = block[index];
     const pair = keyValue(entry.text);
@@ -73,8 +285,10 @@ function parseStep(block, start, end) {
     if (entry.indent === 6 && index === start) step.fields[pair.key] = pair.value;
     else if (entry.indent === 8) {
       inWith = pair.key === 'with';
-      if (!inWith) step.fields[pair.key] = pair.value;
+      inEnv = pair.key === 'env';
+      if (!inWith && !inEnv) step.fields[pair.key] = pair.value;
     } else if (entry.indent === 10 && inWith) step.with[pair.key] = pair.value;
+    else if (entry.indent === 10 && inEnv) step.env[pair.key] = pair.value;
     if (entry.indent === 8 && pair.key === 'run') {
       const commandLines = [];
       let cursor = index + 1;
@@ -197,7 +411,19 @@ export function validateWorkflow(source) {
   }
   if (prNumber?.fields.type !== 'string' || prNumber.fields.required !== 'false') errors.push('workflow_dispatch pull_request_number must be an optional string with fail-closed runtime enforcement');
   if (parsed.workflow_dispatch_inputs.enforce_release) errors.push('Legacy enforce_release input can bypass the mutually exclusive dispatch mode');
-  if (!parsed.workflow_dispatch_inputs.outcome_packet || !parsed.workflow_dispatch_inputs.approval_record) errors.push('Release evidence inputs must remain explicit for release_enforcement mode');
+  if (!parsed.workflow_dispatch_inputs.outcome_packet || !parsed.workflow_dispatch_inputs.approval_record
+    || !parsed.workflow_dispatch_inputs.loop_contract || !parsed.workflow_dispatch_inputs.knowledge_receipt
+    || !parsed.workflow_dispatch_inputs.runner_provenance || !parsed.workflow_dispatch_inputs.run_directory
+    || !parsed.workflow_dispatch_inputs.release_evidence_run_id) errors.push('Release evidence inputs must remain explicit for release_enforcement mode');
+  for (const [input, description] of Object.entries({
+    runner_provenance: 'Repository-relative RunnerProvenanceV1 path inside the downloaded immutable evidence bundle',
+    run_directory: 'Repository-relative digest-chained runner directory inside the downloaded immutable evidence bundle',
+  })) {
+    const value = parsed.workflow_dispatch_inputs[input];
+    if (value?.fields.type !== 'string' || value.fields.required !== 'false' || value.fields.description !== description) {
+      errors.push(`workflow_dispatch ${input} must be an optional string described as: ${description}`);
+    }
+  }
   for (const [id, expectedName] of REQUIRED_JOBS) {
     const job = parsed.jobs[id];
     checks += 1;
@@ -214,6 +440,8 @@ export function validateWorkflow(source) {
       ? {contents: 'read', 'id-token': 'write', attestations: 'write'}
       : id === 'pr-context'
         ? {contents: 'read', 'pull-requests': 'read'}
+        : id === 'release-enforcement'
+          ? {actions: 'read', contents: 'read', 'id-token': 'write'}
         : {};
     for (const [permission, level] of Object.entries(job.permissions)) {
       checks += 1;
@@ -251,6 +479,10 @@ export function validateWorkflow(source) {
       checks += 1;
       if (!executable.includes(token)) errors.push(`${id} lacks required executable command: ${token}`);
     }
+  }
+  for (const specification of REQUIRED_DIRECT_INVOCATIONS) {
+    checks += 1;
+    requireDirectInvocation(parsed.jobs[specification.job], specification, errors);
   }
   const release = parsed.jobs['release-enforcement'];
   const prOutcome = parsed.jobs['pr-outcome'];
@@ -306,11 +538,15 @@ export function validateWorkflow(source) {
     const attestation = attestations[0];
     if (attestation.fields.uses !== 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8') errors.push('PR outcome attestation action must remain pinned to the reviewed v4.2.2 commit');
     if (attestation.fields.id !== 'attest-outcome') errors.push('PR outcome attestation step must expose the canonical attest-outcome ID');
-    if (attestation.with['subject-path'] !== '${{ runner.temp }}/pr-outcome/outcome.json') errors.push('PR outcome attestation must sign the exact generated external outcome packet');
+    if (attestation.with['subject-path'] !== 'output/agent-runs/ci-pr-outcome/outcome.json') errors.push('PR outcome attestation must sign the exact generated external outcome packet');
   }
   if (!prExecutable.includes('steps.attest-outcome.outputs.bundle-path')) errors.push('PR outcome must retain the exact attestation bundle emitted by the signing step');
   if (prOutcome?.block.includes('$GOVERNANCE_REPORT_ROOT/pr-outcome')) errors.push('PR outcome evidence must not dirty the candidate checkout');
   if (!prExecutable.includes('pr-context-${{ github.run_id }}/pr-event.json')) errors.push('PR outcome must consume the exact same-run PR event artifact');
+  requireDirectGuardInvocation(prOutcome, 'context', PR_GUARD_CONTEXT_ARGS, errors);
+  requireDirectGuardInvocation(prOutcome, 'accept', PR_GUARD_ACCEPT_ARGS, errors);
+  const prAcceptanceStep = prOutcome?.steps.find((step) => step.fields.name === 'Enforce governed PR acceptance');
+  if (prAcceptanceStep?.env.GH_TOKEN !== '${{ github.token }}') errors.push('PR adoption guard requires GH_TOKEN: ${{ github.token }} for external execution readback');
   if (release?.fields.if !== "github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'release_enforcement' && inputs.pull_request_number == ''") errors.push('Release enforcement must be mutually exclusive from PR dispatch validation');
   if (JSON.stringify(release?.needs ?? []) !== JSON.stringify(['pr-context'])) errors.push('Release enforcement must need the mode and PR-number context gate');
   if (release?.fields.environment !== 'public-testnet-release') errors.push('Release enforcement must use the protected release environment');

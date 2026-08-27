@@ -10,14 +10,17 @@
 Every decision is revocable, dated, scoped, and subordinate to
 `PRODUCT_TRUTH.md`.
 
-## DEC-001 - Receipt-first entrance
+## DEC-001 - Receipt-first Catch entrance
 
 - Date: 2026-08-23
 - Status: active
-- Scope: public-beta Catch entrance
+- Scope: public-beta Catch route when a participant has a receipt, image, link, or spend to capture
 - Supersedes: manual-first entry in historical prototypes
-- Decision: The first product action is **Scan a receipt**. Capture creates a
-  local draft; review is the authority boundary. Manual entry is a fallback.
+- Decision: The dominant action in this bounded Catch state is **Scan a
+  receipt**. Capture creates a local draft; review is the authority boundary.
+  Manual entry is a fallback. This decision does not select the Home action for
+  every user state and does not determine the operator's next implementation
+  priority.
 - Reason: Capturing the real-world moment reduces retyping and preserves an
   explicit human review before shared truth changes.
 - Falsifier: Real first-time users complete the intended Catch job more clearly
@@ -134,3 +137,54 @@ Every decision is revocable, dated, scoped, and subordinate to
 - Falsifier: A smaller objectively verified terminal contract proves the same
   product, security, byte-identity, ownership, real-user, rollback, and recall
   outcomes without weakening any of them.
+
+## DEC-009 - Actions are contextual; priorities are comparative
+
+- Date: 2026-08-27
+- Status: active
+- Scope: Product Cockpit prioritization and action selection across Home, routes, user states, and operator work
+- Supersedes: any universal reading of DEC-001, `product/story-map.md`, generated Cockpit copy, or one card's `next_action`
+- Decision: ChopDot presents one obvious action per observed user state or
+  operator state. A card must name its audience and action scope. The Cockpit's
+  ranked card selects the operator's next product package; it does not make that
+  card action the universal Home action for every participant. Priority requires
+  an expected outcome, proving evidence, failure outcome, accountable owner,
+  exit condition, priority basis, and explicit alternatives not now. Product
+  score remains an admission gate and is not ranking evidence.
+- Reason: A participant creating a group, capturing a receipt, accepting an
+  invite, continuing an existing group, recovering on another device, or
+  operating a release has a different current job. Collapsing these states into
+  one default action created contradictory guidance while the validator still
+  passed.
+- Falsifier: Real state-specific testing shows one universal action produces
+  clearer completion with lower friction across every governed state, and the
+  same evidence also resolves the operator-priority distinction without hiding
+  a required job.
+
+## DEC-010 - Category baseline before differentiation
+
+- Date: 2026-08-27
+- Status: active
+- Scope: product definition, experience composition, benchmark evidence, and
+  phased acceptance for every user-facing ChopDot package
+- Supersedes: any reading of an internal scenario, high product score, Devnet
+  catalog, 10x thesis, or infrastructure capability as proof that the normal
+  category basics are complete
+- Decision: Compose user-facing ChopDot work in three explicit layers:
+  category baseline first, ChopDot differentiation second, and bounded
+  experiments third. `product/benchmark-baseline.md` records the current floor
+  and evidence grade. Every active user-facing card must cite the baseline
+  outcomes it covers, name the differentiated outcome it adds, declare its
+  delivery phase and evidence state, and preserve any E2 or real-user gap.
+  Conventional apps and null workflows are decision inputs, not product law;
+  dated E1 source review cannot be represented as hands-on E2 proof.
+- Reason: The conventional group-money research, scenario scorecards, and 10x
+  thesis existed in another checkout but were absent from the launch
+  worktree's active context. That allowed a bounded receipt scenario and a
+  platform catalog to substitute for a complete category-floor decision while
+  validation still passed.
+- Falsifier: Real same-journey evidence shows that a baseline requirement is
+  irrelevant to the addressed user state, or that a smaller outcome set
+  produces clearer completion without losing a familiar required job. The
+  affected requirement may then be changed through a dated reviewed decision;
+  it may not be silently ignored by a card or skill.

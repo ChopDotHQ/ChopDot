@@ -1,6 +1,14 @@
 # ChopDot Feature Inheritance and External Analog Matrix
 
-Generated: 2026-08-22T21:10:21.313Z
+**Kind:** historical research snapshot
+**Status:** superseded for current product baseline and routing
+**Owner:** product-research
+**Observed at:** 2026-08-22T21:10:21.313Z
+**Applies to:** the cited cross-checkout source identities only
+**Authority:** time-sliced evidence only; `product/benchmark-baseline.md`, current Cockpit sources, and exact-worktree release state win
+
+All uses of “current” below mean current at the recorded observation time, not
+the present launch worktree.
 
 ## Result
 
@@ -196,4 +204,3 @@ The canonical cockpit is a dirty, separate checkout. Its records below are a has
 ## Product gate and documentation impact
 
 No user-facing UI was changed, so the scored product gate is not applicable. This research does not change a product or architecture decision; it makes the current evidence boundary explicit. A later adapter or One Chop Core adoption decision must update the relevant source wiki/ADR and regenerate its read models.
-

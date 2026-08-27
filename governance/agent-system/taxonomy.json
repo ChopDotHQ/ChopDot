@@ -124,7 +124,7 @@
     {
       "currentName": "Product package loop",
       "targetType": "agent-loop",
-      "targetName": "Product Definition plus Implementation and UX composition"
+      "targetName": "Product Portfolio Judgment and Product Definition plus Implementation and UX composition"
     },
     {
       "currentName": "Live failure loop",
@@ -155,52 +155,31 @@
   "loopProfiles": [
     {
       "id": "research",
-      "artifact": "cited decision or research packet",
-      "expectedOutcome": "Every material claim has an admissible citation, source identity, confidence, and explicit uncertainty.",
-      "defaultMaximumIterations": 3,
-      "independentReviewWhen": "The result can change product, security, legal, financial, or release decisions."
+      "profilePath": "governance/agent-system/loops/research.v1.json"
     },
     {
       "id": "product-definition",
-      "artifact": "accepted card, specification, and journey",
-      "expectedOutcome": "Product score is at least 8/10, no product-law conflict exists, and behavior, authority, failure, and screenshot criteria are testable.",
-      "defaultMaximumIterations": 3,
-      "independentReviewWhen": "Always by product assurance."
+      "profilePath": "governance/agent-system/loops/product-definition.v1.json"
     },
     {
       "id": "implementation",
-      "artifact": "verified patch",
-      "expectedOutcome": "Every declared requirement passes focused checks and any applicable production entrypoint with attributed source identity.",
-      "defaultMaximumIterations": 3,
-      "independentReviewWhen": "Authority, money, privacy, recovery, security, or release code is affected."
+      "profilePath": "governance/agent-system/loops/implementation.v1.json"
     },
     {
       "id": "ux-creation",
-      "artifact": "accepted real-screen journey",
-      "expectedOutcome": "The first screen has one obvious next action and first, action, error, recovery, and after states pass product, responsive, and accessibility evaluation.",
-      "defaultMaximumIterations": 3,
-      "independentReviewWhen": "Always by product assurance; accessibility assurance for core journeys."
+      "profilePath": "governance/agent-system/loops/ux-creation.v1.json"
     },
     {
       "id": "security-authority",
-      "artifact": "threat, finding, or verdict packet",
-      "expectedOutcome": "No unresolved critical or high finding remains in the affected authority, money, privacy, recovery, secret, or release boundary.",
-      "defaultMaximumIterations": 2,
-      "independentReviewWhen": "Always; the evaluator must differ from the implementer."
+      "profilePath": "governance/agent-system/loops/security-authority.v1.json"
     },
     {
       "id": "incident-repair",
-      "artifact": "reproduction, repair, and regression packet",
-      "expectedOutcome": "The reported failure is reproduced or honestly bounded, its source is repaired, and the exact affected environment passes readback without reusing a disproven hypothesis.",
-      "defaultMaximumIterations": 3,
-      "independentReviewWhen": "The incident affected release, money, authority, privacy, recovery, or user reachability."
+      "profilePath": "governance/agent-system/loops/incident-repair.v1.json"
     },
     {
       "id": "release-outcome",
-      "artifact": "immutable candidate and release outcome packet",
-      "expectedOutcome": "The same reviewed bytes are staged and promoted, every advertised surface reads back the same identity, ownership is proven, and user proof remains a separate verdict.",
-      "defaultMaximumIterations": 2,
-      "independentReviewWhen": "Always by release assurance."
+      "profilePath": "governance/agent-system/loops/release-outcome.v1.json"
     }
   ],
   "terminalStates": [

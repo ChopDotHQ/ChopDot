@@ -1,10 +1,11 @@
 # Emergency pot journey
 
-**Kind:** decision
+**Kind:** reference
 **Status:** active
 **Owner:** product
 **Last reviewed:** 2026-08-24
 **Applies to:** `chopdot-v1-launch`
+**Authority:** scoped journey reference derived from Product Truth, current Cockpit decisions and contracts, ADRs, and exact privacy and mode evidence; it cannot set priority or release status
 **Sources:** P-007, DC-004, privacy and mode tests
 
 GIVEN a private request with trusted roles and a threshold, WHEN the threshold

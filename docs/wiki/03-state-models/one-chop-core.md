@@ -1,10 +1,11 @@
 # One Chop Core
 
-**Kind:** decision
+**Kind:** reference
 **Status:** active
 **Owner:** core authority
 **Last reviewed:** 2026-08-27
 **Applies to:** `chopdot-v1-launch`
+**Authority:** scoped state-model reference derived from Product Truth, current Cockpit decisions and contracts, ADRs, and exact replay evidence; it cannot replace those authorities
 **Sources:** P-034, DEC-002, ADR 0001, exact-money/event tests
 
 `MoneyV1` stores bounded integer minor units and an explicit currency.

@@ -35,7 +35,19 @@ export function createKgv2Adapter(client, options = {}) {
       if (result?.receipt_version) return result;
       const mismatches = result.mismatches ?? [];
       const staleReasons = result.stale_reasons ?? [];
-      return receiptBase('verify_recall', { ...metadata, active_read_path: result.active_read_path ?? metadata.active_read_path, fallback_status: result.fallback_status ?? 'none', accepted: result.accepted ?? (mismatches.length === 0 && staleReasons.length === 0), rejected_reasons: result.rejected_reasons ?? [], facts: result.facts ?? result.recalled_facts ?? [], citations: result.citations ?? [], source_identities: result.source_identities ?? [], mismatches, stale_reasons: staleReasons, current_outcome_digest: result.current_outcome_digest ?? null });
+      return receiptBase('verify_recall', {
+        ...metadata,
+        active_read_path: result.active_read_path ?? metadata.active_read_path,
+        fallback_status: result.fallback_status ?? 'none',
+        accepted: result.accepted ?? (mismatches.length === 0 && staleReasons.length === 0),
+        rejected_reasons: result.rejected_reasons ?? [],
+        durable_record_id: result.durable_record_id ?? null,
+        stored_packet_digest: result.stored_packet_digest ?? result.current_outcome_digest ?? null,
+        stored_artifact_digests: result.stored_artifact_digests ?? [],
+        facts: result.facts ?? result.recalled_facts ?? [], citations: result.citations ?? [],
+        source_identities: result.source_identities ?? [], mismatches, stale_reasons: staleReasons,
+        current_outcome_digest: result.current_outcome_digest ?? null,
+      });
     },
   };
 }

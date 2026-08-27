@@ -53,6 +53,13 @@ function commandResult(assertion, root, options = {}) {
   const expected = assertion.expected_exit_code ?? 0;
   const exitCode = result.status ?? (result.error ? null : 0);
   const passed = exitCode === expected && !result.error;
+  let verifiedMeasurements = null;
+  if (passed) {
+    try {
+      const parsed = JSON.parse(result.stdout ?? '');
+      if (parsed?.measurements && typeof parsed.measurements === 'object' && !Array.isArray(parsed.measurements)) verifiedMeasurements = parsed.measurements;
+    } catch { /* A command need not produce structured measurements. */ }
+  }
   return {
     assertion_id: assertion.id,
     type: 'command',
@@ -67,6 +74,7 @@ function commandResult(assertion, root, options = {}) {
     stdout: redactString((result.stdout ?? '').slice(-20_000)),
     stderr: redactString((result.stderr ?? '').slice(-20_000)),
     error: result.error ? { name: result.error.name, message: result.error.message, code: result.error.code ?? null } : null,
+    verified_measurements: redactValue(verifiedMeasurements),
   };
 }
 
@@ -112,14 +120,33 @@ export async function evaluateContractAssertions(contract, options = {}) {
   const independence = verifyReviewerIndependence(contract, evaluatorIdentity, options);
   const commandResults = (contract.evaluator.deterministic_commands ?? []).map((check) => commandResult(check, contractRoot(contract), options));
   const verifiedMeasurements = options.verifiedMeasurements ?? {};
+  const commandMeasurements = {};
+  const measurementConflicts = [];
+  for (const result of commandResults) {
+    if (!result.passed || !result.verified_measurements) continue;
+    for (const [subject, binding] of Object.entries(result.verified_measurements)) {
+      if (!binding || typeof binding !== 'object' || !('value' in binding) || typeof binding.evidence_level !== 'string') continue;
+      if (subject in commandMeasurements && JSON.stringify(commandMeasurements[subject]) !== JSON.stringify(binding)) {
+        measurementConflicts.push(subject);
+        delete commandMeasurements[subject];
+      } else if (!measurementConflicts.includes(subject)) commandMeasurements[subject] = { ...binding, evidence_artifact_ids: [] };
+    }
+  }
+  const boundMeasurements = { ...commandMeasurements };
+  for (const [subject, binding] of Object.entries(verifiedMeasurements)) {
+    if (subject in boundMeasurements && JSON.stringify(boundMeasurements[subject].value) !== JSON.stringify(binding.value)) {
+      measurementConflicts.push(subject);
+      delete boundMeasurements[subject];
+    } else if (!measurementConflicts.includes(subject)) boundMeasurements[subject] = binding;
+  }
   const computed = {
     deterministic_command_failures: commandResults.filter((entry) => !entry.passed).length,
     deterministic_command_passes: commandResults.filter((entry) => entry.passed).length,
     deterministic_command_count: commandResults.length,
-    ...Object.fromEntries(Object.entries(verifiedMeasurements).map(([subject, binding]) => [subject, binding.value])),
+    ...Object.fromEntries(Object.entries(boundMeasurements).map(([subject, binding]) => [subject, binding.value])),
   };
   const results = contract.expected_outcome.assertions.map((assertion) => {
-    const binding = verifiedMeasurements[assertion.subject];
+    const binding = boundMeasurements[assertion.subject];
     const observed = computed[assertion.subject];
     const expected = assertion.operator === 'sha256_equals' && typeof assertion.expected === 'string' && assertion.expected in computed ? computed[assertion.expected] : assertion.expected;
     const evidenceAccepted = binding && evidenceLevelMeets(binding.evidence_level, assertion.minimum_evidence_level);
@@ -142,7 +169,7 @@ export async function evaluateContractAssertions(contract, options = {}) {
   const passRate = total === 0 ? 0 : passed / total;
   const threshold = contract.evaluator.pass_threshold;
   const hardFailures = results.filter((entry) => entry.result !== 'pass' && contract.evaluator.hard_fail_assertion_ids.includes(entry.assertion_id)).map((entry) => entry.assertion_id);
-  const deterministicCommandsPassed = commandResults.every((entry) => entry.passed);
+  const deterministicCommandsPassed = commandResults.every((entry) => entry.passed) && measurementConflicts.length === 0;
   const accepted = deterministicCommandsPassed && independence.accepted && failed === 0 && blocked === 0 && hardFailures.length === 0 && passRate >= threshold;
   const timestamp = options.evaluatedAt ?? nowIso();
   const evaluation = {
@@ -163,7 +190,7 @@ export async function evaluateContractAssertions(contract, options = {}) {
     verdict: accepted ? 'accepted' : blocked ? 'blocked' : 'rejected',
     evidence_artifact_ids: options.evidenceArtifactIds ?? ['artifact_runtime_evaluation'],
   };
-  return { ...evaluation, command_results: commandResults, accepted };
+  return { ...evaluation, command_results: commandResults, command_measurement_conflicts: [...new Set(measurementConflicts)], accepted };
 }
 
 export async function recordEvaluation(runDirectory, contract, options = {}) {
@@ -179,10 +206,10 @@ export async function recordEvaluation(runDirectory, contract, options = {}) {
   const evaluation = await evaluateContractAssertions(contract, { ...options, measurements: undefined, verifiedMeasurements: measurementResolution.verified, candidateIdentity: candidateBefore, candidateDigest: candidateBefore.candidate_digest });
   const candidateAfter = assertCurrentCandidate(contract, { expected: options.candidateIdentity });
   if (candidateBefore.candidate_digest !== candidateAfter.candidate_digest) throw new Error('Candidate identity changed during evaluation');
-  const { command_results: _commandResults, accepted: _accepted, ...persistedEvaluation } = evaluation;
+  const { command_results: _commandResults, command_measurement_conflicts: _commandMeasurementConflicts, accepted: _accepted, ...persistedEvaluation } = evaluation;
   const evidenceId = makeId('artifact');
   const evidenceFile = path.join(runDirectory, 'evidence', `${evaluation.evaluation_id}.commands.json`);
-  await writeJsonAtomic(evidenceFile, redactValue({ command_results: evaluation.command_results, measurement_binding_results: measurementResolution.results, candidate_identity: persistedCandidateIdentity(candidateAfter), candidate_digest: candidateAfter.candidate_digest }));
+  await writeJsonAtomic(evidenceFile, redactValue({ command_results: evaluation.command_results, command_measurement_conflicts: evaluation.command_measurement_conflicts, measurement_binding_results: measurementResolution.results, candidate_identity: persistedCandidateIdentity(candidateAfter), candidate_digest: candidateAfter.candidate_digest }));
   const evidenceBytes = await readFile(evidenceFile);
   const evidenceArtifact = {
     artifact_version: '1.0.0', artifact_id: evidenceId, run_id: contract.run_id,
@@ -205,13 +232,34 @@ export async function recordEvaluation(runDirectory, contract, options = {}) {
   persistedEvaluation.candidate_digest = candidateAfter.candidate_digest;
   const evaluationValidation = validateRuntimePacket(persistedEvaluation, 'evaluation.v1.schema.json');
   if (!evaluationValidation.valid) throw new Error(`Evaluation schema invalid: ${evaluationValidation.issues.map((entry) => `${entry.path} ${entry.message}`).join('; ')}`);
+  const evaluationRecordId = makeId('artifact');
+  const evaluationRecordFile = path.join(runDirectory, 'evidence', `${evaluation.evaluation_id}.evaluation.json`);
+  await writeJsonAtomic(evaluationRecordFile, redactValue(persistedEvaluation));
+  const evaluationRecordBytes = await readFile(evaluationRecordFile);
+  const evaluationRecordArtifact = {
+    artifact_version: '1.0.0', artifact_id: evaluationRecordId, run_id: contract.run_id,
+    artifact_type: 'EvaluationRecordV1', path: evaluationRecordFile,
+    media_type: 'application/json', byte_length: evaluationRecordBytes.length, sha256: sha256(evaluationRecordBytes),
+    created_at: evaluation.finished_at, created_by: evaluation.evaluator.id,
+    candidate_identity: persistedCandidateIdentity(candidateAfter),
+    redaction_status: 'passed', source_artifact_ids: [...persistedEvaluation.evidence_artifact_ids],
+  };
+  const evaluationRecordValidation = validateRuntimePacket(evaluationRecordArtifact, 'artifact.v1.schema.json');
+  if (!evaluationRecordValidation.valid) throw new Error(`Evaluation record artifact schema invalid: ${evaluationRecordValidation.issues.map((entry) => `${entry.path} ${entry.message}`).join('; ')}`);
+  await appendEvent(runDirectory, { run_id: contract.run_id, event_type: 'artifact_recorded', actor: evaluation.evaluator.id, payload: evaluationRecordArtifact });
   await appendEvent(runDirectory, {
     run_id: contract.run_id,
     event_type: 'evaluation_finished',
     actor: evaluation.evaluator.id,
     payload: persistedEvaluation,
   });
-  return { ...evaluation, assertions: persistedEvaluation.assertions, evidence_artifact_ids: [evidenceId], evidence_artifact: evidenceArtifact };
+  return {
+    ...evaluation,
+    assertions: persistedEvaluation.assertions,
+    evidence_artifact_ids: [...persistedEvaluation.evidence_artifact_ids],
+    evidence_artifact: evidenceArtifact,
+    evaluation_record_artifact: evaluationRecordArtifact,
+  };
 }
 
 export async function recordRepairDirective(runDirectory, contract, directive, actor = 'evaluator', options = {}) {

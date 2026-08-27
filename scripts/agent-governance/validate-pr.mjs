@@ -93,7 +93,7 @@ function safeRepositoryFile(root, relative, label, errors) {
   return absolute;
 }
 
-function validateOutcomeEvidence(root, reference, { runId, terminalState, headSha, headBranch, ciOutcomePath }, errors) {
+function validateOutcomeEvidence(root, reference, { runId, terminalState, baseSha, headSha, headBranch, ciOutcomePath }, errors) {
   if (!reference) return null;
   let file;
   let evidenceRoot;
@@ -135,11 +135,20 @@ function validateOutcomeEvidence(root, reference, { runId, terminalState, headSh
     } catch {
       errors.push('CI-generated OutcomePacketV1 candidate identity cannot be read from the exact checkout');
     }
-    if (actualHead && (packet.starting_head !== actualHead || packet.ending_head !== actualHead)) {
-      errors.push(`CI-generated OutcomePacketV1 must bind starting and ending head to exact candidate ${actualHead}`);
+    let baseTree = null;
+    try { if (baseSha) baseTree = execFileSync('git', ['rev-parse', `${baseSha}^{tree}`], { cwd: root, encoding: 'utf8' }).trim(); }
+    catch { errors.push(`CI-generated OutcomePacketV1 base tree cannot be read for ${baseSha}`); }
+    if (baseSha && packet.starting_head !== baseSha) {
+      errors.push(`CI-generated OutcomePacketV1 must bind starting head to exact PR base ${baseSha}`);
     }
-    if (actualTree && (packet.starting_tree !== actualTree || packet.ending_tree !== actualTree)) {
-      errors.push(`CI-generated OutcomePacketV1 must bind starting and ending tree to exact candidate ${actualTree}`);
+    if (actualHead && packet.ending_head !== actualHead) {
+      errors.push(`CI-generated OutcomePacketV1 must bind ending head to exact candidate ${actualHead}`);
+    }
+    if (baseTree && packet.starting_tree !== baseTree) {
+      errors.push(`CI-generated OutcomePacketV1 must bind starting tree to exact PR base tree ${baseTree}`);
+    }
+    if (actualTree && packet.ending_tree !== actualTree) {
+      errors.push(`CI-generated OutcomePacketV1 must bind ending tree to exact candidate ${actualTree}`);
     }
     if (!Array.isArray(packet.git_status) || packet.git_status.length !== 0) errors.push('CI-generated OutcomePacketV1 must declare a clean candidate');
   }
@@ -209,7 +218,7 @@ export function validatePullRequestBody({ body, catalog, evidencePolicy, root = 
   if (outcome?.ci_generated && !allowCiGenerated) errors.push('CI_GENERATED is allowed only for moving pull-request outcome evidence');
   if (terminalState === 'succeeded' && requireCiGeneratedOutcome && !outcome?.ci_generated) errors.push('A succeeded moving pull request must use CI_GENERATED to avoid self-referential Git evidence');
   if (outcome && !outcome.ci_generated && (outcome.path.includes('..') || path.isAbsolute(outcome.path))) errors.push('OutcomePacketV1 path must be a safe repository-relative path');
-  const outcomePacket = validateOutcomeEvidence(root, outcome, { runId, terminalState, headSha, headBranch, ciOutcomePath }, errors);
+  const outcomePacket = validateOutcomeEvidence(root, outcome, { runId, terminalState, baseSha, headSha, headBranch, ciOutcomePath }, errors);
   if (outcome?.ci_generated && ciOutcomePath && !outcomePacket) errors.push('CI-generated OutcomePacketV1 validation did not produce a packet');
 
   const knownInvariantIds = new Set((catalog.invariants ?? []).map((entry) => entry.id));

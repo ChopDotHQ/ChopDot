@@ -91,6 +91,16 @@ test('workflow dispatch exposes one fail-closed PR mode separate from release mo
   });
   assert.equal(parsed.workflow_dispatch_inputs.pull_request_number.fields.type, 'string');
   assert.equal(parsed.workflow_dispatch_inputs.pull_request_number.fields.required, 'false');
+  assert.deepEqual(parsed.workflow_dispatch_inputs.runner_provenance.fields, {
+    description: 'Repository-relative RunnerProvenanceV1 path inside the downloaded immutable evidence bundle',
+    required: 'false',
+    type: 'string',
+  });
+  assert.deepEqual(parsed.workflow_dispatch_inputs.run_directory.fields, {
+    description: 'Repository-relative digest-chained runner directory inside the downloaded immutable evidence bundle',
+    required: 'false',
+    type: 'string',
+  });
   assert.equal(parsed.workflow_dispatch_inputs.enforce_release, undefined);
   assert.deepEqual(parsed.jobs['pr-context'].permissions, {contents: 'read', 'pull-requests': 'read'});
   assert.deepEqual(parsed.jobs['repo-governance'].needs, ['pr-context']);
@@ -160,6 +170,13 @@ test('PR outcome depends on all exact-head jobs and uses same-run external artif
   assert.deepEqual(parsed.jobs['pr-outcome'].permissions, {contents: 'read', 'id-token': 'write', attestations: 'write'});
   assert.match(parsed.jobs['pr-outcome'].block, /actions\/download-artifact@[0-9a-f]{40}/);
   assert.match(parsed.jobs['pr-outcome'].block, /generate-pr-outcome\.mjs/);
+  assert.match(parsed.jobs['pr-outcome'].block, /acceptance-contract\.json/);
+  assert.match(parsed.jobs['pr-outcome'].block, /--execution-attestation="output\/agent-runs\/ci-pr-outcome\/execution-attestation\.json"/);
+  assert.match(parsed.jobs['pr-outcome'].block, /run_directory="\$\(jq -r '\.run_directory' output\/agent-runs\/ci-pr-outcome\/generation\.json\)"/);
+  assert.match(parsed.jobs['pr-outcome'].block, /--runner-provenance="output\/agent-runs\/ci-pr-outcome\/runner-provenance\.json"/);
+  assert.match(parsed.jobs['pr-outcome'].block, /--run-directory="\$run_directory"/);
+  assert.equal(parsed.jobs['pr-outcome'].steps.find((step) => step.fields.name === 'Enforce governed PR acceptance').env.GH_TOKEN, '${{ github.token }}');
+  assert.match(parsed.jobs['pr-outcome'].block, /--evidence-level=exact-candidate/);
   assert.match(parsed.jobs['pr-outcome'].block, /--evaluator-identity="github-actions:pr-outcome:\$\{\{ github\.run_id \}\}:\$\{\{ github\.run_attempt \}\}"/);
   assert.match(parsed.jobs['pr-outcome'].block, /--ci-outcome/);
   assert.match(parsed.jobs['pr-outcome'].block, /actions\/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8/);
@@ -173,8 +190,8 @@ test('structural validator rejects an absent, repointed, or broadened PR outcome
   assert(absentResult.errors.some((error) => error.includes('exactly one GitHub build-provenance attestation')));
 
   const repointed = workflow.replace(
-    '          subject-path: ${{ runner.temp }}/pr-outcome/outcome.json',
-    '          subject-path: ${{ runner.temp }}/pr-outcome/validation.json',
+    '          subject-path: output/agent-runs/ci-pr-outcome/outcome.json',
+    '          subject-path: output/agent-runs/ci-pr-outcome/validation.json',
   );
   const repointedResult = validateWorkflow(repointed);
   assert.equal(repointedResult.ok, false);
@@ -193,6 +210,117 @@ test('structural validator rejects a job that checks out a moving ref', () => {
   assert(result.errors.some((error) => error.includes('must checkout EXPECTED_SHA')));
 });
 
+test('structural validator rejects a weakened PR adoption contract or evidence level', () => {
+  const weakLevel = validateWorkflow(workflow.replace('--evidence-level=exact-candidate', '--evidence-level=unit'));
+  assert.equal(weakLevel.ok, false);
+  assert(weakLevel.errors.some((error) => error.includes('lacks required proof argument: --evidence-level=exact-candidate')));
+  const wrongContract = validateWorkflow(workflow.replace('acceptance-contract.json', 'unbound-contract.json'));
+  assert.equal(wrongContract.ok, false);
+  assert(wrongContract.errors.some((error) => error.includes('lacks required proof argument: --contract=')));
+});
+
+test('PR acceptance requires the generated execution attestation and GitHub readback token directly', () => {
+  const argument = '--execution-attestation="output/agent-runs/ci-pr-outcome/execution-attestation.json"';
+  for (const broken of [
+    workflow.replace(argument, `--execution-attestation="$EXECUTION_ATTESTATION"\n          echo '${argument}'`),
+    workflow.replace(argument, `echo '${argument}'`),
+    workflow.replace('          GH_TOKEN: ${{ github.token }}\n        run: |\n          base_sha=', '        run: |\n          base_sha='),
+  ]) {
+    const result = validateWorkflow(broken);
+    assert.equal(result.ok, false);
+    assert(result.errors.some((error) => error.includes('execution-attestation') || error.includes('requires GH_TOKEN') || error.includes('exact canonical invocation')));
+  }
+});
+
+test('PR acceptance requires the generator runner provenance and emitted run directory directly', () => {
+  const provenanceArgument = '--runner-provenance="output/agent-runs/ci-pr-outcome/runner-provenance.json"';
+  const runDirectoryAssignment = `run_directory="$(jq -r '.run_directory' output/agent-runs/ci-pr-outcome/generation.json)"`;
+  const runDirectoryArgument = '--run-directory="$run_directory"';
+  for (const broken of [
+    workflow.replace(` ${provenanceArgument}`, ''),
+    workflow.replace(provenanceArgument, '--runner-provenance="output/agent-runs/ci-pr-outcome/other-provenance.json"'),
+    workflow.replace(`          ${runDirectoryAssignment}\n`, ''),
+    workflow.replace(runDirectoryAssignment, `run_directory="$(jq -r '.run_directory' output/agent-runs/ci-pr-outcome/other-generation.json)"`),
+    workflow.replace(` ${runDirectoryArgument}`, ''),
+    workflow.replace(runDirectoryArgument, '--run-directory="$OTHER_RUN_DIRECTORY"'),
+  ]) {
+    const result = validateWorkflow(broken);
+    assert.equal(result.ok, false);
+    assert(result.errors.some((error) => /runner-provenance|run-directory|runner directory|canonical invocation/u.test(error)));
+  }
+});
+
+test('knowledge record and verify require their exact adapter, digest, and output bindings', () => {
+  const cases = [
+    workflow.replace(
+      '--adapter=exact-source --outcome="output/agent-runs/ci-pr-outcome/outcome.json"',
+      '--adapter="$KNOWLEDGE_ADAPTER" --outcome="output/agent-runs/ci-pr-outcome/outcome.json"',
+    ),
+    workflow.replace(
+      '--adapter=exact-source --outcome-digest="$outcome_digest"',
+      '--adapter=exact-source --outcome-digest="$OTHER_DIGEST"',
+    ),
+    workflow.replace(
+      '> "output/agent-runs/ci-pr-outcome/knowledge-recall.json"',
+      '> "$KNOWLEDGE_RECALL"',
+    ),
+  ];
+  for (const broken of cases) {
+    const result = validateWorkflow(broken);
+    assert.equal(result.ok, false);
+    assert(result.errors.some((error) => /knowledge-(?:record|verify)/u.test(error)));
+  }
+});
+
+test('structural validator rejects inert PR guard command decoys', () => {
+  for (const subcommand of ['context', 'accept']) {
+    const broken = workflow.replace(
+      `node scripts/agent-governance/adoption-guard.mjs ${subcommand}`,
+      `echo node scripts/agent-governance/adoption-guard.mjs ${subcommand}`,
+    );
+    const result = validateWorkflow(broken);
+    assert.equal(result.ok, false, subcommand);
+    assert(result.errors.some((error) => error.includes(`directly execute exactly one ${subcommand} invocation`)), subcommand);
+  }
+});
+
+test('structural validator binds every proof argument to the executed accept command', () => {
+  const requiredArgument = '--knowledge-receipt="output/agent-runs/ci-pr-outcome/knowledge-recall.json"';
+  const broken = workflow.replace(
+    requiredArgument,
+    `--knowledge-receipt="output/agent-runs/ci-pr-outcome/unbound-recall.json"\n          echo '${requiredArgument}'`,
+  );
+  const result = validateWorkflow(broken);
+  assert.equal(result.ok, false);
+  assert(result.errors.some((error) => error.includes(`accept invocation lacks required proof argument: ${requiredArgument}`)));
+});
+
+test('structural validator rejects a guard invocation whose failure is masked', () => {
+  const broken = workflow.replace(
+    '--json-out="output/agent-runs/ci-pr-outcome/acceptance-receipt.json"',
+    '--json-out="output/agent-runs/ci-pr-outcome/acceptance-receipt.json" || true',
+  );
+  const result = validateWorkflow(broken);
+  assert.equal(result.ok, false);
+  assert(result.errors.some((error) => error.includes('accept invocation cannot mask failure')));
+});
+
+test('structural validator rejects a direct-looking guard hidden behind false control flow', () => {
+  const broken = workflow
+    .replace(
+      '          node scripts/agent-governance/adoption-guard.mjs context',
+      '          if false; then\n          node scripts/agent-governance/adoption-guard.mjs context',
+    )
+    .replace(
+      '--json-out="output/agent-runs/ci-pr-outcome/acceptance-receipt.json"',
+      '--json-out="output/agent-runs/ci-pr-outcome/acceptance-receipt.json"\n          fi',
+    );
+  const result = validateWorkflow(broken);
+  assert.equal(result.ok, false);
+  assert(result.errors.some((error) => error.includes('behind shell control flow')));
+  assert(result.errors.some((error) => error.includes('final executable command')));
+});
+
 test('release enforcement is manual, environment-gated, and fails through explicit evidence validation', () => {
   assert.match(workflow, /workflow_dispatch:/);
   assert.match(workflow, /if: github\.event_name == 'workflow_dispatch' && inputs\.dispatch_mode == 'release_enforcement' && inputs\.pull_request_number == ''/);
@@ -201,6 +329,13 @@ test('release enforcement is manual, environment-gated, and fails through explic
   assert.match(workflow, /inputs\.outcome_packet/);
   assert.match(workflow, /inputs\.approval_record/);
   assert.match(parsed.jobs['release-enforcement'].block, /runner\.temp.*release-enforcement.*release-exact-head\.json/);
+  assert.deepEqual(parsed.jobs['release-enforcement'].permissions, {actions: 'read', contents: 'read', 'id-token': 'write'});
+  assert.match(parsed.jobs['release-enforcement'].block, /execution-attestation\.mjs create/);
+  assert.match(parsed.jobs['release-enforcement'].block, /--execution-attestation="\$\{\{ runner\.temp \}\}\/release-enforcement\/execution-attestation\.json"/);
+  for (const stepName of ['Generate current protected-environment execution attestation', 'Enforce approved immutable release evidence']) {
+    assert.equal(parsed.jobs['release-enforcement'].steps.find((step) => step.fields.name === stepName).env.GH_TOKEN, '${{ github.token }}');
+  }
+  assert.doesNotMatch(parsed.jobs['release-enforcement'].block, /if: inputs\.release_evidence_run_id != ''/);
   assert.doesNotMatch(parsed.jobs['release-enforcement'].block, /CI_GENERATED/);
 });
 
@@ -243,6 +378,74 @@ test('commented executable commands cannot satisfy required job behavior', () =>
   const result = validateWorkflow(broken);
   assert.equal(result.ok, false);
   assert(result.errors.some((error) => error.includes('lacks required executable command: fail-closed.test.mjs')));
+});
+
+test('audited workflow commands reject echo, printf, string, comment, dead, and masked decoys', () => {
+  const commands = [
+    'node scripts/agent-system/cli.mjs knowledge-record',
+    'node scripts/agent-system/cli.mjs knowledge-verify',
+    'node scripts/agent-governance/validate-repository.mjs',
+    'npm run lint',
+    'npm run build',
+    'npm run test:node',
+    'npm run security:baseline',
+    'node scripts/agent-governance/generate-pr-outcome.mjs',
+    'node scripts/agent-governance/execution-attestation.mjs create',
+    'node scripts/agent-governance/enforce-release.mjs',
+  ];
+  const mutations = [
+    (command) => `echo '${command}'`,
+    (command) => `printf '%s\\n' '${command}'`,
+    (command) => `decoy='${command}'`,
+    (command) => `# ${command}`,
+    (command) => `false && ${command}`,
+    (command) => `${command} || true`,
+  ];
+  for (const command of commands) {
+    for (const mutate of mutations) {
+      const replacement = mutate(command);
+      const broken = workflow.replace(command, replacement);
+      assert.notEqual(broken, workflow, `${command}: ${replacement}`);
+      const result = validateWorkflow(broken);
+      assert.equal(result.ok, false, `${command}: ${replacement}`);
+      assert(
+        result.errors.some((error) => error.includes(`directly execute exactly one ${command}`)
+          || error.includes(`required command ${command} is weakened`)),
+        `${command}: ${replacement}: ${result.errors.join('; ')}`,
+      );
+    }
+  }
+});
+
+test('release attestation rejects permission, token, argument, and indirect-command weakening', () => {
+  const attestationArgument = '--execution-attestation="${{ runner.temp }}/release-enforcement/execution-attestation.json"';
+  const cases = [
+    workflow.replace('      id-token: write\n    steps:\n      - name: Checkout exact candidate', '    steps:\n      - name: Checkout exact candidate'),
+    workflow.replace('          node scripts/agent-governance/execution-attestation.mjs create', '          attestor="node scripts/agent-governance/execution-attestation.mjs create"\n          $attestor'),
+    workflow.replace('          --expected-branch="$EXPECTED_BRANCH"', '          --expected-branch="$OTHER_BRANCH"\n          echo \'--expected-branch="$EXPECTED_BRANCH"\''),
+    workflow.replace(attestationArgument, `--execution-attestation="$EXECUTION_ATTESTATION"\n          echo '${attestationArgument}'`),
+    workflow.replace(/        env:\n          GH_TOKEN: \$\{\{ github\.token \}\}\n        run: >-\n          node scripts\/agent-governance\/execution-attestation\.mjs create/u, '        run: >-\n          node scripts/agent-governance/execution-attestation.mjs create'),
+  ];
+  for (const broken of cases) {
+    const result = validateWorkflow(broken);
+    assert.equal(result.ok, false, result.errors.join('; '));
+  }
+});
+
+test('release dispatch requires explicit runner provenance and run-directory inputs and bindings', () => {
+  const cases = [
+    workflow.replace(/      runner_provenance:\n[\s\S]*?        type: string\n/u, ''),
+    workflow.replace('Repository-relative RunnerProvenanceV1 path inside the downloaded immutable evidence bundle', 'Some runner file'),
+    workflow.replace(/      run_directory:\n[\s\S]*?        type: string\n/u, ''),
+    workflow.replace('Repository-relative digest-chained runner directory inside the downloaded immutable evidence bundle', 'Some directory'),
+    workflow.replace('--runner-provenance="${{ inputs.runner_provenance }}"', '--runner-provenance="$RUNNER_PROVENANCE"'),
+    workflow.replace('--run-directory="${{ inputs.run_directory }}"', '--run-directory="$RUN_DIRECTORY"'),
+  ];
+  for (const broken of cases) {
+    const result = validateWorkflow(broken);
+    assert.equal(result.ok, false, result.errors.join('; '));
+    assert(result.errors.some((error) => /runner_provenance|run_directory|runner-provenance|run-directory|directly execute exactly one node scripts\/agent-governance\/enforce-release/u.test(error)));
+  }
 });
 
 test('continue-on-error and false job or step conditions are rejected', () => {

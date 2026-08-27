@@ -1,10 +1,14 @@
 # One ChopDot v1 — Complete Product and Launch Plan
 
-Date: 2026-08-20
-Track: Track 1 product delivery
-Deployment door: Programme A `.dot`
-Native capabilities: Programme B, pulled in only behind product-language boundaries
-Cockpit anchor: P-032, with P-022, P-025, P-027, and P-033 as required dependencies
+**Kind:** historical plan
+**Status:** superseded for current routing
+**Owner:** product
+**Observed at:** 2026-08-20
+**Applies to:** its cited 2026-08-20 source and candidate snapshot only
+**Authority:** historical requirements and evidence only; current Product Truth, benchmark, Cockpit, context manifest, roadmap, and release state win
+
+The named dinner below is a time-sliced acceptance fixture, not the canonical
+proof for every current package or user state.
 
 ## Goal
 

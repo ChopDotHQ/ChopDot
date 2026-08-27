@@ -1,21 +1,30 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  benchmarkBaselineFailures,
+  activeProductCardFromMarkdown,
   checkpointCardTransitionFailures,
+  checkpointAcceptanceFailures,
+  checkpointAcceptanceDurabilityFailures,
   checkpointEvidencePathFailures,
   checkpointProvenanceFailures,
+  completionEventBijectionFailures,
   checkoutIdentityFailures,
   conditionalRouteKeyFailures,
+  generatedViews,
   kgKnownShapeFailures,
   markdownMetadataFailures,
   outcomePacketReferenceFailures,
   rankCards,
+  nextBuildingCard,
+  requiredBenchmarkIds,
   releaseBlockerSetFailures,
   releaseVerdictDependencyFailures,
   releaseVerdictShapeFailures,
   requiredReadOrderFailures,
   validateCards,
 } from './product-cockpit.mjs';
+import { digestObject } from './agent-governance/lib.mjs';
 
 const base = Object.freeze({
   status: 'building',
@@ -30,7 +39,23 @@ const base = Object.freeze({
   pillar: 'Management',
   journey: 'Mina completes one job.',
   next_action: 'Continue',
+  operator_next_action: 'Continue the bounded package',
+  audience: 'participant',
+  action_scope: 'Existing group with one pending participant action',
+  action_scope_universal: 'false',
+  delivery_phase: 'phase-1-baseline',
+  benchmark_requirements: 'BASE-STATUS-01',
+  differentiated_outcome: 'The participant understands the exact authority boundary without infrastructure language.',
+  benchmark_evidence_state: 'e1-stale-refresh-required-e2-open',
+  benchmark_scope: 'applies',
   score: '9/10',
+  expected_outcome: 'The participant completes one observable job.',
+  success_evidence: 'A focused test and production-entrypoint journey pass.',
+  failure_outcome: 'The action fails closed and remains reviewable.',
+  accountable_owner: 'product-assurance',
+  exit_condition: 'The journey and failure path pass.',
+  priority_basis: 'This card resolves the highest reviewed eligible blocker.',
+  alternatives_not_now: 'P-012 and P-022 remain queued behind this dependency.',
   authority: 'Signed event',
   scope: 'bounded',
   out: 'parallel authority',
@@ -41,6 +66,31 @@ const contextManifest = Object.freeze({
   branch: 'codex/chopdot-v1-launch',
 });
 const candidateHead = 'ab'.repeat(20);
+
+function governedAcceptanceReceipt() {
+  const candidate = {
+    root: contextManifest.exact_root,
+    branch: contextManifest.branch,
+    commit: candidateHead,
+    tree: 'cd'.repeat(20),
+    git_status: [],
+  };
+  const base = {
+    receipt_version: '1.0.0', receipt_id: 'acceptance_receipt_123456789abc',
+    surface: 'product_finish', candidate,
+    changed_paths: ['src/example.ts'], changed_path_manifest_digest: '11'.repeat(32),
+    changed_path_manifest_sources: [{ source: 'contract-range', starting_head: 'ef'.repeat(20), ending_head: candidate.commit }],
+    governed_rules: ['repository-default'], profiles: ['implementation'], evidence_level: 'exact-candidate',
+    contracts: [{ path: 'artifacts/contract.json', sha256: '44'.repeat(32), run_id: 'run_fixture_001', contract_digest: '55'.repeat(32), profile: 'implementation' }],
+    outcomes: [{ path: 'artifacts/outcome.json', sha256: '22'.repeat(32), run_id: 'run_fixture_001', packet_digest: '33'.repeat(32) }],
+    runner_provenance: [{ path: 'artifacts/runner-provenance.json', sha256: '66'.repeat(32), run_directory: 'artifacts/run_fixture_001', provenance_id: 'runner_provenance_fixture', provenance_digest: '77'.repeat(32) }],
+    execution_attestations: [{ path: 'artifacts/execution-attestation.json', sha256: '88'.repeat(32), attestation_id: 'execution_attestation_fixture', provider: 'github-actions-oidc' }],
+    knowledge_receipts: [{ path: 'artifacts/recall.json', receipt_id: 'knowledge_receipt_fixture', current_outcome_digest: '33'.repeat(32), backend: 'exact-source' }],
+    context_receipt: { receipt_version: '1.0.0', receipt_digest: '99'.repeat(32), verdict: 'governed', candidate },
+    checks: 8, verdict: 'governed', failures: [], created_at: '2026-08-27T12:00:00.000Z',
+  };
+  return { ...base, receipt_digest: digestObject(base) };
+}
 
 test('local context validation keeps exact root and non-detached branch mandatory', () => {
   assert.deepEqual(checkoutIdentityFailures(contextManifest, {
@@ -56,6 +106,65 @@ test('local context validation keeps exact root and non-detached branch mandator
   assert.ok(wrongRoot.failures.some((failure) => failure.includes('context root mismatch')));
   const detached = checkoutIdentityFailures(contextManifest, { root: contextManifest.exact_root, branch: '', head: candidateHead }, {});
   assert.ok(detached.failures.some((failure) => failure.includes('<detached>')));
+});
+
+test('completed checkpoints durably bind the full governed acceptance receipt', () => {
+  const receipt = governedAcceptanceReceipt();
+  const event = {
+    state: 'done',
+    git: {
+      root: receipt.candidate.root,
+      branch: receipt.candidate.branch,
+      head: receipt.candidate.commit,
+      tree: receipt.candidate.tree,
+    },
+    outcomePacket: receipt.outcomes[0].path,
+    outcomePacketSha256: receipt.outcomes[0].sha256,
+    acceptance: {
+      receiptId: receipt.receipt_id,
+      receiptDigest: receipt.receipt_digest,
+      verdict: receipt.verdict,
+      surface: receipt.surface,
+    },
+    acceptanceReceipt: receipt,
+  };
+  assert.deepEqual(checkpointAcceptanceFailures(event), []);
+  event.acceptanceReceipt.changed_paths = ['src/tampered.ts'];
+  assert(checkpointAcceptanceFailures(event).some((failure) => failure.includes('digest does not match')));
+});
+
+test('completed checkpoint durability rejects candidate-authored receipt summaries without tracked proof bytes', async () => {
+  const receipt = governedAcceptanceReceipt();
+  const event = {
+    state: 'done',
+    git: {
+      root: receipt.candidate.root,
+      branch: receipt.candidate.branch,
+      head: receipt.candidate.commit,
+      tree: receipt.candidate.tree,
+    },
+    outcomePacket: receipt.outcomes[0].path,
+    outcomePacketSha256: receipt.outcomes[0].sha256,
+    acceptanceReceipt: receipt,
+  };
+  let replayed = false;
+  const failures = await checkpointAcceptanceDurabilityFailures(event, {
+    tracked: new Set(),
+    replay: async () => { replayed = true; return { valid: true, issues: [] }; },
+  });
+  assert.equal(replayed, false);
+  assert.ok(failures.some((failure) => failure.includes('acceptance contract: file is not tracked')));
+  assert.ok(failures.some((failure) => failure.includes('acceptance runner directory: directory is missing')));
+});
+
+test('done card status and completion events form an exact bijection', () => {
+  const cards = [{ id: 'P-001', status: 'done' }, { id: 'P-002', status: 'building' }];
+  assert.deepEqual(completionEventBijectionFailures(cards, [{ state: 'done', cards: ['P-001'] }]), []);
+  assert(completionEventBijectionFailures(cards, []).some((failure) => failure.includes('P-001')));
+  assert(completionEventBijectionFailures(cards, [
+    { state: 'done', cards: ['P-001'] },
+    { state: 'done', cards: ['P-002'] },
+  ]).some((failure) => failure.includes('P-002')));
 });
 
 test('GitHub context permits an ephemeral detached checkout only with full exact attestation', () => {
@@ -106,6 +215,131 @@ test('next-card ranking ignores source order and selects explicit P0 priority', 
   const p022 = {...base, id: 'P-022', priority: '90', blocker: 'P1-live-home-hierarchy'};
   assert.equal(rankCards([p034, p022, p035])[0].id, 'P-035');
   assert.equal(rankCards([p035, p034, p022])[0].id, 'P-035');
+  assert.equal(nextBuildingCard([p034, p022, p035]).id, 'P-035');
+});
+
+test('ContextReceipt selector uses the same blocker-aware next-card contract as product query', () => {
+  const markdown = [
+    ['P-012', 'Receipt capture', 'priority: 50\nblocker: none'],
+    ['P-035', 'Membership repair', 'priority: 100\nblocker: P0-live-first-use'],
+  ].map(([id, title, priority]) => `## ${id} - ${title}\n\n\`\`\`yaml\nid: ${id}\nstatus: building\n${priority}\noperator_next_action: Prove ${id}\n\`\`\``).join('\n\n');
+  assert.deepEqual(activeProductCardFromMarkdown(markdown), {
+    id: 'P-035',
+    status: 'building',
+    priority: 100,
+    operator_next_action: 'Prove P-035',
+  });
+});
+
+test('generated views keep operator priority separate from a universal user action', () => {
+  const card = {
+    ...base,
+    id: 'P-035',
+    title: 'Account, contact and membership lifecycle',
+    next_action: 'Create my group',
+    operator_next_action: 'Repair and prove shared-group creation',
+    action_scope: 'First shared-group creation by a local participant',
+    priority: '100',
+    blocker: 'P0-live-first-use',
+    pillar: 'Management',
+  };
+  const views = generatedViews([card]);
+  assert.match(views.resume, /Current operator priority: P-035/u);
+  assert.match(views.resume, /Operator next action: \*\*Repair and prove shared-group creation\*\*/u);
+  assert.match(views.resume, /Bounded participant\/card action: \*\*Create my group\*\*/u);
+  assert.match(views.resume, /Action audience and scope: participant/u);
+  assert.doesNotMatch(views.resume, /First action:/u);
+  assert.match(views.resume, /never becomes one universal action for every user/u);
+});
+
+test('benchmark baseline requires the stable outcome set and explicit E1/E2 boundary', () => {
+  const rows = requiredBenchmarkIds.map((id) => `| ${id} | outcome | comparator | \`E1-public-source\` | Not executed | must-match |`).join('\n');
+  const fixture = `# Benchmark\n\n**Kind:** guardrail\n**Status:** active\n**Owner:** product-research\n**Last reviewed:** 2026-08-27\n**Applies to:** chopdot-v1-launch\n**Authority:** category floor only\n\nStale E1 public source review; refresh required.\nE2 hands-on same-journey walkthrough remains open.\ncompetitive-gap-decisions-2026-06-23.md is superseded by DEC-009 and DEC-010.\nCategory language: add expense, who paid, who owes, settle up, recipient confirmed, group summary.\n${rows}`;
+  assert.deepEqual(benchmarkBaselineFailures(fixture), []);
+  const failures = benchmarkBaselineFailures(`${fixture}\n| BASE-ENTRY-01 | duplicate | comparator | \`E1-public-source\` | Not executed | must-match |\n| BASE-UNKNOWN-01 | unknown | comparator | \`E1-public-source\` | Not executed | must-match |`);
+  assert.ok(failures.some((failure) => failure.includes('repeats BASE-ENTRY-01')));
+  assert.ok(failures.some((failure) => failure.includes('unknown outcome id BASE-UNKNOWN-01')));
+});
+
+test('cards must cite known baseline outcomes and preserve open E2 status', () => {
+  const known = new Set(requiredBenchmarkIds);
+  const unknown = validateCards([{...base, id: 'P-034', benchmark_requirements: 'BASE-UNKNOWN-01'}], new Date('2026-08-24T12:00:00Z'), known);
+  assert.ok(unknown.some((failure) => failure.includes('is not defined by product/benchmark-baseline.md')));
+  const omitted = validateCards([{...base, id: 'P-034', benchmark_requirements: 'not-applicable: convenient', delivery_phase: 'phase-1-baseline'}], new Date('2026-08-24T12:00:00Z'), known);
+  assert.ok(omitted.some((failure) => failure.includes('participant-facing cards must cite applicable benchmark outcomes')));
+  const premature = validateCards([{...base, id: 'P-034', status: 'done'}], new Date('2026-08-24T12:00:00Z'), known);
+  assert.ok(premature.some((failure) => failure.includes('E1 evidence with E2 open cannot support done status')));
+});
+
+test('card validation rejects a universal action scope', () => {
+  for (const actionScope of ['all users', 'all participants', 'every Home state', 'universal route', 'everyone']) {
+    const failures = validateCards([{...base, id: 'P-034', action_scope: actionScope}], new Date('2026-08-24T12:00:00Z'));
+    assert.ok(failures.some((failure) => failure.includes('action_scope must name a bounded')), actionScope);
+  }
+});
+
+test('participant cards cannot bypass the benchmark with internal not-applicable language', () => {
+  const failures = validateCards([{
+    ...base,
+    id: 'P-034',
+    benchmark_requirements: 'not-applicable: internal',
+    benchmark_evidence_state: 'not-applicable-internal',
+    benchmark_scope: 'applies',
+    delivery_phase: 'phase-0-grounding',
+  }], new Date('2026-08-24T12:00:00Z'));
+  assert.ok(failures.some((failure) => failure.includes('participant-facing cards must cite applicable benchmark outcomes')));
+});
+
+test('the benchmark-registry package preserves its honest E1 and E2 evidence state', () => {
+  const failures = validateCards([{
+    ...base,
+    id: 'P-013',
+    audience: 'operator',
+    journey: 'The product evaluator defines the category floor.',
+    action_scope: 'Product evaluator reviewing the benchmark registry',
+    delivery_phase: 'phase-0-grounding',
+    benchmark_requirements: 'not-applicable: this package defines the benchmark registry',
+    benchmark_scope: 'defines-registry',
+  }], new Date('2026-08-24T12:00:00Z'));
+  assert.equal(failures.filter((failure) => failure.includes('benchmark')).length, 0, failures.join('; '));
+});
+
+test('card audience and action scope must agree', () => {
+  const operatorFailures = validateCards([{
+    ...base,
+    id: 'P-030',
+    audience: 'operator',
+    journey: 'Mina opens the app.',
+    action_scope: 'Open the app',
+  }], new Date('2026-08-24T12:00:00Z'));
+  assert.ok(operatorFailures.some((failure) => failure.includes('operator cards must name an operator role')));
+
+  const participantFailures = validateCards([{
+    ...base,
+    id: 'P-034',
+    action_scope: 'Release integrator reviewing the frozen candidate',
+  }], new Date('2026-08-24T12:00:00Z'));
+  assert.ok(participantFailures.some((failure) => failure.includes('participant cards cannot use an operator action_scope')));
+});
+
+test('card validation requires the prioritization outcome contract', () => {
+  const card = {...base, id: 'P-034'};
+  delete card.expected_outcome;
+  delete card.exit_condition;
+  const failures = validateCards([card], new Date('2026-08-24T12:00:00Z'));
+  assert.ok(failures.includes('P-034: missing expected_outcome'));
+  assert.ok(failures.includes('P-034: missing exit_condition'));
+});
+
+test('card validation requires at least two explicit alternative cards', () => {
+  const failures = validateCards([{...base, id: 'P-034', alternatives_not_now: 'P-012 remains later.'}], new Date('2026-08-24T12:00:00Z'));
+  assert.ok(failures.includes('P-034: alternatives_not_now must name at least two distinct Cockpit cards'));
+});
+
+test('product score remains separate from card ordering', () => {
+  const higherScore = {...base, id: 'P-012', score: '10/10', priority: '20'};
+  const lowerScore = {...base, id: 'P-035', score: '8/10', priority: '100'};
+  assert.equal(rankCards([higherScore, lowerScore])[0].id, 'P-035');
 });
 
 test('card validation rejects ambiguous active priority', () => {

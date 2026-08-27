@@ -6,6 +6,7 @@ import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { validateOutcomePacket } from '../agent-system/outcome.mjs';
 import { validateGovernanceInstance } from '../agent-system/schema.mjs';
+import { canonicalGitChangedPaths, validateAcceptance } from './adoption-guard.mjs';
 import { digestObject, parseArgs, readJson, sha256File, writeMarkdownReport, writeReport } from './lib.mjs';
 
 function safeRepositoryFile(root, relative, label, errors) {
@@ -156,8 +157,9 @@ export function validateReleaseCandidate({ root, outcomePath, approvalPath, expe
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const root = path.resolve(options.root ?? process.cwd());
-  if (!options.outcome || !options.approval) {
-    process.stderr.write('Release enforcement requires --outcome and --approval. Missing evidence is a failure, not a skipped green job.\n');
+  if (!options.outcome || !options.approval || !options.contract || !options.knowledge_receipt
+    || !options.runner_provenance || !options.run_directory || !options.execution_attestation) {
+    process.stderr.write('Release enforcement requires --outcome, --approval, --contract, --knowledge-receipt, --runner-provenance, --run-directory, and --execution-attestation. Missing evidence is a failure, not a skipped green job.\n');
     process.exitCode = 2;
     return;
   }
@@ -167,6 +169,32 @@ async function main() {
     approvalPath: options.approval,
     expectedSha: options.expected_sha ?? process.env.EXPECTED_SHA,
   });
+  try {
+    const acceptedOutcome = readJson(path.resolve(root, options.outcome));
+    const acceptance = await validateAcceptance({
+      root,
+      surface: 'release',
+      changedPaths: canonicalGitChangedPaths(root, acceptedOutcome.starting_head, acceptedOutcome.ending_head),
+      outcomePaths: [options.outcome],
+      contractPaths: [options.contract],
+      knowledgeReceiptPaths: [options.knowledge_receipt],
+      runnerProvenancePaths: [options.runner_provenance],
+      runDirectories: [options.run_directory],
+      executionAttestationPaths: [options.execution_attestation],
+      contextReceiptPath: options.context_receipt ?? null,
+      expectedCommit: options.expected_sha ?? process.env.EXPECTED_SHA,
+      expectedTree: execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { cwd: root, encoding: 'utf8' }).trim(),
+      expectedBranch: execFileSync('git', ['branch', '--show-current'], { cwd: root, encoding: 'utf8' }).trim(),
+      evidenceLevel: 'release',
+    });
+    result.checks += acceptance.checks;
+    result.summary.acceptance_receipt_id = acceptance.receipt_id;
+    result.summary.acceptance_verdict = acceptance.verdict;
+    if (acceptance.verdict !== 'governed') result.errors.push(...acceptance.failures.map((entry) => `Adoption guard: ${entry}`));
+  } catch (error) {
+    result.errors.push(`Adoption guard failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  result.ok = result.errors.length === 0;
   writeReport(options.json_out ? path.resolve(options.json_out) : null, result);
   writeMarkdownReport(options.md_out ? path.resolve(options.md_out) : null, 'ChopDot release-enforcement report', result);
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);

@@ -15,6 +15,23 @@ const INTENT_BY_PROFILE = {
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
 
+function requiredProfileCommands(profileId, profile) {
+  if (!profile.evaluator?.deterministic_checks?.includes('benchmark_packet_semantics_check')) return [];
+  if (profileId === 'product-definition') return [{
+    id: 'PROD-BENCHMARK-SEMANTICS',
+    command: 'node scripts/agent-system/benchmark-semantics.mjs --packet artifacts/agentops/outcomes/example/product-definition.json --type product-definition',
+    expected_exit_code: 0,
+    timeout_seconds: 120,
+  }];
+  if (profileId === 'ux-creation') return [{
+    id: 'UX-BENCHMARK-SEMANTICS',
+    command: 'node scripts/agent-system/benchmark-semantics.mjs --packet artifacts/agentops/outcomes/example/ux-journey.json --type ux-journey',
+    expected_exit_code: 0,
+    timeout_seconds: 120,
+  }];
+  throw new Error(`benchmark_packet_semantics_check has no command mapping for ${profileId}`);
+}
+
 export function loadLoopProfile(profileId) {
   if (!(profileId in INTENT_BY_PROFILE)) throw new Error(`Unknown loop profile: ${profileId}`);
   return loadGovernanceJson('loops', `${profileId}.v1.json`);
@@ -90,7 +107,12 @@ export function createContract(options = {}) {
     },
     evaluator: options.evaluator ?? {
       rubric_refs: [profile.evaluator.rubric_path],
-      deterministic_commands: (options.deterministicCommands ?? template.evaluator.deterministic_commands).map((entry) => ({ ...entry, cwd: root })),
+      deterministic_commands: (() => {
+        const required = requiredProfileCommands(profileId, profile);
+        const requiredIds = new Set(required.map((entry) => entry.id));
+        const selected = options.deterministicCommands ?? template.evaluator.deterministic_commands;
+        return [...required, ...selected.filter((entry) => !requiredIds.has(entry.id))].map((entry) => ({ ...entry, cwd: root }));
+      })(),
       reviewer_independence: options.reviewerIndependence ?? profile.evaluator.independence,
       pass_threshold: profile.evaluator.pass_threshold,
       hard_fail_assertion_ids: clone(profile.evaluator.hard_failures),

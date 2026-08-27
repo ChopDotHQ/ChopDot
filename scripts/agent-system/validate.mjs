@@ -83,6 +83,19 @@ export function validateAgentContract(contract, options = {}) {
     issues.push(issue('evaluator', 'Evaluator and numeric required pass-rate threshold are required'));
   } else if (contract.evaluator.pass_threshold < 0 || contract.evaluator.pass_threshold > 1) {
     issues.push(issue('evaluator.thresholds.required_pass_rate', 'Pass rate must be between zero and one'));
+  } else {
+    const profileId = typeof contract.loop_profile === 'object' ? contract.loop_profile.id : String(contract.loop_profile ?? '').replace(/\.v1$/u, '');
+    const semanticCommand = profileId === 'product-definition'
+      ? { id: 'PROD-BENCHMARK-SEMANTICS', type: 'product-definition' }
+      : profileId === 'ux-creation'
+        ? { id: 'UX-BENCHMARK-SEMANTICS', type: 'ux-journey' }
+        : null;
+    if (semanticCommand) {
+      const command = contract.evaluator.deterministic_commands.find((entry) => entry.id === semanticCommand.id);
+      if (!command || !String(command.command).includes('scripts/agent-system/benchmark-semantics.mjs') || !String(command.command).includes(`--type ${semanticCommand.type}`)) {
+        issues.push(issue('evaluator.deterministic_commands', `${profileId} requires the exact benchmark semantic command`, 'required_semantic_gate'));
+      }
+    }
   }
   if (!Array.isArray(contract.terminal_states) || contract.terminal_states.length === 0 || contract.terminal_states.some((state) => !TERMINAL_STATES.includes(state))) {
     issues.push(issue('terminal_states', 'Only recognized terminal states are allowed'));

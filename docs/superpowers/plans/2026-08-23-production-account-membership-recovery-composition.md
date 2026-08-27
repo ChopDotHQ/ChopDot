@@ -1,5 +1,12 @@
 # Production account, membership, and recovery composition
 
+**Kind:** plan
+**Status:** superseded
+**Owner:** product and identity
+**Last reviewed:** 2026-08-27
+**Applies to:** `chopdot-v1-launch` historical 2026-08-23 composition slice
+**Authority:** historical plan only; DEC-009 and the active 2026-08-27 full-product plan govern current action scope and priority
+
 Date: 2026-08-23
 Programme: A, constrained by Programme B
 Cockpit cards: P-035 and P-032
@@ -12,9 +19,11 @@ ceremony. Compose signed organizer membership and optional participant-held
 recovery into the existing One Chop Core without making host, chat, URL,
 storage, or recovery carriers an authority.
 
-## Current truth to preserve
+## Historical assumptions at the time
 
-- **Scan a receipt** remains the first product action.
+- **Scan a receipt** was treated as the first product action in this bounded
+  slice. DEC-009 supersedes that universal reading: it is now scoped to a
+  participant entering Catch with a receipt or spend.
 - Signed canonical events are membership and money authority.
 - Contact proof selects a person but grants no membership or organizer role.
 - Receipt drafts remain local until reviewed and signed.

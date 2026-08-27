@@ -11,15 +11,18 @@ The historical June 2026 programme plan in the canonical checkout is stale and
 contains an earlier two-kernel/Supabase direction. It was reviewed as context,
 not copied into this release tree.
 
-For this branch, the current route is `product/context-authority.json`, which
-names the 2026-08-24 context-authority and live-first-use repair plan. The
-2026-08-22 plan remains a historical execution record, not current authority.
+Current routing is resolved from `product/context-authority.json` at read time;
+this historical plan does not freeze or restate the active plan name. The
+2026-08-22 plan also remains a historical execution record, not current
+authority.
 
 ## Product end state
 
 One participant-held ChopDot engine completes Catch -> Management -> Payout ->
 History for normal pots, receipt capture, Spend Card, savings circles,
-emergency pots, and community funds. **Scan a receipt** is the first action.
+emergency pots, and community funds. Each observed participant state gets one
+obvious bounded action; **Scan a receipt** applies only to a Catch state with a
+receipt or spend.
 Polkadot is a distribution and evidence rail, not product authority.
 
 ## Status board

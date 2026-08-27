@@ -1,18 +1,22 @@
 # P-035 and P-022 local acceptance
 
 **Kind:** measurement
-**Status:** active
+**Status:** historical
 **Owner:** product assurance
+**Last reviewed:** 2026-08-27
+**Applies to:** `chopdot-v1-launch`
+**Authority:** dated local measurement for commit 79f93166 only; DEC-009, DEC-010, current Cockpit cards, and current exact-candidate evidence govern present acceptance
 **Observed:** 2026-08-24
-**Applies to:** `chopdot-v1-launch` working tree based on commit
-`79f93166f29073f9d549159d5ef345e38346b3b9`
+**Candidate commit:** `79f93166f29073f9d549159d5ef345e38346b3b9`
 **Scope:** local exact-worktree acceptance only; not commit, candidate, stage,
 promotion, live usability, ownership, user proof, or KGv2 recall evidence
 
-## Accepted behavior
+## Behavior observed at that commit
 
-- Empty Home presents one dominant **Scan a receipt** action, one secondary
-  **New group** action, no duplicate group action, and no mode catalog.
+- Empty Home presented one dominant **Scan a receipt** action and one secondary
+  **New group** action. That universal Home acceptance is superseded by
+  DEC-009 and DEC-010; retain this bullet as historical evidence, not current
+  P-022 UX acceptance.
 - **Create my group** obtains exact runtime account readiness before proposing
   canonical `CREATE_GROUP`; contact proof, wallet state, and personhood are not
   authority.
@@ -73,10 +77,12 @@ reviewed bytes identifiable without rewriting historical candidate proof.
 | `output/playwright/p035-retry-after-desktop.png` | 51,033 | `173392cca26459cff6ff8a85ccfad834d118d6940f04aa92a927e1a5a30d2ed6` |
 | `output/playwright/p035-created-after-mobile.png` | 31,567 | `44a96c7c3448a745d230a11b749ad3eecd86120662ce198f1aa425d64f471fe6` |
 
-Visual verdict: GO for local integration. Mobile and desktop are action-led,
+Historical visual verdict: GO for local integration at commit `79f93166`.
+Mobile and desktop were action-led,
 the first action is obvious, New group is calm rather than dashboard-like, and
-retry language gives one recovery action. This does not prove the public `.dot`
-host has the new bytes.
+retry language gives one recovery action. The Empty Home hierarchy conclusion
+is now superseded; this does not prove current P-022 acceptance or that the
+public `.dot` host has the new bytes.
 
 ## Independent repair review
 
@@ -91,6 +97,8 @@ and an append-only cockpit checkpoint.
 
 ## Remaining gates
 
+- Current category-baseline and contextual-Home acceptance under DEC-009 and
+  DEC-010.
 - Logical commit and push.
 - Deterministic `.dot` candidate build and immutable fingerprint.
 - Products Devnet stage, readback, and live first-use verification.

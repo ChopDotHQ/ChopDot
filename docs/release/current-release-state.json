@@ -3,7 +3,7 @@
   "kind": "measurement",
   "status": "active",
   "owner": "release-integrator",
-  "observed_at": "2026-08-24",
+  "observed_at": "2026-08-27",
   "applies_to": "chopdot-v1-launch",
   "authority": "Machine-readable current release verdicts only; this cannot change product intent or replace immutable bytes and live readback.",
   "branch": "codex/chopdot-v1-launch",
@@ -86,6 +86,13 @@
       "evidence": "docs/release/2026-08-24-live-first-use-findings.md",
       "evidence_sha256": "e1e6b46449bdd5d960682d0ee494b8034e6286b1738569f8d2168fae73daf621",
       "summary": "Empty Home is a duplicated dashboard rather than one clear next action."
+    },
+    {
+      "severity": "P1",
+      "card": "P-013",
+      "evidence": "product/benchmark-baseline.md",
+      "evidence_sha256": "eb0bad42e37a3d6b61ca98414dfc03ff123a0c67c016ee612aab7b6b54c76b50",
+      "summary": "Conventional and null-workflow evidence is stale E1 or inferred E0, and the E2 same-task walkthrough remains open."
     }
   ],
   "kgv2": {
@@ -119,5 +126,5 @@
       "The stored recall does not cite the context authority manifest, ADR 0004, or live blocker evidence."
     ]
   },
-  "next_required_outcome": "Repair P-035 and P-022, prove the production entrypoint and real screens, then freeze a new immutable candidate."
+  "next_required_outcome": "Repair and live-prove P-035; refresh and execute the Phase 1 P-013 same-task baseline; use that evidence to repair and prove P-022; then freeze a new immutable candidate."
 }

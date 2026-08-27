@@ -24,6 +24,26 @@ on:
         description: Repository-relative exact-candidate approval record path
         required: false
         type: string
+      loop_contract:
+        description: Repository-relative release-outcome contract path
+        required: false
+        type: string
+      knowledge_receipt:
+        description: Repository-relative exact-digest verify-recall receipt path
+        required: false
+        type: string
+      runner_provenance:
+        description: Repository-relative RunnerProvenanceV1 path inside the downloaded immutable evidence bundle
+        required: false
+        type: string
+      run_directory:
+        description: Repository-relative digest-chained runner directory inside the downloaded immutable evidence bundle
+        required: false
+        type: string
+      release_evidence_run_id:
+        description: Prior same-repository run containing the release-evidence artifact bundle
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -367,38 +387,54 @@ jobs:
           node scripts/agent-governance/generate-pr-outcome.mjs
           --event-path="${{ runner.temp }}/agent-governance-input/pr-context-${{ github.run_id }}/pr-event.json"
           --evidence-root="${{ runner.temp }}/agent-governance-input"
-          --output-directory="${{ runner.temp }}/pr-outcome"
+          --output-directory="output/agent-runs/ci-pr-outcome"
           --workflow-run-id="${{ github.run_id }}"
           --workflow-run-attempt="${{ github.run_attempt }}"
           --evaluator-identity="github-actions:pr-outcome:${{ github.run_id }}:${{ github.run_attempt }}"
           --job-results-json='{"agent-contract":"${{ needs.agent-contract.result }}","agent-runner":"${{ needs.agent-runner.result }}","knowledge-adapters":"${{ needs.knowledge-adapters.result }}","repo-governance":"${{ needs.repo-governance.result }}","application-fast-assurance":"${{ needs.application-fast-assurance.result }}"}'
-          --json-out="${{ runner.temp }}/pr-outcome/generation.json"
+          --json-out="output/agent-runs/ci-pr-outcome/generation.json"
+      - name: Record and recall the exact PR outcome
+        run: |
+          git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"
+          node scripts/agent-system/cli.mjs knowledge-record --adapter=exact-source --outcome="output/agent-runs/ci-pr-outcome/outcome.json" --json > "output/agent-runs/ci-pr-outcome/knowledge-record.json"
+          outcome_digest="$(node -e "const p=require('./output/agent-runs/ci-pr-outcome/outcome.json'); process.stdout.write(p.packet_digest)")"
+          node scripts/agent-system/cli.mjs knowledge-verify --adapter=exact-source --outcome-digest="$outcome_digest" --json > "output/agent-runs/ci-pr-outcome/knowledge-recall.json"
+      - name: Enforce governed PR acceptance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          base_sha="$(jq -r '.pull_request.base.sha' "${{ runner.temp }}/agent-governance-input/pr-context-${{ github.run_id }}/pr-event.json")"
+          changed_paths="$(git diff --name-only "$base_sha..$EXPECTED_SHA" -- | paste -sd, -)"
+          profile="$(jq -r '.pull_request.body' "${{ runner.temp }}/agent-governance-input/pr-context-${{ github.run_id }}/pr-event.json" | sed -n 's/^- \*\*Agent loop profile:\*\*[[:space:]]*`\{0,1\}\([^`[:space:]]*\).*/\1/p' | head -n 1)"
+          run_directory="$(jq -r '.run_directory' output/agent-runs/ci-pr-outcome/generation.json)"
+          node scripts/agent-governance/adoption-guard.mjs context --surface=pr_merge --profile="$profile" --json-out="output/agent-runs/ci-pr-outcome/context-receipt.json"
+          node scripts/agent-governance/adoption-guard.mjs accept --surface=pr_merge --changed-paths="$changed_paths" --outcome="output/agent-runs/ci-pr-outcome/outcome.json" --contract="output/agent-runs/ci-pr-outcome/acceptance-contract.json" --knowledge-receipt="output/agent-runs/ci-pr-outcome/knowledge-recall.json" --execution-attestation="output/agent-runs/ci-pr-outcome/execution-attestation.json" --runner-provenance="output/agent-runs/ci-pr-outcome/runner-provenance.json" --run-directory="$run_directory" --context-receipt="output/agent-runs/ci-pr-outcome/context-receipt.json" --profile="$profile" --evidence-level=exact-candidate --expected-sha="$EXPECTED_SHA" --expected-tree="$(git rev-parse "$EXPECTED_SHA^{tree}")" --expected-branch="$EXPECTED_BRANCH" --json-out="output/agent-runs/ci-pr-outcome/acceptance-receipt.json"
       - name: Validate PR claims against generated outcome
         run: >-
           node scripts/agent-governance/validate-pr.mjs
           --event-path="${{ runner.temp }}/agent-governance-input/pr-context-${{ github.run_id }}/pr-event.json"
-          --ci-outcome="${{ runner.temp }}/pr-outcome/outcome.json"
-          --json-out="${{ runner.temp }}/pr-outcome/validation.json"
-          --md-out="${{ runner.temp }}/pr-outcome/validation.md"
+          --ci-outcome="output/agent-runs/ci-pr-outcome/outcome.json"
+          --json-out="output/agent-runs/ci-pr-outcome/validation.json"
+          --md-out="output/agent-runs/ci-pr-outcome/validation.md"
       - name: Attest the exact external outcome packet
         id: attest-outcome
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
-          subject-path: ${{ runner.temp }}/pr-outcome/outcome.json
+          subject-path: output/agent-runs/ci-pr-outcome/outcome.json
       - name: Retain the offline attestation bundle
         run: >-
           cp -- "${{ steps.attest-outcome.outputs.bundle-path }}"
-          "${{ runner.temp }}/pr-outcome/outcome-attestation.jsonl"
+          "output/agent-runs/ci-pr-outcome/outcome-attestation.jsonl"
       - name: Publish PR outcome decision
         if: always()
         run: |
-          if [[ -f "${{ runner.temp }}/pr-outcome/validation.md" ]]; then cat "${{ runner.temp }}/pr-outcome/validation.md" >> "$GITHUB_STEP_SUMMARY"; else echo "PR outcome evidence was absent or malformed; no green verdict exists." >> "$GITHUB_STEP_SUMMARY"; fi
+          if [[ -f "output/agent-runs/ci-pr-outcome/validation.md" ]]; then cat "output/agent-runs/ci-pr-outcome/validation.md" >> "$GITHUB_STEP_SUMMARY"; else echo "PR outcome evidence was absent or malformed; no green verdict exists." >> "$GITHUB_STEP_SUMMARY"; fi
       - name: Upload PR outcome evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: pr-outcome-${{ github.run_id }}
-          path: ${{ runner.temp }}/pr-outcome/
+          path: output/agent-runs/ci-pr-outcome/
           if-no-files-found: error
           retention-days: 30
 
@@ -410,6 +446,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: public-testnet-release
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -424,11 +464,37 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Require and download immutable release evidence bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.release_evidence_run_id }}
+          pattern: release-evidence-*
+          path: output/release-evidence
+          merge-multiple: true
+      - name: Bind release enforcement to the named branch
+        run: git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"
+      - name: Generate current protected-environment execution attestation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          node scripts/agent-governance/execution-attestation.mjs create
+          --expected-sha="$EXPECTED_SHA"
+          --expected-branch="$EXPECTED_BRANCH"
+          --json-out="${{ runner.temp }}/release-enforcement/execution-attestation.json"
       - name: Enforce approved immutable release evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: >-
           node scripts/agent-governance/enforce-release.mjs
           --outcome="${{ inputs.outcome_packet }}"
           --approval="${{ inputs.approval_record }}"
+          --contract="${{ inputs.loop_contract }}"
+          --knowledge-receipt="${{ inputs.knowledge_receipt }}"
+          --runner-provenance="${{ inputs.runner_provenance }}"
+          --run-directory="${{ inputs.run_directory }}"
+          --execution-attestation="${{ runner.temp }}/release-enforcement/execution-attestation.json"
           --expected-sha="$EXPECTED_SHA"
           --json-out="${{ runner.temp }}/release-enforcement/release.json"
           --md-out="${{ runner.temp }}/release-enforcement/release.md"

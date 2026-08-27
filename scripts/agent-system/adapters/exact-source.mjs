@@ -85,6 +85,9 @@ export function createExactSourceAdapter(options = {}) {
       return receiptBase('verify_recall', {
         ...metadata, active_read_path: recordsRoot, accepted: mismatches.length === 0,
         rejected_reasons: mismatches.length ? ['recall_mismatch'] : [],
+        durable_record_id: match ? match.name.replace(/\.json$/u, '') : null,
+        stored_packet_digest: match?.record.packet_digest ?? null,
+        stored_artifact_digests: (match?.record.artifacts ?? []).map((entry) => entry.sha256).filter(Boolean),
         facts: match ? [{ fact_id: 'fact_recall_1', statement: `Outcome ${expectedDigest} recalled`, citation_ids: ['citation_recall_1'] }] : [],
         citations: citation ? [citation] : [], source_identities: sourceIdentity ? [sourceIdentity] : [],
         mismatches, current_outcome_digest: match?.record.packet_digest ?? null,

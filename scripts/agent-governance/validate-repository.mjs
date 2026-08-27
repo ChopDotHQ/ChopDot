@@ -7,6 +7,7 @@ import { pathToFileURL } from 'node:url';
 import {
   isExcluded, parseArgs, readJson, walkTextFiles, writeMarkdownReport, writeReport,
 } from './lib.mjs';
+import { adoptionPolicyFailures } from './adoption-guard.mjs';
 import { validateWorkflow } from './validate-workflow.mjs';
 
 const EXPECTED_INVARIANTS = [
@@ -69,8 +70,9 @@ export function validateRepository(root, options = {}) {
   const invariantPath = path.join(root, 'scripts/agent-governance/catalog/invariants.v1.json');
   const providerPath = path.join(root, 'scripts/agent-governance/catalog/provider-policy.v1.json');
   const evidencePath = path.join(root, 'governance/agent-system/policies/evidence-levels.json');
+  const adoptionPath = path.join(root, 'governance/agent-system/policies/adoption-boundary.v1.json');
   const packagePath = path.join(root, 'package.json');
-  for (const file of [invariantPath, providerPath, evidencePath, packagePath]) {
+  for (const file of [invariantPath, providerPath, evidencePath, adoptionPath, packagePath]) {
     checks += 1;
     if (!fs.existsSync(file)) errors.push(`Missing required governance source: ${path.relative(root, file)}`);
   }
@@ -79,11 +81,13 @@ export function validateRepository(root, options = {}) {
   let catalog;
   let provider;
   let evidence;
+  let adoption;
   let packageJson;
   try {
     catalog = readJson(invariantPath);
     provider = readJson(providerPath);
     evidence = readJson(evidencePath);
+    adoption = readJson(adoptionPath);
     packageJson = readJson(packagePath);
   } catch (error) {
     return { ok: false, root, checks, errors: [`Invalid JSON: ${error.message}`], warnings, summary: {} };
@@ -124,6 +128,25 @@ export function validateRepository(root, options = {}) {
   errors.push(...providerResult.errors);
   warnings.push(...providerResult.warnings);
 
+  checks += 1;
+  errors.push(...adoptionPolicyFailures(adoption).map((entry) => `Adoption policy: ${entry}`));
+  const requiredScripts = [
+    'prepare', 'agent:context:receipt', 'agent:acceptance:guard',
+    'agent:hooks:install', 'agent:hooks:check', 'test:agent:adoption',
+  ];
+  for (const script of requiredScripts) {
+    checks += 1;
+    if (!packageJson.scripts?.[script]) errors.push(`Missing adoption script ${script}`);
+  }
+  const hookPath = path.join(root, '.githooks/pre-push');
+  checks += 1;
+  if (!fs.existsSync(hookPath)) errors.push('Missing tracked .githooks/pre-push');
+  else {
+    const hook = fs.readFileSync(hookPath, 'utf8');
+    if (!hook.includes('adoption-guard.mjs push')) errors.push('pre-push hook does not invoke the adoption guard');
+    if (!(fs.statSync(hookPath).mode & 0o111)) errors.push('pre-push hook is not executable');
+  }
+
   const workflowPath = path.join(root, '.github/workflows/agent-governance.yml');
   checks += 1;
   if (!fs.existsSync(workflowPath)) errors.push('Missing .github/workflows/agent-governance.yml');
@@ -147,7 +170,7 @@ export function validateRepository(root, options = {}) {
     checks,
     errors,
     warnings,
-    summary: { invariant_count: seen.size, schema_count: schemaFiles.length, evidence_level_count: evidenceIds.size },
+    summary: { invariant_count: seen.size, schema_count: schemaFiles.length, evidence_level_count: evidenceIds.size, adoption_rules: adoption.path_rules?.length ?? 0 },
   };
 }
 

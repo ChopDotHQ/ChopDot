@@ -1,5 +1,12 @@
 # ChopDot feature inheritance and external analog matrix
 
+**Kind:** historical research plan
+**Status:** completed time-sliced record
+**Owner:** product-research
+**Observed at:** 2026-08-22
+**Applies to:** the source identities recorded by the resulting matrix
+**Authority:** execution provenance only; it cannot define current product baseline, priority, implementation, or release state
+
 **Programme:** Programme B — product/platform research. No UI, runtime, deployment, or authority code changes.
 
 ## Goal

@@ -3,7 +3,7 @@
 **Kind:** decision
 **Status:** active
 **Owner:** product-assurance
-**Last reviewed:** 2026-08-24
+**Last reviewed:** 2026-08-27
 **Applies to:** chopdot-v1-launch
 **Authority:** conditional native architecture path; it cannot claim current implementation, deployment, or user reachability
 
@@ -28,7 +28,8 @@ without a mandatory recovery kit.
 6. Exact external/native payment evidence cannot self-confirm or close a group.
 7. Every named mode uses One Chop Core and the production entrypoint.
 8. One deterministic CAR is staged, promoted unchanged, reached, transferred,
-   and recalled by KGv2 with exact-worktree citations.
+   and recalled by the configured provider-neutral Knowledge Context adapter
+   with exact-worktree citations. KGv2 is one replaceable adapter.
 
 ## Falsifiers
 

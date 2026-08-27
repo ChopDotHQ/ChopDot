@@ -1,13 +1,14 @@
 # Spend Card journey
 
-**Kind:** decision
+**Kind:** reference
 **Status:** active
 **Owner:** product
 **Last reviewed:** 2026-08-24
 **Applies to:** `chopdot-v1-launch`
+**Authority:** scoped journey reference derived from Product Truth, current Cockpit decisions and contracts, ADRs, and exact mode evidence; it cannot make Spend Card the universal product entry
 **Sources:** P-005, DC-004, production-entrypoint mode tests
 
-GIVEN a transaction import, WHEN Mina matches a receipt and reviews amount,
+GIVEN a transaction import, WHEN the cardholder matches a receipt and reviews amount,
 currency, date, and group, THEN ChopDot creates a normal reviewed spend. A feed
 never implies acceptance. Duplicate transactions, late receipts, mismatches,
 refunds, and reversals remain visible immutable history. ChopDot does not issue

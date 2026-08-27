@@ -9,7 +9,9 @@ import { evaluateContractAssertions, evaluateRubric, gradeTrajectory, recordEval
 import { hashArtifact, recordArtifact, scanArtifact } from '../artifacts.mjs';
 import { assertRedacted, redactValue, scanForSensitiveContent } from '../redact.mjs';
 import { buildContinuationPacket, buildOutcomePacket, promoteOutcome, validateOutcomePacket } from '../outcome.mjs';
+import { generateRunnerProvenance, verifyRunnerProvenance } from '../provenance.mjs';
 import { aggregateRunMetrics } from '../metrics.mjs';
+import { digestObject } from '../core.mjs';
 
 async function started(overrides = {}) {
   const root = await fixtureRoot();
@@ -67,6 +69,40 @@ test('a failed deterministic command rejects otherwise passing typed measurement
   const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
   assert.equal(snapshot.status, 'failed_verification');
   assert.equal(snapshot.evaluations[0].verdict, 'rejected');
+});
+
+test('a passing structured deterministic command binds its measured assertion', async () => {
+  const root = await fixtureRoot();
+  const reportScript = path.join(root, 'scripts', 'agent-system', 'semantic-report.mjs');
+  await writeFile(reportScript, `process.stdout.write(JSON.stringify({measurements:{unresolved_required_baseline_count:{value:0,evidence_level:'unit'}}}));\n`);
+  const contract = fixtureContract(root, {
+    expected_outcome: {
+      statement: 'The semantic report proves the baseline is resolved.',
+      assertions: [{
+        id: 'PROD-BASELINE',
+        description: 'Unresolved baseline count is zero.',
+        subject: 'unresolved_required_baseline_count',
+        operator: 'count_equals',
+        expected: 0,
+        minimum_evidence_level: 'unit',
+        hard_fail: true,
+      }],
+    },
+    evaluator: {
+      deterministic_commands: [{
+        id: 'PROD-BENCHMARK-SEMANTICS',
+        command: `${process.execPath} scripts/agent-system/semantic-report.mjs`,
+        cwd: root,
+        expected_exit_code: 0,
+        timeout_seconds: 10,
+      }],
+      hard_fail_assertion_ids: ['PROD-BASELINE'],
+    },
+  });
+  const result = await evaluateContractAssertions(contract, { evaluatorIdentity: 'reviewer-agent' });
+  assert.equal(result.accepted, true);
+  assert.deepEqual(result.counts, { total: 1, passed: 1, failed: 0, blocked: 0 });
+  assert.deepEqual(result.command_measurement_conflicts, []);
 });
 
 test('measurement binding rejects nonexistent evidence IDs, wrong candidates, and insufficient levels', async () => {
@@ -205,16 +241,68 @@ async function successfulRun() {
 
 test('successful run builds valid schema-shaped outcome packet', async () => {
   const { contract, runDirectory } = await successfulRun();
-  const packet = buildOutcomePacket(contract, await rebuildSnapshot(runDirectory, contract.run_id));
+  const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+  const provenance = await generateRunnerProvenance(runDirectory, contract, { snapshot });
+  const packet = buildOutcomePacket(contract, snapshot, { runnerProvenance: provenance });
   assert.equal(validateOutcomePacket(packet).valid, true);
   assert.equal(packet.requirements[0].status, 'accepted');
+  assert.equal(packet.evaluation_index.length, 1);
+  const evaluation = JSON.parse(await readFile(packet.evaluation_index[0].path, 'utf8'));
+  assert.equal(evaluation.evaluation_id, packet.evaluation_summary.evaluation_ids[0]);
+  assert.equal(evaluation.evaluator.id, 'reviewer-agent');
+  assert.equal(evaluation.independence, 'different_actor');
 });
 
 test('tampered outcome digest is rejected', async () => {
   const { contract, runDirectory } = await successfulRun();
-  const packet = buildOutcomePacket(contract, await rebuildSnapshot(runDirectory, contract.run_id));
+  const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+  const provenance = await generateRunnerProvenance(runDirectory, contract, { snapshot });
+  const packet = buildOutcomePacket(contract, snapshot, { runnerProvenance: provenance });
   packet.branch = 'tampered';
   assert.ok(validateOutcomePacket(packet).issues.includes('outcome digest mismatch'));
+});
+
+test('runner provenance replay rejects a plausible hand-authored bundle', async () => {
+  const { contract, runDirectory } = await successfulRun();
+  const provenance = await generateRunnerProvenance(runDirectory, contract);
+  const forged = structuredClone(provenance);
+  forged.command_evidence.command_results_digest = 'f'.repeat(64);
+  forged.provenance_digest = digestObject(Object.fromEntries(Object.entries(forged).filter(([key]) => key !== 'provenance_digest')));
+  const result = await verifyRunnerProvenance(runDirectory, contract, forged);
+  assert.equal(result.valid, false);
+  assert.ok(result.issues.includes('provenance does not match replayed ledger'));
+});
+
+test('runner provenance replay rejects tampered ledger, evaluation, and command evidence', async (t) => {
+  await t.test('ledger', async () => {
+    const { contract, runDirectory } = await successfulRun();
+    const provenance = await generateRunnerProvenance(runDirectory, contract);
+    const ledger = path.join(runDirectory, 'events.jsonl');
+    await writeFile(ledger, (await readFile(ledger, 'utf8')).replace('"succeeded"', '"cancelled"'));
+    const result = await verifyRunnerProvenance(runDirectory, contract, provenance);
+    assert.equal(result.valid, false);
+    assert.match(result.issues.join('\n'), /digest|terminal|ledger/i);
+  });
+  await t.test('evaluation record', async () => {
+    const { contract, runDirectory } = await successfulRun();
+    const provenance = await generateRunnerProvenance(runDirectory, contract);
+    const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+    const artifact = snapshot.artifacts.find((entry) => entry.artifact_id === provenance.evaluation.record_artifact_id);
+    await writeFile(path.isAbsolute(artifact.path) ? artifact.path : path.resolve(contract.scope.root, artifact.path), `${JSON.stringify({ forged: true })}\n`);
+    const result = await verifyRunnerProvenance(runDirectory, contract, provenance);
+    assert.equal(result.valid, false);
+    assert.match(result.issues.join('\n'), /hash mismatch/i);
+  });
+  await t.test('command evidence', async () => {
+    const { contract, runDirectory } = await successfulRun();
+    const provenance = await generateRunnerProvenance(runDirectory, contract);
+    const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+    const artifact = snapshot.artifacts.find((entry) => entry.artifact_id === provenance.command_evidence.artifact_id);
+    await writeFile(path.isAbsolute(artifact.path) ? artifact.path : path.resolve(contract.scope.root, artifact.path), `${JSON.stringify({ command_results: [] })}\n`);
+    const result = await verifyRunnerProvenance(runDirectory, contract, provenance);
+    assert.equal(result.valid, false);
+    assert.match(result.issues.join('\n'), /hash mismatch/i);
+  });
 });
 
 test('outcome promotion writes only accepted packet', async () => {

@@ -27,7 +27,7 @@ worktree:
 
 | Surface | SHA-256 | Observation | Disposition |
 |---|---|---|---|
-| `/Users/devinsonpena/ChopDot/.agents/skills/chopdot-product-judgment/SKILL.md` | `bbe3b1661f74723f496232eff3456fc7dc7265b9508983994bfbc19d1e269863` | Reviewed 2026-08-24; resolves the exact worktree, product law, Cockpit, production entrypoint, screenshots, and live-failure repair, but predates the Portable Agent Outcome System command route. | supporting; select the `product-definition` or `incident-repair` profile through `AGENTS.md`; may not redefine outcomes or terminal states |
+| `/Users/devinsonpena/ChopDot/.agents/skills/chopdot-product-judgment/SKILL.md` | `ddd50cd9782d99a44e90fea5e7796d1bbe9b3aa5d9fbcc6fb19b98253abdb455` | Reviewed 2026-08-27; machine-local loader for tracked `governance/agent-system/instructions/chopdot-product-judgment.md` (`94ad402d0e1108950854ffa7adf83a7c6afeb9a5753270def79fd0052d0d1115`), which requires an independent first view, comparative priority verdict, contextual action scope, and objective outcome contract. | supporting loader only; select the `product-definition` or `incident-repair` profile through `AGENTS.md`; may not redefine outcomes, priorities, strategy, or terminal states |
 | `/Users/devinsonpena/ChopDot/.agents/skills/chopdot-frontend-design/SKILL.md` | `0cd0bce748594fb87e5fa911c5c4acfddbbb117e8873437dcecd9f9b6ad3c39a` | Reviewed 2026-08-24; resolves the exact worktree, Cockpit, production entrypoint, real-screen states, accessibility, and screenshot repair, but predates the Portable Agent Outcome System command route. | supporting; select the `ux-creation` profile through `AGENTS.md`; may not redefine outcomes or terminal states |
 
 The skills' product and visual loops remain useful. Their process vocabulary is

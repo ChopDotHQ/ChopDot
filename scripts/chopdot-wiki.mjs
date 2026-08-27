@@ -4,8 +4,7 @@ import { lstat, mkdir, readFile, realpath, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
-import {parseCards, rankCards} from './product-cockpit.mjs';
-import {validateCards} from './product-cockpit.mjs';
+import {benchmarkBaselineFailures, parseBenchmarkIds, parseCards, rankCards, validateCards} from './product-cockpit.mjs';
 
 const root = process.cwd();
 const wikiRoot = path.join(root, 'docs/wiki');
@@ -40,6 +39,19 @@ function validDate(value) {
   return parsed;
 }
 
+function metadataValue(content, field) {
+  return content.match(new RegExp(`^\\*\\*${field}:\\*\\* (.+)$`, 'mu'))?.[1]?.trim() ?? null;
+}
+
+async function conditionalDecisionSources() {
+  const manifestPath = await safeRepoFile('product/context-authority.json', 'context authority manifest');
+  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+  return new Set((manifest.conditional_routes ?? [])
+    .flatMap((route) => route.sources ?? [])
+    .map((source) => source.path)
+    .filter((sourcePath) => typeof sourcePath === 'string'));
+}
+
 async function sourcePages() {
   const {stdout} = await execFileAsync('git', ['ls-files', 'docs/wiki'], {cwd: root});
   const tracked = stdout.split('\n').filter(Boolean)
@@ -53,6 +65,7 @@ async function render() {
   const truth = await readFile(path.join(root, 'PRODUCT_TRUTH.md'), 'utf8');
   const cards = await readFile(path.join(root, 'product/cards.md'), 'utf8');
   const decisions = await readFile(path.join(root, 'product/decisions.md'), 'utf8');
+  const benchmarkBaseline = await readFile(path.join(root, 'product/benchmark-baseline.md'), 'utf8');
   const releaseState = await readFile(path.join(root, 'docs/release/current-release-state.json'), 'utf8');
   const parsedCards = parseCards(cards);
   const activeCards = rankCards(parsedCards).filter((card) => card.status === 'building');
@@ -64,7 +77,7 @@ async function render() {
 **Owner:** wiki-generator
 **Last reviewed:** 2026-08-26
 **Applies to:** chopdot-v1-launch
-**Authority:** navigation only; source wiki pages own their claims
+**Authority:** navigation only; every source page explains a scoped claim subordinate to Product Truth, current Cockpit decisions and contracts, ADRs, and exact evidence
 
 Generated from source pages. Update the linked source, then run \`npm run wiki:sync\`.
 
@@ -84,11 +97,15 @@ Generated read model. It is navigation, not product authority.
 - Product truth SHA-256: \`${createHash('sha256').update(truth).digest('hex')}\`
 - Product cards SHA-256: \`${createHash('sha256').update(cards).digest('hex')}\`
 - Product decisions SHA-256: \`${createHash('sha256').update(decisions).digest('hex')}\`
+- Product benchmark baseline SHA-256: \`${createHash('sha256').update(benchmarkBaseline).digest('hex')}\`
 - Current release state SHA-256: \`${createHash('sha256').update(releaseState).digest('hex')}\`
 - Active cards: ${activeCards.map((card) => card.id).join(', ') || 'none'}
-- Explicit next card: ${nextCard ? `${nextCard.id} — ${nextCard.next_action}` : 'none'}
+- Explicit next card: ${nextCard ? `${nextCard.id} — ${nextCard.title}` : 'none'}
+- Operator next action: ${nextCard?.operator_next_action ?? 'none'}
+- Bounded participant/card action: ${nextCard?.next_action ?? 'none'} (${nextCard?.action_scope ?? 'no active scope'})
 - Product loop: Catch -> Management -> Payout -> History
-- First product action: Scan a receipt
+- Product composition: category baseline -> ChopDot differentiation -> bounded experiments
+- Action rule: choose one obvious action for the observed user or operator state; never invent one universal first action for the whole product
 - Authority: participant-held signed events
 - Release boundary: DotNS, hosts, chains, caches, and knowledge backends are indexes or rails, never money or membership authority
 
@@ -97,12 +114,14 @@ Read in order:
 1. [Context authority](../../product/context-authority.json)
 2. [Product truth](../../PRODUCT_TRUTH.md)
 3. [Product cards](../../product/cards.md)
-4. [Current release state](../release/current-release-state.json)
-5. [Current product state](00-start-here/current-product-state.md)
-6. [Architecture](01-product-truth/participant-held-architecture.md)
-7. [One Chop Core](03-state-models/one-chop-core.md)
-8. [Release checklist](07-quality/release-checklist.md)
-9. [Portable agent outcomes](07-quality/portable-agent-outcomes.md)
+4. [Category benchmark baseline](../../product/benchmark-baseline.md)
+5. [Current release state](../release/current-release-state.json)
+6. [Current product state](00-start-here/current-product-state.md)
+7. [Product layers and delivery phases](00-start-here/product-layers-and-delivery-phases.md)
+8. [Architecture](01-product-truth/participant-held-architecture.md)
+9. [One Chop Core](03-state-models/one-chop-core.md)
+10. [Release checklist](07-quality/release-checklist.md)
+11. [Portable agent outcomes](07-quality/portable-agent-outcomes.md)
 `;
   return { index, context, count: pages.length };
 }
@@ -120,8 +139,13 @@ async function generate() {
 async function validate() {
   const failures = [];
   const rendered = await render();
+  const pages = await sourcePages();
+  const allowedWikiKinds = new Set(['reference', 'guardrail', 'measurement', 'exploration']);
+  const conditionalDecisions = await conditionalDecisionSources();
   const parsedCards = parseCards(await readFile(path.join(root, 'product/cards.md'), 'utf8'));
-  failures.push(...validateCards(parsedCards));
+  const benchmarkBaseline = await readFile(path.join(root, 'product/benchmark-baseline.md'), 'utf8').catch(() => '');
+  failures.push(...benchmarkBaselineFailures(benchmarkBaseline));
+  failures.push(...validateCards(parsedCards, new Date(), new Set(parseBenchmarkIds(benchmarkBaseline))));
   for (const [target, expected] of [[indexPath, rendered.index], [contextPath, rendered.context]]) {
     const safeTarget = await safeRepoFile(path.relative(root, target), `generated wiki ${path.basename(target)}`).catch((error) => {
       failures.push(error instanceof Error ? error.message : String(error));
@@ -130,7 +154,24 @@ async function validate() {
     const current = safeTarget ? await readFile(safeTarget, 'utf8').catch(() => null) : null;
     if (current !== expected) failures.push(`${path.relative(root, target)} is missing or stale`);
   }
+  for (const sourcePage of pages) {
+    const relative = path.relative(root, sourcePage).split(path.sep).join('/');
+    const content = await readFile(sourcePage, 'utf8');
+    for (const field of ['Kind', 'Status', 'Owner', 'Last reviewed', 'Applies to', 'Authority']) {
+      if (!metadataValue(content, field)) failures.push(`${relative}: missing ${field} metadata`);
+    }
+    const kind = metadataValue(content, 'Kind');
+    if (kind === 'decision' && !conditionalDecisions.has(relative)) {
+      failures.push(`${relative}: Kind decision is allowed only when this exact page is registered in a context-authority conditional route`);
+    } else if (kind && kind !== 'decision' && !allowedWikiKinds.has(kind)) {
+      failures.push(`${relative}: unsupported wiki source Kind ${kind}`);
+    }
+    const reviewedAt = validDate(metadataValue(content, 'Last reviewed'));
+    const age = reviewedAt ? Math.floor((Date.now() - reviewedAt.getTime()) / 86_400_000) : Number.POSITIVE_INFINITY;
+    if (age < 0 || age > 30) failures.push(`${relative}: review date is future or older than 30 days`);
+  }
   const required = [
+    'README.md',
     '00-start-here/current-product-state.md',
     '01-product-truth/participant-held-architecture.md',
     '02-user-journeys/normal-pot.md',
@@ -140,6 +181,7 @@ async function validate() {
     '02-user-journeys/community-fund.md',
     '03-state-models/one-chop-core.md',
     '05-polkadot-native/native-boundaries.md',
+    '07-quality/portable-agent-outcomes.md',
     '07-quality/release-checklist.md',
   ];
   for (const relative of required) {

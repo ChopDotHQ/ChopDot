@@ -3,7 +3,7 @@
 **Kind:** guardrail
 **Status:** active
 **Owner:** release-integrator
-**Last reviewed:** 2026-08-24
+**Last reviewed:** 2026-08-27
 **Applies to:** chopdot-v1-launch
 **Authority:** conditional native-release execution guardrail subordinate to the current plan, release state, and product law
 
@@ -32,7 +32,9 @@ For each accepted package:
 4. Run focused tests and a `src/main.tsx` production-entrypoint test.
 5. Obtain an independent product/security review.
 6. Repair, rerun the wave regression, commit, and fingerprint.
-7. Refresh exact-worktree Repo Graph and require KGv2 cited recall.
+7. Record and verify exact-worktree cited recall through the configured
+   provider-neutral Knowledge Context adapter. Repo Graph and KGv2 are current
+   adapter names, not permanent backend requirements.
 
 Fixture tests prove service behavior only. They never prove a public release.
 

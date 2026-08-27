@@ -3,16 +3,94 @@
 Generated operator handoff from `product/cards.md`; do not edit or use this
 read model to reprioritize the Cockpit.
 
-- [ ] P-035 [building] priority 100: Create my group
-- [ ] P-022 [building] priority 90: Scan a receipt
-- [ ] P-034 [building] priority 70: Review this draft
-- [ ] P-032 [building] priority 60: Restore my groups
-- [ ] P-012 [building] priority 50: Scan a receipt
-- [ ] P-030 [blocked] priority 95: Clear the release gates
-- [ ] P-005 [blocked] priority 40: Match a receipt
-- [ ] P-006 [blocked] priority 39: Record this contribution
-- [ ] P-007 [blocked] priority 38: Contribute privately
-- [ ] P-008 [blocked] priority 37: Review the proposal
+- [ ] P-035 [building] priority 100: Repair and reprove first shared-group creation and intentional invite acceptance
+  - Bounded card action: Create my group
+  - Audience/scope: participant — Local or guest participant creating a first shared group and inviting one intended recipient
+  - Delivery phase: phase-1-baseline
+  - Category baseline: BASE-ENTRY-01,BASE-GROUP-01,BASE-ACCESS-01 (e1-stale-refresh-required-e2-open)
+  - ChopDot differentiator: Contact, account, wallet, personhood, membership, and organizer authority remain intentional and separate
+  - Expected outcome: A first-time participant creates one shared group and admits another person intentionally without infrastructure coaching
+  - Exit: Real first-use group creation and invite acceptance succeed without Product Account, personhood, or protocol diagnosis
+- [ ] P-013 [building] priority 94: Complete the E2 same-journey walkthrough queue and bind accepted baseline requirements to active product cards
+  - Bounded card action: Review the category floor
+  - Audience/scope: operator — Product evaluator defining the launch-worktree category floor across current user-facing packages
+  - Delivery phase: phase-0-grounding
+  - Category baseline: not-applicable: this package defines and verifies the benchmark requirement set (e1-stale-refresh-required-e2-open)
+  - ChopDot differentiator: Product work cannot hide missing familiar jobs behind internal scenarios, infrastructure, or 10x claims
+  - Expected outcome: Every active user-facing card cites a current baseline outcome and preserves its E2 or real-user gap
+  - Exit: E2 walkthroughs required by each accepting phase are complete before that phase closes, later-phase gaps remain explicit, losses are recorded, and every active user-facing card has accepted benchmark coverage
+- [ ] P-022 [building] priority 90: Benchmark and repair contextual Home plus the complete normal group-money journey
+  - Bounded card action: Scan a receipt
+  - Audience/scope: participant — Empty or returning Home state where the participant's current job is to capture a group spend
+  - Delivery phase: phase-1-baseline
+  - Category baseline: BASE-ENTRY-01,BASE-GROUP-01,BASE-EXPENSE-01,BASE-CAPTURE-01,BASE-SPLIT-01,BASE-STATUS-01,BASE-PAY-01,BASE-EXCEPTION-01,BASE-CURRENCY-01,BASE-OFFLINE-01,BASE-HISTORY-01,BASE-EXPORT-01,BASE-ACCESS-01 (e1-stale-refresh-required-e2-open)
+  - ChopDot differentiator: The normal familiar group-money journey adds receiver-confirmed closeout and readable participant-held history without extra visible ceremony
+  - Expected outcome: Three participants can see the right group state and finish one normal dinner without bookkeeping ambiguity
+  - Exit: Empty and returning Home states each expose one working contextual action, the cited category baseline passes, and the full normal journey closes
+- [ ] P-034 [building] priority 70: Integrate and reprove one signed exact core through src/main.tsx
+  - Bounded card action: Review this draft
+  - Audience/scope: participant — Existing-group review of one proposed money-state change
+  - Delivery phase: phase-0-grounding
+  - Category baseline: BASE-EXPENSE-01,BASE-SPLIT-01,BASE-STATUS-01,BASE-HISTORY-01 (e1-stale-refresh-required-e2-open)
+  - ChopDot differentiator: One participant-held signed event set replays to one exact state without a server, host, or chain becoming authority
+  - Expected outcome: Every participant derives the same exact state from the same accepted event set
+  - Exit: Deterministic replay, migration, correction, and production-entrypoint parity all pass
+- [ ] P-032 [building] priority 60: Prove fresh-device recovery, revocation, and convergence through the production entrypoint
+  - Bounded card action: Restore my groups
+  - Audience/scope: participant — Returning participant on a cleared browser or different device
+  - Delivery phase: phase-2-differentiation
+  - Category baseline: BASE-OFFLINE-01,BASE-HISTORY-01 (e1-stale-refresh-required-e2-open)
+  - ChopDot differentiator: Authorized participants restore the same signed group record without introducing a second recovery authority
+  - Expected outcome: The same authorized participant recovers the same group record without a second authority
+  - Exit: Fresh-device recovery and lost-account social re-grant pass with honest user-visible limitations
+- [ ] P-012 [building] priority 50: Prove bounded capture, correction, and OCR-failure recovery through the production entrypoint
+  - Bounded card action: Scan a receipt
+  - Audience/scope: participant — Catch route for a participant who has just paid or has a receipt to import
+  - Delivery phase: phase-1-baseline
+  - Category baseline: BASE-EXPENSE-01,BASE-CAPTURE-01 (e1-stale-refresh-required-e2-open)
+  - ChopDot differentiator: Capture remains a private reviewable draft until the participant accepts the exact shared change
+  - Expected outcome: Receipt capture creates one reviewable local draft without mutating shared truth
+  - Exit: A participant completes capture and correction through the production entrypoint with one visible recovery action
+- [ ] P-030 [blocked] priority 95: Clear release gates and freeze one deterministic candidate only after product acceptance
+  - Bounded card action: Verify the candidate gates
+  - Audience/scope: operator — Release-integrator view of the exact frozen public-testnet candidate
+  - Delivery phase: phase-4-release
+  - Category baseline: not-applicable: operator distribution and release-evidence package (not-applicable-operator)
+  - ChopDot differentiator: The identical user-reviewed bytes are staged, promoted, owned, reachable, recoverable, and recalled with exact-source evidence
+  - Expected outcome: Every advertised surface serves the same reviewed bytes with proven ownership, rollback, real use, and exact-source recall
+  - Exit: All release verdict dimensions are independently true and the same CAR and CID are read back everywhere
+- [ ] P-005 [blocked] priority 40: Map and prove the complete Spend Card journey after shared baseline gates close
+  - Bounded card action: Match a receipt
+  - Audience/scope: participant — Spend Card group with an imported transaction awaiting receipt review
+  - Delivery phase: phase-3-modes
+  - Category baseline: BASE-EXPENSE-01,BASE-CAPTURE-01,BASE-SPLIT-01,BASE-STATUS-01,BASE-HISTORY-01,MODE-SPEND-01 (e1-stale-refresh-required-e2-open)
+  - ChopDot differentiator: Transaction data helps capture but never becomes accepted group truth without participant review
+  - Expected outcome: A participant matches one transaction and receipt, resolves mismatches, and closes the shared record exactly
+  - Exit: The complete Spend Card journey passes authority, privacy, recovery, and screenshot review
+- [ ] P-006 [blocked] priority 39: Map and prove one complete multi-participant savings round after shared baseline gates close
+  - Bounded card action: Record this contribution
+  - Audience/scope: participant — Active savings-circle round where one participant owes a contribution
+  - Delivery phase: phase-3-modes
+  - Category baseline: BASE-GROUP-01,BASE-STATUS-01,BASE-PAY-01,BASE-EXCEPTION-01,BASE-HISTORY-01,MODE-SAVINGS-01 (e1-stale-refresh-required-e2-open)
+  - ChopDot differentiator: The group preserves contribution, payout, recipient confirmation, and exactly-once round advancement without custody or guaranteed payout
+  - Expected outcome: One savings round records contributions, payout evidence, recipient confirmation, and advances exactly once
+  - Exit: A complete multi-participant round closes and recovers with exact history and one advance
+- [ ] P-007 [blocked] priority 38: Map and prove the private emergency-support journey after shared baseline gates close
+  - Bounded card action: Contribute privately
+  - Audience/scope: participant — Authorized emergency-pot participant viewing a bounded private request
+  - Delivery phase: phase-3-modes
+  - Category baseline: BASE-GROUP-01,BASE-STATUS-01,BASE-PAY-01,BASE-EXCEPTION-01,BASE-HISTORY-01,MODE-EMERGENCY-01 (e1-stale-refresh-required-e2-open)
+  - ChopDot differentiator: Trusted participants coordinate urgent support with threshold authority, bounded disclosure, recipient confirmation, and a redacted record
+  - Expected outcome: A trusted group contributes and approves urgent help without exposing the private reason
+  - Exit: The complete private request and release journey passes adversarial privacy and authority review
+- [ ] P-008 [blocked] priority 37: Map and prove the complete community-fund decision and handoff journey after shared baseline gates close
+  - Bounded card action: Review the proposal
+  - Audience/scope: participant — Community-fund member with one proposal requiring a role-aware decision
+  - Delivery phase: phase-3-modes
+  - Category baseline: BASE-GROUP-01,BASE-STATUS-01,BASE-PAY-01,BASE-EXCEPTION-01,BASE-HISTORY-01,BASE-EXPORT-01,MODE-COMMUNITY-01 (e1-stale-refresh-required-e2-open)
+  - ChopDot differentiator: Contributions, proposals, threshold decisions, release, confirmation, and steward handoff remain role-aware and recoverable without token-governance theater
+  - Expected outcome: A community records contributions, reviews one bounded proposal, approves or rejects it, and confirms the handoff
+  - Exit: A complete multi-role proposal and handoff journey closes with recoverable, redacted history
 
 Completion dimensions remain separate: implemented, tested, committed, pushed,
 candidate_built, staged, promoted, reachable, user_owned, user_proven, kg_known.
