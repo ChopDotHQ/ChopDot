@@ -3,8 +3,8 @@ import test from 'node:test';
 import {cryptoWaitReady, sr25519PairFromSeed, sr25519Sign, sr25519Verify} from '@polkadot/util-crypto';
 import {createCleanState, type Action} from '../../state/store.ts';
 import type {AppState, Expense, Group, Split} from '../../types.ts';
-import type {CanonicalGroupStateV1, CanonicalSigner, CanonicalVerifier} from '../moneyEventKernel.ts';
-import {allocateMoneyEvenly, moneyFromDecimal} from '../money.ts';
+import {canonicalExpenseAccountingV1, canonicalShareId, type CanonicalGroupStateV1, type CanonicalSigner, type CanonicalVerifier} from '../moneyEventKernel.ts';
+import {allocateMoneyEvenly, moneyFromDecimal, signedMoney} from '../money.ts';
 import {ProductionAuthority, isProductionAuthorityAction, type AuthorityIdentityResolver, type AuthorityJournalStore, type PersistedAuthorityGroupV1} from './productionAuthority.ts';
 
 await cryptoWaitReady();
@@ -108,6 +108,56 @@ test('invalid actor and a failed durable write change neither projection nor sig
   );
   assert.deepEqual(state, before);
   assert.equal((await journal.read('g-one'))?.frontierHash, frontier);
+});
+
+test('production authority signs and durably applies typed share adjustments before projection', async () => {
+  const journal = new MemoryJournal();
+  const authority = harness(journal);
+  let state = baseState();
+  state = (await authority.append(state, {
+    type: 'CREATE_GROUP',
+    payload: {group: {id: 'g-adjust', name: 'Adjustments', memberIds: ['mina', 'leo']}},
+  }, 'mina')).state;
+  state = (await authority.append(state, expenseAction('meal-adjust', 12, state), 'mina')).state;
+  const shareId = canonicalShareId('meal-adjust', 'leo');
+  const before = await journal.read('g-adjust');
+  assert.ok(before);
+
+  const accepted = await authority.appendShareAdjustment(state, {
+    groupId: 'g-adjust', shareId, kind: 'refund', delta: signedMoney('-100', 'CHF'), reason: 'Returned item',
+  }, 'mina');
+  assert.equal(accepted.event.eventType, 'SHARE_ADJUSTED');
+  assert.equal(accepted.canonicalState.shares[shareId].amount.minorUnits, '500');
+  assert.equal(Object.values(accepted.state.splits).find(split => split.expenseId === 'meal-adjust' && split.userId === 'leo')?.amount, 5);
+  assert.deepEqual(canonicalExpenseAccountingV1(accepted.canonicalState, 'meal-adjust'), {
+    expenseId: 'meal-adjust',
+    reviewedTotal: moneyFromDecimal('12.00', 'CHF'),
+    adjustmentTotal: signedMoney('-100', 'CHF'),
+    currentShareTotal: moneyFromDecimal('11.00', 'CHF'),
+  });
+  const persisted = await journal.read('g-adjust');
+  assert.equal(persisted?.events.at(-1)?.eventType, 'SHARE_ADJUSTED');
+  assert.notEqual(persisted?.frontierHash, before.frontierHash);
+
+  const stable = structuredClone(accepted.state);
+  const stableFrontier = persisted?.frontierHash;
+  await assert.rejects(authority.appendShareAdjustment(accepted.state, {
+    groupId: 'g-adjust', shareId, kind: 'fee', delta: signedMoney('50', 'USD'), reason: 'Wrong partition',
+  }, 'mina'), /currency/u);
+  await assert.rejects(authority.appendShareAdjustment(accepted.state, {
+    groupId: 'g-adjust', shareId, kind: 'fee', delta: signedMoney('50', 'CHF'), reason: 'Wrong actor',
+  }, 'leo'), /authority/u);
+  await assert.rejects(authority.appendShareAdjustment(accepted.state, {
+    groupId: 'g-adjust', shareId, kind: 'correction', delta: signedMoney('50', 'CHF'), reason: 'Legacy injection',
+  } as never, 'mina'), /replay-only/u);
+  assert.deepEqual(accepted.state, stable);
+  assert.equal((await journal.read('g-adjust'))?.frontierHash, stableFrontier);
+
+  journal.failWrites = true;
+  await assert.rejects(authority.appendShareAdjustment(accepted.state, {
+    groupId: 'g-adjust', shareId, kind: 'fee', delta: signedMoney('50', 'CHF'), reason: 'Durability check',
+  }, 'mina'), /durable write failed/u);
+  assert.equal((await journal.read('g-adjust'))?.frontierHash, stableFrontier);
 });
 
 test('hydrate replays the journal and rejects corruption instead of trusting the cached projection', async () => {

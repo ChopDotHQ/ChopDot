@@ -14,6 +14,7 @@ import {
   assertMoney,
   moneyEquals,
   moneyFromMinorUnits,
+  signedMoney,
   type MoneyAllocationV1,
   type MoneyV1,
 } from './money.ts';
@@ -30,7 +31,7 @@ import {
 
 export type ParticipantRole = 'organizer' | 'member';
 export type ShareStatus = 'open' | 'requested' | 'marked_paid' | 'cleared' | 'received' | 'waived' | 'disputed';
-export type AdjustmentKind = 'correction' | 'refund' | 'fee' | 'waiver' | 'partial_payment' | 'dispute';
+export type AdjustmentKind = 'correction' | 'refund' | 'fee' | 'waiver' | 'partial_payment' | 'dispute' | 'reversal';
 export type CanonicalGroupModeV1 = 'normal_pot' | 'trip' | 'couple' | 'spend_card' | 'savings_circle' | 'emergency_pot' | 'community_fund';
 
 export interface ShareRequestMetadataV1 {
@@ -77,7 +78,13 @@ export interface CanonicalShareV1 {
   status: ShareStatus;
   request?: ShareRequestMetadataV1;
   clearedEvidence?: FinalizedPaymentEvidenceV1;
-  adjustments: Array<{eventId: string; kind: AdjustmentKind; delta: MoneyV1; reason: string}>;
+  adjustments: Array<{
+    eventId: string;
+    kind: AdjustmentKind;
+    delta: MoneyV1;
+    reason: string;
+    reversesAdjustmentEventId?: string;
+  }>;
 }
 export interface CanonicalGroupStateV1 {
   v: 1;
@@ -91,6 +98,8 @@ export interface CanonicalGroupStateV1 {
   members: Record<string, CanonicalMemberV1>;
   expenses: Record<string, CanonicalExpenseV1>;
   shares: Record<string, CanonicalShareV1>;
+  /** Reviewed receipt totals. Settlement adjustments remain separately
+   * attributable on shares and are never silently folded into history. */
   closed: null | {recordId: string; eventId: string; total: MoneyV1; currencyTotals: Record<string, MoneyV1>};
   successorRecords: Array<{recordId: string; predecessorRecordId: string; eventId: string; reason: string}>;
   /** Named-mode state is a projection of the same signed group frontier. */
@@ -104,7 +113,7 @@ export type ChopEventPayloadV1 =
   | {shareId: string; request?: ShareRequestMetadataV1}
   | {shareId: string; evidence: FinalizedPaymentEvidenceV1}
   | {expenseId: string; reason: string; total: MoneyV1; allocations: MoneyAllocationV1[]}
-  | {shareId: string; kind: AdjustmentKind; delta: MoneyV1; reason: string}
+  | {shareId: string; kind: AdjustmentKind; delta: MoneyV1; reason: string; reversesAdjustmentEventId?: string}
   | {recordId: string}
   | {recordId: string; predecessorRecordId: string; reason: string}
   | {member: CanonicalMemberV1}
@@ -182,6 +191,13 @@ export interface CanonicalProjectionResult {
   duplicates: ProjectionIssue[];
   conflicts: ProjectionIssue[];
   rejected: ProjectionIssue[];
+}
+
+export interface CanonicalExpenseAccountingV1 {
+  expenseId: string;
+  reviewedTotal: MoneyV1;
+  adjustmentTotal: MoneyV1;
+  currentShareTotal: MoneyV1;
 }
 
 export interface CanonicalFrontierV1 {
@@ -337,6 +353,51 @@ export function canonicalFrontierBytes(state: CanonicalGroupStateV1): Uint8Array
 
 export function canonicalFrontierHash(state: CanonicalGroupStateV1): Promise<string> {
   return canonicalHash(['chopdot:event-frontier:v1', canonicalFrontier(state)]);
+}
+
+/**
+ * Proves the accounting equation for one reviewed expense without confusing
+ * the immutable receipt total with later settlement adjustments:
+ *
+ *   reviewed total + signed adjustments = current share total
+ *
+ * Refunds and acknowledged partials are negative, fees and reversals are
+ * positive, and disputes are zero-valued facts. A waiver is the exact negative
+ * remainder. The equation is checked after every accepted event.
+ */
+export function canonicalExpenseAccountingV1(
+  state: CanonicalGroupStateV1,
+  expenseId: string,
+): CanonicalExpenseAccountingV1 {
+  const expense = state.expenses[expenseId];
+  if (!expense) throw new Error('Canonical expense accounting target is missing.');
+  const shares = Object.values(state.shares).filter(share => share.expenseId === expenseId);
+  if (shares.length === 0) throw new Error('Canonical expense accounting has no shares.');
+  const partition = expense.total;
+  let currentShareTotal = moneyFromMinorUnits(0n, partition.currency, partition.exponent);
+  let adjustmentTotal = signedMoney('0', partition.currency, partition.exponent);
+  for (const share of shares) {
+    if (share.amount.currency !== partition.currency || share.amount.exponent !== partition.exponent) {
+      throw new Error('Canonical expense share currency does not match its reviewed total.');
+    }
+    currentShareTotal = addMoney(currentShareTotal, share.amount);
+    for (const adjustment of share.adjustments) {
+      if (adjustment.delta.currency !== partition.currency || adjustment.delta.exponent !== partition.exponent) {
+        throw new Error('Canonical expense adjustment currency does not match its reviewed total.');
+      }
+      adjustmentTotal = addMoney(adjustmentTotal, adjustment.delta);
+    }
+  }
+  const expectedCurrent = addMoney(expense.total, adjustmentTotal);
+  if (!moneyEquals(expectedCurrent, currentShareTotal)) {
+    throw new Error('Canonical expense accounting does not conserve reviewed total plus adjustments.');
+  }
+  return {
+    expenseId,
+    reviewedTotal: cloneJson(expense.total),
+    adjustmentTotal,
+    currentShareTotal,
+  };
 }
 
 async function assertCanonicalEvent(event: CanonicalEventV1, verify: CanonicalVerifier): Promise<void> {
@@ -528,6 +589,7 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
     if (!expense || event.actorId !== expense.paidBy || !payload.reason.trim()) throw new Error('Expense correction authority is invalid.');
     const shares = Object.values(state.shares).filter(share => share.expenseId === expense.expenseId);
     if (shares.some(share => !['open', 'requested'].includes(share.status))) throw new Error('Paid or received expenses require an explicit adjustment.');
+    if (shares.some(share => share.adjustments.length > 0)) throw new Error('Adjusted expenses require an explicit successor instead of rewriting their reviewed allocation.');
     assertConservation(payload.total, payload.allocations);
     if (payload.allocations.some(row => !state.members[row.participantId] || state.members[row.participantId].active === false)) throw new Error('Correction allocation member is invalid.');
     expense.revisions.push({eventId: event.eventId, reason: payload.reason.trim(), previousTotal: cloneJson(expense.total), nextTotal: cloneJson(payload.total)});
@@ -555,17 +617,67 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
     const share = shareFor(state, payload.shareId);
     const expense = state.expenses[share.expenseId];
     if (event.actorId !== expense.paidBy || !payload.reason.trim()) throw new Error('Share adjustment authority is invalid.');
+    if (!['correction', 'refund', 'fee', 'waiver', 'partial_payment', 'dispute', 'reversal'].includes(payload.kind)) {
+      throw new Error('Share adjustment kind is invalid.');
+    }
     assertMoney(payload.delta, {allowNegative: true});
     if (payload.delta.currency !== share.amount.currency || payload.delta.exponent !== share.amount.exponent) throw new Error('Share adjustment currency is invalid.');
+    const delta = BigInt(payload.delta.minorUnits);
+    const unresolved = ['open', 'requested', 'disputed'];
+    if (['refund', 'fee'].includes(payload.kind) && !unresolved.includes(share.status)) {
+      throw new Error('Refunds and fees require an unresolved share or an explicit successor.');
+    }
+    if (['partial_payment', 'waiver'].includes(payload.kind) && ![...unresolved, 'marked_paid'].includes(share.status)) {
+      throw new Error('Partial payments and waivers require an unresolved share or payer mark.');
+    }
+    if (payload.kind === 'dispute' && share.status === 'waived') throw new Error('A waived share requires an exact reversal before dispute.');
+    if (payload.kind === 'refund' && delta >= 0n) throw new Error('A refund must reduce the exact share.');
+    if (payload.kind === 'partial_payment' && delta >= 0n) throw new Error('A partial payment must reduce the exact remaining share.');
+    if (payload.kind === 'fee' && delta <= 0n) throw new Error('A fee must increase the exact share.');
+    if (payload.kind === 'dispute' && delta !== 0n) throw new Error('A dispute records a reason without changing money.');
+    let reversedAdjustment: CanonicalShareV1['adjustments'][number] | undefined;
+    if (payload.kind === 'reversal') {
+      if (!payload.reversesAdjustmentEventId?.trim()) throw new Error('A reversal must identify the exact prior adjustment.');
+      reversedAdjustment = share.adjustments.find(adjustment => adjustment.eventId === payload.reversesAdjustmentEventId);
+      if (!reversedAdjustment || ['correction', 'dispute', 'reversal'].includes(reversedAdjustment.kind)) {
+        throw new Error('A reversal target is not an eligible prior adjustment.');
+      }
+      if (share.adjustments.some(adjustment => adjustment.kind === 'reversal'
+        && adjustment.reversesAdjustmentEventId === reversedAdjustment?.eventId)) {
+        throw new Error('This adjustment was already reversed.');
+      }
+      if (delta !== -BigInt(reversedAdjustment.delta.minorUnits)) {
+        throw new Error('A reversal must exactly negate its identified adjustment.');
+      }
+    } else if (payload.reversesAdjustmentEventId !== undefined) {
+      throw new Error('Only a reversal may identify a prior adjustment.');
+    }
     const next = BigInt(share.amount.minorUnits) + BigInt(payload.delta.minorUnits);
     if (next < 0n) throw new Error('Share adjustment cannot make a negative share.');
+    if (payload.kind === 'waiver' && (BigInt(share.amount.minorUnits) <= 0n || delta >= 0n || next !== 0n)) {
+      throw new Error('A waiver must clear a positive exact remaining share.');
+    }
     share.amount = moneyFromMinorUnits(next, share.amount.currency, share.amount.exponent);
-    share.adjustments.push({eventId: event.eventId, kind: payload.kind, delta: cloneJson(payload.delta), reason: payload.reason.trim()});
+    share.adjustments.push({
+      eventId: event.eventId,
+      kind: payload.kind,
+      delta: cloneJson(payload.delta),
+      reason: payload.reason.trim(),
+      ...(payload.kind === 'reversal' ? {reversesAdjustmentEventId: reversedAdjustment!.eventId} : {}),
+    });
     if (payload.kind === 'waiver') {
-      if (next !== 0n) throw new Error('A waiver must clear the exact remaining share.');
       share.status = 'waived';
     } else if (payload.kind === 'dispute') {
       share.status = 'disputed';
+    } else if (payload.kind === 'reversal' && next > 0n) {
+      share.status = 'requested';
+    } else if (payload.kind === 'partial_payment' && share.status !== 'open') {
+      share.status = 'requested';
+    } else if (payload.kind === 'correction' && next > 0n && ['received', 'waived'].includes(share.status)) {
+      // Historical V1 correction facts remain replayable. If one increases a
+      // previously resolved share, it must reopen follow-up rather than retain
+      // a resolved status with a new positive obligation.
+      share.status = 'requested';
     }
     return advance(state, event);
   }
@@ -593,7 +705,8 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
   if (event.actorId !== state.organizerId || !payload.recordId.trim()) throw new Error('Close authority is invalid.');
   const open = Object.values(state.shares).filter(share => {
     const expense = state.expenses[share.expenseId];
-    return share.participantId !== expense.paidBy && !['received', 'waived'].includes(share.status);
+    const invalidWaiver = share.status === 'waived' && BigInt(share.amount.minorUnits) !== 0n;
+    return share.participantId !== expense.paidBy && (invalidWaiver || !['received', 'waived'].includes(share.status));
   });
   if (open.length) throw new Error('Every required share must be received or waived before close.');
   const totals = currencyTotals(state);
@@ -604,6 +717,7 @@ function applyEvent(previous: CanonicalGroupStateV1, event: CanonicalEventV1): C
 }
 
 function advance(state: CanonicalGroupStateV1, event: CanonicalEventV1): CanonicalGroupStateV1 {
+  for (const expenseId of Object.keys(state.expenses)) canonicalExpenseAccountingV1(state, expenseId);
   state.version += 1;
   state.currentEventId = event.eventId;
   state.eventIds.push(event.eventId);

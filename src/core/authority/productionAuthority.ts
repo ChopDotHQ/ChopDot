@@ -1,7 +1,7 @@
 import type {Action} from '../../state/store.ts';
 import type {AppState, GroupMode, WalletPaymentReceipt} from '../../types.ts';
 import type {MembershipGrant} from '../../membership/membershipLifecycle.ts';
-import {canonicalShareId, createCanonicalEvent, projectCanonicalEvents, type CanonicalEventType, type CanonicalEventV1, type CanonicalGroupStateV1, type CanonicalSigner, type CanonicalVerifier} from '../moneyEventKernel.ts';
+import {canonicalShareId, createCanonicalEvent, projectCanonicalEvents, type AdjustmentKind, type CanonicalEventType, type CanonicalEventV1, type CanonicalGroupStateV1, type CanonicalSigner, type CanonicalVerifier} from '../moneyEventKernel.ts';
 import type {ModeWorkflowCommandV1} from '../modeWorkflows.ts';
 import {assertConservation, assertMoney, moneyToDisplayNumber, type MoneyAllocationV1, type MoneyV1} from '../money.ts';
 
@@ -124,6 +124,18 @@ export interface ExpenseCorrectionAuthorityCommandV1 {
   total: MoneyV1;
   allocations: MoneyAllocationV1[];
 }
+
+interface ShareAdjustmentAuthorityCommandBaseV1 {
+  groupId: string;
+  shareId: string;
+  delta: MoneyV1;
+  reason: string;
+}
+
+export type ShareAdjustmentAuthorityCommandV1 = ShareAdjustmentAuthorityCommandBaseV1 & (
+  | {kind: Exclude<AdjustmentKind, 'correction' | 'reversal'>; reversesAdjustmentEventId?: never}
+  | {kind: 'reversal'; reversesAdjustmentEventId: string}
+);
 
 interface ProductionAuthorityOptions {
   journal: AuthorityJournalStore;
@@ -353,6 +365,70 @@ export class ProductionAuthority {
     };
     if (!await this.options.journal.compareAndSwap(groupId, existing.frontierHash, persisted)) {
       throw new Error('The group changed on another device. Refresh and try this correction again.');
+    }
+    return {
+      state: projectGroup(base, persisted, next.state),
+      event,
+      canonicalState: next.state,
+      stateHash: next.stateHash,
+      frontierHash: next.frontierHash,
+    };
+  }
+
+  async appendShareAdjustment(
+    base: AppState,
+    command: ShareAdjustmentAuthorityCommandV1,
+    actorId = base.currentUserId,
+  ): Promise<AuthorityAppendResult> {
+    if (String(command.kind) === 'correction') {
+      throw new Error('Legacy correction events are replay-only; use the reviewed expense-correction command.');
+    }
+    if (!actorId) throw new Error('A participant must be selected before adjusting a share.');
+    if (!base.users[actorId]) throw new Error('The selected participant is missing.');
+    const groupId = required(command.groupId, 'Group identifier');
+    const existing = await this.options.journal.read(groupId);
+    if (!existing) throw new Error('This group is not backed by a signed authority journal.');
+    const current = await this.verifyRecord(existing);
+    const member = current.state.members[actorId];
+    if (!member || member.active === false) throw new Error('This participant is not a member of the accepted group.');
+    const identity = await this.options.identities.resolve(actorId, member.accountPublicKeyHex);
+    if (identity.participantId !== actorId || identity.publicKeyHex !== member.accountPublicKeyHex) {
+      throw new Error('The authority signer does not belong to this accepted participant.');
+    }
+    const event = await createCanonicalEvent({
+      eventId: safeId(`event-${this.options.randomId?.() ?? crypto.randomUUID()}`),
+      commandId: safeId(`command-${this.options.randomId?.() ?? crypto.randomUUID()}`),
+      groupId,
+      eventType: 'SHARE_ADJUSTED',
+      expectedVersion: current.state.version,
+      parentEventId: current.state.currentEventId,
+      actorId,
+      actorAccountPublicKeyHex: identity.publicKeyHex,
+      actorRole: member.role,
+      occurredAt: this.options.now?.() ?? new Date().toISOString(),
+      payload: {
+        shareId: required(command.shareId, 'Share identifier'),
+        kind: command.kind,
+        delta: structuredClone(command.delta),
+        reason: required(command.reason, 'Adjustment reason'),
+        ...(command.kind === 'reversal'
+          ? {reversesAdjustmentEventId: required(command.reversesAdjustmentEventId, 'Reversed adjustment identifier')}
+          : {}),
+      },
+    }, identity.signer);
+    const next = await projectCanonicalEvents([...existing.events, event], this.options.verify);
+    const issue = [...next.rejected, ...next.conflicts].find(row => row.eventId === event.eventId);
+    if (issue || !next.state.eventIds.includes(event.eventId)) {
+      throw new Error(issue?.reason ?? 'This share adjustment is no longer valid on the accepted group frontier.');
+    }
+    const persisted: PersistedAuthorityGroupV1 = {
+      ...existing,
+      events: [...existing.events, event],
+      stateHash: next.stateHash,
+      frontierHash: next.frontierHash,
+    };
+    if (!await this.options.journal.compareAndSwap(groupId, existing.frontierHash, persisted)) {
+      throw new Error('The group changed on another device. Refresh and try this adjustment again.');
     }
     return {
       state: projectGroup(base, persisted, next.state),

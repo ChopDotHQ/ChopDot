@@ -11,6 +11,7 @@ export {
 export type {MoneyAllocationV1, MoneyPostingV1, MoneyV1} from './money.ts';
 export {
   canonicalEventSigningBytes,
+  canonicalExpenseAccountingV1,
   canonicalFrontier,
   canonicalFrontierBytes,
   canonicalFrontierHash,
