@@ -55,7 +55,9 @@ export function checkoutIdentityFailures(manifest, observed, environment = {}) {
   else if (actualHead !== expectedSha) failures.push(`GitHub context HEAD mismatch: ${actualHead || 'missing'} != ${expectedSha}`);
   if (!expectedBranch) failures.push('GitHub context validation requires EXPECTED_BRANCH');
   else if (expectedBranch !== manifest.branch) {
-    const targetsManifestBranch = eventName === 'pull_request' && expectedBaseBranch === manifest.branch;
+    const targetsManifestBranch = environment.CONTEXT_PR_VALIDATION === 'true'
+      && ['pull_request', 'workflow_dispatch'].includes(eventName)
+      && expectedBaseBranch === manifest.branch;
     if (!targetsManifestBranch) failures.push(`GitHub context branch mismatch: ${expectedBranch} != ${manifest.branch ?? 'missing'}`);
   }
   if (!workspace || path.resolve(workspace) !== actualRoot) failures.push('GitHub context validation requires GITHUB_WORKSPACE to equal the actual checkout root');

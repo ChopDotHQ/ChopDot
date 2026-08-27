@@ -288,7 +288,13 @@ jobs:
           --md-out="$GOVERNANCE_REPORT_ROOT/pull-request.md"
       - name: Validate current context, Cockpit, and wiki
         run: |
-          npm run context:validate
+          event_file="${{ runner.temp }}/pr-context-input/pr-event.json"
+          if [[ -f "$event_file" ]]; then
+            base_branch="$(jq -r '.pull_request.base.ref' "$event_file")"
+            CONTEXT_PR_VALIDATION=true EXPECTED_BASE_BRANCH="$base_branch" npm run context:validate
+          else
+            npm run context:validate
+          fi
           npm run product:validate
           npm run wiki:validate
       - name: Install governed hook in clean checkout

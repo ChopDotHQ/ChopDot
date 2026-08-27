@@ -194,6 +194,7 @@ test('GitHub context permits an exact PR head targeting the manifest branch', ()
     EXPECTED_SHA: candidateHead,
     EXPECTED_BRANCH: 'codex/agent-loop-ci-hook-repair',
     EXPECTED_BASE_BRANCH: contextManifest.branch,
+    CONTEXT_PR_VALIDATION: 'true',
   };
   assert.deepEqual(checkoutIdentityFailures(contextManifest, observed, environment).failures, []);
   assert.ok(checkoutIdentityFailures(contextManifest, observed, {
@@ -203,6 +204,10 @@ test('GitHub context permits an exact PR head targeting the manifest branch', ()
   assert.ok(checkoutIdentityFailures(contextManifest, observed, {
     ...environment,
     GITHUB_EVENT_NAME: 'workflow_dispatch',
+  }).failures.length === 0);
+  assert.ok(checkoutIdentityFailures(contextManifest, observed, {
+    ...environment,
+    CONTEXT_PR_VALIDATION: 'false',
   }).failures.some((failure) => failure.includes('branch mismatch')));
 });
 
