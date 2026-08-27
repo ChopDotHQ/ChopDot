@@ -60,6 +60,7 @@ import {
   verifyParticipantSignature,
 } from '../core/authority/browserAuthority';
 import {rotateGroupCreationSession} from '../membership/groupCreationSessionDraft';
+import {bootstrapLegacyAssessment, summarizeLegacyAssessment, type LegacyAssessmentSummaryV1} from '../core/legacyMoneyMigration';
 
 type SessionStatus = 'off' | 'connecting' | 'ready' | 'error';
 
@@ -75,6 +76,8 @@ interface AppStateContextValue {
   sessionStatus: SessionStatus;
   authorityStatus: 'checking' | 'ready' | 'error';
   authorityError?: string;
+  legacyAssessmentStatus: 'checking' | 'ready' | 'error';
+  legacyMigrationAssessment: LegacyAssessmentSummaryV1 | null;
   authorityBusy: boolean;
   runAuthority: (action: ProductionAuthorityAction) => Promise<boolean>;
   runModeAuthority: (command: ModeAuthorityCommandV1) => Promise<CanonicalGroupStateV1 | null>;
@@ -125,6 +128,8 @@ export function AppStateProvider({ children, authorityDependencies }: { children
   const [sessionStatus, setSessionStatus] = useState<SessionStatus>('off');
   const [authorityStatus, setAuthorityStatus] = useState<'checking' | 'ready' | 'error'>('checking');
   const [authorityError, setAuthorityError] = useState<string>();
+  const [legacyAssessmentStatus, setLegacyAssessmentStatus] = useState<'checking' | 'ready' | 'error'>('checking');
+  const [legacyMigrationAssessment, setLegacyMigrationAssessment] = useState<LegacyAssessmentSummaryV1 | null>(null);
   const [authorityPending, setAuthorityPending] = useState(0);
   const stateRef = useRef(state);
   const connectionRef = useRef<HostSessionConnection | null>(null);
@@ -222,12 +227,23 @@ export function AppStateProvider({ children, authorityDependencies }: { children
 
   useEffect(() => {
     let cancelled = false;
+    let startupPhase: 'legacy-assessment' | 'authority-hydration' = 'legacy-assessment';
     const authority = authorityRef.current!;
     const vault = authorityVaultRef.current!;
-    void vault.listGroupIds()
-      .then(groupIds => {
-        groupIds.forEach(groupId => managedGroupIdsRef.current.add(groupId));
-        return authority.hydrate(stateRef.current);
+    void bootstrapLegacyAssessment(stateRef.current, vault)
+      .then(async ({assessment, authorityGroupIds}) => {
+        startupPhase = 'authority-hydration';
+        authorityGroupIds.forEach(groupId => managedGroupIdsRef.current.add(groupId));
+        const nextState = await authority.hydrate(stateRef.current);
+        const finalAuthorityGroupIds = [...new Set(await vault.listGroupIds())].sort();
+        if (JSON.stringify(finalAuthorityGroupIds) !== JSON.stringify(authorityGroupIds)) {
+          throw new Error('Legacy assessment authority collision check changed during startup.');
+        }
+        if (!cancelled) {
+          setLegacyMigrationAssessment(summarizeLegacyAssessment(assessment));
+          setLegacyAssessmentStatus('ready');
+        }
+        return nextState;
       })
       .then(nextState => {
         if (cancelled) return;
@@ -235,12 +251,16 @@ export function AppStateProvider({ children, authorityDependencies }: { children
         setAuthorityError(undefined);
         setAuthorityStatus('ready');
       })
-      .catch(reason => {
+      .catch(() => {
         if (cancelled) return;
-        const message = reason instanceof Error ? reason.message : String(reason);
+        const message = startupPhase === 'legacy-assessment'
+          ? 'Stored legacy data could not be assessed safely.'
+          : 'Shared group history could not be opened safely.';
         setAuthorityError(message);
         setAuthorityStatus('error');
-        updateObserver({lastError: message});
+        setLegacyMigrationAssessment(null);
+        setLegacyAssessmentStatus('error');
+        updateObserver({lastError: message, lastRejection: `startup:${startupPhase}`});
       });
     return () => { cancelled = true; };
   }, [replaceAuthorityProjection, updateObserver]);
@@ -1061,6 +1081,8 @@ export function AppStateProvider({ children, authorityDependencies }: { children
     hostParticipant,
     sessionStatus,
     authorityStatus,
+    legacyAssessmentStatus,
+    legacyMigrationAssessment,
     authorityBusy: authorityPending > 0,
     runAuthority,
     runModeAuthority,

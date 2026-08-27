@@ -23,8 +23,9 @@ payment, or closeout history.
   `superseded_by_authority` verdicts with stable reason codes.
 - Explicit-currency, exact-money, reference, roster, payer, split, identifier,
   status, orphan, conservation, and collision checks.
-- Encrypted persistence of the assessment outside authority journals,
-  idempotent by source digest.
+- Encrypted immutable persistence of the assessment and its exact redacted
+  migration-source packet outside authority journals, keyed by assessed-source
+  digest plus authority-context digest.
 - Production bootstrap wiring and a read-only context result.
 - Unit, restart/idempotency, corruption, and bootstrap tests.
 
@@ -40,8 +41,11 @@ payment, or closeout history.
 
 ## Requirements
 
-1. The assessor SHALL hash a canonical source packet and produce the same
-   assessment digest for the same source regardless of object insertion order.
+1. The assessor SHALL domain-separate and hash a canonical packet containing
+   only the migration-relevant source subset. Finite fractional numbers SHALL
+   use deterministic IEEE-754 encoding; non-finite values SHALL become typed
+   quarantine findings. The same relevant source SHALL produce the same digest
+   regardless of object insertion order.
 2. Every expense SHALL carry an explicit supported currency and exact
    representable amount; global currency preference SHALL NOT fill a gap.
 3. Every group, expense, split, user, member, and payer reference SHALL be
@@ -49,14 +53,27 @@ payment, or closeout history.
    group without partial observations.
 4. Legacy statuses and closed-record identifiers SHALL be retained only as
    labelled, non-authoritative claims.
-5. An existing authority journal for the same group SHALL produce
-   `superseded_by_authority`; the assessor SHALL NOT read, merge, or overwrite
-   that journal.
-6. Assessment persistence SHALL be encrypted and namespaced outside the
-   authority-journal object store. An unchanged source digest SHALL be
-   idempotent.
-7. Production startup SHALL assess before declaring authority hydration ready
-   and SHALL expose the read-only verdict without promoting any source row.
+5. An existing authority-journal identifier for the same group SHALL produce a
+   provisional `superseded_by_authority` finding; the assessor SHALL NOT read,
+   merge, or overwrite that journal, and normal hydration SHALL still validate
+   it. Startup SHALL observe the exact journal-ID set before and after
+   assessment, retry a bounded number of times when it changes, and fail closed
+   rather than expose a stale ready verdict.
+6. Assessment persistence SHALL be immutable, encrypted, and isolated outside
+   the authority-journal object store. It SHALL preserve the exact redacted
+   source packet whose digest was assessed, so later projection replacement
+   cannot erase the evidence needed to reproduce the verdict. Its key and
+   authenticated identity SHALL bind both the assessed-source digest and
+   authority-context digest. An exact duplicate SHALL be idempotent; same-key
+   different content SHALL be treated as corruption and never overwrite
+   evidence.
+7. Production startup SHALL capture the relevant immutable source subset before
+   hydration or projection persistence and assess it before declaring authority
+   ready. The assessment path SHALL NOT mutate any source row. Normal authority
+   hydration MAY replace superseded projection-cache rows only after the exact
+   redacted source packet is durably preserved in the encrypted assessment.
+   Raw sessions, capabilities, wallet/payment details, and arbitrary activity
+   data SHALL NOT enter that packet.
 8. Invalid or corrupt assessment storage SHALL fail visibly and SHALL NOT
    weaken the authority boundary.
 
@@ -72,8 +89,12 @@ payment, or closeout history.
   organizer, signer, and payer authority remain unproven.
 - GIVEN a group ID already present in the authority journal, WHEN assessed,
   THEN it is marked `superseded_by_authority` and the journal is unchanged.
-- GIVEN identical source bytes after restart, WHEN assessed again, THEN the
-  same digest is returned without a duplicate assessment write.
+- GIVEN the journal-ID set changes during assessment, WHEN bootstrap rechecks
+  it, THEN it retries boundedly and exposes no ready verdict until two
+  consecutive exact sets match.
+- GIVEN identical relevant source and authority context after restart, WHEN
+  assessed again, THEN the same digests are returned without a duplicate
+  assessment write.
 - GIVEN an operator later chooses promotion, WHEN participant ceremonies have
   not supplied signed origin/membership/payer events, THEN the system stops at
   review and cannot claim migration complete.
@@ -82,6 +103,8 @@ payment, or closeout history.
 
 - Exact source commit and tree.
 - Focused assessment/store/bootstrap pass counts.
+- Real-browser IndexedDB v2-to-v3 upgrade, encrypted-at-rest, immutable-add,
+  AAD/tamper rejection, reset, and key-reenrollment proof.
 - Full Node, TypeScript, build, wiki, Cockpit, and diff checks.
 - Independent security/authority review with repairs and final verdict.
 - Evidence packet, checkpoint, Repo Graph refresh, and cited recall status.

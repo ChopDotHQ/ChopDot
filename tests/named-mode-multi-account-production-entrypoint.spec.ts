@@ -156,7 +156,7 @@ async function readRedactedAuthorityJournal(): Promise<Array<{
     return Uint8Array.from({length: normalized.length / 2}, (_, index) => Number.parseInt(normalized.slice(index * 2, index * 2 + 2), 16));
   };
   const database = await new Promise<IDBDatabase>((resolve, reject) => {
-    const open = indexedDB.open('chopdot-authority-v1', 2);
+    const open = indexedDB.open('chopdot-authority-v1');
     open.onsuccess = () => resolve(open.result);
     open.onerror = () => reject(open.error ?? new Error('Authority journal database is unavailable.'));
   });

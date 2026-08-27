@@ -9,7 +9,9 @@ import type {
 const JOURNALS = 'journals';
 const KEYS = 'keys';
 const DELIVERIES = 'authority-deliveries';
+const LEGACY_ASSESSMENTS = 'legacy-assessments';
 const JOURNAL_KEY_ID = 'journal-encryption-key';
+export const AUTHORITY_STORAGE_RESET_STORES = [JOURNALS, DELIVERIES, LEGACY_ASSESSMENTS, KEYS] as const;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
@@ -86,9 +88,9 @@ export class IndexedDbAuthorityJournalStore implements AuthorityJournalStore {
   }
 
   async clear(): Promise<void> {
-    await request(this.dbName, JOURNALS, 'readwrite', store => store.clear());
-    await request(this.dbName, DELIVERIES, 'readwrite', store => store.clear());
-    await request(this.dbName, KEYS, 'readwrite', store => store.clear());
+    for (const storeName of AUTHORITY_STORAGE_RESET_STORES) {
+      await request(this.dbName, storeName, 'readwrite', store => store.clear());
+    }
   }
 
   async enqueueAuthorityDelivery(input: Omit<PendingAuthorityDeliveryV1, 'v' | 'deliveryId' | 'acknowledgedRecipientIds' | 'queuedAt'> & {queuedAt?: string}): Promise<PendingAuthorityDeliveryV1 | null> {
@@ -165,6 +167,27 @@ export class IndexedDbAuthorityJournalStore implements AuthorityJournalStore {
     await request(this.dbName, DELIVERIES, 'readwrite', store => store.delete(`protected:${required(reference)}`));
   }
 
+  /** Encrypted assessment metadata is deliberately namespaced outside the
+   * JOURNALS store and can never satisfy AuthorityJournalStore.read(). */
+  async readLegacyAssessment(recordId: string): Promise<unknown | null> {
+    const keyId = `legacy-assessment:${required(recordId)}`;
+    const encrypted = await request(this.dbName, LEGACY_ASSESSMENTS, 'readonly', store => store.get(keyId)) as EncryptedJournalV1 | undefined;
+    if (!encrypted) return null;
+    return this.decryptBoundValue(encrypted, keyId, 'Legacy assessment storage is corrupt.');
+  }
+
+  async putLegacyAssessmentIfAbsent(recordId: string, value: unknown): Promise<'stored' | 'exists'> {
+    const keyId = `legacy-assessment:${required(recordId)}`;
+    const encrypted = await this.encryptBoundValue(value, keyId);
+    try {
+      await request(this.dbName, LEGACY_ASSESSMENTS, 'readwrite', store => store.add(encrypted, keyId));
+      return 'stored';
+    } catch (reason) {
+      if (reason instanceof DOMException && reason.name === 'ConstraintError') return 'exists';
+      throw reason;
+    }
+  }
+
   async loadDeviceKey(participantId: string): Promise<DeviceAuthorityKeyV1 | null> {
     const value = await request(this.dbName, KEYS, 'readonly', store => store.get(deviceKeyId(participantId))) as DeviceAuthorityKeyV1 | undefined;
     if (!value) return null;
@@ -203,6 +226,31 @@ export class IndexedDbAuthorityJournalStore implements AuthorityJournalStore {
     const ciphertext = await crypto.subtle.encrypt({name: 'AES-GCM', iv}, key, encoder.encode(JSON.stringify(value)));
     const encrypted: EncryptedJournalV1 = {v: 1, frontierHash: '', ivHex: bytesToHex(iv), ciphertextHex: bytesToHex(new Uint8Array(ciphertext))};
     await request(this.dbName, DELIVERIES, 'readwrite', store => store.put(encrypted, keyId));
+  }
+
+  private async encryptBoundValue(value: unknown, keyId: string): Promise<EncryptedJournalV1> {
+    const key = await this.encryptionKey();
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ciphertext = await crypto.subtle.encrypt(
+      {name: 'AES-GCM', iv, additionalData: encoder.encode(keyId)},
+      key,
+      encoder.encode(JSON.stringify(value)),
+    );
+    return {v: 1, frontierHash: '', ivHex: bytesToHex(iv), ciphertextHex: bytesToHex(new Uint8Array(ciphertext))};
+  }
+
+  private async decryptBoundValue<T>(encrypted: EncryptedJournalV1, keyId: string, safeError: string): Promise<T> {
+    const key = await this.encryptionKey();
+    try {
+      const plaintext = await crypto.subtle.decrypt(
+        {name: 'AES-GCM', iv: hexToBytes(encrypted.ivHex), additionalData: encoder.encode(keyId)},
+        key,
+        hexToBytes(encrypted.ciphertextHex),
+      );
+      return JSON.parse(decoder.decode(plaintext)) as T;
+    } catch {
+      throw new Error(safeError);
+    }
   }
 }
 
@@ -313,11 +361,12 @@ function request(dbName: string, storeName: string, mode: IDBTransactionMode, op
 
 function openDatabase(name: string): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const open = indexedDB.open(name, 2);
+    const open = indexedDB.open(name, 3);
     open.onupgradeneeded = () => {
       if (!open.result.objectStoreNames.contains(JOURNALS)) open.result.createObjectStore(JOURNALS);
       if (!open.result.objectStoreNames.contains(KEYS)) open.result.createObjectStore(KEYS);
       if (!open.result.objectStoreNames.contains(DELIVERIES)) open.result.createObjectStore(DELIVERIES);
+      if (!open.result.objectStoreNames.contains(LEGACY_ASSESSMENTS)) open.result.createObjectStore(LEGACY_ASSESSMENTS);
     };
     open.onsuccess = () => resolve(open.result);
     open.onerror = () => reject(open.error ?? new Error('Participant authority storage is unavailable.'));
