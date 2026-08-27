@@ -160,6 +160,77 @@ test('production authority signs and durably applies typed share adjustments bef
   assert.equal((await journal.read('g-adjust'))?.frontierHash, stableFrontier);
 });
 
+test('closed groups append signed successors without rewriting the original close', async () => {
+  const journal = new MemoryJournal();
+  const identityControl = {unavailable: false, resolveCount: 0};
+  const authority = harness(journal, [], identityControl);
+  let state = baseState();
+  state = (await authority.append(state, {
+    type: 'CREATE_GROUP', payload: {group: {id: 'g-successor', name: 'Closed dinner', memberIds: ['mina', 'leo']}},
+  }, 'mina')).state;
+
+  await assert.rejects(authority.appendCloseoutSuccessor(state, {
+    groupId: 'g-successor', recordId: 'record-next', predecessorRecordId: 'record-original', reason: 'Late receipt',
+  }, 'mina'), /closed group/u);
+
+  state = (await authority.append(state, {
+    type: 'SAVE_RECORD', payload: {groupId: 'g-successor', recordId: 'record-original'},
+  }, 'mina')).state;
+  const original = await authority.readCanonicalGroup('g-successor');
+  assert.ok(original?.closed);
+  const originalClose = structuredClone(original.closed);
+  const originalSaved = structuredClone(state.savedRecords['record-original']);
+  const originalFrontier = (await journal.read('g-successor'))?.frontierHash;
+
+  await assert.rejects(authority.appendCloseoutSuccessor(state, {
+    groupId: 'g-successor', recordId: 'record-next', predecessorRecordId: 'record-original', reason: 'Wrong actor',
+  }, 'leo'), /current organizer/u);
+  await assert.rejects(authority.appendCloseoutSuccessor(state, {
+    groupId: 'g-successor', recordId: 'record-next', predecessorRecordId: 'record-other', reason: 'Wrong predecessor',
+  }, 'mina'), /exact closed record/u);
+  assert.equal((await journal.read('g-successor'))?.frontierHash, originalFrontier);
+
+  journal.failCas = true;
+  await assert.rejects(authority.appendCloseoutSuccessor(state, {
+    groupId: 'g-successor', recordId: 'record-next', predecessorRecordId: 'record-original', reason: 'Stale write',
+  }, 'mina'), /changed on another device/u);
+  journal.failCas = false;
+  assert.equal((await journal.read('g-successor'))?.frontierHash, originalFrontier);
+  assert.deepEqual(state.savedRecords['record-original'], originalSaved);
+
+  const accepted = await authority.appendCloseoutSuccessor(state, {
+    groupId: 'g-successor', recordId: 'record-next', predecessorRecordId: 'record-original', reason: 'Late receipt',
+  }, 'mina');
+  assert.equal(accepted.outcome, 'applied');
+  assert.equal(accepted.event.eventType, 'SUCCESSOR_RECORD_CREATED');
+  assert.deepEqual(accepted.canonicalState.closed, originalClose);
+  assert.deepEqual(accepted.state.savedRecords['record-original'], originalSaved);
+  assert.deepEqual(accepted.canonicalState.successorRecords.map(record => ({
+    recordId: record.recordId, predecessorRecordId: record.predecessorRecordId, reason: record.reason,
+  })), [{recordId: 'record-next', predecessorRecordId: 'record-original', reason: 'Late receipt'}]);
+
+  const acceptedFrontier = (await journal.read('g-successor'))?.frontierHash;
+  const acceptedEventCount = (await journal.read('g-successor'))?.events.length;
+  const acceptedResolveCount = identityControl.resolveCount;
+  identityControl.unavailable = true;
+  const retry = await authority.appendCloseoutSuccessor(state, {
+    groupId: 'g-successor', recordId: 'record-next', predecessorRecordId: 'record-original', reason: 'Late receipt',
+  }, 'mina');
+  assert.equal(retry.outcome, 'duplicate');
+  assert.equal(retry.event.eventId, accepted.event.eventId);
+  assert.equal(retry.frontierHash, accepted.frontierHash);
+  assert.deepEqual(retry.canonicalState, accepted.canonicalState);
+  assert.equal((await journal.read('g-successor'))?.events.length, acceptedEventCount);
+  assert.equal((await journal.read('g-successor'))?.frontierHash, acceptedFrontier);
+  assert.equal(identityControl.resolveCount, acceptedResolveCount, 'durable duplicate catch-up does not reconnect the original signer');
+
+  await assert.rejects(authority.appendCloseoutSuccessor(accepted.state, {
+    groupId: 'g-successor', recordId: 'record-next', predecessorRecordId: 'record-original', reason: 'Duplicate',
+  }, 'mina'), /different content/u);
+  assert.equal((await journal.read('g-successor'))?.frontierHash, acceptedFrontier);
+  assert.deepEqual((await authority.readCanonicalGroup('g-successor'))?.closed, originalClose);
+});
+
 test('hydrate replays the journal and rejects corruption instead of trusting the cached projection', async () => {
   const journal = new MemoryJournal();
   const authority = harness(journal);
@@ -261,9 +332,15 @@ test('fresh-device recovery imports one fully verified frontier atomically and i
   assert.deepEqual(await invalidJournal.listGroupIds(), []);
 });
 
-function harness(journal: MemoryJournal, authorizedStates: CanonicalGroupStateV1[] = []): ProductionAuthority {
+function harness(
+  journal: MemoryJournal,
+  authorizedStates: CanonicalGroupStateV1[] = [],
+  identityControl: {unavailable: boolean; resolveCount: number} = {unavailable: false, resolveCount: 0},
+): ProductionAuthority {
   const identities: AuthorityIdentityResolver = {
     async resolve(participantId, expectedPublicKeyHex) {
+      identityControl.resolveCount += 1;
+      if (identityControl.unavailable) throw new Error('test signer unavailable');
       const pair = pairs[participantId as keyof typeof pairs];
       if (!pair) throw new Error('test signer missing');
       const actual = publicKey(participantId as keyof typeof pairs);
@@ -322,10 +399,12 @@ function requestAction(splitId: string): Extract<Action, {type: 'SEND_REQUEST'}>
 class MemoryJournal implements AuthorityJournalStore {
   private readonly records = new Map<string, PersistedAuthorityGroupV1>();
   failWrites = false;
+  failCas = false;
   async listGroupIds(): Promise<string[]> { return [...this.records.keys()]; }
   async read(groupId: string): Promise<PersistedAuthorityGroupV1 | null> { return structuredClone(this.records.get(groupId) ?? null); }
   async compareAndSwap(groupId: string, expectedFrontierHash: string | null, value: PersistedAuthorityGroupV1): Promise<boolean> {
     if (this.failWrites) throw new Error('durable write failed');
+    if (this.failCas) return false;
     if ((this.records.get(groupId)?.frontierHash ?? null) !== expectedFrontierHash) return false;
     this.records.set(groupId, structuredClone(value));
     return true;

@@ -39,6 +39,7 @@ import {
   isCanonicalAuthorityEventEnvelope,
   isProductionAuthorityAction,
   type CanonicalAuthorityEventAckV1,
+  type CloseoutSuccessorAuthorityCommandV1,
   type ExpenseCorrectionAuthorityCommandV1,
   type ShareAdjustmentAuthorityCommandV1,
   type ModeAuthorityCommandV1,
@@ -78,6 +79,7 @@ interface AppStateContextValue {
   runAuthority: (action: ProductionAuthorityAction) => Promise<boolean>;
   runModeAuthority: (command: ModeAuthorityCommandV1) => Promise<CanonicalGroupStateV1 | null>;
   runExpenseCorrectionAuthority: (command: ExpenseCorrectionAuthorityCommandV1) => Promise<CanonicalGroupStateV1 | null>;
+  runCloseoutSuccessorAuthority: (command: CloseoutSuccessorAuthorityCommandV1) => Promise<CanonicalGroupStateV1 | null>;
   runShareAdjustmentAuthority: (command: ShareAdjustmentAuthorityCommandV1) => Promise<CanonicalGroupStateV1 | null>;
   runMembershipAuthority: (command: MembershipAuthorityCommandV1) => Promise<CanonicalGroupStateV1 | null>;
   readCanonicalGroup: (groupId: string) => Promise<CanonicalGroupStateV1 | null>;
@@ -685,6 +687,30 @@ export function AppStateProvider({ children, authorityDependencies }: { children
     return operation;
   }, [flushAuthorityDeliveryOutbox, queueAcceptedAuthorityDelivery, replaceAuthorityProjection, updateObserver]);
 
+  const runCloseoutSuccessorAuthority = useCallback((command: CloseoutSuccessorAuthorityCommandV1): Promise<CanonicalGroupStateV1 | null> => {
+    setAuthorityPending(current => current + 1);
+    const operation = authorityQueueRef.current
+      .then(async () => {
+        const before = stateRef.current;
+        const result = await authorityRef.current!.appendCloseoutSuccessor(before, command);
+        managedGroupIdsRef.current.add(result.canonicalState.groupId);
+        await queueAcceptedAuthorityDelivery(before, result);
+        replaceAuthorityProjection(result.state);
+        setAuthorityError(undefined);
+        await flushAuthorityDeliveryOutbox();
+        return structuredClone(result.canonicalState);
+      })
+      .catch(reason => {
+        const message = reason instanceof Error ? reason.message : String(reason);
+        setAuthorityError(message);
+        updateObserver({lastError: message, lastRejection: 'authority:SUCCESSOR_RECORD_CREATED'});
+        return null;
+      })
+      .finally(() => setAuthorityPending(current => Math.max(0, current - 1)));
+    authorityQueueRef.current = operation.then(() => undefined);
+    return operation;
+  }, [flushAuthorityDeliveryOutbox, queueAcceptedAuthorityDelivery, replaceAuthorityProjection, updateObserver]);
+
   const runShareAdjustmentAuthority = useCallback((command: ShareAdjustmentAuthorityCommandV1): Promise<CanonicalGroupStateV1 | null> => {
     setAuthorityPending(current => current + 1);
     const operation = authorityQueueRef.current
@@ -1039,6 +1065,7 @@ export function AppStateProvider({ children, authorityDependencies }: { children
     runAuthority,
     runModeAuthority,
     runExpenseCorrectionAuthority,
+    runCloseoutSuccessorAuthority,
     runShareAdjustmentAuthority,
     runMembershipAuthority,
     readCanonicalGroup,

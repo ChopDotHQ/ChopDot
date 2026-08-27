@@ -125,6 +125,13 @@ export interface ExpenseCorrectionAuthorityCommandV1 {
   allocations: MoneyAllocationV1[];
 }
 
+export interface CloseoutSuccessorAuthorityCommandV1 {
+  groupId: string;
+  recordId: string;
+  predecessorRecordId: string;
+  reason: string;
+}
+
 interface ShareAdjustmentAuthorityCommandBaseV1 {
   groupId: string;
   shareId: string;
@@ -372,6 +379,90 @@ export class ProductionAuthority {
       canonicalState: next.state,
       stateHash: next.stateHash,
       frontierHash: next.frontierHash,
+    };
+  }
+
+  async appendCloseoutSuccessor(
+    base: AppState,
+    command: CloseoutSuccessorAuthorityCommandV1,
+    actorId = base.currentUserId,
+  ): Promise<AuthorityAcceptResult> {
+    if (!actorId) throw new Error('A participant must be selected before creating a successor record.');
+    if (!base.users[actorId]) throw new Error('The selected participant is missing.');
+    const groupId = required(command.groupId, 'Group identifier');
+    const existing = await this.options.journal.read(groupId);
+    if (!existing) throw new Error('This group is not backed by a signed authority journal.');
+    const current = await this.verifyRecord(existing);
+    if (!current.state.closed) throw new Error('Only a closed group can create a successor record.');
+    const member = current.state.members[actorId];
+    if (!member || member.active === false || actorId !== current.state.organizerId || member.role !== 'organizer') {
+      throw new Error('Only the current organizer may create a successor record.');
+    }
+    const predecessorRecordId = required(command.predecessorRecordId, 'Predecessor record identifier');
+    if (predecessorRecordId !== current.state.closed.recordId) {
+      throw new Error('The successor must identify the exact closed record.');
+    }
+    const recordId = required(command.recordId, 'Successor record identifier');
+    const reason = required(command.reason, 'Successor reason');
+    if (recordId === predecessorRecordId) throw new Error('This successor record already exists.');
+    const durableSuccessor = current.state.successorRecords.find(record => record.recordId === recordId);
+    if (durableSuccessor) {
+      const durableEvent = existing.events.find(candidate => candidate.eventId === durableSuccessor.eventId);
+      const payload = durableEvent?.payload as {recordId?: string; predecessorRecordId?: string; reason?: string} | undefined;
+      const exactRetry = durableEvent?.eventType === 'SUCCESSOR_RECORD_CREATED'
+        && durableEvent.actorId === actorId
+        && durableEvent.actorAccountPublicKeyHex === member.accountPublicKeyHex
+        && payload?.recordId === recordId
+        && payload.predecessorRecordId === predecessorRecordId
+        && payload.reason === reason;
+      if (!exactRetry) throw new Error('This successor record identifier is already used by different content.');
+      return {
+        state: projectGroup(base, existing, current.state),
+        event: durableEvent,
+        canonicalState: structuredClone(current.state),
+        stateHash: current.stateHash,
+        frontierHash: current.frontierHash,
+        outcome: 'duplicate',
+      };
+    }
+    const identity = await this.options.identities.resolve(actorId, member.accountPublicKeyHex);
+    if (identity.participantId !== actorId || identity.publicKeyHex !== member.accountPublicKeyHex) {
+      throw new Error('The authority signer does not belong to the current organizer.');
+    }
+    const event = await createCanonicalEvent({
+      eventId: safeId(`event-${this.options.randomId?.() ?? crypto.randomUUID()}`),
+      commandId: safeId(`command-${this.options.randomId?.() ?? crypto.randomUUID()}`),
+      groupId,
+      eventType: 'SUCCESSOR_RECORD_CREATED',
+      expectedVersion: current.state.version,
+      parentEventId: current.state.currentEventId,
+      actorId,
+      actorAccountPublicKeyHex: identity.publicKeyHex,
+      actorRole: 'organizer',
+      occurredAt: this.options.now?.() ?? new Date().toISOString(),
+      payload: {recordId, predecessorRecordId, reason},
+    }, identity.signer);
+    const next = await projectCanonicalEvents([...existing.events, event], this.options.verify);
+    const issue = [...next.rejected, ...next.conflicts].find(row => row.eventId === event.eventId);
+    if (issue || !next.state.eventIds.includes(event.eventId)) {
+      throw new Error(issue?.reason ?? 'This successor record is no longer valid on the accepted group frontier.');
+    }
+    const persisted: PersistedAuthorityGroupV1 = {
+      ...existing,
+      events: [...existing.events, event],
+      stateHash: next.stateHash,
+      frontierHash: next.frontierHash,
+    };
+    if (!await this.options.journal.compareAndSwap(groupId, existing.frontierHash, persisted)) {
+      throw new Error('The group changed on another device. Refresh and try this successor again.');
+    }
+    return {
+      state: projectGroup(base, persisted, next.state),
+      event,
+      canonicalState: next.state,
+      stateHash: next.stateHash,
+      frontierHash: next.frontierHash,
+      outcome: 'applied',
     };
   }
 
