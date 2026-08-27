@@ -380,6 +380,11 @@ jobs:
           persist-credentials: false
       - name: Assert exact candidate checkout
         run: node scripts/agent-governance/assert-exact-head.mjs --json-out="${{ runner.temp }}/pr-outcome/pr-outcome-exact-head.json"
+      - name: Attach authenticated candidate branch identity
+        run: |
+          git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"
+          test "$(git branch --show-current)" = "$EXPECTED_BRANCH"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -404,7 +409,6 @@ jobs:
           --json-out="output/agent-runs/ci-pr-outcome/generation.json"
       - name: Record and recall the exact PR outcome
         run: |
-          git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"
           node scripts/agent-system/cli.mjs knowledge-record --adapter=exact-source --outcome="output/agent-runs/ci-pr-outcome/outcome.json" --json > "output/agent-runs/ci-pr-outcome/knowledge-record.json"
           outcome_digest="$(node -e "const p=require('./output/agent-runs/ci-pr-outcome/outcome.json'); process.stdout.write(p.packet_digest)")"
           node scripts/agent-system/cli.mjs knowledge-verify --adapter=exact-source --outcome-digest="$outcome_digest" --json > "output/agent-runs/ci-pr-outcome/knowledge-recall.json"

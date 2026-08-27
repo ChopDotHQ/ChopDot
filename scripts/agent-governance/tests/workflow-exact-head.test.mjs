@@ -81,6 +81,38 @@ test('workflow has least permissions and all stable merge-boundary job names', (
   }
 });
 
+test('PR outcome attaches the authenticated branch before generating candidate-bound evidence', () => {
+  const steps = parsed.jobs['pr-outcome'].steps;
+  const attachIndex = steps.findIndex((step) => step.fields.name === 'Attach authenticated candidate branch identity');
+  const generateIndex = steps.findIndex((step) => step.fields.name === 'Generate external exact-candidate OutcomePacketV1');
+  assert(attachIndex >= 0);
+  assert(attachIndex < generateIndex);
+  assert.match(steps[attachIndex].run, /git checkout -B "\$EXPECTED_BRANCH" "\$EXPECTED_SHA"/);
+  assert.match(steps[attachIndex].run, /git branch --show-current/);
+  assert.match(steps[attachIndex].run, /git rev-parse HEAD/);
+});
+
+test('structural validator rejects missing, late, or weakened PR candidate branch attachment', () => {
+  const block = `      - name: Attach authenticated candidate branch identity
+        run: |
+          git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"
+          test "$(git branch --show-current)" = "$EXPECTED_BRANCH"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+`;
+  const cases = [
+    workflow.replace(block, ''),
+    workflow.replace(block, '').replace('      - name: Generate external exact-candidate OutcomePacketV1\n', `      - name: Generate external exact-candidate OutcomePacketV1\n${block}`),
+    workflow.replace('git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"', 'git checkout -B "$EXPECTED_BRANCH" HEAD'),
+    workflow.replace('test "$(git branch --show-current)" = "$EXPECTED_BRANCH"', 'echo "$EXPECTED_BRANCH"'),
+    workflow.replace('test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"', 'true'),
+  ];
+  for (const broken of cases) {
+    const result = validateWorkflow(broken);
+    assert.equal(result.ok, false, result.errors.join('; '));
+    assert(result.errors.some((error) => error.includes('PR outcome branch attachment')));
+  }
+});
+
 test('workflow dispatch exposes one fail-closed PR mode separate from release mode', () => {
   assert.deepEqual(parsed.workflow_dispatch_inputs.dispatch_mode, {
     fields: {
