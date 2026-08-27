@@ -290,6 +290,8 @@ jobs:
           npm run context:validate
           npm run product:validate
           npm run wiki:validate
+      - name: Install governed hook in clean checkout
+        run: node scripts/agent-governance/install-hooks.mjs
       - name: Test repository-governance false-green controls
         run: node --test scripts/agent-governance/tests/*.test.mjs
       - name: Publish summary
