@@ -5,6 +5,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { validateOutcomePacket } from '../agent-system/outcome.mjs';
+import { sha256 } from '../agent-system/core.mjs';
 import {
   checkedCount, labelValue, parseArgs, readJson, section, stripCode, tableRows,
   sha256File, writeMarkdownReport, writeReport,
@@ -158,7 +159,8 @@ function validateOutcomeEvidence(root, reference, { runId, terminalState, baseSh
       errors.push(`Outcome evidence ${evidence.artifact_id ?? '(missing)'} is not identically bound in artifacts`);
     }
     const evidenceFile = safeRepositoryFile(evidenceRoot, evidence.path, `Outcome evidence ${evidence.artifact_id}`, errors);
-    if (evidenceFile && sha256File(evidenceFile) !== evidence.sha256) errors.push(`Outcome evidence ${evidence.path} does not match cited SHA-256`);
+    const artifactDigest = evidenceFile ? sha256(`${evidence.path}\0${sha256File(evidenceFile)}`) : null;
+    if (evidenceFile && artifactDigest !== evidence.sha256) errors.push(`Outcome evidence ${evidence.path} does not match cited artifact aggregate SHA-256`);
     else if (evidenceFile) resolvedEvidence.set(evidence.path, evidenceFile);
   }
   if (reference.ci_generated) {

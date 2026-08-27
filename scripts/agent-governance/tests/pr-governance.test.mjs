@@ -7,6 +7,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { validatePullRequestBody } from '../validate-pr.mjs';
 import { digestObject, sha256File } from '../lib.mjs';
+import { sha256 } from '../../agent-system/core.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const catalog = JSON.parse(fs.readFileSync(path.join(root, 'scripts/agent-governance/catalog/invariants.v1.json')));
@@ -18,10 +19,10 @@ function outcomeFixture(mutator = () => {}) {
   const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-pr-governance-'));
   fs.mkdirSync(path.join(fixtureRoot, 'evidence'), { recursive: true });
   fs.writeFileSync(path.join(fixtureRoot, 'evidence/proof.json'), '{"proof":true}\n');
-  const proofDigest = sha256File(path.join(fixtureRoot, 'evidence/proof.json'));
+  const proofDigest = sha256(`evidence/proof.json\0${sha256File(path.join(fixtureRoot, 'evidence/proof.json'))}`);
   const evaluationPath = path.join(fixtureRoot, 'evidence/evaluation.json');
   fs.writeFileSync(evaluationPath, `${JSON.stringify({ evaluation: true })}\n`);
-  const evaluationDigest = sha256File(evaluationPath);
+  const evaluationDigest = sha256(`evidence/evaluation.json\0${sha256File(evaluationPath)}`);
   const packet = {
     outcome_version: '1.0.0', outcome_id: 'outcome_governance_fixture', run_id: 'run_governance_fixture_001',
     contract_digest: 'a'.repeat(64), root: '/exact/source/worktree', branch: 'codex/chopdot-v1-launch',
@@ -72,9 +73,9 @@ function ciOutcomeFixture(mutator = () => {}, provenanceMutator = () => {}) {
   };
   provenanceMutator(provenance);
   fs.writeFileSync(path.join(outputRoot, 'pr-outcome-evidence.json'), `${JSON.stringify(provenance)}\n`);
-  const evidenceDigest = sha256File(path.join(outputRoot, 'pr-outcome-evidence.json'));
+  const evidenceDigest = sha256(`output/ci-pr-outcome/pr-outcome-evidence.json\0${sha256File(path.join(outputRoot, 'pr-outcome-evidence.json'))}`);
   fs.writeFileSync(path.join(outputRoot, 'pr-outcome-evaluation.json'), '{"evaluation":true}\n');
-  const evaluationDigest = sha256File(path.join(outputRoot, 'pr-outcome-evaluation.json'));
+  const evaluationDigest = sha256(`output/ci-pr-outcome/pr-outcome-evaluation.json\0${sha256File(path.join(outputRoot, 'pr-outcome-evaluation.json'))}`);
   const packet = {
     outcome_version: '1.0.0', outcome_id: 'outcome_ci_fixture', run_id: 'run_governance_fixture_001',
     contract_digest: 'a'.repeat(64), root: fixtureRoot, branch: 'codex/test',
@@ -266,7 +267,7 @@ test('outcome run, head, and cited evidence are bound to the PR claim', () => {
   assert.equal(result.ok, false);
   assert(result.errors.some((error) => error.includes('does not match PR run')));
   assert(result.errors.some((error) => error.includes('does not match PR head')));
-  assert(result.errors.some((error) => error.includes('does not match cited SHA-256')));
+  assert(result.errors.some((error) => error.includes('does not match cited artifact aggregate SHA-256')));
 });
 
 test('moving succeeded PRs require explicit deferred CI_GENERATED evidence', () => {
