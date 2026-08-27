@@ -1,0 +1,27 @@
+{
+  "schema": "chopdot.product.checkpoint.v2",
+  "sequence": 3,
+  "state": "checkpoint",
+  "cards": [
+    "P-034"
+  ],
+  "summary": "P-034 exact share adjustments passed independent review and authority verification; Gate 9 remains building",
+  "evidence": "docs/release/2026-08-27-p034-share-adjustment-authority.md",
+  "evidenceQuality": "strong",
+  "evidenceSha256": "03316a84dfbf9a4c3e4009439e2b340bebad41cdf870dd17e0ada59d6b0d1234",
+  "source": "product/cards.md",
+  "sourceSha256": "15b02b4933b13651f59ff954913fdcf7884628924ef2f48c6e901954ca1f0097",
+  "git": {
+    "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+    "branch": "codex/chopdot-v1-launch",
+    "head": "bf6a54ecdfba99a8e0ea02595d2881ae44f973b0",
+    "tree": "ab6bf0bdb775cab72f46404e245a5960380aff4a",
+    "dirtyPaths": [
+      "A  docs/release/2026-08-27-p034-share-adjustment-authority.md",
+      "M  docs/wiki/03-state-models/one-chop-core.md",
+      "M  docs/wiki/agent-context.generated.md",
+      "M  product/cards.md",
+      "M  product/context-authority.json"
+    ]
+  }
+}

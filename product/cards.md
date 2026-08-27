@@ -20,17 +20,17 @@ status: building
 priority: 70
 blocker: none
 blocked_by: none
-reviewed: 2026-08-24
+reviewed: 2026-08-27
 applies_to: chopdot-v1-launch
-evidence_type: source
-evidence: src/core/moneyEventKernel.ts
-evidence_sha256: f63b389cedc292478f3a152eb0480385264708ed2bfb3204876f5d8a68f5a322
+evidence_type: measurement
+evidence: docs/release/2026-08-27-p034-share-adjustment-authority.md
+evidence_sha256: 03316a84dfbf9a4c3e4009439e2b340bebad41cdf870dd17e0ada59d6b0d1234
 pillar: Management
 journey: Mina reviews one exact group-money action and every participant derives the same state.
 next_action: Review this draft
 score: 10/10
 authority: Participant-signed ChopEventV1 log
-scope: MoneyV1, ChopEventV1, ModePolicyV1, deterministic replay, migration
+scope: MoneyV1, ChopEventV1, ModePolicyV1, deterministic replay, exact production adjustments, migration
 out: UI redesign, custody, provider-shaped truth
 ```
 
