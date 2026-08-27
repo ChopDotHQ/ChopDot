@@ -3,7 +3,7 @@
 **Kind:** decision
 **Status:** active
 **Owner:** product
-**Last reviewed:** 2026-08-24
+**Last reviewed:** 2026-08-27
 **Applies to:** `chopdot-v1-launch`
 **Authority:** dated revocable release decisions subordinate to product law
 
@@ -112,3 +112,25 @@ Every decision is revocable, dated, scoped, and subordinate to
 - Falsifier: Production-entrypoint and real-live proof show the reported path
   succeeds without coaching and the frozen bytes actually differ from those
   observed by the user.
+
+## DEC-008 - Full product and deployment are one release train
+
+- Date: 2026-08-27
+- Status: active
+- Scope: `codex/chopdot-v1-launch` through public-testnet acceptance
+- Supersedes: treating the 2026-08-24 bounded first-use repair as the complete
+  release plan
+- Decision: Route the release through
+  `docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md`.
+  The bounded first-use repair remains a required early gate, followed by the
+  full normal journey, every named mode, assurance, one immutable candidate,
+  Devnet staging, byte-identical public-testnet promotion, name ownership,
+  real three-person acceptance, and exact-source knowledge recall. An upload,
+  CID, reachable gateway, or local green suite cannot individually mean 100%
+  deployed.
+- Reason: Product completion, release bytes, live reachability, user ownership,
+  real use, and durable knowledge are different failure domains and must not be
+  collapsed into one optimistic deployment label.
+- Falsifier: A smaller objectively verified terminal contract proves the same
+  product, security, byte-identity, ownership, real-user, rollback, and recall
+  outcomes without weakening any of them.

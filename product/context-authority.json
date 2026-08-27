@@ -2,7 +2,7 @@
   "schema": "chopdot.context-authority.v1",
   "status": "active",
   "owner": "release-integrator",
-  "last_reviewed": "2026-08-26",
+  "last_reviewed": "2026-08-27",
   "exact_root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
   "branch": "codex/chopdot-v1-launch",
   "authority_order": [
@@ -52,44 +52,44 @@
       "kind": "decision",
       "status": "active",
       "owner": "product",
-      "last_reviewed": "2026-08-24",
+      "last_reviewed": "2026-08-27",
       "freshness_days": 14,
       "applies_to": "chopdot-v1-launch",
       "authority": "current product jobs, priorities, scope, blockers, and acceptance state",
-      "sha256": "8b3f1de935d2e7f241c3f8c2bc7be4df67e5f3127c290b39c043f64dc01b6c2b"
+      "sha256": "948e986608c51c929390b442b696103cfe23e49e054dd4b35889047b7699016d"
     },
     {
       "path": "product/decisions.md",
       "kind": "decision",
       "status": "active",
       "owner": "product",
-      "last_reviewed": "2026-08-24",
+      "last_reviewed": "2026-08-27",
       "freshness_days": 30,
       "applies_to": "chopdot-v1-launch",
       "authority": "dated revocable release decisions subordinate to product law",
-      "sha256": "ab5a29c28558e4942e35074b39a2fb8e11dfa46a4151fe4540bff3157451f321"
+      "sha256": "efb4394d9067afade9cf8d5d4ff2470d9889bbf38e0d83b7f3db6fc71beee168"
     },
     {
       "path": "product/decision-contracts.md",
       "kind": "guardrail",
       "status": "active",
       "owner": "product-assurance",
-      "last_reviewed": "2026-08-24",
+      "last_reviewed": "2026-08-27",
       "freshness_days": 30,
       "applies_to": "chopdot-v1-launch",
       "authority": "executable acceptance boundaries for current decisions",
-      "sha256": "b6d38c0a51c894dfde4264675f3c1274b81a8233ede4d1d4a0a7b73e9834df1c"
+      "sha256": "e78927395f1737eb79d475b010781c5fe6f682a046e3f13c04a72f24b8d66774"
     },
     {
       "path": "product/roadmap.md",
       "kind": "decision",
       "status": "active",
       "owner": "product",
-      "last_reviewed": "2026-08-24",
+      "last_reviewed": "2026-08-27",
       "freshness_days": 14,
       "applies_to": "chopdot-v1-launch",
       "authority": "current ordering only; Cockpit card priority is the machine-routed next action",
-      "sha256": "e1737b676c1623b2c68ef6b22a7e1e260662f413d573ef3a366b44af840e4411"
+      "sha256": "72c967b6f3c4f7860dfe3fe3a76493a7de2c976fec9fbb735158a3b89f63dca0"
     },
     {
       "path": "docs/release/current-release-state.json",
@@ -103,15 +103,15 @@
       "sha256": "937339a90c008e8d7a57cee5b18a8619e2816aee93527ddfddb821cedc0a634d"
     },
     {
-      "path": "docs/superpowers/plans/2026-08-24-context-authority-and-live-first-use-repair.md",
+      "path": "docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md",
       "kind": "decision",
       "status": "active",
       "owner": "release-integrator",
-      "last_reviewed": "2026-08-24",
+      "last_reviewed": "2026-08-27",
       "freshness_days": 14,
       "applies_to": "chopdot-v1-launch",
-      "authority": "current bounded execution plan; it cannot change product law or expand external approval",
-      "sha256": "2fb1b59ac4ec979fa4e94210934d228053804a71cf9ad6aa3481852c007fe684"
+      "authority": "current full public-testnet execution route; it cannot change product law or expand the recorded external approval envelope",
+      "sha256": "6533a3ea7019025405b53e54d409de35855c2b323cfa3425b64d5f19828a5730"
     },
     {
       "path": "docs/CHOPDOT_OPERATING_LOOPS.md",
@@ -144,7 +144,7 @@
       "freshness_days": 14,
       "applies_to": "chopdot-v1-launch",
       "authority": "navigation only; it cannot override law, Cockpit source, exact source evidence, release readback, or cited recall",
-      "sha256": "36c578c4b7a30a5c912962bdd6cbb654537681e7e6245adccce8d195755d4918"
+      "sha256": "00228a54a4bd9d633403b1dbe8337339f6e16a35053916307badd3e2ecc2146b"
     }
   ],
   "conditional_routes": [

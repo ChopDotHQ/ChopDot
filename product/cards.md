@@ -3,7 +3,7 @@
 **Kind:** decision
 **Status:** active
 **Owner:** product
-**Last reviewed:** 2026-08-24
+**Last reviewed:** 2026-08-27
 **Applies to:** `chopdot-v1-launch`
 **Authority:** current product jobs, priorities, scope, blockers, and acceptance state
 
@@ -218,16 +218,16 @@ status: blocked
 priority: 95
 blocker: none
 blocked_by: P-035,P-022
-reviewed: 2026-08-24
+reviewed: 2026-08-27
 applies_to: chopdot-v1-launch
 evidence_type: measurement
 evidence: docs/release/2026-08-24-live-first-use-findings.md
 evidence_sha256: e1e6b46449bdd5d960682d0ee494b8034e6286b1738569f8d2168fae73daf621
 pillar: Delivery
 journey: Mina opens the same reviewed ChopDot release through every supported .dot testnet surface.
-next_action: Prove the repaired candidate
+next_action: Clear the release gates
 score: 9/10
 authority: Signed product events; DotNS and hosts resolve immutable bytes only
-scope: deterministic CAR/CID, Devnet stage, public promotion, Desktop, rollback, KGv2
+scope: branch protection, dependency and release findings, deterministic CAR/CID, Devnet stage, identical public promotion, Desktop, rollback, ownership, real-user proof, portable cited recall
 out: mainnet, rebuild-on-promotion, host as product authority
 ```

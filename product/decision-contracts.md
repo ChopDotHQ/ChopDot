@@ -3,7 +3,7 @@
 **Kind:** guardrail
 **Status:** active
 **Owner:** product assurance
-**Last reviewed:** 2026-08-24
+**Last reviewed:** 2026-08-27
 **Applies to:** `chopdot-v1-launch`
 **Authority:** executable acceptance boundaries for current decisions
 
@@ -66,3 +66,25 @@
   protocol language as the cause of failure.
 - Empty Home has one dominant receipt action, prioritized group cards, and one
   New Group action; modes live inside creation.
+
+## DC-008 - Full release completion — reviewed 2026-08-27
+
+- `implemented`, `tested`, `committed`, `pushed`, `candidate_built`, `staged`,
+  `promoted`, `reachable`, `user_owned`, `user_proven`, and `kg_known` are
+  measured and reported separately.
+- `implemented=true` requires the normal journey and every named mode through
+  the production entrypoint; service fixtures alone are insufficient.
+- `tested=true` requires zero unresolved release-blocking authority, privacy,
+  recovery, accessibility, dependency, contract, or release findings.
+- `promoted=true` requires the same CAR SHA-256 and root/app CID as the staged
+  candidate; rebuilding for a public environment is a failure.
+- `reachable=true` requires fresh live readback from every advertised surface,
+  not an upload receipt or local preview.
+- `user_owned=true` requires post-transfer chain readback, and
+  `user_proven=true` requires one real organizer plus two real participants.
+- `kg_known=true` requires the current portable knowledge port to cite the
+  exact accepted root, branch, commit, and outcome without fallback. A backend
+  version name cannot satisfy this contract by itself.
+- Any false verdict, byte mismatch, stale candidate, approval mismatch, live
+  P0/P1, or unowned advertised name returns to the owning gate and preserves an
+  explicit rollback target.

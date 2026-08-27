@@ -22,7 +22,7 @@ against this exact worktree and commit.
 7. `product/decision-contracts.md`
 8. `product/roadmap.md`
 9. `docs/release/current-release-state.json`
-10. `docs/superpowers/plans/2026-08-24-context-authority-and-live-first-use-repair.md`
+10. `docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md`
 11. `docs/CHOPDOT_OPERATING_LOOPS.md`
 12. `docs/CHOPDOT_LOOP_RUNNER.md`
 13. `docs/wiki/agent-context.generated.md`

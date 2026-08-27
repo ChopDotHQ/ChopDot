@@ -1,7 +1,7 @@
 # ChopDot Context Authority and Live First-Use Repair
 
 **Kind:** decision
-**Status:** active
+**Status:** superseded
 **Owner:** release integrator
 **Last reviewed:** 2026-08-24
 **Applies to:** chopdot-v1-launch
@@ -9,6 +9,11 @@
 **Branch:** `codex/chopdot-v1-launch`
 **Programme:** Programme A — public-testnet product release
 **Supersedes:** no product law; narrows the current release critical path
+**Superseded by:** `2026-08-27-chopdot-full-product-public-testnet-execution.md`
+
+> This plan remains accepted evidence for the context-authority and live
+> first-use repair package. The 2026-08-27 plan is the current full release
+> execution route.
 
 ## Goal
 

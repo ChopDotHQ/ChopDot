@@ -10,8 +10,8 @@
 Generated read model. It is navigation, not product authority.
 
 - Product truth SHA-256: `d5ea94b3b89f682d7b7ab76f580102316c25b0366c52b9b5a851a5ab7162bba6`
-- Product cards SHA-256: `8b3f1de935d2e7f241c3f8c2bc7be4df67e5f3127c290b39c043f64dc01b6c2b`
-- Product decisions SHA-256: `ab5a29c28558e4942e35074b39a2fb8e11dfa46a4151fe4540bff3157451f321`
+- Product cards SHA-256: `948e986608c51c929390b442b696103cfe23e49e054dd4b35889047b7699016d`
+- Product decisions SHA-256: `efb4394d9067afade9cf8d5d4ff2470d9889bbf38e0d83b7f3db6fc71beee168`
 - Current release state SHA-256: `937339a90c008e8d7a57cee5b18a8619e2816aee93527ddfddb821cedc0a634d`
 - Active cards: P-035, P-022, P-034, P-032, P-012
 - Explicit next card: P-035 — Create my group
