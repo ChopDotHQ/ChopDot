@@ -130,16 +130,16 @@ QUERIES = {
         "recovery contract bounded non-authority index no admin upgrade membership money custody"
     ),
     "context_authority": (
-        "ChopDot exact worktree context authority hierarchy Cockpit priority KGv2 cited recall only"
+        "product/context-authority.json authority hierarchy current"
     ),
     "live_first_use": (
         "ChopDot live first use guest group creation blocker overloaded Home candidate ineligible promotion"
     ),
     "full_release_route": (
-        "ChopDot 21 gate full product public testnet release identical CAR CID ownership real three person acceptance portable cited recall"
+        "docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md deployment portable"
     ),
     "governed_ci": (
-        "ChopDot exact head PR OutcomePacket deterministic evaluator required checks no human review overclaim"
+        ".github/workflows/agent-governance.yml OutcomePacket exact-head"
     ),
 }
 
