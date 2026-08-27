@@ -215,7 +215,7 @@ export async function recordEvaluation(runDirectory, contract, options = {}) {
   const evidenceArtifact = {
     artifact_version: '1.0.0', artifact_id: evidenceId, run_id: contract.run_id,
     artifact_type: 'TestEvidencePacketV1', path: evidencePath,
-    media_type: 'application/json', byte_length: evidenceBytes.length, sha256: sha256(evidenceBytes),
+    media_type: 'application/json', byte_length: evidenceBytes.length, sha256: sha256(`${evidencePath}\0${sha256(evidenceBytes)}`),
     created_at: evaluation.finished_at, created_by: evaluation.evaluator.id,
     candidate_identity: persistedCandidateIdentity(candidateAfter),
     redaction_status: 'passed', source_artifact_ids: [],
@@ -241,7 +241,7 @@ export async function recordEvaluation(runDirectory, contract, options = {}) {
   const evaluationRecordArtifact = {
     artifact_version: '1.0.0', artifact_id: evaluationRecordId, run_id: contract.run_id,
     artifact_type: 'EvaluationRecordV1', path: evaluationRecordPath,
-    media_type: 'application/json', byte_length: evaluationRecordBytes.length, sha256: sha256(evaluationRecordBytes),
+    media_type: 'application/json', byte_length: evaluationRecordBytes.length, sha256: sha256(`${evaluationRecordPath}\0${sha256(evaluationRecordBytes)}`),
     created_at: evaluation.finished_at, created_by: evaluation.evaluator.id,
     candidate_identity: persistedCandidateIdentity(candidateAfter),
     redaction_status: 'passed', source_artifact_ids: [...persistedEvaluation.evidence_artifact_ids],
