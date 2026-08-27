@@ -329,8 +329,17 @@ def isolated_main(autobots: Path, source_identity: dict[str, object]) -> int:
     repo_graph_runtime_root = artifact_root / "repo-graph-runtime"
     repo_graph_runner.REPORT_ROOT = repo_graph_runtime_root / "reports"
     repo_graph_runner.STATE_ROOT = repo_graph_runtime_root / "state"
+    ingest_mode = os.environ.get("CHOPDOT_AGENTOPS_INGEST_MODE", "scan")
+    if ingest_mode not in {"scan", "full"}:
+        raise RuntimeError(
+            "CHOPDOT_AGENTOPS_INGEST_MODE must be either scan or full"
+        )
     deployment = repo_graph_runner.deploy_repo(
-        MANIFEST, apply=True, portfolio_tier="product"
+        MANIFEST, apply=ingest_mode == "full", portfolio_tier="product"
+    )
+    deployment["execution_mode"] = ingest_mode
+    deployment["projection_scope"] = (
+        "external_projectors" if ingest_mode == "full" else "not_run_bounded_scan"
     )
     report_root = repo_graph_runner.REPORT_ROOT / "repos" / REPO_ID
     graph = json.loads((report_root / "graph.json").read_text(encoding="utf-8"))
@@ -423,7 +432,12 @@ def isolated_main(autobots: Path, source_identity: dict[str, object]) -> int:
 
     checks = {
         "deployment_working": deployment.get("status") == "working",
-        "ingestion_passed": deployment.get("ingestion", {}).get("status") == "pass",
+        "ingestion_passed_or_bounded_scan": (
+            deployment.get("ingestion", {}).get("status") == "pass"
+            if ingest_mode == "full"
+            else deployment.get("ingestion", {}).get("status") == "skipped"
+            and deployment.get("ingestion", {}).get("reason") == "dry_run"
+        ),
         "exact_root": graph.get("identity", {}).get("root") == str(WORKTREE),
         "exact_branch": graph.get("identity", {}).get("branch")
         == "codex/chopdot-v1-launch",
