@@ -291,10 +291,10 @@ jobs:
           event_file="${{ runner.temp }}/pr-context-input/pr-event.json"
           if [[ -f "$event_file" ]]; then
             base_branch="$(jq -r '.pull_request.base.ref' "$event_file")"
-            CONTEXT_PR_VALIDATION=true EXPECTED_BASE_BRANCH="$base_branch" npm run context:validate
-          else
-            npm run context:validate
+            export CONTEXT_PR_VALIDATION=true
+            export EXPECTED_BASE_BRANCH="$base_branch"
           fi
+          npm run context:validate
           npm run product:validate
           npm run wiki:validate
       - name: Install governed hook in clean checkout
