@@ -1,0 +1,27 @@
+{
+  "schema": "chopdot.product.checkpoint.v2",
+  "sequence": 5,
+  "state": "checkpoint",
+  "cards": [
+    "P-034"
+  ],
+  "summary": "Gate 9 legacy assessment preserves and semantically replays one encrypted redacted source packet before authority readiness; independent review found zero P0/P1.",
+  "evidence": "docs/release/2026-08-27-p034-legacy-assessment-quarantine.md",
+  "evidenceQuality": "strong",
+  "evidenceSha256": "1f9b2d6359476bcbbf29e7a4b91c9966e27ba618d1cf35c2495c2f3dbd60f7c7",
+  "source": "product/cards.md",
+  "sourceSha256": "2885f033d03ddc2f265cf916c46bed85f7601a2bd1f90819ef8d598d6e2245f9",
+  "git": {
+    "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+    "branch": "codex/chopdot-v1-launch",
+    "head": "37c2ac134cb1d77b6f91ca3759f66270da6d61a1",
+    "tree": "3a708f997ec665c431fd667112586294f4532467",
+    "dirtyPaths": [
+      "A  docs/release/2026-08-27-p034-legacy-assessment-quarantine.md",
+      " M docs/wiki/03-state-models/one-chop-core.md",
+      " M docs/wiki/agent-context.generated.md",
+      " M product/cards.md",
+      " M product/context-authority.json"
+    ]
+  }
+}

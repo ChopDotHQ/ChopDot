@@ -63,3 +63,16 @@ and explains why a successor exists. The event advances the same canonical
 frontier. An exact retry after delivery failure returns the original durable
 event without a second signature, event, or frontier change, while conflicting
 reuse of the successor identifier fails closed.
+
+Pre-authority local caches never become an implicit origin for this core.
+Startup first creates an encrypted immutable assessment of an exact redacted
+source packet. Explicit supported currency, exact representability, opaque
+identifiers, references, roster, payer allocation, status, conservation, saved
+record, and authority-journal collisions are checked for the whole group. Any
+failure produces a review-only quarantine with no partial observations. A
+ready assessment still proves no membership, payer, organizer, payment, or
+closeout authority and creates no event or journal. Before readback is
+accepted, the preserved packet is reconstructed and reassessed; all findings,
+claims, exact-money observations, verdicts, evidence, and digests must match.
+Normal authority hydration may replace a superseded cache row only after that
+redacted source evidence has been durably preserved.

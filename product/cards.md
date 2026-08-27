@@ -23,8 +23,8 @@ blocked_by: none
 reviewed: 2026-08-27
 applies_to: chopdot-v1-launch
 evidence_type: measurement
-evidence: docs/release/2026-08-27-p034-closeout-successor-authority.md
-evidence_sha256: ea27d0d81e986d73b742892f0c706dcd9ea7c3fbb3451daf258ebcfb4b4894d1
+evidence: docs/release/2026-08-27-p034-legacy-assessment-quarantine.md
+evidence_sha256: 1f9b2d6359476bcbbf29e7a4b91c9966e27ba618d1cf35c2495c2f3dbd60f7c7
 pillar: Management
 journey: Mina reviews one exact group-money action and every participant derives the same state.
 next_action: Review this draft
@@ -134,7 +134,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: ca16cae0d567f0ad5567a24c1487e045f3ffad00d51d772f69079baf380ed61b
+evidence_sha256: c336775d2c43127a5757b6140671fb4a982226c920b4f89f486cc4ce5ba07cd9
 pillar: Catch
 journey: Mina imports a card transaction, attaches its receipt and shares the right amounts.
 next_action: Match a receipt
@@ -156,7 +156,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: ca16cae0d567f0ad5567a24c1487e045f3ffad00d51d772f69079baf380ed61b
+evidence_sha256: c336775d2c43127a5757b6140671fb4a982226c920b4f89f486cc4ce5ba07cd9
 pillar: Management -> Payout -> History
 journey: A savings circle completes one contribution and payout round transparently.
 next_action: Record this contribution
@@ -178,7 +178,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: ca16cae0d567f0ad5567a24c1487e045f3ffad00d51d772f69079baf380ed61b
+evidence_sha256: c336775d2c43127a5757b6140671fb4a982226c920b4f89f486cc4ce5ba07cd9
 pillar: Management -> Payout -> History
 journey: A trusted group helps urgently without exposing the private reason.
 next_action: Contribute privately
@@ -200,7 +200,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: ca16cae0d567f0ad5567a24c1487e045f3ffad00d51d772f69079baf380ed61b
+evidence_sha256: c336775d2c43127a5757b6140671fb4a982226c920b4f89f486cc4ce5ba07cd9
 pillar: Management -> Payout -> History
 journey: A community agrees how to use shared contributions and records the handoff.
 next_action: Review the proposal
