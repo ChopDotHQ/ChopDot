@@ -1,0 +1,211 @@
+name: DATA-002 Finalize
+
+on:
+  push:
+    branches:
+      - agent/data-002-integer-money
+    paths:
+      - '.github/workflows/data-002-open-pr.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: data-002-finalize
+  cancel-in-progress: false
+
+jobs:
+  verify-and-open-pr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: chopdot
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d chopdot"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/chopdot
+      DIRECT_URL: postgresql://postgres:postgres@127.0.0.1:5432/chopdot
+      VITE_DATA_SOURCE: local
+      VITE_SUPABASE_URL: https://example.invalid
+      VITE_SUPABASE_ANON_KEY: test-only
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Assert clean implementation parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          parent="$(git rev-parse HEAD^)"
+          message="$(git log -1 --format=%s "$parent")"
+          test "$message" = 'feat: canonical integer money and versioned persistence'
+          git ls-tree -r --name-only "$parent" | grep -q '^src/'
+          git ls-tree -r --name-only "$parent" | grep -q '^backend/'
+          if git ls-tree -r --name-only "$parent" | grep -Eq '^\.data-002-transport/|data-002-bootstrap\.yml|data-002-open-pr\.yml'; then
+            echo 'Temporary transport/finalization files leaked into the clean commit' >&2
+            exit 1
+          fi
+          test "$(git rev-list --count 9fbef7d603e53d8246119dd82d941719e2595ed9.."$parent")" -eq 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            backend/package-lock.json
+
+      - name: Frontend clean install
+        run: npm ci
+
+      - name: Reconciliation and provider-neutral guards
+        run: |
+          npm run verify:reconciliation
+          npm run verify:provider-neutral
+
+      - name: Exact money and persistence tests
+        run: npm run test:data-002
+
+      - name: Frontend CI
+        run: npm run ci:fast
+
+      - name: Backend clean install
+        run: npm ci --prefix backend
+
+      - name: Backend CI
+        run: npm --prefix backend run ci:fast
+
+      - name: Deploy database migration
+        run: npm --prefix backend run db:migrate
+
+      - name: Verify migrated database
+        shell: bash
+        run: |
+          set -euo pipefail
+          if npm --prefix backend run | grep -q 'verify:data-002-db'; then
+            npm --prefix backend run verify:data-002-db
+          else
+            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 <<'SQL'
+          DO $$
+          DECLARE
+            integer_columns integer;
+          BEGIN
+            SELECT count(*) INTO integer_columns
+            FROM information_schema.columns
+            WHERE table_schema = 'public'
+              AND column_name IN ('amount_units', 'amountUnits')
+              AND data_type IN ('bigint', 'numeric', 'text');
+            IF integer_columns = 0 THEN
+              RAISE EXCEPTION 'No canonical integer-money columns found';
+            END IF;
+          END $$;
+          SQL
+          fi
+
+      - name: Open or update draft PR
+        shell: bash
+        run: |
+          set -euo pipefail
+          clean_sha="$(git rev-parse HEAD^)"
+          cat > /tmp/data002-pr.md <<EOF
+          ## Summary
+
+          Implements DATA-002 on top of the protected canonical reconciliation baseline.
+
+          Clean implementation commit:
+
+          \`\`\`text
+          ${clean_sha}
+          \`\`\`
+
+          Base:
+
+          \`\`\`text
+          agent/canonical-reconciliation@9fbef7d603e53d8246119dd82d941719e2595ed9
+          \`\`\`
+
+          ## What changed
+
+          - replaces canonical floating-point financial amounts with decimal-string integer units and explicit currency scales;
+          - adds exact parsing, formatting, comparison, addition, subtraction, and deterministic allocation with conserved remainders;
+          - prevents balances and settlements from netting different currencies together;
+          - adds versioned, ordered, idempotent persistence migrations with backup and quarantine behavior for ambiguous or corrupt legacy state;
+          - moves persisted and wire financial DTOs to precision-safe integer-unit serialization;
+          - adds PostgreSQL/Prisma integer-money columns, deterministic backfill, and financial constraints;
+          - makes the active data path provider-neutral: ChopDot HTTP API -> Prisma -> PostgreSQL, while retaining local mode for device drafts;
+          - adds exact-money, migration, serialization, and database verification coverage.
+
+          ## Financial invariants
+
+          - no canonical persisted or wire amount is a JavaScript floating-point number;
+          - \`sum(split.amountUnits) === expense.amountUnits\`;
+          - remainder assignment is deterministic and independent of member input order;
+          - every currency/asset has one explicit scale;
+          - mixed currencies are never silently aggregated;
+          - repeated persistence migration is idempotent;
+          - ambiguous legacy data is quarantined instead of silently rewritten.
+
+          ## Verification
+
+          The DATA-002 finalization workflow passed before this PR was opened:
+
+          - clean root and backend installs;
+          - reconciliation guard;
+          - provider-neutral architecture guard;
+          - exact-money and persistence migration tests;
+          - frontend typecheck, lint, unit tests, and production build;
+          - Prisma generation, backend typecheck, backend tests, and backend build;
+          - migration deployment against PostgreSQL 16;
+          - migrated integer-money schema verification.
+
+          ## Deliberately deferred
+
+          - authenticated sessions and actor binding;
+          - payer/receiver authorization;
+          - idempotency keys and optimistic command versions;
+          - transactional payment intent and evidence commands;
+          - live Polkadot payment proof;
+          - production release acceptance.
+
+          Those remain BACKEND-001, BACKEND-002, and release work.
+          EOF
+
+          existing="$(gh pr list --repo ChopDotHQ/ChopDot --head agent/data-002-integer-money --state open --json number --jq '.[0].number // empty')"
+          if [ -z "$existing" ]; then
+            gh pr create \
+              --repo ChopDotHQ/ChopDot \
+              --draft \
+              --base agent/canonical-reconciliation \
+              --head agent/data-002-integer-money \
+              --title 'feat: canonical integer money and versioned persistence' \
+              --body-file /tmp/data002-pr.md
+          else
+            gh pr edit "$existing" \
+              --repo ChopDotHQ/ChopDot \
+              --title 'feat: canonical integer money and versioned persistence' \
+              --body-file /tmp/data002-pr.md
+          fi
+
+      - name: Remove temporary finalization commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          clean_sha="$(git rev-parse HEAD^)"
+          git push --force origin "$clean_sha":refs/heads/agent/data-002-integer-money
