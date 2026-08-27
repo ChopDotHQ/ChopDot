@@ -23,7 +23,8 @@ AUTOBOTS_TOOL_HASHES = {
     "agentops/runners/repo_graph_v1.py": "015648c5acd7c6ac210b8b64a9b8ce8711ce9b0dc1ec083aa89663d42edf1275",
 }
 REPO_ID = "chopdot-v1-launch"
-ARTIFACT_ROOT = WORKTREE / "artifacts" / "agentops"
+DEFAULT_ARTIFACT_ROOT = WORKTREE / "artifacts" / "agentops"
+LOCAL_EVIDENCE_ROOT = WORKTREE / "output" / "agent-runs"
 PROOF_PATH = WORKTREE / "docs/release/2026-08-24-recovery-head-index-live-proof.md"
 CONTEXT_PATH = WORKTREE / "product/context-authority.json"
 LIVE_FINDING_PATH = WORKTREE / "docs/release/2026-08-24-live-first-use-findings.md"
@@ -47,9 +48,13 @@ MANIFEST = {
             "product/**",
             "docs/CHOPDOT_OPERATING_LOOPS.md",
             "docs/CHOPDOT_LOOP_RUNNER.md",
+            ".github/CODEOWNERS",
+            ".github/workflows/agent-governance.yml",
+            "governance/agent-system/**",
             "docs/adr/**",
             "docs/wiki/**",
             "docs/release/**",
+            "docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md",
             "docs/superpowers/plans/2026-08-24-context-authority-and-live-first-use-repair.md",
             "docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
             "docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.json",
@@ -57,6 +62,8 @@ MANIFEST = {
             "deployment/recovery-head-index/**",
             "contracts/recovery-head-index/**",
             "scripts/lib/recovery-head-verification.mjs",
+            "scripts/agent-governance/**",
+            "scripts/agent-system/**",
             "scripts/prepare-dot-host-release.mjs",
             "scripts/recovery-head-deployment.mjs",
             "scripts/release-evidence.test.mjs",
@@ -91,6 +98,9 @@ MANIFEST = {
         "product/cards.md",
         "product/decisions.md",
         "docs/adr/0004-context-authority-and-cited-recall.md",
+        "docs/adr/0005-portable-agent-outcome-system.md",
+        "docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md",
+        ".github/workflows/agent-governance.yml",
         "docs/release/current-release-state.json",
         "docs/release/2026-08-24-live-first-use-findings.md",
         "docs/release/2026-08-24-local-release-assurance.md",
@@ -125,6 +135,12 @@ QUERIES = {
     "live_first_use": (
         "ChopDot live first use guest group creation blocker overloaded Home candidate ineligible promotion"
     ),
+    "full_release_route": (
+        "ChopDot 21 gate full product public testnet release identical CAR CID ownership real three person acceptance portable cited recall"
+    ),
+    "governed_ci": (
+        "ChopDot exact head PR OutcomePacket deterministic evaluator required checks no human review overclaim"
+    ),
 }
 
 REQUIRED_QUERY_SOURCE = {
@@ -134,6 +150,9 @@ REQUIRED_QUERY_SOURCE = {
     "authority_boundary": PROOF_PATH,
     "context_authority": CONTEXT_PATH,
     "live_first_use": LIVE_FINDING_PATH,
+    "full_release_route": WORKTREE
+    / "docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md",
+    "governed_ci": WORKTREE / ".github/workflows/agent-governance.yml",
 }
 
 
@@ -143,6 +162,19 @@ def write_json(path: Path, payload: object) -> None:
         json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n",
         encoding="utf-8",
     )
+
+
+def resolve_artifact_root() -> Path:
+    configured = os.environ.get("CHOPDOT_AGENTOPS_ARTIFACT_ROOT")
+    if not configured:
+        return DEFAULT_ARTIFACT_ROOT
+    resolved = Path(configured).resolve()
+    if resolved != LOCAL_EVIDENCE_ROOT and LOCAL_EVIDENCE_ROOT not in resolved.parents:
+        raise RuntimeError(
+            "CHOPDOT_AGENTOPS_ARTIFACT_ROOT must stay under the exact worktree's "
+            f"ignored evidence root: {LOCAL_EVIDENCE_ROOT}"
+        )
+    return resolved
 
 
 def git(*args: str) -> str:
@@ -292,6 +324,7 @@ def isolated_main(autobots: Path, source_identity: dict[str, object]) -> int:
     os.environ["AGENTOPS_CG2_REPO_ROOT_CHOPDOT_V1_LAUNCH"] = str(WORKTREE)
 
     deployment = deploy_repo(MANIFEST, apply=True, portfolio_tier="product")
+    artifact_root = resolve_artifact_root()
     report_root = autobots / "agentops/reports/repo_graph_v1/repos" / REPO_ID
     graph = json.loads((report_root / "graph.json").read_text(encoding="utf-8"))
     packet = json.loads(
@@ -469,9 +502,40 @@ def isolated_main(autobots: Path, source_identity: dict[str, object]) -> int:
         "deployment": deployment,
         "context_packet": packet,
     }
-    write_json(ARTIFACT_ROOT / "release-repo-graph-packet.json", packet_artifact)
-    write_json(ARTIFACT_ROOT / "release-kgv2-recall.json", preflights)
-    write_json(ARTIFACT_ROOT / "release-agentops-verification.json", result)
+    port_packet = {
+        "schema_version": "1.0.0",
+        "kind": "chopdot.release-repo-graph-port-packet.v1",
+        "generated_at": result["generated_at"],
+        "root": source_identity["root"],
+        "branch": source_identity["branch"],
+        "commit": source_identity["head"],
+        "tree": source_identity["tree"],
+        "dirty": False,
+        "dirty_paths": [],
+        "graph_digest": graph.get("graph_digest"),
+        "repo_graph_packet_digest": packet.get("packet_digest"),
+        "facts": [
+            {
+                "statement": "The Repo Graph packet describes the exact clean ChopDot launch worktree, branch, commit, and tree.",
+                "confidence": 1,
+            },
+            {
+                "statement": "The active release route contains 21 separately evidenced gates through identical public-testnet promotion, ownership, real-user proof, rollback, and portable cited recall.",
+                "confidence": 1,
+            },
+            {
+                "statement": "Knowledge recall is an operational evidence layer and does not create product, participant, membership, money, recovery, or release authority.",
+                "confidence": 1,
+            },
+        ],
+        "stale_reasons": [],
+    }
+    write_json(artifact_root / "release-repo-graph-packet.json", packet_artifact)
+    write_json(
+        artifact_root / "release-repo-graph-port-packet.json", port_packet
+    )
+    write_json(artifact_root / "release-kgv2-recall.json", preflights)
+    write_json(artifact_root / "release-agentops-verification.json", result)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 2
 
