@@ -5,16 +5,13 @@ import path from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
 import { validateGovernanceInstance } from '../agent-system/schema.mjs';
+import { loadProjectAuthorityProfile, resolveEnvironmentAuthority } from './authority-profile.mjs';
 import { digestObject, parseArgs, writeReport } from './lib.mjs';
 
 export const EXECUTION_AUDIENCE = 'chopdot-agent-evaluation';
 const GITHUB_ISSUER = 'https://token.actions.githubusercontent.com';
 const GITHUB_JWKS = `${GITHUB_ISSUER}/.well-known/jwks`;
-const REPOSITORY = 'ChopDotHQ/ChopDot';
-const WORKFLOW_PREFIX = `${REPOSITORY}/.github/workflows/agent-governance.yml@`;
 export const RELEASE_ENVIRONMENT = 'public-testnet-release';
-export const RELEASE_REVIEWER = Object.freeze({ login: 'Gizmotronn', id: 31812229 });
-export const RELEASE_BRANCHES = Object.freeze(['codex/chopdot-v1-launch', 'main']);
 
 function decodePart(value) {
   return JSON.parse(Buffer.from(value, 'base64url').toString('utf8'));
@@ -76,36 +73,36 @@ function officialJwks() {
   return curlJson([GITHUB_JWKS]);
 }
 
-function officialRunReadback(runId, environment = process.env) {
+function officialRunReadback(repository, runId, environment = process.env) {
   const token = environment.GH_TOKEN ?? environment.GITHUB_TOKEN;
   if (!token) throw new Error('GitHub run readback token is unavailable');
   return curlJson([
     '-H', `Authorization: Bearer ${token}`,
     '-H', 'Accept: application/vnd.github+json',
     '-H', 'X-GitHub-Api-Version: 2022-11-28',
-    `https://api.github.com/repos/${REPOSITORY}/actions/runs/${runId}`,
+    `https://api.github.com/repos/${repository}/actions/runs/${runId}`,
   ], environment);
 }
 
-function officialEnvironmentReadback(environmentName, environment = process.env) {
+function officialEnvironmentReadback(repository, environmentName, environment = process.env) {
   const token = environment.GH_TOKEN ?? environment.GITHUB_TOKEN;
   if (!token) throw new Error('GitHub environment readback token is unavailable');
   return curlJson([
     '-H', `Authorization: Bearer ${token}`,
     '-H', 'Accept: application/vnd.github+json',
     '-H', 'X-GitHub-Api-Version: 2022-11-28',
-    `https://api.github.com/repos/${REPOSITORY}/environments/${encodeURIComponent(environmentName)}`,
+    `https://api.github.com/repos/${repository}/environments/${encodeURIComponent(environmentName)}`,
   ], environment);
 }
 
-function officialEnvironmentBranchPoliciesReadback(environmentName, environment = process.env) {
+function officialEnvironmentBranchPoliciesReadback(repository, environmentName, environment = process.env) {
   const token = environment.GH_TOKEN ?? environment.GITHUB_TOKEN;
   if (!token) throw new Error('GitHub environment branch-policy readback token is unavailable');
   return curlJson([
     '-H', `Authorization: Bearer ${token}`,
     '-H', 'Accept: application/vnd.github+json',
     '-H', 'X-GitHub-Api-Version: 2022-11-28',
-    `https://api.github.com/repos/${REPOSITORY}/environments/${encodeURIComponent(environmentName)}/deployment-branch-policies`,
+    `https://api.github.com/repos/${repository}/environments/${encodeURIComponent(environmentName)}/deployment-branch-policies`,
   ], environment);
 }
 
@@ -116,6 +113,16 @@ export function verifyGithubExecutionAttestation(attestation, expected, options 
   let decoded;
   try { decoded = decodeJwt(attestation?.oidc_jwt); } catch (error) { failures.push(error.message); return failures; }
   const { header, claims, signingInput, signature } = decoded;
+  let authorityProfile;
+  let environmentAuthority;
+  try {
+    authorityProfile = options.authorityProfile ?? loadProjectAuthorityProfile(expected.candidate?.root);
+    if (expected.environment) environmentAuthority = resolveEnvironmentAuthority(authorityProfile, expected.environment);
+  } catch (error) {
+    failures.push(error.message);
+  }
+  const repository = authorityProfile?.repository;
+  const workflowPrefix = repository ? `${repository}/.github/workflows/agent-governance.yml@` : null;
   try {
     const jwks = options.jwks ?? officialJwks();
     const key = (jwks.keys ?? []).find((entry) => entry.kid === header.kid && entry.kty === 'RSA');
@@ -126,8 +133,8 @@ export function verifyGithubExecutionAttestation(attestation, expected, options 
   const audiences = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
   if (claims.iss !== GITHUB_ISSUER) failures.push('execution attestation issuer is not GitHub Actions');
   if (!audiences.includes(EXECUTION_AUDIENCE)) failures.push('execution attestation audience is wrong');
-  if (claims.repository !== REPOSITORY) failures.push('execution attestation repository is wrong');
-  if (!String(claims.workflow_ref ?? '').startsWith(WORKFLOW_PREFIX)) failures.push('execution attestation workflow is not agent-governance.yml');
+  if (!repository || claims.repository !== repository) failures.push('execution attestation repository differs from the project authority profile');
+  if (!workflowPrefix || !String(claims.workflow_ref ?? '').startsWith(workflowPrefix)) failures.push('execution attestation workflow is not agent-governance.yml in the governed repository');
   for (const key of ['repository', 'event_name', 'workflow_ref', 'actor', 'ref', 'sha']) {
     if (attestation?.workflow_run?.[key] !== claims[key]) failures.push(`execution attestation ${key} metadata differs from signed claims`);
   }
@@ -143,7 +150,7 @@ export function verifyGithubExecutionAttestation(attestation, expected, options 
   if (claims.event_name === 'workflow_dispatch' && claims.sha !== expected.candidate?.commit) failures.push('execution attestation workflow_dispatch SHA does not match candidate commit');
   if (expected.environment) {
     if (claims.environment !== expected.environment) failures.push(`execution attestation environment is not ${expected.environment}`);
-    if (claims.sub !== `repo:${REPOSITORY}:environment:${expected.environment}`) failures.push('execution attestation subject is not bound to the protected release environment');
+    if (!repository || claims.sub !== `repo:${repository}:environment:${expected.environment}`) failures.push('execution attestation subject is not bound to the protected governed environment');
   }
   const evaluated = Date.parse(attestation?.evaluated_at ?? '');
   const issued = Number(claims.iat) * 1000;
@@ -153,7 +160,8 @@ export function verifyGithubExecutionAttestation(attestation, expected, options 
     failures.push('execution attestation evaluation time is outside the signed issuance window');
   }
   try {
-    const run = options.runReadback ?? officialRunReadback(claims.run_id, options.environment);
+    if (!repository) throw new Error('project authority repository is unavailable');
+    const run = options.runReadback ?? officialRunReadback(repository, claims.run_id, options.environment);
     if (String(run.id ?? '') !== String(claims.run_id ?? '')) failures.push('GitHub run readback ID mismatch');
     if (run.head_sha !== expected.candidate?.commit) failures.push('GitHub run readback head SHA mismatch');
     if (run.head_branch !== expected.candidate?.branch) failures.push('GitHub run readback branch mismatch');
@@ -163,29 +171,40 @@ export function verifyGithubExecutionAttestation(attestation, expected, options 
   } catch (error) { failures.push(`GitHub run readback failed: ${error.message}`); }
   if (expected.environment) {
     try {
-      const environment = options.environmentReadback ?? officialEnvironmentReadback(expected.environment, options.environment);
+      if (!repository || !environmentAuthority) throw new Error('governed environment authority is unavailable');
+      const environment = options.environmentReadback ?? officialEnvironmentReadback(repository, expected.environment, options.environment);
       if (environment.name !== expected.environment) failures.push('GitHub environment readback name mismatch');
-      const reviewers = (environment.protection_rules ?? []).find((entry) => entry.type === 'required_reviewers');
-      if (!reviewers || reviewers.prevent_self_review !== true) failures.push('GitHub release environment does not prevent self-review');
-      const approvedReviewer = (reviewers?.reviewers ?? []).some((entry) => entry.type === 'User'
-        && Number(entry.reviewer?.id) === RELEASE_REVIEWER.id
-        && entry.reviewer?.login === RELEASE_REVIEWER.login);
-      if (!approvedReviewer) failures.push(`GitHub release environment does not require ${RELEASE_REVIEWER.login}`);
-      if (environment.can_admins_bypass !== false) failures.push('GitHub release environment still permits administrator bypass');
+      const reviewerRule = (environment.protection_rules ?? []).find((entry) => entry.type === 'required_reviewers');
+      const observedReviewers = (reviewerRule?.reviewers ?? [])
+        .map((entry) => ({ type: entry.type, id: Number(entry.reviewer?.id), login: entry.reviewer?.login }))
+        .sort((left, right) => `${left.type}:${left.id}:${left.login}`.localeCompare(`${right.type}:${right.id}:${right.login}`));
+      const expectedReviewers = environmentAuthority.required_reviewers
+        .map((entry) => ({ type: entry.type, id: Number(entry.id), login: entry.login }))
+        .sort((left, right) => `${left.type}:${left.id}:${left.login}`.localeCompare(`${right.type}:${right.id}:${right.login}`));
+      if (reviewerRule && reviewerRule.prevent_self_review !== environmentAuthority.prevent_self_review) {
+        failures.push(`GitHub governed environment prevent_self_review differs from project authority policy ${environmentAuthority.prevent_self_review}`);
+      }
+      if (JSON.stringify(observedReviewers) !== JSON.stringify(expectedReviewers)) {
+        failures.push(`GitHub governed environment required reviewers differ from project authority policy; unexpected required reviewer or missing configured reviewer`);
+      }
+      if (environment.can_admins_bypass !== environmentAuthority.can_admins_bypass) {
+        failures.push(`GitHub governed environment administrator bypass differs from project authority policy ${environmentAuthority.can_admins_bypass}`);
+      }
       if (environment.deployment_branch_policy?.protected_branches !== false
         || environment.deployment_branch_policy?.custom_branch_policies !== true) {
-        failures.push('GitHub release environment does not use the explicit reviewed branch allowlist');
+        failures.push('GitHub governed environment does not use the explicit reviewed branch allowlist');
       }
       const policyReadback = options.environmentBranchPolicies
-        ?? officialEnvironmentBranchPoliciesReadback(expected.environment, options.environment);
+        ?? officialEnvironmentBranchPoliciesReadback(repository, expected.environment, options.environment);
       const observedPolicies = (policyReadback.branch_policies ?? [])
         .filter((entry) => entry.type === 'branch')
         .map((entry) => entry.name)
         .sort();
-      if (JSON.stringify(observedPolicies) !== JSON.stringify([...RELEASE_BRANCHES].sort())) {
-        failures.push(`GitHub release environment branch allowlist differs from ${RELEASE_BRANCHES.join(', ')}`);
+      const expectedBranches = [...environmentAuthority.branches].sort();
+      if (JSON.stringify(observedPolicies) !== JSON.stringify(expectedBranches)) {
+        failures.push(`GitHub governed environment branch allowlist differs from ${expectedBranches.join(', ')}`);
       }
-      if (!observedPolicies.includes(expected.candidate?.branch)) failures.push('GitHub release environment does not allow the exact candidate branch');
+      if (!observedPolicies.includes(expected.candidate?.branch)) failures.push('GitHub governed environment does not allow the exact candidate branch');
     } catch (error) { failures.push(`GitHub environment readback failed: ${error.message}`); }
   }
   return [...new Set(failures)];

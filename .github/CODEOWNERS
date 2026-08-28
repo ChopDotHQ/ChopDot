@@ -1,6 +1,7 @@
-# ChopDot review routing. GitHub readback verified @Devpen787 and @Gizmotronn
-# have direct admin access on 2026-08-26. CODEOWNERS requests review; it does
-# not prove reviewer independence or branch enforcement.
+# ChopDot contributor review routing. @Devpen787 is the project owner and
+# @Gizmotronn is an existing contributor. CODEOWNERS may request either person;
+# it does not make a contributor mandatory, prove reviewer independence, or
+# create project/release authority.
 
 # Default coverage prevents an unowned path from silently entering the repo.
 * @Devpen787 @Gizmotronn

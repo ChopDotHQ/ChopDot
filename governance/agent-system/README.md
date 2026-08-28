@@ -184,7 +184,7 @@ retained for adaptation. Competing authority prose, packet types, workflow, and
 ADR numbering are superseded by the single architecture here. See
 [`docs/investigations/2026-08-26-pr-14-agent-supervision-reconciliation.md`](../../docs/investigations/2026-08-26-pr-14-agent-supervision-reconciliation.md).
 
-## Ownership and CODEOWNERS boundary
+## Ownership, identity mode, and CODEOWNERS boundary
 
 | Paths | Responsible role | Required independent role |
 |---|---|---|
@@ -197,11 +197,19 @@ ADR numbering are superseded by the single architecture here. See
 | `PRODUCT_TRUTH.md` | founder/product authority | explicit founder review |
 | money, membership, recovery, privacy, and release paths | affected domain owner | independent security/authority review |
 
-`.github/CODEOWNERS` now maps these paths to the only verified repository
-administrator. That routing does not by itself establish reviewer independence.
-Until the repository ruleset and its required checks are present and read back,
-review ownership remains a declared process requirement rather than enforced
-repository state.
+`project-authority.v1.json` is the repository-owned identity and delegation
+profile. Generic runner and verification code consumes its roles and must not
+hard-code project usernames. `.github/CODEOWNERS` maps these paths to the human
+project owner for routing only; it establishes no reviewer independence.
+
+In `delegated-owner-principal` mode, authorized agents act through the same
+GitHub principal as the human project owner. The governed merge boundary uses
+the exact-candidate hosted checks and does not invent an impossible self-review
+or require an unrelated collaborator. Deterministic evaluator separation is
+reported as such, never as independent human review. A future separated bot/App
+mode may add owner review if the owner explicitly adopts it. Changing mode is a
+governed configuration migration requiring source, workflow, ruleset,
+environment, and live readback agreement.
 
 ## Adoption boundary
 
@@ -240,9 +248,10 @@ cited evidence, replays the digest-chained runner proof, binds it to the
 checkpoint candidate and outcome, and requires an exact one-to-one mapping
 between every `done` card and one completed checkpoint.
 
-Deterministic evaluator separation proves independent execution, not human or
-agent judgment. Product, security, and release review require their own
-protected evidence outside candidate-authored bytes. Files below
+Deterministic evaluator separation proves independent execution, not human
+review. Delegated-owner authorization and independent human review are separate
+claims; neither may be inferred from a reviewer username. Product, security,
+and release review require the evidence declared by the active profile. Files below
 `docs/release/` are documentation and historical evidence; editing them is not
 a live release effect. The executable release boundary is the protected GitHub
 environment plus the release-enforcement workflow and external readback.

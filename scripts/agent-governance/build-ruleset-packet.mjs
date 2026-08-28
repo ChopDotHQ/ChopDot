@@ -4,16 +4,11 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { authorityPolicyForSurface } from './authority-profile.mjs';
 import { digestObject, parseArgs } from './lib.mjs';
 
-export const REQUIRED_CHECKS = [
-  'Agent contract',
-  'Agent runner',
-  'Knowledge adapters',
-  'Repo governance',
-  'Application fast assurance',
-  'PR outcome',
-];
+const BRANCH_MERGE_POLICY = authorityPolicyForSurface('branch_merge');
+export const REQUIRED_CHECKS = Object.freeze([...BRANCH_MERGE_POLICY.required_status_checks]);
 
 export function buildRulesetPacket({ repository, sourceHead, sourceTree, branches }) {
   const include = branches.map((branch) => `refs/heads/${branch}`);
@@ -28,11 +23,12 @@ export function buildRulesetPacket({ repository, sourceHead, sourceTree, branche
       {
         type: 'pull_request',
         parameters: {
-          required_approving_review_count: 1,
+          required_approving_review_count: BRANCH_MERGE_POLICY.required_approving_review_count,
           dismiss_stale_reviews_on_push: true,
-          require_code_owner_review: true,
-          require_last_push_approval: true,
-          required_review_thread_resolution: true,
+          require_code_owner_review: BRANCH_MERGE_POLICY.require_code_owner_review,
+          require_last_push_approval: BRANCH_MERGE_POLICY.require_last_push_approval,
+          require_extra_approval_for_unattributed_changes: false,
+          required_review_thread_resolution: BRANCH_MERGE_POLICY.required_review_thread_resolution,
           allowed_merge_methods: ['squash', 'merge', 'rebase'],
         },
       },

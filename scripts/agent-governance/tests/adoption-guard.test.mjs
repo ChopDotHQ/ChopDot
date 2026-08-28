@@ -56,6 +56,10 @@ async function fixture(options = {}) {
     path.join(repositoryRoot, 'governance/agent-system/policies/adoption-boundary.v1.json'),
     path.join(root, 'governance/agent-system/policies/adoption-boundary.v1.json'),
   );
+  fs.copyFileSync(
+    path.join(repositoryRoot, 'governance/agent-system/project-authority.v1.json'),
+    path.join(root, 'governance/agent-system/project-authority.v1.json'),
+  );
   fs.writeFileSync(path.join(root, '.gitignore'), 'output/\ndocs/release/current-release-state.json\n');
   fs.writeFileSync(path.join(root, 'PRODUCT_TRUTH.md'), '# Product truth\nExact authority.\n');
   fs.writeFileSync(path.join(root, 'product/cards.md'), [
@@ -658,10 +662,7 @@ test('release accepts only a separately signed protected-environment attestation
     environmentReadback: {
       name: 'public-testnet-release', can_admins_bypass: false,
       deployment_branch_policy: { protected_branches: false, custom_branch_policies: true },
-      protection_rules: [{
-        type: 'required_reviewers', prevent_self_review: true,
-        reviewers: [{ type: 'User', reviewer: { id: 31812229, login: 'Gizmotronn' } }],
-      }],
+      protection_rules: [],
     },
     environmentBranchPolicies: {
       total_count: 2,
@@ -696,6 +697,37 @@ test('release accepts only a separately signed protected-environment attestation
   });
   assert.equal(bypassReceipt.verdict, 'unverified');
   assert(bypassReceipt.failures.some((entry) => entry.includes('administrator bypass')));
+
+  const unexpectedReviewerOptions = structuredClone(executionAttestationOptions);
+  unexpectedReviewerOptions.environmentReadback.protection_rules = [{
+    type: 'required_reviewers', prevent_self_review: false,
+    reviewers: [{ type: 'User', reviewer: { id: 999999, login: 'UnconfiguredCollaborator' } }],
+  }];
+  const unexpectedReviewerReceipt = await rawValidateAcceptance({
+    root: value.root, surface: 'release', changedPaths: ['scripts/agent-governance/change.mjs'],
+    outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
+    runnerProvenancePaths: ['output/provenance.json'], runDirectoryPaths: [path.relative(value.root, value.runDirectory)],
+    executionAttestationPaths: ['output/release-attestation.json'], executionAttestationOptions: unexpectedReviewerOptions,
+    expectedCommit: value.head, expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'release',
+    now: new Date('2026-08-27T13:00:00Z'),
+  });
+  assert.equal(unexpectedReviewerReceipt.verdict, 'unverified');
+  assert(unexpectedReviewerReceipt.failures.some((entry) => entry.includes('unexpected required reviewer')));
+
+  const wrongSelfReviewOptions = structuredClone(executionAttestationOptions);
+  wrongSelfReviewOptions.environmentReadback.protection_rules = [{
+    type: 'required_reviewers', prevent_self_review: true, reviewers: [],
+  }];
+  const wrongSelfReviewReceipt = await rawValidateAcceptance({
+    root: value.root, surface: 'release', changedPaths: ['scripts/agent-governance/change.mjs'],
+    outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
+    runnerProvenancePaths: ['output/provenance.json'], runDirectoryPaths: [path.relative(value.root, value.runDirectory)],
+    executionAttestationPaths: ['output/release-attestation.json'], executionAttestationOptions: wrongSelfReviewOptions,
+    expectedCommit: value.head, expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'release',
+    now: new Date('2026-08-27T13:00:00Z'),
+  });
+  assert.equal(wrongSelfReviewReceipt.verdict, 'unverified');
+  assert(wrongSelfReviewReceipt.failures.some((entry) => entry.includes('prevent_self_review differs')));
 });
 
 test('the repository has an executable governed pre-push hook', () => {

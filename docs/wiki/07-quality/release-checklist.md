@@ -19,8 +19,9 @@ The protected release job additionally requires an applicable
 Context verify-recall receipt, replayable `RunnerProvenanceV1`, its persisted
 run directory, and a consumed single-use approval bound to the same
 candidate/outcome/effect. The current protected-environment job mints a GitHub
-OIDC execution attestation and reads back the required reviewer and self-review
-protection before it runs the shared adoption guard. It must emit a `governed`
+OIDC execution attestation and reads back the project authority profile,
+reviewer policy, branch policy, and disabled admin bypass before it runs the
+shared adoption guard. It must emit a `governed`
 release acceptance receipt. Missing release evidence is a failing job, never a
 skipped green path.
 
@@ -30,7 +31,7 @@ stand in for the candidate. The independent evaluation must be an indexed,
 hashed `EvaluationV1`, and the knowledge receipt must cite the exact outcome
 through a durable exact-source record outside the caller-supplied outcome
 artifact. Repository source proves only the intended gate. The protected GitHub
-environment, required reviewer, branch ruleset, and exact workflow run must be
+environment, delegated owner identity, identity mode, branch ruleset, and exact workflow run must be
 read back separately before remote release enforcement is claimed.
 The environment uses an explicit two-branch deployment allowlist:
 `main` and `codex/chopdot-v1-launch`. A generic “protected branches” setting is
@@ -42,6 +43,12 @@ environment setting **Allow administrators to bypass configured protection
 rules** is enabled, the release loop is protected for ordinary execution but is
 not literally unavoidable to repository administrators; the wake-up verdict
 must say so until that setting is disabled and read back.
+
+ChopDot currently uses `delegated-owner-principal` mode: authorized agents and
+the human owner both act through `Devpen787`. The release environment therefore
+must not require an unrelated collaborator or claim an independent human
+review. Release approval evidence remains explicit and candidate-bound; the
+hosted release verifier and readbacks remain mandatory.
 
 The machine-readable current release verdict is
 `docs/release/current-release-state.json`. The earlier

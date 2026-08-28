@@ -153,6 +153,11 @@ verifier and cannot prove original task-start lineage. The verdict must bind a
 schema-valid, hashed `EvaluationV1` artifact and replayable
 `RunnerProvenanceV1`. A summary Boolean is not execution or review evidence.
 
+The current `delegated-owner-principal` profile permits authorized agents to act
+through `Devpen787`. It requires the hosted exact-candidate checks but no
+fabricated self-review and no unrelated collaborator. Deterministic evaluator
+separation must not be described as independent human review.
+
 For `product:finish`, also pass `--outcome-packet`, `--contract`,
 `--knowledge-receipt`, `--runner-provenance`, `--run-directory`,
 `--execution-attestation`, `--context-receipt`, `--agent-run-id`,
