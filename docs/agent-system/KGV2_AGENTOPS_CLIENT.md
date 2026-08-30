@@ -134,8 +134,15 @@ does not prove recall.
 Runner artifact records bind `hashArtifact(...).aggregate_sha256`, even for a
 single file. The client verifies that canonical aggregate before a write, then
 uses the verified manifest entry's raw file SHA-256 for KGv2 source lineage and
-citation verification. A directory aggregate is evidence but is not itself a
-citable file anchor. Symlinks and cross-root real paths remain rejected.
+citation verification. The selected single-file anchor must also be a regular
+blob whose exact bytes exist at the outcome packet's `ending_head`; ignored or
+untracked run output is never a durable citation anchor. A directory aggregate
+is evidence but is not itself a citable file anchor. Symlinks, committed
+symlinks, cross-root real paths, and worktree bytes that differ from the
+accepted commit remain rejected. A recordable outcome therefore needs at least
+one exact-hash, Git-tracked single-file artifact in its evidence, evaluation, or
+artifact index; ephemeral runner evidence may prove the outcome but cannot be
+the KG lineage source.
 
 ## Current live measurement
 

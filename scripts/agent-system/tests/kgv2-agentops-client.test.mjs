@@ -18,11 +18,10 @@ function identity(root) {
 
 async function outcomeFixture(root) {
   const scope = identity(root);
-  const evidencePath = path.join(root, 'outcome-evidence.json');
-  await writeFile(evidencePath, '{"accepted":true}\n');
+  const evidencePath = path.join(root, 'scripts', 'agent-system', 'fixture.mjs');
   const evidenceHash = sha256(await readFile(evidencePath));
   const artifactHash = (await hashArtifact(root, evidencePath)).aggregate_sha256;
-  const artifact = { artifact_id: 'artifact_outcome_evidence', path: 'outcome-evidence.json', sha256: artifactHash };
+  const artifact = { artifact_id: 'artifact_outcome_evidence', path: 'scripts/agent-system/fixture.mjs', sha256: artifactHash };
   const packet = {
     outcome_version: '1.0.0', outcome_id: 'outcome_kgv2_fixture', run_id: 'run_kgv2_fixture_0001',
     contract_digest: 'a'.repeat(64), root, branch: scope.branch,
@@ -100,6 +99,7 @@ test('pinned AgentOps client satisfies all four provider-neutral port operations
   assert.equal(recall.fallback_status, 'none');
   assert.equal(recordedAnchor.sha256, evidenceHash, 'citation uses the verified file hash');
   assert.equal(recordedAnchor.artifact_sha256, artifactHash, 'anchor retains the canonical aggregate artifact hash');
+  assert.equal(recordedAnchor.commit, scope.commit, 'anchor is bound to the exact committed candidate');
 });
 
 test('read_context removes a cross-root citation and reports stale context without fallback', async () => {
@@ -237,6 +237,49 @@ test('record_outcome rejects a cross-root evidence anchor before invoking KGv2',
     invoke: async () => { invoked = true; return { accepted: true }; },
   });
   const receipt = await client.record_outcome(packet, {});
+  assert.equal(receipt.accepted, false);
+  assert.equal(invoked, false);
+  assert.deepEqual(receipt.rejected_reasons, ['no_exact_root_hash_verified_outcome_anchor']);
+});
+
+test('record_outcome rejects an ignored hash-valid run artifact that is not durable at the exact commit', async () => {
+  const root = await fixtureRoot();
+  const { packet, scope } = await outcomeFixture(root);
+  const ignoredPath = path.join(root, 'runs', 'evaluation.json');
+  await mkdir(path.dirname(ignoredPath), { recursive: true });
+  await writeFile(ignoredPath, '{"accepted":true}\n');
+  const ignored = {
+    artifact_id: 'artifact_ignored_run_output', path: 'runs/evaluation.json',
+    sha256: (await hashArtifact(root, ignoredPath)).aggregate_sha256,
+  };
+  packet.artifacts = [ignored];
+  packet.evaluation_index = [ignored];
+  packet.evidence_index = [ignored];
+  packet.packet_digest = digestObject(Object.fromEntries(Object.entries(packet).filter(([key]) => key !== 'packet_digest')));
+  let invoked = false;
+  const receipt = await createAgentOpsKgv2Client({
+    repoId: 'fixture', candidateInspector: () => scope,
+    outcomeProofVerifier: async () => ({ accepted: true }),
+    invoke: async () => { invoked = true; return { accepted: true }; },
+  }).record_outcome(packet, {});
+  assert.equal(receipt.accepted, false);
+  assert.equal(invoked, false);
+  assert.deepEqual(receipt.rejected_reasons, ['no_exact_root_hash_verified_outcome_anchor']);
+});
+
+test('record_outcome rejects hash-valid tracked worktree bytes that differ from the ending commit', async () => {
+  const root = await fixtureRoot();
+  const { packet, scope, evidencePath } = await outcomeFixture(root);
+  await writeFile(evidencePath, 'export const fixture = "modified after commit";\n');
+  const modifiedHash = (await hashArtifact(root, evidencePath)).aggregate_sha256;
+  for (const index of [packet.artifacts, packet.evaluation_index, packet.evidence_index]) index[0].sha256 = modifiedHash;
+  packet.packet_digest = digestObject(Object.fromEntries(Object.entries(packet).filter(([key]) => key !== 'packet_digest')));
+  let invoked = false;
+  const receipt = await createAgentOpsKgv2Client({
+    repoId: 'fixture', candidateInspector: () => scope,
+    outcomeProofVerifier: async () => ({ accepted: true }),
+    invoke: async () => { invoked = true; return { accepted: true }; },
+  }).record_outcome(packet, {});
   assert.equal(receipt.accepted, false);
   assert.equal(invoked, false);
   assert.deepEqual(receipt.rejected_reasons, ['no_exact_root_hash_verified_outcome_anchor']);

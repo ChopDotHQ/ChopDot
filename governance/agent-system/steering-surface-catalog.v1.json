@@ -35,7 +35,7 @@
       "scripts/"
     ],
     "repository_file_count": 700,
-    "repository_manifest_sha256": "e2a4d17bdfa2df265ffd079ce05c393d0359d7fe9e59b6d6e0b4094c59b33fdb"
+    "repository_manifest_sha256": "c1699265782e653e8b56bbd9b4d9f15ca8fb343e95a446fdab3dc599ae024b8c"
   },
   "lifecycle_summary": {
     "active": 241,
@@ -201,7 +201,7 @@
         "retry_exit": "Repair with a changed hypothesis and rerun focused plus core regression suites."
       },
       "file_count": 38,
-      "manifest_sha256": "bdbc1b3fdc562eaab29e2bda8aea9e7c012bd4e8ca02e3084f1a5538e24be960"
+      "manifest_sha256": "39db537172f403c90144162ffad97c878294ac8cf10af885dd1c5bf11806f7f5"
     },
     {
       "id": "architecture-decisions",
@@ -556,7 +556,7 @@
         "retry_exit": "Update source documentation after behavior is accepted, then rerun links and monitor checks."
       },
       "file_count": 5,
-      "manifest_sha256": "3de92b00ab577cd7bffde0fd478e1a85c746fbfc1ab7c3b9ce3a603afe9dce43"
+      "manifest_sha256": "0988ea9ddde9253e82216aaed4b25a44f9c611d5e9688ff23e174d9a524d1beb"
     },
     {
       "id": "portable-agent-contracts",
@@ -1912,8 +1912,8 @@
     {
       "surface_id": "repo-docs-agent-system-kgv2-agentops-client-md",
       "path": "docs/agent-system/KGV2_AGENTOPS_CLIENT.md",
-      "sha256": "f487cfff6e8fa9d552fc6ece78b33c782fbe1c55635775db0a20fc478970959e",
-      "bytes": 5822,
+      "sha256": "b1228c0a0ea1e58f482ec5f8dde6c929e58f013732f0993f9133ba757411e210",
+      "bytes": 6315,
       "group_id": "operating-documentation",
       "surface_kind": "method",
       "control_kind": "none",
@@ -9626,8 +9626,8 @@
     {
       "surface_id": "repo-scripts-agent-system-adapters-kgv2-agentops-client-mjs",
       "path": "scripts/agent-system/adapters/kgv2-agentops-client.mjs",
-      "sha256": "5a4037fc0265ffd75bd9d608284b3f2df66dd4fb552023480b67f550c42f350f",
-      "bytes": 24185,
+      "sha256": "3a029826dae3fd8fbdcae02dd66edb260d692debaad5a1d7374ce93ff017c988",
+      "bytes": 25737,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10088,8 +10088,8 @@
     {
       "surface_id": "repo-scripts-agent-system-tests-kgv2-agentops-client-test-mjs",
       "path": "scripts/agent-system/tests/kgv2-agentops-client.test.mjs",
-      "sha256": "5f7b9ed571f76af78788480dc06622bbe4af5e925a6facdc3da16cd472e871bc",
-      "bytes": 17051,
+      "sha256": "47524c771487d9af88dd74dfa15d35d837d9d60cfe613b2a6fba01d0d1a26561",
+      "bytes": 19501,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -14077,5 +14077,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "8ad8824771deff56f304fd9256e6cdc87d58661fc6839da3da97e3d11e21b19c"
+  "catalog_digest": "0a6b86d6d6c3c342fd631a98a47697332c583f415fb880b395970a3f51a2553c"
 }

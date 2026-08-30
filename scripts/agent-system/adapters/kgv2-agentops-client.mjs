@@ -202,6 +202,23 @@ function git(args, cwd) {
   return (result.stdout ?? '').trim();
 }
 
+function committedBlob(root, commit, relativePath) {
+  if (!/^[0-9a-f]{40}$/u.test(commit ?? '')) throw new Error('anchor_commit_invalid');
+  const result = spawnSync('/usr/bin/git', ['ls-tree', '-z', '--full-tree', commit, '--', relativePath], {
+    cwd: root, encoding: null, shell: false,
+  });
+  if (result.error) throw new Error(`git_spawn_failed:${result.error.code ?? result.error.message}`);
+  if (result.status !== 0) throw new Error((result.stderr ?? result.stdout ?? Buffer.alloc(0)).toString('utf8').trim() || 'anchor_tree_lookup_failed');
+  const records = result.stdout.toString('utf8').split('\0').filter(Boolean);
+  if (records.length !== 1) throw new Error('anchor_not_tracked_at_commit');
+  const match = /^(\d{6}) (\S+) ([0-9a-f]{40})\t(.+)$/u.exec(records[0]);
+  if (!match || match[2] !== 'blob' || match[1] === '120000' || match[4] !== relativePath) throw new Error('anchor_not_regular_committed_blob');
+  const blob = spawnSync('/usr/bin/git', ['cat-file', 'blob', match[3]], { cwd: root, encoding: null, shell: false });
+  if (blob.error) throw new Error(`git_spawn_failed:${blob.error.code ?? blob.error.message}`);
+  if (blob.status !== 0) throw new Error((blob.stderr ?? blob.stdout ?? Buffer.alloc(0)).toString('utf8').trim() || 'anchor_blob_read_failed');
+  return blob.stdout;
+}
+
 function defaultCandidateInspector(scopeInput, { requireClean = false } = {}) {
   const scope = normalizeKnowledgeScope(scopeInput);
   const exactRoot = path.resolve(scope.root);
@@ -264,7 +281,10 @@ async function findAnchor(packet) {
       if (!resolved.startsWith(`${root}${path.sep}`)) continue;
       const hashed = await hashArtifact(root, resolved);
       if (hashed.aggregate_sha256 !== entry.sha256 || hashed.manifest.length !== 1) continue;
-      return { path: resolved, sha256: hashed.manifest[0].sha256, artifact_sha256: entry.sha256 };
+      const relative = path.relative(root, resolved).split(path.sep).join('/');
+      const blob = committedBlob(root, packet.ending_head, relative);
+      if (sha256(blob) !== hashed.manifest[0].sha256) continue;
+      return { path: resolved, sha256: hashed.manifest[0].sha256, artifact_sha256: entry.sha256, commit: packet.ending_head };
     } catch { /* try the next declared evidence artifact */ }
   }
   throw new Error('no_exact_root_hash_verified_outcome_anchor');
