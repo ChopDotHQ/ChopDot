@@ -233,11 +233,12 @@ jobs:
           node --test
           scripts/agent-system/tests/knowledge-adapters.test.mjs
           scripts/agent-system/tests/adapters-compat-cli.test.mjs
+          scripts/agent-system/tests/kgv2-agentops-client.test.mjs
       - name: Publish summary
         if: always()
         run: |
           echo "## Knowledge adapters" >> "$GITHUB_STEP_SUMMARY"
-          echo "Conformance is scoped to exact-source, Repo Graph fixture, KGv2 fixture/runtime preflight, and mock KGv3." >> "$GITHUB_STEP_SUMMARY"
+          echo "Conformance is scoped to exact-source, Repo Graph fixture, KGv2 fixture/runtime preflight, the pinned AgentOps KGv2 client, and mock KGv3." >> "$GITHUB_STEP_SUMMARY"
           echo "Knowledge recall never promotes evidence or creates product authority." >> "$GITHUB_STEP_SUMMARY"
       - name: Upload evidence
         if: always()
@@ -268,6 +269,11 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Check steering-surface registry and generated catalog
+        run: >-
+          node scripts/agent-governance/steering-surfaces.mjs check
+          --require-promoted
+          --json-out="$GOVERNANCE_REPORT_ROOT/steering-surfaces.json"
       - name: Validate repository invariants and provider independence
         run: >-
           node scripts/agent-governance/validate-repository.mjs

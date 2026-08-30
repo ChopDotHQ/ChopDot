@@ -39,6 +39,98 @@ It may not:
   the applicable human approval; or
 - describe source existence as implementation, live use, or release proof.
 
+## Complete steering-surface registry
+
+`steering-surface-registry.v1.json` is the intentional source registry for
+everything known to shape an agent's ChopDot decisions or execution: product
+authority, decision records, methods, profiles, schemas, rubrics, policies,
+executors, hooks, workflows, generated context, machine-local skills, external
+agents, knowledge bridges, and runtime-injected classes. Its purpose is to make
+cognitive influence visible, owned, lifecycle-bound, and reviewable. It is not
+a second product cockpit and cannot choose what ChopDot should build.
+
+The deterministic monitor in
+`scripts/agent-governance/steering-surfaces.mjs` discovers repository surfaces
+under the declared roots, hashes each file, validates framework/profile
+relationships and external identities, and writes two read models:
+
+- `steering-surface-catalog.v1.json` — the complete path, kind, lifecycle,
+  owner, activation mode, and SHA-256 census;
+- `docs/agent-system/STEERING_SURFACE_HEALTH.md` — the human-readable aggregate,
+  lifecycle, and expected-verdict view.
+
+Run:
+
+```bash
+npm run agent:steering:report
+npm run agent:steering:check
+```
+
+Use `npm run agent:steering:build` only after an intentional registry or
+steering-source change, then review both generated diffs and rerun the check.
+Check mode is read-only and must never rewrite authority to make itself pass.
+
+The monitor's outcomes are deliberately bounded:
+
+- `pass` — the registry, catalog, hashes, framework/profile bindings, freshness,
+  and required local identities are coherent;
+- `degraded` — only optional unavailable or deliberately guarded/degraded
+  surfaces remain, and their IDs are explicit;
+- `blocked` — schema or semantic validation failed, a controlled file is
+  uncatalogued, a generated output is stale, a required surface is missing, an
+  external digest changed, or the registry review is overdue.
+
+None of these outcomes proves product correctness, implementation, testing,
+deployment, reachability, ownership, or live-user acceptance. A passing
+catalog says that the declared steering system is internally accounted for;
+the applicable product and release gates still decide their own claims.
+
+Machine-local and cross-root surfaces are never silently treated as current
+worktree truth. Quarantined or retired surfaces have activation disabled. An
+optional missing surface appears as unavailable/degraded rather than making a
+portable clone unusable. The canonical-checkout AgentOps context and the two
+AutoBots ChopDot agents currently remain quarantined and must not be automatic
+read or execution routes.
+
+## Definition framework versus profile
+
+The portable
+`frameworks/evidence-bound-definition-loop.v1.json` defines the generic
+Evidence-Bound Definition Loop. It requires a decision target, authoritative
+inputs, observable expected outcome, evaluation criteria, proving evidence,
+failure/blocker behavior, owner/authority, and retry/exit rule. It structures
+how an answer is defined and verified; it must not supply the answer, product
+law, priority, taste, approval, or release verdict.
+
+`profiles/experience-definition.v1.json` is the Experience Definition profile
+over that framework. It selects domain-specific outputs and evidence for
+people, jobs, permissions, information architecture, navigation, states,
+brand, interaction, responsive behavior, accessibility, and real-screen
+review. It must not turn one earlier product choice—such as a home pattern,
+dashboard prohibition, or universal first action—into a reusable method rule.
+Other domains should add their own profiles while keeping the framework
+unchanged.
+
+## Lifecycle, upgrade, and retirement
+
+Every registered surface declares an accountable owner, allowed and forbidden
+influence, activation mode, lifecycle, expected outcome, evidence, failure
+behavior, and retry/exit condition. Lifecycle changes are reviewed source
+changes, never monitor side effects:
+
+1. `candidate` surfaces remain explicit-only until their intended outcome and
+   evidence are reviewed.
+2. `active` surfaces may activate only through their declared route.
+3. `degraded` surfaces stay bounded while an owner records the limitation and
+   repair or replacement.
+4. `quarantined`, `superseded`, and `retired` surfaces have activation disabled;
+   historical evidence remains discoverable but cannot steer current work.
+5. An upgrade names the changed capability or assumption, supplies new evidence,
+   updates compatibility and trusted identity where applicable, regenerates the
+   catalog, and passes hostile monitor tests before activation.
+6. A retirement disables activation first, records the replacement or reason,
+   preserves audit history, and only then advances the lifecycle.
+
 ## System shape
 
 ```text

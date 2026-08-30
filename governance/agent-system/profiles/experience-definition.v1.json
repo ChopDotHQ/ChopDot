@@ -1,0 +1,53 @@
+{
+  "schema": "chopdot.definition-profile.v1",
+  "profile_id": "experience-definition",
+  "version": "1.0.0",
+  "status": "active",
+  "framework_ref": "../frameworks/evidence-bound-definition-loop.v1.json",
+  "authority": "Domain profile only. It defines what evidence a user-experience proposal must contain; it may not invent product hierarchy, a universal action, brand direction, or feature priority.",
+  "applies_when": [
+    "defining or changing information architecture",
+    "defining or changing navigation or home composition",
+    "defining or changing a user-facing journey",
+    "defining or changing brand, visual, interaction, or content systems",
+    "evaluating parity with category benchmarks"
+  ],
+  "required_outputs": [
+    "people, states, jobs, and permissions map",
+    "feature and category-baseline coverage",
+    "information architecture and navigation model",
+    "state-specific actions and open-action prompting rules",
+    "first, normal, empty, loading, error, recovery, and after states",
+    "brand and visual-system rationale",
+    "responsive and accessibility behavior",
+    "explicit alternatives, rejected assumptions, and unresolved questions"
+  ],
+  "evaluation_criteria": [
+    "the proposal covers the accepted product scope and category baseline",
+    "hierarchy follows cited product decisions rather than a method preference",
+    "navigation remains understandable without an agent explaining it",
+    "open actions are contextual prompts rather than a forced universal entrance",
+    "visual and brand choices have a stated purpose and consistent system",
+    "normal, failure, recovery, and post-action states remain usable",
+    "real screens are reviewed at declared mobile and desktop viewports",
+    "accessibility requirements are tested against the accepted behavior"
+  ],
+  "proving_evidence": [
+    "traceability from each material choice to current authority or measured benchmark evidence",
+    "state and journey coverage mapped to observable acceptance criteria",
+    "real rendered screenshots and click-through observations at declared viewports",
+    "an independent requirement-bound review with failures and limitations recorded"
+  ],
+  "forbidden_inferences": [
+    "one action is best for every user, screen, or state",
+    "a dashboard, homebase, feed, wizard, or another pattern is inherently right or wrong",
+    "a design skill or benchmark example can override product authority",
+    "a visually polished screen proves feature, authority, or end-to-end completeness",
+    "repetition across derivative prompts is independent evidence"
+  ],
+  "expected_outcome": {
+    "statement": "A complete, traceable experience definition that downstream design and implementation agents can execute without silently inventing product scope, hierarchy, or success criteria.",
+    "failure": "Return failed_verification or blocked with the missing authority, evidence, state coverage, or unresolved choice named explicitly.",
+    "retry_exit": "Repair only with a changed hypothesis or new evidence; exit when all declared criteria pass or the finite budget reaches a terminal state."
+  }
+}

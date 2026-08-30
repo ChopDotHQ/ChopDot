@@ -228,6 +228,21 @@ export async function validateSystem(root = process.cwd()) {
     const result = validateJsonSchemaDefinition(await readJson(file));
     results.push({ file: path.relative(exactRoot, file), ...result });
   }
+  for (const file of await jsonFiles(path.join(governanceRoot, 'frameworks'))) {
+    const result = validateGovernanceInstance(await readJson(file), 'definition-framework.v1.schema.json');
+    results.push({ file: path.relative(exactRoot, file), ...result });
+  }
+  for (const file of await jsonFiles(path.join(governanceRoot, 'profiles'))) {
+    const result = validateGovernanceInstance(await readJson(file), 'definition-profile.v1.schema.json');
+    results.push({ file: path.relative(exactRoot, file), ...result });
+  }
+  const steeringRegistry = path.join(governanceRoot, 'steering-surface-registry.v1.json');
+  try {
+    const result = validateGovernanceInstance(await readJson(steeringRegistry), 'steering-surface-registry.v1.schema.json');
+    results.push({ file: path.relative(exactRoot, steeringRegistry), ...result });
+  } catch (error) {
+    results.push({ file: path.relative(exactRoot, steeringRegistry), valid: false, issues: [issue('$', `Steering registry is unavailable or invalid JSON: ${error.message}`, 'missing')] });
+  }
   for (const file of await jsonFiles(path.join(governanceRoot, 'evals', 'rubrics'))) {
     const result = validateRubric(await readJson(file));
     results.push({ file: path.relative(exactRoot, file), ...result });

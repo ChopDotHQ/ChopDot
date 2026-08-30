@@ -16,6 +16,7 @@ import { startRun } from '../../agent-system/runner.mjs';
 import { fixturePreflightIdentity, recordPassingMeasurementEvidence } from '../../agent-system/tests/helpers.mjs';
 import { digestObject, sha256File } from '../lib.mjs';
 import { buildGithubExecutionAttestation } from '../execution-attestation.mjs';
+import { runSteeringMonitor } from '../steering-surfaces.mjs';
 import {
   adoptionPolicyFailures, buildContextReceipt, classifyChangedPaths,
   hookHealth, replayAcceptanceReceipt, validateAcceptance as rawValidateAcceptance,
@@ -25,6 +26,10 @@ const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 const fixtureKeys = generateKeyPairSync('rsa', { modulusLength: 2048 });
 const fixtureJwk = { ...fixtureKeys.publicKey.export({ format: 'jwk' }), kid: 'fixture-key', alg: 'RS256', use: 'sig' };
 const fixtureAttestations = new Map();
+const STEERING_NOW = new Date('2026-08-28T13:00:00.000Z');
+const STEERING_REGISTRY_PATH = 'governance/agent-system/steering-surface-registry.v1.json';
+const STEERING_CATALOG_PATH = 'governance/agent-system/steering-surface-catalog.v1.json';
+const STEERING_HEALTH_PATH = 'docs/agent-system/STEERING_SURFACE_HEALTH.md';
 
 function validateAcceptance(options) {
   return rawValidateAcceptance({ ...(fixtureAttestations.get(fs.realpathSync(options.root)) ?? {}), ...options });
@@ -42,12 +47,90 @@ function run(root, args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
 }
 
+function fixtureSteeringRegistry() {
+  const authority = {
+    may_influence: ['fixture routing evidence'],
+    must_not_decide: ['product law', 'acceptance without evidence'],
+  };
+  const expectedOutcome = {
+    statement: 'The fixture exposes steering integrity and degraded state without deciding route relevance.',
+    evidence: ['standalone monitor receipt'],
+    failure: 'Block the fixture receipt when generated identity drifts.',
+    retry_exit: 'Regenerate fixture outputs and rerun the same context test.',
+  };
+  return {
+    schema: 'chopdot.steering-surface-registry.v1',
+    registry_id: 'chopdot-steering-surfaces',
+    version: '1.0.0',
+    status: 'active',
+    authority: 'Fixture inventory and monitoring only; never product law, priority, route relevance, or approval.',
+    accountable_owner: 'fixture owner',
+    reviewed_on: '2026-08-28',
+    review_interval_days: 30,
+    discovery_roots: ['governance/agent-system/', 'product/', 'scripts/agent-governance/'],
+    surface_groups: [{
+      id: 'fixture-steering',
+      surface_kind: 'validator',
+      control_kind: 'gate',
+      domain: 'agent_governance',
+      influence_class: 'operating_method',
+      lifecycle: 'degraded',
+      activation_mode: 'routed',
+      accountable_owner: 'fixture owner',
+      patterns: ['governance/agent-system/**', 'product/**', 'scripts/agent-governance/**'],
+      allow_empty: false,
+      authority,
+      expected_outcome: expectedOutcome,
+    }],
+    external_discovery: [{
+      id: 'fixture-external-census',
+      lifecycle: 'active',
+      activation_mode: 'automatic',
+      accountable_owner: 'fixture owner',
+      presence_policy: 'optional',
+      locator: { base: 'exact_worktree_root', path: '.fixture-skills' },
+      patterns: ['*/SKILL.md'],
+      authority,
+      expected_outcome: expectedOutcome,
+    }],
+    external_surfaces: [],
+    runtime_classes: [],
+    lifecycle_reviews: [
+      {
+        surface_id: 'fixture-steering', lifecycle: 'degraded', reviewed_on: '2026-08-28', review_interval_days: 30,
+        reason: 'Deliberately degraded to prove structured receipt limitations without failing unrelated work.', replacement: null,
+      },
+      {
+        surface_id: 'fixture-external-census', lifecycle: 'active', reviewed_on: '2026-08-28', review_interval_days: 30,
+        reason: 'Optional external discovery remains observable in the standalone fixture monitor.', replacement: null,
+      },
+    ],
+    generated_outputs: { catalog: STEERING_CATALOG_PATH, health_report: STEERING_HEALTH_PATH },
+  };
+}
+
+function syncFixtureSteeringOutputs(root) {
+  const initial = runSteeringMonitor(root, { now: STEERING_NOW });
+  for (const [relative, content] of [
+    [STEERING_CATALOG_PATH, initial._generated.catalog],
+    [STEERING_HEALTH_PATH, initial._generated.health],
+  ]) {
+    const file = path.join(root, relative);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, content);
+  }
+  const result = runSteeringMonitor(root, { now: STEERING_NOW });
+  assert.notEqual(result.verdict, 'blocked', `fixture steering monitor failed: ${result.drifts.join('; ')}`);
+  return result;
+}
+
 async function fixture(options = {}) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-adoption-')));
   run(root, ['init', '-q', '-b', 'main']);
   run(root, ['config', 'user.email', 'fixture@example.invalid']);
   run(root, ['config', 'user.name', 'Fixture']);
   fs.mkdirSync(path.join(root, 'governance/agent-system/policies'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'governance/agent-system/contracts'), { recursive: true });
   fs.mkdirSync(path.join(root, 'product'), { recursive: true });
   fs.mkdirSync(path.join(root, 'docs/release'), { recursive: true });
   fs.mkdirSync(path.join(root, 'scripts/agent-governance'), { recursive: true });
@@ -60,7 +143,20 @@ async function fixture(options = {}) {
     path.join(repositoryRoot, 'governance/agent-system/project-authority.v1.json'),
     path.join(root, 'governance/agent-system/project-authority.v1.json'),
   );
-  fs.writeFileSync(path.join(root, '.gitignore'), 'output/\ndocs/release/current-release-state.json\n');
+  for (const schema of ['definition-framework.v1.schema.json', 'definition-profile.v1.schema.json']) {
+    fs.copyFileSync(
+      path.join(repositoryRoot, 'governance/agent-system/contracts', schema),
+      path.join(root, 'governance/agent-system/contracts', schema),
+    );
+  }
+  fs.writeFileSync(path.join(root, STEERING_REGISTRY_PATH), `${JSON.stringify(fixtureSteeringRegistry(), null, 2)}\n`);
+  fs.writeFileSync(path.join(root, '.gitignore'), [
+    'output/',
+    'docs/release/current-release-state.json',
+    STEERING_CATALOG_PATH,
+    STEERING_HEALTH_PATH,
+    '',
+  ].join('\n'));
   fs.writeFileSync(path.join(root, 'PRODUCT_TRUTH.md'), '# Product truth\nExact authority.\n');
   fs.writeFileSync(path.join(root, 'product/cards.md'), [
     '## P-001 - Fixture',
@@ -97,6 +193,7 @@ async function fixture(options = {}) {
         cwd: root, expected_exit_code: 0, timeout_seconds: 10,
       }],
     });
+    contract.context.max_age_seconds = 31_536_000;
     contract.knowledge_policy.preflight_required = false;
     fs.writeFileSync(path.join(root, 'output/contract.json'), JSON.stringify(contract));
     ({ run_directory: runDirectory } = await startRun(contract, {
@@ -110,6 +207,7 @@ async function fixture(options = {}) {
   const head = run(root, ['rev-parse', 'HEAD']);
   const tree = run(root, ['rev-parse', 'HEAD^{tree}']);
   if (options.contractStartsAtCandidate) await startFixtureRun(head, tree);
+  const steering = syncFixtureSteeringOutputs(root);
   fs.writeFileSync(path.join(root, 'docs/release/current-release-state.json'), JSON.stringify({
     kgv2: {
       current_outcome_known: true, repo_root: root, branch: 'main', latest_packet_commit: head,
@@ -210,7 +308,7 @@ async function fixture(options = {}) {
   fixtureAttestations.set(root, acceptanceAttestation);
   return {
     root, head, tree, packet, recall, contract, evaluation, provenance, runDirectory, releaseAttestation,
-    acceptanceAttestation,
+    acceptanceAttestation, steering,
   };
 }
 
@@ -243,6 +341,36 @@ test('context receipt binds exact identity and fails when an authority digest dr
   const drifted = buildContextReceipt({ root: value.root, loopProfile: 'implementation', now: new Date('2026-08-27T13:00:00Z') });
   assert.equal(drifted.verdict, 'unverified');
   assert(drifted.reasons.some((entry) => entry.includes('digest changed')));
+});
+
+test('degraded steering is recorded with identity and limitations without automatically failing context', async () => {
+  const value = await fixture();
+  const receipt = buildContextReceipt({ root: value.root, loopProfile: 'implementation', now: new Date('2026-08-28T13:00:00Z') });
+
+  assert.equal(receipt.verdict, 'governed', JSON.stringify(receipt.reasons));
+  assert.equal(receipt.steering_state.monitor_verdict, 'degraded');
+  assert.equal(receipt.steering_state.route_relevance, 'not_evaluated');
+  assert.ok(receipt.steering_state.degraded_surface_ids.includes('fixture-steering'));
+  assert.ok(receipt.steering_state.disabled_surface_ids.includes('fixture-external-census'));
+  assert.deepEqual(receipt.steering_state.drifts, []);
+  assert.match(receipt.steering_state.registry_sha256, /^[0-9a-f]{64}$/u);
+  assert.match(receipt.steering_state.registry_semantic_digest, /^[0-9a-f]{64}$/u);
+  assert.match(receipt.steering_state.catalog_digest, /^[0-9a-f]{64}$/u);
+  assert.match(receipt.steering_state.repository_manifest_sha256, /^[0-9a-f]{64}$/u);
+  assert.match(receipt.steering_state.worktree_manifest_sha256, /^[0-9a-f]{64}$/u);
+  assert.ok(receipt.steering_state.limitations.some((entry) => /relevance.+not evaluated/iu.test(entry)));
+});
+
+test('blocked steering remains unverified and preserves its exact drift evidence', async () => {
+  const value = await fixture();
+  fs.appendFileSync(path.join(value.root, 'scripts/agent-governance/change.mjs'), '// unsynchronized steering mutation\n');
+  const receipt = buildContextReceipt({ root: value.root, loopProfile: 'implementation', now: new Date('2026-08-28T13:00:00Z') });
+
+  assert.equal(receipt.verdict, 'unverified');
+  assert.equal(receipt.steering_state.monitor_verdict, 'blocked');
+  assert.equal(receipt.steering_state.route_relevance, 'not_evaluated');
+  assert.ok(receipt.steering_state.drifts.some((entry) => /generated catalog.+stale/iu.test(entry)));
+  assert.ok(receipt.reasons.some((entry) => entry.startsWith('steering surface monitor:')));
 });
 
 test('task-start context fails stale knowledge while exact recalled candidate can pass acceptance', async () => {

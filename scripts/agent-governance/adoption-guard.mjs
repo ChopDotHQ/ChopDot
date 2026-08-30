@@ -17,6 +17,7 @@ import { validateAgentContract, validateContractProfileAlignment } from '../agen
 import { nextBuildingProductCard } from '../product-card-ranking.mjs';
 import { decodeJwt, RELEASE_ENVIRONMENT, verifyGithubExecutionAttestation } from './execution-attestation.mjs';
 import { digestObject, parseArgs, readJson, sha256File, writeReport } from './lib.mjs';
+import { runSteeringMonitor } from './steering-surfaces.mjs';
 
 const POLICY_PATH = 'governance/agent-system/policies/adoption-boundary.v1.json';
 const CONTEXT_PATH = 'product/context-authority.json';
@@ -221,6 +222,33 @@ export function buildContextReceipt({
   const portableCi = process.env.GITHUB_ACTIONS === 'true';
   if (!portableCi && path.resolve(manifest.exact_root ?? '') !== root) failures.push('context manifest exact_root differs from current root');
   if (!portableCi && manifest.branch !== candidate.branch) failures.push('context manifest branch differs from current branch');
+  const steering = runSteeringMonitor(root, { now, requirePromoted: portableCi });
+  if (steering.verdict === 'blocked') {
+    failures.push(...steering.drifts.map((reason) => `steering surface monitor: ${reason}`));
+  }
+  const degradedSurfaceIds = unique(steering.degraded_surface_ids ?? []);
+  const disabledSurfaceIds = unique(steering.disabled_surface_ids ?? []);
+  const steeringLimitations = unique([
+    ...(steering.limitations ?? []),
+    ...(steering.verdict === 'degraded'
+      ? [`Steering is degraded for ${degradedSurfaceIds.join(', ') || 'unidentified surfaces'}; relevance to the ${surface} route was not evaluated.`]
+      : []),
+  ]);
+  const steeringState = {
+    monitor_verdict: steering.verdict,
+    registry_path: steering.registry.path,
+    registry_sha256: steering.registry.sha256,
+    registry_semantic_digest: steering.registry.semantic_digest,
+    catalog_path: steering.catalog.path,
+    catalog_digest: steering.catalog.digest,
+    repository_manifest_sha256: steering.catalog.repository_manifest_sha256,
+    worktree_manifest_sha256: steering.worktree.working_tree_manifest_sha256,
+    degraded_surface_ids: degradedSurfaceIds,
+    disabled_surface_ids: disabledSurfaceIds,
+    drifts: unique(steering.drifts ?? []),
+    route_relevance: 'not_evaluated',
+    limitations: steeringLimitations,
+  };
   const sources = sourceReceipt(root, manifest, now);
   failures.push(...sources.failures);
   const observedKnowledge = knowledgeOverride ?? knowledgeState(root, candidate);
@@ -232,7 +260,7 @@ export function buildContextReceipt({
   const base = {
     receipt_version: '1.0.0', surface, loop_profile: loopProfile,
     candidate, governing_sources: sources.records, active_product_card: activeProductCard(root),
-    knowledge_state: observedKnowledge,
+    knowledge_state: observedKnowledge, steering_state: steeringState,
     verdict: failures.length ? 'unverified' : 'governed', reasons: unique(failures), created_at: now.toISOString(),
   };
   const receiptId = `context_receipt_${digestObject(base).slice(0, 12)}`;

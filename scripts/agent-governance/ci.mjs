@@ -7,6 +7,12 @@ import { pathToFileURL } from 'node:url';
 import { parseArgs } from './lib.mjs';
 
 const GOVERNANCE_COMMANDS = [
+  ['node', ['scripts/agent-governance/steering-surfaces.mjs', 'check', '--require-promoted']],
+  ['node', ['--test',
+    'scripts/agent-governance/tests/steering-surfaces.test.mjs',
+    'scripts/agent-governance/tests/steering-wiring.test.mjs',
+    'scripts/agent-governance/tests/steering-schedule.test.mjs',
+  ]],
   ['node', ['scripts/agent-system/cli.mjs', 'ci']],
   ['node', ['--test',
     'scripts/agent-system/tests/core-contract.test.mjs',
@@ -16,6 +22,7 @@ const GOVERNANCE_COMMANDS = [
     'scripts/agent-system/tests/fail-closed.test.mjs',
     'scripts/agent-system/tests/knowledge-adapters.test.mjs',
     'scripts/agent-system/tests/adapters-compat-cli.test.mjs',
+    'scripts/agent-system/tests/kgv2-agentops-client.test.mjs',
   ]],
   ['node', ['scripts/agent-governance/validate-repository.mjs']],
   ['node', ['scripts/agent-governance/adoption-guard.mjs', 'hooks-check']],

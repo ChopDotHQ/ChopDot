@@ -30,8 +30,33 @@ against this exact worktree and commit.
 
 ## Read-order gate
 
-Run `npm run context:validate` before relying on this order. Generated files
-are navigation/read models and must never be edited as authority.
+Before entering the required product read order, inspect the steering registry
+and its generated health report, then run:
+
+```bash
+npm run agent:steering:check
+npm run context:validate
+```
+
+The steering check proves that the declared catalog, hashes, lifecycle states,
+framework/profile bindings, and required local identities remain coherent. A
+`blocked` result stops governed work until the named drift is resolved. A
+`degraded` result permits work only after the unavailable, guarded, or
+explicitly degraded surfaces are recorded in the task evidence and none is
+required by the selected route. A `pass` is a routing precondition, not proof
+that a product decision is right, code works, or a release is deployed.
+
+The generated catalog and health report are navigation/read models and must
+never be edited as authority. Change the source registry deliberately, run
+`npm run agent:steering:build`, review the generated diff, and then rerun the
+check.
+
+Canonical-checkout `.local-private/agentops/**` context and the AutoBots
+`chopdot-daily-operator` and `chopdot-product-systems-steward` definitions are
+quarantined cross-root surfaces in the registry. Do not read, invoke, or route
+through them automatically. They remain supporting evidence only until their
+exact-root identity, freshness, authority, and replacement route are reviewed
+and their lifecycle is deliberately upgraded in the registry.
 
 Create a machine-readable context receipt before non-trivial work:
 
@@ -95,6 +120,24 @@ Run these routing gates before claiming the agent system is usable:
 Outcome packets may supply evidence to Cockpit, PR, CI, release, and knowledge
 surfaces. They may not change product priority, product score, participant
 authority, or product law.
+
+## Definition framework and domain profiles
+
+The portable Evidence-Bound Definition Loop at
+`governance/agent-system/frameworks/evidence-bound-definition-loop.v1.json`
+is a method contract, not a source of answers. It requires every definition
+task to name its decision target, authoritative inputs, observable expected
+outcome, evaluation criteria, proving evidence, failure/blocker behavior,
+owner/authority, and retry/exit rule. It may be reused in another domain
+without carrying ChopDot product choices with it.
+
+The Experience Definition file at
+`governance/agent-system/profiles/experience-definition.v1.json` is one domain
+profile over that framework. It adds the evidence needed for user experience,
+information architecture, navigation, brand, interaction, responsive, and
+accessibility work. It cannot declare a universal home pattern, primary action,
+visual style, or feature priority. Those answers must trace to current product
+authority and measured category evidence.
 
 ## Unavoidable acceptance boundary
 

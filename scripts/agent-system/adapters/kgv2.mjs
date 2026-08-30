@@ -21,11 +21,11 @@ export function createKgv2Adapter(client, options = {}) {
       if (result?.context_version) return result;
       return { context_version: '1.0.0', request_id: result.request_id, scope: normalizeKnowledgeScope(scope), question, authority_policy: typeof authorityPolicy === 'string' ? authorityPolicy : 'kgv2-bridge', ...metadata, runtime: result.runtime ?? metadata.runtime, active_read_path: result.active_read_path ?? metadata.active_read_path, fallback_status: result.fallback_status ?? 'none', facts: result.facts ?? [], citations: result.citations ?? [], source_identities: result.source_identities ?? result.cited_source_identities ?? [], freshness: result.freshness, confidence: result.confidence ?? 0, stale_reasons: result.stale_reasons ?? [], current_outcome_digest: result.current_outcome_digest ?? null, observed_at: result.observed_at };
     },
-    async record_outcome(packet) {
+    async record_outcome(packet, proof) {
       const validation = validateOutcomePacket(packet);
       if (!validation.valid) return receiptBase('record_outcome', { ...metadata, accepted: false, rejected_reasons: validation.issues.map((entry) => `invalid_outcome:${entry}`) });
       if (!client?.record_outcome) unavailable('record_outcome');
-      const result = await client.record_outcome(packet);
+      const result = await client.record_outcome(packet, proof);
       if (result?.receipt_version) return result;
       return receiptBase('record_outcome', { ...metadata, accepted: result.accepted === true, rejected_reasons: result.rejected_reasons ?? [], durable_record_id: result.durable_record_id ?? null, stored_packet_digest: result.stored_packet_digest ?? null, stored_artifact_digests: result.stored_artifact_digests ?? [], current_outcome_digest: result.stored_packet_digest ?? null });
     },

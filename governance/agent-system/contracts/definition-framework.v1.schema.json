@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/schemas/definition-framework.v1.schema.json",
+  "title": "Evidence-bound definition framework",
+  "type": "object",
+  "required": [
+    "schema",
+    "framework_id",
+    "version",
+    "status",
+    "portable",
+    "authority",
+    "purpose",
+    "required_contract",
+    "stages",
+    "terminal_states",
+    "hard_stops"
+  ],
+  "properties": {
+    "schema": { "const": "chopdot.definition-framework.v1" },
+    "framework_id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "status": { "enum": ["experimental", "active", "superseded", "retired"] },
+    "portable": { "const": true },
+    "authority": { "type": "string", "minLength": 20 },
+    "purpose": { "type": "string", "minLength": 20 },
+    "required_contract": {
+      "type": "array",
+      "minItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "decision_target",
+          "authoritative_inputs",
+          "expected_outcome",
+          "evaluation_criteria",
+          "proving_evidence",
+          "failure_or_blocker",
+          "owner_and_authority",
+          "retry_and_exit"
+        ]
+      },
+      "allOf": [
+        { "contains": { "const": "decision_target" } },
+        { "contains": { "const": "authoritative_inputs" } },
+        { "contains": { "const": "expected_outcome" } },
+        { "contains": { "const": "evaluation_criteria" } },
+        { "contains": { "const": "proving_evidence" } },
+        { "contains": { "const": "failure_or_blocker" } },
+        { "contains": { "const": "owner_and_authority" } },
+        { "contains": { "const": "retry_and_exit" } }
+      ]
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 6,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 3 }
+    },
+    "terminal_states": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": { "enum": ["accepted", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"] }
+    },
+    "hard_stops": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 8 }
+    }
+  },
+  "additionalProperties": false
+}
