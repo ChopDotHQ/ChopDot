@@ -130,6 +130,7 @@ function syncFixtureSteeringOutputs(root) {
 
 async function fixture(options = {}) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-adoption-')));
+  const candidatePath = options.candidatePath ?? 'tests/change.mjs';
   run(root, ['init', '-q', '-b', 'main']);
   run(root, ['config', 'user.email', 'fixture@example.invalid']);
   run(root, ['config', 'user.name', 'Fixture']);
@@ -200,9 +201,9 @@ async function fixture(options = {}) {
       root, loopProfile: 'implementation', branch: 'main', startingHead,
       startingTree, sourcePath: 'PRODUCT_TRUTH.md', createdAt: '2026-08-27T12:00:00.000Z',
       runId: 'run_adoption_fixture_001', createdBy: 'fixture-agent', createdByKind: 'agent',
-      inPaths: ['tests'], allowedWrites: ['tests'],
+      inPaths: [path.posix.dirname(candidatePath)], allowedWrites: [path.posix.dirname(candidatePath)],
       deterministicCommands: [{
-        id: 'CHECK-ADOPTION-FIXTURE', command: `${process.execPath} --check tests/change.mjs`,
+        id: 'CHECK-ADOPTION-FIXTURE', command: `${process.execPath} --check ${candidatePath}`,
         cwd: root, expected_exit_code: 0, timeout_seconds: 10,
       }],
     });
@@ -214,7 +215,6 @@ async function fixture(options = {}) {
     }));
   };
   if (!options.contractStartsAtCandidate) await startFixtureRun(baseHead, baseTree);
-  const candidatePath = options.candidatePath ?? 'tests/change.mjs';
   fs.mkdirSync(path.dirname(path.join(root, candidatePath)), { recursive: true });
   fs.writeFileSync(path.join(root, candidatePath), 'export const changed = true;\n');
   run(root, ['add', candidatePath]);
@@ -559,6 +559,55 @@ test('adoption policy defaults every tracked path to a governed loop class', () 
   assert.equal(classified.find((entry) => entry.path === 'PRODUCT_TRUTH.md').rule.id, 'product-law');
   assert.equal(classified.find((entry) => entry.path === 'unknown.txt').rule.id, 'repository-default');
   assert.equal(classifyChangedPaths(policy, ['docs/release/current-release-state.json'])[0].rule.id, 'documentation-research');
+});
+
+test('only reserved release-script namespaces route as release while directory semantics remain bounded', () => {
+  const policy = JSON.parse(fs.readFileSync(path.join(repositoryRoot, 'governance/agent-system/policies/adoption-boundary.v1.json')));
+  const intended = [
+    'scripts/prepare-dot-host-release.mjs',
+    'scripts/readback-dot-host-release.mjs',
+    'scripts/record-dot-host-promotion.mjs',
+    'scripts/recovery-head-deployment.mjs',
+    'scripts/verify-dot-host-rebuild.mjs',
+    'scripts/verify-dot-host.mjs',
+    'scripts/record-dot-host-rollback.mjs',
+    'scripts/readback-dot-host-promotion.mjs',
+    'scripts/prepare-dot-host-release-v2.mjs',
+    'scripts/verify-dot-host-release.mjs',
+    'scripts/verify-dot-host-public.mjs',
+    'scripts/recovery-head-deployment-v2.mjs',
+    'scripts/verify-dot-host-backdoor.mjs',
+  ];
+  const hostileNearMisses = [
+    'scripts/prepare-dot-hostile-release.mjs',
+    'scripts/readbacks-dot-host-release.mjs',
+    'scripts/recording-dot-host-promotion.mjs',
+    'scripts/recovery-head-deployments.mjs',
+    'scripts/verify-dot-hostile.mjs',
+    'scripts/verify-dot-host/nested.mjs',
+    'scripts/record-user-analytics.mjs',
+    'scripts/readback-local-cache.mjs',
+    'scripts/prepare-dot-host-other.mjs',
+  ];
+  const classified = classifyChangedPaths(policy, [...intended, ...hostileNearMisses, 'deployment/nested/release.json']);
+  for (const relative of intended) assert.equal(classified.find((entry) => entry.path === relative).rule.id, 'release', relative);
+  for (const relative of hostileNearMisses) assert.equal(classified.find((entry) => entry.path === relative).rule.id, 'repository-default', relative);
+  assert.equal(classified.find((entry) => entry.path === 'scripts/verify-dot-host-backdoor.mjs').rule.id, 'release', 'verify-dot-host-* is a deliberately reserved release namespace');
+  assert.equal(classified.find((entry) => entry.path === 'deployment/nested/release.json').rule.id, 'release');
+});
+
+test('exact release-script routing enforces both an allowed profile and release evidence', async () => {
+  const value = await fixture({ candidatePath: 'scripts/verify-dot-host.mjs' });
+  const receipt = await validateAcceptance({
+    root: value.root, surface: 'product_finish', changedPaths: ['scripts/verify-dot-host.mjs'],
+    outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
+    knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
+    expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
+    now: new Date('2026-08-27T13:00:00Z'),
+  });
+  assert.equal(receipt.verdict, 'unverified');
+  assert(receipt.failures.some((entry) => entry.includes('scripts/verify-dot-host.mjs is not covered by an allowed loop profile (release-outcome, security-authority, incident-repair)')));
+  assert(receipt.failures.some((entry) => entry.includes('scripts/verify-dot-host.mjs requires release evidence; observed exact-candidate')));
 });
 
 test('acceptance requirements cannot be weakened by editing policy booleans', () => {

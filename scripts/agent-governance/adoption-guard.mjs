@@ -25,7 +25,7 @@ const RELEASE_STATE_PATH = 'docs/release/current-release-state.json';
 const EVIDENCE_LEVELS = ['source-only', 'unit', 'simulated-integration', 'simulated-host', 'exact-candidate', 'real-host-chain', 'live-user', 'release'];
 const LOOP_PROFILES = ['research', 'product-definition', 'implementation', 'ux-creation', 'security-authority', 'incident-repair', 'release-outcome'];
 const ACCEPTANCE_SURFACES = ['product_finish', 'pr_merge', 'release'];
-const ADOPTION_POLICY_DIGEST = '71aee286b42619aa7eeba282cdc07a4718966be23b07c30999b5849a4301f199';
+const ADOPTION_POLICY_DIGEST = '547e2bc0841d17acbdc095f513261aa0536e173896fb152e7e17d2f3e6f9a09a';
 const SURFACE_PROMOTION = Object.freeze({
   task_start: 'prohibited',
   product_finish: 'governed-acceptance-only',
@@ -122,7 +122,11 @@ export function adoptionPolicyFailures(policy) {
   for (const rule of policy?.path_rules ?? []) {
     if (!rule.id || ids.has(rule.id)) failures.push(`invalid or duplicate adoption rule ${rule.id ?? '(missing)'}`);
     ids.add(rule.id);
-    if (!(rule.paths?.length || rule.prefixes?.length)) failures.push(`${rule.id}: paths or prefixes are required`);
+    if (!(rule.paths?.length || rule.prefixes?.length || rule.filename_prefixes?.length)) failures.push(`${rule.id}: paths, prefixes, or filename_prefixes are required`);
+    if ((rule.filename_prefixes ?? []).some((entry) => {
+      const prefix = normalizedRelative(entry);
+      return !prefix || path.posix.basename(prefix) === '';
+    })) failures.push(`${rule.id}: filename_prefixes must identify a non-empty filename prefix`);
     if (!rule.allowed_profiles?.length) failures.push(`${rule.id}: allowed_profiles are required`);
     if (rule.allowed_profiles?.some((profile) => !LOOP_PROFILES.includes(profile))) failures.push(`${rule.id}: allowed_profiles contains an unknown canonical profile`);
     if (!EVIDENCE_LEVELS.includes(rule.minimum_evidence_level)) failures.push(`${rule.id}: minimum_evidence_level must be promotable and canonical`);
@@ -135,9 +139,18 @@ export function adoptionPolicyFailures(policy) {
 function ruleMatches(rule, relative) {
   const candidate = normalizedRelative(relative);
   if ((rule.paths ?? []).some((entry) => normalizedRelative(entry) === candidate)) return true;
-  return (rule.prefixes ?? []).some((entry) => {
+  if ((rule.prefixes ?? []).some((entry) => {
     const prefix = normalizedRelative(entry);
     return prefix === '' || candidate === prefix || candidate.startsWith(`${prefix}/`);
+  })) return true;
+  return (rule.filename_prefixes ?? []).some((entry) => {
+    const prefix = normalizedRelative(entry);
+    if (!prefix || path.posix.dirname(candidate) !== path.posix.dirname(prefix)) return false;
+    const candidateName = path.posix.basename(candidate);
+    const prefixName = path.posix.basename(prefix);
+    if (!candidateName.startsWith(prefixName)) return false;
+    const suffix = candidateName.slice(prefixName.length);
+    return suffix === '' || prefixName.endsWith('-') || suffix.startsWith('.') || suffix.startsWith('-');
   });
 }
 

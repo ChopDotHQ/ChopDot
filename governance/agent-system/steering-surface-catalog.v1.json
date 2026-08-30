@@ -34,15 +34,15 @@
       "proof/",
       "scripts/"
     ],
-    "repository_file_count": 700,
-    "repository_manifest_sha256": "c1699265782e653e8b56bbd9b4d9f15ca8fb343e95a446fdab3dc599ae024b8c"
+    "repository_file_count": 701,
+    "repository_manifest_sha256": "a4423193673bae90e7e6efe2207e16721235874129949bfa1a1649fc586c9f3c"
   },
   "lifecycle_summary": {
     "active": 241,
     "candidate": 0,
     "degraded": 49,
     "deprecated": 0,
-    "historical": 410,
+    "historical": 411,
     "quarantined": 0,
     "retired": 0,
     "superseded": 0
@@ -121,7 +121,7 @@
         "retry_exit": "Repair or explicitly change lifecycle through reviewed source, regenerate, and recheck."
       },
       "file_count": 29,
-      "manifest_sha256": "73f2576ae82ba7a9277c4cbda3ea616f6984f43754eb45526692c33186000feb"
+      "manifest_sha256": "e7d9b3e9f45561f23f84205ce537acc7e15da675e1517d4eef5c4b499f8ea1cb"
     },
     {
       "id": "agent-policies-and-foundation",
@@ -163,7 +163,7 @@
         "retry_exit": "Reconcile at the accountable policy owner and rerun all dependent validations."
       },
       "file_count": 9,
-      "manifest_sha256": "50ccf7f31dcd01363c474e594b86382f595b08b11eb00a47ac6429d6b94ce9ee"
+      "manifest_sha256": "6bb5afda8ffcbbe427aef965306c9f4e508f246c7b789d6b265eedd600a05da9"
     },
     {
       "id": "agent-system-runtime",
@@ -389,8 +389,8 @@
         "failure": "Treat ambiguous historical material as non-authoritative and require current-source confirmation.",
         "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog."
       },
-      "file_count": 53,
-      "manifest_sha256": "c20ad31146628488c4f8057207bf86c54aa05f884efd0db379ae7211e825b6e6"
+      "file_count": 54,
+      "manifest_sha256": "98e41a71e2e5c1d9fb9a38de97cda50f4f6026e8daa3577891882e05620a1943"
     },
     {
       "id": "knowledge-and-wiki-sources",
@@ -2890,6 +2890,20 @@
       "accountable_owner": "repository owner"
     },
     {
+      "surface_id": "repo-docs-superpowers-plans-2026-08-30-release-path-routing-fix-md",
+      "path": "docs/superpowers/plans/2026-08-30-release-path-routing-fix.md",
+      "sha256": "5db8f8fff5ff25a851d1117f9ce559338f79df130556144f082cbb298d72d6b3",
+      "bytes": 2948,
+      "group_id": "historical-plans-and-investigations",
+      "surface_kind": "historical_evidence",
+      "control_kind": "none",
+      "domain": "history",
+      "influence_class": "supporting_technique",
+      "lifecycle": "historical",
+      "activation_mode": "explicit_only",
+      "accountable_owner": "repository owner"
+    },
+    {
       "surface_id": "repo-docs-wiki-00-start-here-current-product-state-md",
       "path": "docs/wiki/00-start-here/current-product-state.md",
       "sha256": "09cd58a1d2dc461b2f35c8652b4489c6797a6e74f2890cb3515fad7ae5584138",
@@ -3844,8 +3858,8 @@
     {
       "surface_id": "repo-governance-agent-system-policies-adoption-boundary-v1-json",
       "path": "governance/agent-system/policies/adoption-boundary.v1.json",
-      "sha256": "c54c49f2c4c647787b327a7ceaded76d012663e0ef0ccf68969a41b9b1d53d1b",
-      "bytes": 3038,
+      "sha256": "019a17fc27b497a9c3b8aef8641014a8eb36fe20d5e64fd7c9540a446b96905d",
+      "bytes": 3093,
       "group_id": "agent-policies-and-foundation",
       "surface_kind": "policy",
       "control_kind": "gate",
@@ -9206,8 +9220,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-adoption-guard-mjs",
       "path": "scripts/agent-governance/adoption-guard.mjs",
-      "sha256": "f1ac17207f68f13ebf170d63444c0708a021343235b07f376cd99b89552c62bf",
-      "bytes": 71894,
+      "sha256": "7927411c1480056e224ac0fa52e0893e74518d8f9c1fcb3decaa9e5363f7ac2b",
+      "bytes": 72762,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -9416,8 +9430,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-tests-adoption-guard-test-mjs",
       "path": "scripts/agent-governance/tests/adoption-guard.test.mjs",
-      "sha256": "05fdd19841a912edfae2348c8ec60347c54541edf0cad1fa68fb9bbbedfff51e",
-      "bytes": 62427,
+      "sha256": "b91c18f944f98e779e7fb92069618e940134af8604d08d74bd53f09646f7a645",
+      "bytes": 65463,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -14077,5 +14091,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "0a6b86d6d6c3c342fd631a98a47697332c583f415fb880b395970a3f51a2553c"
+  "catalog_digest": "0840ce37b225c553da7a4e23471cb157120f022251974afd06a940a12e249f5d"
 }
