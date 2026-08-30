@@ -129,7 +129,7 @@ desktop. All committed captures are JPEG-encoded and use `.jpg` filenames.
 ### 4.1 Deployed Home — **FAIL**
 
 Evidence:
-`output/design-audit/2026-08-28-brand-experience/01-deployed-home-mobile-host.jpg`
+`docs/investigations/evidence/2026-08-28-brand-experience/01-deployed-home-mobile-host.jpg`
 
 SHA-256:
 `d3951d59697e59687351dcd80021c2d723c817fb87563f0d420e282af784e2a9`
@@ -153,7 +153,7 @@ is valid only when the participant's observed job is to capture a spend.
 ### 4.2 Deployed New Group — **FAIL / known P0**
 
 Evidence:
-`output/design-audit/2026-08-28-brand-experience/02-new-group-mobile.jpg`
+`docs/investigations/evidence/2026-08-28-brand-experience/02-new-group-mobile.jpg`
 
 SHA-256:
 `5124c8097bf31d2dd7d7365cf047764c83ef91e19564bf893bfdf78e57effcfd`
@@ -171,7 +171,7 @@ Observed:
 ### 4.3 Deployed People — **PARTIAL**
 
 Evidence:
-`output/design-audit/2026-08-28-brand-experience/03-friends-mobile.jpg`
+`docs/investigations/evidence/2026-08-28-brand-experience/03-friends-mobile.jpg`
 
 SHA-256:
 `740ee3bd4ebeb40462cb8e27717cd55c3f5c83014c1b726c3cb3c31e5d80b848`
@@ -195,7 +195,7 @@ Problems:
 ### 4.4 Deployed Pay — **FAIL / information-architecture mismatch**
 
 Evidence:
-`output/design-audit/2026-08-28-brand-experience/04-pay-mobile.jpg`
+`docs/investigations/evidence/2026-08-28-brand-experience/04-pay-mobile.jpg`
 
 SHA-256:
 `b8b2d0757f9c4689ea616b78e87a73de7474ab13ccd2e067b7a1c1ddfd8761ee`
@@ -216,7 +216,7 @@ like the product's payout journey.
 ### 4.5 Deployed History — **PARTIAL**
 
 Evidence:
-`output/design-audit/2026-08-28-brand-experience/05-history-mobile.jpg`
+`docs/investigations/evidence/2026-08-28-brand-experience/05-history-mobile.jpg`
 
 SHA-256:
 `d21d8213c17298e44fa09dde8e5b22ae48e63ab6a04a37d6fe1642b9c4b83baa`
@@ -236,7 +236,7 @@ Problems:
 ### 4.6 Deployed Settings — **PARTIAL**
 
 Evidence:
-`output/design-audit/2026-08-28-brand-experience/06-settings-mobile.jpg`
+`docs/investigations/evidence/2026-08-28-brand-experience/06-settings-mobile.jpg`
 
 SHA-256:
 `80e7f5f2c80ad51655e0a2ea683377d276508f7c968f636bc3087f0076543e80`
@@ -257,7 +257,7 @@ Problems:
 ### 4.7 Current-worktree Home — **FAIL, despite a partial source repair**
 
 Evidence:
-`output/design-audit/2026-08-28-brand-experience/08-current-worktree-guest-home-mobile.jpg`
+`docs/investigations/evidence/2026-08-28-brand-experience/08-current-worktree-guest-home-mobile.jpg`
 
 SHA-256:
 `67b4ba8f801a4996b6eddac164cbdf7f4f296de47de0212c1da14ba691458845`
@@ -282,7 +282,7 @@ fundamental application composition.
 ### 4.8 Current-worktree New Group — **PARTIAL, unreleased**
 
 Evidence:
-`output/design-audit/2026-08-28-brand-experience/09-current-worktree-new-group-mobile.jpg`
+`docs/investigations/evidence/2026-08-28-brand-experience/09-current-worktree-new-group-mobile.jpg`
 
 SHA-256:
 `23035047970856dd10ad1c8b8e0e700fadcedf83c6d5be3aa13e0f0ebe9f2b5b`
@@ -308,7 +308,7 @@ Open design questions:
 ### 4.9 Current-worktree dark mode — **PARTIAL**
 
 Evidence:
-`output/design-audit/2026-08-28-brand-experience/10-current-worktree-home-dark-mobile.jpg`
+`docs/investigations/evidence/2026-08-28-brand-experience/10-current-worktree-home-dark-mobile.jpg`
 
 SHA-256:
 `81b6b17c12a0dfe8b8b2b9b79fc85044f6f2196369f6305705ebbb6361f062a3`
@@ -320,7 +320,7 @@ an incorrect information hierarchy.
 ### 4.10 Current-worktree desktop — **FAIL / mobile shell enlarged**
 
 Evidence:
-`output/design-audit/2026-08-28-brand-experience/11-current-worktree-home-desktop-1280x800.jpg`
+`docs/investigations/evidence/2026-08-28-brand-experience/11-current-worktree-home-desktop-1280x800.jpg`
 
 SHA-256:
 `50556637eac1a4ac824ba90e240a3bbce0e856394fd6cffc485c0f1ab9e1bdf2`
