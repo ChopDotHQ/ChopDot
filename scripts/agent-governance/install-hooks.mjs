@@ -13,5 +13,5 @@ if (!fs.existsSync(path.join(root, '.git')) && !process.env.GITHUB_WORKSPACE) {
   throw new Error('Cannot install ChopDot hooks: .githooks/pre-push is missing');
 } else {
   execFileSync('git', ['config', 'core.hooksPath', '.githooks'], { cwd: root, stdio: 'inherit' });
-  process.stdout.write('ChopDot governed pre-push hook is active.\n');
+  process.stdout.write('ChopDot bounded local pre-push hook is active.\n');
 }

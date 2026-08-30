@@ -7,7 +7,7 @@
   "properties": {
     "receipt_version": { "const": "1.0.0" },
     "receipt_id": { "type": "string", "pattern": "^context_receipt_[a-z0-9]{12}$" },
-    "surface": { "enum": ["task_start", "product_finish", "governed_push", "pr_merge", "release"] },
+    "surface": { "enum": ["task_start", "product_finish", "pr_merge", "release"] },
     "loop_profile": { "type": "string", "minLength": 1 },
     "candidate": {
       "type": "object",

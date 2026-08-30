@@ -4,5 +4,4 @@ set -eu
 repo_root="$(git rev-parse --show-toplevel)"
 cd "$repo_root"
 
-node scripts/agent-governance/steering-surfaces.mjs check --require-promoted
-node scripts/agent-governance/adoption-guard.mjs push
+node scripts/agent-governance/adoption-guard.mjs push-preflight --remote-name "$1"

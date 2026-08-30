@@ -9,9 +9,6 @@
     "product_finish": {
       "promotion": "governed-acceptance-only"
     },
-    "governed_push": {
-      "promotion": "governed-acceptance-only"
-    },
     "pr_merge": {
       "promotion": "governed-acceptance-only"
     },

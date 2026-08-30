@@ -9,12 +9,13 @@ import hashlib
 import subprocess
 import sys
 import tempfile
+from collections.abc import Mapping
 from datetime import datetime, timezone
 from pathlib import Path
 
 
 WORKTREE = Path("/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch").resolve()
-AUTOBOTS_SOURCE = Path("/Users/devinsonpena/.codex/worktrees/24f9/AutoBots").resolve()
+DEFAULT_AUTOBOTS_SOURCE = Path("/Users/devinsonpena/Documents/AutoBots")
 AUTOBOTS_COMMIT = "15577d8e15ec98e14dc7f20ce1525ceb68d8ed75"
 NODE_BIN = Path("/opt/homebrew/bin/node").resolve()
 KG_PYTHON = Path("/Users/devinsonpena/Documents/AutoBots/proofmap/.venv/bin/python")
@@ -22,6 +23,16 @@ AUTOBOTS_TOOL_HASHES = {
     "agentops/runners/kg_preflight.py": "cda747f0737c372a8121715cff8fb36539b8e411ca9f75cc8aa95e3abf0627ba",
     "agentops/runners/repo_graph_v1.py": "015648c5acd7c6ac210b8b64a9b8ce8711ce9b0dc1ec083aa89663d42edf1275",
 }
+
+
+def resolve_autobots_source(
+    environment: Mapping[str, str] = os.environ,
+) -> Path:
+    configured = environment.get("CHOPDOT_KGV2_AUTOBOTS_SOURCE")
+    return Path(configured or DEFAULT_AUTOBOTS_SOURCE).expanduser().resolve()
+
+
+AUTOBOTS_SOURCE = resolve_autobots_source()
 REPO_ID = "chopdot-v1-launch"
 DEFAULT_ARTIFACT_ROOT = WORKTREE / "artifacts" / "agentops"
 LOCAL_EVIDENCE_ROOT = WORKTREE / "output" / "agent-runs"
@@ -413,21 +424,32 @@ def require_clean_exact_worktree() -> dict[str, object]:
     return {"root": str(root), "branch": branch, "head": head, "tree": tree, "status": []}
 
 
-def attest_autobots_source() -> None:
-    if not AUTOBOTS_SOURCE.is_dir():
-        raise RuntimeError(f"Pinned AgentOps source checkout is missing: {AUTOBOTS_SOURCE}")
-    subprocess.run(
-        ["/usr/bin/git", "-C", str(AUTOBOTS_SOURCE), "cat-file", "-e", f"{AUTOBOTS_COMMIT}^{{commit}}"],
-        check=True,
+def attest_autobots_source(source: Path = AUTOBOTS_SOURCE) -> None:
+    if not source.is_dir():
+        raise RuntimeError(f"Pinned AgentOps source checkout is missing: {source}")
+    commit_check = subprocess.run(
+        ["/usr/bin/git", "-C", str(source), "cat-file", "-e", f"{AUTOBOTS_COMMIT}^{{commit}}"],
+        check=False,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
         text=True,
     )
-    for relative, expected in AUTOBOTS_TOOL_HASHES.items():
-        committed = subprocess.check_output(
-            ["/usr/bin/git", "-C", str(AUTOBOTS_SOURCE), "show", f"{AUTOBOTS_COMMIT}:{relative}"]
+    if commit_check.returncode != 0:
+        raise RuntimeError(
+            f"Pinned AgentOps commit is unavailable from {source}: {AUTOBOTS_COMMIT}"
         )
-        if sha256_bytes(committed) != expected:
+    for relative, expected in AUTOBOTS_TOOL_HASHES.items():
+        committed = subprocess.run(
+            ["/usr/bin/git", "-C", str(source), "show", f"{AUTOBOTS_COMMIT}:{relative}"],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        if committed.returncode != 0:
+            raise RuntimeError(
+                f"Pinned AgentOps tool is unavailable at {AUTOBOTS_COMMIT}: {relative}"
+            )
+        if sha256_bytes(committed.stdout) != expected:
             raise RuntimeError(f"Pinned AgentOps tool hash differs for {relative}")
 
 

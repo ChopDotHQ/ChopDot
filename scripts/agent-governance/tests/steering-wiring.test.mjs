@@ -115,21 +115,27 @@ function findStep(steps, predicate, description) {
   return step;
 }
 
-test('pre-push runs the strict steering gate before the adoption guard', () => {
+test('pre-push delegates bounded strict local evidence to push-preflight', () => {
   const prePush = readRequired(paths.prePush);
   const executableLines = prePush
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter((line) => line !== '' && !line.startsWith('#'));
 
-  const steeringIndex = executableLines.findIndex(isStrictSteeringScript);
-  const adoptionIndex = executableLines.findIndex((line) => (
-    /\bnode\s+scripts\/agent-governance\/adoption-guard\.mjs\s+push\b/.test(line)
+  const preflightIndex = executableLines.findIndex((line) => (
+    /\bnode\s+scripts\/agent-governance\/adoption-guard\.mjs\s+push-preflight\b/.test(line)
   ));
 
-  assert.notEqual(steeringIndex, -1, 'pre-push omits the strict promoted steering check');
-  assert.notEqual(adoptionIndex, -1, 'pre-push omits the push adoption guard');
-  assert.ok(steeringIndex < adoptionIndex, 'pre-push must run steering validation before adoption validation');
+  assert.notEqual(preflightIndex, -1, 'pre-push omits the bounded push preflight');
+  assert.match(executableLines[preflightIndex], /--remote-name\s+"\$1"/u, 'pre-push does not bind the exact Git remote name');
+  assert.doesNotMatch(prePush, /adoption-guard\.mjs\s+push(?:\s|$)/u, 'pre-push still invokes local governed acceptance');
+
+  const guard = readRequired('scripts/agent-governance/adoption-guard.mjs');
+  assert.match(guard, /runSteeringMonitor\(root,\s*\{\s*now,\s*requirePromoted:\s*true\s*\}\)/u,
+    'push-preflight does not run strict promoted steering');
+  assert.match(guard, /governed_acceptance:\s*false/u, 'push-preflight does not explicitly deny governed acceptance');
+  assert.match(guard, /authoritative_acceptance_surface:\s*'pr_merge'/u,
+    'push-preflight does not preserve hosted PR merge as authoritative');
 });
 
 test('PR repo-governance binds the candidate and preserves strict steering JSON evidence', () => {

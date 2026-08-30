@@ -149,7 +149,8 @@ export function validateRepository(root, options = {}) {
   if (!fs.existsSync(hookPath)) errors.push('Missing tracked .githooks/pre-push');
   else {
     const hook = fs.readFileSync(hookPath, 'utf8');
-    if (!hook.includes('adoption-guard.mjs push')) errors.push('pre-push hook does not invoke the adoption guard');
+    if (!/adoption-guard\.mjs\s+push-preflight\b/u.test(hook)) errors.push('pre-push hook does not invoke bounded push-preflight');
+    if (/adoption-guard\.mjs\s+push(?:\s|$)/u.test(hook)) errors.push('pre-push hook invokes retired local governed acceptance');
     if (!(fs.statSync(hookPath).mode & 0o111)) errors.push('pre-push hook is not executable');
   }
 

@@ -142,16 +142,23 @@ authority and measured category evidence.
 ## Unavoidable acceptance boundary
 
 Governed work may be explored while incomplete, but it cannot be marked done,
-pushed through the tracked hook, accepted by Product Cockpit, merged through
-the required PR check, or released without the applicable contract, exact
-candidate `OutcomePacketV1`, independent verdict, and exact-digest knowledge
-recall required by
+accepted by Product Cockpit, merged through the required PR check, or released
+without the applicable contract, exact-candidate `OutcomePacketV1`, independent
+verdict, and exact-digest knowledge recall required by
 `governance/agent-system/policies/adoption-boundary.v1.json`.
 
-The local pre-push hook is early feedback, not the security boundary. The PR
-and release jobs run the same deterministic guard so `--no-verify` cannot turn
-unverified work into accepted work. A scratch artifact may remain
-`ungoverned` or `unverified`; those verdicts are never promotable.
+The tracked pre-push hook is bounded early feedback only. It consumes exactly
+one Git ref update and proves a clean checked-out fast-forward candidate and
+governed changed paths. Steering must be either `pass` or drift-free
+`degraded` whose exact IDs are already explained by declared degraded
+repository/external surfaces or disabled/unavailable optional external
+surfaces. The latter emits
+`local_preflight_degraded`, never a pass. It cannot emit or claim governed
+acceptance. Hosted `pr_merge` is the authoritative
+repository-code acceptance surface; release acceptance remains separate.
+`--no-verify` can skip local feedback, but cannot satisfy the required hosted
+check. A scratch artifact may remain `ungoverned` or `unverified`; those
+verdicts are never promotable.
 
 ## Product/release loop
 

@@ -19,7 +19,8 @@ import { buildGithubExecutionAttestation } from '../execution-attestation.mjs';
 import { runSteeringMonitor } from '../steering-surfaces.mjs';
 import {
   adoptionPolicyFailures, buildContextReceipt, classifyChangedPaths,
-  hookHealth, replayAcceptanceReceipt, validateAcceptance as rawValidateAcceptance,
+  buildPushPreflight, evaluateLocalSteering, hookHealth, parsePrePushUpdates, replayAcceptanceReceipt,
+  validateAcceptance as rawValidateAcceptance,
 } from '../adoption-guard.mjs';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -30,6 +31,7 @@ const STEERING_NOW = new Date('2026-08-28T13:00:00.000Z');
 const STEERING_REGISTRY_PATH = 'governance/agent-system/steering-surface-registry.v1.json';
 const STEERING_CATALOG_PATH = 'governance/agent-system/steering-surface-catalog.v1.json';
 const STEERING_HEALTH_PATH = 'docs/agent-system/STEERING_SURFACE_HEALTH.md';
+const ZERO_OID_FOR_TEST = '0'.repeat(40);
 
 function validateAcceptance(options) {
   return rawValidateAcceptance({ ...(fixtureAttestations.get(fs.realpathSync(options.root)) ?? {}), ...options });
@@ -47,7 +49,7 @@ function run(root, args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
 }
 
-function fixtureSteeringRegistry() {
+function fixtureSteeringRegistry(lifecycle = 'degraded') {
   const authority = {
     may_influence: ['fixture routing evidence'],
     must_not_decide: ['product law', 'acceptance without evidence'],
@@ -67,14 +69,14 @@ function fixtureSteeringRegistry() {
     accountable_owner: 'fixture owner',
     reviewed_on: '2026-08-28',
     review_interval_days: 30,
-    discovery_roots: ['governance/agent-system/', 'product/', 'scripts/agent-governance/'],
+    discovery_roots: ['product/', 'scripts/agent-governance/'],
     surface_groups: [{
       id: 'fixture-steering',
       surface_kind: 'validator',
       control_kind: 'gate',
       domain: 'agent_governance',
       influence_class: 'operating_method',
-      lifecycle: 'degraded',
+      lifecycle,
       activation_mode: 'routed',
       accountable_owner: 'fixture owner',
       patterns: ['governance/agent-system/**', 'product/**', 'scripts/agent-governance/**'],
@@ -97,8 +99,10 @@ function fixtureSteeringRegistry() {
     runtime_classes: [],
     lifecycle_reviews: [
       {
-        surface_id: 'fixture-steering', lifecycle: 'degraded', reviewed_on: '2026-08-28', review_interval_days: 30,
-        reason: 'Deliberately degraded to prove structured receipt limitations without failing unrelated work.', replacement: null,
+        surface_id: 'fixture-steering', lifecycle, reviewed_on: '2026-08-28', review_interval_days: 30,
+        reason: lifecycle === 'degraded'
+          ? 'Deliberately degraded to prove structured receipt limitations without failing unrelated work.'
+          : 'Active fixture steering proves the strict local preflight pass path.', replacement: null,
       },
       {
         surface_id: 'fixture-external-census', lifecycle: 'active', reviewed_on: '2026-08-28', review_interval_days: 30,
@@ -135,6 +139,9 @@ async function fixture(options = {}) {
   fs.mkdirSync(path.join(root, 'docs/release'), { recursive: true });
   fs.mkdirSync(path.join(root, 'scripts/agent-governance'), { recursive: true });
   fs.mkdirSync(path.join(root, 'output'), { recursive: true });
+  if (options.steeringLifecycle === 'active') {
+    fs.mkdirSync(path.join(root, '.fixture-skills'), { recursive: true });
+  }
   fs.copyFileSync(
     path.join(repositoryRoot, 'governance/agent-system/policies/adoption-boundary.v1.json'),
     path.join(root, 'governance/agent-system/policies/adoption-boundary.v1.json'),
@@ -149,7 +156,7 @@ async function fixture(options = {}) {
       path.join(root, 'governance/agent-system/contracts', schema),
     );
   }
-  fs.writeFileSync(path.join(root, STEERING_REGISTRY_PATH), `${JSON.stringify(fixtureSteeringRegistry(), null, 2)}\n`);
+  fs.writeFileSync(path.join(root, STEERING_REGISTRY_PATH), `${JSON.stringify(fixtureSteeringRegistry(options.steeringLifecycle), null, 2)}\n`);
   fs.writeFileSync(path.join(root, '.gitignore'), [
     'output/',
     'docs/release/current-release-state.json',
@@ -178,8 +185,14 @@ async function fixture(options = {}) {
   }));
   run(root, ['add', '.']);
   run(root, ['commit', '-qm', 'fixture base']);
+  syncFixtureSteeringOutputs(root);
+  run(root, ['add', '-f', STEERING_CATALOG_PATH, STEERING_HEALTH_PATH]);
+  run(root, ['commit', '--amend', '--no-edit', '-q']);
   const baseHead = run(root, ['rev-parse', 'HEAD']);
   const baseTree = run(root, ['rev-parse', 'HEAD^{tree}']);
+  const steering = syncFixtureSteeringOutputs(root);
+  run(root, ['update-ref', 'refs/remotes/origin/trunk', baseHead]);
+  run(root, ['symbolic-ref', 'refs/remotes/origin/HEAD', 'refs/remotes/origin/trunk']);
   let contract;
   let runDirectory;
   const startFixtureRun = async (startingHead, startingTree) => {
@@ -187,9 +200,9 @@ async function fixture(options = {}) {
       root, loopProfile: 'implementation', branch: 'main', startingHead,
       startingTree, sourcePath: 'PRODUCT_TRUTH.md', createdAt: '2026-08-27T12:00:00.000Z',
       runId: 'run_adoption_fixture_001', createdBy: 'fixture-agent', createdByKind: 'agent',
-      inPaths: ['scripts/agent-governance'], allowedWrites: ['scripts/agent-governance'],
+      inPaths: ['tests'], allowedWrites: ['tests'],
       deterministicCommands: [{
-        id: 'CHECK-ADOPTION-FIXTURE', command: `${process.execPath} --check scripts/agent-governance/change.mjs`,
+        id: 'CHECK-ADOPTION-FIXTURE', command: `${process.execPath} --check tests/change.mjs`,
         cwd: root, expected_exit_code: 0, timeout_seconds: 10,
       }],
     });
@@ -201,13 +214,16 @@ async function fixture(options = {}) {
     }));
   };
   if (!options.contractStartsAtCandidate) await startFixtureRun(baseHead, baseTree);
-  fs.writeFileSync(path.join(root, 'scripts/agent-governance/change.mjs'), 'export const changed = true;\n');
-  run(root, ['add', 'scripts/agent-governance/change.mjs']);
+  const candidatePath = options.candidatePath ?? 'tests/change.mjs';
+  fs.mkdirSync(path.dirname(path.join(root, candidatePath)), { recursive: true });
+  fs.writeFileSync(path.join(root, candidatePath), 'export const changed = true;\n');
+  run(root, ['add', candidatePath]);
   run(root, ['commit', '-qm', 'fixture candidate']);
-  const head = run(root, ['rev-parse', 'HEAD']);
-  const tree = run(root, ['rev-parse', 'HEAD^{tree}']);
+  let head = run(root, ['rev-parse', 'HEAD']);
+  let tree = run(root, ['rev-parse', 'HEAD^{tree}']);
+  const candidateSteering = syncFixtureSteeringOutputs(root);
+  assert.equal(candidateSteering.catalog.digest, steering.catalog.digest);
   if (options.contractStartsAtCandidate) await startFixtureRun(head, tree);
-  const steering = syncFixtureSteeringOutputs(root);
   fs.writeFileSync(path.join(root, 'docs/release/current-release-state.json'), JSON.stringify({
     kgv2: {
       current_outcome_known: true, repo_root: root, branch: 'main', latest_packet_commit: head,
@@ -307,10 +323,233 @@ async function fixture(options = {}) {
   };
   fixtureAttestations.set(root, acceptanceAttestation);
   return {
-    root, head, tree, packet, recall, contract, evaluation, provenance, runDirectory, releaseAttestation,
+    root, baseHead, head, tree, packet, recall, contract, evaluation, provenance, runDirectory, releaseAttestation,
     acceptanceAttestation, steering,
   };
 }
+
+test('pre-push parser accepts exact Git records and rejects incomplete or ambiguous input', () => {
+  const local = 'a'.repeat(40);
+  const remote = 'b'.repeat(40);
+  const accepted = parsePrePushUpdates(`refs/heads/main ${local} refs/heads/main ${remote}\n`);
+  assert.deepEqual(accepted.failures, []);
+  assert.deepEqual(accepted.updates, [{
+    line: 1, local_ref: 'refs/heads/main', local_sha: local,
+    remote_ref: 'refs/heads/main', remote_sha: remote,
+  }]);
+
+  assert.ok(parsePrePushUpdates('').failures.some((entry) => /no ref updates/u.test(entry)));
+  assert.match(parsePrePushUpdates('refs/heads/main short refs/heads/main').failures[0], /exactly four fields/u);
+  assert.match(
+    parsePrePushUpdates(`refs/heads/main short refs/heads/main ${remote}`).failures[0],
+    /malformed object ID/u,
+  );
+  const duplicate = parsePrePushUpdates([
+    `refs/heads/main ${local} refs/heads/main ${remote}`,
+    `refs/heads/other ${local} refs/heads/main ${remote}`,
+  ].join('\n'));
+  assert.ok(duplicate.failures.includes('pre-push stdin contains duplicate remote ref updates'));
+});
+
+test('push preflight proves only the clean checked-out fast-forward candidate', async () => {
+  const value = await fixture({ steeringLifecycle: 'active' });
+  const result = buildPushPreflight({
+    root: value.root,
+    input: `refs/heads/main ${value.head} refs/heads/main ${value.baseHead}\n`,
+    remoteName: 'origin',
+    now: STEERING_NOW,
+  });
+
+  assert.equal(result.ok, true, JSON.stringify(result.failures));
+  assert.equal(result.verdict, 'local_preflight_pass');
+  assert.equal(result.governed_acceptance, false);
+  assert.equal(result.authoritative_acceptance_surface, 'pr_merge');
+  assert.equal(result.candidate.commit, value.head);
+  assert.deepEqual(result.ranges[0].commits, [value.head]);
+  assert.deepEqual(result.changed_paths, ['tests/change.mjs']);
+  assert.notEqual(result.strict_steering.verdict, 'blocked');
+  assert.match(result.preflight_digest, /^[0-9a-f]{64}$/u);
+  assert.equal('acceptance_receipt_version' in result, false);
+});
+
+test('push preflight blocks multiple updates, ref rewriting, and ungoverned paths while preserving declared degradation', async (t) => {
+  await t.test('multiple updates', async () => {
+    const value = await fixture({ steeringLifecycle: 'active' });
+    const input = [
+      `refs/heads/main ${value.head} refs/heads/main ${value.baseHead}`,
+      `refs/heads/main ${value.head} refs/heads/main ${value.baseHead}`,
+    ].join('\n');
+    const result = buildPushPreflight({ root: value.root, input, remoteName: 'origin', now: STEERING_NOW });
+    assert.equal(result.ok, false);
+    assert.ok(result.failures.includes('pre-push requires exactly one ref update'));
+  });
+
+  await t.test('different remote ref', async () => {
+    const value = await fixture({ steeringLifecycle: 'active' });
+    const result = buildPushPreflight({
+      root: value.root,
+      input: `refs/heads/main ${value.head} refs/heads/rewritten ${value.baseHead}\n`,
+      remoteName: 'origin', now: STEERING_NOW,
+    });
+    assert.equal(result.ok, false);
+    assert.ok(result.failures.some((entry) => /must match exactly/u.test(entry)));
+  });
+
+  await t.test('degraded steering', async () => {
+    const value = await fixture();
+    const result = buildPushPreflight({
+      root: value.root,
+      input: `refs/heads/main ${value.head} refs/heads/main ${value.baseHead}\n`,
+      remoteName: 'origin', now: STEERING_NOW,
+    });
+    assert.equal(result.ok, true, JSON.stringify(result.failures));
+    assert.equal(result.verdict, 'local_preflight_degraded');
+    assert.equal(result.governed_acceptance, false);
+    assert.deepEqual(result.strict_steering.unexplained_degraded_surface_ids, []);
+    assert.ok(result.strict_steering.explained_degraded_surface_ids.includes('fixture-steering'));
+    assert.ok(result.strict_steering.explained_degraded_surface_ids.includes('fixture-external-census'));
+  });
+
+  await t.test('ungoverned changed path', async () => {
+    const value = await fixture({ steeringLifecycle: 'active' });
+    const policyPath = path.join(value.root, 'governance/agent-system/policies/adoption-boundary.v1.json');
+    const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+    policy.non_promotable_prefixes.push('tests/change.mjs');
+    fs.writeFileSync(policyPath, JSON.stringify(policy));
+    const result = buildPushPreflight({
+      root: value.root,
+      input: `refs/heads/main ${value.head} refs/heads/main ${value.baseHead}\n`,
+      remoteName: 'origin', now: STEERING_NOW,
+    });
+    assert.equal(result.ok, false);
+    assert.ok(result.failures.includes('ungoverned changed path: tests/change.mjs'));
+  });
+});
+
+test('local steering assessment blocks unexplained degradation and stale or drifted evidence', () => {
+  const registry = fixtureSteeringRegistry('degraded');
+  const baseline = {
+    verdict: 'degraded',
+    registry: { status: 'active' },
+    freshness: { stale: false, lifecycle_reviews: [] },
+    drifts: [],
+    degraded_surface_ids: ['fixture-steering', 'fixture-external-census'],
+    external_discovery: [{ id: 'fixture-external-census', state: 'unavailable', presence_policy: 'optional' }],
+    observations: [],
+  };
+  assert.equal(evaluateLocalSteering(baseline, registry).allowed, true);
+
+  const declaredExternalRegistry = {
+    ...registry,
+    external_surfaces: [{ id: 'declared-external-degradation', lifecycle: 'degraded' }],
+  };
+  const declaredExternal = evaluateLocalSteering({
+    ...baseline,
+    degraded_surface_ids: [...baseline.degraded_surface_ids, 'declared-external-degradation'],
+    observations: [{ id: 'declared-external-degradation', state: 'degraded' }],
+  }, declaredExternalRegistry);
+  assert.equal(declaredExternal.allowed, true);
+  assert.ok(declaredExternal.explained_degraded_surface_ids.includes('declared-external-degradation'));
+
+  const unexplained = evaluateLocalSteering({
+    ...baseline, degraded_surface_ids: [...baseline.degraded_surface_ids, 'injected-degradation'],
+  }, registry);
+  assert.equal(unexplained.allowed, false);
+  assert.deepEqual(unexplained.unexplained_degraded_surface_ids, ['injected-degradation']);
+
+  const drifted = evaluateLocalSteering({ ...baseline, drifts: ['generated catalog is stale'] }, registry);
+  assert.equal(drifted.allowed, false);
+  assert.ok(drifted.failures.some((entry) => /generated catalog is stale/u.test(entry)));
+
+  const stale = evaluateLocalSteering({ ...baseline, freshness: { stale: true, lifecycle_reviews: [] } }, registry);
+  assert.equal(stale.allowed, false);
+  assert.ok(stale.failures.includes('strict steering registry review is stale'));
+});
+
+test('push preflight fails closed on deletion, dirty state, non-fast-forward, and unknown new-ref base', async (t) => {
+  await t.test('deletion', async () => {
+    const value = await fixture();
+    const result = buildPushPreflight({
+      root: value.root,
+      input: `refs/heads/main ${ZERO_OID_FOR_TEST} refs/heads/main ${value.head}\n`,
+      remoteName: 'origin', now: STEERING_NOW,
+    });
+    assert.equal(result.ok, false);
+    assert.ok(result.failures.some((entry) => /deletion is not locally provable/u.test(entry)));
+  });
+
+  await t.test('dirty candidate', async () => {
+    const value = await fixture();
+    fs.appendFileSync(path.join(value.root, 'tests/change.mjs'), '// dirty\n');
+    const result = buildPushPreflight({
+      root: value.root,
+      input: `refs/heads/main ${value.head} refs/heads/main ${value.baseHead}\n`,
+      remoteName: 'origin', now: STEERING_NOW,
+    });
+    assert.equal(result.ok, false);
+    assert.ok(result.failures.includes('pre-push candidate worktree is not clean'));
+  });
+
+  await t.test('non-fast-forward', async () => {
+    const value = await fixture();
+    const future = run(value.root, ['commit-tree', `${value.head}^{tree}`, '-p', value.head, '-m', 'future remote']);
+    const result = buildPushPreflight({
+      root: value.root,
+      input: `refs/heads/main ${value.head} refs/heads/main ${future}\n`,
+      remoteName: 'origin', now: STEERING_NOW,
+    });
+    assert.equal(result.ok, false);
+    assert.ok(result.failures.some((entry) => /non-fast-forward/u.test(entry)));
+  });
+
+  await t.test('new ref without a provable named-remote base', async () => {
+    const value = await fixture();
+    const result = buildPushPreflight({
+      root: value.root,
+      input: `refs/heads/main ${value.head} refs/heads/main ${ZERO_OID_FOR_TEST}\n`,
+      remoteName: 'missing', now: STEERING_NOW,
+    });
+    assert.equal(result.ok, false);
+    assert.ok(result.failures.some((entry) => /cannot resolve the named remote HEAD/u.test(entry)));
+  });
+
+  await t.test('new ref cannot masquerade as the named remote default branch', async () => {
+    const value = await fixture({ steeringLifecycle: 'active' });
+    run(value.root, ['branch', '-m', 'trunk']);
+    const result = buildPushPreflight({
+      root: value.root,
+      input: `refs/heads/trunk ${value.head} refs/heads/trunk ${ZERO_OID_FOR_TEST}\n`,
+      remoteName: 'origin', now: STEERING_NOW,
+    });
+    assert.equal(result.ok, false);
+    assert.ok(result.failures.some((entry) => /named remote default branch/u.test(entry)));
+  });
+
+  await t.test('existing remote default branch is rejected', async () => {
+    const value = await fixture({ steeringLifecycle: 'active' });
+    run(value.root, ['branch', '-m', 'trunk']);
+    const result = buildPushPreflight({
+      root: value.root,
+      input: `refs/heads/trunk ${value.head} refs/heads/trunk ${value.baseHead}\n`,
+      remoteName: 'origin', now: STEERING_NOW,
+    });
+    assert.equal(result.ok, false);
+    assert.ok(result.failures.some((entry) => /named remote default branch/u.test(entry)));
+  });
+
+  await t.test('cross-remote symbolic HEAD is rejected', async () => {
+    const value = await fixture({ steeringLifecycle: 'active' });
+    run(value.root, ['update-ref', 'refs/remotes/other/trunk', value.baseHead]);
+    run(value.root, ['symbolic-ref', 'refs/remotes/origin/HEAD', 'refs/remotes/other/trunk']);
+    const result = buildPushPreflight({
+      root: value.root,
+      input: `refs/heads/main ${value.head} refs/heads/main ${value.baseHead}\n`,
+      remoteName: 'origin', now: STEERING_NOW,
+    });
+    assert.equal(result.ok, false);
+    assert.ok(result.failures.some((entry) => /cannot resolve the named remote HEAD/u.test(entry)));
+  });
+});
 
 test('adoption policy defaults every tracked path to a governed loop class', () => {
   const policy = JSON.parse(fs.readFileSync(path.join(repositoryRoot, 'governance/agent-system/policies/adoption-boundary.v1.json')));
@@ -324,12 +563,26 @@ test('adoption policy defaults every tracked path to a governed loop class', () 
 
 test('acceptance requirements cannot be weakened by editing policy booleans', () => {
   const policy = JSON.parse(fs.readFileSync(path.join(repositoryRoot, 'governance/agent-system/policies/adoption-boundary.v1.json')));
-  policy.surfaces.governed_push.require_outcome_packet = false;
-  policy.surfaces.governed_push.require_contract = false;
-  policy.surfaces.governed_push.require_independent_review = false;
-  policy.surfaces.governed_push.require_knowledge_recall = false;
+  policy.surfaces.product_finish.require_outcome_packet = false;
+  policy.surfaces.product_finish.require_contract = false;
+  policy.surfaces.product_finish.require_independent_review = false;
+  policy.surfaces.product_finish.require_knowledge_recall = false;
   const failures = adoptionPolicyFailures(policy);
   assert(failures.some((entry) => entry.includes('acceptance requirements are immutable guard invariants')));
+});
+
+test('removed governed_push surface cannot produce programmatic acceptance', async () => {
+  const value = await fixture();
+  await assert.rejects(
+    rawValidateAcceptance({
+      root: value.root, surface: 'governed_push', changedPaths: ['tests/change.mjs'],
+      outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
+      knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
+      expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
+      now: new Date('2026-08-27T13:00:00Z'),
+    }),
+    /unsupported acceptance surface: governed_push/u,
+  );
 });
 
 test('context receipt binds exact identity and fails when an authority digest drifts', async () => {
@@ -363,7 +616,7 @@ test('degraded steering is recorded with identity and limitations without automa
 
 test('blocked steering remains unverified and preserves its exact drift evidence', async () => {
   const value = await fixture();
-  fs.appendFileSync(path.join(value.root, 'scripts/agent-governance/change.mjs'), '// unsynchronized steering mutation\n');
+  fs.appendFileSync(path.join(value.root, 'product/cards.md'), '\n<!-- unsynchronized steering mutation -->\n');
   const receipt = buildContextReceipt({ root: value.root, loopProfile: 'implementation', now: new Date('2026-08-28T13:00:00Z') });
 
   assert.equal(receipt.verdict, 'unverified');
@@ -382,7 +635,7 @@ test('task-start context fails stale knowledge while exact recalled candidate ca
   assert.equal(context.verdict, 'unverified');
   assert(context.reasons.some((entry) => entry.includes('legacy release snapshot is stale')));
   const acceptance = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -404,14 +657,14 @@ test('context receipt uses the shared blocker-aware Cockpit ranking', async () =
 test('exact contract, outcome, independent verdict, and recall produce governed acceptance', async () => {
   const value = await fixture();
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate', now: new Date('2026-08-27T13:00:00Z'),
   });
   assert.equal(receipt.verdict, 'governed', JSON.stringify(receipt.failures));
   assert.equal(receipt.outcomes[0].packet_digest, value.packet.packet_digest);
-  assert.deepEqual(receipt.changed_paths, ['scripts/agent-governance/change.mjs']);
+  assert.deepEqual(receipt.changed_paths, ['tests/change.mjs']);
   assert.match(receipt.changed_path_manifest_digest, /^[0-9a-f]{64}$/);
   assert.equal(receipt.execution_attestations[0].ref, 'refs/pull/1/merge');
   assert.equal(receipt.execution_attestations[0].sha, 'b'.repeat(40));
@@ -420,7 +673,7 @@ test('exact contract, outcome, independent verdict, and recall produce governed 
 test('hand-authored evaluation, outcome, and recall cannot replace external execution provenance', async () => {
   const value = await fixture();
   const receipt = await rawValidateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -438,7 +691,7 @@ test('tampered external execution signature cannot produce governed acceptance',
   attestation.oidc_jwt = `${header}.${payload}.${signature[0] === 'A' ? 'B' : 'A'}${signature.slice(1)}`;
   fs.writeFileSync(target, JSON.stringify(attestation));
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -451,21 +704,21 @@ test('tampered external execution signature cannot produce governed acceptance',
 test('caller-supplied synthetic paths cannot replace the canonical Git diff manifest', async () => {
   const value = await fixture();
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['docs/release/current-release-state.json'],
+    root: value.root, surface: 'product_finish', changedPaths: ['docs/release/current-release-state.json'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
     now: new Date('2026-08-27T13:00:00Z'),
   });
   assert.equal(receipt.verdict, 'unverified');
-  assert.deepEqual(receipt.changed_paths, ['scripts/agent-governance/change.mjs']);
+  assert.deepEqual(receipt.changed_paths, ['tests/change.mjs']);
   assert(receipt.failures.some((entry) => entry.includes('Supplied changed paths do not match canonical Git manifest')));
 });
 
 test('missing outcome, contract, or knowledge recall cannot pass a governed surface', async () => {
   const value = await fixture();
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     expectedCommit: value.head, expectedTree: value.tree, expectedBranch: 'main',
   });
   assert.equal(receipt.verdict, 'unverified');
@@ -477,7 +730,7 @@ test('missing outcome, contract, or knowledge recall cannot pass a governed surf
 test('a declared profile cannot cover a contract selected from another loop profile', async () => {
   const value = await fixture();
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], declaredProfiles: ['research'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -499,7 +752,7 @@ test('wrong loop profile and stale recall both fail closed', async () => {
   recall.stale_reasons = ['stale fixture'];
   fs.writeFileSync(recallPath, JSON.stringify(recall));
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -513,7 +766,7 @@ test('tampered cited evidence cannot produce governed acceptance', async () => {
   const value = await fixture();
   fs.writeFileSync(path.join(value.root, 'output/proof.json'), JSON.stringify({ passed: false }));
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -537,7 +790,7 @@ test('a hand-built independent_review_satisfied boolean cannot replace hashed Ev
   recall.source_identities[0].sha256 = outcomeSha;
   fs.writeFileSync(recallPath, JSON.stringify(recall));
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -561,7 +814,7 @@ test('forged recall citations fail when bytes are missing or their SHA-256 diffe
     }
     fs.writeFileSync(recallPath, JSON.stringify(recall));
     const receipt = await validateAcceptance({
-      root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+      root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
       outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
       knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
       expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -576,13 +829,13 @@ test('forged recall citations fail when bytes are missing or their SHA-256 diffe
 test('an evidence level below the governed path minimum fails closed', async () => {
   const value = await fixture();
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'unit',
   });
   assert.equal(receipt.verdict, 'unverified');
-  assert(receipt.failures.some((entry) => entry.includes('requires exact-candidate evidence; observed unit')));
+  assert(receipt.failures.some((entry) => entry.includes('requires simulated-integration evidence; observed unit')));
 });
 
 test('a tampered supplied context receipt is rejected and current sources are rechecked', async () => {
@@ -592,7 +845,7 @@ test('a tampered supplied context receipt is rejected and current sources are re
   fs.writeFileSync(path.join(value.root, 'output/context.json'), JSON.stringify(context));
   fs.writeFileSync(path.join(value.root, 'PRODUCT_TRUTH.md'), '# drifted after receipt\n');
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], contextReceiptPath: 'output/context.json',
     expectedCommit: value.head, expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -612,7 +865,7 @@ test('promotion fails when the exact-candidate recall itself is not current', as
   recall.rejected_reasons = ['fixture outcome is not durably known'];
   fs.writeFileSync(recallPath, JSON.stringify(recall));
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -626,7 +879,7 @@ test('promotion fails when the exact-candidate recall itself is not current', as
 test('pr_merge derives changed paths from hashed PR provenance when verifier contract starts at candidate HEAD', async () => {
   const value = await fixture({ contractStartsAtCandidate: true });
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'pr_merge', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'pr_merge', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -634,7 +887,7 @@ test('pr_merge derives changed paths from hashed PR provenance when verifier con
   });
   assert.equal(value.contract.scope.starting_head, value.head);
   assert.equal(receipt.verdict, 'governed', JSON.stringify(receipt.failures));
-  assert.deepEqual(receipt.changed_paths, ['scripts/agent-governance/change.mjs']);
+  assert.deepEqual(receipt.changed_paths, ['tests/change.mjs']);
   assert.equal(receipt.changed_path_manifest_sources[0].kind, 'pr_candidate_provenance');
   assert.equal(receipt.changed_path_manifest_sources[0].path, 'output/pr-outcome-evidence.json');
   assert.match(receipt.changed_path_manifest_sources[0].sha256, /^[0-9a-f]{64}$/u);
@@ -661,7 +914,7 @@ test('a hand-authored RunnerProvenanceV1 cannot replace replayed runner state', 
   provenance.provenance_digest = digestObject(Object.fromEntries(Object.entries(provenance).filter(([key]) => key !== 'provenance_digest')));
   fs.writeFileSync(provenancePath, JSON.stringify(provenance));
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'],
     knowledgeReceiptPaths: ['output/recall.json'], expectedCommit: value.head,
     expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
@@ -676,7 +929,7 @@ test('tampered runner ledger, evaluation, and command evidence each fail governe
     const ledger = path.join(value.runDirectory, 'events.jsonl');
     fs.writeFileSync(ledger, fs.readFileSync(ledger, 'utf8').replace('"terminal_state":"succeeded"', '"terminal_state":"cancelled"'));
     const receipt = await validateAcceptance({
-      root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+      root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
       outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
       expectedCommit: value.head, expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
     });
@@ -687,7 +940,7 @@ test('tampered runner ledger, evaluation, and command evidence each fail governe
     const value = await fixture();
     fs.writeFileSync(path.resolve(value.root, value.packet.evaluation_index[0].path), JSON.stringify({ forged: true }));
     const receipt = await validateAcceptance({
-      root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+      root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
       outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
       expectedCommit: value.head, expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
     });
@@ -699,7 +952,7 @@ test('tampered runner ledger, evaluation, and command evidence each fail governe
     const command = value.packet.artifacts.find((entry) => entry.artifact_id === value.provenance.command_evidence.artifact_id);
     fs.writeFileSync(path.resolve(value.root, command.path), JSON.stringify({ command_results: [] }));
     const receipt = await validateAcceptance({
-      root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+      root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
       outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
       expectedCommit: value.head, expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
     });
@@ -722,7 +975,7 @@ test('knowledge recall rejects self-citing the supplied outcome instead of the d
   recall.source_identities[0].sha256 = outcomeSha;
   fs.writeFileSync(recallPath, JSON.stringify(recall));
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
     expectedCommit: value.head, expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
   });
@@ -735,7 +988,7 @@ test('missing persisted provenance or durable recall bytes fail closed', async (
     const value = await fixture();
     fs.unlinkSync(path.join(value.root, 'output/provenance.json'));
     const receipt = await validateAcceptance({
-      root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+      root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
       outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
       expectedCommit: value.head, expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
     });
@@ -746,7 +999,7 @@ test('missing persisted provenance or durable recall bytes fail closed', async (
     const value = await fixture();
     fs.unlinkSync(value.recall.citations[0].path);
     const receipt = await validateAcceptance({
-      root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+      root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
       outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
       expectedCommit: value.head, expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
     });
@@ -758,7 +1011,7 @@ test('missing persisted provenance or durable recall bytes fail closed', async (
 test('AcceptanceReceiptV1 can be independently replayed from only its persisted bindings', async () => {
   const value = await fixture();
   const receipt = await validateAcceptance({
-    root: value.root, surface: 'governed_push', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'product_finish', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
     expectedCommit: value.head, expectedTree: value.tree, expectedBranch: 'main', evidenceLevel: 'exact-candidate',
     now: new Date('2026-08-27T13:00:00Z'),
@@ -801,7 +1054,7 @@ test('release accepts only a separately signed protected-environment attestation
     },
   };
   const receipt = await rawValidateAcceptance({
-    root: value.root, surface: 'release', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'release', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
     runnerProvenancePaths: ['output/provenance.json'], runDirectoryPaths: [path.relative(value.root, value.runDirectory)],
     executionAttestationPaths: ['output/release-attestation.json'],
@@ -816,7 +1069,7 @@ test('release accepts only a separately signed protected-environment attestation
   const bypassOptions = structuredClone(executionAttestationOptions);
   bypassOptions.environmentReadback.can_admins_bypass = true;
   const bypassReceipt = await rawValidateAcceptance({
-    root: value.root, surface: 'release', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'release', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
     runnerProvenancePaths: ['output/provenance.json'], runDirectoryPaths: [path.relative(value.root, value.runDirectory)],
     executionAttestationPaths: ['output/release-attestation.json'], executionAttestationOptions: bypassOptions,
@@ -832,7 +1085,7 @@ test('release accepts only a separately signed protected-environment attestation
     reviewers: [{ type: 'User', reviewer: { id: 999999, login: 'UnconfiguredCollaborator' } }],
   }];
   const unexpectedReviewerReceipt = await rawValidateAcceptance({
-    root: value.root, surface: 'release', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'release', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
     runnerProvenancePaths: ['output/provenance.json'], runDirectoryPaths: [path.relative(value.root, value.runDirectory)],
     executionAttestationPaths: ['output/release-attestation.json'], executionAttestationOptions: unexpectedReviewerOptions,
@@ -847,7 +1100,7 @@ test('release accepts only a separately signed protected-environment attestation
     type: 'required_reviewers', prevent_self_review: true, reviewers: [],
   }];
   const wrongSelfReviewReceipt = await rawValidateAcceptance({
-    root: value.root, surface: 'release', changedPaths: ['scripts/agent-governance/change.mjs'],
+    root: value.root, surface: 'release', changedPaths: ['tests/change.mjs'],
     outcomePaths: ['output/outcome.json'], contractPaths: ['output/contract.json'], knowledgeReceiptPaths: ['output/recall.json'],
     runnerProvenancePaths: ['output/provenance.json'], runDirectoryPaths: [path.relative(value.root, value.runDirectory)],
     executionAttestationPaths: ['output/release-attestation.json'], executionAttestationOptions: wrongSelfReviewOptions,

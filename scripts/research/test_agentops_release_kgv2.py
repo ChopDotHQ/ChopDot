@@ -5,8 +5,11 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 
 SCRIPT_PATH = Path(__file__).with_name("agentops-release-kgv2.py")
@@ -34,6 +37,47 @@ def passing_query_checks() -> dict[str, dict[str, bool]]:
 
 
 class ReleaseAgentOpsGate9ContractTests(unittest.TestCase):
+    def test_autobots_source_defaults_to_canonical_checkout_and_accepts_override(self) -> None:
+        self.assertEqual(
+            REFRESHER.resolve_autobots_source({}),
+            Path("/Users/devinsonpena/Documents/AutoBots").resolve(),
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            expected = Path(temporary).resolve()
+            self.assertEqual(
+                REFRESHER.resolve_autobots_source(
+                    {"CHOPDOT_KGV2_AUTOBOTS_SOURCE": temporary}
+                ),
+                expected,
+            )
+
+    def test_autobots_source_attestation_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            source = Path(temporary)
+            with patch.object(
+                REFRESHER.subprocess,
+                "run",
+                return_value=SimpleNamespace(returncode=1),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "commit is unavailable"):
+                    REFRESHER.attest_autobots_source(source)
+
+            with patch.object(
+                REFRESHER.subprocess,
+                "run",
+                side_effect=[
+                    SimpleNamespace(returncode=0),
+                    SimpleNamespace(returncode=1, stdout=b""),
+                ],
+            ):
+                with self.assertRaisesRegex(RuntimeError, "tool is unavailable"):
+                    REFRESHER.attest_autobots_source(source)
+
+        with self.assertRaisesRegex(RuntimeError, "source checkout is missing"):
+            REFRESHER.attest_autobots_source(
+                Path(temporary) / "missing-after-cleanup"
+            )
+
     def test_manifest_explicitly_routes_every_gate9_path(self) -> None:
         manifest_paths = REFRESHER.MANIFEST["paths"]
         include = set(manifest_paths["include"])

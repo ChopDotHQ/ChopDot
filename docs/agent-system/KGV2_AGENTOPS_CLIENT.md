@@ -54,6 +54,13 @@ AGENTOPS_CG2_DSN
 Changing the source commit changes the reported backend version and requires
 the same tests and live health/read proof again.
 
+The exact-worktree Repo Graph refresher in
+`scripts/research/agentops-release-kgv2.py` uses the same
+`CHOPDOT_KGV2_AUTOBOTS_SOURCE` override and canonical checkout default. It
+still verifies the immutable commit and the approved runner byte hashes before
+cloning a detached clean snapshot; changing the checkout locator does not
+permit working-tree AutoBots bytes to execute.
+
 ## Fail-closed gates
 
 Recording is rejected before any KG write when any of these conditions holds:

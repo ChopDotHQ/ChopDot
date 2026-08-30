@@ -309,13 +309,20 @@ environment, and live readback agreement.
 acceptance, not a product-priority source. It defaults tracked repository paths
 to governed profiles and requires context, contract, exact-candidate outcome,
 runner provenance, external execution, evidence-byte, and knowledge-recall
-proof at the applicable
-Product Cockpit, push, PR, and release surfaces.
+proof at the applicable Product Cockpit, hosted PR, and release surfaces.
 
 `scripts/agent-governance/adoption-guard.mjs` emits `ContextReceiptV1` and
-`AcceptanceReceiptV1`. The tracked pre-push hook provides local feedback.
-Product Cockpit, the exact-head PR outcome job, and release enforcement call the
-same guard. The guard pins the reviewed routing-policy digest, derives the
+`AcceptanceReceiptV1`. The tracked pre-push hook provides bounded local
+feedback only: exactly one matching ref, a clean checked-out fast-forward
+candidate, and governed paths. Steering may be `pass` or a drift-free,
+fresh, active-registry `degraded` result whose exact IDs are fully explained by
+declared degraded repository/external surfaces or disabled/unavailable optional
+external surfaces;
+that result remains `local_preflight_degraded`, never pass. The hook never
+emits or claims governed acceptance. Product Cockpit, the exact-head hosted
+`pr_merge` job, and release enforcement call the acceptance guard; hosted
+`pr_merge` alone authoritatively accepts repository code. The guard pins the
+reviewed routing-policy digest, derives the
 changed-path manifest from the applicable Git range, and requires a hashed
 `EvaluationV1`, replayable `RunnerProvenanceV1`, GitHub OIDC execution
 attestation, and byte-valid exact-outcome recall backed by a durable cited
