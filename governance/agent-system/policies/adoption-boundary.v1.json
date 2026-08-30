@@ -50,7 +50,8 @@
     },
     {
       "id": "release",
-      "prefixes": ["deployment/", "scripts/record-", "scripts/readback-", "scripts/prepare-dot-host", "scripts/verify-dot-host", "scripts/recovery-head-deployment"],
+      "prefixes": ["deployment/"],
+      "filename_prefixes": ["scripts/record-dot-host-", "scripts/readback-dot-host-", "scripts/prepare-dot-host-release", "scripts/verify-dot-host", "scripts/recovery-head-deployment"],
       "allowed_profiles": ["release-outcome", "security-authority", "incident-repair"],
       "minimum_evidence_level": "release"
     },

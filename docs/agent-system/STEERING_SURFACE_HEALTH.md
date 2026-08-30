@@ -4,14 +4,14 @@
 **Authority:** inventory and monitoring only; never product law, priority, approval, or release proof
 **Registry:** `governance/agent-system/steering-surface-registry.v1.json` v1.0.0 (active)
 **Registry semantic digest:** `de324a6a42d279f746427025b869df5c9e1388eda3b1deeb231474a0c111caea`
-**Repository manifest aggregate:** `c1699265782e653e8b56bbd9b4d9f15ca8fb343e95a446fdab3dc599ae024b8c`
-**Catalog digest:** `0a6b86d6d6c3c342fd631a98a47697332c583f415fb880b395970a3f51a2553c`
+**Repository manifest aggregate:** `a4423193673bae90e7e6efe2207e16721235874129949bfa1a1649fc586c9f3c`
+**Catalog digest:** `0840ce37b225c553da7a4e23471cb157120f022251974afd06a940a12e249f5d`
 
 This file is deterministic. Current branch, dirty state, optional machine-local availability, and hash drift are reported by `npm run agent:steering:report`. Update sources deliberately, run `npm run agent:steering:build`, review the diff, then run `npm run agent:steering:check`. The monitor never rewrites authority during a check.
 
 ## Baseline
 
-- Repository surfaces: 700
+- Repository surfaces: 701
 - External discovery censuses declared: 4
 - External surfaces declared: 54
 - Runtime classes declared: 4
@@ -28,21 +28,21 @@ Degraded repository groups: `legacy-steering-documents`, `operating-documentatio
 |---|---:|
 | active | 241 |
 | degraded | 49 |
-| historical | 410 |
+| historical | 411 |
 
 ## Governed groups
 
 | Group | Lifecycle | Files | Ordered manifest SHA-256 |
 |---|---|---:|---|
 | agent-evaluation-system | active | 8 | 56388ea341278c1be9b1e18c6cd557bbfe319b1eed49889ee044846050a33ba4 |
-| agent-governance-runtime | active | 29 | 73f2576ae82ba7a9277c4cbda3ea616f6984f43754eb45526692c33186000feb |
-| agent-policies-and-foundation | active | 9 | 50ccf7f31dcd01363c474e594b86382f595b08b11eb00a47ac6429d6b94ce9ee |
+| agent-governance-runtime | active | 29 | e7d9b3e9f45561f23f84205ce537acc7e15da675e1517d4eef5c4b499f8ea1cb |
+| agent-policies-and-foundation | active | 9 | 6bb5afda8ffcbbe427aef965306c9f4e508f246c7b789d6b265eedd600a05da9 |
 | agent-system-runtime | active | 38 | 39db537172f403c90144162ffad97c878294ac8cf10af885dd1c5bf11806f7f5 |
 | architecture-decisions | active | 6 | c655d48db90d88c8252dbd9f769d1e2e48e3a709e8212013311357b4682a6944 |
 | definition-frameworks | active | 1 | 426935c74c44de7d200d80494e27a01eaaf8d3bd2963f1f7a794588a275b0f7d |
 | definition-profiles | active | 1 | 68e492127a763057c64db65142d17044d708995a2e20f9c92e4b5143b98dc3f3 |
 | deployment-context | active | 10 | d09cf4c1c8a12c12947b1895b37d3324a8d476eaa2693637bcb510801e2713f7 |
-| historical-plans-and-investigations | historical | 53 | c20ad31146628488c4f8057207bf86c54aa05f884efd0db379ae7211e825b6e6 |
+| historical-plans-and-investigations | historical | 54 | 98e41a71e2e5c1d9fb9a38de97cda50f4f6026e8daa3577891882e05620a1943 |
 | knowledge-and-wiki-sources | active | 15 | a21f10625a941924b09fb8dbfa6cd883b487e68837db3b9cc9114af1029c25be |
 | legacy-steering-documents | degraded | 10 | d5a81d892973840dce72a73b0e35d46c33a67136776cdee77706318d1b4acfd0 |
 | native-and-release-context | active | 15 | a54cdcfc22ae6367c0a8d801782b245c55dad0ae4aa314ab8ae07840fb94ddd7 |
