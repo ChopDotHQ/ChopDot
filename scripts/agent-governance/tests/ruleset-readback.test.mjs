@@ -24,14 +24,25 @@ test('active ruleset readback proves all required boundaries', () => {
   assert.equal(result.summary.ruleset_id, 123);
 });
 
-test('missing check and stale-review controls are non-green', () => {
+test('missing check and reintroduced mandatory review are non-green', () => {
   const fixture = ruleset();
   fixture.rules.find((entry) => entry.type === 'required_status_checks').parameters.required_status_checks.pop();
-  fixture.rules.find((entry) => entry.type === 'pull_request').parameters.dismiss_stale_reviews_on_push = false;
+  fixture.rules.find((entry) => entry.type === 'pull_request').parameters.required_approving_review_count = 1;
   const result = validateRulesetReadback([fixture], { branches });
   assert.equal(result.ok, false);
-  assert(result.errors.some((error) => error.includes('dismiss stale')));
+  assert(result.errors.some((error) => error.includes('approving-review count')));
   assert(result.errors.some((error) => error.includes('Missing required status check')));
+});
+
+test('CODEOWNER and last-push reviewer dependencies cannot be silently restored', () => {
+  const fixture = ruleset();
+  const pullRequest = fixture.rules.find((entry) => entry.type === 'pull_request').parameters;
+  pullRequest.require_code_owner_review = true;
+  pullRequest.require_last_push_approval = true;
+  const result = validateRulesetReadback([fixture], { branches });
+  assert.equal(result.ok, false);
+  assert(result.errors.some((error) => error.includes('CODEOWNERS-review')));
+  assert(result.errors.some((error) => error.includes('last-push-approval')));
 });
 
 test('ruleset targeting another branch cannot prove protection', () => {

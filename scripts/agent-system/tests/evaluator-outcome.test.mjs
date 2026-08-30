@@ -247,7 +247,7 @@ test('successful run builds valid schema-shaped outcome packet', async () => {
   assert.equal(validateOutcomePacket(packet).valid, true);
   assert.equal(packet.requirements[0].status, 'accepted');
   assert.equal(packet.evaluation_index.length, 1);
-  const evaluation = JSON.parse(await readFile(packet.evaluation_index[0].path, 'utf8'));
+  const evaluation = JSON.parse(await readFile(path.resolve(contract.scope.root, packet.evaluation_index[0].path), 'utf8'));
   assert.equal(evaluation.evaluation_id, packet.evaluation_summary.evaluation_ids[0]);
   assert.equal(evaluation.evaluator.id, 'reviewer-agent');
   assert.equal(evaluation.independence, 'different_actor');

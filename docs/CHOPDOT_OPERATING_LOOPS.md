@@ -116,7 +116,7 @@ that contract. Runner replay proves independent deterministic execution. Human
 or agent product, security, and release review remain separate claims that need
 protected evidence outside candidate-authored files.
 
-Expected outcome: a governed product finish, push, PR merge, or release has one
+Expected outcome: a governed product finish, hosted PR merge, or release has one
 schema-valid receipt binding the same root, branch, commit, tree, profile,
 contract digest, outcome digest, runner provenance, external execution,
 evidence hashes, and durable knowledge recall.
@@ -133,6 +133,19 @@ recall, or exact-candidate requirements. Generic task-start context reports
 stale repository knowledge as `unverified`. At acceptance, only a byte-valid
 exact-outcome recall with durable source identity can establish current
 candidate knowledge; a prose claim or an older release-state snapshot cannot.
+
+The local pre-push loop is deliberately smaller and non-authoritative. It
+consumes exactly one Git-supplied same-name, non-default branch update, proves a
+clean checked-out fast-forward candidate and governed paths. Steering may be a
+`pass`, or a drift-free, fresh, active-registry `degraded` result only when
+every exact degraded ID is already explained by a declared degraded
+repository/external surface or a disabled/unavailable optional external
+surface. That outcome is
+`local_preflight_degraded`, not pass. Missing, malformed, deletion, multi-ref,
+rewritten-ref, non-fast-forward, unresolved-remote-HEAD, ungoverned-path,
+dirty, stale, drifted, unexplained-degraded, or blocked input fails closed.
+Every allowed outcome keeps `governed_acceptance: false`; hosted `pr_merge`
+remains the only authoritative repository-code acceptance surface.
 
 Every long-running checkpoint records exact root/branch/HEAD/tree/status,
 completed and open requirement IDs, files changed, tests and exact counts,

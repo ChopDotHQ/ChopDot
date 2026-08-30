@@ -8,6 +8,7 @@ import {
   isExcluded, parseArgs, readJson, walkTextFiles, writeMarkdownReport, writeReport,
 } from './lib.mjs';
 import { adoptionPolicyFailures } from './adoption-guard.mjs';
+import { runSteeringMonitor } from './steering-surfaces.mjs';
 import { validateWorkflow } from './validate-workflow.mjs';
 
 const EXPECTED_INVARIANTS = [
@@ -128,6 +129,11 @@ export function validateRepository(root, options = {}) {
   errors.push(...providerResult.errors);
   warnings.push(...providerResult.warnings);
 
+  const steering = runSteeringMonitor(root, { requirePromoted: Boolean(options.expectedSha) });
+  checks += steering.checks;
+  if (steering.verdict === 'blocked') errors.push(...steering.drifts.map((entry) => `Steering surfaces: ${entry}`));
+  else if (steering.verdict === 'degraded') warnings.push(`Steering surfaces: degraded; disabled=${steering.disabled_surface_ids.join(', ') || 'none'}`);
+
   checks += 1;
   errors.push(...adoptionPolicyFailures(adoption).map((entry) => `Adoption policy: ${entry}`));
   const requiredScripts = [
@@ -143,7 +149,8 @@ export function validateRepository(root, options = {}) {
   if (!fs.existsSync(hookPath)) errors.push('Missing tracked .githooks/pre-push');
   else {
     const hook = fs.readFileSync(hookPath, 'utf8');
-    if (!hook.includes('adoption-guard.mjs push')) errors.push('pre-push hook does not invoke the adoption guard');
+    if (!/adoption-guard\.mjs\s+push-preflight\b/u.test(hook)) errors.push('pre-push hook does not invoke bounded push-preflight');
+    if (/adoption-guard\.mjs\s+push(?:\s|$)/u.test(hook)) errors.push('pre-push hook invokes retired local governed acceptance');
     if (!(fs.statSync(hookPath).mode & 0o111)) errors.push('pre-push hook is not executable');
   }
 
@@ -170,7 +177,15 @@ export function validateRepository(root, options = {}) {
     checks,
     errors,
     warnings,
-    summary: { invariant_count: seen.size, schema_count: schemaFiles.length, evidence_level_count: evidenceIds.size, adoption_rules: adoption.path_rules?.length ?? 0 },
+    summary: {
+      invariant_count: seen.size,
+      schema_count: schemaFiles.length,
+      evidence_level_count: evidenceIds.size,
+      adoption_rules: adoption.path_rules?.length ?? 0,
+      steering_verdict: steering.verdict,
+      steering_surface_count: steering.catalog.repository_file_count,
+      steering_manifest_sha256: steering.catalog.repository_manifest_sha256,
+    },
   };
 }
 

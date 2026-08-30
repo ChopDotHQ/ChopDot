@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { authorityPolicyForSurface } from './authority-profile.mjs';
 import { REQUIRED_CHECKS } from './build-ruleset-packet.mjs';
 import { parseArgs, readJson, writeReport } from './lib.mjs';
 
@@ -33,11 +34,12 @@ export function validateRulesetReadback(rulesets, { branches, requiredChecks = R
   if (!rules.has('deletion')) errors.push('Ruleset does not prevent branch deletion');
   if (!rules.has('non_fast_forward')) errors.push('Ruleset does not prevent force push');
   const pullRequest = rules.get('pull_request')?.parameters ?? {};
-  if ((pullRequest.required_approving_review_count ?? 0) < 1) errors.push('Ruleset does not require an approving review');
-  if (!pullRequest.dismiss_stale_reviews_on_push) errors.push('Ruleset does not dismiss stale reviews after changes');
-  if (!pullRequest.require_code_owner_review) errors.push('Ruleset does not require CODEOWNERS review');
-  if (!pullRequest.require_last_push_approval) errors.push('Ruleset does not require approval after the last push');
-  if (!pullRequest.required_review_thread_resolution) errors.push('Ruleset does not require conversation resolution');
+  const mergePolicy = authorityPolicyForSurface('branch_merge');
+  if ((pullRequest.required_approving_review_count ?? 0) !== mergePolicy.required_approving_review_count) errors.push('Ruleset approving-review count differs from the project authority profile');
+  if (pullRequest.require_code_owner_review !== mergePolicy.require_code_owner_review) errors.push('Ruleset CODEOWNERS-review setting differs from the project authority profile');
+  if (pullRequest.require_last_push_approval !== mergePolicy.require_last_push_approval) errors.push('Ruleset last-push-approval setting differs from the project authority profile');
+  if (pullRequest.require_extra_approval_for_unattributed_changes !== false) errors.push('Ruleset unexpectedly requires an unattributed-changes reviewer in delegated-owner mode');
+  if (pullRequest.required_review_thread_resolution !== mergePolicy.required_review_thread_resolution) errors.push('Ruleset conversation-resolution setting differs from the project authority profile');
   const status = rules.get('required_status_checks')?.parameters ?? {};
   if (!status.strict_required_status_checks_policy) errors.push('Required status checks are not strict/up-to-date');
   const actualChecks = new Set((status.required_status_checks ?? []).map((entry) => entry.context));

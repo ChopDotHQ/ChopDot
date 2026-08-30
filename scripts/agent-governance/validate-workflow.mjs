@@ -526,6 +526,23 @@ export function validateWorkflow(source) {
     for (const override of ['run-id', 'github-token', 'repository']) if (Object.hasOwn(download.with, override)) errors.push(`PR outcome cannot override download-artifact ${override}`);
   }
   const prExecutable = prOutcome?.steps.map((step) => step.run).filter(Boolean).join('\n') ?? '';
+  const prSteps = prOutcome?.steps ?? [];
+  const branchAttachmentIndex = prSteps.findIndex((step) => step.fields.name === 'Attach authenticated candidate branch identity');
+  const outcomeGenerationIndex = prSteps.findIndex((step) => step.fields.name === 'Generate external exact-candidate OutcomePacketV1');
+  const branchAttachment = branchAttachmentIndex >= 0 ? prSteps[branchAttachmentIndex].run : '';
+  checks += 4;
+  if (branchAttachmentIndex < 0 || outcomeGenerationIndex < 0 || branchAttachmentIndex >= outcomeGenerationIndex) {
+    errors.push('PR outcome must attach the authenticated candidate branch before outcome generation');
+  }
+  for (const command of [
+    'git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"',
+    'test "$(git branch --show-current)" = "$EXPECTED_BRANCH"',
+    'test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"',
+  ]) {
+    if (!branchAttachment.split('\n').map((line) => line.trim()).includes(command)) {
+      errors.push(`PR outcome branch attachment lacks exact fail-closed command: ${command}`);
+    }
+  }
   for (const job of coreNeeds) {
     checks += 1;
     if (!prExecutable.includes(`needs.${job}.result`)) errors.push(`PR outcome must bind the same-run result for ${job}`);

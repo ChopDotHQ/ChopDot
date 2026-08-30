@@ -7,7 +7,7 @@
   "properties": {
     "receipt_version": { "const": "1.0.0" },
     "receipt_id": { "type": "string", "pattern": "^acceptance_receipt_[a-z0-9]{12}$" },
-    "surface": { "enum": ["product_finish", "governed_push", "pr_merge", "release"] },
+    "surface": { "enum": ["product_finish", "pr_merge", "release"] },
     "candidate": { "type": "object" },
     "changed_paths": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
     "changed_path_manifest_digest": { "$ref": "#/$defs/digest" },

@@ -115,14 +115,16 @@ Direct `succeeded` termination is forbidden. Success is reachable only through
 accepted evaluation, trajectory grading, a clean ending candidate, and outcome
 promotion.
 
-## Acceptance and push gate
+## Acceptance and local push preflight
 
-Before Product Cockpit finish or a governed push, provide the exact accepted
-inputs to the shared guard:
+Product Cockpit and hosted PR/release acceptance provide exact accepted inputs
+to the shared guard. Repository-code acceptance is authoritative only on hosted
+`pr_merge`; there is no local governed-push acceptance command. For example,
+Product Cockpit acceptance uses an explicit surface:
 
 ```bash
 npm run agent:acceptance:guard -- \
-  --surface=governed_push \
+  --surface=product_finish \
   --changed-paths="path/one,path/two" \
   --outcome=artifacts/agentops/outcomes/RUN/outcome.json \
   --contract=output/working_memory/RUN-contract.json \
@@ -136,12 +138,16 @@ npm run agent:acceptance:guard -- \
 ```
 
 `npm install`/`npm ci` runs the tracked hook installer. Confirm it with
-`npm run agent:hooks:check`. The pre-push hook consumes the same inputs through
-`CHOPDOT_OUTCOME_PACKET`, `CHOPDOT_LOOP_CONTRACT`,
-`CHOPDOT_KNOWLEDGE_RECEIPT`, `CHOPDOT_CONTEXT_RECEIPT`, and
-`CHOPDOT_LOOP_PROFILE`, plus `CHOPDOT_EVIDENCE_LEVEL`. `--no-verify` can skip only this early local feedback;
-the required PR job regenerates an exact-candidate acceptance contract and
-OutcomePacket, recalls the exact digest, and runs the same guard remotely.
+`npm run agent:hooks:check`. Git supplies exact pre-push stdin to
+`push-preflight`; it accepts exactly one same-name, non-default branch update
+and fails closed on a missing/malformed/deletion/non-fast-forward/ambiguous
+range, a dirty candidate, an ungoverned path, steering drift/staleness, or any
+unexplained degraded ID. A fully explained, drift-free declared degradation is
+allowed only as `local_preflight_degraded`, with the exact IDs preserved. The
+hook has no acceptance environment inputs and emits
+`governed_acceptance: false`. `--no-verify` can skip only this early local
+feedback; the required hosted PR job regenerates exact-candidate evidence and
+runs authoritative `pr_merge` acceptance.
 
 `--changed-paths` is not trusted classification input. It must equal the
 ordered canonical Git diff for the applicable independently bound range;
@@ -152,6 +158,11 @@ evidence, because the CI-generated contract is a post-hoc exact-candidate
 verifier and cannot prove original task-start lineage. The verdict must bind a
 schema-valid, hashed `EvaluationV1` artifact and replayable
 `RunnerProvenanceV1`. A summary Boolean is not execution or review evidence.
+
+The current `delegated-owner-principal` profile permits authorized agents to act
+through `Devpen787`. It requires the hosted exact-candidate checks but no
+fabricated self-review and no unrelated collaborator. Deterministic evaluator
+separation must not be described as independent human review.
 
 For `product:finish`, also pass `--outcome-packet`, `--contract`,
 `--knowledge-receipt`, `--runner-provenance`, `--run-directory`,

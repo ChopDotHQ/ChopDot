@@ -1,0 +1,48 @@
+{
+  "schema": "chopdot.definition-framework.v1",
+  "framework_id": "evidence-bound-definition-loop",
+  "version": "1.0.0",
+  "status": "active",
+  "portable": true,
+  "authority": "Method only. It may structure a definition and its evidence; it may not supply the answer, product law, priority, taste, approval, or release verdict.",
+  "purpose": "Produce bounded definitions whose intended outcome, authority, proof, failure behavior, ownership, and stopping rule are explicit before downstream creation begins.",
+  "required_contract": [
+    "decision_target",
+    "authoritative_inputs",
+    "expected_outcome",
+    "evaluation_criteria",
+    "proving_evidence",
+    "failure_or_blocker",
+    "owner_and_authority",
+    "retry_and_exit"
+  ],
+  "stages": [
+    "frame the decision target and scope",
+    "resolve authoritative inputs and conflicts",
+    "define the observable expected outcome",
+    "compare relevant alternatives and counterevidence",
+    "specify acceptance, failure, owner, and exit conditions",
+    "create or change the bounded artifact",
+    "observe the artifact in its real evaluation context",
+    "evaluate against the declared criteria and evidence",
+    "repair with a changed hypothesis inside the budget",
+    "record the verdict, evidence, limitations, and successor"
+  ],
+  "terminal_states": [
+    "accepted",
+    "failed_verification",
+    "blocked",
+    "approval_required",
+    "budget_exhausted",
+    "cancelled"
+  ],
+  "hard_stops": [
+    "the method or profile silently chooses the answer",
+    "the expected outcome is subjective or not observable",
+    "a governing source conflict is unresolved",
+    "the evidence cannot prove the claimed outcome",
+    "the owner or decision authority is ambiguous",
+    "repair repeats without a changed hypothesis",
+    "a profile claims more authority than its framework"
+  ]
+}

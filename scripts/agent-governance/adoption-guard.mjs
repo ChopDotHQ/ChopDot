@@ -17,18 +17,18 @@ import { validateAgentContract, validateContractProfileAlignment } from '../agen
 import { nextBuildingProductCard } from '../product-card-ranking.mjs';
 import { decodeJwt, RELEASE_ENVIRONMENT, verifyGithubExecutionAttestation } from './execution-attestation.mjs';
 import { digestObject, parseArgs, readJson, sha256File, writeReport } from './lib.mjs';
+import { loadSteeringRegistry, runSteeringMonitor } from './steering-surfaces.mjs';
 
 const POLICY_PATH = 'governance/agent-system/policies/adoption-boundary.v1.json';
 const CONTEXT_PATH = 'product/context-authority.json';
 const RELEASE_STATE_PATH = 'docs/release/current-release-state.json';
 const EVIDENCE_LEVELS = ['source-only', 'unit', 'simulated-integration', 'simulated-host', 'exact-candidate', 'real-host-chain', 'live-user', 'release'];
 const LOOP_PROFILES = ['research', 'product-definition', 'implementation', 'ux-creation', 'security-authority', 'incident-repair', 'release-outcome'];
-const ACCEPTANCE_SURFACES = ['product_finish', 'governed_push', 'pr_merge', 'release'];
-const ADOPTION_POLICY_DIGEST = '1aed4998136114eeb7383ddce9b089bd5adc9470677d4e16ab84a19de90e2a02';
+const ACCEPTANCE_SURFACES = ['product_finish', 'pr_merge', 'release'];
+const ADOPTION_POLICY_DIGEST = '71aee286b42619aa7eeba282cdc07a4718966be23b07c30999b5849a4301f199';
 const SURFACE_PROMOTION = Object.freeze({
   task_start: 'prohibited',
   product_finish: 'governed-acceptance-only',
-  governed_push: 'governed-acceptance-only',
   pr_merge: 'governed-acceptance-only',
   release: 'governed-acceptance-only',
 });
@@ -207,6 +207,7 @@ export function buildContextReceipt({
   root: rootInput, surface = 'task_start', loopProfile = 'implementation', now = new Date(),
   candidateOverride = null, knowledgeOverride = null,
 }) {
+  if (surface === 'governed_push') throw new Error('unsupported acceptance surface: governed_push');
   const root = fs.realpathSync(path.resolve(rootInput));
   const policy = loadAdoptionPolicy(root);
   const failures = adoptionPolicyFailures(policy);
@@ -221,6 +222,33 @@ export function buildContextReceipt({
   const portableCi = process.env.GITHUB_ACTIONS === 'true';
   if (!portableCi && path.resolve(manifest.exact_root ?? '') !== root) failures.push('context manifest exact_root differs from current root');
   if (!portableCi && manifest.branch !== candidate.branch) failures.push('context manifest branch differs from current branch');
+  const steering = runSteeringMonitor(root, { now, requirePromoted: portableCi });
+  if (steering.verdict === 'blocked') {
+    failures.push(...steering.drifts.map((reason) => `steering surface monitor: ${reason}`));
+  }
+  const degradedSurfaceIds = unique(steering.degraded_surface_ids ?? []);
+  const disabledSurfaceIds = unique(steering.disabled_surface_ids ?? []);
+  const steeringLimitations = unique([
+    ...(steering.limitations ?? []),
+    ...(steering.verdict === 'degraded'
+      ? [`Steering is degraded for ${degradedSurfaceIds.join(', ') || 'unidentified surfaces'}; relevance to the ${surface} route was not evaluated.`]
+      : []),
+  ]);
+  const steeringState = {
+    monitor_verdict: steering.verdict,
+    registry_path: steering.registry.path,
+    registry_sha256: steering.registry.sha256,
+    registry_semantic_digest: steering.registry.semantic_digest,
+    catalog_path: steering.catalog.path,
+    catalog_digest: steering.catalog.digest,
+    repository_manifest_sha256: steering.catalog.repository_manifest_sha256,
+    worktree_manifest_sha256: steering.worktree.working_tree_manifest_sha256,
+    degraded_surface_ids: degradedSurfaceIds,
+    disabled_surface_ids: disabledSurfaceIds,
+    drifts: unique(steering.drifts ?? []),
+    route_relevance: 'not_evaluated',
+    limitations: steeringLimitations,
+  };
   const sources = sourceReceipt(root, manifest, now);
   failures.push(...sources.failures);
   const observedKnowledge = knowledgeOverride ?? knowledgeState(root, candidate);
@@ -232,7 +260,7 @@ export function buildContextReceipt({
   const base = {
     receipt_version: '1.0.0', surface, loop_profile: loopProfile,
     candidate, governing_sources: sources.records, active_product_card: activeProductCard(root),
-    knowledge_state: observedKnowledge,
+    knowledge_state: observedKnowledge, steering_state: steeringState,
     verdict: failures.length ? 'unverified' : 'governed', reasons: unique(failures), created_at: now.toISOString(),
   };
   const receiptId = `context_receipt_${digestObject(base).slice(0, 12)}`;
@@ -905,13 +933,197 @@ function changedPaths(root, base, head) {
   return list(git(root, ['diff', '--name-only', `${base}..${head}`, '--']).replaceAll('\n', ','));
 }
 
+const ZERO_OID = '0'.repeat(40);
+
+export function parsePrePushUpdates(input) {
+  const failures = [];
+  const updates = [];
+  const lines = String(input ?? '').split(/\r?\n/u).filter((line) => line.trim() !== '');
+  if (!lines.length) failures.push('pre-push stdin contains no ref updates');
+  lines.forEach((line, index) => {
+    const fields = line.trim().split(/\s+/u);
+    if (fields.length !== 4) {
+      failures.push(`pre-push line ${index + 1} must contain exactly four fields`);
+      return;
+    }
+    const [localRef, localSha, remoteRef, remoteSha] = fields;
+    if (!/^[0-9a-f]{40}$/u.test(localSha) || !/^[0-9a-f]{40}$/u.test(remoteSha)) {
+      failures.push(`pre-push line ${index + 1} contains a malformed object ID`);
+      return;
+    }
+    updates.push({ line: index + 1, local_ref: localRef, local_sha: localSha, remote_ref: remoteRef, remote_sha: remoteSha });
+  });
+  const remoteRefs = updates.map((entry) => entry.remote_ref);
+  if (new Set(remoteRefs).size !== remoteRefs.length) failures.push('pre-push stdin contains duplicate remote ref updates');
+  if (updates.length !== 1) failures.push('pre-push requires exactly one ref update');
+  return { updates, failures: unique(failures) };
+}
+
+export function evaluateLocalSteering(result, registry) {
+  const degradedIds = unique(result?.degraded_surface_ids ?? []);
+  const explained = new Set([
+    ...(registry?.surface_groups ?? []).filter((entry) => entry.lifecycle === 'degraded').map((entry) => entry.id),
+    ...(registry?.external_surfaces ?? []).filter((entry) => entry.lifecycle === 'degraded').map((entry) => entry.id),
+    ...(result?.external_discovery ?? []).filter((entry) => entry.state === 'unavailable' && entry.presence_policy === 'optional').map((entry) => entry.id),
+    ...(result?.observations ?? []).filter((entry) => entry.state === 'disabled').map((entry) => entry.id),
+  ]);
+  const unexplained = degradedIds.filter((id) => !explained.has(id));
+  const staleLifecycle = (result?.freshness?.lifecycle_reviews ?? []).filter((entry) => entry.stale).map((entry) => entry.surface_id);
+  const failures = [];
+  if (result?.registry?.status !== 'active') failures.push('strict steering registry is not active');
+  if (result?.freshness?.stale) failures.push('strict steering registry review is stale');
+  if (staleLifecycle.length) failures.push(`strict steering lifecycle reviews are stale: ${staleLifecycle.join(', ')}`);
+  if ((result?.drifts ?? []).length) failures.push(...result.drifts.map((entry) => `strict steering: ${entry}`));
+  if (unexplained.length) failures.push(`strict steering has unexplained degraded surfaces: ${unexplained.join(', ')}`);
+  if (!['pass', 'degraded'].includes(result?.verdict)) failures.push(`strict steering is ${result?.verdict ?? 'unavailable'}`);
+  if (result?.verdict === 'degraded' && degradedIds.length === 0) failures.push('strict steering degraded verdict has no exact surface IDs');
+  return {
+    allowed: failures.length === 0,
+    state: result?.verdict ?? 'unavailable',
+    degraded_surface_ids: degradedIds,
+    explained_degraded_surface_ids: degradedIds.filter((id) => explained.has(id)),
+    unexplained_degraded_surface_ids: unexplained,
+    failures: unique(failures),
+  };
+}
+
+function namedRemoteHead(root, remoteName) {
+  if (!/^[A-Za-z0-9._-]+$/u.test(String(remoteName ?? ''))) throw new Error('pre-push has no safe named remote');
+  const headRef = `refs/remotes/${remoteName}/HEAD`;
+  const symbolic = git(root, ['symbolic-ref', headRef]);
+  if (!symbolic.startsWith(`refs/remotes/${remoteName}/`) || symbolic === headRef) {
+    throw new Error(`named remote HEAD escapes ${remoteName}`);
+  }
+  return symbolic;
+}
+
+function newRemoteRefBase(root, localSha, symbolic) {
+  git(root, ['cat-file', '-e', `${symbolic}^{commit}`]);
+  const base = git(root, ['merge-base', localSha, symbolic]);
+  if (!base) throw new Error('new remote ref base is empty');
+  git(root, ['merge-base', '--is-ancestor', base, localSha]);
+  return { base, source: symbolic };
+}
+
+export function buildPushPreflight({ root: rootInput, input, remoteName = null, now = new Date() }) {
+  const root = fs.realpathSync(path.resolve(rootInput));
+  const parsed = parsePrePushUpdates(input);
+  const failures = [...parsed.failures];
+  const ranges = [];
+  let candidate = null;
+  try {
+    const branch = git(root, ['branch', '--show-current']);
+    const commit = git(root, ['rev-parse', 'HEAD']);
+    const tree = git(root, ['rev-parse', 'HEAD^{tree}']);
+    const status = git(root, ['status', '--porcelain=v1', '--untracked-files=all']);
+    candidate = { root, branch, commit, tree, git_status: status ? status.split('\n') : [] };
+    if (!branch) failures.push('pre-push requires a checked-out branch');
+    if (candidate.git_status.length) failures.push('pre-push candidate worktree is not clean');
+    for (const update of parsed.updates) {
+      if (update.local_sha === ZERO_OID) { failures.push(`pre-push deletion is not locally provable: ${update.remote_ref}`); continue; }
+      if (!update.local_ref.startsWith('refs/heads/')) { failures.push(`pre-push supports branch refs only: ${update.local_ref}`); continue; }
+      if (!update.remote_ref.startsWith('refs/heads/')) { failures.push(`pre-push remote ref is not a branch: ${update.remote_ref}`); continue; }
+      if (update.remote_ref !== update.local_ref) { failures.push(`pre-push local and remote refs must match exactly: ${update.local_ref}`); continue; }
+      let remoteHead;
+      try { remoteHead = namedRemoteHead(root, remoteName); }
+      catch { failures.push(`pre-push cannot resolve the named remote HEAD for ${remoteName ?? 'unknown'}`); continue; }
+      const targetRemoteRef = `refs/remotes/${remoteName}/${update.remote_ref.slice('refs/heads/'.length)}`;
+      if (remoteHead === targetRemoteRef) { failures.push(`pre-push rejects the named remote default branch: ${update.remote_ref}`); continue; }
+      try { git(root, ['check-ref-format', update.local_ref]); git(root, ['check-ref-format', update.remote_ref]); }
+      catch { failures.push(`pre-push contains an invalid ref name on line ${update.line}`); continue; }
+      const localBranch = update.local_ref.slice('refs/heads/'.length);
+      if (localBranch !== branch || update.local_sha !== commit) {
+        failures.push(`pre-push update is not the exact checked-out candidate: ${update.local_ref}`);
+        continue;
+      }
+      try {
+        git(root, ['cat-file', '-e', `${update.local_sha}^{commit}`]);
+        let base = update.remote_sha;
+        let baseSource = update.remote_ref;
+        if (base === ZERO_OID) ({ base, source: baseSource } = newRemoteRefBase(root, update.local_sha, remoteHead));
+        else {
+          git(root, ['cat-file', '-e', `${base}^{commit}`]);
+          git(root, ['merge-base', '--is-ancestor', base, update.local_sha]);
+        }
+        const commits = git(root, ['rev-list', '--reverse', `${base}..${update.local_sha}`]).split('\n').filter(Boolean);
+        if (!commits.length) throw new Error('push range contains no commits');
+        const paths = canonicalGitChangedPaths(root, base, update.local_sha);
+        ranges.push({
+          local_ref: update.local_ref, remote_ref: update.remote_ref, base_sha: base, head_sha: update.local_sha,
+          base_source: baseSource, commits, changed_paths: paths,
+          range_digest: digestObject({ base_sha: base, head_sha: update.local_sha, commits, changed_paths: paths }),
+        });
+      } catch (error) {
+        failures.push(`pre-push range is missing, non-fast-forward, unrelated, or ambiguous for ${update.remote_ref}: ${String(error.stderr ?? error.message ?? error).trim()}`);
+      }
+    }
+  } catch (error) { failures.push(`pre-push candidate identity is unavailable: ${error.message}`); }
+
+  let steering = null;
+  let steeringState = 'blocked';
+  try {
+    const result = runSteeringMonitor(root, { now, requirePromoted: true });
+    const registry = loadSteeringRegistry(root);
+    const assessment = evaluateLocalSteering(result, registry);
+    steeringState = assessment.state;
+    steering = {
+      verdict: result.verdict, checks: result.checks, drifts: result.drifts,
+      registry_sha256: result.registry.sha256, registry_semantic_digest: result.registry.semantic_digest,
+      catalog_digest: result.catalog.digest, repository_manifest_sha256: result.catalog.repository_manifest_sha256,
+      worktree_manifest_sha256: result.worktree.working_tree_manifest_sha256,
+      degraded_surface_ids: result.degraded_surface_ids,
+      explained_degraded_surface_ids: assessment.explained_degraded_surface_ids,
+      unexplained_degraded_surface_ids: assessment.unexplained_degraded_surface_ids,
+      limitations: result.limitations,
+    };
+    failures.push(...assessment.failures);
+  } catch (error) { failures.push(`strict steering could not run: ${error.message}`); }
+  if (ranges.length !== parsed.updates.length) failures.push('not every requested ref update has an exact local range');
+  const changedPaths = unique(ranges.flatMap((entry) => entry.changed_paths));
+  const policy = loadAdoptionPolicy(root);
+  failures.push(...adoptionPolicyFailures(policy).map((entry) => `adoption policy: ${entry}`));
+  const rawClassifications = classifyChangedPaths(policy, changedPaths);
+  for (const entry of rawClassifications) {
+    if (entry.disposition !== 'governed' || !entry.rule) failures.push(`ungoverned changed path: ${entry.path}`);
+  }
+  const classifications = rawClassifications.map((entry) => ({
+    path: entry.path, disposition: entry.disposition, rule_id: entry.rule?.id ?? null,
+  }));
+  const base = {
+    push_preflight_version: '1.0.0',
+    authority: 'Local clean-candidate, Git-range, path-classification, and strict-steering evidence only.',
+    governed_acceptance: false, authoritative_acceptance_surface: 'pr_merge',
+    remote: { name: remoteName, location_recorded: false }, candidate, ranges, changed_paths: changedPaths,
+    classifications, strict_steering: steering, failures: unique(failures),
+    limitations: [
+      'A local hook can be bypassed and cannot provide hosted execution or independent merge evidence.',
+      'A local preflight pass is not governed acceptance, merge approval, release proof, deployment proof, or live-user proof.',
+    ],
+    created_at: now.toISOString(),
+  };
+  const result = {
+    ...base,
+    ok: base.failures.length === 0,
+    verdict: base.failures.length
+      ? 'local_preflight_blocked'
+      : (steeringState === 'degraded' ? 'local_preflight_degraded' : 'local_preflight_pass'),
+  };
+  result.preflight_digest = digestObject(result);
+  return result;
+}
+
 export function hookHealth(root) {
   const failures = [];
   const configured = (() => { try { return git(root, ['config', '--get', 'core.hooksPath']); } catch { return ''; } })();
   const hook = path.join(root, '.githooks/pre-push');
   if (configured !== '.githooks') failures.push(`core.hooksPath is ${configured || 'unset'}, expected .githooks`);
   if (!fs.existsSync(hook)) failures.push('tracked pre-push hook is missing');
-  else if (!(fs.statSync(hook).mode & 0o111)) failures.push('tracked pre-push hook is not executable');
+  else {
+    const body = fs.readFileSync(hook, 'utf8');
+    if (!/adoption-guard\.mjs\s+push-preflight\b/u.test(body)) failures.push('tracked pre-push hook does not invoke bounded push-preflight');
+    if (/adoption-guard\.mjs\s+push(?:\s|$)/u.test(body)) failures.push('tracked pre-push hook still invokes local governed acceptance');
+    if (!(fs.statSync(hook).mode & 0o111)) failures.push('tracked pre-push hook is not executable');
+  }
   return { ok: failures.length === 0, configured, hook: path.relative(root, hook), failures };
 }
 
@@ -924,8 +1136,9 @@ async function main() {
     result = buildContextReceipt({ root, surface: options.surface ?? 'task_start', loopProfile: options.profile ?? 'implementation' });
     if (options.require_governed && result.verdict !== 'governed') process.exitCode = 1;
   } else if (command === 'accept') {
+    if (!options.surface) throw new Error('accept requires an explicit --surface; repository-code acceptance is hosted pr_merge only');
     result = await validateAcceptance({
-      root, surface: options.surface ?? 'governed_push', changedPaths: list(options.changed_paths),
+      root, surface: options.surface, changedPaths: list(options.changed_paths),
       outcomePaths: list(options.outcomes ?? options.outcome), contractPaths: list(options.contracts ?? options.contract),
       knowledgeReceiptPaths: list(options.knowledge_receipts ?? options.knowledge_receipt),
       executionAttestationPaths: list(options.execution_attestations ?? options.execution_attestation),
@@ -935,29 +1148,11 @@ async function main() {
       contextReceiptPath: options.context_receipt, evidenceLevel: options.evidence_level,
     });
     if (result.verdict !== 'governed') process.exitCode = 1;
-  } else if (command === 'push') {
-    const lines = fs.readFileSync(0, 'utf8').split('\n').map((entry) => entry.trim()).filter(Boolean);
-    const receipts = [];
-    for (const line of lines) {
-      const [localRef, localSha, remoteRef, remoteSha] = line.split(/\s+/u);
-      if (!localSha || /^0{40}$/u.test(localSha)) continue;
-      const branch = localRef.startsWith('refs/heads/') ? localRef.slice('refs/heads/'.length) : git(root, ['branch', '--show-current']);
-      receipts.push(await validateAcceptance({
-        root, surface: 'governed_push', changedPaths: changedPaths(root, remoteSha, localSha),
-        outcomePaths: list(process.env.CHOPDOT_OUTCOME_PACKET), contractPaths: list(process.env.CHOPDOT_LOOP_CONTRACT),
-        knowledgeReceiptPaths: list(process.env.CHOPDOT_KNOWLEDGE_RECEIPT),
-        executionAttestationPaths: list(process.env.CHOPDOT_EXECUTION_ATTESTATION),
-        runnerProvenancePaths: list(process.env.CHOPDOT_RUNNER_PROVENANCE),
-        runDirectoryPaths: list(process.env.CHOPDOT_RUN_DIRECTORY),
-        declaredProfiles: list(process.env.CHOPDOT_LOOP_PROFILE), expectedCommit: localSha,
-        expectedTree: git(root, ['rev-parse', `${localSha}^{tree}`]), expectedBranch: branch,
-        contextReceiptPath: process.env.CHOPDOT_CONTEXT_RECEIPT,
-        evidenceLevel: process.env.CHOPDOT_EVIDENCE_LEVEL,
-      }));
-      void remoteRef;
-    }
-    result = { ok: receipts.every((entry) => entry.verdict === 'governed'), receipts };
+  } else if (command === 'push-preflight') {
+    result = buildPushPreflight({ root, input: fs.readFileSync(0, 'utf8'), remoteName: options.remote_name });
     if (!result.ok) process.exitCode = 1;
+  } else if (command === 'push') {
+    throw new Error('push is retired because a local hook cannot produce governed acceptance; use push-preflight and hosted pr_merge');
   } else if (command === 'hooks-check') {
     result = hookHealth(root);
     if (!result.ok) process.exitCode = 1;

@@ -5,6 +5,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { validateOutcomePacket } from '../agent-system/outcome.mjs';
+import { sha256 } from '../agent-system/core.mjs';
 import {
   checkedCount, labelValue, parseArgs, readJson, section, stripCode, tableRows,
   sha256File, writeMarkdownReport, writeReport,
@@ -104,7 +105,7 @@ function validateOutcomeEvidence(root, reference, { runId, terminalState, baseSh
       errors.push(`CI-generated OutcomePacketV1 does not exist: ${file}`);
       return null;
     }
-    evidenceRoot = path.dirname(file);
+    evidenceRoot = root;
   } else {
     file = safeRepositoryFile(root, reference.path, 'OutcomePacketV1', errors);
     evidenceRoot = root;
@@ -135,17 +136,14 @@ function validateOutcomeEvidence(root, reference, { runId, terminalState, baseSh
     } catch {
       errors.push('CI-generated OutcomePacketV1 candidate identity cannot be read from the exact checkout');
     }
-    let baseTree = null;
-    try { if (baseSha) baseTree = execFileSync('git', ['rev-parse', `${baseSha}^{tree}`], { cwd: root, encoding: 'utf8' }).trim(); }
-    catch { errors.push(`CI-generated OutcomePacketV1 base tree cannot be read for ${baseSha}`); }
-    if (baseSha && packet.starting_head !== baseSha) {
-      errors.push(`CI-generated OutcomePacketV1 must bind starting head to exact PR base ${baseSha}`);
+    if (actualHead && packet.starting_head !== actualHead) {
+      errors.push(`CI-generated post-hoc OutcomePacketV1 must bind starting head to exact candidate ${actualHead}`);
     }
     if (actualHead && packet.ending_head !== actualHead) {
       errors.push(`CI-generated OutcomePacketV1 must bind ending head to exact candidate ${actualHead}`);
     }
-    if (baseTree && packet.starting_tree !== baseTree) {
-      errors.push(`CI-generated OutcomePacketV1 must bind starting tree to exact PR base tree ${baseTree}`);
+    if (actualTree && packet.starting_tree !== actualTree) {
+      errors.push(`CI-generated post-hoc OutcomePacketV1 must bind starting tree to exact candidate tree ${actualTree}`);
     }
     if (actualTree && packet.ending_tree !== actualTree) {
       errors.push(`CI-generated OutcomePacketV1 must bind ending tree to exact candidate ${actualTree}`);
@@ -154,13 +152,41 @@ function validateOutcomeEvidence(root, reference, { runId, terminalState, baseSh
   }
 
   const artifacts = new Map((packet.artifacts ?? []).map((entry) => [entry.artifact_id, entry]));
+  const resolvedEvidence = new Map();
   for (const evidence of packet.evidence_index ?? []) {
     const artifact = artifacts.get(evidence.artifact_id);
     if (!artifact || artifact.path !== evidence.path || artifact.sha256 !== evidence.sha256) {
       errors.push(`Outcome evidence ${evidence.artifact_id ?? '(missing)'} is not identically bound in artifacts`);
     }
     const evidenceFile = safeRepositoryFile(evidenceRoot, evidence.path, `Outcome evidence ${evidence.artifact_id}`, errors);
-    if (evidenceFile && sha256File(evidenceFile) !== evidence.sha256) errors.push(`Outcome evidence ${evidence.path} does not match cited SHA-256`);
+    const artifactDigest = evidenceFile ? sha256(`${evidence.path}\0${sha256File(evidenceFile)}`) : null;
+    if (evidenceFile && artifactDigest !== evidence.sha256) errors.push(`Outcome evidence ${evidence.path} does not match cited artifact aggregate SHA-256`);
+    else if (evidenceFile) resolvedEvidence.set(evidence.path, evidenceFile);
+  }
+  if (reference.ci_generated) {
+    const provenanceEntries = [...resolvedEvidence.entries()].filter(([relative]) => path.basename(relative) === 'pr-outcome-evidence.json');
+    if (provenanceEntries.length !== 1) {
+      errors.push(`CI-generated OutcomePacketV1 requires exactly one hashed pr-outcome-evidence.json; found ${provenanceEntries.length}`);
+    } else {
+      let provenance = null;
+      try { provenance = readJson(provenanceEntries[0][1]); }
+      catch (error) { errors.push(`CI-generated PR provenance is not valid JSON: ${error.message}`); }
+      if (provenance) {
+        const range = provenance.pull_request_range ?? {};
+        if (range.base_sha !== baseSha) errors.push('CI-generated PR provenance base SHA does not match the exact PR event');
+        if (range.head_sha !== headSha) errors.push('CI-generated PR provenance head SHA does not match the exact PR event');
+        let changedPaths = [];
+        try { changedPaths = execFileSync('git', ['diff', '--name-only', `${baseSha}..${headSha}`, '--'], { cwd: root, encoding: 'utf8' }).trim().split('\n').filter(Boolean); }
+        catch { errors.push('CI-generated PR provenance changed paths cannot be derived from the exact PR range'); }
+        if (JSON.stringify(range.changed_paths ?? null) !== JSON.stringify(changedPaths)) errors.push('CI-generated PR provenance changed paths do not match the exact PR range');
+        if (provenance.candidate?.branch !== headBranch || provenance.candidate?.commit !== headSha || provenance.candidate?.tree !== packet.ending_tree) {
+          errors.push('CI-generated PR provenance candidate identity does not match the exact PR candidate');
+        }
+        if (!/post-hoc exact-candidate acceptance verifier/u.test(provenance.acceptance_contract?.purpose ?? '')) {
+          errors.push('CI-generated PR provenance must identify the outcome as a post-hoc exact-candidate verifier');
+        }
+      }
+    }
   }
   return packet;
 }

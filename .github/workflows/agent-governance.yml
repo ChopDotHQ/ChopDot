@@ -55,6 +55,7 @@ concurrency:
 env:
   EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   EXPECTED_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+  EXPECTED_BASE_BRANCH: ${{ github.event.pull_request.base.ref || '' }}
   GOVERNANCE_REPORT_ROOT: artifacts/agent-governance
 
 jobs:
@@ -232,11 +233,12 @@ jobs:
           node --test
           scripts/agent-system/tests/knowledge-adapters.test.mjs
           scripts/agent-system/tests/adapters-compat-cli.test.mjs
+          scripts/agent-system/tests/kgv2-agentops-client.test.mjs
       - name: Publish summary
         if: always()
         run: |
           echo "## Knowledge adapters" >> "$GITHUB_STEP_SUMMARY"
-          echo "Conformance is scoped to exact-source, Repo Graph fixture, KGv2 fixture/runtime preflight, and mock KGv3." >> "$GITHUB_STEP_SUMMARY"
+          echo "Conformance is scoped to exact-source, Repo Graph fixture, KGv2 fixture/runtime preflight, the pinned AgentOps KGv2 client, and mock KGv3." >> "$GITHUB_STEP_SUMMARY"
           echo "Knowledge recall never promotes evidence or creates product authority." >> "$GITHUB_STEP_SUMMARY"
       - name: Upload evidence
         if: always()
@@ -267,6 +269,11 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Check steering-surface registry and generated catalog
+        run: >-
+          node scripts/agent-governance/steering-surfaces.mjs check
+          --require-promoted
+          --json-out="$GOVERNANCE_REPORT_ROOT/steering-surfaces.json"
       - name: Validate repository invariants and provider independence
         run: >-
           node scripts/agent-governance/validate-repository.mjs
@@ -287,9 +294,17 @@ jobs:
           --md-out="$GOVERNANCE_REPORT_ROOT/pull-request.md"
       - name: Validate current context, Cockpit, and wiki
         run: |
+          event_file="${{ runner.temp }}/pr-context-input/pr-event.json"
+          if [[ -f "$event_file" ]]; then
+            base_branch="$(jq -r '.pull_request.base.ref' "$event_file")"
+            export CONTEXT_PR_VALIDATION=true
+            export EXPECTED_BASE_BRANCH="$base_branch"
+          fi
           npm run context:validate
           npm run product:validate
           npm run wiki:validate
+      - name: Install governed hook in clean checkout
+        run: node scripts/agent-governance/install-hooks.mjs
       - name: Test repository-governance false-green controls
         run: node --test scripts/agent-governance/tests/*.test.mjs
       - name: Publish summary
@@ -371,6 +386,11 @@ jobs:
           persist-credentials: false
       - name: Assert exact candidate checkout
         run: node scripts/agent-governance/assert-exact-head.mjs --json-out="${{ runner.temp }}/pr-outcome/pr-outcome-exact-head.json"
+      - name: Attach authenticated candidate branch identity
+        run: |
+          git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"
+          test "$(git branch --show-current)" = "$EXPECTED_BRANCH"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -395,7 +415,6 @@ jobs:
           --json-out="output/agent-runs/ci-pr-outcome/generation.json"
       - name: Record and recall the exact PR outcome
         run: |
-          git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"
           node scripts/agent-system/cli.mjs knowledge-record --adapter=exact-source --outcome="output/agent-runs/ci-pr-outcome/outcome.json" --json > "output/agent-runs/ci-pr-outcome/knowledge-record.json"
           outcome_digest="$(node -e "const p=require('./output/agent-runs/ci-pr-outcome/outcome.json'); process.stdout.write(p.packet_digest)")"
           node scripts/agent-system/cli.mjs knowledge-verify --adapter=exact-source --outcome-digest="$outcome_digest" --json > "output/agent-runs/ci-pr-outcome/knowledge-recall.json"

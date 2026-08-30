@@ -39,6 +39,98 @@ It may not:
   the applicable human approval; or
 - describe source existence as implementation, live use, or release proof.
 
+## Complete steering-surface registry
+
+`steering-surface-registry.v1.json` is the intentional source registry for
+everything known to shape an agent's ChopDot decisions or execution: product
+authority, decision records, methods, profiles, schemas, rubrics, policies,
+executors, hooks, workflows, generated context, machine-local skills, external
+agents, knowledge bridges, and runtime-injected classes. Its purpose is to make
+cognitive influence visible, owned, lifecycle-bound, and reviewable. It is not
+a second product cockpit and cannot choose what ChopDot should build.
+
+The deterministic monitor in
+`scripts/agent-governance/steering-surfaces.mjs` discovers repository surfaces
+under the declared roots, hashes each file, validates framework/profile
+relationships and external identities, and writes two read models:
+
+- `steering-surface-catalog.v1.json` — the complete path, kind, lifecycle,
+  owner, activation mode, and SHA-256 census;
+- `docs/agent-system/STEERING_SURFACE_HEALTH.md` — the human-readable aggregate,
+  lifecycle, and expected-verdict view.
+
+Run:
+
+```bash
+npm run agent:steering:report
+npm run agent:steering:check
+```
+
+Use `npm run agent:steering:build` only after an intentional registry or
+steering-source change, then review both generated diffs and rerun the check.
+Check mode is read-only and must never rewrite authority to make itself pass.
+
+The monitor's outcomes are deliberately bounded:
+
+- `pass` — the registry, catalog, hashes, framework/profile bindings, freshness,
+  and required local identities are coherent;
+- `degraded` — only optional unavailable or deliberately guarded/degraded
+  surfaces remain, and their IDs are explicit;
+- `blocked` — schema or semantic validation failed, a controlled file is
+  uncatalogued, a generated output is stale, a required surface is missing, an
+  external digest changed, or the registry review is overdue.
+
+None of these outcomes proves product correctness, implementation, testing,
+deployment, reachability, ownership, or live-user acceptance. A passing
+catalog says that the declared steering system is internally accounted for;
+the applicable product and release gates still decide their own claims.
+
+Machine-local and cross-root surfaces are never silently treated as current
+worktree truth. Quarantined or retired surfaces have activation disabled. An
+optional missing surface appears as unavailable/degraded rather than making a
+portable clone unusable. The canonical-checkout AgentOps context and the two
+AutoBots ChopDot agents currently remain quarantined and must not be automatic
+read or execution routes.
+
+## Definition framework versus profile
+
+The portable
+`frameworks/evidence-bound-definition-loop.v1.json` defines the generic
+Evidence-Bound Definition Loop. It requires a decision target, authoritative
+inputs, observable expected outcome, evaluation criteria, proving evidence,
+failure/blocker behavior, owner/authority, and retry/exit rule. It structures
+how an answer is defined and verified; it must not supply the answer, product
+law, priority, taste, approval, or release verdict.
+
+`profiles/experience-definition.v1.json` is the Experience Definition profile
+over that framework. It selects domain-specific outputs and evidence for
+people, jobs, permissions, information architecture, navigation, states,
+brand, interaction, responsive behavior, accessibility, and real-screen
+review. It must not turn one earlier product choice—such as a home pattern,
+dashboard prohibition, or universal first action—into a reusable method rule.
+Other domains should add their own profiles while keeping the framework
+unchanged.
+
+## Lifecycle, upgrade, and retirement
+
+Every registered surface declares an accountable owner, allowed and forbidden
+influence, activation mode, lifecycle, expected outcome, evidence, failure
+behavior, and retry/exit condition. Lifecycle changes are reviewed source
+changes, never monitor side effects:
+
+1. `candidate` surfaces remain explicit-only until their intended outcome and
+   evidence are reviewed.
+2. `active` surfaces may activate only through their declared route.
+3. `degraded` surfaces stay bounded while an owner records the limitation and
+   repair or replacement.
+4. `quarantined`, `superseded`, and `retired` surfaces have activation disabled;
+   historical evidence remains discoverable but cannot steer current work.
+5. An upgrade names the changed capability or assumption, supplies new evidence,
+   updates compatibility and trusted identity where applicable, regenerates the
+   catalog, and passes hostile monitor tests before activation.
+6. A retirement disables activation first, records the replacement or reason,
+   preserves audit history, and only then advances the lifecycle.
+
 ## System shape
 
 ```text
@@ -184,7 +276,7 @@ retained for adaptation. Competing authority prose, packet types, workflow, and
 ADR numbering are superseded by the single architecture here. See
 [`docs/investigations/2026-08-26-pr-14-agent-supervision-reconciliation.md`](../../docs/investigations/2026-08-26-pr-14-agent-supervision-reconciliation.md).
 
-## Ownership and CODEOWNERS boundary
+## Ownership, identity mode, and CODEOWNERS boundary
 
 | Paths | Responsible role | Required independent role |
 |---|---|---|
@@ -197,11 +289,19 @@ ADR numbering are superseded by the single architecture here. See
 | `PRODUCT_TRUTH.md` | founder/product authority | explicit founder review |
 | money, membership, recovery, privacy, and release paths | affected domain owner | independent security/authority review |
 
-`.github/CODEOWNERS` now maps these paths to the only verified repository
-administrator. That routing does not by itself establish reviewer independence.
-Until the repository ruleset and its required checks are present and read back,
-review ownership remains a declared process requirement rather than enforced
-repository state.
+`project-authority.v1.json` is the repository-owned identity and delegation
+profile. Generic runner and verification code consumes its roles and must not
+hard-code project usernames. `.github/CODEOWNERS` maps these paths to the human
+project owner for routing only; it establishes no reviewer independence.
+
+In `delegated-owner-principal` mode, authorized agents act through the same
+GitHub principal as the human project owner. The governed merge boundary uses
+the exact-candidate hosted checks and does not invent an impossible self-review
+or require an unrelated collaborator. Deterministic evaluator separation is
+reported as such, never as independent human review. A future separated bot/App
+mode may add owner review if the owner explicitly adopts it. Changing mode is a
+governed configuration migration requiring source, workflow, ruleset,
+environment, and live readback agreement.
 
 ## Adoption boundary
 
@@ -209,13 +309,20 @@ repository state.
 acceptance, not a product-priority source. It defaults tracked repository paths
 to governed profiles and requires context, contract, exact-candidate outcome,
 runner provenance, external execution, evidence-byte, and knowledge-recall
-proof at the applicable
-Product Cockpit, push, PR, and release surfaces.
+proof at the applicable Product Cockpit, hosted PR, and release surfaces.
 
 `scripts/agent-governance/adoption-guard.mjs` emits `ContextReceiptV1` and
-`AcceptanceReceiptV1`. The tracked pre-push hook provides local feedback.
-Product Cockpit, the exact-head PR outcome job, and release enforcement call the
-same guard. The guard pins the reviewed routing-policy digest, derives the
+`AcceptanceReceiptV1`. The tracked pre-push hook provides bounded local
+feedback only: exactly one matching ref, a clean checked-out fast-forward
+candidate, and governed paths. Steering may be `pass` or a drift-free,
+fresh, active-registry `degraded` result whose exact IDs are fully explained by
+declared degraded repository/external surfaces or disabled/unavailable optional
+external surfaces;
+that result remains `local_preflight_degraded`, never pass. The hook never
+emits or claims governed acceptance. Product Cockpit, the exact-head hosted
+`pr_merge` job, and release enforcement call the acceptance guard; hosted
+`pr_merge` alone authoritatively accepts repository code. The guard pins the
+reviewed routing-policy digest, derives the
 changed-path manifest from the applicable Git range, and requires a hashed
 `EvaluationV1`, replayable `RunnerProvenanceV1`, GitHub OIDC execution
 attestation, and byte-valid exact-outcome recall backed by a durable cited
@@ -240,9 +347,10 @@ cited evidence, replays the digest-chained runner proof, binds it to the
 checkpoint candidate and outcome, and requires an exact one-to-one mapping
 between every `done` card and one completed checkpoint.
 
-Deterministic evaluator separation proves independent execution, not human or
-agent judgment. Product, security, and release review require their own
-protected evidence outside candidate-authored bytes. Files below
+Deterministic evaluator separation proves independent execution, not human
+review. Delegated-owner authorization and independent human review are separate
+claims; neither may be inferred from a reviewer username. Product, security,
+and release review require the evidence declared by the active profile. Files below
 `docs/release/` are documentation and historical evidence; editing them is not
 a live release effect. The executable release boundary is the protected GitHub
 environment plus the release-enforcement workflow and external readback.

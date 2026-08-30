@@ -133,7 +133,7 @@
       "freshness_days": 30,
       "applies_to": "chopdot-v1-launch",
       "authority": "process only; never product law or deployment evidence",
-      "sha256": "4628772082eb11942d2bee22a96abe81cd80f12199d7312748297feee3307c4d"
+      "sha256": "f89c88831e0cd003233646780c36262765d3c685de5d3beb34b80e3fd3092894"
     },
     {
       "path": "docs/CHOPDOT_LOOP_RUNNER.md",
@@ -144,7 +144,7 @@
       "freshness_days": 30,
       "applies_to": "chopdot-v1-launch",
       "authority": "commands and stop conditions only",
-      "sha256": "8e8fbcffa3a0137b84bd03ebc1b3bb41c3f8a4ef0c87325993e0fb26c37509b7"
+      "sha256": "59f2037ca18e4d0b38f6939a3e75ee33bcb68ef72a86a324298305cbe6b279aa"
     },
     {
       "path": "docs/wiki/agent-context.generated.md",

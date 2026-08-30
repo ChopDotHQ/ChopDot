@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -24,6 +25,15 @@ function fixtureRoot() {
   copy('package.json');
   copy('.github/workflows/agent-governance.yml');
   copy('.githooks/pre-push');
+  copy('governance/agent-system/steering-surface-registry.v1.json');
+  copy('governance/agent-system/steering-surface-catalog.v1.json');
+  copy('docs/agent-system/STEERING_SURFACE_HEALTH.md');
+  const steeringCatalog = JSON.parse(fs.readFileSync(
+    path.join(repositoryRoot, 'governance/agent-system/steering-surface-catalog.v1.json'),
+  ));
+  for (const surface of steeringCatalog.repository_surfaces ?? []) {
+    if (fs.existsSync(path.join(repositoryRoot, surface.path))) copy(surface.path);
+  }
   const catalog = JSON.parse(fs.readFileSync(path.join(root, 'scripts/agent-governance/catalog/invariants.v1.json')));
   for (const invariant of catalog.invariants) {
     const file = path.join(root, invariant.source);
@@ -32,6 +42,11 @@ function fixtureRoot() {
     if (fs.existsSync(source)) fs.copyFileSync(source, file);
     else fs.writeFileSync(file, '# fixture\n');
   }
+  execFileSync('git', ['init', '-q', '-b', 'main'], { cwd: root });
+  execFileSync('git', ['config', 'user.email', 'fixture@example.invalid'], { cwd: root });
+  execFileSync('git', ['config', 'user.name', 'Fixture'], { cwd: root });
+  execFileSync('git', ['add', '.'], { cwd: root });
+  execFileSync('git', ['commit', '-qm', 'fixture'], { cwd: root });
   return root;
 }
 

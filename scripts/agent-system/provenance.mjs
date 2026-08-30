@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { lstat, readFile } from 'node:fs/promises';
 import { digestContract } from './contract.mjs';
-import { digestObject, makeId, nowIso, sha256, writeJsonAtomic } from './core.mjs';
+import { digestObject, makeId, nowIso, writeJsonAtomic } from './core.mjs';
 import { persistedCandidateIdentity } from './candidate.mjs';
 import { rebuildSnapshot } from './ledger.mjs';
 import { validateRuntimePacket } from './validate.mjs';
@@ -12,7 +12,8 @@ const withoutDigest = (value, field) => Object.fromEntries(Object.entries(value)
 async function checkedJsonArtifact(artifact, root = null) {
   const artifactPath = path.isAbsolute(artifact.path) ? artifact.path : path.resolve(root, artifact.path);
   const bytes = await readFile(artifactPath);
-  if (sha256(bytes) !== artifact.sha256) throw new Error(`Artifact ${artifact.artifact_id} content hash mismatch`);
+  const hashed = await hashArtifact(root, artifact.path);
+  if (hashed.aggregate_sha256 !== artifact.sha256) throw new Error(`Artifact ${artifact.artifact_id} content hash mismatch`);
   return { bytes, value: JSON.parse(bytes.toString('utf8')) };
 }
 

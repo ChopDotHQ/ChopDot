@@ -88,14 +88,17 @@ stronger evidence.
 
 - **Evaluator / reviewer identity:**
 - **Independence from author:** independent | deterministic-only |
-  not-independent-and-blocked
+  delegated-owner-no-independent-human-review | not-independent-and-blocked
 - **Evaluation packet / artifact:**
 - **Pass / fail / skip counts:**
 - **Hard failures:**
 - **Repair iterations and changed hypotheses:**
 
 Critical security, authority, money, privacy, recovery, credential, and release
-packages require a separately identified reviewer. CODEOWNERS routing alone is not proof of independence.
+packages require the evaluation and approval evidence declared by the active
+authority profile. In delegated-owner mode, agents act through the owner's
+principal and must not relabel deterministic evaluation as independent human
+review. CODEOWNERS routing alone proves no independence.
 
 ## Side investigations
 

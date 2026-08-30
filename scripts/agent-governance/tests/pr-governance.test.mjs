@@ -7,6 +7,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { validatePullRequestBody } from '../validate-pr.mjs';
 import { digestObject, sha256File } from '../lib.mjs';
+import { sha256 } from '../../agent-system/core.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const catalog = JSON.parse(fs.readFileSync(path.join(root, 'scripts/agent-governance/catalog/invariants.v1.json')));
@@ -18,10 +19,10 @@ function outcomeFixture(mutator = () => {}) {
   const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-pr-governance-'));
   fs.mkdirSync(path.join(fixtureRoot, 'evidence'), { recursive: true });
   fs.writeFileSync(path.join(fixtureRoot, 'evidence/proof.json'), '{"proof":true}\n');
-  const proofDigest = sha256File(path.join(fixtureRoot, 'evidence/proof.json'));
+  const proofDigest = sha256(`evidence/proof.json\0${sha256File(path.join(fixtureRoot, 'evidence/proof.json'))}`);
   const evaluationPath = path.join(fixtureRoot, 'evidence/evaluation.json');
   fs.writeFileSync(evaluationPath, `${JSON.stringify({ evaluation: true })}\n`);
-  const evaluationDigest = sha256File(evaluationPath);
+  const evaluationDigest = sha256(`evidence/evaluation.json\0${sha256File(evaluationPath)}`);
   const packet = {
     outcome_version: '1.0.0', outcome_id: 'outcome_governance_fixture', run_id: 'run_governance_fixture_001',
     contract_digest: 'a'.repeat(64), root: '/exact/source/worktree', branch: 'codex/chopdot-v1-launch',
@@ -48,7 +49,7 @@ function outcomeFixture(mutator = () => {}) {
   return { root: fixtureRoot, packet, fileDigest: sha256File(outcomePath) };
 }
 
-function ciOutcomeFixture(mutator = () => {}) {
+function ciOutcomeFixture(mutator = () => {}, provenanceMutator = () => {}) {
   const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-pr-ci-root-'));
   execFileSync('git', ['init', '-q', '-b', 'codex/test'], { cwd: fixtureRoot });
   execFileSync('git', ['config', 'user.email', 'fixture@example.invalid'], { cwd: fixtureRoot });
@@ -57,32 +58,39 @@ function ciOutcomeFixture(mutator = () => {}) {
   execFileSync('git', ['add', '.'], { cwd: fixtureRoot });
   execFileSync('git', ['commit', '-qm', 'base'], { cwd: fixtureRoot });
   const fixtureBase = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: fixtureRoot, encoding: 'utf8' }).trim();
-  const fixtureBaseTree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { cwd: fixtureRoot, encoding: 'utf8' }).trim();
   fs.writeFileSync(path.join(fixtureRoot, 'candidate.txt'), 'candidate\n');
   execFileSync('git', ['add', '.'], { cwd: fixtureRoot });
   execFileSync('git', ['commit', '-qm', 'candidate'], { cwd: fixtureRoot });
   const fixtureHead = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: fixtureRoot, encoding: 'utf8' }).trim();
   const fixtureTree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { cwd: fixtureRoot, encoding: 'utf8' }).trim();
-  const outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-pr-ci-output-'));
-  fs.writeFileSync(path.join(outputRoot, 'pr-outcome-evidence.json'), '{"same_run":true}\n');
-  const evidenceDigest = sha256File(path.join(outputRoot, 'pr-outcome-evidence.json'));
+  const outputRoot = path.join(fixtureRoot, 'output', 'ci-pr-outcome');
+  fs.mkdirSync(outputRoot, { recursive: true });
+  const provenance = {
+    pr_outcome_evidence_version: '1.0.0',
+    candidate: { root: fixtureRoot, branch: 'codex/test', commit: fixtureHead, tree: fixtureTree, git_status: [] },
+    pull_request_range: { base_sha: fixtureBase, head_sha: fixtureHead, changed_paths: ['candidate.txt'] },
+    acceptance_contract: { purpose: 'post-hoc exact-candidate acceptance verifier; not original task-creation proof' },
+  };
+  provenanceMutator(provenance);
+  fs.writeFileSync(path.join(outputRoot, 'pr-outcome-evidence.json'), `${JSON.stringify(provenance)}\n`);
+  const evidenceDigest = sha256(`output/ci-pr-outcome/pr-outcome-evidence.json\0${sha256File(path.join(outputRoot, 'pr-outcome-evidence.json'))}`);
   fs.writeFileSync(path.join(outputRoot, 'pr-outcome-evaluation.json'), '{"evaluation":true}\n');
-  const evaluationDigest = sha256File(path.join(outputRoot, 'pr-outcome-evaluation.json'));
+  const evaluationDigest = sha256(`output/ci-pr-outcome/pr-outcome-evaluation.json\0${sha256File(path.join(outputRoot, 'pr-outcome-evaluation.json'))}`);
   const packet = {
     outcome_version: '1.0.0', outcome_id: 'outcome_ci_fixture', run_id: 'run_governance_fixture_001',
     contract_digest: 'a'.repeat(64), root: fixtureRoot, branch: 'codex/test',
-    starting_head: fixtureBase, starting_tree: fixtureBaseTree, ending_head: fixtureHead, ending_tree: fixtureTree, git_status: [],
+    starting_head: fixtureHead, starting_tree: fixtureTree, ending_head: fixtureHead, ending_tree: fixtureTree, git_status: [],
     requirements: [{ requirement_id: 'PAOS-W7', status: 'accepted', evaluation_ids: ['evaluation_ci_fixture'] }],
     artifacts: [
-      { artifact_id: 'artifact_ci_fixture', path: 'pr-outcome-evidence.json', sha256: evidenceDigest },
-      { artifact_id: 'artifact_ci_evaluation', path: 'pr-outcome-evaluation.json', sha256: evaluationDigest },
+      { artifact_id: 'artifact_ci_fixture', path: 'output/ci-pr-outcome/pr-outcome-evidence.json', sha256: evidenceDigest },
+      { artifact_id: 'artifact_ci_evaluation', path: 'output/ci-pr-outcome/pr-outcome-evaluation.json', sha256: evaluationDigest },
     ],
     evaluation_summary: { evaluation_ids: ['evaluation_ci_fixture'], total_assertions: 1, passed: 1, failed: 0, blocked: 0, hard_failures: [], score: 1, threshold: 1, independent_review_satisfied: true },
     runner_provenance: { provenance_id: 'runner_provenance_ci_fixture', provenance_digest: '4'.repeat(64), ledger_head_digest: '5'.repeat(64), event_count: 1, evaluation_digest: '6'.repeat(64) },
-    evaluation_index: [{ artifact_id: 'artifact_ci_evaluation', path: 'pr-outcome-evaluation.json', sha256: evaluationDigest }],
+    evaluation_index: [{ artifact_id: 'artifact_ci_evaluation', path: 'output/ci-pr-outcome/pr-outcome-evaluation.json', sha256: evaluationDigest }],
     effects: [], approvals: [], evidence_index: [
-      { artifact_id: 'artifact_ci_fixture', path: 'pr-outcome-evidence.json', sha256: evidenceDigest },
-      { artifact_id: 'artifact_ci_evaluation', path: 'pr-outcome-evaluation.json', sha256: evaluationDigest },
+      { artifact_id: 'artifact_ci_fixture', path: 'output/ci-pr-outcome/pr-outcome-evidence.json', sha256: evidenceDigest },
+      { artifact_id: 'artifact_ci_evaluation', path: 'output/ci-pr-outcome/pr-outcome-evaluation.json', sha256: evaluationDigest },
     ],
     limitations: [], terminal_state: 'succeeded', knowledge_receipts: [], created_at: '2026-08-26T12:00:00Z',
   };
@@ -259,7 +267,7 @@ test('outcome run, head, and cited evidence are bound to the PR claim', () => {
   assert.equal(result.ok, false);
   assert(result.errors.some((error) => error.includes('does not match PR run')));
   assert(result.errors.some((error) => error.includes('does not match PR head')));
-  assert(result.errors.some((error) => error.includes('does not match cited SHA-256')));
+  assert(result.errors.some((error) => error.includes('does not match cited artifact aggregate SHA-256')));
 });
 
 test('moving succeeded PRs require explicit deferred CI_GENERATED evidence', () => {
@@ -312,6 +320,30 @@ test('final CI_GENERATED validation binds external packet root branch head and e
   });
   assert.equal(dirtyRejected.ok, false);
   assert(dirtyRejected.errors.some((error) => error.includes('declare a clean candidate')));
+
+  const staleStart = ciOutcomeFixture((packet) => { packet.starting_head = packet.ending_head.replace(/^./u, packet.ending_head[0] === 'f' ? 'e' : 'f'); });
+  const staleStartRejected = validatePullRequestBody({
+    body: body({ outcomeReference: 'CI_GENERATED', base: staleStart.base }), catalog, evidencePolicy, root: staleStart.root,
+    baseSha: staleStart.base, headSha: staleStart.head, headBranch: 'codex/test', allowCiGenerated: true,
+    requireCiGeneratedOutcome: true, ciOutcomePath: staleStart.outcomePath,
+  });
+  assert(staleStartRejected.errors.some((error) => error.includes('post-hoc OutcomePacketV1 must bind starting head')));
+
+  for (const [label, mutate, fragment] of [
+    ['base', (provenance) => { provenance.pull_request_range.base_sha = 'f'.repeat(40); }, 'base SHA'],
+    ['head', (provenance) => { provenance.pull_request_range.head_sha = 'f'.repeat(40); }, 'head SHA'],
+    ['paths', (provenance) => { provenance.pull_request_range.changed_paths = []; }, 'changed paths'],
+    ['purpose', (provenance) => { provenance.acceptance_contract.purpose = 'ordinary implementation'; }, 'post-hoc exact-candidate'],
+  ]) {
+    const hostile = ciOutcomeFixture(() => {}, mutate);
+    const hostileResult = validatePullRequestBody({
+      body: body({ outcomeReference: 'CI_GENERATED', base: hostile.base }), catalog, evidencePolicy, root: hostile.root,
+      baseSha: hostile.base, headSha: hostile.head, headBranch: 'codex/test', allowCiGenerated: true,
+      requireCiGeneratedOutcome: true, ciOutcomePath: hostile.outcomePath,
+    });
+    assert.equal(hostileResult.ok, false, label);
+    assert(hostileResult.errors.some((error) => error.includes(fragment)), `${label}: ${hostileResult.errors.join('; ')}`);
+  }
 });
 
 test('non-succeeded terminal states are HOLD-only and cannot green the merge gate', () => {

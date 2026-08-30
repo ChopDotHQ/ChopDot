@@ -428,7 +428,15 @@ export async function main(argv = process.argv.slice(2)) {
       const adapter = await loadAdapter(options);
       const packet = await readJson(path.resolve(requireOption(options, 'outcome')));
       if (bool(options.dry_run)) result = { root, proposed_effect: { type: 'knowledge_record', target: options.adapter ?? 'exact-source', outcome_digest: packet.outcome_digest }, dry_run: true };
-      else result = await adapter.record_outcome(packet);
+      else {
+        const proofRequested = options.contract || options.runner_provenance || options.run_directory;
+        const proof = proofRequested ? {
+          contract_path: path.resolve(requireOption(options, 'contract')),
+          runner_provenance_path: path.resolve(requireOption(options, 'runner_provenance')),
+          run_directory: path.resolve(requireOption(options, 'run_directory')),
+        } : undefined;
+        result = await adapter.record_outcome(packet, proof);
+      }
       if (!result.accepted) exitCode = 1;
       break;
     }
