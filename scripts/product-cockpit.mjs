@@ -33,17 +33,81 @@ const agentEvidenceLevels = new Set([
   'local-blocked',
 ]);
 
-export function checkoutIdentityFailures(manifest, observed, environment = {}) {
+export function parseWorktreePorcelain(value) {
+  const records = [];
+  let current = null;
+  for (const field of String(value).split('\0')) {
+    if (!field) {
+      if (current) records.push(current);
+      current = null;
+      continue;
+    }
+    const separator = field.indexOf(' ');
+    const key = separator < 0 ? field : field.slice(0, separator);
+    const entryValue = separator < 0 ? true : field.slice(separator + 1);
+    if (key === 'worktree') {
+      if (current) records.push(current);
+      current = { worktree: entryValue };
+    } else if (current) current[key] = entryValue;
+  }
+  if (current) records.push(current);
+  return records;
+}
+
+export function localFeatureWorktreeFailures(manifest, observed, evidence = {}) {
+  const failures = [...(evidence.collection_failures ?? [])];
+  const actualRoot = path.resolve(String(observed.root ?? ''));
+  const canonicalRoot = path.resolve(String(manifest.exact_root ?? ''));
+  const actualBranch = String(observed.branch ?? '');
+  const actualHead = String(observed.head ?? '');
+  const expectedTargetRef = `refs/remotes/origin/${String(manifest.branch ?? '')}`;
+
+  if (actualRoot === canonicalRoot) failures.push('feature-worktree validation requires a checkout distinct from the canonical root');
+  if (!actualBranch) failures.push('feature-worktree validation rejects a detached HEAD');
+  else if (actualBranch === manifest.branch) failures.push('feature-worktree validation requires a branch distinct from the manifest branch');
+  if (evidence.candidate_real_root !== actualRoot) failures.push('feature-worktree Git evidence does not bind the observed checkout root');
+  if (evidence.canonical_real_root !== canonicalRoot) failures.push('feature-worktree Git evidence does not bind the manifest exact root');
+  if (!evidence.candidate_common_dir || evidence.candidate_common_dir !== evidence.canonical_common_dir) {
+    failures.push('feature-worktree checkout and manifest root are not worktrees of the same Git repository');
+  }
+
+  const worktrees = Array.isArray(evidence.registered_worktrees) ? evidence.registered_worktrees : [];
+  const candidateRecords = worktrees.filter((entry) => path.resolve(String(entry.worktree ?? '')) === actualRoot);
+  if (candidateRecords.length !== 1) failures.push('feature-worktree checkout root is not exactly once in the repository worktree registry');
+  else {
+    if (candidateRecords[0].HEAD !== actualHead) failures.push('feature-worktree registry HEAD does not match the observed HEAD');
+    if (candidateRecords[0].branch !== `refs/heads/${actualBranch}`) failures.push('feature-worktree registry branch does not match the observed branch');
+  }
+  const canonicalRecords = worktrees.filter((entry) => path.resolve(String(entry.worktree ?? '')) === canonicalRoot);
+  if (canonicalRecords.length !== 1) failures.push('manifest exact root is not exactly once in the repository worktree registry');
+
+  if (evidence.target_ref !== expectedTargetRef) failures.push(`feature-worktree target ref must be exactly ${expectedTargetRef}`);
+  if (!/^[0-9a-f]{40}$/u.test(String(evidence.target_sha ?? ''))) failures.push('feature-worktree target ref is missing or does not resolve to a full Git SHA');
+  if (evidence.target_type_sha !== evidence.target_sha) failures.push('feature-worktree target type check is not bound to the resolved target SHA');
+  if (evidence.target_type !== 'commit') failures.push('feature-worktree target ref does not resolve to a commit');
+  if (evidence.ancestor_target_sha !== evidence.target_sha) failures.push('feature-worktree ancestry check is not bound to the resolved target SHA');
+  if (evidence.ancestor_head_sha !== actualHead) failures.push('feature-worktree ancestry check is not bound to the observed HEAD');
+  if (evidence.target_is_ancestor !== true) failures.push('feature-worktree target ref is not an ancestor of HEAD');
+  return failures;
+}
+
+export function checkoutIdentityFailures(manifest, observed, environment = {}, options = {}) {
   const failures = [];
   const actualRoot = path.resolve(String(observed.root ?? ''));
   const actualBranch = String(observed.branch ?? '');
   const actualHead = String(observed.head ?? '');
   const githubMode = environment.GITHUB_ACTIONS === 'true';
   if (!githubMode) {
+    if (options.featureWorktree === true) {
+      failures.push(...localFeatureWorktreeFailures(manifest, observed, options.featureEvidence));
+      return { mode: 'local-feature-worktree', failures, canonical_root: manifest.exact_root, declared_branch: actualBranch };
+    }
     if (actualRoot !== path.resolve(String(manifest.exact_root ?? ''))) failures.push(`context root mismatch: ${observed.root ?? 'missing'} != ${manifest.exact_root ?? 'missing'}`);
     if (!actualBranch || actualBranch !== manifest.branch) failures.push(`context branch mismatch: ${actualBranch || '<detached>'} != ${manifest.branch ?? 'missing'}`);
     return { mode: 'local', failures, canonical_root: manifest.exact_root, declared_branch: actualBranch };
   }
+
+  if (options.featureWorktree === true) failures.push('--feature-worktree is a local-only preflight option and cannot alter GitHub validation');
 
   const expectedSha = String(environment.EXPECTED_SHA ?? '');
   const expectedBranch = String(environment.EXPECTED_BRANCH ?? '');
@@ -66,7 +130,114 @@ export function checkoutIdentityFailures(manifest, observed, environment = {}) {
   return { mode: 'github', failures, canonical_root: manifest.exact_root, declared_branch: expectedBranch };
 }
 
-function parseArgs(values) {
+async function commandResult(command, args, cwd) {
+  try {
+    const { stdout } = await execFileAsync(command, args, { cwd });
+    return { ok: true, stdout: stdout.trim() };
+  } catch (error) {
+    return {
+      ok: false,
+      stdout: String(error?.stdout ?? '').trim(),
+      error: String(error?.stderr ?? error?.message ?? error).trim(),
+    };
+  }
+}
+
+export async function collectLocalFeatureWorktreeEvidence(manifest, observed, {
+  execute = commandResult,
+  resolvePath = realpath,
+} = {}) {
+  const collectionFailures = [];
+  const candidateRoot = path.resolve(String(observed.root ?? ''));
+  const canonicalRoot = path.resolve(String(manifest.exact_root ?? ''));
+  const targetRef = `refs/remotes/origin/${String(manifest.branch ?? '')}`;
+  const [candidateRealRoot, canonicalRealRoot] = await Promise.all([
+    resolvePath(candidateRoot).catch((error) => { collectionFailures.push(`feature-worktree root cannot be resolved: ${error.message}`); return ''; }),
+    resolvePath(canonicalRoot).catch((error) => { collectionFailures.push(`manifest exact root cannot be resolved: ${error.message}`); return ''; }),
+  ]);
+  const [candidateCommon, canonicalCommon, worktreeList] = await Promise.all([
+    execute('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], candidateRoot),
+    execute('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], canonicalRoot),
+    execute('git', ['worktree', 'list', '--porcelain', '-z'], canonicalRoot),
+  ]);
+  const targetSha = await execute('git', ['show-ref', '--verify', '--hash', targetRef], candidateRoot);
+  const resolvedTargetSha = targetSha.ok ? targetSha.stdout : '';
+  const observedHead = String(observed.head ?? '');
+  const targetType = resolvedTargetSha
+    ? await execute('git', ['cat-file', '-t', resolvedTargetSha], candidateRoot)
+    : {ok: false, stdout: '', error: 'exact target ref did not resolve'};
+  const targetAncestor = resolvedTargetSha && /^[0-9a-f]{40}$/u.test(observedHead)
+    ? await execute('git', ['merge-base', '--is-ancestor', resolvedTargetSha, observedHead], candidateRoot)
+    : {ok: false, stdout: '', error: 'resolved target SHA or observed HEAD is invalid'};
+  for (const [label, result] of [
+    ['candidate common Git directory', candidateCommon],
+    ['manifest common Git directory', canonicalCommon],
+    ['registered worktree list', worktreeList],
+    ['exact target ref', targetSha],
+    ['target ref object type', targetType],
+  ]) if (!result.ok) collectionFailures.push(`feature-worktree could not prove ${label}: ${result.error || 'command failed'}`);
+
+  return {
+    collection_failures: collectionFailures,
+    candidate_real_root: candidateRealRoot ? path.resolve(candidateRealRoot) : '',
+    canonical_real_root: canonicalRealRoot ? path.resolve(canonicalRealRoot) : '',
+    candidate_common_dir: candidateCommon.ok ? path.resolve(candidateCommon.stdout) : '',
+    canonical_common_dir: canonicalCommon.ok ? path.resolve(canonicalCommon.stdout) : '',
+    registered_worktrees: worktreeList.ok ? parseWorktreePorcelain(worktreeList.stdout) : [],
+    target_ref: targetRef,
+    target_sha: resolvedTargetSha,
+    target_type_sha: resolvedTargetSha,
+    target_type: targetType.ok ? targetType.stdout : '',
+    ancestor_target_sha: resolvedTargetSha,
+    ancestor_head_sha: observedHead,
+    target_is_ancestor: targetAncestor.ok,
+  };
+}
+
+async function collectCheckoutValidationSnapshot(manifest, options = {}) {
+  const [{stdout: actualRoot}, {stdout: actualBranch}, {stdout: actualHead}] = await Promise.all([
+    execFileAsync('git', ['rev-parse', '--show-toplevel'], {cwd: root}),
+    execFileAsync('git', ['branch', '--show-current'], {cwd: root}),
+    execFileAsync('git', ['rev-parse', 'HEAD'], {cwd: root}),
+  ]);
+  const head = actualHead.trim();
+  const [{stdout: actualTree}, {stdout: actualStatus}] = await Promise.all([
+    execFileAsync('git', ['rev-parse', `${head}^{tree}`], {cwd: root}),
+    execFileAsync('git', ['status', '--short', '--branch'], {cwd: root}),
+  ]);
+  const observed = {
+    root: actualRoot.trim(),
+    branch: actualBranch.trim(),
+    head,
+    tree: actualTree.trim(),
+    status: actualStatus.trim(),
+  };
+  const featureEvidence = options.featureWorktree === true && process.env.GITHUB_ACTIONS !== 'true'
+    ? await collectLocalFeatureWorktreeEvidence(manifest, observed)
+    : undefined;
+  return {manifest, observed, featureEvidence};
+}
+
+export async function featureWorktreeSnapshotStabilityFailures(snapshot, execute = commandResult) {
+  if (!snapshot?.featureEvidence) return [];
+  const failures = [];
+  const {observed, featureEvidence} = snapshot;
+  const [targetNow, headNow] = await Promise.all([
+    execute('git', ['show-ref', '--verify', '--hash', featureEvidence.target_ref], observed.root),
+    execute('git', ['rev-parse', 'HEAD'], observed.root),
+  ]);
+  if (!targetNow.ok) failures.push(`feature-worktree final target-ref stability read failed: ${targetNow.error || 'command failed'}`);
+  else if (targetNow.stdout !== featureEvidence.target_sha) failures.push('feature-worktree target ref moved during validation');
+  if (!headNow.ok) failures.push(`feature-worktree final HEAD stability read failed: ${headNow.error || 'command failed'}`);
+  else if (headNow.stdout !== observed.head) failures.push('feature-worktree HEAD moved during validation');
+  return failures;
+}
+
+export function validationReportIdentity(options, fallbackIdentity) {
+  return options.validationSnapshot?.observed ?? fallbackIdentity;
+}
+
+export function parseArgs(values) {
   const parsed = { _: [] };
   for (const value of values) {
     if (!value.startsWith('--')) {
@@ -764,7 +935,7 @@ async function decisionFailures(now = new Date()) {
   return failures;
 }
 
-async function releaseStateFailures(cards, now = new Date()) {
+async function releaseStateFailures(cards, now = new Date(), options = {}) {
   const failures = [];
   const tracked = await trackedFiles();
   const context = await loadContextAuthority();
@@ -925,19 +1096,19 @@ async function releaseStateFailures(cards, now = new Date()) {
     const selectedNext = rankCards(cards).find((card) => card.status === 'building')?.id;
     if (expectedNext !== selectedNext) failures.push(`selected next card ${selectedNext ?? 'none'} does not match highest-severity release blocker ${expectedNext ?? 'none'}`);
   }
-  const [{ stdout: head }, { stdout: actualBranch }, { stdout: actualRoot }] = await Promise.all([
-    execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: root }),
-    execFileAsync('git', ['branch', '--show-current'], { cwd: root }),
-    execFileAsync('git', ['rev-parse', '--show-toplevel'], { cwd: root }),
-  ]);
-  const checkout = checkoutIdentityFailures(context, { root: actualRoot.trim(), branch: actualBranch.trim(), head: head.trim() }, process.env);
+  const validationSnapshot = options.validationSnapshot ?? await collectCheckoutValidationSnapshot(context, options);
+  const {observed, featureEvidence} = validationSnapshot;
+  const checkout = checkoutIdentityFailures(context, observed, process.env, {
+    featureWorktree: options.featureWorktree === true,
+    featureEvidence,
+  });
   failures.push(...checkout.failures);
   if (release.branch !== context.branch) failures.push(`current release branch ${release.branch ?? 'missing'} differs from the context authority branch ${context.branch ?? 'missing'}`);
   if (verdicts.pushed === true && /^[0-9a-f]{40}$/u.test(candidate.commit ?? '')) {
     await execFileAsync('git', ['merge-base', '--is-ancestor', candidate.commit, `origin/${release.branch}`], { cwd: root }).catch(() => failures.push('pushed=true but the candidate commit is not on the recorded origin branch'));
   }
   if (verdicts.kg_known === true) {
-    failures.push(...kgKnownShapeFailures(release.kgv2, { root: context.exact_root, branch: context.branch, head: head.trim() }));
+    failures.push(...kgKnownShapeFailures(release.kgv2, { root: context.exact_root, branch: context.branch, head: observed.head }));
     for (const sourcePath of release.kgv2?.cited_source_paths ?? []) {
       const absoluteSource = path.resolve(String(sourcePath));
       const relativeSource = path.relative(canonicalRoot, absoluteSource);
@@ -1107,7 +1278,7 @@ export function releaseVerdictShapeFailures(verdicts, verdictNotes = {}) {
   return failures;
 }
 
-async function contextFailures(now = new Date()) {
+async function contextFailures(now = new Date(), options = {}) {
   const failures = [];
   let manifest;
   try {
@@ -1119,17 +1290,13 @@ async function contextFailures(now = new Date()) {
   if (manifest.status !== 'active') failures.push('context authority manifest is not active');
   for (const field of ['owner', 'last_reviewed', 'exact_root', 'branch']) if (!manifest[field]) failures.push(`context authority manifest is missing ${field}`);
   if (daysSince(manifest.last_reviewed, now) < 0 || daysSince(manifest.last_reviewed, now) > 14) failures.push('context authority manifest review is future or older than 14 days');
-  const [{ stdout: actualRoot }, { stdout: actualBranch }, { stdout: actualHead }, { stdout: trackedOutput }] = await Promise.all([
-    execFileAsync('git', ['rev-parse', '--show-toplevel'], { cwd: root }),
-    execFileAsync('git', ['branch', '--show-current'], { cwd: root }),
-    execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: root }),
-    execFileAsync('git', ['ls-files'], { cwd: root }),
-  ]);
-  const checkout = checkoutIdentityFailures(manifest, {
-    root: actualRoot.trim(),
-    branch: actualBranch.trim(),
-    head: actualHead.trim(),
-  }, process.env);
+  const validationSnapshot = options.validationSnapshot ?? await collectCheckoutValidationSnapshot(manifest, options);
+  const {observed, featureEvidence} = validationSnapshot;
+  const {stdout: trackedOutput} = await execFileAsync('git', ['ls-files'], {cwd: root});
+  const checkout = checkoutIdentityFailures(manifest, observed, process.env, {
+    featureWorktree: options.featureWorktree === true,
+    featureEvidence,
+  });
   failures.push(...checkout.failures);
 
   const validKinds = new Set(['law', 'decision', 'measurement', 'guardrail', 'exploration', 'read-model']);
@@ -1202,45 +1369,73 @@ async function contextFailures(now = new Date()) {
   return failures;
 }
 
-async function governanceFailures(cards) {
+async function governanceFailures(cards, options = {}) {
   const benchmark = await benchmarkState();
-  return [
-    ...await contextFailures(),
+  const validationSnapshot = options.validationSnapshot ?? await collectCheckoutValidationSnapshot(await loadContextAuthority(), options);
+  const snapshotOptions = {...options, validationSnapshot};
+  const failures = [
+    ...await contextFailures(new Date(), snapshotOptions),
     ...benchmark.failures,
     ...validateCards(cards, new Date(), benchmark.ids),
     ...await cardEvidenceFailures(cards),
     ...await decisionFailures(),
-    ...await releaseStateFailures(cards),
+    ...await releaseStateFailures(cards, new Date(), snapshotOptions),
     ...await historyFailures(cards),
   ];
+  return failures;
 }
 
-async function validateContext() {
+export function validationOptions(args = {}) {
+  if (Object.hasOwn(args, 'feature-worktree') && args['feature-worktree'] !== true) {
+    return { featureWorktree: false, optionFailures: ['--feature-worktree does not accept a value; pass the bare flag explicitly'] };
+  }
+  return { featureWorktree: args['feature-worktree'] === true, optionFailures: [] };
+}
+
+async function invocationValidationOptions(args = {}) {
+  const options = validationOptions(args);
+  if (!options.featureWorktree || options.optionFailures.length || process.env.GITHUB_ACTIONS === 'true') return options;
+  const manifest = await loadContextAuthority();
+  return {...options, validationSnapshot: await collectCheckoutValidationSnapshot(manifest, options)};
+}
+
+function reportValidationMode(options) {
+  if (options.featureWorktree) console.log('Validation mode: bounded local feature-worktree preflight (not canonical; not governed acceptance).');
+}
+
+async function validateContext(args = {}) {
+  const options = await invocationValidationOptions(args);
   const { cards } = await load();
-  const failures = await governanceFailures(cards);
+  const failures = [...options.optionFailures, ...await governanceFailures(cards, options)];
   const expectedViews = generatedViews(cards);
   for (const [target, content] of [[resumePath, expectedViews.resume], [boardPath, expectedViews.board], [tasksPath, expectedViews.tasks]]) {
     if (await readFile(target, 'utf8').catch(() => null) !== content) failures.push(`${path.relative(root, target)} is missing or stale`);
   }
   await execFileAsync(process.execPath, ['scripts/chopdot-wiki.mjs', 'validate'], { cwd: root }).catch((error) => failures.push(`wiki derived surfaces are invalid: ${error.stderr?.trim?.() || error.message}`));
+  failures.push(...await featureWorktreeSnapshotStabilityFailures(options.validationSnapshot));
   if (failures.length) {
     console.error(failures.join('\n'));
     process.exitCode = 1;
     return false;
   }
   const manifest = await loadContextAuthority();
-  const [{stdout: head}, {stdout: tree}, {stdout: branch}, {stdout: status}] = await Promise.all([
-    execFileAsync('git', ['rev-parse', 'HEAD'], {cwd: root}),
-    execFileAsync('git', ['rev-parse', 'HEAD^{tree}'], {cwd: root}),
-    execFileAsync('git', ['branch', '--show-current'], {cwd: root}),
-    execFileAsync('git', ['status', '--short', '--branch'], {cwd: root}),
-  ]);
+  const fallbackIdentity = options.validationSnapshot ? null : await (async () => {
+    const [{stdout: head}, {stdout: tree}, {stdout: branch}, {stdout: status}] = await Promise.all([
+      execFileAsync('git', ['rev-parse', 'HEAD'], {cwd: root}),
+      execFileAsync('git', ['rev-parse', 'HEAD^{tree}'], {cwd: root}),
+      execFileAsync('git', ['branch', '--show-current'], {cwd: root}),
+      execFileAsync('git', ['status', '--short', '--branch'], {cwd: root}),
+    ]);
+    return {root, head: head.trim(), tree: tree.trim(), branch: branch.trim(), status: status.trim()};
+  })();
+  const identity = validationReportIdentity(options, fallbackIdentity);
   console.log(`Context authority valid (${manifest.default_read_order.length} default sources).`);
-  console.log(`Root: ${root}`);
-  console.log(`Branch: ${branch.trim()}`);
-  console.log(`HEAD: ${head.trim()}`);
-  console.log(`Tree: ${tree.trim()}`);
-  console.log(`Git status:\n${status.trim() || 'clean'}`);
+  reportValidationMode(options);
+  console.log(`Root: ${identity.root}`);
+  console.log(`Branch: ${identity.branch}`);
+  console.log(`HEAD: ${identity.head}`);
+  console.log(`Tree: ${identity.tree}`);
+  console.log(`Git status:\n${identity.status || 'clean'}`);
   return true;
 }
 
@@ -1258,9 +1453,10 @@ async function refresh() {
   console.log(`Product cockpit refreshed (${cards.length} cards).`);
 }
 
-async function validate() {
+async function validate(args = {}) {
+  const options = await invocationValidationOptions(args);
   const { cards } = await load();
-  const failures = await governanceFailures(cards);
+  const failures = [...options.optionFailures, ...await governanceFailures(cards, options)];
   const expected = generatedViews(cards);
   for (const [target, content] of [[resumePath, expected.resume], [boardPath, expected.board], [tasksPath, expected.tasks]]) {
     try {
@@ -1269,23 +1465,28 @@ async function validate() {
       failures.push(`${path.relative(root, target)} is missing; run product:refresh`);
     }
   }
+  failures.push(...await featureWorktreeSnapshotStabilityFailures(options.validationSnapshot));
   if (failures.length) {
     console.error(failures.join('\n'));
     process.exitCode = 1;
     return;
   }
   console.log(`Product cockpit valid (${cards.length} cards; product admission gates and prioritization outcome contracts are present).`);
+  reportValidationMode(options);
 }
 
 async function query(args) {
+  const options = await invocationValidationOptions(args);
   const { cards } = await load();
-  const failures = await governanceFailures(cards);
+  const failures = [...options.optionFailures, ...await governanceFailures(cards, options)];
+  failures.push(...await featureWorktreeSnapshotStabilityFailures(options.validationSnapshot));
   if (failures.length) throw new Error(failures.join('\n'));
   const queryText = args._.join(' ').toLowerCase();
   const selected = queryText === 'next'
     ? [nextBuildingCard(cards)].filter(Boolean)
     : cards.filter((card) => JSON.stringify(card).toLowerCase().includes(queryText));
   console.log(selected.map((card) => `${card.id} [${card.status}] ${card.title}\n  Operator priority action: ${card.next_action}\n  Audience/scope: ${card.audience} — ${card.action_scope}\n  Expected outcome: ${card.expected_outcome}\n  Priority basis: ${card.priority_basis}\n  Alternatives not now: ${card.alternatives_not_now}`).join('\n'));
+  reportValidationMode(options);
 }
 
 async function setStatus(command, args) {
@@ -1513,9 +1714,9 @@ async function main() {
   const [command = 'resume', ...rawArgs] = process.argv.slice(2);
   const args = parseArgs(rawArgs);
   try {
-    if (command === 'context-validate') await validateContext();
+    if (command === 'context-validate') await validateContext(args);
     else if (command === 'refresh') await refresh();
-    else if (command === 'validate') await validate();
+    else if (command === 'validate') await validate(args);
     else if (command === 'query') await query(args);
     else if (command === 'resume') await resume();
     else if (command === 'start' || command === 'finish') await setStatus(command, args);

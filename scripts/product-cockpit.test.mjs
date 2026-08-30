@@ -8,13 +8,17 @@ import {
   checkpointAcceptanceDurabilityFailures,
   checkpointEvidencePathFailures,
   checkpointProvenanceFailures,
+  collectLocalFeatureWorktreeEvidence,
   completionEventBijectionFailures,
   checkoutIdentityFailures,
   conditionalRouteKeyFailures,
   generatedViews,
+  featureWorktreeSnapshotStabilityFailures,
   kgKnownShapeFailures,
+  localFeatureWorktreeFailures,
   markdownMetadataFailures,
   outcomePacketReferenceFailures,
+  parseArgs,
   rankCards,
   nextBuildingCard,
   requiredBenchmarkIds,
@@ -23,6 +27,8 @@ import {
   releaseVerdictShapeFailures,
   requiredReadOrderFailures,
   validateCards,
+  validationReportIdentity,
+  validationOptions,
 } from './product-cockpit.mjs';
 import { digestObject } from './agent-governance/lib.mjs';
 
@@ -67,6 +73,29 @@ const contextManifest = Object.freeze({
 });
 const candidateHead = 'ab'.repeat(20);
 
+function featureWorktreeEvidence(overrides = {}) {
+  const candidateRoot = '/Users/devinsonpena/ChopDot/.worktrees/feature-example';
+  return {
+    collection_failures: [],
+    candidate_real_root: candidateRoot,
+    canonical_real_root: contextManifest.exact_root,
+    candidate_common_dir: '/Users/devinsonpena/ChopDot/.git',
+    canonical_common_dir: '/Users/devinsonpena/ChopDot/.git',
+    registered_worktrees: [
+      { worktree: contextManifest.exact_root, HEAD: 'cd'.repeat(20), branch: `refs/heads/${contextManifest.branch}` },
+      { worktree: candidateRoot, HEAD: candidateHead, branch: 'refs/heads/codex/feature-example' },
+    ],
+    target_ref: `refs/remotes/origin/${contextManifest.branch}`,
+    target_sha: 'ef'.repeat(20),
+    target_type_sha: 'ef'.repeat(20),
+    target_type: 'commit',
+    ancestor_target_sha: 'ef'.repeat(20),
+    ancestor_head_sha: candidateHead,
+    target_is_ancestor: true,
+    ...overrides,
+  };
+}
+
 function governedAcceptanceReceipt() {
   const candidate = {
     root: contextManifest.exact_root,
@@ -106,6 +135,168 @@ test('local context validation keeps exact root and non-detached branch mandator
   assert.ok(wrongRoot.failures.some((failure) => failure.includes('context root mismatch')));
   const detached = checkoutIdentityFailures(contextManifest, { root: contextManifest.exact_root, branch: '', head: candidateHead }, {});
   assert.ok(detached.failures.some((failure) => failure.includes('<detached>')));
+});
+
+test('local feature-worktree validation is explicit and does not weaken the default root gate', () => {
+  const observed = {
+    root: '/Users/devinsonpena/ChopDot/.worktrees/feature-example',
+    branch: 'codex/feature-example',
+    head: candidateHead,
+  };
+  const withoutFlag = checkoutIdentityFailures(contextManifest, observed, {});
+  assert.equal(withoutFlag.mode, 'local');
+  assert.ok(withoutFlag.failures.some((failure) => failure.includes('context root mismatch')));
+  const withFlag = checkoutIdentityFailures(contextManifest, observed, {}, {
+    featureWorktree: true,
+    featureEvidence: featureWorktreeEvidence(),
+  });
+  assert.equal(withFlag.mode, 'local-feature-worktree');
+  assert.deepEqual(withFlag.failures, []);
+});
+
+test('feature-worktree CLI parsing accepts only the explicit bare flag shared by validation commands', () => {
+  assert.deepEqual(validationOptions(parseArgs([])), { featureWorktree: false, optionFailures: [] });
+  assert.deepEqual(validationOptions(parseArgs(['--feature-worktree'])), { featureWorktree: true, optionFailures: [] });
+  const valued = validationOptions(parseArgs(['--feature-worktree=false']));
+  assert.equal(valued.featureWorktree, false);
+  assert.ok(valued.optionFailures.some((failure) => failure.includes('does not accept a value')));
+});
+
+test('local feature-worktree validation rejects wrong repository, root, and detached or canonical branches', () => {
+  const observed = {
+    root: '/Users/devinsonpena/ChopDot/.worktrees/feature-example',
+    branch: 'codex/feature-example',
+    head: candidateHead,
+  };
+  assert.ok(localFeatureWorktreeFailures(contextManifest, observed, featureWorktreeEvidence({
+    candidate_common_dir: '/tmp/other/.git',
+  })).some((failure) => failure.includes('same Git repository')));
+  assert.ok(localFeatureWorktreeFailures(contextManifest, observed, featureWorktreeEvidence({
+    candidate_real_root: '/tmp/spoofed-feature',
+  })).some((failure) => failure.includes('observed checkout root')));
+  assert.ok(localFeatureWorktreeFailures(contextManifest, { ...observed, branch: '' }, featureWorktreeEvidence()).some((failure) => failure.includes('detached HEAD')));
+  assert.ok(localFeatureWorktreeFailures(contextManifest, {
+    root: contextManifest.exact_root,
+    branch: contextManifest.branch,
+    head: candidateHead,
+  }, featureWorktreeEvidence({ candidate_real_root: contextManifest.exact_root })).some((failure) => failure.includes('distinct from the canonical root')));
+});
+
+test('local feature-worktree validation requires the exact existing origin target commit and ancestor relationship', () => {
+  const observed = {
+    root: '/Users/devinsonpena/ChopDot/.worktrees/feature-example',
+    branch: 'codex/feature-example',
+    head: candidateHead,
+  };
+  for (const [overrides, fragment] of [
+    [{ target_ref: 'refs/remotes/upstream/codex/chopdot-v1-launch' }, 'target ref must be exactly'],
+    [{ target_sha: '' }, 'missing or does not resolve'],
+    [{ target_type: 'tag' }, 'does not resolve to a commit'],
+    [{ target_is_ancestor: false }, 'not an ancestor'],
+    [{ collection_failures: ['feature-worktree could not prove exact target ref: missing'] }, 'could not prove exact target ref'],
+  ]) {
+    const failures = localFeatureWorktreeFailures(contextManifest, observed, featureWorktreeEvidence(overrides));
+    assert.ok(failures.some((failure) => failure.includes(fragment)), `${JSON.stringify(overrides)} did not fail for ${fragment}`);
+  }
+});
+
+test('local feature-worktree validation binds type and ancestry to one resolved target SHA and observed HEAD', () => {
+  const observed = {
+    root: '/Users/devinsonpena/ChopDot/.worktrees/feature-example',
+    branch: 'codex/feature-example',
+    head: candidateHead,
+  };
+  for (const [overrides, fragment] of [
+    [{target_type_sha: '12'.repeat(20)}, 'type check is not bound'],
+    [{ancestor_target_sha: '34'.repeat(20)}, 'ancestry check is not bound to the resolved target'],
+    [{ancestor_head_sha: '56'.repeat(20)}, 'ancestry check is not bound to the observed HEAD'],
+  ]) {
+    const failures = localFeatureWorktreeFailures(contextManifest, observed, featureWorktreeEvidence(overrides));
+    assert.ok(failures.some((failure) => failure.includes(fragment)), `${JSON.stringify(overrides)} did not fail for ${fragment}`);
+  }
+});
+
+test('feature-worktree collector binds commands to one snapshot and rejects a target ref or HEAD that moves before success', async () => {
+  const candidateRoot = '/Users/devinsonpena/ChopDot/.worktrees/feature-example';
+  const observed = {root: candidateRoot, branch: 'codex/feature-example', head: candidateHead};
+  const targetSha = 'ef'.repeat(20);
+  const movedTargetSha = '12'.repeat(20);
+  const movedHead = '34'.repeat(20);
+  const calls = [];
+  let moved = false;
+  const execute = async (command, args, cwd) => {
+    calls.push({command, args: [...args], cwd});
+    if (args[0] === 'rev-parse' && args[1] === '--path-format=absolute') return {ok: true, stdout: '/Users/devinsonpena/ChopDot/.git'};
+    if (args[0] === 'worktree') return {ok: true, stdout: [
+      `worktree ${contextManifest.exact_root}`, `HEAD ${'cd'.repeat(20)}`, `branch refs/heads/${contextManifest.branch}`, '',
+      `worktree ${candidateRoot}`, `HEAD ${candidateHead}`, 'branch refs/heads/codex/feature-example', '',
+    ].join('\0')};
+    if (args[0] === 'show-ref') return {ok: true, stdout: moved ? movedTargetSha : targetSha};
+    if (args[0] === 'cat-file') return {ok: true, stdout: 'commit'};
+    if (args[0] === 'merge-base') {
+      moved = true;
+      return {ok: true, stdout: ''};
+    }
+    if (args[0] === 'rev-parse' && args[1] === 'HEAD') return {ok: true, stdout: moved ? movedHead : candidateHead};
+    return {ok: false, stdout: '', error: `unexpected command ${args.join(' ')}`};
+  };
+  const evidence = await collectLocalFeatureWorktreeEvidence(contextManifest, observed, {
+    execute,
+    resolvePath: async (value) => value,
+  });
+  assert.equal(evidence.target_sha, targetSha);
+  assert.equal(evidence.target_type_sha, targetSha);
+  assert.equal(evidence.ancestor_target_sha, targetSha);
+  assert.equal(evidence.ancestor_head_sha, candidateHead);
+  assert.ok(calls.some(({args}) => args[0] === 'cat-file' && args[2] === targetSha));
+  assert.ok(calls.some(({args}) => args[0] === 'merge-base' && args[2] === targetSha && args[3] === candidateHead));
+  assert.deepEqual(await featureWorktreeSnapshotStabilityFailures({
+    observed,
+    featureEvidence: evidence,
+  }, execute), [
+    'feature-worktree target ref moved during validation',
+    'feature-worktree HEAD moved during validation',
+  ]);
+});
+
+test('feature-mode success reporting stays bound to the validated snapshot instead of a later Git read', () => {
+  const validated = {
+    root: '/Users/devinsonpena/ChopDot/.worktrees/feature-example',
+    branch: 'codex/feature-example',
+    head: candidateHead,
+    tree: 'cd'.repeat(20),
+    status: '## codex/feature-example',
+  };
+  const laterRead = {...validated, head: '12'.repeat(20), tree: '34'.repeat(20)};
+  assert.equal(validationReportIdentity({validationSnapshot: {observed: validated}}, laterRead), validated);
+  assert.equal(validationReportIdentity({}, laterRead), laterRead);
+});
+
+test('feature-worktree metadata cannot spoof GitHub validation or the registered checkout identity', () => {
+  const observed = {
+    root: '/Users/devinsonpena/ChopDot/.worktrees/feature-example',
+    branch: 'codex/feature-example',
+    head: candidateHead,
+  };
+  const githubSpoof = checkoutIdentityFailures(contextManifest, observed, {
+    GITHUB_ACTIONS: 'true',
+    GITHUB_WORKSPACE: observed.root,
+    GITHUB_RUN_ID: '33333333333',
+    GITHUB_EVENT_NAME: 'pull_request',
+    EXPECTED_SHA: candidateHead,
+    EXPECTED_BRANCH: observed.branch,
+    EXPECTED_BASE_BRANCH: contextManifest.branch,
+    CONTEXT_PR_VALIDATION: 'true',
+  }, { featureWorktree: true, featureEvidence: featureWorktreeEvidence() });
+  assert.ok(githubSpoof.failures.some((failure) => failure.includes('local-only')));
+  const registrySpoof = localFeatureWorktreeFailures(contextManifest, observed, featureWorktreeEvidence({
+    registered_worktrees: [
+      { worktree: contextManifest.exact_root, HEAD: 'cd'.repeat(20), branch: `refs/heads/${contextManifest.branch}` },
+      { worktree: observed.root, HEAD: '12'.repeat(20), branch: 'refs/heads/codex/not-the-observed-branch' },
+    ],
+  }));
+  assert.ok(registrySpoof.some((failure) => failure.includes('registry HEAD')));
+  assert.ok(registrySpoof.some((failure) => failure.includes('registry branch')));
 });
 
 test('completed checkpoints durably bind the full governed acceptance receipt', () => {
