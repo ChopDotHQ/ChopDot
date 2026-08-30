@@ -4,8 +4,8 @@
 **Authority:** inventory and monitoring only; never product law, priority, approval, or release proof
 **Registry:** `governance/agent-system/steering-surface-registry.v1.json` v1.0.0 (active)
 **Registry semantic digest:** `de324a6a42d279f746427025b869df5c9e1388eda3b1deeb231474a0c111caea`
-**Repository manifest aggregate:** `270e9286c7ff383b19e039cfaf7671b828eed2e9b104d4015d8cc44879649b1d`
-**Catalog digest:** `09efbe655a9553c31e624a99ef54e5cf48428c557ddfc2d6671d318dd9908b22`
+**Repository manifest aggregate:** `e2a4d17bdfa2df265ffd079ce05c393d0359d7fe9e59b6d6e0b4094c59b33fdb`
+**Catalog digest:** `8ad8824771deff56f304fd9256e6cdc87d58661fc6839da3da97e3d11e21b19c`
 
 This file is deterministic. Current branch, dirty state, optional machine-local availability, and hash drift are reported by `npm run agent:steering:report`. Update sources deliberately, run `npm run agent:steering:build`, review the diff, then run `npm run agent:steering:check`. The monitor never rewrites authority during a check.
 
@@ -37,7 +37,7 @@ Degraded repository groups: `legacy-steering-documents`, `operating-documentatio
 | agent-evaluation-system | active | 8 | 56388ea341278c1be9b1e18c6cd557bbfe319b1eed49889ee044846050a33ba4 |
 | agent-governance-runtime | active | 29 | 73f2576ae82ba7a9277c4cbda3ea616f6984f43754eb45526692c33186000feb |
 | agent-policies-and-foundation | active | 9 | 50ccf7f31dcd01363c474e594b86382f595b08b11eb00a47ac6429d6b94ce9ee |
-| agent-system-runtime | active | 38 | 680ee80de65efab71558f14e8ec5343067f820ee439da8b4590941bf265fbedb |
+| agent-system-runtime | active | 38 | bdbc1b3fdc562eaab29e2bda8aea9e7c012bd4e8ca02e3084f1a5538e24be960 |
 | architecture-decisions | active | 6 | c655d48db90d88c8252dbd9f769d1e2e48e3a709e8212013311357b4682a6944 |
 | definition-frameworks | active | 1 | 426935c74c44de7d200d80494e27a01eaaf8d3bd2963f1f7a794588a275b0f7d |
 | definition-profiles | active | 1 | 68e492127a763057c64db65142d17044d708995a2e20f9c92e4b5143b98dc3f3 |
@@ -46,7 +46,7 @@ Degraded repository groups: `legacy-steering-documents`, `operating-documentatio
 | knowledge-and-wiki-sources | active | 15 | a21f10625a941924b09fb8dbfa6cd883b487e68837db3b9cc9114af1029c25be |
 | legacy-steering-documents | degraded | 10 | d5a81d892973840dce72a73b0e35d46c33a67136776cdee77706318d1b4acfd0 |
 | native-and-release-context | active | 15 | a54cdcfc22ae6367c0a8d801782b245c55dad0ae4aa314ab8ae07840fb94ddd7 |
-| operating-documentation | degraded | 5 | 1fa051a5da899d0f2ae870ae175ef21d39e2b9ed09aaa1659c1b91aa93fc7350 |
+| operating-documentation | degraded | 5 | 3de92b00ab577cd7bffde0fd478e1a85c746fbfc1ab7c3b9ce3a603afe9dce43 |
 | portable-agent-contracts | active | 27 | 6ac14701ec9447050f06834ed3fdc9976e090d4e56f11c81bb21916d98c75424 |
 | portable-agent-loops | active | 14 | 6f197602235a3e68abeb4aedd58e43ba8a32aa1b495a1a9d58b5a3c42950803e |
 | product-context-and-history | active | 7 | 2c3b84af6812fbe12ff8a4e4c2e114570f45a6917eb480adf3699cfecfd28c22 |

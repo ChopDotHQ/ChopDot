@@ -7,6 +7,7 @@ import { digestContract } from '../contract.mjs';
 import { validateOutcomePacket } from '../outcome.mjs';
 import { verifyRunnerProvenance } from '../provenance.mjs';
 import { validateAgentContract } from '../validate.mjs';
+import { hashArtifact } from '../artifacts.mjs';
 import { normalizeKnowledgeScope, receiptBase } from './port.mjs';
 
 const DEFAULT_AUTOBOTS_SOURCE = '/Users/devinsonpena/Documents/AutoBots';
@@ -261,7 +262,9 @@ async function findAnchor(packet) {
       if (info.isSymbolicLink() || !info.isFile()) continue;
       const resolved = await realpath(candidate);
       if (!resolved.startsWith(`${root}${path.sep}`)) continue;
-      if (sha256(await readFile(resolved)) === entry.sha256) return { path: resolved, sha256: entry.sha256 };
+      const hashed = await hashArtifact(root, resolved);
+      if (hashed.aggregate_sha256 !== entry.sha256 || hashed.manifest.length !== 1) continue;
+      return { path: resolved, sha256: hashed.manifest[0].sha256, artifact_sha256: entry.sha256 };
     } catch { /* try the next declared evidence artifact */ }
   }
   throw new Error('no_exact_root_hash_verified_outcome_anchor');

@@ -72,8 +72,9 @@ Recording is rejected before any KG write when any of these conditions holds:
 - the current worktree is dirty;
 - the exact contract, persisted runner provenance, or runner directory is
   absent, symlinked, cross-root, or fails ledger/evaluation replay;
-- no declared evidence artifact exists inside the exact root with its declared
-  SHA-256, including after real-path resolution; or
+- no declared single-file evidence artifact exists inside the exact root with
+  its canonical runner aggregate SHA-256, including after real-path
+  resolution; or
 - the pinned runtime or authority is unavailable.
 
 Reading and recall never use a v1, cross-root, or uncited fallback. Missing,
@@ -129,6 +130,12 @@ The client replays the ledger, evaluation, command evidence, artifact hashes,
 contract digest, and candidate identity before invoking KGv2. Follow a record
 with `knowledge-verify` for the same digest; an upload or record receipt alone
 does not prove recall.
+
+Runner artifact records bind `hashArtifact(...).aggregate_sha256`, even for a
+single file. The client verifies that canonical aggregate before a write, then
+uses the verified manifest entry's raw file SHA-256 for KGv2 source lineage and
+citation verification. A directory aggregate is evidence but is not itself a
+citable file anchor. Symlinks and cross-root real paths remain rejected.
 
 ## Current live measurement
 
