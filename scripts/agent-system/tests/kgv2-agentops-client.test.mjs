@@ -7,6 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { createAgentOpsKgv2Client } from '../adapters/kgv2-agentops-client.mjs';
 import { digestObject, sha256 } from '../core.mjs';
 import { digestContract } from '../contract.mjs';
+import { hashArtifact } from '../artifacts.mjs';
 import { runKnowledgeAdapterConformance, validateKnowledgeContext, validateKnowledgeReceipt, validateKnowledgeRecall } from '../adapters/port.mjs';
 import { fixtureContract, fixtureRoot } from './helpers.mjs';
 
@@ -17,10 +18,10 @@ function identity(root) {
 
 async function outcomeFixture(root) {
   const scope = identity(root);
-  const evidencePath = path.join(root, 'outcome-evidence.json');
-  await writeFile(evidencePath, '{"accepted":true}\n');
+  const evidencePath = path.join(root, 'scripts', 'agent-system', 'fixture.mjs');
   const evidenceHash = sha256(await readFile(evidencePath));
-  const artifact = { artifact_id: 'artifact_outcome_evidence', path: 'outcome-evidence.json', sha256: evidenceHash };
+  const artifactHash = (await hashArtifact(root, evidencePath)).aggregate_sha256;
+  const artifact = { artifact_id: 'artifact_outcome_evidence', path: 'scripts/agent-system/fixture.mjs', sha256: artifactHash };
   const packet = {
     outcome_version: '1.0.0', outcome_id: 'outcome_kgv2_fixture', run_id: 'run_kgv2_fixture_0001',
     contract_digest: 'a'.repeat(64), root, branch: scope.branch,
@@ -34,7 +35,7 @@ async function outcomeFixture(root) {
     created_at: '2026-08-30T10:00:00.000Z', packet_digest: null,
   };
   packet.packet_digest = digestObject(Object.fromEntries(Object.entries(packet).filter(([key]) => key !== 'packet_digest')));
-  return { packet, scope, evidencePath, evidenceHash };
+  return { packet, scope, evidencePath, evidenceHash, artifactHash };
 }
 
 function exactRecord(scope, sourcePath, sourceHash, objectValue, suffix = 'fixture') {
@@ -81,8 +82,14 @@ function fixtureClient(scope, invoke, candidateInspector = (value) => value) {
 
 test('pinned AgentOps client satisfies all four provider-neutral port operations', async () => {
   const root = await fixtureRoot();
-  const { packet, scope, evidencePath, evidenceHash } = await outcomeFixture(root);
-  const client = fixtureClient(scope, fakeRuntime(scope, evidencePath, evidenceHash));
+  const { packet, scope, evidencePath, evidenceHash, artifactHash } = await outcomeFixture(root);
+  assert.notEqual(artifactHash, evidenceHash, 'fixture must exercise aggregate artifact hash rather than raw file hash');
+  let recordedAnchor;
+  const runtime = fakeRuntime(scope, evidencePath, evidenceHash);
+  const client = fixtureClient(scope, async (operation, payload) => {
+    if (operation === 'record_outcome') recordedAnchor = payload.anchor;
+    return runtime(operation, payload);
+  });
   const result = await runKnowledgeAdapterConformance(client, { scope, outcome_packet: packet });
   assert.equal(result.accepted, true, JSON.stringify(result.cases, null, 2));
   assert.deepEqual(result.counts, { total: 4, passed: 4, failed: 0 });
@@ -90,6 +97,9 @@ test('pinned AgentOps client satisfies all four provider-neutral port operations
   assert.equal(validateKnowledgeRecall(recall, scope, packet.packet_digest), true);
   assert.equal(recall.backend, 'kgv2');
   assert.equal(recall.fallback_status, 'none');
+  assert.equal(recordedAnchor.sha256, evidenceHash, 'citation uses the verified file hash');
+  assert.equal(recordedAnchor.artifact_sha256, artifactHash, 'anchor retains the canonical aggregate artifact hash');
+  assert.equal(recordedAnchor.commit, scope.commit, 'anchor is bound to the exact committed candidate');
 });
 
 test('read_context removes a cross-root citation and reports stale context without fallback', async () => {
@@ -204,6 +214,72 @@ test('record_outcome rejects a symlink evidence anchor before invoking KGv2', as
     invoke: async () => { invoked = true; return { accepted: true }; },
   });
   const receipt = await client.record_outcome(packet, {});
+  assert.equal(receipt.accepted, false);
+  assert.equal(invoked, false);
+  assert.deepEqual(receipt.rejected_reasons, ['no_exact_root_hash_verified_outcome_anchor']);
+});
+
+test('record_outcome rejects a cross-root evidence anchor before invoking KGv2', async () => {
+  const root = await fixtureRoot();
+  const { packet, scope } = await outcomeFixture(root);
+  const outside = await mkdtemp(path.join(os.tmpdir(), 'chopdot-kgv2-cross-root-'));
+  const outsideFile = path.join(outside, 'evidence.json');
+  await writeFile(outsideFile, '{"accepted":true}\n');
+  const artifact = { artifact_id: 'artifact_cross_root', path: outsideFile, sha256: 'a'.repeat(64) };
+  packet.artifacts = [artifact];
+  packet.evaluation_index = [artifact];
+  packet.evidence_index = [artifact];
+  packet.packet_digest = digestObject(Object.fromEntries(Object.entries(packet).filter(([key]) => key !== 'packet_digest')));
+  let invoked = false;
+  const client = createAgentOpsKgv2Client({
+    repoId: 'fixture', candidateInspector: () => scope,
+    outcomeProofVerifier: async () => ({ accepted: true }),
+    invoke: async () => { invoked = true; return { accepted: true }; },
+  });
+  const receipt = await client.record_outcome(packet, {});
+  assert.equal(receipt.accepted, false);
+  assert.equal(invoked, false);
+  assert.deepEqual(receipt.rejected_reasons, ['no_exact_root_hash_verified_outcome_anchor']);
+});
+
+test('record_outcome rejects an ignored hash-valid run artifact that is not durable at the exact commit', async () => {
+  const root = await fixtureRoot();
+  const { packet, scope } = await outcomeFixture(root);
+  const ignoredPath = path.join(root, 'runs', 'evaluation.json');
+  await mkdir(path.dirname(ignoredPath), { recursive: true });
+  await writeFile(ignoredPath, '{"accepted":true}\n');
+  const ignored = {
+    artifact_id: 'artifact_ignored_run_output', path: 'runs/evaluation.json',
+    sha256: (await hashArtifact(root, ignoredPath)).aggregate_sha256,
+  };
+  packet.artifacts = [ignored];
+  packet.evaluation_index = [ignored];
+  packet.evidence_index = [ignored];
+  packet.packet_digest = digestObject(Object.fromEntries(Object.entries(packet).filter(([key]) => key !== 'packet_digest')));
+  let invoked = false;
+  const receipt = await createAgentOpsKgv2Client({
+    repoId: 'fixture', candidateInspector: () => scope,
+    outcomeProofVerifier: async () => ({ accepted: true }),
+    invoke: async () => { invoked = true; return { accepted: true }; },
+  }).record_outcome(packet, {});
+  assert.equal(receipt.accepted, false);
+  assert.equal(invoked, false);
+  assert.deepEqual(receipt.rejected_reasons, ['no_exact_root_hash_verified_outcome_anchor']);
+});
+
+test('record_outcome rejects hash-valid tracked worktree bytes that differ from the ending commit', async () => {
+  const root = await fixtureRoot();
+  const { packet, scope, evidencePath } = await outcomeFixture(root);
+  await writeFile(evidencePath, 'export const fixture = "modified after commit";\n');
+  const modifiedHash = (await hashArtifact(root, evidencePath)).aggregate_sha256;
+  for (const index of [packet.artifacts, packet.evaluation_index, packet.evidence_index]) index[0].sha256 = modifiedHash;
+  packet.packet_digest = digestObject(Object.fromEntries(Object.entries(packet).filter(([key]) => key !== 'packet_digest')));
+  let invoked = false;
+  const receipt = await createAgentOpsKgv2Client({
+    repoId: 'fixture', candidateInspector: () => scope,
+    outcomeProofVerifier: async () => ({ accepted: true }),
+    invoke: async () => { invoked = true; return { accepted: true }; },
+  }).record_outcome(packet, {});
   assert.equal(receipt.accepted, false);
   assert.equal(invoked, false);
   assert.deepEqual(receipt.rejected_reasons, ['no_exact_root_hash_verified_outcome_anchor']);
