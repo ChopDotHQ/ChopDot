@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import test, {type TestContext} from 'node:test';
 import type {ChatReceivedAction} from '@parity/product-sdk-host';
 import {verifiedContactActor, verifiedContactFixture} from '../../tests/fixtures/verifiedContactFixture.ts';
 import {VerifiedContactRepository, type AsyncJsonStorage} from '../contacts/verifiedContactRepository.ts';
@@ -74,7 +74,12 @@ class ProtectedKeys implements ProtectedGroupKeySink {
 const verifyCanonical: CanonicalVerifier = (bytes, signature, publicKeyHex) =>
   verifyProductAccountSignature(publicKeyHex, bytes, signature);
 
-test('verified contact becomes a V2 invitation, but MEMBER_ADDED waits for signed acceptance and grant acknowledgement', async () => {
+function freezeWallClock(t: TestContext): void {
+  t.mock.timers.enable({apis: ['Date'], now: new Date('2026-08-23T12:00:00.000Z')});
+}
+
+test('verified contact becomes a V2 invitation, but MEMBER_ADDED waits for signed acceptance and grant acknowledgement', async t => {
+  freezeWallClock(t);
   const h = await harness();
   const created = await h.organizer.createInvitation({
     requestId: 'add-leo-0001', contactRecordId: h.contactRecordId, roomId: h.roomId,
@@ -153,7 +158,8 @@ test('verified contact becomes a V2 invitation, but MEMBER_ADDED waits for signe
   }), new Uint8Array(32).fill(7));
 });
 
-test('retry, acknowledgement replay, request replay, and restart are idempotent', async () => {
+test('retry, acknowledgement replay, request replay, and restart are idempotent', async t => {
+  freezeWallClock(t);
   const h = await harness();
   const request = {
     requestId: 'idempotent-leo', contactRecordId: h.contactRecordId, roomId: h.roomId,
@@ -189,7 +195,8 @@ test('retry, acknowledgement replay, request replay, and restart are idempotent'
   assert.equal(restarted.status(created.invitationId), 'accepted');
 });
 
-test('organizer restart recovers a durable grant acknowledgement after outbox cleanup failure', async () => {
+test('organizer restart recovers a durable grant acknowledgement after outbox cleanup failure', async t => {
+  freezeWallClock(t);
   const h = await harness();
   const created = await h.organizer.createInvitation({
     requestId: 'crash-safe-leo', contactRecordId: h.contactRecordId, roomId: h.roomId,
@@ -220,7 +227,8 @@ test('organizer restart recovers a durable grant acknowledgement after outbox cl
   assert.equal(command.type, 'add');
 });
 
-test('a durable recipient sink never downgrades a grant to V1 when its exact record is unavailable', async () => {
+test('a durable recipient sink never downgrades a grant to V1 when its exact record is unavailable', async t => {
+  freezeWallClock(t);
   const h = await harness({durableRecordUnavailable: true});
   const created = await h.organizer.createInvitation({
     requestId: 'missing-record-leo', contactRecordId: h.contactRecordId, roomId: h.roomId,
