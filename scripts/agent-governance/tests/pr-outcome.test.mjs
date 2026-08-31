@@ -4,11 +4,14 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { generatePrOutcome } from '../generate-pr-outcome.mjs';
 import { digestContract, loadLoopProfile } from '../../agent-system/contract.mjs';
 import { validateOutcomePacket } from '../../agent-system/outcome.mjs';
 import { validateAgentContract, validateContractProfileAlignment } from '../../agent-system/validate.mjs';
 import { validateGovernanceInstance } from '../../agent-system/schema.mjs';
+
+const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 
 const reportNames = [
   'agent-contract-exact-head.json', 'agent-runner-exact-head.json',
@@ -61,10 +64,15 @@ function fixture() {
   execFileSync('git', ['config', 'user.email', 'fixture@example.invalid'], { cwd: root });
   execFileSync('git', ['config', 'user.name', 'Fixture'], { cwd: root });
   fs.mkdirSync(path.join(root, 'scripts', 'agent-system'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'governance', 'agent-system', 'loops'), { recursive: true });
+  fs.copyFileSync(
+    path.join(repositoryRoot, 'governance/agent-system/loops/implementation.v1.json'),
+    path.join(root, 'governance/agent-system/loops/implementation.v1.json'),
+  );
   fs.writeFileSync(path.join(root, 'scripts', 'agent-system', 'cli.mjs'), 'process.exit(0);\n');
   fs.writeFileSync(path.join(root, 'PRODUCT_TRUTH.md'), '# Fixture product truth\n');
   fs.writeFileSync(path.join(root, '.gitignore'), 'output/\n');
-  execFileSync('git', ['add', 'scripts/agent-system/cli.mjs', 'PRODUCT_TRUTH.md', '.gitignore'], { cwd: root });
+  execFileSync('git', ['add', 'scripts/agent-system/cli.mjs', 'governance/agent-system/loops/implementation.v1.json', 'PRODUCT_TRUTH.md', '.gitignore'], { cwd: root });
   execFileSync('git', ['commit', '-qm', 'runner fixture'], { cwd: root });
   commit(root, 'base.txt', 'base\n', 'base');
   const baseSha = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
