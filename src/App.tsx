@@ -8,6 +8,7 @@ import { AppStateProvider, useAppState } from './state/AppStateContext';
 import { Welcome } from './components/Welcome';
 import { GuestSetup } from './components/GuestSetup';
 import { Home } from './components/Home';
+import type {HomeContextualPrompt} from './components/homePresentation';
 import { StateProof } from './components/dev/StateProof';
 import { CreateGroup } from './components/CreateGroup';
 import { GroupDetail } from './components/GroupDetail';
@@ -305,7 +306,7 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
   }, [dependencies?.membershipOrganizerEntry]);
 
   if (view.name === 'state_proof') {
-    if (!isDev) return <Home onStartGroup={() => setView({ name: 'home' })} onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})} onGoToGroup={() => setView({ name: 'home' })} onGoToProfile={() => setView({ name: 'home' })} />;
+    if (!isDev) return <Home onStartGroup={() => setView({ name: 'home' })} onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})} onGoToGroup={() => setView({ name: 'home' })} onOpenPrompt={() => setView({name: 'home'})} onGoToProfile={() => setView({ name: 'home' })} />;
     return <StateProof onBack={() => setView(getEntryView())} />;
   }
 
@@ -550,6 +551,7 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
         onStartGroup={() => setView({ name: 'home' })}
         onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})}
         onGoToGroup={() => setView({ name: 'home' })}
+        onOpenPrompt={() => setView({name: 'home'})}
         onGoToProfile={() => setView({ name: 'home' })}
       />;
     } else {
@@ -560,6 +562,13 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
       onStartGroup={() => setView({ name: 'create_group' })}
       onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})}
       onGoToGroup={(groupId) => setView({ name: 'group_detail', groupId })}
+      onOpenPrompt={(prompt: HomeContextualPrompt) => {
+        if (prompt.kind === 'payment_requested' && state.currentUserId) {
+          setView({name: 'payer_view', groupId: prompt.groupId, memberId: state.currentUserId});
+          return;
+        }
+        setView({name: 'group_detail', groupId: prompt.groupId});
+      }}
       onGoToProfile={() => setView({ name: 'profile' })}
     />;
   }

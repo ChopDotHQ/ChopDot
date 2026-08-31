@@ -13,7 +13,7 @@ import {useAppState} from '../state/AppStateContext';
 import {getGroupTotal, getMemberBalance} from '../state/store';
 import type {Group, GroupMode, Split} from '../types';
 import {getCurrencySymbol, getInitials} from '../utils';
-import {deriveHomePresentation} from './homePresentation';
+import {deriveHomePresentation, type HomeContextualPrompt} from './homePresentation';
 import {groupMode, modeCopy} from './productModes';
 
 const modeIcons = {
@@ -30,11 +30,13 @@ export function Home({
   onStartGroup,
   onScanReceipt,
   onGoToGroup,
+  onOpenPrompt,
   onGoToProfile,
 }: {
   onStartGroup: () => void;
   onScanReceipt: () => void;
   onGoToGroup: (groupId: string) => void;
+  onOpenPrompt: (prompt: HomeContextualPrompt) => void;
   onGoToProfile: () => void;
 }) {
   const {state} = useAppState();
@@ -134,7 +136,7 @@ export function Home({
             <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300">{presentation.prompt.detail}</p>
             <button
               type="button"
-              onClick={() => onGoToGroup(presentation.prompt!.groupId)}
+              onClick={() => onOpenPrompt(presentation.prompt!)}
               data-primary-action="true"
               className="mt-5 flex min-h-14 w-full items-center justify-center rounded-full bg-gray-950 px-6 text-base font-bold text-white shadow-sm transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-100"
             >

@@ -61,6 +61,31 @@ test('returning Home keeps group cards before one deterministic contextual promp
   await page.screenshot({path: `${screenshotRoot}/home-contextual-prompt-390x844.png`, fullPage: true});
 });
 
+test('a Home payment prompt opens the payer action instead of a static group page', async ({page}) => {
+  await page.setViewportSize({width: 390, height: 844});
+  await page.addInitScript(({key, value}) => window.localStorage.setItem(key, value), {
+    key: 'chopdot-portable-shell-state-v1',
+    value: JSON.stringify({
+      mode: 'clean', theme: 'light', currency: 'CHF', preferredPaymentMethod: null, currentUserId: 'leo',
+      users: {mina: {id: 'mina', name: 'Mina'}, leo: {id: 'leo', name: 'Leo'}},
+      groups: {dinner: {id: 'dinner', name: 'Zurich dinner', memberIds: ['mina', 'leo']}},
+      expenses: {meal: {id: 'meal', groupId: 'dinner', description: 'Dinner', amount: 120, currency: 'CHF', paidByUserId: 'mina', date: '2026-08-30T12:00:00.000Z'}},
+      splits: {leoShare: {id: 'leoShare', expenseId: 'meal', userId: 'leo', amount: 60, status: 'request_sent'}},
+      paymentMethods: {}, activityEvents: {}, savedRecords: {},
+    }),
+  });
+  await page.goto(appUrl, {waitUntil: 'domcontentloaded'});
+
+  await expect(page.getByRole('heading', {name: 'Your share is ready in Zurich dinner'})).toBeVisible();
+  await page.getByRole('button', {name: 'Open group'}).click();
+
+  await expect(page.getByRole('banner').getByText('Pay Mina')).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Zurich dinner'})).toBeVisible();
+  await expect(page.getByText('Your share')).toBeVisible();
+  await expect(page.getByText('Cash')).toBeVisible();
+  await expect(page.getByRole('button', {name: 'I paid Mina'})).toBeVisible();
+});
+
 test('Create group completes existing account setup and keeps signed creation behind one action', async ({browser}) => {
   const product = await openHostedProduct(browser, {bindAccount: false, viewport: {width: 390, height: 844}});
   try {
