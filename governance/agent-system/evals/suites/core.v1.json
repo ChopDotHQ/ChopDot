@@ -71,37 +71,59 @@
       "id": "routing-rejects-universal-receipt-first-action",
       "kind": "task_routing",
       "expected_verdict": "blocked",
-      "input": { "taskDomain": "product-definition", "expectedOutcome": "Define one bounded product decision with evidence.", "failureSignals": ["universal-product-action"] }
+      "input": { "taskDomain": "product-definition", "expectedOutcome": "Define one bounded product decision with evidence.", "inPaths": ["product"], "outPaths": ["src"], "failureSignals": ["universal-product-action"] }
     },
     {
       "id": "routing-rejects-contributor-as-required-authority",
       "kind": "task_routing",
       "expected_verdict": "blocked",
-      "input": { "taskDomain": "security-authority", "expectedOutcome": "Preserve contributor and project authority separation.", "failureSignals": ["named-contributor-required"] }
+      "input": { "taskDomain": "security-authority", "expectedOutcome": "Preserve contributor and project authority separation.", "inPaths": ["governance"], "outPaths": ["src"], "failureSignals": ["named-contributor-required"] }
     },
     {
       "id": "routing-does-not-confuse-kg-transport-with-context",
       "kind": "task_routing",
       "expected_verdict": "unverified",
-      "input": { "taskDomain": "research", "expectedOutcome": "Return populated cited context for the exact root.", "contextTransportOk": true, "contextFactCount": 0 }
+      "input": { "taskDomain": "research", "expectedOutcome": "Return populated cited context for the exact root.", "inPaths": ["docs"], "contextTransportOk": true, "contextFactCount": 0 }
     },
     {
       "id": "routing-rejects-disabled-skill-acceptance",
       "kind": "task_routing",
       "expected_verdict": "blocked",
-      "input": { "taskDomain": "implementation", "expectedOutcome": "Implement with repository-approved methods only.", "skillIds": ["skill-chopdot-engineering-judgment"] }
+      "input": { "taskDomain": "implementation", "expectedOutcome": "Implement with repository-approved methods only.", "inPaths": ["scripts"], "outPaths": ["src"], "skillIds": ["skill-chopdot-engineering-judgment"] }
     },
     {
       "id": "routing-requires-host-parser-proof",
       "kind": "task_routing",
       "expected_verdict": "routed",
-      "input": { "taskDomain": "incident", "expectedOutcome": "Repair the hosted workflow parser failure at exact head.", "hostParserRequired": true, "requestedMutation": false }
+      "input": { "taskDomain": "incident", "expectedOutcome": "Repair the hosted workflow parser failure at exact head.", "inPaths": [".github/workflows"], "outPaths": ["src"], "hostParserRequired": true, "requestedMutation": false }
     },
     {
       "id": "routing-rejects-governance-without-visible-product-checkpoint",
       "kind": "task_routing",
       "expected_verdict": "blocked",
-      "input": { "taskDomain": "ux", "expectedOutcome": "Show a visible product checkpoint before governance acceptance.", "userFacing": true, "failureSignals": ["missing-visible-product-checkpoint"] }
+      "input": { "taskDomain": "ux", "expectedOutcome": "Show a visible product checkpoint before governance acceptance.", "inPaths": ["src"], "outPaths": ["governance"], "userFacing": true, "failureSignals": ["missing-visible-product-checkpoint"] }
+    },
+    {
+      "id": "route-contract-roundtrip-binds-task-scope",
+      "kind": "route_contract_roundtrip",
+      "expected_valid": true,
+      "input": {
+        "taskDomain": "implementation",
+        "expectedOutcome": "Bind the exact task path scope through canonical route and contract persistence.",
+        "inPaths": ["docs/agent-system", "product/context-authority.json", "scripts/agent-system"],
+        "outPaths": ["src"]
+      }
+    },
+    {
+      "id": "route-contract-roundtrip-retains-profile-checks",
+      "kind": "route_contract_roundtrip",
+      "expected_valid": true,
+      "input": {
+        "taskDomain": "implementation",
+        "expectedOutcome": "Retain profile-required deterministic checks when no custom command is supplied.",
+        "inPaths": ["scripts/agent-system"],
+        "outPaths": ["PRODUCT_TRUTH.md", "src"]
+      }
     }
   ]
 }

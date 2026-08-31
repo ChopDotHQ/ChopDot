@@ -34,7 +34,7 @@
     "created_by": { "$ref": "#/$defs/actor" },
     "task_route": {
       "type": "object",
-      "required": ["route_id", "route_digest", "source_path", "task_domain", "run_type", "risk_tier", "profile_id", "execution_mode", "agent_ids", "skill_ids", "expected_outcome", "evidence", "approval_boundary"],
+      "required": ["route_id", "route_digest", "source_path", "task_domain", "run_type", "risk_tier", "profile_id", "execution_mode", "agent_ids", "skill_ids", "contract_inputs", "expected_outcome", "evidence", "approval_boundary"],
       "properties": {
         "route_id": { "type": "string", "pattern": "^route_[a-z0-9][a-z0-9_-]{7,95}$" },
         "route_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
@@ -46,6 +46,16 @@
         "execution_mode": { "enum": ["deterministic", "single-agent", "parallel-workers", "orchestrator-workers", "evaluator-optimizer"] },
         "agent_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
         "skill_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^skill-[a-z0-9-]+$" } },
+        "contract_inputs": {
+          "type": "object",
+          "required": ["source_path", "requirement_ids", "deterministic_commands"],
+          "properties": {
+            "source_path": { "$ref": "#/$defs/repo_path" },
+            "requirement_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 2 } },
+            "deterministic_commands": { "type": "array", "items": { "$ref": "#/$defs/command_check" } }
+          },
+          "additionalProperties": false
+        },
         "expected_outcome": { "type": "string", "minLength": 12 },
         "evidence": {
           "type": "object",

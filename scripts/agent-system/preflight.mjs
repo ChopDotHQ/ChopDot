@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { sha256 } from './core.mjs';
+import { digestObject, sha256 } from './core.mjs';
 import { contractProfileId, contractRoot, loadLoopProfile, routeEvidenceAssertions } from './contract.mjs';
 import { validateAgentContract, validateContractProfileAlignment, validateLoopProfile } from './validate.mjs';
 import { loadGovernanceJson, loadGovernanceJsonFrom } from './schema.mjs';
@@ -24,6 +24,11 @@ function gitIdentity(root) {
 function insideDeclaredScope(candidate, inPaths) {
   const normalized = String(candidate).replace(/^\.\//, '').replace(/\/$/, '');
   return inPaths.some((entry) => normalized === entry.replace(/\/$/, '') || normalized.startsWith(`${entry.replace(/\/$/, '')}/`));
+}
+
+function sameValue(left, right) {
+  if (left === undefined || right === undefined) return left === right;
+  return digestObject(left) === digestObject(right);
 }
 
 export async function executeRunPreflight(contract, options = {}) {
@@ -78,26 +83,28 @@ export async function executeRunPreflight(contract, options = {}) {
           execution_mode: route.execution_mode,
           agent_ids: route.selection?.agent_ids,
           skill_ids: route.selection?.skill_ids,
+          contract_inputs: route.contract_inputs,
           expected_outcome: route.expected_outcome,
           evidence: route.evidence,
           approval_boundary: route.approval_boundary,
         };
-        for (const [field, observed] of Object.entries(bindings)) if (JSON.stringify(observed) !== JSON.stringify(contract.task_route[field])) issues.push({ gate: 'task_route', path: `task_route.${field}`, message: `Contract binding differs from accepted route receipt: ${field}`, code: 'route_contract_mismatch' });
-        if (route.scope.head !== contract.scope.starting_head || route.scope.tree !== contract.scope.starting_tree || route.scope.branch !== contract.scope.branch || JSON.stringify(route.scope.dirty_paths) !== JSON.stringify(contract.scope.dirty_paths)) issues.push({ gate: 'task_route', path: 'task_route.scope', message: 'Route receipt and contract candidate identity differ', code: 'route_candidate_mismatch' });
+        for (const [field, observed] of Object.entries(bindings)) if (!sameValue(observed, contract.task_route[field])) issues.push({ gate: 'task_route', path: `task_route.${field}`, message: `Contract binding differs from accepted route receipt: ${field}`, code: 'route_contract_mismatch' });
+        if (route.scope.head !== contract.scope.starting_head || route.scope.tree !== contract.scope.starting_tree || route.scope.branch !== contract.scope.branch || !sameValue(route.scope.dirty_paths, contract.scope.dirty_paths) || !sameValue(route.scope.in_paths, contract.scope.in_paths) || !sameValue(route.scope.out_paths, contract.scope.out_paths)) issues.push({ gate: 'task_route', path: 'task_route.scope', message: 'Route receipt and contract candidate or task path scope differ', code: 'route_candidate_mismatch' });
         if (contract.task?.objective !== route.expected_outcome) issues.push({ gate: 'task_route', path: 'task.objective', message: 'Contract objective differs from the accepted route outcome', code: 'route_outcome_mismatch' });
+        if (!sameValue(contract.requirement_ids, route.contract_inputs.requirement_ids) || !sameValue(contract.evaluator?.deterministic_commands, route.contract_inputs.deterministic_commands) || contract.context?.governing_sources?.[0]?.path !== route.contract_inputs.source_path) issues.push({ gate: 'task_route', path: 'contract_inputs', message: 'Contract requirements, governing source, or deterministic checks differ from the accepted route', code: 'route_contract_input_mismatch' });
         const contractAssertions = new Map((contract.expected_outcome?.assertions ?? []).map((entry) => [entry.id, entry]));
         for (const expected of routeEvidenceAssertions(route)) {
           const observed = contractAssertions.get(expected.id);
-          if (JSON.stringify(observed) !== JSON.stringify(expected) || !contract.evaluator?.hard_fail_assertion_ids?.includes(expected.id)) issues.push({ gate: 'task_route', path: `expected_outcome.assertions.${expected.id}`, message: `Contract does not enforce routed evidence assertion ${expected.id}`, code: 'route_evidence_mismatch' });
+          if (!sameValue(observed, expected) || !contract.evaluator?.hard_fail_assertion_ids?.includes(expected.id)) issues.push({ gate: 'task_route', path: `expected_outcome.assertions.${expected.id}`, message: `Contract does not enforce routed evidence assertion ${expected.id}`, code: 'route_evidence_mismatch' });
         }
         const routeTemplate = loadGovernanceJsonFrom(root, 'loops', 'examples', `${route.selection.profile_id}.contract.v1.json`);
         const templateAuthority = routeTemplate.authority;
         const expectedAuthority = {
-          allowed_writes: route.approval_boundary.mutation_allowed ? routeTemplate.scope.in_paths : [],
+          allowed_writes: route.approval_boundary.mutation_allowed ? route.scope.in_paths : [],
           external_effects: route.approval_boundary.effect_types.length ? route.approval_boundary.effect_types : ['none'],
           required_approvals: route.approval_boundary.approval_required ? ['accepted-task-route-approval'] : templateAuthority.required_approvals,
         };
-        for (const [field, expected] of Object.entries(expectedAuthority)) if (JSON.stringify(contract.authority?.[field]) !== JSON.stringify(expected)) issues.push({ gate: 'task_route', path: `authority.${field}`, message: `Contract ${field} widens or changes the accepted route boundary`, code: 'route_authority_mismatch' });
+        for (const [field, expected] of Object.entries(expectedAuthority)) if (!sameValue(contract.authority?.[field], expected)) issues.push({ gate: 'task_route', path: `authority.${field}`, message: `Contract ${field} widens or changes the accepted route boundary`, code: 'route_authority_mismatch' });
         const expectedArchitecture = route.execution_mode.replaceAll('-', '_');
         if (contract.architecture?.mode !== expectedArchitecture) issues.push({ gate: 'task_route', path: 'architecture.mode', message: 'Contract architecture differs from the accepted route', code: 'route_architecture_mismatch' });
         const budgetFields = ['max_iterations', 'max_retries', 'max_wall_seconds', 'max_tool_calls', 'max_model_cost_usd', 'max_external_cost_usd'];

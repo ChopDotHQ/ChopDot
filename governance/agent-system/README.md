@@ -162,6 +162,8 @@ The classification rules are machine-readable in `taxonomy.json`:
 npm run agent:route -- \
   --output output/agent-routes/<route-id>.json \
   --task-domain implementation \
+  --in-paths scripts/agent-system,governance/agent-system \
+  --out-paths PRODUCT_TRUTH.md,src \
   --expected-outcome "Produce the bounded verified implementation outcome."
 
 npm run agent:contract:new -- \
@@ -173,10 +175,24 @@ npm run agent:contract:new -- \
 `contract-new --route` rejects non-`routed`, stale, wrong-root, or
 digest-invalid receipts and forbids a second `--loop-profile` choice. Run
 preflight reopens the receipt and compares its digest, candidate identity,
-profile, execution mode, agents, skills, expected outcome, evidence gates,
-authority boundary, effect types, and budgets with the contract binding.
+profile, execution mode, agents, skills, exact task input/exclusion paths,
+expected outcome, evidence gates, authority boundary, effect types, and budgets
+with the contract binding. A route must declare at least one normalized
+repository-relative `in_path`; `contract-new --route` cannot replace it. For a
+mutating route, `authority.allowed_writes` equals—not merely overlaps—the routed
+`in_paths`. The approval request digest also binds `in_paths` and `out_paths`,
+so a repository-effect approval cannot be replayed onto a wider task scope.
+The route also persists the requirement IDs, governing source path, and final
+deterministic command set. `contract-new --route` rejects overrides for all
+three. Omitting custom commands preserves the selected profile's checks rather
+than replacing them with an empty list.
 The runtime also compares `contract.json` with the immutable declared digest
 before it plans or dispatches an effect.
+
+Route and contract packets are written as canonical JSON. Preflight compares
+structured bindings canonically rather than relying on object-key insertion
+order; a packet that is semantically identical after persistence remains valid,
+while any changed value still fails its digest or binding check.
 
 | Risk | Default execution | Minimum route proof | Additional boundary |
 |---|---|---|---|

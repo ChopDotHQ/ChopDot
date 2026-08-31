@@ -272,7 +272,7 @@
           "freshness_days": 90,
           "applies_to": "chopdot-v1-launch",
           "authority": "process architecture only; never product law, participant authority, product priority, or release proof",
-          "sha256": "a742b30a622014bb4ede9ff45ace4d823932d0bf62ecf91ef963458145900db3"
+          "sha256": "86ab6197bb6958dbce8e6d3f4fe592157a3cddd321c739d795501880cd2d15be"
         },
         {
           "path": "docs/superpowers/plans/2026-08-26-portable-agent-outcome-system.md",

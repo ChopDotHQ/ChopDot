@@ -53,12 +53,28 @@ export function loadExampleContract(profileId, root) {
   return root ? loadGovernanceJsonFrom(root, 'loops', 'examples', `${profileId}.contract.v1.json`) : loadGovernanceJson('loops', 'examples', `${profileId}.contract.v1.json`);
 }
 
+export function resolveProfileCommands(profileId, profile, root, requested) {
+  const template = loadExampleContract(profileId, root);
+  const selected = requested === undefined ? template.evaluator.deterministic_commands : requested;
+  if (!Array.isArray(selected)) throw new Error('Deterministic commands must be an array');
+  const required = requiredProfileCommands(profileId, profile);
+  const requiredIds = new Set(required.map((entry) => entry.id));
+  const combined = [...required, ...selected.filter((entry) => !requiredIds.has(entry.id))];
+  const ids = new Set();
+  return combined.map((entry) => {
+    if (!entry || typeof entry !== 'object' || !String(entry.id ?? '').trim() || !String(entry.command ?? '').trim() || !Number.isInteger(entry.expected_exit_code) || !Number.isInteger(entry.timeout_seconds) || entry.timeout_seconds < 1) throw new Error('Every deterministic command requires id, command, integer expected_exit_code, and positive timeout_seconds');
+    if (ids.has(entry.id)) throw new Error(`Duplicate deterministic command ID: ${entry.id}`);
+    ids.add(entry.id);
+    return { ...entry, cwd: root };
+  });
+}
+
 export function createContract(options = {}) {
   const root = normalizeRoot(options.root ?? process.cwd());
   const runId = options.runId ?? makeId('run');
   const createdAt = options.createdAt ?? nowIso();
   const routeNeedsProductLaw = ['product-definition', 'ux'].includes(options.taskRoute?.task_domain);
-  const sourcePath = options.sourcePath ?? (options.taskRoute && !routeNeedsProductLaw ? 'governance/agent-system/policies/task-routing.v1.json' : 'PRODUCT_TRUTH.md');
+  const sourcePath = options.taskRoute?.contract_inputs?.source_path ?? options.sourcePath ?? (options.taskRoute && !routeNeedsProductLaw ? 'governance/agent-system/policies/task-routing.v1.json' : 'PRODUCT_TRUTH.md');
   let sourceHash = '0'.repeat(64);
   try { sourceHash = sha256(readFileSync(path.join(root, sourcePath))); } catch { /* validation reports unavailable context later */ }
   const profileId = String(options.loopProfile ?? 'implementation').replace(/\.v1$/, '');
@@ -94,6 +110,7 @@ export function createContract(options = {}) {
         execution_mode: options.taskRoute.execution_mode,
         agent_ids: clone(options.taskRoute.selection.agent_ids),
         skill_ids: clone(options.taskRoute.selection.skill_ids),
+        contract_inputs: clone(options.taskRoute.contract_inputs),
         expected_outcome: options.taskRoute.expected_outcome,
         evidence: clone(options.taskRoute.evidence),
         approval_boundary: clone(options.taskRoute.approval_boundary),
@@ -106,11 +123,11 @@ export function createContract(options = {}) {
     },
     task: routeBound ? { ...task, objective: options.taskRoute.expected_outcome } : task,
     intent_type: options.intentType ?? INTENT_BY_PROFILE[profileId],
-    requirement_ids: options.requirementIds ?? profile.expected_outcome.assertions.map((entry) => entry.id),
+    requirement_ids: routeBound ? clone(options.taskRoute.contract_inputs.requirement_ids) : options.requirementIds ?? profile.expected_outcome.assertions.map((entry) => entry.id),
     artifact_contract: options.artifactContract ?? {
       ...template.artifact_contract,
       artifact_types: clone(profile.artifact_contract.artifact_types),
-      required_paths: options.inPaths?.length ? options.inPaths : template.artifact_contract.required_paths,
+      required_paths: routeBound ? clone(routeScope.in_paths) : options.inPaths?.length ? options.inPaths : template.artifact_contract.required_paths,
     },
     expected_outcome: routeBound ? {
       statement: profile.expected_outcome.statement,
@@ -124,8 +141,8 @@ export function createContract(options = {}) {
       branch: routeScope.branch,
       starting_head: routeScope.head,
       starting_tree: routeScope.tree,
-      in_paths: options.inPaths?.length ? options.inPaths : template.scope.in_paths,
-      out_paths: options.outPaths ?? [],
+      in_paths: clone(routeScope.in_paths),
+      out_paths: clone(routeScope.out_paths),
       dirty_paths: clone(routeScope.dirty_paths),
     } : options.scope ?? {
       root,
@@ -139,7 +156,7 @@ export function createContract(options = {}) {
     authority: routeBound ? {
       ...template.authority,
       allowed_reads: template.authority.allowed_reads,
-      allowed_writes: routeAllowsMutation ? clone(template.scope.in_paths) : [],
+      allowed_writes: routeAllowsMutation ? clone(routeScope.in_paths) : [],
       external_effects: routeBoundary.effect_types.length ? clone(routeBoundary.effect_types) : ['none'],
       required_approvals: routeBoundary.approval_required ? ['accepted-task-route-approval'] : template.authority.required_approvals,
     } : options.authority ?? {
@@ -173,12 +190,7 @@ export function createContract(options = {}) {
     },
     evaluator: options.evaluator ?? {
       rubric_refs: [profile.evaluator.rubric_path],
-      deterministic_commands: (() => {
-        const required = requiredProfileCommands(profileId, profile);
-        const requiredIds = new Set(required.map((entry) => entry.id));
-        const selected = options.deterministicCommands ?? template.evaluator.deterministic_commands;
-        return [...required, ...selected.filter((entry) => !requiredIds.has(entry.id))].map((entry) => ({ ...entry, cwd: root }));
-      })(),
+      deterministic_commands: routeBound ? clone(options.taskRoute.contract_inputs.deterministic_commands) : resolveProfileCommands(profileId, profile, root, options.deterministicCommands),
       reviewer_independence: options.reviewerIndependence ?? profile.evaluator.independence,
       pass_threshold: profile.evaluator.pass_threshold,
       hard_fail_assertion_ids: routeBound ? [...new Set([...profile.evaluator.hard_failures, ...routeAssertions.map((entry) => entry.id)])] : clone(profile.evaluator.hard_failures),
