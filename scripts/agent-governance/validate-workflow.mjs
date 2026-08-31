@@ -571,8 +571,15 @@ export function validateWorkflow(source) {
   if (JSON.stringify(repoGovernance?.needs ?? []) !== JSON.stringify(['pr-context'])) errors.push('Repo governance must need the exact PR context job');
   const browserEvidenceSteps = browserAssurance?.steps.filter((step) => step.env.CHOPDOT_RELEASE_EVIDENCE_ROOT === '${{ runner.temp }}/chopdot-release-evidence') ?? [];
   const browserExactHead = browserAssurance?.steps.find((step) => step.fields.name === 'Assert exact candidate checkout');
+  const browserSummary = browserAssurance?.steps.find((step) => step.fields.name === 'Publish browser assurance summary');
   const browserUpload = browserAssurance?.steps.find((step) => step.fields.name === 'Upload browser assurance evidence');
-  checks += 2;
+  const browserTail = browserAssurance?.steps.slice(-3).map((step) => step.fields.name) ?? [];
+  const expectedBrowserSummary = [
+    'echo "## Application browser assurance" >> "$GITHUB_STEP_SUMMARY"',
+    'echo "Production-entrypoint Playwright results apply only to the exact checked-out candidate." >> "$GITHUB_STEP_SUMMARY"',
+    'echo "This is application evidence, not deployment, reachability, ownership, or live-user proof." >> "$GITHUB_STEP_SUMMARY"',
+  ].join('\n');
+  checks += 5;
   if (browserAssurance?.env.CHOPDOT_RELEASE_EVIDENCE_ROOT !== undefined) errors.push('Application browser assurance cannot bind CHOPDOT_RELEASE_EVIDENCE_ROOT at job scope');
   if (Object.values(browserAssurance?.env ?? {}).some((value) => value.includes('${{ runner.'))) errors.push('Application browser assurance job-level env cannot use runner context');
   if (JSON.stringify(browserEvidenceSteps.map((step) => step.fields.name)) !== JSON.stringify([
@@ -580,6 +587,9 @@ export function validateWorkflow(source) {
     'Assert machine-readable browser result',
   ])) errors.push('Browser assurance must bind the external release evidence root on exactly the two runtime steps where runner context is available');
   if (browserExactHead?.run !== 'node scripts/agent-governance/assert-exact-head.mjs --json-out="${{ runner.temp }}/chopdot-release-evidence/application-browser-exact-head.json"') errors.push('Browser assurance exact-head evidence must be written outside the repository beneath the uploaded release evidence root');
+  if (JSON.stringify(browserTail) !== JSON.stringify(['Publish browser assurance summary', 'Assert browser suite left repository clean', 'Upload browser assurance evidence'])) errors.push('Browser assurance must end with summary, then the penultimate clean-checkout assertion, then the final evidence upload');
+  if (browserSummary?.fields.if !== 'always()') errors.push('Browser assurance summary must remain an always-run pre-clean diagnostic step');
+  if (browserSummary?.run !== expectedBrowserSummary) errors.push('Browser assurance summary must contain only the three reviewed GitHub summary writes before the clean-checkout assertion');
   if (browserUpload?.with.path !== '${{ runner.temp }}/chopdot-release-evidence/') errors.push('Browser assurance must upload only the external release evidence root');
   if (!browserAssurance?.block.includes('${{ runner.temp }}/chopdot-release-evidence/')) errors.push('Browser assurance must upload the external release evidence root directly');
   if (!browserAssurance?.steps.some((step) => step.fields.name === 'Upload browser assurance evidence' && step.with['if-no-files-found'] === 'error')) errors.push('Browser assurance evidence upload must fail when evidence is absent');

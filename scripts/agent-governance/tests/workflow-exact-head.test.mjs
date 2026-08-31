@@ -476,6 +476,8 @@ test('browser evidence root, upload, and complete post-suite cleanliness cannot 
     workflow.replace('          git diff --cached --exit-code\n', ''),
     workflow.replace('          test -z "$(git status --porcelain --untracked-files=all)"\n', ''),
     workflow.replace('git status --porcelain --untracked-files=all', 'git status --porcelain --untracked-files=no'),
+    workflow.replace('      - name: Upload browser assurance evidence\n', '      - name: Reintroduce checkout dirtiness after the clean gate\n        run: touch post-clean-dirty.txt\n      - name: Upload browser assurance evidence\n'),
+    workflow.replace('          echo "This is application evidence, not deployment, reachability, ownership, or live-user proof." >> "$GITHUB_STEP_SUMMARY"\n', '          echo "This is application evidence, not deployment, reachability, ownership, or live-user proof." >> "$GITHUB_STEP_SUMMARY"\n          touch post-clean-dirty.txt\n'),
   ];
   for (const broken of cases) {
     assert.notEqual(broken, workflow);

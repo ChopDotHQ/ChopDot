@@ -161,3 +161,11 @@ or ADR change is expected unless implementation reveals an architecture change.
   A local path simulation proved matching exact-head SHA/tree evidence without
   changing repository status; focused hosted-assurance regressions remain
   `46/46`, and workflow structure now passes `479` checks.
+- Independent review then rejected candidate `4d80852…` because the summary
+  step still ran after the cleanliness assertion: a later executable step could
+  re-dirty the checkout while structural validation remained green. The job now
+  ends in the enforced order `summary -> clean assertion -> upload`; the clean
+  assertion is penultimate, upload is final, and the reviewed summary command is
+  exact. Hostile post-clean insertion and summary-write mutations fail closed.
+  The expanded focused set passes `54/54` and workflow structure passes `482`
+  checks.
