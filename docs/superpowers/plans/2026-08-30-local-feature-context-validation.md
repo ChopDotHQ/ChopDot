@@ -3,7 +3,7 @@
 **Kind:** execution plan
 **Status:** active
 **Owner:** agent-governance
-**Last reviewed:** 2026-08-30
+**Last reviewed:** 2026-08-31
 **Applies to:** `codex/chopdot-v1-launch`
 **Authority:** bounded local context-validation repair; cannot change product
 truth, canonical context authority, or governed acceptance
@@ -30,6 +30,9 @@ exact-branch default.
 - Require a non-detached feature branch.
 - Resolve the exact local `refs/remotes/origin/<manifest.branch>` ref and prove
   it is an ancestor of the feature HEAD.
+- Bind canonical KG recall checks to that resolved target commit and reject a
+  feature checkout whose `HEAD`, branch, or complete status changes before the
+  command reports success.
 - Propagate the option through `context:validate`, `product:validate`, and
   `product:query` command paths.
 - Add hostile, hermetic tests for absent authorization and spoofed or stale Git
@@ -58,6 +61,11 @@ exact-branch default.
    environment metadata SHALL not replace Git observations.
 7. A feature-worktree success SHALL be labelled as bounded local validation,
    never canonical or governed acceptance.
+8. The final stability read SHALL match the captured target ref, feature
+   `HEAD`, feature branch, and complete short status.
+9. When current release knowledge is already verified, feature validation
+   SHALL compare KG lineage with the resolved canonical target commit rather
+   than the descendant feature `HEAD`.
 
 ## Loop contract
 

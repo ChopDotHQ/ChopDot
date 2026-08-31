@@ -35,7 +35,7 @@
       "scripts/"
     ],
     "repository_file_count": 703,
-    "repository_manifest_sha256": "1890a96cb76e8b1035167a07b464b4f7c655a27c56f4fa3e663cc60297eb0616"
+    "repository_manifest_sha256": "c47b323951ac834204ac75614d8b8ab738d39fbf1a703df470f41ec2677c902e"
   },
   "lifecycle_summary": {
     "active": 241,
@@ -390,7 +390,7 @@
         "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog."
       },
       "file_count": 55,
-      "manifest_sha256": "9e9e5109a749b1858abee9e93e2d0ce06b7ce7ef4eb43b8c0df23c04931f5c17"
+      "manifest_sha256": "f8bc228ecdf2ff29f563b9d2380da3d0b7fcc3f3ff1af20f3b2843365d3c1749"
     },
     {
       "id": "knowledge-and-wiki-sources",
@@ -556,7 +556,7 @@
         "retry_exit": "Update source documentation after behavior is accepted, then rerun links and monitor checks."
       },
       "file_count": 6,
-      "manifest_sha256": "a679c78960ec266d3cb7cdd13524eccc0eb26c58694e3330056e0165f188258c"
+      "manifest_sha256": "d6a639bebfdfdc6fce5aba840783f00a327c397ca69778c0b6b2b5d0183ebe21"
     },
     {
       "id": "portable-agent-contracts",
@@ -1023,7 +1023,7 @@
         "retry_exit": "Repair or explicitly reclassify the script, then rerun focused and governing checks."
       },
       "file_count": 33,
-      "manifest_sha256": "7c13767089bb2a16d5786a4a8ab3bf221538e6493b83d74203a701a463273ab6"
+      "manifest_sha256": "698144e700fc50504322c761952a259c11e2463a54de01e4badbddc6ab09bd17"
     },
     {
       "id": "shared-script-libraries",
@@ -1940,8 +1940,8 @@
     {
       "surface_id": "repo-docs-agent-system-local-feature-context-validation-md",
       "path": "docs/agent-system/local-feature-context-validation.md",
-      "sha256": "9e0168670c561ffe0b36d30f8fab47519b1b2996fd4ce4f1fb224f83858bd201",
-      "bytes": 1274,
+      "sha256": "dafaf7cfc37c345d6b2e291909d80a66a561a3f7d54802ded581d2a2017d9bca",
+      "bytes": 1707,
       "group_id": "operating-documentation",
       "surface_kind": "method",
       "control_kind": "none",
@@ -2906,8 +2906,8 @@
     {
       "surface_id": "repo-docs-superpowers-plans-2026-08-30-local-feature-context-validation-md",
       "path": "docs/superpowers/plans/2026-08-30-local-feature-context-validation.md",
-      "sha256": "58c1cc84d4e8c11d596b7f20b8105ac46f52f5c81f4890e001eaa45b5b8e1411",
-      "bytes": 3735,
+      "sha256": "3ca1420ea6b7390c2a9d94fcf3ae04f12a36bffc942227067ab77c8b2f1803c0",
+      "bytes": 4236,
       "group_id": "historical-plans-and-investigations",
       "surface_kind": "historical_evidence",
       "control_kind": "none",
@@ -10410,8 +10410,8 @@
     {
       "surface_id": "repo-scripts-product-cockpit-mjs",
       "path": "scripts/product-cockpit.mjs",
-      "sha256": "995f9437cd77327f96c08d4bfe489042b76fb8f989d4bce049b6f68a88489cf4",
-      "bytes": 107240,
+      "sha256": "407537bff2a5690fd49172d5a95efa637c29bdec1844b6ee7aa1515129170161",
+      "bytes": 108102,
       "group_id": "root-script-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10424,8 +10424,8 @@
     {
       "surface_id": "repo-scripts-product-cockpit-test-mjs",
       "path": "scripts/product-cockpit.test.mjs",
-      "sha256": "720fb56d50af8a73284faea2f6687bf8a954c7194071a62f54bd2350cbc2920f",
-      "bytes": 39472,
+      "sha256": "ea69323535725a9eadcb4eb0c6e162e3841a89ad0a1f32b6c9fa4990985db741",
+      "bytes": 41447,
       "group_id": "root-script-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -14119,5 +14119,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "5721cfcc085facc2d1cafbc83c5cf8c608c8718aa25ec1201ecb61ab3917f0f5"
+  "catalog_digest": "7857128f34458de8436015adb94df2c24cf76beac7c5e59e3e913747a11f7640"
 }

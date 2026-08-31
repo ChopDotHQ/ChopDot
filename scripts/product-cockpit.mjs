@@ -222,14 +222,20 @@ export async function featureWorktreeSnapshotStabilityFailures(snapshot, execute
   if (!snapshot?.featureEvidence) return [];
   const failures = [];
   const {observed, featureEvidence} = snapshot;
-  const [targetNow, headNow] = await Promise.all([
+  const [targetNow, headNow, branchNow, statusNow] = await Promise.all([
     execute('git', ['show-ref', '--verify', '--hash', featureEvidence.target_ref], observed.root),
     execute('git', ['rev-parse', 'HEAD'], observed.root),
+    execute('git', ['branch', '--show-current'], observed.root),
+    execute('git', ['status', '--short', '--branch'], observed.root),
   ]);
   if (!targetNow.ok) failures.push(`feature-worktree final target-ref stability read failed: ${targetNow.error || 'command failed'}`);
   else if (targetNow.stdout !== featureEvidence.target_sha) failures.push('feature-worktree target ref moved during validation');
   if (!headNow.ok) failures.push(`feature-worktree final HEAD stability read failed: ${headNow.error || 'command failed'}`);
   else if (headNow.stdout !== observed.head) failures.push('feature-worktree HEAD moved during validation');
+  if (!branchNow.ok) failures.push(`feature-worktree final branch stability read failed: ${branchNow.error || 'command failed'}`);
+  else if (branchNow.stdout !== observed.branch) failures.push('feature-worktree branch moved during validation');
+  if (!statusNow.ok) failures.push(`feature-worktree final status stability read failed: ${statusNow.error || 'command failed'}`);
+  else if (statusNow.stdout !== observed.status) failures.push('feature-worktree status moved during validation');
   return failures;
 }
 
@@ -604,6 +610,14 @@ export function kgKnownShapeFailures(kgv2, expectedIdentity) {
   if (!kgv2?.runtime || typeof kgv2.runtime.kind !== 'string' || typeof kgv2.runtime.python !== 'string') failures.push('kg_known=true requires the active runtime identity');
   if (!Array.isArray(kgv2?.cited_source_paths) || kgv2.cited_source_paths.length === 0) failures.push('kg_known=true requires cited source paths');
   return failures;
+}
+
+export function kgExpectedIdentityForValidation(context, observed, featureEvidence) {
+  return {
+    root: context.exact_root,
+    branch: context.branch,
+    head: featureEvidence?.target_sha ?? observed.head,
+  };
 }
 
 export function releaseVerdictDependencyFailures(verdicts) {
@@ -1108,7 +1122,7 @@ async function releaseStateFailures(cards, now = new Date(), options = {}) {
     await execFileAsync('git', ['merge-base', '--is-ancestor', candidate.commit, `origin/${release.branch}`], { cwd: root }).catch(() => failures.push('pushed=true but the candidate commit is not on the recorded origin branch'));
   }
   if (verdicts.kg_known === true) {
-    failures.push(...kgKnownShapeFailures(release.kgv2, { root: context.exact_root, branch: context.branch, head: observed.head }));
+    failures.push(...kgKnownShapeFailures(release.kgv2, kgExpectedIdentityForValidation(context, observed, featureEvidence)));
     for (const sourcePath of release.kgv2?.cited_source_paths ?? []) {
       const absoluteSource = path.resolve(String(sourcePath));
       const relativeSource = path.relative(canonicalRoot, absoluteSource);

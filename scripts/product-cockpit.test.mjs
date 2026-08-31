@@ -14,6 +14,7 @@ import {
   conditionalRouteKeyFailures,
   generatedViews,
   featureWorktreeSnapshotStabilityFailures,
+  kgExpectedIdentityForValidation,
   kgKnownShapeFailures,
   localFeatureWorktreeFailures,
   markdownMetadataFailures,
@@ -218,7 +219,12 @@ test('local feature-worktree validation binds type and ancestry to one resolved 
 
 test('feature-worktree collector binds commands to one snapshot and rejects a target ref or HEAD that moves before success', async () => {
   const candidateRoot = '/Users/devinsonpena/ChopDot/.worktrees/feature-example';
-  const observed = {root: candidateRoot, branch: 'codex/feature-example', head: candidateHead};
+  const observed = {
+    root: candidateRoot,
+    branch: 'codex/feature-example',
+    head: candidateHead,
+    status: '## codex/feature-example',
+  };
   const targetSha = 'ef'.repeat(20);
   const movedTargetSha = '12'.repeat(20);
   const movedHead = '34'.repeat(20);
@@ -238,6 +244,8 @@ test('feature-worktree collector binds commands to one snapshot and rejects a ta
       return {ok: true, stdout: ''};
     }
     if (args[0] === 'rev-parse' && args[1] === 'HEAD') return {ok: true, stdout: moved ? movedHead : candidateHead};
+    if (args[0] === 'branch') return {ok: true, stdout: moved ? 'codex/other-feature' : observed.branch};
+    if (args[0] === 'status') return {ok: true, stdout: moved ? '## codex/other-feature\n M src/example.ts' : observed.status};
     return {ok: false, stdout: '', error: `unexpected command ${args.join(' ')}`};
   };
   const evidence = await collectLocalFeatureWorktreeEvidence(contextManifest, observed, {
@@ -256,7 +264,27 @@ test('feature-worktree collector binds commands to one snapshot and rejects a ta
   }, execute), [
     'feature-worktree target ref moved during validation',
     'feature-worktree HEAD moved during validation',
+    'feature-worktree branch moved during validation',
+    'feature-worktree status moved during validation',
   ]);
+});
+
+test('feature-worktree stability accepts only an unchanged complete mutable checkout identity', async () => {
+  const observed = {
+    root: '/Users/devinsonpena/ChopDot/.worktrees/feature-example',
+    branch: 'codex/feature-example',
+    head: candidateHead,
+    status: '## codex/feature-example\n M src/example.ts',
+  };
+  const evidence = featureWorktreeEvidence();
+  const execute = async (_command, args) => {
+    if (args[0] === 'show-ref') return {ok: true, stdout: evidence.target_sha};
+    if (args[0] === 'rev-parse') return {ok: true, stdout: observed.head};
+    if (args[0] === 'branch') return {ok: true, stdout: observed.branch};
+    if (args[0] === 'status') return {ok: true, stdout: observed.status};
+    return {ok: false, stdout: '', error: `unexpected command ${args.join(' ')}`};
+  };
+  assert.deepEqual(await featureWorktreeSnapshotStabilityFailures({observed, featureEvidence: evidence}, execute), []);
 });
 
 test('feature-mode success reporting stays bound to the validated snapshot instead of a later Git read', () => {
@@ -675,6 +703,21 @@ test('kg_known shape requires active v2, no fallback, exact lineage, and citatio
   };
   assert.deepEqual(kgKnownShapeFailures(valid, expected), []);
   assert.ok(kgKnownShapeFailures({...valid, fallback_used: true, latest_packet_commit: 'ef'.repeat(20)}, expected).length >= 2);
+});
+
+test('feature-worktree KG validation remains bound to the canonical target commit', () => {
+  const observed = {head: candidateHead};
+  const canonicalHead = 'ef'.repeat(20);
+  assert.deepEqual(kgExpectedIdentityForValidation(contextManifest, observed), {
+    root: contextManifest.exact_root,
+    branch: contextManifest.branch,
+    head: candidateHead,
+  });
+  assert.deepEqual(kgExpectedIdentityForValidation(contextManifest, observed, featureWorktreeEvidence({target_sha: canonicalHead})), {
+    root: contextManifest.exact_root,
+    branch: contextManifest.branch,
+    head: canonicalHead,
+  });
 });
 
 test('release verdicts reject string booleans, unsupported statuses, and missing notes', () => {

@@ -4,8 +4,8 @@
 **Authority:** inventory and monitoring only; never product law, priority, approval, or release proof
 **Registry:** `governance/agent-system/steering-surface-registry.v1.json` v1.0.0 (active)
 **Registry semantic digest:** `de324a6a42d279f746427025b869df5c9e1388eda3b1deeb231474a0c111caea`
-**Repository manifest aggregate:** `1890a96cb76e8b1035167a07b464b4f7c655a27c56f4fa3e663cc60297eb0616`
-**Catalog digest:** `5721cfcc085facc2d1cafbc83c5cf8c608c8718aa25ec1201ecb61ab3917f0f5`
+**Repository manifest aggregate:** `c47b323951ac834204ac75614d8b8ab738d39fbf1a703df470f41ec2677c902e`
+**Catalog digest:** `7857128f34458de8436015adb94df2c24cf76beac7c5e59e3e913747a11f7640`
 
 This file is deterministic. Current branch, dirty state, optional machine-local availability, and hash drift are reported by `npm run agent:steering:report`. Update sources deliberately, run `npm run agent:steering:build`, review the diff, then run `npm run agent:steering:check`. The monitor never rewrites authority during a check.
 
@@ -42,11 +42,11 @@ Degraded repository groups: `legacy-steering-documents`, `operating-documentatio
 | definition-frameworks | active | 1 | 426935c74c44de7d200d80494e27a01eaaf8d3bd2963f1f7a794588a275b0f7d |
 | definition-profiles | active | 1 | 68e492127a763057c64db65142d17044d708995a2e20f9c92e4b5143b98dc3f3 |
 | deployment-context | active | 10 | d09cf4c1c8a12c12947b1895b37d3324a8d476eaa2693637bcb510801e2713f7 |
-| historical-plans-and-investigations | historical | 55 | 9e9e5109a749b1858abee9e93e2d0ce06b7ce7ef4eb43b8c0df23c04931f5c17 |
+| historical-plans-and-investigations | historical | 55 | f8bc228ecdf2ff29f563b9d2380da3d0b7fcc3f3ff1af20f3b2843365d3c1749 |
 | knowledge-and-wiki-sources | active | 15 | a21f10625a941924b09fb8dbfa6cd883b487e68837db3b9cc9114af1029c25be |
 | legacy-steering-documents | degraded | 10 | d5a81d892973840dce72a73b0e35d46c33a67136776cdee77706318d1b4acfd0 |
 | native-and-release-context | active | 15 | a54cdcfc22ae6367c0a8d801782b245c55dad0ae4aa314ab8ae07840fb94ddd7 |
-| operating-documentation | degraded | 6 | a679c78960ec266d3cb7cdd13524eccc0eb26c58694e3330056e0165f188258c |
+| operating-documentation | degraded | 6 | d6a639bebfdfdc6fce5aba840783f00a327c397ca69778c0b6b2b5d0183ebe21 |
 | portable-agent-contracts | active | 27 | 6ac14701ec9447050f06834ed3fdc9976e090d4e56f11c81bb21916d98c75424 |
 | portable-agent-loops | active | 14 | 6f197602235a3e68abeb4aedd58e43ba8a32aa1b495a1a9d58b5a3c42950803e |
 | product-context-and-history | active | 7 | 2c3b84af6812fbe12ff8a4e4c2e114570f45a6917eb480adf3699cfecfd28c22 |
@@ -58,7 +58,7 @@ Degraded repository groups: `legacy-steering-documents`, `operating-documentatio
 | repository-entrypoints | active | 3 | ef06c4b845b0ea2693cddf925743d54d54b6b15066f55b07ac8f57cb0d2706db |
 | research-and-benchmark-context | degraded | 17 | 29998d57d5a36ca8e2c1029280d1fc925eb410e8b9260831a9670460138d700a |
 | research-script-tools | degraded | 15 | 7e7fa3aceeaae51418ca5bb1df211207ef37079db70ec277a3ffcc5129094610 |
-| root-script-runtime | active | 33 | 7c13767089bb2a16d5786a4a8ab3bf221538e6493b83d74203a701a463273ab6 |
+| root-script-runtime | active | 33 | 698144e700fc50504322c761952a259c11e2463a54de01e4badbddc6ab09bd17 |
 | shared-script-libraries | active | 9 | 2e3ea50a85398d5d590a25c22c72e10e3675ce71a24aa1920f61d6b1493fd4e6 |
 | tracked-judgment-methods | degraded | 2 | b04fd513ec97c8545a0fe4799cc0db37a2a855fd81d357dd22575a41ef177964 |
 | tracked-root-plans | historical | 12 | ba803c726980044b9ba90c7603a02ce9793a83b19064144c40dda5260825c6b1 |
