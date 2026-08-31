@@ -34,15 +34,15 @@
       "proof/",
       "scripts/"
     ],
-    "repository_file_count": 701,
-    "repository_manifest_sha256": "a4423193673bae90e7e6efe2207e16721235874129949bfa1a1649fc586c9f3c"
+    "repository_file_count": 703,
+    "repository_manifest_sha256": "c47b323951ac834204ac75614d8b8ab738d39fbf1a703df470f41ec2677c902e"
   },
   "lifecycle_summary": {
     "active": 241,
     "candidate": 0,
-    "degraded": 49,
+    "degraded": 50,
     "deprecated": 0,
-    "historical": 411,
+    "historical": 412,
     "quarantined": 0,
     "retired": 0,
     "superseded": 0
@@ -389,8 +389,8 @@
         "failure": "Treat ambiguous historical material as non-authoritative and require current-source confirmation.",
         "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog."
       },
-      "file_count": 54,
-      "manifest_sha256": "98e41a71e2e5c1d9fb9a38de97cda50f4f6026e8daa3577891882e05620a1943"
+      "file_count": 55,
+      "manifest_sha256": "f8bc228ecdf2ff29f563b9d2380da3d0b7fcc3f3ff1af20f3b2843365d3c1749"
     },
     {
       "id": "knowledge-and-wiki-sources",
@@ -555,8 +555,8 @@
         "failure": "Mark documentation degraded when it claims behavior not present in code or current authority.",
         "retry_exit": "Update source documentation after behavior is accepted, then rerun links and monitor checks."
       },
-      "file_count": 5,
-      "manifest_sha256": "0988ea9ddde9253e82216aaed4b25a44f9c611d5e9688ff23e174d9a524d1beb"
+      "file_count": 6,
+      "manifest_sha256": "d6a639bebfdfdc6fce5aba840783f00a327c397ca69778c0b6b2b5d0183ebe21"
     },
     {
       "id": "portable-agent-contracts",
@@ -1023,7 +1023,7 @@
         "retry_exit": "Repair or explicitly reclassify the script, then rerun focused and governing checks."
       },
       "file_count": 33,
-      "manifest_sha256": "41a91589be7417f45a9a0af95749d5fed80c56408fbb197a986e606ca2da9e5e"
+      "manifest_sha256": "698144e700fc50504322c761952a259c11e2463a54de01e4badbddc6ab09bd17"
     },
     {
       "id": "shared-script-libraries",
@@ -1928,6 +1928,20 @@
       "path": "docs/agent-system/MIGRATION_AND_ADOPTION.md",
       "sha256": "4be18b56a6c2aaf7b86450942b381867ed466978a97a148b6581aad835ea8a33",
       "bytes": 8893,
+      "group_id": "operating-documentation",
+      "surface_kind": "method",
+      "control_kind": "none",
+      "domain": "agent_governance",
+      "influence_class": "operating_method",
+      "lifecycle": "degraded",
+      "activation_mode": "routed",
+      "accountable_owner": "agent-systems integrator"
+    },
+    {
+      "surface_id": "repo-docs-agent-system-local-feature-context-validation-md",
+      "path": "docs/agent-system/local-feature-context-validation.md",
+      "sha256": "dafaf7cfc37c345d6b2e291909d80a66a561a3f7d54802ded581d2a2017d9bca",
+      "bytes": 1707,
       "group_id": "operating-documentation",
       "surface_kind": "method",
       "control_kind": "none",
@@ -2880,6 +2894,20 @@
       "path": "docs/superpowers/plans/2026-08-28-project-authority-portability-repair.md",
       "sha256": "644b88de25569de0b4f6ad9643a35de14e503a205b881056ef05b37023ee43dd",
       "bytes": 3122,
+      "group_id": "historical-plans-and-investigations",
+      "surface_kind": "historical_evidence",
+      "control_kind": "none",
+      "domain": "history",
+      "influence_class": "supporting_technique",
+      "lifecycle": "historical",
+      "activation_mode": "explicit_only",
+      "accountable_owner": "repository owner"
+    },
+    {
+      "surface_id": "repo-docs-superpowers-plans-2026-08-30-local-feature-context-validation-md",
+      "path": "docs/superpowers/plans/2026-08-30-local-feature-context-validation.md",
+      "sha256": "3ca1420ea6b7390c2a9d94fcf3ae04f12a36bffc942227067ab77c8b2f1803c0",
+      "bytes": 4236,
       "group_id": "historical-plans-and-investigations",
       "surface_kind": "historical_evidence",
       "control_kind": "none",
@@ -10382,8 +10410,8 @@
     {
       "surface_id": "repo-scripts-product-cockpit-mjs",
       "path": "scripts/product-cockpit.mjs",
-      "sha256": "75bc72edc777c9272ee67661387621afb440cdaca3e8aaebd5e1b8ca7767a6be",
-      "bytes": 95405,
+      "sha256": "407537bff2a5690fd49172d5a95efa637c29bdec1844b6ee7aa1515129170161",
+      "bytes": 108102,
       "group_id": "root-script-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10396,8 +10424,8 @@
     {
       "surface_id": "repo-scripts-product-cockpit-test-mjs",
       "path": "scripts/product-cockpit.test.mjs",
-      "sha256": "b5d0d22bfae06ed570b1d3f888b70cee42132581f6cea027850bcfb1fc5c372b",
-      "bytes": 29779,
+      "sha256": "ea69323535725a9eadcb4eb0c6e162e3841a89ad0a1f32b6c9fa4990985db741",
+      "bytes": 41447,
       "group_id": "root-script-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -14091,5 +14119,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "0840ce37b225c553da7a4e23471cb157120f022251974afd06a940a12e249f5d"
+  "catalog_digest": "7857128f34458de8436015adb94df2c24cf76beac7c5e59e3e913747a11f7640"
 }
