@@ -13,9 +13,14 @@ import { validateGovernanceInstance } from '../../agent-system/schema.mjs';
 const reportNames = [
   'agent-contract-exact-head.json', 'agent-runner-exact-head.json',
   'knowledge-adapters-exact-head.json', 'repo-governance-exact-head.json',
-  'application-exact-head.json',
+  'application-exact-head.json', 'application-browser-exact-head.json',
+  'secrets-scan-exact-head.json',
 ];
-const successfulJobs = Object.fromEntries(['agent-contract', 'agent-runner', 'knowledge-adapters', 'repo-governance', 'application-fast-assurance'].map((job) => [job, 'success']));
+const requiredJobs = [
+  'agent-contract', 'agent-runner', 'knowledge-adapters', 'repo-governance',
+  'application-fast-assurance', 'application-browser-assurance', 'secrets-scan',
+];
+const successfulJobs = Object.fromEntries(requiredJobs.map((job) => [job, 'success']));
 function unsignedFixtureToken() {
   const encode = (value) => Buffer.from(JSON.stringify(value)).toString('base64url');
   return `${encode({ alg: 'RS256', kid: 'fixture' })}.${encode({
@@ -79,8 +84,8 @@ test('same-run exact-head reports generate a valid external OutcomePacketV1', as
   const value = fixture();
   const result = await generatePrOutcome({ ...value, ...identities, runId: 'run_governance_fixture_001', branch: 'codex/test', expectedSha: value.head, workflowRunId: '12345', jobResults: successfulJobs });
   assert.equal(result.ok, true);
-  assert.equal(result.exact_counts.total, 5);
-  assert.equal(result.exact_counts.passed, 5);
+  assert.equal(result.exact_counts.total, 7);
+  assert.equal(result.exact_counts.passed, 7);
   assert.equal(validateOutcomePacket(result.packet).valid, true);
   assert.equal(result.packet.ending_head, value.head);
   assert.equal(result.packet.ending_tree, value.tree);
@@ -102,6 +107,8 @@ test('same-run exact-head reports generate a valid external OutcomePacketV1', as
     'IMPL-REQUIREMENTS', 'IMPL-FOCUSED', 'IMPL-PRODUCTION', 'IMPL-SCOPE', 'IMPL-CRITICAL',
   ]);
   const evidence = JSON.parse(fs.readFileSync(path.join(value.outputDirectory, 'pr-outcome-evidence.json')));
+  assert.deepEqual(evidence.job_results, successfulJobs);
+  assert.deepEqual(evidence.measurements.production_entrypoint_status.source_jobs, ['application-browser-assurance']);
   assert.equal(evidence.independence.candidate_provenance.base_sha, value.baseSha);
   assert.equal(evidence.independence.candidate_provenance.head_sha, value.head);
   assert.equal(evidence.independence.candidate_provenance.commit_count, 1);
@@ -249,11 +256,35 @@ test('missing, duplicate, stale, or dirty same-run inputs fail closed', async ()
   await assert.rejects(() => generatePrOutcome({ ...dirty, ...identities, runId: 'run_governance_fixture_001', branch: 'codex/test', expectedSha: dirty.head, workflowRunId: '4', jobResults: successfulJobs }), /candidate is dirty/);
 });
 
-test('missing, skipped, or failed required job results cannot generate an outcome', async () => {
-  for (const result of [undefined, 'skipped', 'failure']) {
-    const value = fixture();
-    const jobResults = { ...successfulJobs };
-    if (result === undefined) delete jobResults['agent-runner']; else jobResults['agent-runner'] = result;
-    await assert.rejects(() => generatePrOutcome({ ...value, ...identities, runId: 'run_governance_fixture_001', branch: 'codex/test', expectedSha: value.head, workflowRunId: '5', jobResults }), /agent-runner=success/);
+test('missing, skipped, or failed browser and secrets job results cannot generate an outcome', async () => {
+  for (const job of ['application-browser-assurance', 'secrets-scan']) {
+    for (const result of [undefined, 'skipped', 'failure']) {
+      const value = fixture();
+      const jobResults = { ...successfulJobs };
+      if (result === undefined) delete jobResults[job]; else jobResults[job] = result;
+      await assert.rejects(
+        () => generatePrOutcome({ ...value, ...identities, runId: 'run_governance_fixture_001', branch: 'codex/test', expectedSha: value.head, workflowRunId: '5', jobResults }),
+        new RegExp(`${job}=success`),
+      );
+    }
+  }
+});
+
+test('missing or stale browser and secrets exact-head reports fail closed', async () => {
+  for (const reportName of ['application-browser-exact-head.json', 'secrets-scan-exact-head.json']) {
+    const missing = fixture();
+    fs.rmSync(path.dirname(path.join(missing.evidenceRoot, reportName.replace('.json', ''), reportName)), { recursive: true });
+    await assert.rejects(
+      () => generatePrOutcome({ ...missing, ...identities, runId: 'run_governance_fixture_001', branch: 'codex/test', expectedSha: missing.head, workflowRunId: '6', jobResults: successfulJobs }),
+      /exactly one same-run/,
+    );
+
+    const stale = fixture();
+    const stalePath = path.join(stale.evidenceRoot, reportName.replace('.json', ''), reportName);
+    fs.writeFileSync(stalePath, JSON.stringify({ ok: true, actual_sha: 'f'.repeat(40), actual_tree: stale.tree }));
+    await assert.rejects(
+      () => generatePrOutcome({ ...stale, ...identities, runId: 'run_governance_fixture_001', branch: 'codex/test', expectedSha: stale.head, workflowRunId: '7', jobResults: successfulJobs }),
+      /does not prove exact candidate/,
+    );
   }
 });

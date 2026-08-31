@@ -1,8 +1,9 @@
 import {expect, test} from '@playwright/test';
 import {closeHostedProduct, openHostedProduct} from './support/hostedProductAccount.ts';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
 const appUrl = 'http://127.0.0.1:4177/';
-const evidenceRoot = 'test-results/contextual-home-first-group/product-surface';
+const evidenceRoot = releaseEvidencePath('product-surface-visual-evidence');
 
 test('capture receipt-first product evidence at mobile and desktop widths', async ({browser}) => {
   const page = await browser.newPage({viewport: {width: 390, height: 844}});

@@ -7,9 +7,10 @@ import {
 } from '@parity/host-api-test-sdk';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import path from 'node:path';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
 const appUrl = process.env.UI_ASSURANCE_APP_URL ?? 'http://127.0.0.1:4177/';
-const evidenceRoot = path.resolve('test-results/contextual-home-first-group/ui-assurance');
+const evidenceRoot = releaseEvidencePath('ui-assurance-release');
 const widths = [
   {width: 320, height: 700, label: '320x700'},
   {width: 375, height: 812, label: '375x812'},
@@ -197,14 +198,14 @@ async function captureHostedSurface(page: Page, frame: Frame, surface: string): 
     let activeFrame = frame;
     for (let attempt = 0; attempt < 3; attempt += 1) {
       try {
-        activeFrame = currentProductFrame(page);
+        activeFrame = await readyProductFrame(page);
         await activeFrame.locator('#root').screenshot({
           path: path.join(evidenceRoot, `${surface}-${viewport.label}.png`),
           animations: 'disabled',
         });
         break;
       } catch (error) {
-        if (attempt === 2 || !/not attached|context was destroyed|navigation/iu.test(error instanceof Error ? error.message : String(error))) throw error;
+        if (attempt === 2) throw error;
         await page.waitForTimeout(250);
       }
     }
@@ -424,6 +425,21 @@ function currentProductFrame(page: Page): Frame {
   const frame = page.frames().find(candidate => candidate !== page.mainFrame());
   if (!frame) throw new Error('Product frame did not attach.');
   return frame;
+}
+
+async function readyProductFrame(page: Page): Promise<Frame> {
+  let ready: Frame | undefined;
+  await expect.poll(async () => {
+    for (const candidate of page.frames().filter(frame => frame !== page.mainFrame())) {
+      if (await candidate.locator('main').isVisible().catch(() => false)) {
+        ready = candidate;
+        return true;
+      }
+    }
+    return false;
+  }, {timeout: 15_000}).toBe(true);
+  if (!ready) throw new Error('A ready product main did not attach.');
+  return ready;
 }
 
 async function openCreatedGroupIfHome(frame: Frame, groupName: string, heading: string): Promise<void> {

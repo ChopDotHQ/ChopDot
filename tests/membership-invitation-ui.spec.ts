@@ -1,9 +1,10 @@
 import {mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {expect, test, type Page} from '@playwright/test';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
 const baseUrl = 'http://127.0.0.1:4177/membership-invitation-preview.html';
-const proofDir = path.resolve('proof/chopdot-candidate-2026-08-12/screenshots');
+const proofDir = releaseEvidencePath('membership-invitation-ui');
 
 test.beforeAll(async () => mkdir(proofDir, {recursive: true}));
 

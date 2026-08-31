@@ -12,6 +12,8 @@ const REQUIRED_JOBS = new Map([
   ['knowledge-adapters', 'Knowledge adapters'],
   ['repo-governance', 'Repo governance'],
   ['application-fast-assurance', 'Application fast assurance'],
+  ['application-browser-assurance', 'Application browser assurance'],
+  ['secrets-scan', 'Secrets scan'],
   ['pr-outcome', 'PR outcome'],
   ['release-enforcement', 'Release enforcement'],
 ]);
@@ -23,6 +25,19 @@ const REQUIRED_RUN_TOKENS = new Map([
   ['knowledge-adapters', ['knowledge-adapters.test.mjs', 'adapters-compat-cli.test.mjs']],
   ['repo-governance', ['validate-repository.mjs', 'validate-pr.mjs', 'scripts/agent-governance/tests/*.test.mjs']],
   ['application-fast-assurance', ['npm run lint', 'npm run build', 'npm run test:node', 'npm run security:baseline']],
+  ['application-browser-assurance', [
+    'npx --no-install playwright install --with-deps chromium',
+    'npm run test:release-browser',
+    'git diff --exit-code',
+    'git diff --cached --exit-code',
+    'git status --porcelain --untracked-files=all',
+  ]],
+  ['secrets-scan', [
+    'gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz',
+    '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb',
+    'sha256sum --check --strict',
+    '$RUNNER_TEMP/gitleaks git . --redact --verbose --exit-code=1',
+  ]],
   ['pr-outcome', ['generate-pr-outcome.mjs', 'validate-pr.mjs', 'outcome-attestation.jsonl']],
   ['release-enforcement', ['scripts/agent-governance/enforce-release.mjs']],
 ]);
@@ -84,6 +99,52 @@ const REQUIRED_DIRECT_INVOCATIONS = Object.freeze([
     exact: true,
   })),
   {
+    job: 'application-browser-assurance',
+    step: 'Install exact Playwright Chromium',
+    command: 'npx --no-install playwright install --with-deps chromium',
+    exact: true,
+  },
+  {
+    job: 'application-browser-assurance',
+    step: 'Run production-entrypoint browser assurance',
+    command: 'npm run test:release-browser',
+    exact: true,
+  },
+  ...[
+    'git diff --exit-code',
+    'git diff --cached --exit-code',
+    'test -z "$(git status --porcelain --untracked-files=all)"',
+  ].map((exactInvocation) => ({
+    job: 'application-browser-assurance',
+    step: 'Assert browser suite left repository clean',
+    command: exactInvocation.split(' ')[0],
+    exactInvocation,
+  })),
+  {
+    job: 'secrets-scan',
+    step: 'Download and verify pinned Gitleaks CLI',
+    command: 'curl',
+    exactInvocation: 'curl --fail --show-error --silent --location --proto \'=https\' --tlsv1.2 "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz" --output "$RUNNER_TEMP/gitleaks_8.30.1_linux_x64.tar.gz"',
+  },
+  {
+    job: 'secrets-scan',
+    step: 'Download and verify pinned Gitleaks CLI',
+    command: 'sha256sum --check --strict',
+    exactInvocation: 'sha256sum --check --strict <<< "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  $RUNNER_TEMP/gitleaks_8.30.1_linux_x64.tar.gz"',
+  },
+  {
+    job: 'secrets-scan',
+    step: 'Download and verify pinned Gitleaks CLI',
+    command: 'tar',
+    exactInvocation: 'tar -xzf "$RUNNER_TEMP/gitleaks_8.30.1_linux_x64.tar.gz" -C "$RUNNER_TEMP" gitleaks',
+  },
+  {
+    job: 'secrets-scan',
+    step: 'Scan exact repository history with redaction',
+    command: '$RUNNER_TEMP/gitleaks',
+    exactInvocation: '$RUNNER_TEMP/gitleaks git . --redact --verbose --exit-code=1 --report-format=json --report-path="$GOVERNANCE_REPORT_ROOT/gitleaks.json"',
+  },
+  {
     job: 'pr-outcome',
     step: 'Generate external exact-candidate OutcomePacketV1',
     command: 'node scripts/agent-governance/generate-pr-outcome.mjs',
@@ -94,7 +155,7 @@ const REQUIRED_DIRECT_INVOCATIONS = Object.freeze([
       '--workflow-run-id="${{ github.run_id }}"',
       '--workflow-run-attempt="${{ github.run_attempt }}"',
       '--evaluator-identity="github-actions:pr-outcome:${{ github.run_id }}:${{ github.run_attempt }}"',
-      "--job-results-json='{\"agent-contract\":\"${{ needs.agent-contract.result }}\",\"agent-runner\":\"${{ needs.agent-runner.result }}\",\"knowledge-adapters\":\"${{ needs.knowledge-adapters.result }}\",\"repo-governance\":\"${{ needs.repo-governance.result }}\",\"application-fast-assurance\":\"${{ needs.application-fast-assurance.result }}\"}'",
+      "--job-results-json='{\"agent-contract\":\"${{ needs.agent-contract.result }}\",\"agent-runner\":\"${{ needs.agent-runner.result }}\",\"knowledge-adapters\":\"${{ needs.knowledge-adapters.result }}\",\"repo-governance\":\"${{ needs.repo-governance.result }}\",\"application-fast-assurance\":\"${{ needs.application-fast-assurance.result }}\",\"application-browser-assurance\":\"${{ needs.application-browser-assurance.result }}\",\"secrets-scan\":\"${{ needs.secrets-scan.result }}\"}'",
       '--json-out="output/agent-runs/ci-pr-outcome/generation.json"',
     ],
     exactWithArgs: true,
@@ -488,13 +549,25 @@ export function validateWorkflow(source) {
   const prOutcome = parsed.jobs['pr-outcome'];
   const prContext = parsed.jobs['pr-context'];
   const repoGovernance = parsed.jobs['repo-governance'];
-  const coreNeeds = ['agent-contract', 'agent-runner', 'knowledge-adapters', 'repo-governance', 'application-fast-assurance'];
+  const browserAssurance = parsed.jobs['application-browser-assurance'];
+  const coreNeeds = [
+    'agent-contract',
+    'agent-runner',
+    'knowledge-adapters',
+    'repo-governance',
+    'application-fast-assurance',
+    'application-browser-assurance',
+    'secrets-scan',
+  ];
   const requiredNeeds = ['pr-context', ...coreNeeds];
   const prValidationCondition = "github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'pr_validation')";
-  checks += 9;
+  checks += 12;
   if (prOutcome?.fields.if !== prValidationCondition) errors.push('PR outcome must run only for pull_request or exact pr_validation dispatch mode');
-  if (JSON.stringify(prOutcome?.needs ?? []) !== JSON.stringify(requiredNeeds)) errors.push('PR outcome must need all five exact-head jobs in canonical order');
+  if (JSON.stringify(prOutcome?.needs ?? []) !== JSON.stringify(requiredNeeds)) errors.push('PR outcome must need all seven exact-head evidence jobs in canonical order');
   if (JSON.stringify(repoGovernance?.needs ?? []) !== JSON.stringify(['pr-context'])) errors.push('Repo governance must need the exact PR context job');
+  if (!browserAssurance?.block.includes('CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence')) errors.push('Browser assurance must bind release evidence outside the repository');
+  if (!browserAssurance?.block.includes('${{ env.CHOPDOT_RELEASE_EVIDENCE_ROOT }}/')) errors.push('Browser assurance must upload the configured release evidence root');
+  if (!browserAssurance?.steps.some((step) => step.fields.name === 'Upload browser assurance evidence' && step.with['if-no-files-found'] === 'error')) errors.push('Browser assurance evidence upload must fail when evidence is absent');
   const contextCommand = prContext?.steps.map((step) => step.run).filter(Boolean).join('\n') ?? '';
   for (const token of [
     '=~ ^[1-9][0-9]*$', '[[ "$SELECTED_REF_TYPE" == "branch" ]]', 'repos/$REPOSITORY/pulls/$DISPATCH_PR_NUMBER',

@@ -1,8 +1,9 @@
 import {mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {expect, test, type Page} from '@playwright/test';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
-const proofDir = path.resolve('test-results/contextual-home-first-group/showcase');
+const proofDir = releaseEvidencePath('showcase-entrance');
 const appUrl = 'http://127.0.0.1:4177';
 
 async function expectEntrance(page: Page) {

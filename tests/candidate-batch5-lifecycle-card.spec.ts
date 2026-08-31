@@ -2,10 +2,10 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {expect,test,type Browser,type BrowserContext,type Page} from '@playwright/test';
 import type {CanonicalEventV1} from '../src/core/moneyEventKernel.ts';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
-const proofRoot='proof/chopdot-candidate-2026-08-12';
-const proofDir=path.join(proofRoot,'screenshots','b5-2026-08-13');
-const observationsPath=path.join(proofRoot,'test-results','b5-2026-08-13','comprehension-observations.json');
+const proofDir=releaseEvidencePath('candidate-batch5-lifecycle-card','screenshots');
+const observationsPath=releaseEvidencePath('candidate-batch5-lifecycle-card','comprehension-observations.json');
 const baseUrl=process.env.AUTHORITY_KEY_TEST_BASE_URL??'http://127.0.0.1:4177';
 type ActorId='mina'|'leo'|'nina';
 type Actor={id:ActorId;context:BrowserContext;page:Page};
