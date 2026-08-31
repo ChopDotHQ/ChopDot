@@ -35,7 +35,7 @@
       "scripts/"
     ],
     "repository_file_count": 717,
-    "repository_manifest_sha256": "cd43efdc7a0d87b493d1593415a6f4588683616a2b888f90466721e28a794982"
+    "repository_manifest_sha256": "fcf4ba6b24a6de21ec4e8d291bd10f6684bb097320fb58243fb02e21b711284e"
   },
   "lifecycle_summary": {
     "active": 249,
@@ -83,7 +83,7 @@
         "retry_exit": "Repair the candidate or evaluator and rerun the same versioned case."
       },
       "file_count": 8,
-      "manifest_sha256": "fa82e2b2f76c68a772b85326043c73ff1cbeebcfb8c9a0d0660053acdb9c3f4a"
+      "manifest_sha256": "4f302df46094c5dd1d701775355f80656653be0d187d08c8930a765d6716ee0f"
     },
     {
       "id": "agent-governance-runtime",
@@ -163,7 +163,7 @@
         "retry_exit": "Reconcile at the accountable policy owner and rerun all dependent validations."
       },
       "file_count": 10,
-      "manifest_sha256": "fa044bbc3e97aca0ce2248fb7e39cbb7c5193a6d6c487904fc4408de8f95adbd"
+      "manifest_sha256": "0655f25a194f1686bef56be66571af5a3fdd9cb22896abff3eed475d369b5183"
     },
     {
       "id": "agent-system-runtime",
@@ -201,7 +201,7 @@
         "retry_exit": "Repair with a changed hypothesis and rerun focused plus core regression suites."
       },
       "file_count": 41,
-      "manifest_sha256": "695e927510853811a98865e9516be3b780c136dd70c9c2f6c2c8c9d2dd9fb5f7"
+      "manifest_sha256": "72834fbe738116fb43b32a8ef344cae5c59d306277d8298dacc6ab5283eec751"
     },
     {
       "id": "architecture-decisions",
@@ -238,7 +238,7 @@
         "retry_exit": "Record or supersede the decision through the architecture owner and update dependents."
       },
       "file_count": 6,
-      "manifest_sha256": "79dfb5edd75893720e24f59828b9f03c442ea8f7a18213945cca4956245ff811"
+      "manifest_sha256": "841e156c119e4ffce900e0307a3ba01808c1e2ba9a405b86bc95670225467f73"
     },
     {
       "id": "definition-frameworks",
@@ -556,7 +556,7 @@
         "retry_exit": "Update source documentation after behavior is accepted, then rerun links and monitor checks."
       },
       "file_count": 8,
-      "manifest_sha256": "8d36e568848c8ef3891e71f96fe72eb8f2ec94fbd730d49166e23b82cc2a38d7"
+      "manifest_sha256": "cc0a5cb587cef62e7069fcf5078eb97b9e153dcb555c320e992eb9df99593fdb"
     },
     {
       "id": "portable-agent-contracts",
@@ -592,7 +592,7 @@
         "retry_exit": "Repair the artifact or versioned schema without weakening accepted invariants."
       },
       "file_count": 30,
-      "manifest_sha256": "0b5e9b4de51f04a52a327c0e6d2615babbf97a2f4e2c2d32fe039dc3145d4d32"
+      "manifest_sha256": "062e4c71f49b147509022e0ca04cd3f9548f2229b6086c8ba2cd78a34f446d9c"
     },
     {
       "id": "portable-agent-loops",
@@ -670,7 +670,7 @@
         "retry_exit": "Refresh from canonical sources or record the blocker; never substitute uncited recall."
       },
       "file_count": 7,
-      "manifest_sha256": "f1f74f83b5fd433beef42d844d30ed8a5c7045292ac4ae1b9a41f41a41839131"
+      "manifest_sha256": "8b8ed05dccb2ed31ae83a117fdb23e6f9ca2e334c12ed90887ea810e032c25d1"
     },
     {
       "id": "product-decisions",
@@ -1884,8 +1884,8 @@
     {
       "surface_id": "repo-docs-adr-0005-portable-agent-outcome-system-md",
       "path": "docs/adr/0005-portable-agent-outcome-system.md",
-      "sha256": "a742b30a622014bb4ede9ff45ace4d823932d0bf62ecf91ef963458145900db3",
-      "bytes": 13057,
+      "sha256": "86ab6197bb6958dbce8e6d3f4fe592157a3cddd321c739d795501880cd2d15be",
+      "bytes": 13802,
       "group_id": "architecture-decisions",
       "surface_kind": "decision_source",
       "control_kind": "none",
@@ -1954,8 +1954,8 @@
     {
       "surface_id": "repo-docs-agent-system-migration-and-adoption-md",
       "path": "docs/agent-system/MIGRATION_AND_ADOPTION.md",
-      "sha256": "0805ba7a01953b2340b876553279e8e4f7ae3ffe0ac166d945db9e93e032da2d",
-      "bytes": 10670,
+      "sha256": "b375e5553f294f6c3b80c3b911d154f3d13214915b5842fc5a95c1c825c001dc",
+      "bytes": 11417,
       "group_id": "operating-documentation",
       "surface_kind": "method",
       "control_kind": "none",
@@ -3228,8 +3228,8 @@
     {
       "surface_id": "repo-governance-agent-system-readme-md",
       "path": "governance/agent-system/README.md",
-      "sha256": "e81c2a6c67f8bddf27508ab7b4238d9b5831fef0d35deffc9be588721124d410",
-      "bytes": 22746,
+      "sha256": "d35a7a4a411eac0f48c34113172715f535e98ff628cbe2f8c56d5bc48f624039",
+      "bytes": 23813,
       "group_id": "agent-policies-and-foundation",
       "surface_kind": "policy",
       "control_kind": "gate",
@@ -3256,8 +3256,8 @@
     {
       "surface_id": "repo-governance-agent-system-contracts-agent-loop-contract-v1-schema-json",
       "path": "governance/agent-system/contracts/agent-loop-contract.v1.schema.json",
-      "sha256": "51e97e256cefe6528b24210f3861cf4d1a24c4878952d9a3d8eb9fa8b0060f6e",
-      "bytes": 16040,
+      "sha256": "4b9f422ade9e1ffbcacf12639b40db0f9dd4df5c18b492c1671b556215df6ccd",
+      "bytes": 16589,
       "group_id": "portable-agent-contracts",
       "surface_kind": "contract_schema",
       "control_kind": "gate",
@@ -3634,8 +3634,8 @@
     {
       "surface_id": "repo-governance-agent-system-contracts-task-route-v1-schema-json",
       "path": "governance/agent-system/contracts/task-route.v1.schema.json",
-      "sha256": "05af1cf9d89f283905dd87c08aeb7e080f7f7ede4308436536362789bd7798fb",
-      "bytes": 7640,
+      "sha256": "e2c3b0eb7f9863e7d3468b11b50eb00b112434c5bf94e7b97d21250db74fd333",
+      "bytes": 9459,
       "group_id": "portable-agent-contracts",
       "surface_kind": "contract_schema",
       "control_kind": "gate",
@@ -3760,8 +3760,8 @@
     {
       "surface_id": "repo-governance-agent-system-evals-suites-core-v1-json",
       "path": "governance/agent-system/evals/suites/core.v1.json",
-      "sha256": "2e571b7597a047196b4f116cd3dcd9a14d63355de3e9c362ced26f0606bb1efe",
-      "bytes": 3904,
+      "sha256": "33a7ddb045321c4c77c1fc1505c8e28ea4dc896e1ffd41d8f9499961969c8c60",
+      "bytes": 5029,
       "group_id": "agent-evaluation-system",
       "surface_kind": "rubric",
       "control_kind": "evaluation_flywheel",
@@ -4404,7 +4404,7 @@
     {
       "surface_id": "repo-product-context-authority-json",
       "path": "product/context-authority.json",
-      "sha256": "3b6864d30e108f6b2f6ed4a1c09d724927dfa9eedf6b1ecaabc97eb7a837df5c",
+      "sha256": "0d9df6498d5ac5ec1cf591397ea70173a8099136e65bf8e70dee3e8940edadd2",
       "bytes": 13799,
       "group_id": "product-context-and-history",
       "surface_kind": "context_source",
@@ -9948,8 +9948,8 @@
     {
       "surface_id": "repo-scripts-agent-system-cli-mjs",
       "path": "scripts/agent-system/cli.mjs",
-      "sha256": "edef8c316bbc81666c48683b43efb5af35670899001270eeb602e5050f02b123",
-      "bytes": 34022,
+      "sha256": "a0f9a9edfc43610d0996f35515dfeb29785326e8617ddb6a0549fab507fa6fad",
+      "bytes": 34829,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -9976,8 +9976,8 @@
     {
       "surface_id": "repo-scripts-agent-system-contract-mjs",
       "path": "scripts/agent-system/contract.mjs",
-      "sha256": "03a34fad645543757ccd33bb1c5ca5cc1b155d5ee78dfee32621e6e2cad4b206",
-      "bytes": 12247,
+      "sha256": "769de4996d96efb6ef89faf0dbdfc93bf56f9518a3882c2c2d01223301da2e53",
+      "bytes": 13342,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10018,8 +10018,8 @@
     {
       "surface_id": "repo-scripts-agent-system-eval-runner-mjs",
       "path": "scripts/agent-system/eval-runner.mjs",
-      "sha256": "87b6f859b2602a8c0efc4c82f87319ac0d4b64ab9c565d3725b8b3cb07fa7eb0",
-      "bytes": 3112,
+      "sha256": "2fb4102b94e06313d034d091336fce32d7329c25d3206e2046832066a136ae4a",
+      "bytes": 5047,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10102,8 +10102,8 @@
     {
       "surface_id": "repo-scripts-agent-system-preflight-mjs",
       "path": "scripts/agent-system/preflight.mjs",
-      "sha256": "3240e1b8e9cc8bf7f20b16d31af6b826700ed872737f2135fba18f2440be4a0a",
-      "bytes": 13848,
+      "sha256": "035698c5167561490a2856a31339a43a68bb4e0e6321c0dfbc72afa41076f5f8",
+      "bytes": 14598,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10144,8 +10144,8 @@
     {
       "surface_id": "repo-scripts-agent-system-router-mjs",
       "path": "scripts/agent-system/router.mjs",
-      "sha256": "3a32c7980f87ce2880bfc349335cf9b2558b0e84742e80cd1f36a291d33d1019",
-      "bytes": 26765,
+      "sha256": "04c5b8f7fca0a62d9510d34fc135e3697ba0f839c81f9b52a4deee21b38f2a1c",
+      "bytes": 31760,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10354,8 +10354,8 @@
     {
       "surface_id": "repo-scripts-agent-system-tests-router-test-mjs",
       "path": "scripts/agent-system/tests/router.test.mjs",
-      "sha256": "9cca3eddd24a36bc28c9ad5b2452b0cb56a5cc390f597c1e5e2d475fb9f78440",
-      "bytes": 30630,
+      "sha256": "36036a7041171d60ceb621ab2df418c327e7af7632491a903beb2f94ed5b8c0c",
+      "bytes": 37364,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10368,8 +10368,8 @@
     {
       "surface_id": "repo-scripts-agent-system-validate-mjs",
       "path": "scripts/agent-system/validate.mjs",
-      "sha256": "4d33f67cf5c0b810d2b52ee6855764b9cb31fbaad43bf9b4a43100a1c8ebffeb",
-      "bytes": 25504,
+      "sha256": "20d202fd02b6475ebaf6b35f5fa0d9fdbc879444ebc5196f8fca58f00afcdd09",
+      "bytes": 26425,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -14315,5 +14315,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "c5c218889a779f5c56fa943a26899b21c00c297e9ecdbe73ae3157180862c9f9"
+  "catalog_digest": "4c5e56e78106118529a4e59c1686b85b9651327f672b0c3a30223ecbe1cbe9b1"
 }

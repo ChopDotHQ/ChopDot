@@ -89,6 +89,18 @@ monitor. Do not fork the framework to preserve a one-off product assumption.
 profile, execution shape, evidence, budget, stop condition, and approval/readback
 requirements. It is not product authority and is not a new loop framework.
 
+- Every route binds normalized repository-relative `in_paths` and `out_paths`
+  before contract creation. The route contract cannot replace them; mutating
+  write authority must equal the routed `in_paths` exactly.
+- Repository-effect approvals bind those path lists in their request digest.
+  Widening task scope therefore requires a new route and approval, not a
+  contract override.
+- Requirement IDs, governing source, and deterministic checks are selected and
+  persisted by the route. The contract may not add, remove, or replace them;
+  omitted custom commands retain profile-required checks.
+- Canonically persisted route contracts must survive preflight independent of
+  JSON object-key order. Value or digest changes still fail closed.
+
 - Low-risk routes use deterministic or turn-shaped work with source/unit proof.
 - Moderate routes use bounded work with focused and integration proof;
   user-facing work also requires screenshots.

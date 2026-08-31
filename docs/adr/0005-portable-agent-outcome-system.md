@@ -66,9 +66,10 @@ an Agent Loop unless it owns a declared artifact and the Agent Loop Contract.
 `TaskRouteV1` is the fail-closed admission receipt in front of the existing
 contract. It classifies task domain, run type, execution mode, risk, selected
 profile and provider-neutral agent roles, repository-approved skill IDs,
-expected outcome, evidence, finite budget, stop condition, approval boundary,
-and routing rationale. Its verdict is exactly one of `routed`, `unverified`,
-`blocked`, or `approval_required`.
+exact repository-relative task input/exclusion paths, expected outcome,
+evidence, finite budget, stop condition, approval boundary, and routing
+rationale. Its verdict is exactly one of `routed`, `unverified`, `blocked`, or
+`approval_required`.
 
 The receipt may choose process and evidence. It may not choose product
 priority, design direction, participant authority, membership, money, or
@@ -82,15 +83,27 @@ Routing policies, retry budgets, profiles, and example contracts are loaded
 from the receipt's exact repository root. A clean committed tree is mandatory
 for critical routing because a dirty path list does not bind uncommitted bytes.
 Repository, external, and critical-external routes also bind an explicit list
-of allowed effect types; the runtime rejects effects outside that list.
+of allowed effect types; the runtime rejects effects outside that list. The
+route's path lists are fixed before contract creation. A mutating contract's
+allowed-write set must equal its routed `in_paths`, and neither contract
+arguments nor an example contract may replace that scope.
+
+The receipt also binds the governing source, requirement IDs, and final
+deterministic command set. Contract creation cannot override these acceptance
+inputs, and omission of custom commands retains the selected profile's default
+checks.
 
 `approval_ref` is a digest-bound structured operator attestation recording a
-human actor, exact root, candidate HEAD/tree, purpose, allowed effect set,
-source message/envelope, and expiry. It is not a cryptographic identity proof:
+human actor, exact root, candidate HEAD/tree, task path scope, purpose, allowed
+effect set, source message/envelope, and expiry. It is not a cryptographic identity proof:
 the evidence reference and claimed human identity are not authenticated by
 TaskRouteV1 and must not be reported as independently verified human approval.
 Every external effect still needs its own run-ledger approval identity and
 readback before dispatch.
+
+Canonical packet persistence may reorder JSON object keys. Route and contract
+readback therefore compares canonical values, not insertion order. Semantic
+changes remain protected by packet digests and exact binding checks.
 
 Every non-trivial agent run uses `AgentLoopContractV1` and terminates as exactly
 one of:

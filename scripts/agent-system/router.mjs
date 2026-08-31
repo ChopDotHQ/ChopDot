@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { digestObject, makeId, normalizeRoot, nowIso, sha256 } from './core.mjs';
-import { loadLoopProfile } from './contract.mjs';
+import { loadLoopProfile, resolveProfileCommands } from './contract.mjs';
 import { loadGovernanceJson, loadGovernanceJsonFrom, validateGovernanceInstance } from './schema.mjs';
 import { validateTaskRoutingPolicy } from './routing-policy.mjs';
 
@@ -49,6 +49,28 @@ function dirtyPaths(root) {
     if (/[RC]/.test(status) && tokens[index + 1]) paths.push(tokens[++index]);
   }
   return [...new Set(paths)].sort();
+}
+
+function normalizeRoutePaths(values, label, { required = false } = {}) {
+  if (!Array.isArray(values)) {
+    if (!required && values === undefined) return [];
+    throw new Error(`${label} must be an array of repository-relative paths`);
+  }
+  const normalized = values.map((value) => {
+    const raw = String(value).trim();
+    if (!raw || raw.includes('\\') || path.isAbsolute(raw)) throw new Error(`${label} contains an invalid repository-relative path: ${raw || '(empty)'}`);
+    const candidate = path.posix.normalize(raw.replace(/^\.\//u, '').replace(/\/$/u, ''));
+    if (!candidate || candidate === '.' || candidate === '..' || candidate.startsWith('../') || candidate.includes('\0')) throw new Error(`${label} contains an invalid repository-relative path: ${raw}`);
+    if (raw !== candidate) throw new Error(`${label} contains a noncanonical repository-relative path: ${raw}`);
+    return candidate;
+  });
+  const result = [...new Set(normalized)].sort();
+  if (required && result.length === 0) throw new Error(`${label} requires at least one repository-relative path`);
+  return result;
+}
+
+function pathContains(parent, child) {
+  return parent === child || child.startsWith(`${parent}/`);
 }
 
 export function observeRouteScope(rootValue = process.cwd()) {
@@ -137,6 +159,8 @@ export function digestApprovalRequest(input) {
     candidate_tree: input.candidateTree,
     effect_class: input.effectClass,
     effect_types: [...input.effectTypes],
+    in_paths: [...input.inPaths],
+    out_paths: [...input.outPaths],
     expected_outcome: String(input.expectedOutcome).trim(),
   });
 }
@@ -157,6 +181,21 @@ export function validateTaskRoute(route, options = {}) {
     catch (error) { issues.push({ path: '/scope', code: 'scope_unavailable', message: `Exact route scope cannot be observed: ${error.message}` }); }
   }
   if (expectedScope) for (const field of ['root', 'branch', 'head', 'tree', 'dirty_paths']) if (JSON.stringify(route?.scope?.[field]) !== JSON.stringify(expectedScope[field])) issues.push({ path: `/scope/${field}`, code: 'stale_route', message: `Route ${field} does not match the current exact-worktree state` });
+  try {
+    const inPaths = normalizeRoutePaths(route?.scope?.in_paths, 'scope.in_paths', { required: true });
+    const outPaths = normalizeRoutePaths(route?.scope?.out_paths, 'scope.out_paths');
+    if (JSON.stringify(inPaths) !== JSON.stringify(route?.scope?.in_paths) || JSON.stringify(outPaths) !== JSON.stringify(route?.scope?.out_paths)) issues.push({ path: '/scope', code: 'scope_paths_noncanonical', message: 'Route paths must be sorted, unique, normalized repository-relative paths' });
+    if (inPaths.some((inPath) => outPaths.some((outPath) => pathContains(outPath, inPath) || pathContains(inPath, outPath)))) issues.push({ path: '/scope', code: 'scope_path_conflict', message: 'In-scope and out-of-scope paths cannot overlap' });
+  } catch (error) { issues.push({ path: '/scope', code: 'scope_path_invalid', message: error.message }); }
+  try {
+    const sourcePath = normalizeRoutePaths([route?.contract_inputs?.source_path], 'contract_inputs.source_path', { required: true })[0];
+    if (sourcePath !== route?.contract_inputs?.source_path) issues.push({ path: '/contract_inputs/source_path', code: 'contract_input_noncanonical', message: 'Governing source path must be canonical' });
+    readFileSync(path.join(authorityRoot, sourcePath));
+  } catch (error) { issues.push({ path: '/contract_inputs/source_path', code: 'contract_input_unavailable', message: error.message }); }
+  if (Array.isArray(route?.contract_inputs?.deterministic_commands)) {
+    const ids = route.contract_inputs.deterministic_commands.map((entry) => entry.id);
+    if (new Set(ids).size !== ids.length || route.contract_inputs.deterministic_commands.some((entry) => entry.cwd !== normalizeRoot(authorityRoot))) issues.push({ path: '/contract_inputs/deterministic_commands', code: 'contract_input_invalid', message: 'Deterministic commands require unique IDs and the exact route root as cwd' });
+  }
   if (options.requireRouted && route?.verdict !== 'routed') issues.push({ path: '/verdict', code: 'route_not_accepted', message: `Contract creation requires routed; received ${route?.verdict ?? 'missing'}` });
   if (route?.risk_tier === 'critical' && !route.selection?.agent_ids?.includes('independent-evaluator')) issues.push({ path: '/selection/agent_ids', code: 'independent_evaluator_required', message: 'Critical routes require a separate evaluator role' });
   if (route?.selection?.profile_id) {
@@ -189,8 +228,8 @@ export function validateTaskRoute(route, options = {}) {
   const approvalRef = boundary?.approval_ref;
   if (approvalRef) {
     if (approvalRef.approval_digest !== digestApprovalRef(approvalRef)) issues.push({ path: '/approval_boundary/approval_ref/approval_digest', code: 'approval_digest_mismatch', message: 'Approval reference digest does not match its content' });
-    const expectedRequestDigest = digestApprovalRequest({ scopeRoot: route.scope.root, candidateHead: route.scope.head, candidateTree: route.scope.tree, effectClass: boundary.effect_class, effectTypes: boundary.effect_types, expectedOutcome: route.expected_outcome });
-    if (approvalRef.scope_root !== route?.scope?.root || approvalRef.effect_class !== boundary.effect_class || approvalRef.candidate_head !== route.scope.head || approvalRef.candidate_tree !== route.scope.tree || JSON.stringify(approvalRef.effect_types) !== JSON.stringify(boundary.effect_types) || approvalRef.request_digest !== expectedRequestDigest) issues.push({ path: '/approval_boundary/approval_ref', code: 'approval_scope_mismatch', message: 'Approval reference does not match route root, candidate, purpose, effect class, and effect types' });
+    const expectedRequestDigest = digestApprovalRequest({ scopeRoot: route.scope.root, candidateHead: route.scope.head, candidateTree: route.scope.tree, effectClass: boundary.effect_class, effectTypes: boundary.effect_types, inPaths: route.scope.in_paths, outPaths: route.scope.out_paths, expectedOutcome: route.expected_outcome });
+    if (approvalRef.scope_root !== route?.scope?.root || approvalRef.effect_class !== boundary.effect_class || approvalRef.candidate_head !== route.scope.head || approvalRef.candidate_tree !== route.scope.tree || JSON.stringify(approvalRef.effect_types) !== JSON.stringify(boundary.effect_types) || JSON.stringify(approvalRef.in_paths) !== JSON.stringify(route.scope.in_paths) || JSON.stringify(approvalRef.out_paths) !== JSON.stringify(route.scope.out_paths) || approvalRef.request_digest !== expectedRequestDigest) issues.push({ path: '/approval_boundary/approval_ref', code: 'approval_scope_mismatch', message: 'Approval reference does not match route root, candidate, paths, purpose, effect class, and effect types' });
     if (approvalRef.granted_by_kind !== 'human') issues.push({ path: '/approval_boundary/approval_ref/granted_by_kind', code: 'human_approval_required', message: 'Critical or external mutation approval must trace to a human operator' });
     const grantedAt = Date.parse(approvalRef.granted_at);
     const expiresAt = Date.parse(approvalRef.expires_at);
@@ -222,6 +261,14 @@ export function routeTask(input, options = {}) {
   if (!profileId) throw new Error(`Unknown task domain: ${input.taskDomain ?? '(missing)'}`);
   if (!String(input.expectedOutcome ?? '').trim()) throw new Error('Expected outcome is required');
   const profile = loadLoopProfile(profileId, root);
+  const inPaths = normalizeRoutePaths(input.inPaths, 'inPaths', { required: true });
+  const outPaths = normalizeRoutePaths(input.outPaths, 'outPaths');
+  if (inPaths.some((inPath) => outPaths.some((outPath) => pathContains(outPath, inPath) || pathContains(inPath, outPath)))) throw new Error('inPaths and outPaths cannot overlap');
+  const sourcePath = normalizeRoutePaths([input.sourcePath ?? (['product-definition', 'ux'].includes(input.taskDomain) ? 'PRODUCT_TRUTH.md' : 'governance/agent-system/policies/task-routing.v1.json')], 'sourcePath', { required: true })[0];
+  try { readFileSync(path.join(root, sourcePath)); } catch (error) { throw new Error(`sourcePath is unavailable in the exact root: ${sourcePath} (${error.code ?? error.message})`); }
+  const requirementIds = input.requirementIds === undefined ? profile.expected_outcome.assertions.map((entry) => entry.id) : [...new Set(input.requirementIds.map((entry) => String(entry).trim()))];
+  if (!requirementIds.length || requirementIds.some((entry) => entry.length < 2)) throw new Error('requirementIds requires non-empty stable requirement IDs');
+  const deterministicCommands = resolveProfileCommands(profileId, profile, root, input.deterministicCommands);
   const criticalTopics = [...new Set(input.criticalTopics ?? [])];
   const unknownCriticalTopics = criticalTopics.filter((topic) => !policy.critical_topics.includes(topic));
   if (unknownCriticalTopics.length) throw new Error(`Unknown critical topics: ${unknownCriticalTopics.join(', ')}`);
@@ -275,8 +322,8 @@ export function routeTask(input, options = {}) {
   const approvalRequired = Boolean(['repository_effect', 'external_effect', 'critical_external_effect'].includes(effectClass) || requestedMutation && riskTier === 'critical');
   const approvalRef = input.approvalRef ?? null;
   if (approvalRef && approvalRef.approval_digest !== digestApprovalRef(approvalRef)) throw new Error('Approval reference digest is invalid');
-  const expectedApprovalRequest = digestApprovalRequest({ scopeRoot: root, candidateHead: head, candidateTree: tree, effectClass, effectTypes, expectedOutcome: input.expectedOutcome });
-  const approvalGranted = Boolean(approvalRef && approvalRef.scope_root === root && approvalRef.effect_class === effectClass && approvalRef.candidate_head === head && approvalRef.candidate_tree === tree && JSON.stringify(approvalRef.effect_types) === JSON.stringify(effectTypes) && approvalRef.request_digest === expectedApprovalRequest && approvalRef.granted_by_kind === 'human' && Date.parse(approvalRef.granted_at) <= Date.parse(createdAt) && Date.parse(approvalRef.expires_at) > Date.now());
+  const expectedApprovalRequest = digestApprovalRequest({ scopeRoot: root, candidateHead: head, candidateTree: tree, effectClass, effectTypes, inPaths, outPaths, expectedOutcome: input.expectedOutcome });
+  const approvalGranted = Boolean(approvalRef && approvalRef.scope_root === root && approvalRef.effect_class === effectClass && approvalRef.candidate_head === head && approvalRef.candidate_tree === tree && JSON.stringify(approvalRef.effect_types) === JSON.stringify(effectTypes) && JSON.stringify(approvalRef.in_paths) === JSON.stringify(inPaths) && JSON.stringify(approvalRef.out_paths) === JSON.stringify(outPaths) && approvalRef.request_digest === expectedApprovalRequest && approvalRef.granted_by_kind === 'human' && Date.parse(approvalRef.granted_at) <= Date.parse(createdAt) && Date.parse(approvalRef.expires_at) > Date.now());
   if (scheduled && requestedMutation) {
     if (verdict === 'routed') verdict = 'approval_required';
     rationale.push('Time-based and proactive work is read-only; mutation requires a new approved effect route.');
@@ -297,7 +344,7 @@ export function routeTask(input, options = {}) {
     route_version: '1.0.0',
     route_id: input.routeId ?? makeId('route'),
     created_at: createdAt,
-    scope: { root, branch, head, tree, dirty_paths: options.dirtyPaths ?? observedScope.dirty_paths },
+    scope: { root, branch, head, tree, dirty_paths: options.dirtyPaths ?? observedScope.dirty_paths, in_paths: inPaths, out_paths: outPaths },
     task_domain: input.taskDomain,
     run_type: runType,
     execution_mode: executionMode,
@@ -307,6 +354,11 @@ export function routeTask(input, options = {}) {
       agent_ids: selectedAgents(executionMode, profile.evaluator.independence, riskTier),
       skill_ids: skills.selected,
       observed_unapproved_skill_ids: skills.observed,
+    },
+    contract_inputs: {
+      source_path: sourcePath,
+      requirement_ids: requirementIds,
+      deterministic_commands: deterministicCommands,
     },
     expected_outcome: String(input.expectedOutcome).trim(),
     evidence: {

@@ -74,12 +74,15 @@ Usage: node scripts/agent-system/cli.mjs <command> [options]
 Core commands:
   validate --contract FILE [--expected-root ROOT]
   route --output FILE --task-domain DOMAIN --expected-outcome TEXT
+    --in-paths A,B [--out-paths A,B]
     [--run-type turn|bounded_goal|time_based|proactive]
     [--execution-mode deterministic|single-agent|parallel-workers|orchestrator-workers|evaluator-optimizer]
     [--risk-tier low|moderate|critical] [--critical-topics A,B]
     [--skills A,B] [--observed-skills A,B] [--user-facing]
     [--requested-mutation] [--external-write]
     [--effect-class CLASS] [--effect-types A,B] [--approval-ref-json JSON]
+    [--requirements A,B] [--source-path REPO_PATH]
+    [--deterministic-commands "node --test file,npm run check"]
     [--failure-signals A,B] [--budget-json JSON] [--input FILE]
   contract-new --output FILE --root ROOT --run-id run_<id>
     --branch NAME --starting-head SHA --starting-tree SHA
@@ -182,6 +185,11 @@ export async function main(argv = process.argv.slice(2)) {
         ...supplied,
         taskDomain: options.task_domain ?? supplied.taskDomain,
         expectedOutcome: options.expected_outcome ?? supplied.expectedOutcome,
+        inPaths: options.in_paths ? commaList(options.in_paths) : supplied.inPaths,
+        outPaths: options.out_paths ? commaList(options.out_paths) : supplied.outPaths,
+        requirementIds: options.requirements ? commaList(options.requirements) : supplied.requirementIds,
+        sourcePath: options.source_path ?? supplied.sourcePath,
+        deterministicCommands: options.deterministic_commands === undefined ? supplied.deterministicCommands : deterministicCommands(options.deterministic_commands, root),
         runType: options.run_type ?? supplied.runType,
         executionMode: options.execution_mode ?? supplied.executionMode,
         riskTier: options.risk_tier ?? supplied.riskTier,
@@ -220,7 +228,7 @@ export async function main(argv = process.argv.slice(2)) {
       let routePath = null;
       if (options.route) {
         if (options.loop_profile || options.intent_type || options.objective) throw new Error('--route cannot be combined with --loop-profile, --intent-type, or --objective');
-        const forbiddenRouteOverrides = ['allowed_writes', 'branch', 'starting_head', 'starting_tree'];
+        const forbiddenRouteOverrides = ['allowed_writes', 'branch', 'starting_head', 'starting_tree', 'in_paths', 'out_paths', 'requirements', 'source_path', 'deterministic_commands'];
         const suppliedOverrides = forbiddenRouteOverrides.filter((name) => options[name] !== undefined);
         if (suppliedOverrides.length) throw new Error(`--route cannot be combined with route-authority overrides: ${suppliedOverrides.map((name) => `--${name.replaceAll('_', '-')}`).join(', ')}`);
         routePath = path.resolve(options.route);
@@ -247,7 +255,7 @@ export async function main(argv = process.argv.slice(2)) {
           },
         };
       } else {
-        const commands = deterministicCommands(options.deterministic_commands, root);
+        const commands = options.deterministic_commands === undefined ? undefined : deterministicCommands(options.deterministic_commands, root);
         contract = createContract({
           root,
           runId: options.run_id,

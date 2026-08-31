@@ -11,8 +11,9 @@ import { startRun } from '../runner.mjs';
 import { dispatchEffect, planEffect } from '../effects.mjs';
 import { fixtureRoot } from './helpers.mjs';
 import { validateGovernanceInstance } from '../schema.mjs';
-import { sha256 } from '../core.mjs';
+import { canonicalJson, sha256, writeJsonAtomic } from '../core.mjs';
 import { validateTaskRoutingPolicy } from '../routing-policy.mjs';
+import { createMockKgv3Adapter } from '../adapters/mock-kgv3.mjs';
 
 const SKILL_BYTES = '# test skill\n';
 
@@ -42,7 +43,7 @@ async function routed(input) {
   await installFixtureSkills(root);
   execFileSync('git', ['add', '.'], { cwd: root });
   execFileSync('git', ['commit', '-m', 'install governed fixture skills'], { cwd: root, stdio: 'ignore' });
-  const normalized = { ...input };
+  const normalized = { inPaths: ['governance/agent-system'], outPaths: ['PRODUCT_TRUTH.md', 'src'], ...input };
   if (normalized.approvalRef === 'fixture') {
     const git = (args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
     const effectClass = normalized.effectClass ?? 'critical_external_effect';
@@ -50,7 +51,9 @@ async function routed(input) {
     const expectedOutcome = 'Produce the bounded expected outcome with objective evidence.';
     const candidateHead = git(['rev-parse', 'HEAD']);
     const candidateTree = git(['rev-parse', 'HEAD^{tree}']);
-    const ref = { approval_id: 'approval_fixture_route_0001', granted_by: 'fixture-human', granted_by_kind: 'human', source: 'recorded_operator_envelope', effect_class: effectClass, effect_types: effectTypes, scope_root: root, candidate_head: candidateHead, candidate_tree: candidateTree, request_digest: digestApprovalRequest({ scopeRoot: root, candidateHead, candidateTree, effectClass, effectTypes, expectedOutcome }), granted_at: '2026-08-31T12:00:00.000Z', expires_at: '2099-01-01T00:00:00.000Z', evidence_ref: 'fixture-approved-envelope' };
+    const inPaths = [...normalized.inPaths].sort();
+    const outPaths = [...normalized.outPaths].sort();
+    const ref = { approval_id: 'approval_fixture_route_0001', granted_by: 'fixture-human', granted_by_kind: 'human', source: 'recorded_operator_envelope', effect_class: effectClass, effect_types: effectTypes, scope_root: root, candidate_head: candidateHead, candidate_tree: candidateTree, in_paths: inPaths, out_paths: outPaths, request_digest: digestApprovalRequest({ scopeRoot: root, candidateHead, candidateTree, effectClass, effectTypes, inPaths, outPaths, expectedOutcome }), granted_at: '2026-08-31T12:00:00.000Z', expires_at: '2099-01-01T00:00:00.000Z', evidence_ref: 'fixture-approved-envelope' };
     ref.approval_digest = digestApprovalRef(ref);
     normalized.approvalRef = ref;
   }
@@ -94,7 +97,17 @@ for (const [name, input, expected] of matrix) {
 
 test('route budget cannot widen policy defaults', async () => {
   const root = await fixtureRoot();
-  assert.throws(() => routeTask({ taskDomain: 'research', expectedOutcome: 'Return a cited bounded research result.', budget: { max_tool_calls: 21 } }, { root, registry: registryForFixture() }), /cannot exceed 20/);
+  assert.throws(() => routeTask({ taskDomain: 'research', expectedOutcome: 'Return a cited bounded research result.', inPaths: ['docs'], budget: { max_tool_calls: 21 } }, { root, registry: registryForFixture() }), /cannot exceed 20/);
+});
+
+test('route requires canonical non-overlapping task path scope', async () => {
+  const root = await fixtureRoot();
+  assert.throws(() => routeTask({ taskDomain: 'implementation', expectedOutcome: 'Bind one exact task scope before contract creation.' }, { root, registry: registryForFixture() }), /inPaths must be an array/);
+  assert.throws(() => routeTask({ taskDomain: 'implementation', expectedOutcome: 'Reject overlapping write and forbidden paths.', inPaths: ['docs/agent-system'], outPaths: ['docs'] }, { root, registry: registryForFixture() }), /cannot overlap/);
+  for (const invalid of ['/tmp/escape', '../docs', '.', './scripts/agent-system', 'scripts/../src', 'scripts/']) assert.throws(() => routeTask({ taskDomain: 'implementation', expectedOutcome: 'Reject noncanonical or escaping task paths before contract creation.', inPaths: [invalid] }, { root, registry: registryForFixture() }), /invalid|noncanonical/);
+  const route = routeTask({ taskDomain: 'implementation', expectedOutcome: 'Canonicalize the exact task scope before contract creation.', inPaths: ['scripts/agent-system', 'governance/agent-system'], outPaths: ['src'] }, { root, registry: registryForFixture() });
+  assert.deepEqual(route.scope.in_paths, ['governance/agent-system', 'scripts/agent-system']);
+  assert.deepEqual(route.scope.out_paths, ['src']);
 });
 
 test('task routing policy schema and semantic floors reject weakened critical controls', async () => {
@@ -116,7 +129,7 @@ test('router loads policy and profiles from the exact target root', async () => 
   const policy = JSON.parse(await readFile(policyPath, 'utf8'));
   policy.minimum_risk.release = 'moderate';
   await writeFile(policyPath, `${JSON.stringify(policy)}\n`);
-  assert.throws(() => routeTask({ taskDomain: 'research', expectedOutcome: 'Use only exact-root governed routing sources.' }, { root, registry: registryForFixture() }), /Task routing policy is invalid/);
+  assert.throws(() => routeTask({ taskDomain: 'research', expectedOutcome: 'Use only exact-root governed routing sources.', inPaths: ['docs'] }, { root, registry: registryForFixture() }), /Task routing policy is invalid/);
 });
 
 test('active skill still fails closed when its trusted repository bytes drift', async () => {
@@ -124,7 +137,7 @@ test('active skill still fails closed when its trusted repository bytes drift', 
   await installFixtureSkills(root);
   const registry = registryForFixture();
   registry.external_surfaces[0].trusted_sha256 = 'f'.repeat(64);
-  const route = routeTask({ taskDomain: 'implementation', expectedOutcome: 'Use only byte-verified repository skills.', skillIds: ['skill-webapp-testing'] }, { root, registry });
+  const route = routeTask({ taskDomain: 'implementation', expectedOutcome: 'Use only byte-verified repository skills.', inPaths: ['scripts'], skillIds: ['skill-webapp-testing'] }, { root, registry });
   assert.equal(route.verdict, 'blocked');
   assert.deepEqual(route.selection.skill_ids, []);
 });
@@ -180,7 +193,7 @@ test('scheduled and critical effect semantics fail closed even with a recomputed
 
 test('self-asserted approval booleans cannot authorize a critical route', async () => {
   const root = await fixtureRoot();
-  assert.throws(() => routeTask({ taskDomain: 'release', expectedOutcome: 'Publish an exact reviewed release candidate.', externalWrite: true, approvalGranted: true }, { root, registry: registryForFixture() }), /Boolean approvalGranted is not accepted/);
+  assert.throws(() => routeTask({ taskDomain: 'release', expectedOutcome: 'Publish an exact reviewed release candidate.', inPaths: ['dist-dot-host'], externalWrite: true, approvalGranted: true }, { root, registry: registryForFixture() }), /Boolean approvalGranted is not accepted/);
 });
 
 test('approval reference must be digest-bound to the exact root and effect class', async () => {
@@ -200,10 +213,18 @@ test('approval reference cannot be replayed for a different critical effect set'
   assert.ok(codes.includes('approval_scope_mismatch'));
 });
 
+test('approval reference cannot be replayed for a wider task path scope', async () => {
+  const { root, route } = await routed({ taskDomain: 'implementation', effectClass: 'repository_effect', effectTypes: ['commit'], approvalRef: 'fixture' });
+  route.scope.in_paths = ['governance/agent-system', 'src'];
+  route.route_digest = digestTaskRoute(route);
+  const codes = validateTaskRoute(route, { expectedRoot: root, requireRouted: true, registry: registryForFixture() }).issues.map((issue) => issue.code);
+  assert.ok(codes.includes('approval_scope_mismatch'));
+});
+
 test('critical routes fail closed when the exact candidate has uncommitted bytes', async () => {
   const root = await fixtureRoot();
   await writeFile(path.join(root, 'PRODUCT_TRUTH.md'), '# Changed product truth\n');
-  const route = routeTask({ taskDomain: 'security-authority', expectedOutcome: 'Review one exact committed security candidate.' }, { root, registry: registryForFixture() });
+  const route = routeTask({ taskDomain: 'security-authority', expectedOutcome: 'Review one exact committed security candidate.', inPaths: ['src'] }, { root, registry: registryForFixture() });
   assert.equal(route.verdict, 'blocked');
   assert.ok(route.routing_rationale.some((entry) => entry.includes('clean committed tree')));
   assert.ok(validateTaskRoute(route, { expectedRoot: root, requireRouted: true, registry: registryForFixture() }).issues.some((issue) => issue.code === 'critical_candidate_dirty'));
@@ -228,6 +249,9 @@ test('contract consumes accepted route profile, architecture, budget, and immuta
   assert.equal(contract.architecture.mode, 'single_agent');
   assert.equal(contract.budgets.max_tool_calls, route.budget.max_tool_calls);
   assert.equal(contract.task_route.route_digest, route.route_digest);
+  assert.deepEqual(contract.scope.in_paths, route.scope.in_paths);
+  assert.deepEqual(contract.scope.out_paths, route.scope.out_paths);
+  assert.deepEqual(contract.authority.allowed_writes, route.scope.in_paths);
   assert.equal(contract.context.governing_sources[0].authority_level, 'product_law');
   assert.equal(validateAgentContract(contract, { expectedRoot: root }).valid, true);
 });
@@ -276,17 +300,43 @@ test('CLI contract-new rejects a non-routed receipt and profile override', async
 });
 
 test('CLI contract-new consumes a routed receipt without selecting a second profile', async () => {
-  const { root, route } = await routed({ taskDomain: 'research' });
+  const { root, route } = await routed({ taskDomain: 'implementation' });
   await mkdir(path.join(root, 'runs'), { recursive: true });
   const receipt = path.join(root, 'runs', 'route.json');
   const output = path.join(root, 'runs', 'contract.json');
-  await writeFile(receipt, `${JSON.stringify(route)}\n`);
+  await writeFile(receipt, `${canonicalJson(route)}\n`);
   const cli = path.resolve('scripts/agent-system/cli.mjs');
-  execFileSync(process.execPath, [cli, 'contract-new', '--root', root, '--route', receipt, '--source-path', 'PRODUCT_TRUTH.md', '--output', output, '--run-id', 'run_cli_route_0002'], { cwd: process.cwd(), encoding: 'utf8', stdio: 'pipe' });
+  execFileSync(process.execPath, [cli, 'contract-new', '--root', root, '--route', receipt, '--output', output, '--run-id', 'run_cli_route_0002'], { cwd: process.cwd(), encoding: 'utf8', stdio: 'pipe' });
   const contract = JSON.parse(await readFile(output, 'utf8'));
   assert.equal(contract.loop_profile.id, route.selection.profile_id);
   assert.equal(contract.task_route.route_digest, route.route_digest);
   assert.equal(contract.architecture.mode, routeExecutionMode(route));
+  assert.deepEqual(contract.scope.in_paths, route.scope.in_paths);
+  assert.deepEqual(contract.scope.out_paths, route.scope.out_paths);
+  assert.deepEqual(contract.authority.allowed_writes, route.scope.in_paths);
+  assert.deepEqual(contract.requirement_ids, route.contract_inputs.requirement_ids);
+  assert.deepEqual(contract.evaluator.deterministic_commands, route.contract_inputs.deterministic_commands);
+  assert.ok(contract.evaluator.deterministic_commands.some((entry) => entry.id === 'IMPL-VALIDATE'));
+  const preflight = await executeRunPreflight(contract, { observedIdentity: { root, branch: route.scope.branch, head: route.scope.head, tree: route.scope.tree, dirty_paths: route.scope.dirty_paths }, knowledgeAdapter: createMockKgv3Adapter() });
+  assert.equal(preflight.accepted, true, JSON.stringify(preflight.issues));
+});
+
+test('actual CLI route to contract to run-start survives canonical persistence', async () => {
+  const root = await fixtureRoot();
+  await installFixtureSkills(root);
+  execFileSync('git', ['add', '.'], { cwd: root });
+  execFileSync('git', ['commit', '-m', 'install governed fixture skills'], { cwd: root, stdio: 'ignore' });
+  const cli = path.resolve('scripts/agent-system/cli.mjs');
+  const routePath = path.join(root, 'runs', 'cli-route.json');
+  const contractPath = path.join(root, 'runs', 'cli-contract.json');
+  const runsRoot = path.join(root, 'runs');
+  execFileSync(process.execPath, [cli, 'route', '--root', root, '--output', routePath, '--task-domain', 'implementation', '--in-paths', 'scripts/agent-system', '--out-paths', 'PRODUCT_TRUTH.md', '--expected-outcome', 'Prove the actual canonical CLI route contract and run-start path.', '--json'], { cwd: process.cwd(), encoding: 'utf8', stdio: 'pipe' });
+  execFileSync(process.execPath, [cli, 'contract-new', '--root', root, '--route', routePath, '--output', contractPath, '--run-id', 'run_cli_roundtrip_0001', '--json'], { cwd: process.cwd(), encoding: 'utf8', stdio: 'pipe' });
+  const started = JSON.parse(execFileSync(process.execPath, [cli, 'run-start', '--root', root, '--contract', contractPath, '--runs-root', runsRoot, '--adapter', 'mock-kgv3', '--json'], { cwd: process.cwd(), encoding: 'utf8', stdio: 'pipe' }));
+  assert.equal(started.preflight.accepted, true, JSON.stringify(started.preflight.issues));
+  const contract = JSON.parse(await readFile(contractPath, 'utf8'));
+  assert.deepEqual(contract.authority.allowed_writes, ['scripts/agent-system']);
+  assert.ok(contract.evaluator.deterministic_commands.some((entry) => entry.id === 'IMPL-VALIDATE'));
 });
 
 test('CLI contract-new rejects route authority and candidate overrides', async () => {
@@ -296,7 +346,7 @@ test('CLI contract-new rejects route authority and candidate overrides', async (
   const output = path.join(root, 'runs', 'contract.json');
   await writeFile(receipt, `${JSON.stringify(route)}\n`);
   const cli = path.resolve('scripts/agent-system/cli.mjs');
-  for (const args of [['--allowed-writes', 'docs'], ['--branch', 'codex/forged'], ['--starting-head', 'f'.repeat(40)], ['--starting-tree', 'e'.repeat(40)]]) {
+  for (const args of [['--allowed-writes', 'docs'], ['--branch', 'codex/forged'], ['--starting-head', 'f'.repeat(40)], ['--starting-tree', 'e'.repeat(40)], ['--in-paths', 'src'], ['--out-paths', 'docs'], ['--requirements', 'REQ-FORGED'], ['--source-path', 'PRODUCT_TRUTH.md'], ['--deterministic-commands', 'node --version']]) {
     let message = '';
     try { execFileSync(process.execPath, [cli, 'contract-new', '--root', root, '--route', receipt, '--output', output, '--run-id', 'run_cli_route_override_0001', ...args], { cwd: process.cwd(), encoding: 'utf8', stdio: 'pipe' }); }
     catch (error) { message = `${error.stdout ?? ''}${error.stderr ?? ''}`; }
@@ -366,6 +416,21 @@ test('run preflight rejects a contract that widens a bound read-only route', asy
   assert.ok(failed.issues.some((issue) => issue.code === 'route_authority_mismatch'));
 });
 
+test('run preflight rejects routed task scope and contract-input tampering', async () => {
+  const { root, route } = await routed({ taskDomain: 'implementation' });
+  await mkdir(path.join(root, 'runs'), { recursive: true });
+  await writeJsonAtomic(path.join(root, 'runs', 'route.json'), route);
+  const contract = createContract({ root, runId: 'run_route_scope_tamper_0001', loopProfile: route.selection.profile_id, taskRoute: route, taskRoutePath: 'runs/route.json', routeExecutionMode: routeExecutionMode(route), knowledgePolicy: { port_version: '1.0.0', preflight_required: false, record_outcome: true, verify_recall: true, degraded_context_allowed: false, disallowed_fallbacks: [] } });
+  contract.scope.in_paths = [...contract.scope.in_paths, 'src'];
+  contract.authority.allowed_writes = [...contract.authority.allowed_writes, 'src'];
+  contract.requirement_ids = ['REQ-FORGED'];
+  contract.task_route.contract_inputs.requirement_ids = ['REQ-FORGED'];
+  const failed = await executeRunPreflight(contract);
+  assert.equal(failed.accepted, false);
+  assert.ok(failed.issues.some((issue) => issue.code === 'route_candidate_mismatch'));
+  assert.ok(failed.issues.some((issue) => issue.code === 'route_contract_mismatch' || issue.code === 'route_contract_input_mismatch'));
+});
+
 test('run preflight rejects routed outcome and evidence weakening', async () => {
   const { root, route } = await routed({ taskDomain: 'ux', userFacing: true });
   await mkdir(path.join(root, 'runs'), { recursive: true });
@@ -425,9 +490,11 @@ test('every accepted route class creates a runnable route-bound contract', async
     const { root, route } = await routed(input);
     assert.equal(route.verdict, 'routed', name);
     await mkdir(path.join(root, 'runs'), { recursive: true });
-    await writeFile(path.join(root, 'runs', 'route.json'), `${JSON.stringify(route)}\n`);
+    await writeJsonAtomic(path.join(root, 'runs', 'route.json'), route);
     const contract = createContract({ root, runId: `run_route_domain_${String(index).padStart(8, '0')}`, loopProfile: route.selection.profile_id, taskRoute: route, taskRoutePath: 'runs/route.json', routeExecutionMode: routeExecutionMode(route), knowledgePolicy: { port_version: '1.0.0', preflight_required: false, record_outcome: true, verify_recall: true, degraded_context_allowed: false, disallowed_fallbacks: [] } });
-    const started = await startRun(contract, { runsRoot: path.join(root, 'runs') });
+    await writeJsonAtomic(path.join(root, 'runs', 'contract.json'), contract);
+    const persistedContract = JSON.parse(await readFile(path.join(root, 'runs', 'contract.json'), 'utf8'));
+    const started = await startRun(persistedContract, { runsRoot: path.join(root, 'runs') });
     assert.equal(started.preflight.accepted, true, name);
   }
 });
