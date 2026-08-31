@@ -18,9 +18,10 @@ test('actual App uses one state-faithful card through the full dinner lifecycle'
   const leo=await actor(browser,bus,'leo',{width:390,height:844});
   const nina=await actor(browser,bus,'nina',{width:390,height:844});
   try{
-    await expect(mina.page.getByRole('heading',{name:'Start with the receipt.'})).toBeVisible();
-    await expectOnePrimary(mina.page,'Scan a receipt');
-    await expectActionInViewport(mina.page,'Scan a receipt');
+    await expect(mina.page.getByRole('heading',{name:'Start a group.'})).toBeVisible();
+    await expectOnePrimary(mina.page,'Start a group');
+    await expectActionInViewport(mina.page,'Start a group');
+    await expect(mina.page.getByRole('button',{name:'Scan a receipt'})).toBeVisible();
     await mina.page.screenshot({path:path.join(proofDir,'01-preview-desktop-1280x720.png')});
 
     await openJourney(mina.page); await openJourney(leo.page); await openJourney(nina.page);
@@ -83,7 +84,8 @@ test('actual App uses one state-faithful card through the full dinner lifecycle'
     const observations={
       schemaVersion:1,
       journey:'Mina reviews one CHF 120 dinner, Leo and Nina act, Mina confirms and saves one record.',
-      oneNextAction:'Scan a receipt',
+      oneNextAction:'Start a group',
+      receiptCaptureAvailable:true,
       previewLabelVisible:false,
       previewCreatedMoneyState:false,
       lifecycleStates:['payment_requested','marked_paid','needs_confirmation','sending','ready_to_close','closed'],

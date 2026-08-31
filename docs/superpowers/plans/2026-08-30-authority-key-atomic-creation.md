@@ -1,7 +1,7 @@
 # Atomic browser authority-key creation
 
 **Kind:** execution plan
-**Status:** implemented and independently reviewed on the original slice; fresh release-base integration review pending
+**Status:** implemented and locally verified on the current release base; independent integration review pending
 **Owner:** core authority implementation owner
 **Last reviewed:** 2026-08-31
 **Applies to:** `codex/authority-key-race-fix`
@@ -97,3 +97,11 @@ creation.
   `http://127.0.0.1:4177`.
 - The production build completed successfully from the exact dependency tree.
 - Exact-worktree `tsc --noEmit` completed successfully.
+- Fresh release-base integration at `29aa5d446b034470e871ae1bfd7f5980dac09f8e`
+  passed the focused concurrency/corruption suite `8/8`, the forced eight-writer
+  race `10/10` repetitions, TypeScript, and the production build.
+- The first fresh-base StrictMode run passed `9/10` and exposed one stale test
+  assertion that still made receipt capture the welcome screen's primary action.
+  The test was aligned to the accepted contextual Home decision—`Start a group`
+  remains primary and `Scan a receipt` remains available—without changing product
+  code; the corrected StrictMode/full-lifecycle package then passed `10/10`.
