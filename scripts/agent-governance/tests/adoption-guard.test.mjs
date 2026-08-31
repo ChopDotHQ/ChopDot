@@ -136,6 +136,11 @@ async function fixture(options = {}) {
   run(root, ['config', 'user.name', 'Fixture']);
   fs.mkdirSync(path.join(root, 'governance/agent-system/policies'), { recursive: true });
   fs.mkdirSync(path.join(root, 'governance/agent-system/contracts'), { recursive: true });
+  fs.cpSync(
+    path.join(repositoryRoot, 'governance/agent-system/loops'),
+    path.join(root, 'governance/agent-system/loops'),
+    { recursive: true },
+  );
   fs.mkdirSync(path.join(root, 'product'), { recursive: true });
   fs.mkdirSync(path.join(root, 'docs/release'), { recursive: true });
   fs.mkdirSync(path.join(root, 'scripts/agent-governance'), { recursive: true });

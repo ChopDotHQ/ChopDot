@@ -27,6 +27,7 @@
     "security:baseline": "node scripts/security-baseline.mjs",
     "security:runtime-boundary": "node scripts/verify-runtime-security-boundary.mjs",
     "agent:validate": "node scripts/agent-system/cli.mjs validate",
+    "agent:route": "node scripts/agent-system/cli.mjs route",
     "agent:contract:new": "node scripts/agent-system/cli.mjs contract-new",
     "agent:run:start": "node scripts/agent-system/cli.mjs run-start",
     "agent:run:resume": "node scripts/agent-system/cli.mjs run-resume",

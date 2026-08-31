@@ -1,0 +1,70 @@
+{
+  "replay_version": "1.0.0",
+  "measurement_kind": "retrospective_not_native_run_telemetry",
+  "observed_at": "2026-08-31T14:15:00Z",
+  "run_store_inventory": {
+    "source_root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/output/agent-runs",
+    "measurement_method": "Count immediate directories; count run_-named directories; parse top-level contract.json run_id values; count non-empty top-level ledgers.",
+    "storage_directories": 37,
+    "run_named_directories": 27,
+    "contract_run_ids": 26,
+    "complete_top_level_ledgers": 26
+  },
+  "packages": [
+    {
+      "id": "contextual-home",
+      "classification": { "task_domain": "ux", "risk_tier": "moderate", "run_type": "bounded_goal", "execution_mode": "single-agent", "profile_id": "ux-creation", "evidence_level": "simulated-integration", "reviewer_independence": "different_actor" },
+      "git": { "base": "0b41f6006d4814c5576e7bfa351c7e9d0fd6f8a8", "tip": "711be7b114c89e0bb6cba7ffac41f43ef1061aec", "merge": "29aa5d446b034470e871ae1bfd7f5980dac09f8e", "commit_count": 3, "files_changed": 18, "insertions": 625, "deletions": 84 },
+      "pull_request": { "number": 19, "url": "https://github.com/ChopDotHQ/ChopDot/pull/19", "created_at": "2026-08-31T07:52:42Z", "merged_at": "2026-08-31T08:45:34Z" },
+      "time": { "first_commit_at": "2026-08-31T07:37:26Z", "merge_at": "2026-08-31T08:45:34Z", "first_commit_to_merge_seconds": 4088, "pr_open_to_merge_seconds": 3172 },
+      "tools": { "count": null, "status": "unavailable", "reason": "The package predates TaskRouteV1 and did not record agent tool calls." },
+      "artifacts": [
+        { "id": "focused-unit", "passed": 5, "failed": 0 },
+        { "id": "affected-browser", "passed": 38, "failed": 0 },
+        { "id": "screen-review-rows", "passed": 50, "failed": 0 },
+        { "id": "node-regression", "passed": 374, "failed": 0 },
+        { "id": "security-files", "passed": 200, "failed": 0 },
+        { "id": "independent-focus", "passed": 8, "failed": 0 }
+      ],
+      "interruptions": { "count": null, "status": "unavailable", "reason": "PR effects and reopen events exist, but no standardized agent interruption telemetry was recorded." },
+      "defects": ["Stale ancestry was rejected before acceptance.", "Clipped screenshot behavior was reproduced and repaired.", "Requested-payment Home routing incorrectly opened a static group page and was repaired.", "Initial hosted repository governance failed before the final exact-head pass."],
+      "source_paths": ["docs/superpowers/plans/2026-08-30-contextual-home-first-group.md", "tests/contextual-home.spec.ts", "scripts/agent-system/metrics.mjs"]
+    },
+    {
+      "id": "authority-key-repair",
+      "classification": { "task_domain": "security-authority", "risk_tier": "critical", "run_type": "bounded_goal", "execution_mode": "single-agent", "profile_id": "security-authority", "evidence_level": "exact-candidate", "reviewer_independence": "different_actor" },
+      "git": { "base": "29aa5d446b034470e871ae1bfd7f5980dac09f8e", "tip": "7773478abd045761cc752bd6a43afccd7baff4c1", "merge": "373c80231f37a4cbe05bbca9b0ec3f720eb2d792", "commit_count": 5, "files_changed": 9, "insertions": 584, "deletions": 32 },
+      "pull_request": { "number": 20, "url": "https://github.com/ChopDotHQ/ChopDot/pull/20", "created_at": "2026-08-31T09:17:45Z", "merged_at": "2026-08-31T09:36:59Z" },
+      "time": { "first_commit_at": "2026-08-31T08:47:03Z", "merge_at": "2026-08-31T09:36:59Z", "first_commit_to_merge_seconds": 2996, "pr_open_to_merge_seconds": 1154 },
+      "tools": { "count": null, "status": "unavailable", "reason": "The package predates TaskRouteV1 and did not record agent tool calls." },
+      "artifacts": [
+        { "id": "malformed-matrix", "passed": 10, "failed": 0 },
+        { "id": "focused-authority", "passed": 8, "failed": 0 },
+        { "id": "eight-writer-stress", "passed": 10, "failed": 0 },
+        { "id": "strictmode-lifecycle", "passed": 10, "failed": 0 },
+        { "id": "node-regression", "passed": 374, "failed": 0 },
+        { "id": "security-files", "passed": 200, "failed": 0 }
+      ],
+      "interruptions": { "count": null, "status": "unavailable", "reason": "The package recorded repairs and PR state but no standardized interruption count or duration." },
+      "defects": ["A stale receipt-first assertion failed on the current base and was corrected.", "Independent review exposed an early IndexedDB rejection and connection leak, repaired in 3d1f6f5.", "Initial hosted repository governance failed before the final pass."],
+      "source_paths": ["docs/superpowers/plans/2026-08-30-authority-key-atomic-creation.md", "src/environment/accountBoundKeyEnvelope.test.ts", "scripts/agent-system/metrics.mjs"]
+    },
+    {
+      "id": "hosted-assurance",
+      "classification": { "task_domain": "incident", "risk_tier": "critical", "run_type": "bounded_goal", "execution_mode": "single-agent", "profile_id": "incident-repair", "evidence_level": "exact-candidate", "reviewer_independence": "different_actor" },
+      "git": { "base": "373c80231f37a4cbe05bbca9b0ec3f720eb2d792", "tip": "a9fe40ff194177e9e46fd3d843e03d10349b4358", "merge": "26d1b909f4a64a8ba8aa836ffef07139c078b60d", "commit_count": 9, "files_changed": 39, "insertions": 1159, "deletions": 109 },
+      "pull_request": { "number": 21, "url": "https://github.com/ChopDotHQ/ChopDot/pull/21", "created_at": "2026-08-31T10:06:53Z", "merged_at": "2026-08-31T13:46:40Z" },
+      "time": { "first_commit_at": "2026-08-31T09:38:53Z", "merge_at": "2026-08-31T13:46:40Z", "first_commit_to_merge_seconds": 14867, "pr_open_to_merge_seconds": 13187 },
+      "tools": { "count": null, "status": "unavailable", "reason": "The package predates TaskRouteV1 and did not record agent tool calls." },
+      "artifacts": [
+        { "id": "focused-hosted", "passed": 54, "failed": 0 },
+        { "id": "workflow-validator", "passed": 483, "failed": 0 },
+        { "id": "browser", "passed": 90, "failed": 0 },
+        { "id": "browser-evidence-files", "passed": 156, "failed": 0 }
+      ],
+      "interruptions": { "count": null, "status": "unavailable", "reason": "Multiple rejected candidates are evidenced, but no standardized agent interruption telemetry was recorded." },
+      "defects": ["Writer inventory initially omitted tracked rewrites.", "GitHub job-environment syntax failed hosted parsing.", "An alternate binding parser gap was repaired.", "Five stale Cockpit hashes were repaired.", "An asynchronous persistence race was repaired.", "Two browser readiness defects were repaired.", "Exact-head evidence initially dirtied the checkout.", "A post-clean step bypass was rejected.", "An append-write-inside-clean-step bypass was rejected."],
+      "source_paths": ["docs/superpowers/plans/2026-08-30-hosted-assurance-closure.md", ".github/workflows/agent-governance.yml", "scripts/agent-governance/validate-workflow.mjs"]
+    }
+  ]
+}

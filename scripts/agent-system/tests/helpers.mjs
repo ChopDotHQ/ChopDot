@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
+import { cp, mkdtemp, mkdir, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -17,6 +17,11 @@ export async function fixtureRoot() {
   await writeFile(path.join(root, 'scripts', 'agent-system', 'fixture.mjs'), 'export const fixture = true;\n', 'utf8');
   await writeFile(path.join(root, '.knowns', 'tasks'), 'generated tasks\n', 'utf8');
   await writeFile(path.join(root, '.gitignore'), 'runs/\n', 'utf8');
+  const governanceSource = path.resolve('governance', 'agent-system');
+  const governanceTarget = path.join(root, 'governance', 'agent-system');
+  await mkdir(governanceTarget, { recursive: true });
+  await cp(path.join(governanceSource, 'loops'), path.join(governanceTarget, 'loops'), { recursive: true });
+  await cp(path.join(governanceSource, 'policies'), path.join(governanceTarget, 'policies'), { recursive: true });
   execFileSync('git', ['init', '-b', 'codex/test'], { cwd: root, stdio: 'ignore' });
   execFileSync('git', ['config', 'user.email', 'agent-system@example.invalid'], { cwd: root });
   execFileSync('git', ['config', 'user.name', 'Agent System Fixture'], { cwd: root });

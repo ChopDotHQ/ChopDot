@@ -22,6 +22,7 @@ import { createRepoGraphAdapter } from './adapters/repo-graph.mjs';
 import { createKgv2Adapter } from './adapters/kgv2.mjs';
 import { createMockKgv3Adapter } from './adapters/mock-kgv3.mjs';
 import { runKnowledgeAdapterConformance, validateKnowledgeContext, validateKnowledgeRecall } from './adapters/port.mjs';
+import { observeRouteScope, routeExecutionMode, routeTask, validateTaskRoute } from './router.mjs';
 
 function parseArguments(argv) {
   const [command, ...rest] = argv;
@@ -72,13 +73,21 @@ Usage: node scripts/agent-system/cli.mjs <command> [options]
 
 Core commands:
   validate --contract FILE [--expected-root ROOT]
+  route --output FILE --task-domain DOMAIN --expected-outcome TEXT
+    [--run-type turn|bounded_goal|time_based|proactive]
+    [--execution-mode deterministic|single-agent|parallel-workers|orchestrator-workers|evaluator-optimizer]
+    [--risk-tier low|moderate|critical] [--critical-topics A,B]
+    [--skills A,B] [--observed-skills A,B] [--user-facing]
+    [--requested-mutation] [--external-write]
+    [--effect-class CLASS] [--effect-types A,B] [--approval-ref-json JSON]
+    [--failure-signals A,B] [--budget-json JSON] [--input FILE]
   contract-new --output FILE --root ROOT --run-id run_<id>
     --branch NAME --starting-head SHA --starting-tree SHA
     [--created-by ACTOR_ID --created-by-kind human|agent|deterministic_runner|external_system]
     [--intent-type TYPE] [--requirements A,B] [--in-paths A,B]
     [--out-paths A,B] [--allowed-writes A,B]
     [--deterministic-commands "node --test file,npm run check"]
-    [--from TEMPLATE]
+    [--from TEMPLATE] [--route RECEIPT] [--source-path REPO_PATH]
   run-start --contract FILE [--runs-root DIR]
   run-resume|run-status|run-cancel --run-dir DIR
   run-terminate --run-dir DIR --state blocked|approval_required|budget_exhausted|cancelled|failed_verification [--details-json JSON]
@@ -113,7 +122,12 @@ function requireOption(options, name) {
   return options[name];
 }
 
-async function contractForRun(runDirectory) { return readJson(path.join(runDirectory, 'contract.json')); }
+async function contractForRun(runDirectory) {
+  const contract = await readJson(path.join(runDirectory, 'contract.json'));
+  const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+  if (!snapshot.contract_digest || snapshot.contract_digest !== digestContract(contract)) throw new Error('Persisted run contract differs from the immutable declared contract digest');
+  return contract;
+}
 
 function gitIdentity(root) {
   const run = (args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
@@ -161,6 +175,37 @@ export async function main(argv = process.argv.slice(2)) {
       if (!result.valid) exitCode = 1;
       break;
     }
+    case 'route': {
+      const output = path.resolve(requireOption(options, 'output'));
+      const supplied = options.input ? await readJson(path.resolve(options.input)) : {};
+      const input = {
+        ...supplied,
+        taskDomain: options.task_domain ?? supplied.taskDomain,
+        expectedOutcome: options.expected_outcome ?? supplied.expectedOutcome,
+        runType: options.run_type ?? supplied.runType,
+        executionMode: options.execution_mode ?? supplied.executionMode,
+        riskTier: options.risk_tier ?? supplied.riskTier,
+        criticalTopics: options.critical_topics ? commaList(options.critical_topics) : supplied.criticalTopics,
+        skillIds: options.skills ? commaList(options.skills) : supplied.skillIds,
+        observedSkillIds: options.observed_skills ? commaList(options.observed_skills) : supplied.observedSkillIds,
+        failureSignals: options.failure_signals ? commaList(options.failure_signals) : supplied.failureSignals,
+        userFacing: options.user_facing === undefined ? supplied.userFacing : bool(options.user_facing),
+        requestedMutation: options.requested_mutation === undefined ? supplied.requestedMutation : bool(options.requested_mutation),
+        externalWrite: options.external_write === undefined ? supplied.externalWrite : bool(options.external_write),
+        effectClass: options.effect_class ?? supplied.effectClass,
+        effectTypes: options.effect_types ? commaList(options.effect_types) : supplied.effectTypes,
+        approvalRef: options.approval_ref_json ? jsonOption(options.approval_ref_json) : supplied.approvalRef,
+        contextTransportOk: options.context_transport_ok === undefined ? supplied.contextTransportOk : bool(options.context_transport_ok),
+        contextFactCount: options.context_fact_count === undefined ? supplied.contextFactCount : Number(options.context_fact_count),
+        hostParserRequired: options.host_parser_required === undefined ? supplied.hostParserRequired : bool(options.host_parser_required),
+        budget: options.budget_json ? jsonOption(options.budget_json) : supplied.budget,
+      };
+      const route = routeTask(input, { root });
+      if (!bool(options.dry_run)) await writeJsonAtomic(output, route);
+      result = { root, output, dry_run: bool(options.dry_run), route };
+      if (route.verdict !== 'routed') exitCode = route.verdict === 'approval_required' ? 2 : 1;
+      break;
+    }
     case 'contract-new': {
       const output = path.resolve(requireOption(options, 'output'));
       const hasCreatorId = options.created_by !== undefined;
@@ -171,7 +216,23 @@ export async function main(argv = process.argv.slice(2)) {
       }
       const creator = hasCreatorId ? { id: String(options.created_by), kind: String(options.created_by_kind) } : null;
       let contract;
+      let route = null;
+      let routePath = null;
+      if (options.route) {
+        if (options.loop_profile || options.intent_type || options.objective) throw new Error('--route cannot be combined with --loop-profile, --intent-type, or --objective');
+        const forbiddenRouteOverrides = ['allowed_writes', 'branch', 'starting_head', 'starting_tree'];
+        const suppliedOverrides = forbiddenRouteOverrides.filter((name) => options[name] !== undefined);
+        if (suppliedOverrides.length) throw new Error(`--route cannot be combined with route-authority overrides: ${suppliedOverrides.map((name) => `--${name.replaceAll('_', '-')}`).join(', ')}`);
+        routePath = path.resolve(options.route);
+        const relativeRoutePath = path.relative(root, routePath);
+        if (!relativeRoutePath || relativeRoutePath.startsWith('..') || path.isAbsolute(relativeRoutePath)) throw new Error('--route must be a file inside the exact root');
+        route = await readJson(routePath);
+        const routeValidation = validateTaskRoute(route, { expectedRoot: root, expectedScope: observeRouteScope(root), requireRouted: true });
+        if (!routeValidation.valid) throw new Error(`Route receipt is not accepted: ${routeValidation.issues.map((entry) => `${entry.path}: ${entry.message}`).join('; ')}`);
+        routePath = relativeRoutePath;
+      }
       if (options.from) {
+        if (route) throw new Error('--route cannot be combined with --from');
         contract = await readJson(path.resolve(options.from));
         contract = {
           ...contract,
@@ -190,20 +251,25 @@ export async function main(argv = process.argv.slice(2)) {
         contract = createContract({
           root,
           runId: options.run_id,
-          loopProfile: options.loop_profile,
+          loopProfile: route?.selection.profile_id ?? options.loop_profile,
+          taskRoute: route,
+          taskRoutePath: routePath,
+          routeExecutionMode: route ? routeExecutionMode(route) : undefined,
+          sourcePath: options.source_path,
           task: options.task,
-          objective: options.objective,
+          objective: options.objective ?? route?.expected_outcome,
           deliverable: options.deliverable,
           ...(creator ? { createdBy: creator } : {}),
           intentType: options.intent_type,
           requirementIds: commaList(options.requirements).length ? commaList(options.requirements) : undefined,
           inPaths: commaList(options.in_paths).length ? commaList(options.in_paths) : undefined,
           outPaths: commaList(options.out_paths),
-          allowedWrites: commaList(options.allowed_writes),
+          allowedWrites: route ? undefined : commaList(options.allowed_writes),
           deterministicCommands: commands,
-          branch: options.branch,
-          startingHead: options.starting_head,
-          startingTree: options.starting_tree,
+          branch: route?.scope.branch ?? options.branch,
+          startingHead: route?.scope.head ?? options.starting_head,
+          startingTree: route?.scope.tree ?? options.starting_tree,
+          dirtyPaths: route?.scope.dirty_paths,
         });
       }
       const validation = validateAgentContract(contract, { expectedRoot: root });
@@ -297,8 +363,9 @@ export async function main(argv = process.argv.slice(2)) {
       const contract = await contractForRun(runDirectory);
       const effect = {
         requirement_id: requireOption(options, 'requirement'), effect_type: requireOption(options, 'effect_type'), target: requireOption(options, 'target'),
-        intended_payload: jsonOption(options.payload_json), expected_change: requireOption(options, 'expected_change'), risk: options.risk ?? 'low',
-        approval_required: bool(options.approval_required), approval_id: options.approval_id, approval_expires_at: options.approval_expires_at,
+        intended_payload: jsonOption(options.payload_json), expected_change: requireOption(options, 'expected_change'),
+        ...(options.risk !== undefined ? { risk: options.risk } : {}),
+        ...(options.approval_required !== undefined ? { approval_required: bool(options.approval_required) } : {}), approval_id: options.approval_id, approval_expires_at: options.approval_expires_at,
         recovery_strategy: options.recovery_strategy ?? 'forward_repair', actor: options.actor,
       };
       if (bool(options.dry_run)) result = { root, run_id: contract.run_id, proposed_effect: effect, dry_run: true };

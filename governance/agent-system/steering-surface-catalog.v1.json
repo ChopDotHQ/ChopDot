@@ -34,15 +34,15 @@
       "proof/",
       "scripts/"
     ],
-    "repository_file_count": 709,
-    "repository_manifest_sha256": "9b2881230dcd4579a535cabbea4ed4e3b0ef3d311923a285604f44b6cd64dff4"
+    "repository_file_count": 717,
+    "repository_manifest_sha256": "cd43efdc7a0d87b493d1593415a6f4588683616a2b888f90466721e28a794982"
   },
   "lifecycle_summary": {
-    "active": 242,
+    "active": 249,
     "candidate": 0,
     "degraded": 52,
     "deprecated": 0,
-    "historical": 415,
+    "historical": 416,
     "quarantined": 0,
     "retired": 0,
     "superseded": 0
@@ -83,7 +83,7 @@
         "retry_exit": "Repair the candidate or evaluator and rerun the same versioned case."
       },
       "file_count": 8,
-      "manifest_sha256": "56388ea341278c1be9b1e18c6cd557bbfe319b1eed49889ee044846050a33ba4"
+      "manifest_sha256": "fa82e2b2f76c68a772b85326043c73ff1cbeebcfb8c9a0d0660053acdb9c3f4a"
     },
     {
       "id": "agent-governance-runtime",
@@ -121,7 +121,7 @@
         "retry_exit": "Repair or explicitly change lifecycle through reviewed source, regenerate, and recheck."
       },
       "file_count": 30,
-      "manifest_sha256": "fe0f40ed9209372d2cc90a9fa4d1f8fa72ac5f2017e14a16424d0c49bf9b15b8"
+      "manifest_sha256": "3bc7f1929883ec0dddfc60e35c34b8ca17b3a3fa5405df616897e8c56d68b104"
     },
     {
       "id": "agent-policies-and-foundation",
@@ -162,8 +162,8 @@
         "failure": "Fail closed on conflicting process authority, dangling references, or unsupported lifecycle state.",
         "retry_exit": "Reconcile at the accountable policy owner and rerun all dependent validations."
       },
-      "file_count": 9,
-      "manifest_sha256": "6bb5afda8ffcbbe427aef965306c9f4e508f246c7b789d6b265eedd600a05da9"
+      "file_count": 10,
+      "manifest_sha256": "fa044bbc3e97aca0ce2248fb7e39cbb7c5193a6d6c487904fc4408de8f95adbd"
     },
     {
       "id": "agent-system-runtime",
@@ -200,8 +200,8 @@
         "failure": "Return a non-success terminal state and preserve a resumable evidence packet.",
         "retry_exit": "Repair with a changed hypothesis and rerun focused plus core regression suites."
       },
-      "file_count": 38,
-      "manifest_sha256": "39db537172f403c90144162ffad97c878294ac8cf10af885dd1c5bf11806f7f5"
+      "file_count": 41,
+      "manifest_sha256": "695e927510853811a98865e9516be3b780c136dd70c9c2f6c2c8c9d2dd9fb5f7"
     },
     {
       "id": "architecture-decisions",
@@ -238,7 +238,7 @@
         "retry_exit": "Record or supersede the decision through the architecture owner and update dependents."
       },
       "file_count": 6,
-      "manifest_sha256": "c655d48db90d88c8252dbd9f769d1e2e48e3a709e8212013311357b4682a6944"
+      "manifest_sha256": "79dfb5edd75893720e24f59828b9f03c442ea8f7a18213945cca4956245ff811"
     },
     {
       "id": "definition-frameworks",
@@ -389,8 +389,8 @@
         "failure": "Treat ambiguous historical material as non-authoritative and require current-source confirmation.",
         "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog."
       },
-      "file_count": 58,
-      "manifest_sha256": "ecead2766af8f52706c07fc433df5497b9e2acf64c47abd9fa9c6407772c86d4"
+      "file_count": 59,
+      "manifest_sha256": "43dc381394e3c3d56d0ba97867d62bb4c42c26183845c20a45e0aa36d3890ade"
     },
     {
       "id": "knowledge-and-wiki-sources",
@@ -556,7 +556,7 @@
         "retry_exit": "Update source documentation after behavior is accepted, then rerun links and monitor checks."
       },
       "file_count": 8,
-      "manifest_sha256": "5dd0d6f9f0eea23227816d1b8cc24471a9b76158b06ff65676c36e5f4c38ede4"
+      "manifest_sha256": "8d36e568848c8ef3891e71f96fe72eb8f2ec94fbd730d49166e23b82cc2a38d7"
     },
     {
       "id": "portable-agent-contracts",
@@ -591,8 +591,8 @@
         "failure": "Reject malformed, unknown-version, or semantically inconsistent artifacts.",
         "retry_exit": "Repair the artifact or versioned schema without weakening accepted invariants."
       },
-      "file_count": 27,
-      "manifest_sha256": "6ac14701ec9447050f06834ed3fdc9976e090d4e56f11c81bb21916d98c75424"
+      "file_count": 30,
+      "manifest_sha256": "0b5e9b4de51f04a52a327c0e6d2615babbf97a2f4e2c2d32fe039dc3145d4d32"
     },
     {
       "id": "portable-agent-loops",
@@ -630,7 +630,7 @@
         "retry_exit": "Retry only with a changed hypothesis inside the declared budget."
       },
       "file_count": 14,
-      "manifest_sha256": "6f197602235a3e68abeb4aedd58e43ba8a32aa1b495a1a9d58b5a3c42950803e"
+      "manifest_sha256": "c66294cb68ae40c86d0f5ee7dc5cbd72562275d03b4e01e3e508e633ca352aa9"
     },
     {
       "id": "product-context-and-history",
@@ -670,7 +670,7 @@
         "retry_exit": "Refresh from canonical sources or record the blocker; never substitute uncited recall."
       },
       "file_count": 7,
-      "manifest_sha256": "460dc0e2439425db1cb6f9047d3b7f3702db7b20abe48646a7d962338b1b64d3"
+      "manifest_sha256": "f1f74f83b5fd433beef42d844d30ed8a5c7045292ac4ae1b9a41f41a41839131"
     },
     {
       "id": "product-decisions",
@@ -870,7 +870,7 @@
         "retry_exit": "Repair the candidate, range, source, or enforcement wiring and re-run local preflight plus hosted workflow validation."
       },
       "file_count": 7,
-      "manifest_sha256": "4437cd66749c2f406ae24b987ec7bce4b356735074ca8f8a11e0d1f06d0ad957"
+      "manifest_sha256": "dbd3c6e74f3b80670874b85499e0a6b6f12bed9c2fa206a92c9516db1b929b0a"
     },
     {
       "id": "repository-entrypoints",
@@ -1884,8 +1884,8 @@
     {
       "surface_id": "repo-docs-adr-0005-portable-agent-outcome-system-md",
       "path": "docs/adr/0005-portable-agent-outcome-system.md",
-      "sha256": "af5241be3436cdccbda1ca676a2b5c5a749e8bbdf235ce9fb18dd402c95d477e",
-      "bytes": 10768,
+      "sha256": "a742b30a622014bb4ede9ff45ace4d823932d0bf62ecf91ef963458145900db3",
+      "bytes": 13057,
       "group_id": "architecture-decisions",
       "surface_kind": "decision_source",
       "control_kind": "none",
@@ -1954,8 +1954,8 @@
     {
       "surface_id": "repo-docs-agent-system-migration-and-adoption-md",
       "path": "docs/agent-system/MIGRATION_AND_ADOPTION.md",
-      "sha256": "4be18b56a6c2aaf7b86450942b381867ed466978a97a148b6581aad835ea8a33",
-      "bytes": 8893,
+      "sha256": "0805ba7a01953b2340b876553279e8e4f7ae3ffe0ac166d945db9e93e032da2d",
+      "bytes": 10670,
       "group_id": "operating-documentation",
       "surface_kind": "method",
       "control_kind": "none",
@@ -2026,6 +2026,20 @@
       "path": "docs/evidence/agent-pilots/2026-08-27-research-product-definition.md",
       "sha256": "661f2b3b783b3ca8ad880f09c8ae624cdbd8f462b0f469425ba53191a7574bc7",
       "bytes": 6054,
+      "group_id": "historical-plans-and-investigations",
+      "surface_kind": "historical_evidence",
+      "control_kind": "none",
+      "domain": "history",
+      "influence_class": "supporting_technique",
+      "lifecycle": "historical",
+      "activation_mode": "explicit_only",
+      "accountable_owner": "repository owner"
+    },
+    {
+      "surface_id": "repo-docs-evidence-agent-pilots-2026-08-31-task-route-replays-v1-json",
+      "path": "docs/evidence/agent-pilots/2026-08-31-task-route-replays.v1.json",
+      "sha256": "c964253ec67ecdf2dca5f8277b0dfc0cebcc69d067b182d7f143a68d462101cd",
+      "bytes": 6931,
       "group_id": "historical-plans-and-investigations",
       "surface_kind": "historical_evidence",
       "control_kind": "none",
@@ -3214,8 +3228,8 @@
     {
       "surface_id": "repo-governance-agent-system-readme-md",
       "path": "governance/agent-system/README.md",
-      "sha256": "4a0b613eb62bdf188c3435a9e54c8e78cfdcec282a6eec04288a8f081c0ea647",
-      "bytes": 19323,
+      "sha256": "e81c2a6c67f8bddf27508ab7b4238d9b5831fef0d35deffc9be588721124d410",
+      "bytes": 22746,
       "group_id": "agent-policies-and-foundation",
       "surface_kind": "policy",
       "control_kind": "gate",
@@ -3242,8 +3256,8 @@
     {
       "surface_id": "repo-governance-agent-system-contracts-agent-loop-contract-v1-schema-json",
       "path": "governance/agent-system/contracts/agent-loop-contract.v1.schema.json",
-      "sha256": "608244de45368231f9c8a1fc856dfda258534ba60e2f33bf1a09a3d1a5e40835",
-      "bytes": 12947,
+      "sha256": "51e97e256cefe6528b24210f3861cf4d1a24c4878952d9a3d8eb9fa8b0060f6e",
+      "bytes": 16040,
       "group_id": "portable-agent-contracts",
       "surface_kind": "contract_schema",
       "control_kind": "gate",
@@ -3548,6 +3562,20 @@
       "accountable_owner": "agent-systems integrator"
     },
     {
+      "surface_id": "repo-governance-agent-system-contracts-package-replay-v1-schema-json",
+      "path": "governance/agent-system/contracts/package-replay.v1.schema.json",
+      "sha256": "dc9fd9f8faf73dd2aefc5e2ef87635d7f8629c619d2d4a4d39befbcd6ed5ceeb",
+      "bytes": 5233,
+      "group_id": "portable-agent-contracts",
+      "surface_kind": "contract_schema",
+      "control_kind": "gate",
+      "domain": "generic",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "dependency_only",
+      "accountable_owner": "agent-systems integrator"
+    },
+    {
       "surface_id": "repo-governance-agent-system-contracts-repair-directive-v1-schema-json",
       "path": "governance/agent-system/contracts/repair-directive.v1.schema.json",
       "sha256": "7a6319f888faca70f068724967dcba15d54f94e11822e9eda451b2fe9fd47213",
@@ -3594,6 +3622,34 @@
       "path": "governance/agent-system/contracts/steering-surface-registry.v1.schema.json",
       "sha256": "1d09e043b0428083c649ec1aa6a529e3ff0e5993db28651996f0d0c709faafd0",
       "bytes": 9734,
+      "group_id": "portable-agent-contracts",
+      "surface_kind": "contract_schema",
+      "control_kind": "gate",
+      "domain": "generic",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "dependency_only",
+      "accountable_owner": "agent-systems integrator"
+    },
+    {
+      "surface_id": "repo-governance-agent-system-contracts-task-route-v1-schema-json",
+      "path": "governance/agent-system/contracts/task-route.v1.schema.json",
+      "sha256": "05af1cf9d89f283905dd87c08aeb7e080f7f7ede4308436536362789bd7798fb",
+      "bytes": 7640,
+      "group_id": "portable-agent-contracts",
+      "surface_kind": "contract_schema",
+      "control_kind": "gate",
+      "domain": "generic",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "dependency_only",
+      "accountable_owner": "agent-systems integrator"
+    },
+    {
+      "surface_id": "repo-governance-agent-system-contracts-task-routing-policy-v1-schema-json",
+      "path": "governance/agent-system/contracts/task-routing-policy.v1.schema.json",
+      "sha256": "96aa498bdf79d47cedb2d98d91e3927d2da86ed06ca4c6ed9da8a4557c505471",
+      "bytes": 3138,
       "group_id": "portable-agent-contracts",
       "surface_kind": "contract_schema",
       "control_kind": "gate",
@@ -3704,8 +3760,8 @@
     {
       "surface_id": "repo-governance-agent-system-evals-suites-core-v1-json",
       "path": "governance/agent-system/evals/suites/core.v1.json",
-      "sha256": "91b9f168ce2af05212c424815caf2daa5a5e760279e64218f0493c58afda51bf",
-      "bytes": 1967,
+      "sha256": "2e571b7597a047196b4f116cd3dcd9a14d63355de3e9c362ced26f0606bb1efe",
+      "bytes": 3904,
       "group_id": "agent-evaluation-system",
       "surface_kind": "rubric",
       "control_kind": "evaluation_flywheel",
@@ -3774,8 +3830,8 @@
     {
       "surface_id": "repo-governance-agent-system-loops-examples-incident-repair-contract-v1-json",
       "path": "governance/agent-system/loops/examples/incident-repair.contract.v1.json",
-      "sha256": "9955136d0faa272bec9a13f0868ad1f54ef30eac3c25d119b8125b47b75a172e",
-      "bytes": 5486,
+      "sha256": "fcd93265756fbaf421b0299ceea96428deb102fed2bfa3f2e9e85d45f05afd5f",
+      "bytes": 5436,
       "group_id": "portable-agent-loops",
       "surface_kind": "method",
       "control_kind": "profile",
@@ -3788,8 +3844,8 @@
     {
       "surface_id": "repo-governance-agent-system-loops-examples-product-definition-contract-v1-json",
       "path": "governance/agent-system/loops/examples/product-definition.contract.v1.json",
-      "sha256": "4c26ae05c275a8227878cf67e6e6a50fdaed5dc6daddb834d6b7ce45d9ee39cb",
-      "bytes": 10523,
+      "sha256": "0590faf7f633931eb73cecd08fa742ca886d1013cb9a42c71d1e89401a2efb44",
+      "bytes": 10457,
       "group_id": "portable-agent-loops",
       "surface_kind": "method",
       "control_kind": "profile",
@@ -3802,8 +3858,8 @@
     {
       "surface_id": "repo-governance-agent-system-loops-examples-release-outcome-contract-v1-json",
       "path": "governance/agent-system/loops/examples/release-outcome.contract.v1.json",
-      "sha256": "5da5b747f7706760c80d691494f770976d7fd915165bb7665fc132fc0f03d81a",
-      "bytes": 5678,
+      "sha256": "0e6242e6ec7051176611d31225330f85153ec9491b7f8c44fad9ec9c7d381371",
+      "bytes": 5677,
       "group_id": "portable-agent-loops",
       "surface_kind": "method",
       "control_kind": "profile",
@@ -3830,8 +3886,8 @@
     {
       "surface_id": "repo-governance-agent-system-loops-examples-security-authority-contract-v1-json",
       "path": "governance/agent-system/loops/examples/security-authority.contract.v1.json",
-      "sha256": "26cfb89c2a85967e1457060e8d80ecfcd2ea36cdaafb88a7164b6c0db278251d",
-      "bytes": 5253,
+      "sha256": "8e9019e562ebd797071d738cb2928de5c545fc1495d76c2569b151c3c94e3d6f",
+      "bytes": 5244,
       "group_id": "portable-agent-loops",
       "surface_kind": "method",
       "control_kind": "profile",
@@ -3844,8 +3900,8 @@
     {
       "surface_id": "repo-governance-agent-system-loops-examples-ux-creation-contract-v1-json",
       "path": "governance/agent-system/loops/examples/ux-creation.contract.v1.json",
-      "sha256": "581e404cbec2d854d0b3f0c62bfab1ef627f008ae0d798271de05849a0c618b8",
-      "bytes": 6836,
+      "sha256": "c5b0b597e25760e7e89cf7fb17adc3edd3ab843c4c52595325a69527e78c28d4",
+      "bytes": 6812,
       "group_id": "portable-agent-loops",
       "surface_kind": "method",
       "control_kind": "profile",
@@ -4010,6 +4066,20 @@
       "accountable_owner": "agent-systems integrator"
     },
     {
+      "surface_id": "repo-governance-agent-system-policies-task-routing-v1-json",
+      "path": "governance/agent-system/policies/task-routing.v1.json",
+      "sha256": "b95dbab554ea35dc09704f727683cd17de905b5d1c6adee5f9dcd1eecf9b11a3",
+      "bytes": 1988,
+      "group_id": "agent-policies-and-foundation",
+      "surface_kind": "policy",
+      "control_kind": "gate",
+      "domain": "agent_execution",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "dependency_only",
+      "accountable_owner": "agent-systems integrator"
+    },
+    {
       "surface_id": "repo-governance-agent-system-policies-terminal-states-json",
       "path": "governance/agent-system/policies/terminal-states.json",
       "sha256": "4ee2aab0c37f2d99fee9f4525fb73bf1b4ac27fe573e3ed7937c293270979a6a",
@@ -4110,8 +4180,8 @@
     {
       "surface_id": "repo-package-json",
       "path": "package.json",
-      "sha256": "f8f54c49cf77677527d70c1226c23322e14b26905229eb71b1e1ec600b9cb7e7",
-      "bytes": 13448,
+      "sha256": "29477e0fc9053d2b2893bdb17ced893737179c88420d7d79d5c3b15d4c7f7025",
+      "bytes": 13510,
       "group_id": "repository-enforcement",
       "surface_kind": "workflow",
       "control_kind": "pipeline",
@@ -4334,7 +4404,7 @@
     {
       "surface_id": "repo-product-context-authority-json",
       "path": "product/context-authority.json",
-      "sha256": "f66f1bc4d226e8c10703158b4cdc492d5b18313de12b294e5146fcb6222f73fe",
+      "sha256": "3b6864d30e108f6b2f6ed4a1c09d724927dfa9eedf6b1ecaabc97eb7a837df5c",
       "bytes": 13799,
       "group_id": "product-context-and-history",
       "surface_kind": "context_source",
@@ -9528,8 +9598,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-tests-adoption-guard-test-mjs",
       "path": "scripts/agent-governance/tests/adoption-guard.test.mjs",
-      "sha256": "b91c18f944f98e779e7fb92069618e940134af8604d08d74bd53f09646f7a645",
-      "bytes": 65463,
+      "sha256": "46bccf2cf47e748f236aedba62950ac8c6b6d906bdf05ef4e7d37b587617b415",
+      "bytes": 65624,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -9584,8 +9654,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-tests-pr-outcome-test-mjs",
       "path": "scripts/agent-governance/tests/pr-outcome.test.mjs",
-      "sha256": "ffb8fb5f5c6d6b932906d9e5388092da15201edbc649e0ff98b0771f9f74f33e",
-      "bytes": 19237,
+      "sha256": "2e60e2d52a9c89fa3665b73cbff95e49df9c4ff1132facce81344d895da24e1c",
+      "bytes": 19712,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -9878,8 +9948,8 @@
     {
       "surface_id": "repo-scripts-agent-system-cli-mjs",
       "path": "scripts/agent-system/cli.mjs",
-      "sha256": "8f3e78ae3f450abcc164c63215b46b52eb284a6f6bd1c5d993a36a5c8b0ddf28",
-      "bytes": 28716,
+      "sha256": "edef8c316bbc81666c48683b43efb5af35670899001270eeb602e5050f02b123",
+      "bytes": 34022,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -9906,8 +9976,8 @@
     {
       "surface_id": "repo-scripts-agent-system-contract-mjs",
       "path": "scripts/agent-system/contract.mjs",
-      "sha256": "df5b055cfde9565ac88f71e257d0943aea241a29b993a1b3f5464b5f551f78bb",
-      "bytes": 7686,
+      "sha256": "03a34fad645543757ccd33bb1c5ca5cc1b155d5ee78dfee32621e6e2cad4b206",
+      "bytes": 12247,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -9934,8 +10004,8 @@
     {
       "surface_id": "repo-scripts-agent-system-effects-mjs",
       "path": "scripts/agent-system/effects.mjs",
-      "sha256": "cccbf6b926e6a47caeebfddee596b97964e97aa391f9aa40a9426608fe1f88a4",
-      "bytes": 8937,
+      "sha256": "e128d14226be0ce2ec22ed6a5eb2071838288991ed54488f481aa7551bc9ffaa",
+      "bytes": 11687,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -9948,8 +10018,8 @@
     {
       "surface_id": "repo-scripts-agent-system-eval-runner-mjs",
       "path": "scripts/agent-system/eval-runner.mjs",
-      "sha256": "0b75e93389cad4377943e8e7f6250287829e15c9312bffca6f555492e79ae2e4",
-      "bytes": 2792,
+      "sha256": "87b6f859b2602a8c0efc4c82f87319ac0d4b64ab9c565d3725b8b3cb07fa7eb0",
+      "bytes": 3112,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10032,8 +10102,8 @@
     {
       "surface_id": "repo-scripts-agent-system-preflight-mjs",
       "path": "scripts/agent-system/preflight.mjs",
-      "sha256": "287878b8eb55dc1bd4529a3d82ce0b0c1630d229f7659cdd2e05f363d55d374c",
-      "bytes": 8336,
+      "sha256": "3240e1b8e9cc8bf7f20b16d31af6b826700ed872737f2135fba18f2440be4a0a",
+      "bytes": 13848,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10072,10 +10142,38 @@
       "accountable_owner": "agent-systems integrator"
     },
     {
+      "surface_id": "repo-scripts-agent-system-router-mjs",
+      "path": "scripts/agent-system/router.mjs",
+      "sha256": "3a32c7980f87ce2880bfc349335cf9b2558b0e84742e80cd1f36a291d33d1019",
+      "bytes": 26765,
+      "group_id": "agent-system-runtime",
+      "surface_kind": "executor",
+      "control_kind": "pipeline",
+      "domain": "agent_execution",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "routed",
+      "accountable_owner": "agent-systems integrator"
+    },
+    {
+      "surface_id": "repo-scripts-agent-system-routing-policy-mjs",
+      "path": "scripts/agent-system/routing-policy.mjs",
+      "sha256": "e5843a2f4a7a38286753fae55697e01fde7309c2dfbdfa972ede02b986fd6a30",
+      "bytes": 1572,
+      "group_id": "agent-system-runtime",
+      "surface_kind": "executor",
+      "control_kind": "pipeline",
+      "domain": "agent_execution",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "routed",
+      "accountable_owner": "agent-systems integrator"
+    },
+    {
       "surface_id": "repo-scripts-agent-system-runner-mjs",
       "path": "scripts/agent-system/runner.mjs",
-      "sha256": "793133f9c20462a5b75ff10c1094a614fdd1f6878c2f923986899b499c03b3b5",
-      "bytes": 5967,
+      "sha256": "4798fd0c83dc06f684a704fe1b760b34da522b48908cdf089236410a8d6266a1",
+      "bytes": 6236,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10088,8 +10186,8 @@
     {
       "surface_id": "repo-scripts-agent-system-schema-mjs",
       "path": "scripts/agent-system/schema.mjs",
-      "sha256": "b3f66df14f3e97a93b41500dd7045f041ec6812c7b5f4a62bbad6d018b9df352",
-      "bytes": 9988,
+      "sha256": "797fddbea45b40bd11cbe307609bedfe7ec9d5eb82be4a1ccf8312994eb67731",
+      "bytes": 10168,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10158,8 +10256,8 @@
     {
       "surface_id": "repo-scripts-agent-system-tests-effects-approvals-test-mjs",
       "path": "scripts/agent-system/tests/effects-approvals.test.mjs",
-      "sha256": "24016184f6db9497d8fa163520def4ce22909fa04f3cdd1615036b7ba8dff6f5",
-      "bytes": 7674,
+      "sha256": "6fff1348d077206e68d7abcf48eda221fdf957d219f4f1dfcc9a02a71af17a50",
+      "bytes": 9232,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10200,8 +10298,8 @@
     {
       "surface_id": "repo-scripts-agent-system-tests-helpers-mjs",
       "path": "scripts/agent-system/tests/helpers.mjs",
-      "sha256": "546153557119525dcd38fbd60d5f39bc82ef22663684ab17fb39728476c02752",
-      "bytes": 7040,
+      "sha256": "57acf353cacf605bafa86739b58822cd99d4b4dfe0f89e03793838419bb2403e",
+      "bytes": 7467,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -10254,10 +10352,24 @@
       "accountable_owner": "agent-systems integrator"
     },
     {
+      "surface_id": "repo-scripts-agent-system-tests-router-test-mjs",
+      "path": "scripts/agent-system/tests/router.test.mjs",
+      "sha256": "9cca3eddd24a36bc28c9ad5b2452b0cb56a5cc390f597c1e5e2d475fb9f78440",
+      "bytes": 30630,
+      "group_id": "agent-system-runtime",
+      "surface_kind": "executor",
+      "control_kind": "pipeline",
+      "domain": "agent_execution",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "routed",
+      "accountable_owner": "agent-systems integrator"
+    },
+    {
       "surface_id": "repo-scripts-agent-system-validate-mjs",
       "path": "scripts/agent-system/validate.mjs",
-      "sha256": "71ddc90b00e7ae7bc1f5496b80973ab6ecefa6ee48cbdb4be2e1989a28e5952e",
-      "bytes": 24059,
+      "sha256": "4d33f67cf5c0b810d2b52ee6855764b9cb31fbaad43bf9b4a43100a1c8ebffeb",
+      "bytes": 25504,
       "group_id": "agent-system-runtime",
       "surface_kind": "executor",
       "control_kind": "pipeline",
@@ -14203,5 +14315,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "181694ed43e24b9b04a638ecde24ed99bd905c2f11f49e868f16d0a5222ff8f6"
+  "catalog_digest": "c5c218889a779f5c56fa943a26899b21c00c297e9ecdbe73ae3157180862c9f9"
 }

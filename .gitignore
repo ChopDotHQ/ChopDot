@@ -18,6 +18,8 @@ output/working_memory/
 # observations, and unreconciled effects. Only separately redacted and promoted
 # outcome packets under artifacts/agentops/outcomes may become repo evidence.
 output/agent-runs/
+output/agent-routes/
+output/agent-contracts/
 
 # Local screenshot review is summarized with hashes in committed acceptance
 # reports. The raw captures are regenerated per viewport and remain local.

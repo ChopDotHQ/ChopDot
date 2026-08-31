@@ -66,6 +66,42 @@
         "budgets": {},
         "terminal_states": []
       }
+    },
+    {
+      "id": "routing-rejects-universal-receipt-first-action",
+      "kind": "task_routing",
+      "expected_verdict": "blocked",
+      "input": { "taskDomain": "product-definition", "expectedOutcome": "Define one bounded product decision with evidence.", "failureSignals": ["universal-product-action"] }
+    },
+    {
+      "id": "routing-rejects-contributor-as-required-authority",
+      "kind": "task_routing",
+      "expected_verdict": "blocked",
+      "input": { "taskDomain": "security-authority", "expectedOutcome": "Preserve contributor and project authority separation.", "failureSignals": ["named-contributor-required"] }
+    },
+    {
+      "id": "routing-does-not-confuse-kg-transport-with-context",
+      "kind": "task_routing",
+      "expected_verdict": "unverified",
+      "input": { "taskDomain": "research", "expectedOutcome": "Return populated cited context for the exact root.", "contextTransportOk": true, "contextFactCount": 0 }
+    },
+    {
+      "id": "routing-rejects-disabled-skill-acceptance",
+      "kind": "task_routing",
+      "expected_verdict": "blocked",
+      "input": { "taskDomain": "implementation", "expectedOutcome": "Implement with repository-approved methods only.", "skillIds": ["skill-chopdot-engineering-judgment"] }
+    },
+    {
+      "id": "routing-requires-host-parser-proof",
+      "kind": "task_routing",
+      "expected_verdict": "routed",
+      "input": { "taskDomain": "incident", "expectedOutcome": "Repair the hosted workflow parser failure at exact head.", "hostParserRequired": true, "requestedMutation": false }
+    },
+    {
+      "id": "routing-rejects-governance-without-visible-product-checkpoint",
+      "kind": "task_routing",
+      "expected_verdict": "blocked",
+      "input": { "taskDomain": "ux", "expectedOutcome": "Show a visible product checkpoint before governance acceptance.", "userFacing": true, "failureSignals": ["missing-visible-product-checkpoint"] }
     }
   ]
 }

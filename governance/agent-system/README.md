@@ -1,10 +1,10 @@
 # ChopDot portable agent outcome system
 
 **Kind:** operating architecture
-**Status:** Wave 0 taxonomy accepted; executable system not yet complete
+**Status:** executable router and outcome system implemented locally; remote adoption remains evidence-gated
 **Owner:** agent-systems integrator
 **Independent assurance owner:** product assurance
-**Last reviewed:** 2026-08-26
+**Last reviewed:** 2026-08-31
 **Authority:** process and provenance only; never product law, participant
 authority, product priority, or release proof
 
@@ -135,6 +135,7 @@ changes, never monitor side effects:
 
 ```text
 operator intent
+  -> TaskRouteV1 admission receipt
   -> Context Preflight Gate
   -> AgentLoopContractV1
   -> specialized Agent Loop
@@ -154,6 +155,57 @@ The classification rules are machine-readable in `taxonomy.json`:
 | Pipeline | an ordered identity transition | every stage preserves exact input/output identity and readback |
 | Adapter | a stable port implementation | conformance tests pass without core semantic changes |
 | Evaluation Flywheel | versioned regression cases | the case reproduces and is included in a named suite |
+
+`TaskRouteV1` is an admission receipt, not a sixth taxonomy type. Run it with:
+
+```bash
+npm run agent:route -- \
+  --output output/agent-routes/<route-id>.json \
+  --task-domain implementation \
+  --expected-outcome "Produce the bounded verified implementation outcome."
+
+npm run agent:contract:new -- \
+  --route output/agent-routes/<route-id>.json \
+  --output output/agent-contracts/<run-id>.json \
+  --run-id <run-id>
+```
+
+`contract-new --route` rejects non-`routed`, stale, wrong-root, or
+digest-invalid receipts and forbids a second `--loop-profile` choice. Run
+preflight reopens the receipt and compares its digest, candidate identity,
+profile, execution mode, agents, skills, expected outcome, evidence gates,
+authority boundary, effect types, and budgets with the contract binding.
+The runtime also compares `contract.json` with the immutable declared digest
+before it plans or dispatches an effect.
+
+| Risk | Default execution | Minimum route proof | Additional boundary |
+|---|---|---|---|
+| low | deterministic turn | source or unit | independent review only when the selected profile requires it |
+| moderate | bounded single-agent package | focused plus integration | screenshots for user-facing work |
+| critical | bounded owner plus separate evaluator | exact candidate | approval and readback for mutation or external effect |
+
+The route uses provider-neutral roles (`task-owner`, `independent-evaluator`,
+and bounded worker roles). It never hard-codes a contributor or username as
+project authority. Skill eligibility comes from the active steering registry;
+disabled, quarantined, degraded, or merely platform-injected skills cannot be
+selected for acceptance.
+
+For a mutation requiring prior operator authority, the route accepts only a
+digest-bound `approval_ref` with human actor, exact root, effect class, source
+message/envelope, candidate HEAD/tree, purpose, exact effect types, and expiry.
+This is a structured operator attestation: TaskRouteV1 does not authenticate
+the claimed human identity or evidence reference, so it is not cryptographic or
+independently verified person proof. External effects still require a separate
+run-ledger approval record and verified readback. Repository effects
+(`commit`, `push`, `pr_create`, `pr_update`) and public/testnet effects are
+explicitly selected; a profile template cannot silently grant them.
+
+Routed evidence fields become hard contract assertions. This prevents their
+silent omission, while the current generic measurement artifact proves
+candidate binding and required evidence fields—not semantic authorship of a
+screenshot or production-entrypoint run. Typed media and journey predicates
+remain an evaluator responsibility; do not overclaim a status string as visual
+or live-user proof.
 
 ## Supported Agent Loops
 
@@ -256,6 +308,7 @@ readback. It does not claim arbitrary external side effects are exactly once.
 |---|---|
 | `docs/CHOPDOT_OPERATING_LOOPS.md` context loop | Context Preflight Gate |
 | agent execution contract prose | `AgentLoopContractV1` |
+| unstructured task/process choice | `TaskRouteV1`, then `AgentLoopContractV1` |
 | product package loop | Product Portfolio Judgment, then Product Definition, Implementation, and UX Loop composition |
 | live failure loop | Incident Repair Agent Loop |
 | release loop | Release Outcome Pipeline |
@@ -358,7 +411,7 @@ environment plus the release-enforcement workflow and external readback.
 ## Implementation status
 
 Source implementation and local verification are separate from remote
-adoption. The runner, contracts, profiles, evaluators, knowledge adapters,
+adoption. The router, runner, contracts, profiles, evaluators, knowledge adapters,
 Cockpit integration, workflow validation, and adoption guard exist in this
 worktree. They become remotely enforced only when the accepted commit is pushed
 and the protected required checks/ruleset are read back against that commit.
@@ -368,3 +421,11 @@ governed receipts and escaped-drift cases enter the evaluation suite.
 Never infer `branch_protected`, `ci_enforced`, `adopted`, `kg_known`, or any
 product/release verdict from these source files alone. Cite the current command,
 workflow run, ruleset readback, and exact outcome evidence.
+
+The Phase 1 replay at
+`docs/evidence/agent-pilots/2026-08-31-task-route-replays.v1.json` records 37
+storage directories, 27 run-named directories, but only 26 contract run IDs
+and 26 complete top-level ledgers. Home, authority-key repair, and hosted assurance are classified
+retrospectively with Git/PR duration, artifact counts, and confirmed defects.
+Tool-call and interruption counts remain explicitly unavailable because those
+packages predate native route telemetry; they are not inferred.

@@ -6,7 +6,7 @@
 
 **Owner:** agent-systems integrator
 
-**Last reviewed:** 2026-08-26
+**Last reviewed:** 2026-08-31
 
 **Applies to:** `chopdot-v1-launch`
 
@@ -20,21 +20,24 @@ release evidence
    inventory and lifecycle source, build its generated catalog/health report,
    and resolve every `blocked` monitor finding before new governed work.
 3. Validate the schemas, policies, profiles, and negative fixtures.
-4. Prove the local event/effect ledger, resume, redaction, and evaluator.
-5. Reconcile PR #14's invariant and exact-head enforcement into the same packet
+4. Route new non-trivial work through `TaskRouteV1`; only a `routed` exact-root
+   receipt may seed `contract-new --route`, and the contract may not reselect
+   its profile or execution architecture.
+5. Prove the local event/effect ledger, resume, redaction, and evaluator.
+6. Reconcile PR #14's invariant and exact-head enforcement into the same packet
    family; do not install a second supervision contract.
-6. Add optional outcome references to Cockpit checkpoints without rewriting
+7. Add optional outcome references to Cockpit checkpoints without rewriting
    history or allowing agent state to reprioritize cards.
-7. Move KGv2 and Repo Graph behind the Knowledge Context Port. Preserve the
+8. Move KGv2 and Repo Graph behind the Knowledge Context Port. Preserve the
    legacy release measurement until a fresh accepted outcome replaces it.
-8. Align active agent entrypoints and remove backend-specific core language.
-9. Keep the canonical-checkout AgentOps context and the two AutoBots ChopDot
+9. Align active agent entrypoints and remove backend-specific core language.
+10. Keep the canonical-checkout AgentOps context and the two AutoBots ChopDot
    agents quarantined until exact-worktree provenance, freshness, authority,
    and replacement routing are independently reviewed. Do not leave them in an
    automatic read order or execution path.
-10. Enable CI and repository rules only after exact-head proof and settings
+11. Enable CI and repository rules only after exact-head proof and settings
    readback.
-11. Pilot each profile, record overhead and failures, and promote adoption only
+12. Pilot each profile, record overhead and failures, and promote adoption only
    after the declared observation window.
 
 ## Steering monitor adoption
@@ -79,6 +82,34 @@ does not authorize a universal home pattern, first action, or feature priority.
 Add or upgrade future profiles by changing only domain-specific requirements,
 proving them against the generic framework contract, and passing the registry
 monitor. Do not fork the framework to preserve a one-off product assumption.
+
+## Task routing boundary
+
+`TaskRouteV1` is the portable admission record for choosing an existing loop
+profile, execution shape, evidence, budget, stop condition, and approval/readback
+requirements. It is not product authority and is not a new loop framework.
+
+- Low-risk routes use deterministic or turn-shaped work with source/unit proof.
+- Moderate routes use bounded work with focused and integration proof;
+  user-facing work also requires screenshots.
+- Critical money, membership, privacy, recovery, security, release, credential,
+  or external-write routes require exact-candidate evidence, a separate
+  evaluator, approval for mutation, and readback.
+- Critical routes require a clean commit. Approval is a digest-bound operator
+  attestation to exact root, candidate, purpose, and effect set. Its claimed
+  actor/evidence reference is not authenticated or cryptographic personhood
+  proof; each external effect still uses the approval ledger.
+- Repository/external effect types are explicit route inputs and are rechecked
+  at planning and dispatch. Post-start contract changes fail against the
+  immutable declaration digest.
+- `time_based` and `proactive` are read-only. Mutation requires a new approved
+  effect route rather than widening the monitoring receipt.
+- Only active repository skill IDs can be selected. Injected, disabled,
+  quarantined, or degraded skills can be recorded as observations but cannot
+  establish acceptance.
+
+Routing may block an unsafe method or demand stronger evidence. It may not
+invent the product answer it will later evaluate.
 
 ## Registry lifecycle changes
 

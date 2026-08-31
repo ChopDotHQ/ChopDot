@@ -3,7 +3,7 @@
 **Kind:** decision
 **Status:** accepted
 **Owner:** agent-systems integrator
-**Last reviewed:** 2026-08-26
+**Last reviewed:** 2026-08-31
 **Applies to:** `chopdot-v1-launch`
 **Authority:** process architecture only; never product law, participant authority, product priority, or release proof
 
@@ -61,7 +61,36 @@ Only an Agent Loop is a create-observe-evaluate-repair cycle. A gate, pipeline,
 adapter, or flywheel may contain repetition internally, but it does not become
 an Agent Loop unless it owns a declared artifact and the Agent Loop Contract.
 
-### 2. Use one contract and one packet family
+### 2. Route into one contract and one packet family
+
+`TaskRouteV1` is the fail-closed admission receipt in front of the existing
+contract. It classifies task domain, run type, execution mode, risk, selected
+profile and provider-neutral agent roles, repository-approved skill IDs,
+expected outcome, evidence, finite budget, stop condition, approval boundary,
+and routing rationale. Its verdict is exactly one of `routed`, `unverified`,
+`blocked`, or `approval_required`.
+
+The receipt may choose process and evidence. It may not choose product
+priority, design direction, participant authority, membership, money, or
+release truth. Platform-injected or repository-disabled skills may be observed
+but cannot establish governed acceptance. Time-based and proactive routes are
+read-only; any mutation requires a new approved effect route. A critical route
+requires exact-candidate evidence, an evaluator role separate from the task
+owner, approval for the mutation, and environmental readback.
+
+Routing policies, retry budgets, profiles, and example contracts are loaded
+from the receipt's exact repository root. A clean committed tree is mandatory
+for critical routing because a dirty path list does not bind uncommitted bytes.
+Repository, external, and critical-external routes also bind an explicit list
+of allowed effect types; the runtime rejects effects outside that list.
+
+`approval_ref` is a digest-bound structured operator attestation recording a
+human actor, exact root, candidate HEAD/tree, purpose, allowed effect set,
+source message/envelope, and expiry. It is not a cryptographic identity proof:
+the evidence reference and claimed human identity are not authenticated by
+TaskRouteV1 and must not be reported as independently verified human approval.
+Every external effect still needs its own run-ledger approval identity and
+readback before dispatch.
 
 Every non-trivial agent run uses `AgentLoopContractV1` and terminates as exactly
 one of:
@@ -151,6 +180,9 @@ packet families, product law, or current product priority.
 The architecture is implemented only when all of the following are true:
 
 - schemas and loop profiles fail closed on subjective or incomplete contracts;
+- task routes fail closed on disabled skills, authority conflicts, wrong-root
+  receipts, widened budgets, missing approval attestation, unapproved effect
+  types, post-start contract tampering, and route/contract mismatch;
 - interruption and resume preserve the digest chain and do not duplicate an
   unresolved external effect;
 - every supported agent loop produces its declared artifact and accepted
@@ -200,6 +232,8 @@ observation, explicit evidence, bounded repair, and finite terminal states.
 
 - Agent work gains explicit outcomes, evidence boundaries, retry budgets, and
   resumable handoffs.
+- Operator intent gains one inspectable routing receipt before the loop
+  contract, without introducing a new loop type or packet family.
 - Gates and release pipelines stop masquerading as completed agent work.
 - KG upgrades become adapter changes rather than governance migrations.
 - PR #14 can contribute strong controls without becoming a competing source of
@@ -214,6 +248,8 @@ observation, explicit evidence, bounded repair, and finite terminal states.
 Wave 0 requires:
 
 - JSON parsing of `governance/agent-system/taxonomy.json`;
+- schema and adversarial validation of `TaskRouteV1`, including route-to-contract
+  and route-readback checks;
 - a complete, one-row-per-file PR #14 reconciliation with source hashes;
 - confirmation that `PRODUCT_TRUTH.md` and the P-035 Cockpit source did not
   change;
