@@ -202,10 +202,22 @@ export class IndexedDbAuthorityJournalStore implements AuthorityJournalStore {
 
   private async encryptionKey(): Promise<CryptoKey> {
     const existing = await request(this.dbName, KEYS, 'readonly', store => store.get(JOURNAL_KEY_ID));
-    if (isAesKey(existing)) return existing;
+    if (existing !== undefined) {
+      if (!isAesKey(existing)) throw new Error('Participant authority encryption key is invalid.');
+      return existing;
+    }
     const created = await crypto.subtle.generateKey({name: 'AES-GCM', length: 256}, false, ['encrypt', 'decrypt']);
-    await request(this.dbName, KEYS, 'readwrite', store => store.put(created, JOURNAL_KEY_ID));
-    return created;
+    try {
+      await request(this.dbName, KEYS, 'readwrite', store => store.add(created, JOURNAL_KEY_ID));
+      return created;
+    } catch (reason) {
+      if (!(reason instanceof DOMException) || reason.name !== 'ConstraintError') throw reason;
+    }
+
+    const winner = await request(this.dbName, KEYS, 'readonly', store => store.get(JOURNAL_KEY_ID));
+    if (winner === undefined) throw new Error('Participant authority encryption key creation did not produce a durable key.');
+    if (!isAesKey(winner)) throw new Error('Participant authority encryption key is invalid.');
+    return winner;
   }
 
   private async readEncryptedValue<T>(keyId: string): Promise<T | null> {
@@ -340,6 +352,9 @@ function isAesKey(value: unknown): value is CryptoKey {
     && value.type === 'secret'
     && value.extractable === false
     && value.algorithm.name === 'AES-GCM'
+    && 'length' in value.algorithm
+    && value.algorithm.length === 256
+    && value.usages.length === 2
     && value.usages.includes('encrypt')
     && value.usages.includes('decrypt');
 }
@@ -347,15 +362,37 @@ function isAesKey(value: unknown): value is CryptoKey {
 function request(dbName: string, storeName: string, mode: IDBTransactionMode, operation: (store: IDBObjectStore) => IDBRequest): Promise<unknown> {
   if (typeof indexedDB === 'undefined') throw new Error('Durable participant authority storage is unavailable.');
   return openDatabase(dbName).then(database => new Promise((resolve, reject) => {
-    const transaction = database.transaction(storeName, mode);
-    const operationRequest = operation(transaction.objectStore(storeName));
-    operationRequest.onerror = () => reject(operationRequest.error ?? new Error('Participant authority storage failed.'));
-    transaction.onerror = () => reject(transaction.error ?? new Error('Participant authority storage failed.'));
-    transaction.onabort = () => reject(transaction.error ?? new Error('Participant authority storage failed.'));
-    transaction.oncomplete = () => {
+    let settled = false;
+    let hasFirstError = false;
+    let firstError: unknown;
+    let transaction: IDBTransaction | undefined;
+    let operationRequest: IDBRequest | undefined;
+    const settle = (failed: boolean, error?: unknown) => {
+      if (settled) return;
+      settled = true;
       database.close();
-      resolve(operationRequest.result);
+      if (failed) reject(error);
+      else resolve(operationRequest?.result);
     };
+    const fail = (error: unknown) => {
+      if (!hasFirstError) {
+        hasFirstError = true;
+        firstError = error;
+      }
+      settle(true, firstError);
+    };
+    try {
+      transaction = database.transaction(storeName, mode);
+      operationRequest = operation(transaction.objectStore(storeName));
+    } catch (error) {
+      try { transaction?.abort(); } catch { /* Preserve the original synchronous failure. */ }
+      fail(error);
+      return;
+    }
+    operationRequest.onerror = () => fail(operationRequest.error ?? new Error('Participant authority storage failed.'));
+    transaction.onerror = () => fail(transaction.error ?? new Error('Participant authority storage failed.'));
+    transaction.onabort = () => fail(transaction.error ?? new Error('Participant authority storage failed.'));
+    transaction.oncomplete = () => settle(false);
   }));
 }
 

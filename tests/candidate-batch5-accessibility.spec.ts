@@ -1,6 +1,6 @@
 import {expect,test,type Page} from '@playwright/test';
 
-const appUrl='http://127.0.0.1:4177';
+const appUrl=process.env.AUTHORITY_KEY_TEST_BASE_URL??'http://127.0.0.1:4177';
 
 for(const viewport of [{width:1280,height:720,name:'desktop'},{width:390,height:844,name:'mobile'}]){
   test(`${viewport.name} entrance has semantic structure, one action, and usable targets`,async({page})=>{

@@ -6,6 +6,7 @@ import type {CanonicalEventV1} from '../src/core/moneyEventKernel.ts';
 const proofRoot='proof/chopdot-candidate-2026-08-12';
 const proofDir=path.join(proofRoot,'screenshots','b5-2026-08-13');
 const observationsPath=path.join(proofRoot,'test-results','b5-2026-08-13','comprehension-observations.json');
+const baseUrl=process.env.AUTHORITY_KEY_TEST_BASE_URL??'http://127.0.0.1:4177';
 type ActorId='mina'|'leo'|'nina';
 type Actor={id:ActorId;context:BrowserContext;page:Page};
 
@@ -99,7 +100,7 @@ test('actual App uses one state-faithful card through the full dinner lifecycle'
 
 test('actual App gives loading and unavailable states clear safe stops',async({browser})=>{
   const loading=await browser.newPage({viewport:{width:390,height:844}});
-  await loading.goto('http://127.0.0.1:4177/tests/fixtures/candidateBatch5HardStatesApp.html?state=loading');
+  await loading.goto(`${baseUrl}/tests/fixtures/candidateBatch5HardStatesApp.html?state=loading`);
   await loading.getByRole('button',{name:'Continue as guest'}).click();
   await expect(loading.getByRole('heading',{name:'Opening your dinner…'})).toBeVisible();
   await expect(loading.getByTestId('spending-card-loading')).toBeVisible();
@@ -107,7 +108,7 @@ test('actual App gives loading and unavailable states clear safe stops',async({b
   await loading.close();
 
   const unavailable=await browser.newPage({viewport:{width:390,height:844}});
-  await unavailable.goto('http://127.0.0.1:4177/tests/fixtures/candidateBatch5HardStatesApp.html?state=unavailable');
+  await unavailable.goto(`${baseUrl}/tests/fixtures/candidateBatch5HardStatesApp.html?state=unavailable`);
   await unavailable.getByRole('button',{name:'Continue as guest'}).click();
   await expect(unavailable.getByRole('heading',{name:'This dinner can’t be opened'})).toBeVisible();
   await expectCard(unavailable,'unavailable','Unavailable');
@@ -142,7 +143,7 @@ async function actor(browser:Browser,bus:BrowserDinnerBus,id:ActorId,viewport:{w
   await page.addInitScript(actorId=>{(window as any).__B4_ACTOR_CONFIG__={actorId}},id);
   await page.exposeBinding('__b4Load',async(_source,groupId:string)=>bus.load(id,groupId));
   await page.exposeBinding('__b4Publish',async(_source,event:CanonicalEventV1)=>bus.publish(id,event));
-  bus.add(id,page); await page.goto('http://127.0.0.1:4177/tests/fixtures/candidateBatch4FullLoopApp.html');
+  bus.add(id,page); await page.goto(`${baseUrl}/tests/fixtures/candidateBatch4FullLoopApp.html`);
   return{id,context,page};
 }
 
