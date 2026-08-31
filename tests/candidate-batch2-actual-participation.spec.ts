@@ -6,11 +6,12 @@ import {PNG} from 'pngjs';
 import {cryptoWaitReady, sr25519PairFromSeed, sr25519Sign} from '@polkadot/util-crypto';
 import type {MembershipGrant} from '../src/membership/membershipLifecycle.ts';
 import type {SignedMembershipEventV1} from '../src/membership/signedMembershipEvents.ts';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
 const baseUrl = 'http://127.0.0.1:4177';
 const ninaEntry = `${baseUrl}/tests/fixtures/candidate-batch2-nina-actual-app.html`;
 const minaEntry = `${baseUrl}/tests/fixtures/candidate-batch2-mina-actor.html`;
-const screenshotDir = path.resolve('test-results/candidate-batch2-actual-participation/screenshots');
+const screenshotDir = releaseEvidencePath('candidate-batch2-actual-participation', 'screenshots');
 
 test.beforeAll(async () => mkdir(screenshotDir, {recursive: true}));
 

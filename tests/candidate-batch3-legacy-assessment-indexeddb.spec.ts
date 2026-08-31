@@ -190,6 +190,26 @@ test('the production entrypoint persists a redacted source assessment before aut
     return database?.version ?? 0;
   })).toBe(3);
 
+  await expect.poll(() => page.evaluate(async () => {
+    const open = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('chopdot-authority-v1');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const transaction = open.transaction(['legacy-assessments', 'journals'], 'readonly');
+    const count = (storeName: string) => new Promise<number>((resolve, reject) => {
+      const request = transaction.objectStore(storeName).count();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const [assessmentCount, journalCount] = await Promise.all([
+      count('legacy-assessments'),
+      count('journals'),
+    ]);
+    open.close();
+    return {assessmentCount, journalCount};
+  })).toEqual({assessmentCount: 1, journalCount: 0});
+
   const proof = await page.evaluate(async () => {
     const open = await new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open('chopdot-authority-v1');

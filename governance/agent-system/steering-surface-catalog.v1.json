@@ -34,15 +34,15 @@
       "proof/",
       "scripts/"
     ],
-    "repository_file_count": 705,
-    "repository_manifest_sha256": "ba7bf4b35bc7bda54a39c8d3b8aeb732ae23c73b490e1d695e59bf7487e124fa"
+    "repository_file_count": 709,
+    "repository_manifest_sha256": "9b2881230dcd4579a535cabbea4ed4e3b0ef3d311923a285604f44b6cd64dff4"
   },
   "lifecycle_summary": {
-    "active": 241,
+    "active": 242,
     "candidate": 0,
-    "degraded": 50,
+    "degraded": 52,
     "deprecated": 0,
-    "historical": 414,
+    "historical": 415,
     "quarantined": 0,
     "retired": 0,
     "superseded": 0
@@ -120,8 +120,8 @@
         "failure": "Fail the relevant gate with exact surface IDs and repair guidance.",
         "retry_exit": "Repair or explicitly change lifecycle through reviewed source, regenerate, and recheck."
       },
-      "file_count": 29,
-      "manifest_sha256": "e7d9b3e9f45561f23f84205ce537acc7e15da675e1517d4eef5c4b499f8ea1cb"
+      "file_count": 30,
+      "manifest_sha256": "fe0f40ed9209372d2cc90a9fa4d1f8fa72ac5f2017e14a16424d0c49bf9b15b8"
     },
     {
       "id": "agent-policies-and-foundation",
@@ -389,8 +389,8 @@
         "failure": "Treat ambiguous historical material as non-authoritative and require current-source confirmation.",
         "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog."
       },
-      "file_count": 57,
-      "manifest_sha256": "d8dac10935205ff4902eb792dd1fc699c0fe06a659da1c3d362a58f50fc1e197"
+      "file_count": 58,
+      "manifest_sha256": "ecead2766af8f52706c07fc433df5497b9e2acf64c47abd9fa9c6407772c86d4"
     },
     {
       "id": "knowledge-and-wiki-sources",
@@ -428,7 +428,7 @@
         "retry_exit": "Refresh the provider or use exact source, then verify recall against the accepted digest."
       },
       "file_count": 15,
-      "manifest_sha256": "a21f10625a941924b09fb8dbfa6cd883b487e68837db3b9cc9114af1029c25be"
+      "manifest_sha256": "641722ba023359926d5aebd3e0cf3f8d5e9f0e20c8a74baaa74cfb7aa4c105b4"
     },
     {
       "id": "legacy-steering-documents",
@@ -555,8 +555,8 @@
         "failure": "Mark documentation degraded when it claims behavior not present in code or current authority.",
         "retry_exit": "Update source documentation after behavior is accepted, then rerun links and monitor checks."
       },
-      "file_count": 6,
-      "manifest_sha256": "d6a639bebfdfdc6fce5aba840783f00a327c397ca69778c0b6b2b5d0183ebe21"
+      "file_count": 8,
+      "manifest_sha256": "5dd0d6f9f0eea23227816d1b8cc24471a9b76158b06ff65676c36e5f4c38ede4"
     },
     {
       "id": "portable-agent-contracts",
@@ -670,7 +670,7 @@
         "retry_exit": "Refresh from canonical sources or record the blocker; never substitute uncited recall."
       },
       "file_count": 7,
-      "manifest_sha256": "2c3b84af6812fbe12ff8a4e4c2e114570f45a6917eb480adf3699cfecfd28c22"
+      "manifest_sha256": "460dc0e2439425db1cb6f9047d3b7f3702db7b20abe48646a7d962338b1b64d3"
     },
     {
       "id": "product-decisions",
@@ -713,7 +713,7 @@
         "retry_exit": "Reconcile the decision at product-owner authority and rerun the product and steering monitors."
       },
       "file_count": 6,
-      "manifest_sha256": "f1efa5b85841bb3c3192026682364b8ceb5a7b441a90b1a4259cb1e5f4f95392"
+      "manifest_sha256": "1df8d5aa0f40ef148abdfb3219e3191c5cf295f14a3343cfaca7659842550609"
     },
     {
       "id": "product-generated-read-models",
@@ -870,7 +870,7 @@
         "retry_exit": "Repair the candidate, range, source, or enforcement wiring and re-run local preflight plus hosted workflow validation."
       },
       "file_count": 7,
-      "manifest_sha256": "c9e2f20936e78a95a3d214c305786eeb2fe3020fc52423eabcd28bfddf4acc1b"
+      "manifest_sha256": "4437cd66749c2f406ae24b987ec7bce4b356735074ca8f8a11e0d1f06d0ad957"
     },
     {
       "id": "repository-entrypoints",
@@ -1184,8 +1184,8 @@
     {
       "surface_id": "repo-github-workflows-agent-governance-yml",
       "path": ".github/workflows/agent-governance.yml",
-      "sha256": "b6331df01c79f92a134651548abeaa27dbb35df46faece1a72bc058c6e06e282",
-      "bytes": 25417,
+      "sha256": "96fea7328b13baff3619104b036276e65860d597c1ebab13a0d90573db7df48b",
+      "bytes": 30414,
       "group_id": "repository-enforcement",
       "surface_kind": "workflow",
       "control_kind": "pipeline",
@@ -1894,6 +1894,34 @@
       "lifecycle": "active",
       "activation_mode": "routed",
       "accountable_owner": "architecture owner"
+    },
+    {
+      "surface_id": "repo-docs-agent-system-gitleaks-history-baseline-md",
+      "path": "docs/agent-system/GITLEAKS_HISTORY_BASELINE.md",
+      "sha256": "2109bdc9420ed94800c711fcdc9f458da722203c7d06f6ecbdf5619812c2b8b3",
+      "bytes": 6091,
+      "group_id": "operating-documentation",
+      "surface_kind": "method",
+      "control_kind": "none",
+      "domain": "agent_governance",
+      "influence_class": "operating_method",
+      "lifecycle": "degraded",
+      "activation_mode": "routed",
+      "accountable_owner": "agent-systems integrator"
+    },
+    {
+      "surface_id": "repo-docs-agent-system-hosted-assurance-workflow-disposition-md",
+      "path": "docs/agent-system/HOSTED_ASSURANCE_WORKFLOW_DISPOSITION.md",
+      "sha256": "212bb5b2f33df2b755656cb31c551173c9f677aa2670580e09890751a9cac4d8",
+      "bytes": 4594,
+      "group_id": "operating-documentation",
+      "surface_kind": "method",
+      "control_kind": "none",
+      "domain": "agent_governance",
+      "influence_class": "operating_method",
+      "lifecycle": "degraded",
+      "activation_mode": "routed",
+      "accountable_owner": "agent-systems integrator"
     },
     {
       "surface_id": "repo-docs-agent-system-host-local-steering-monitor-md",
@@ -2932,6 +2960,20 @@
       "accountable_owner": "repository owner"
     },
     {
+      "surface_id": "repo-docs-superpowers-plans-2026-08-30-hosted-assurance-closure-md",
+      "path": "docs/superpowers/plans/2026-08-30-hosted-assurance-closure.md",
+      "sha256": "efd9478202313cce5c7682335000da04ca309996debfb006c60368a658404e3b",
+      "bytes": 10210,
+      "group_id": "historical-plans-and-investigations",
+      "surface_kind": "historical_evidence",
+      "control_kind": "none",
+      "domain": "history",
+      "influence_class": "supporting_technique",
+      "lifecycle": "historical",
+      "activation_mode": "explicit_only",
+      "accountable_owner": "repository owner"
+    },
+    {
       "surface_id": "repo-docs-superpowers-plans-2026-08-30-local-feature-context-validation-md",
       "path": "docs/superpowers/plans/2026-08-30-local-feature-context-validation.md",
       "sha256": "3ca1420ea6b7390c2a9d94fcf3ae04f12a36bffc942227067ab77c8b2f1803c0",
@@ -3144,7 +3186,7 @@
     {
       "surface_id": "repo-docs-wiki-agent-context-generated-md",
       "path": "docs/wiki/agent-context.generated.md",
-      "sha256": "6887d6de5e4f856194ddb337a3ebe8ba71cade07dfa966d46c82fa9e60a053cb",
+      "sha256": "c4e8b8fc2cc79879a117136bba949bee8ac8132cb23f02406d0f0f2b7d6a410e",
       "bytes": 2394,
       "group_id": "knowledge-and-wiki-sources",
       "surface_kind": "context_source",
@@ -4278,7 +4320,7 @@
     {
       "surface_id": "repo-product-cards-md",
       "path": "product/cards.md",
-      "sha256": "9a25bbfab028a0fe36b533194ba4dd16e62ff0da718deda320fc8fd83b96f265",
+      "sha256": "63edd5fa9d7234a80b5518e3ce5e67306bde6ad012a57e9fd53ab970a7ba78ed",
       "bytes": 24891,
       "group_id": "product-decisions",
       "surface_kind": "decision_source",
@@ -4292,7 +4334,7 @@
     {
       "surface_id": "repo-product-context-authority-json",
       "path": "product/context-authority.json",
-      "sha256": "96b6d90d30d746e8218963b24d26680c1ea501e0053ec60dcdae5903a176dec4",
+      "sha256": "f66f1bc4d226e8c10703158b4cdc492d5b18313de12b294e5146fcb6222f73fe",
       "bytes": 13799,
       "group_id": "product-context-and-history",
       "surface_kind": "context_source",
@@ -9402,8 +9444,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-generate-pr-outcome-mjs",
       "path": "scripts/agent-governance/generate-pr-outcome.mjs",
-      "sha256": "60d0a34be7a904c92b68212ef8990bf933ff43bc706c203c9e4889bd97ca964c",
-      "bytes": 19827,
+      "sha256": "0c2fcddf6464c42638f7a394ffcc9861e8ad14c687a7f8faaf43f69da15abdb6",
+      "bytes": 19987,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -9512,6 +9554,20 @@
       "accountable_owner": "agent-systems integrator"
     },
     {
+      "surface_id": "repo-scripts-agent-governance-tests-hosted-assurance-evidence-test-mjs",
+      "path": "scripts/agent-governance/tests/hosted-assurance-evidence.test.mjs",
+      "sha256": "5d6c933244b1840bd72a2d79f28fb0046c484bd06a091e4d2cea4cadd38cab06",
+      "bytes": 12379,
+      "group_id": "agent-governance-runtime",
+      "surface_kind": "validator",
+      "control_kind": "gate",
+      "domain": "agent_governance",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "automatic",
+      "accountable_owner": "agent-systems integrator"
+    },
+    {
       "surface_id": "repo-scripts-agent-governance-tests-pr-governance-test-mjs",
       "path": "scripts/agent-governance/tests/pr-governance.test.mjs",
       "sha256": "06cb591cfff3a2e58a1f279ce3bb49f72b796d21882847e9e7f974d19735746a",
@@ -9528,8 +9584,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-tests-pr-outcome-test-mjs",
       "path": "scripts/agent-governance/tests/pr-outcome.test.mjs",
-      "sha256": "a7bc34867883d209a3e34a1ff76a84d93172d593a4958be6f6ac20ee551414af",
-      "bytes": 17659,
+      "sha256": "ffb8fb5f5c6d6b932906d9e5388092da15201edbc649e0ff98b0771f9f74f33e",
+      "bytes": 19237,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -9626,8 +9682,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-tests-workflow-exact-head-test-mjs",
       "path": "scripts/agent-governance/tests/workflow-exact-head.test.mjs",
-      "sha256": "ee1c818759d9032031b1976d47027c5c43fc852c63891e0b1b911b7169241d8f",
-      "bytes": 30059,
+      "sha256": "d83b8bc8e38343afa724b47351c807b3fceb8d776c837c3e01ffffb76177cf85",
+      "bytes": 36481,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -9668,8 +9724,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-validate-workflow-mjs",
       "path": "scripts/agent-governance/validate-workflow.mjs",
-      "sha256": "b2fe239350ed4b798072d60b0299263fa1ffb18dd2b628d63df60b1eb79c2fb4",
-      "bytes": 34326,
+      "sha256": "cdb51771aed0e761ad1ed26a6b36abdc64a0e16ad0c37ded4ecfa3794b5d6988",
+      "bytes": 41129,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -14147,5 +14203,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "b09f5d7675bb201461703e6058f17786cc675350b55000ed7aadbe755f3069e4"
+  "catalog_digest": "181694ed43e24b9b04a638ecde24ed99bd905c2f11f49e868f16d0a5222ff8f6"
 }

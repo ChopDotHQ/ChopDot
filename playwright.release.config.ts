@@ -1,4 +1,5 @@
 import {defineConfig} from '@playwright/test';
+import {releaseEvidencePath} from './tests/support/releaseEvidencePath.ts';
 
 export default defineConfig({
   testDir: './tests',
@@ -34,7 +35,11 @@ export default defineConfig({
   timeout: 60_000,
   fullyParallel: false,
   workers: 1,
-  reporter: 'line',
+  outputDir: releaseEvidencePath('playwright', 'artifacts'),
+  reporter: [
+    ['line'],
+    ['json', {outputFile: releaseEvidencePath('playwright', 'results.json')}],
+  ],
   use: {
     headless: true,
     viewport: {width: 1280, height: 900},

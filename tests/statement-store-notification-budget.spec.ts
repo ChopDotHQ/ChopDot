@@ -12,6 +12,7 @@ import {
   encodeCompactSessionNotification,
   type CompactSessionNotification,
 } from '../src/environment/hostSessionSync';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
 /**
  * G4 spike, notification scope only.
@@ -34,10 +35,9 @@ const MAX_STATEMENT_SIZE = 512;
 const MAX_USER_TOTAL = 1024;
 
 const productUrl = 'http://127.0.0.1:4177/?developerChecks=1';
-const proofFile = path.resolve(
-  process.env.CHOPDOT_STATEMENT_BUDGET_REPORT
-    ?? 'proof/statement-notification-budget/report.json',
-);
+const proofFile = process.env.CHOPDOT_STATEMENT_BUDGET_REPORT
+  ? path.resolve(process.env.CHOPDOT_STATEMENT_BUDGET_REPORT)
+  : releaseEvidencePath('statement-notification-budget', 'report.json');
 const proofDirectory = path.dirname(proofFile);
 const sessionSecret = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 const groupId = 'friday-crew';

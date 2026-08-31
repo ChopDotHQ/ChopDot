@@ -56,8 +56,8 @@ function runContext(overrides = {}) {
   return {result, runnerTemp, eventPath: path.join(runnerTemp, 'pr-context/pr-event.json'), originalEvent};
 }
 
-test('all eight jobs checkout exact event candidate with full branch history', () => {
-  assert.equal(Object.keys(parsed.jobs).length, 8);
+test('all ten jobs checkout exact event candidate with full branch history', () => {
+  assert.equal(Object.keys(parsed.jobs).length, 10);
   for (const job of Object.values(parsed.jobs)) {
     assert.equal(job.exact_checkout_refs, 1);
     assert.equal(job.full_history_checkouts, 1);
@@ -76,7 +76,7 @@ test('all third-party actions are pinned to full immutable SHAs', () => {
 
 test('workflow has least permissions and all stable merge-boundary job names', () => {
   assert.equal(parsed.permissions_contents_read, true);
-  for (const name of ['Agent contract', 'Agent runner', 'Knowledge adapters', 'Repo governance', 'Application fast assurance', 'PR outcome']) {
+  for (const name of ['Agent contract', 'Agent runner', 'Knowledge adapters', 'Repo governance', 'Application fast assurance', 'Application browser assurance', 'Secrets scan', 'PR outcome']) {
     assert.match(workflow, new RegExp(`name: ${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
   }
 });
@@ -198,7 +198,11 @@ test('runner and adapter jobs cover evaluator, redaction, compatibility, and con
 });
 
 test('PR outcome depends on all exact-head jobs and uses same-run external artifact ingress', () => {
-  assert.deepEqual(parsed.jobs['pr-outcome'].needs, ['pr-context', 'agent-contract', 'agent-runner', 'knowledge-adapters', 'repo-governance', 'application-fast-assurance']);
+  assert.deepEqual(parsed.jobs['pr-outcome'].needs, [
+    'pr-context', 'agent-contract', 'agent-runner', 'knowledge-adapters',
+    'repo-governance', 'application-fast-assurance',
+    'application-browser-assurance', 'secrets-scan',
+  ]);
   assert.deepEqual(parsed.jobs['pr-outcome'].permissions, {contents: 'read', 'id-token': 'write', attestations: 'write'});
   assert.match(parsed.jobs['pr-outcome'].block, /actions\/download-artifact@[0-9a-f]{40}/);
   assert.match(parsed.jobs['pr-outcome'].block, /generate-pr-outcome\.mjs/);
@@ -410,6 +414,114 @@ test('commented executable commands cannot satisfy required job behavior', () =>
   const result = validateWorkflow(broken);
   assert.equal(result.ok, false);
   assert(result.errors.some((error) => error.includes('lacks required executable command: fail-closed.test.mjs')));
+});
+
+test('browser and secrets assurance jobs cannot be removed, skipped, or moved off the exact candidate', () => {
+  const browserBlock = /\n  application-browser-assurance:\n[\s\S]*?(?=\n  secrets-scan:\n)/u;
+  const secretsBlock = /\n  secrets-scan:\n[\s\S]*?(?=\n  pr-outcome:\n)/u;
+  const cases = [
+    workflow.replace(browserBlock, ''),
+    workflow.replace(secretsBlock, ''),
+    workflow.replace('  application-browser-assurance:\n    name: Application browser assurance', '  application-browser-assurance:\n    name: Application browser assurance\n    if: false'),
+    workflow.replace('  secrets-scan:\n    name: Secrets scan', '  secrets-scan:\n    name: Secrets scan\n    if: false'),
+    workflow.replace(
+      /(  application-browser-assurance:[\s\S]*?ref: )\$\{\{ env\.EXPECTED_SHA \}\}/u,
+      '$1main',
+    ),
+    workflow.replace(
+      /(  secrets-scan:[\s\S]*?ref: )\$\{\{ env\.EXPECTED_SHA \}\}/u,
+      '$1main',
+    ),
+  ];
+  for (const broken of cases) {
+    assert.notEqual(broken, workflow);
+    const result = validateWorkflow(broken);
+    assert.equal(result.ok, false, result.errors.join('; '));
+  }
+});
+
+test('browser evidence root cannot be reintroduced at job scope', () => {
+  const broken = workflow.replace(
+    '  application-browser-assurance:\n    name: Application browser assurance',
+    '  application-browser-assurance:\n    name: Application browser assurance\n    env:\n      CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence',
+  );
+  assert.notEqual(broken, workflow);
+  const result = validateWorkflow(broken);
+  assert.equal(result.ok, false);
+  assert(result.errors.some((error) => error.includes('job scope')));
+  assert(result.errors.some((error) => error.includes('runner context')));
+});
+
+test('browser and secrets commands cannot be masked or replaced by inert decoys', () => {
+  for (const command of [
+    'npx --no-install playwright install --with-deps chromium',
+    'npm run test:release-browser',
+    '$RUNNER_TEMP/gitleaks git . --redact --verbose --exit-code=1 --report-format=json --report-path="$GOVERNANCE_REPORT_ROOT/gitleaks.json"',
+  ]) {
+    for (const replacement of [`${command} || true`, `echo '${command}'`]) {
+      const broken = workflow.replace(command, replacement);
+      assert.notEqual(broken, workflow);
+      const result = validateWorkflow(broken);
+      assert.equal(result.ok, false, `${replacement}: ${result.errors.join('; ')}`);
+    }
+  }
+});
+
+test('browser evidence root, upload, and complete post-suite cleanliness cannot be weakened', () => {
+  const cases = [
+    workflow.replace('${{ runner.temp }}/chopdot-release-evidence/application-browser-exact-head.json', '$GOVERNANCE_REPORT_ROOT/application-browser-exact-head.json'),
+    workflow.replace('CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence', 'CHOPDOT_RELEASE_EVIDENCE_ROOT: artifacts/release'),
+    workflow.replace('          path: ${{ runner.temp }}/chopdot-release-evidence/\n', '          path: ${{ env.GOVERNANCE_REPORT_ROOT }}/\n'),
+    workflow.replace('          git diff --exit-code\n', ''),
+    workflow.replace('          git diff --cached --exit-code\n', ''),
+    workflow.replace('          test -z "$(git status --porcelain --untracked-files=all)"\n', ''),
+    workflow.replace('git status --porcelain --untracked-files=all', 'git status --porcelain --untracked-files=no'),
+    workflow.replace('      - name: Upload browser assurance evidence\n', '      - name: Reintroduce checkout dirtiness after the clean gate\n        run: touch post-clean-dirty.txt\n      - name: Upload browser assurance evidence\n'),
+    workflow.replace('          echo "This is application evidence, not deployment, reachability, ownership, or live-user proof." >> "$GITHUB_STEP_SUMMARY"\n', '          echo "This is application evidence, not deployment, reachability, ownership, or live-user proof." >> "$GITHUB_STEP_SUMMARY"\n          touch post-clean-dirty.txt\n'),
+    workflow.replace('          test -z "$(git status --porcelain --untracked-files=all)"\n', '          test -z "$(git status --porcelain --untracked-files=all)"\n          touch post-clean-dirty.txt\n'),
+  ];
+  for (const broken of cases) {
+    assert.notEqual(broken, workflow);
+    const result = validateWorkflow(broken);
+    assert.equal(result.ok, false, result.errors.join('; '));
+  }
+});
+
+test('secrets scan rejects moving releases, altered or absent checksums, and absent evidence', () => {
+  const archiveUrl = 'https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz';
+  const checksum = '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb';
+  const secretsStart = workflow.indexOf('\n  secrets-scan:\n');
+  const secretsEnd = workflow.indexOf('\n  pr-outcome:\n');
+  assert(secretsStart >= 0 && secretsEnd > secretsStart);
+  const replaceSecrets = (needle, replacement) => {
+    const block = workflow.slice(secretsStart, secretsEnd).replace(needle, replacement);
+    return `${workflow.slice(0, secretsStart)}${block}${workflow.slice(secretsEnd)}`;
+  };
+  const cases = [
+    replaceSecrets(archiveUrl, 'https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz'),
+    replaceSecrets(checksum, '0'.repeat(64)),
+    replaceSecrets(`          sha256sum --check --strict <<< "${checksum}  $RUNNER_TEMP/gitleaks_8.30.1_linux_x64.tar.gz"\n`, ''),
+    replaceSecrets('          if-no-files-found: error', '          if-no-files-found: warn'),
+  ];
+  for (const broken of cases) {
+    assert.notEqual(broken, workflow);
+    const result = validateWorkflow(broken);
+    assert.equal(result.ok, false, result.errors.join('; '));
+  }
+});
+
+test('PR outcome cannot omit browser or secrets dependencies and result bindings', () => {
+  const cases = [
+    workflow.replace('      - application-browser-assurance\n', ''),
+    workflow.replace('      - secrets-scan\n', ''),
+    workflow.replace(',"application-browser-assurance":"${{ needs.application-browser-assurance.result }}"', ''),
+    workflow.replace(',"secrets-scan":"${{ needs.secrets-scan.result }}"', ''),
+  ];
+  for (const broken of cases) {
+    assert.notEqual(broken, workflow);
+    const result = validateWorkflow(broken);
+    assert.equal(result.ok, false, result.errors.join('; '));
+  }
 });
 
 test('audited workflow commands reject echo, printf, string, comment, dead, and masked decoys', () => {

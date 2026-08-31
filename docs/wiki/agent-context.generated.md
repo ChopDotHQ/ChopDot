@@ -10,7 +10,7 @@
 Generated read model. It is navigation, not product authority.
 
 - Product truth SHA-256: `d5ea94b3b89f682d7b7ab76f580102316c25b0366c52b9b5a851a5ab7162bba6`
-- Product cards SHA-256: `9a25bbfab028a0fe36b533194ba4dd16e62ff0da718deda320fc8fd83b96f265`
+- Product cards SHA-256: `63edd5fa9d7234a80b5518e3ce5e67306bde6ad012a57e9fd53ab970a7ba78ed`
 - Product decisions SHA-256: `45fcb3c7ad18036d5aa4f7a325aa1c0f084f2566514b390877d9cc036a92ab7b`
 - Product benchmark baseline SHA-256: `eb0bad42e37a3d6b61ca98414dfc03ff123a0c67c016ee612aab7b6b54c76b50`
 - Current release state SHA-256: `48bbff0d8cb8e20e66769d90c2f0e7e7e8882aae1404f3319ea3bac1d27dccab`

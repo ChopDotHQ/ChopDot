@@ -16,10 +16,13 @@ for(const viewport of [{width:1280,height:720,name:'desktop'},{width:390,height:
 
 test('keyboard focus is visible and the first action works without a pointer',async({page})=>{
   await page.setViewportSize({width:390,height:844}); await page.goto(appUrl);
+  const action=page.getByRole('button',{name:'Start a group'});
+  await expect(page.getByRole('heading',{level:1,name:'Start a group.'})).toBeVisible();
+  await expect(action).toBeVisible();
+  await expect(action).toHaveAccessibleName('Start a group');
   await page.keyboard.press('Tab');
-  const focused=page.locator(':focus');
-  await expect(focused).toHaveAccessibleName('Start a group');
-  const focusStyle=await focused.evaluate(element=>{const style=getComputedStyle(element);return{outline:style.outlineStyle,width:style.outlineWidth,shadow:style.boxShadow}});
+  await expect(action).toBeFocused();
+  const focusStyle=await action.evaluate(element=>{const style=getComputedStyle(element);return{outline:style.outlineStyle,width:style.outlineWidth,shadow:style.boxShadow}});
   expect(focusStyle.outline==='solid'||focusStyle.shadow!=='none').toBe(true);
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading',{name:'What should we call you?'})).toBeVisible();

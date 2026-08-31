@@ -4,9 +4,10 @@ import {
   openHostedProduct,
   type HostedProductAccount,
 } from './support/hostedProductAccount.ts';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
 const appUrl = 'http://127.0.0.1:4177/';
-const evidenceRoot = 'artifacts/release/ui-wave-6';
+const evidenceRoot = releaseEvidencePath('named-mode-production-entrypoint');
 
 const cases = [
   {

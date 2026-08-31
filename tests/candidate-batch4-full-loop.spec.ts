@@ -2,8 +2,9 @@ import {mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {expect,test,type Browser,type BrowserContext,type Page} from '@playwright/test';
 import type {CanonicalEventV1} from '../src/core/moneyEventKernel.ts';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
-const proofDir='proof/chopdot-candidate-2026-08-12/screenshots/b4-2026-08-13';
+const proofDir=releaseEvidencePath('candidate-batch4-full-loop');
 const baseUrl=process.env.AUTHORITY_KEY_TEST_BASE_URL??'http://127.0.0.1:4177';
 type ActorId='mina'|'leo'|'nina';
 type Actor={id:ActorId;context:BrowserContext;page:Page};

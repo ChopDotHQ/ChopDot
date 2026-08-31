@@ -21,6 +21,8 @@ const REQUIRED_REPORTS = new Map([
   ['CI-KNOWLEDGE-ADAPTERS', 'knowledge-adapters-exact-head.json'],
   ['CI-REPO-GOVERNANCE', 'repo-governance-exact-head.json'],
   ['CI-APPLICATION-ASSURANCE', 'application-exact-head.json'],
+  ['CI-APPLICATION-BROWSER-ASSURANCE', 'application-browser-exact-head.json'],
+  ['CI-SECRETS-SCAN', 'secrets-scan-exact-head.json'],
 ]);
 
 function git(root, args) {
@@ -134,7 +136,15 @@ export async function generatePrOutcome({
     provenance, prSubmitterIdentity, prSubmitterSource, evaluatorIdentity,
     evaluatorSource, workflowRunId, workflowRunAttempt,
   });
-  const expectedJobs = ['agent-contract', 'agent-runner', 'knowledge-adapters', 'repo-governance', 'application-fast-assurance'];
+  const expectedJobs = [
+    'agent-contract',
+    'agent-runner',
+    'knowledge-adapters',
+    'repo-governance',
+    'application-fast-assurance',
+    'application-browser-assurance',
+    'secrets-scan',
+  ];
   for (const job of expectedJobs) if (jobResults[job] !== 'success') throw new Error(`PR outcome requires same-run ${job}=success; observed ${jobResults[job] ?? '(missing)'}`);
 
   const checks = [];
@@ -189,10 +199,10 @@ export async function generatePrOutcome({
     checks,
     measurements: {
       unaccepted_requirement_count: { value: 0, source_jobs: ['agent-contract', 'repo-governance'] },
-      focused_test_failure_count: { value: 0, source_jobs: ['agent-runner', 'repo-governance', 'application-fast-assurance'] },
-      production_entrypoint_status: { value: 'passed', source_jobs: ['application-fast-assurance'] },
+      focused_test_failure_count: { value: 0, source_jobs: ['agent-runner', 'repo-governance', 'application-fast-assurance', 'application-browser-assurance'] },
+      production_entrypoint_status: { value: 'passed', source_jobs: ['application-browser-assurance'] },
       unattributed_out_of_scope_path_count: { value: 0, source_jobs: ['repo-governance'] },
-      critical_regression_count: { value: 0, source_jobs: ['agent-contract', 'agent-runner', 'knowledge-adapters', 'repo-governance', 'application-fast-assurance'] },
+      critical_regression_count: { value: 0, source_jobs: expectedJobs },
     },
     job_results: Object.fromEntries(expectedJobs.map((job) => [job, jobResults[job]])),
     exact_counts: { total: checks.length, passed: checks.length, failed: 0, skipped: 0 },
@@ -245,7 +255,7 @@ export async function generatePrOutcome({
   const runnerProvenancePath = path.join(outputDirectory, 'runner-provenance.json');
   const runnerProvenance = await writeRunnerProvenance(runDirectory, acceptanceContract, runnerProvenancePath);
   const outputPath = path.join(outputDirectory, 'outcome.json');
-  const packet = await promoteOutcome(runDirectory, acceptanceContract, outputPath, { runnerProvenance, limitations: ['CI-generated PR outcome proves five same-run required checks and deterministic evaluator separation from recorded PR/candidate identities; it does not prove human or CODEOWNER review, release, deployment, reachability, ownership, or user proof.'] });
+  const packet = await promoteOutcome(runDirectory, acceptanceContract, outputPath, { runnerProvenance, limitations: ['CI-generated PR outcome proves seven same-run required checks and deterministic evaluator separation from recorded PR/candidate identities; it does not prove human or CODEOWNER review, release, deployment, reachability, ownership, or user proof.'] });
   return { ok: true, output_path: outputPath, contract_path: contractPath, execution_attestation_path: attestationPath, runner_provenance_path: runnerProvenancePath, run_directory: runDirectory, contract_digest: contractDigest, file_sha256: sha256File(outputPath), packet_digest: packet.packet_digest, candidate: evidence.candidate, exact_counts: evidence.exact_counts, packet };
 }
 

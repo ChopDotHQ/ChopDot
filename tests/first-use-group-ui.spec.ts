@@ -1,8 +1,9 @@
 import {expect, test} from '@playwright/test';
 import {closeHostedProduct, currentProductFrame, openHostedProduct} from './support/hostedProductAccount.ts';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
 const appUrl = 'http://127.0.0.1:4177/';
-const screenshotRoot = 'test-results/contextual-home-first-group/first-use';
+const screenshotRoot = releaseEvidencePath('contextual-home-first-group', 'first-use');
 
 test('empty Home has one New group action and a secondary receipt path', async ({page}) => {
   await enterAsGuest(page);

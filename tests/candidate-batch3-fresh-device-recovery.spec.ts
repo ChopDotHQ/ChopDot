@@ -2,10 +2,11 @@ import {mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {expect, test, type Browser, type BrowserContext} from '@playwright/test';
 import {candidateBatch3RecoveryData, b3Digest} from './fixtures/candidateBatch3RecoveryFixture.ts';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
 const baseUrl = 'http://127.0.0.1:4177';
 const entry = `${baseUrl}/tests/fixtures/candidateBatch3FreshRecoveryApp.html`;
-const screenshotDir = path.resolve('proof/chopdot-candidate-2026-08-12/screenshots/b3-2026-08-13T105000Z');
+const screenshotDir = releaseEvidencePath('candidate-batch3-fresh-device-recovery');
 
 test.beforeAll(async () => mkdir(screenshotDir, {recursive:true}));
 
