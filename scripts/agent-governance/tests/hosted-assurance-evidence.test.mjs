@@ -81,6 +81,9 @@ function browserEvidenceFailures(source) {
   const end = source.indexOf('\n  secrets-scan:\n');
   if (start < 0 || end <= start) return ['application-browser-assurance block missing'];
   const block = source.slice(start, end);
+  const stepsStart = block.indexOf('\n    steps:\n');
+  if (stepsStart < 0) return ['application-browser-assurance steps missing'];
+  const jobHeader = block.slice(0, stepsStart);
   const required = [
     'CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence',
     'test -s "$CHOPDOT_RELEASE_EVIDENCE_ROOT/playwright/results.json"',
@@ -94,6 +97,7 @@ function browserEvidenceFailures(source) {
   const failures = required.filter(value => !block.includes(value)).map(value => `browser evidence contract missing ${value}`);
   const evidenceBindingCount = (block.match(/CHOPDOT_RELEASE_EVIDENCE_ROOT: \$\{\{ runner\.temp \}\}\/chopdot-release-evidence/gu) ?? []).length;
   if (evidenceBindingCount !== 2) failures.push(`browser evidence root must bind exactly two runtime steps, found ${evidenceBindingCount}`);
+  if (/CHOPDOT_RELEASE_EVIDENCE_ROOT|\$\{\{ runner\./u.test(jobHeader)) failures.push('browser evidence root cannot use runner context at job scope');
   return failures;
 }
 
@@ -148,7 +152,11 @@ test('browser workflow uploads runtime evidence and proves tracked-source cleanl
 });
 
 test('runner context is used only where GitHub exposes it', () => {
-  assert.doesNotMatch(workflow, /timeout-minutes: 30\s+env:\s+CHOPDOT_RELEASE_EVIDENCE_ROOT: \$\{\{ runner\.temp \}\}/u);
+  const broken = workflow.replace(
+    '  application-browser-assurance:\n    name: Application browser assurance',
+    '  application-browser-assurance:\n    name: Application browser assurance\n    env:\n      CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence',
+  );
+  assert.notDeepEqual(browserEvidenceFailures(broken), []);
   assert.equal((workflow.match(/CHOPDOT_RELEASE_EVIDENCE_ROOT: \$\{\{ runner\.temp \}\}\/chopdot-release-evidence/gu) ?? []).length, 2);
   assert.match(workflow, /path: \|\s+\$\{\{ env\.GOVERNANCE_REPORT_ROOT \}\}\/\s+\$\{\{ runner\.temp \}\}\/chopdot-release-evidence\//u);
 });

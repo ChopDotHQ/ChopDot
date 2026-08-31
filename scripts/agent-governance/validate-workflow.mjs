@@ -364,9 +364,11 @@ function parseStep(block, start, end) {
 function parseJob(block) {
   const fields = {};
   const permissions = {};
+  const env = {};
   const steps = [];
   const needs = [];
   let inPermissions = false;
+  let inEnv = false;
   let inSteps = false;
   let inNeeds = false;
   for (let index = 0; index < block.length; index += 1) {
@@ -375,9 +377,11 @@ function parseJob(block) {
     if (entry.indent === 4 && pair) {
       fields[pair.key] = pair.value;
       inPermissions = pair.key === 'permissions';
+      inEnv = pair.key === 'env';
       inSteps = pair.key === 'steps';
       inNeeds = pair.key === 'needs';
     } else if (entry.indent === 6 && pair && inPermissions && !entry.text.startsWith('- ')) permissions[pair.key] = pair.value;
+    else if (entry.indent === 6 && pair && inEnv && !entry.text.startsWith('- ')) env[pair.key] = pair.value;
     if (entry.indent === 6 && entry.text.startsWith('- ') && inNeeds) needs.push(entry.text.slice(2).trim());
     if (entry.indent === 6 && entry.text.startsWith('- ') && inSteps) {
       let end = index + 1;
@@ -389,7 +393,7 @@ function parseJob(block) {
   const checkoutSteps = steps.filter((step) => step.fields.uses?.startsWith('actions/checkout@'));
   const assertionSteps = steps.filter((step) => step.run.includes('scripts/agent-governance/assert-exact-head.mjs'));
   return {
-    name: fields.name ?? null, fields, permissions, needs, steps,
+    name: fields.name ?? null, fields, permissions, env, needs, steps,
     uses: steps.map((step) => step.fields.uses).filter(Boolean),
     exact_checkout_refs: checkoutSteps.filter((step) => step.with.ref === '${{ env.EXPECTED_SHA }}').length,
     full_history_checkouts: checkoutSteps.filter((step) => step.with['fetch-depth'] === '0').length,
@@ -566,6 +570,8 @@ export function validateWorkflow(source) {
   if (JSON.stringify(prOutcome?.needs ?? []) !== JSON.stringify(requiredNeeds)) errors.push('PR outcome must need all seven exact-head evidence jobs in canonical order');
   if (JSON.stringify(repoGovernance?.needs ?? []) !== JSON.stringify(['pr-context'])) errors.push('Repo governance must need the exact PR context job');
   const browserEvidenceSteps = browserAssurance?.steps.filter((step) => step.env.CHOPDOT_RELEASE_EVIDENCE_ROOT === '${{ runner.temp }}/chopdot-release-evidence') ?? [];
+  if (browserAssurance?.env.CHOPDOT_RELEASE_EVIDENCE_ROOT !== undefined) errors.push('Application browser assurance cannot bind CHOPDOT_RELEASE_EVIDENCE_ROOT at job scope');
+  if (Object.values(browserAssurance?.env ?? {}).some((value) => value.includes('${{ runner.'))) errors.push('Application browser assurance job-level env cannot use runner context');
   if (JSON.stringify(browserEvidenceSteps.map((step) => step.fields.name)) !== JSON.stringify([
     'Run production-entrypoint browser assurance',
     'Assert machine-readable browser result',

@@ -440,6 +440,18 @@ test('browser and secrets assurance jobs cannot be removed, skipped, or moved of
   }
 });
 
+test('browser evidence root cannot be reintroduced at job scope', () => {
+  const broken = workflow.replace(
+    '  application-browser-assurance:\n    name: Application browser assurance',
+    '  application-browser-assurance:\n    name: Application browser assurance\n    env:\n      CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence',
+  );
+  assert.notEqual(broken, workflow);
+  const result = validateWorkflow(broken);
+  assert.equal(result.ok, false);
+  assert(result.errors.some((error) => error.includes('job scope')));
+  assert(result.errors.some((error) => error.includes('runner context')));
+});
+
 test('browser and secrets commands cannot be masked or replaced by inert decoys', () => {
   for (const command of [
     'npx --no-install playwright install --with-deps chromium',

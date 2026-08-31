@@ -122,3 +122,10 @@ or ADR change is expected unless implementation reveals an architecture change.
   root is now bound only on the two runtime steps where GitHub exposes the
   runner context and is referenced directly by the upload step. A hostile test
   and structural validator now reject moving that binding back to job scope.
+- Independent exact-head review reproduced a fail-closed gap in the structural
+  validator: alternate job-level evidence bindings could evade the original
+  format-sensitive test. The validator now parses job-level environment keys,
+  rejects the evidence root and runner context there, and carries a hostile
+  regression case. The hosted cleanliness step also prints the bounded status
+  before asserting it so a runner-only dirty path is diagnosable rather than an
+  opaque exit code.
