@@ -2,7 +2,7 @@ import {expect, test} from '@playwright/test';
 import {closeHostedProduct, openHostedProduct} from './support/hostedProductAccount.ts';
 
 const appUrl = 'http://127.0.0.1:4177/';
-const evidenceRoot = 'artifacts/release/ui-wave-4';
+const evidenceRoot = 'test-results/contextual-home-first-group/product-surface';
 
 test('capture receipt-first product evidence at mobile and desktop widths', async ({browser}) => {
   const page = await browser.newPage({viewport: {width: 390, height: 844}});
@@ -10,7 +10,7 @@ test('capture receipt-first product evidence at mobile and desktop widths', asyn
   await page.goto(appUrl, {waitUntil: 'domcontentloaded'});
   await page.evaluate(() => window.localStorage.clear());
   await page.reload({waitUntil: 'domcontentloaded'});
-  await expect(page.getByRole('heading', {name: 'Start with the receipt.'})).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Start a group.'})).toBeVisible();
   await page.screenshot({path: `${evidenceRoot}/01-welcome-mobile.png`, fullPage: true});
 
   await page.getByRole('button', {name: 'Scan a receipt'}).click();
@@ -32,7 +32,7 @@ test('capture receipt-first product evidence at mobile and desktop widths', asyn
     await frame.getByRole('button', {name: 'Create my group'}).click();
     await expect(frame.getByRole('heading', {name: 'Zurich Dinner'})).toBeVisible({timeout: 15_000});
     await frame.getByLabel('Back').click();
-    await expect(frame.getByRole('heading', {name: 'Start with the receipt.'})).toBeVisible();
+    await expect(frame.getByRole('heading', {name: 'Your groups'})).toBeVisible();
     await frame.locator('#root').screenshot({path: `${evidenceRoot}/03-home-group-card-mobile.png`});
 
     for (const mode of ['Trip', 'Couple', 'Spend Card', 'Savings circle', 'Emergency pot', 'Community fund']) {

@@ -2,16 +2,18 @@ import {mkdir} from 'node:fs/promises';
 import path from 'node:path';
 import {expect, test, type Page} from '@playwright/test';
 
-const proofDir = path.resolve('proof/chopdot-candidate-2026-08-12/screenshots');
+const proofDir = path.resolve('test-results/contextual-home-first-group/showcase');
 const appUrl = 'http://127.0.0.1:4177';
 
 async function expectEntrance(page: Page) {
-  await expect(page.getByRole('heading', {name: 'Start with the receipt.'})).toBeVisible();
-  await expect(page.getByText('Scanning makes a local draft. Nothing is shared yet.')).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Start a group.'})).toBeVisible();
+  await expect(page.getByText('You choose what to share. Receipt scans stay drafts until you review them.')).toBeVisible();
 
-  const action = page.getByRole('button', {name: 'Scan a receipt'});
+  const action = page.getByRole('button', {name: 'Start a group'});
   await expect(action).toBeVisible();
   await expect(action).toBeEnabled();
+  await expect(page.getByRole('button', {name: 'Scan a receipt'})).toBeVisible();
+  await expect(page.locator('[data-primary-action="true"]:visible')).toHaveCount(1);
 
   const box = await action.boundingBox();
   const shell = await page.locator('.app-shell-frame').boundingBox();
@@ -50,6 +52,7 @@ test('mobile entrance routes through the existing guest action without creating 
   await page.getByPlaceholder('Display name').fill('Mina');
   await page.getByRole('button', {name: 'Continue as Mina'}).click();
   await expect(page.getByText('Hey, Mina')).toBeVisible();
-  await expect(page.getByText('No groups yet.')).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Your groups'})).toBeVisible();
+  await expect(page.getByRole('button', {name: 'New group'})).toBeVisible();
   await page.screenshot({path: path.join(proofDir, '04-guest-home-no-fake-state-mobile.png'), fullPage: false});
 });

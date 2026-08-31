@@ -13,6 +13,7 @@ import {useAppState} from '../state/AppStateContext';
 import {getGroupTotal, getMemberBalance} from '../state/store';
 import type {Group, GroupMode, Split} from '../types';
 import {getCurrencySymbol, getInitials} from '../utils';
+import {deriveHomePresentation} from './homePresentation';
 import {groupMode, modeCopy} from './productModes';
 
 const modeIcons = {
@@ -42,8 +43,8 @@ export function Home({
 
   if (!currentUser) return null;
 
-  const myGroups = (Object.values(state.groups) as Group[]).filter(group => group.memberIds.includes(currentUser.id));
-  const openGroups = myGroups.filter(group => !group.closedRecordId);
+  const presentation = deriveHomePresentation(state, currentUser.id);
+  const openGroups = presentation.openGroupIds.map(groupId => state.groups[groupId]).filter((group): group is Group => Boolean(group));
 
   return (
     <main className="flex h-full flex-1 flex-col overflow-hidden bg-[#f7f6f4] text-gray-950 transition-colors dark:bg-gray-950 dark:text-white">
@@ -62,33 +63,32 @@ export function Home({
       </header>
 
       <div className="flex-1 overflow-y-auto px-6 pb-28">
-        <section className="pb-8 pt-4" aria-labelledby="catch-title">
-          <p className="text-sm font-semibold text-[#c40068] dark:text-[#ff65b5]">You paid. Catch it now.</p>
-          <h1 id="catch-title" className="mt-2 max-w-[18rem] text-[2.45rem] font-bold leading-[1] tracking-[-0.06em]">Start with the receipt.</h1>
-          <p className="mt-3 max-w-[19rem] text-[15px] leading-6 text-gray-600 dark:text-gray-300">Review the amount and people before anything reaches the group.</p>
-          <button
-            type="button"
-            onClick={onScanReceipt}
-            data-primary-action="true"
-            className="mt-6 flex min-h-16 w-full items-center justify-center rounded-full bg-[#e6007a] px-6 text-lg font-bold text-white shadow-[0_14px_30px_rgba(230,0,122,0.22)] transition-colors hover:bg-[#c9006b]"
-          >
-            <Camera className="mr-2 h-5 w-5" aria-hidden="true" />
-            Scan a receipt
-          </button>
-        </section>
-
-        <section aria-labelledby="groups-title" className="border-t border-gray-200 py-7 dark:border-gray-800">
+        <section aria-labelledby="groups-title" className="pb-7 pt-4">
           <div className="flex items-center justify-between gap-3">
-            <h2 id="groups-title" className="text-lg font-bold tracking-[-0.03em]">Your groups</h2>
-            <button type="button" onClick={onStartGroup} className="min-h-11 px-2 text-sm font-semibold text-gray-600 hover:text-gray-950 dark:text-gray-300 dark:hover:text-white">New group</button>
+            <h1 id="groups-title" className="text-[2.2rem] font-bold leading-none tracking-[-0.055em]">Your groups</h1>
+            {presentation.state === 'returning' && (
+              <button type="button" onClick={onStartGroup} className="min-h-11 rounded-full px-3 text-sm font-semibold text-gray-600 hover:bg-white hover:text-gray-950 dark:text-gray-300 dark:hover:bg-gray-900 dark:hover:text-white">New group</button>
+            )}
           </div>
 
-          {openGroups.length === 0 ? (
-            <p className="py-5 text-sm text-gray-600 dark:text-gray-300">
-              No groups yet.
-            </p>
+          {presentation.state === 'empty' ? (
+            <div className="mt-7 rounded-[1.6rem] border border-black/5 bg-white p-6 shadow-[0_8px_26px_rgba(20,20,24,0.04)] dark:border-white/5 dark:bg-gray-900">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff0f8] text-[#e6007a] dark:bg-[#e6007a]/15">
+                <UsersRound className="h-6 w-6" aria-hidden="true" />
+              </span>
+              <h2 className="mt-5 text-xl font-bold tracking-[-0.035em]">Bring everyone into one place</h2>
+              <p className="mt-2 max-w-[25rem] text-sm leading-6 text-gray-600 dark:text-gray-300">Start with a dinner, trip, household, or any group that shares money.</p>
+              <button
+                type="button"
+                onClick={onStartGroup}
+                data-primary-action="true"
+                className="mt-6 flex min-h-14 w-full items-center justify-center rounded-full bg-[#e6007a] px-6 text-base font-bold text-white shadow-[0_12px_28px_rgba(230,0,122,0.2)] transition-colors hover:bg-[#c9006b]"
+              >
+                New group
+              </button>
+            </div>
           ) : (
-            <div className="mt-3 space-y-3">
+            <div className="mt-5 space-y-3">
               {openGroups.map(group => {
                 const copy = modeCopy(group);
                 const myBalance = getMemberBalance(state, group.id, currentUser.id);
@@ -125,6 +125,35 @@ export function Home({
               })}
             </div>
           )}
+        </section>
+
+        {presentation.prompt && (
+          <section aria-labelledby="home-prompt-title" className="border-t border-gray-200 py-7 dark:border-gray-800">
+            <p className="text-sm font-semibold text-[#c40068] dark:text-[#ff65b5]">{presentation.prompt.eyebrow}</p>
+            <h2 id="home-prompt-title" className="mt-2 text-xl font-bold tracking-[-0.035em]">{presentation.prompt.title}</h2>
+            <p className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300">{presentation.prompt.detail}</p>
+            <button
+              type="button"
+              onClick={() => onGoToGroup(presentation.prompt!.groupId)}
+              data-primary-action="true"
+              className="mt-5 flex min-h-14 w-full items-center justify-center rounded-full bg-gray-950 px-6 text-base font-bold text-white shadow-sm transition-colors hover:bg-gray-800 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-100"
+            >
+              {presentation.prompt.actionLabel}
+            </button>
+          </section>
+        )}
+
+        <section aria-labelledby="catch-shortcut-title" className="border-t border-gray-200 py-7 dark:border-gray-800">
+          <div className="flex items-start gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#e6007a] shadow-sm dark:bg-gray-900">
+              <Camera className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 id="catch-shortcut-title" className="font-bold tracking-[-0.02em]">Already paid for something?</h2>
+              <p className="mt-1 text-sm leading-5 text-gray-600 dark:text-gray-300">Capture a receipt now and choose the group after you review it.</p>
+              <button type="button" onClick={onScanReceipt} className="mt-3 min-h-11 text-sm font-bold text-[#c40068] hover:text-[#9f0056] dark:text-[#ff65b5] dark:hover:text-[#ff8ac8]">Scan a receipt</button>
+            </div>
+          </div>
         </section>
       </div>
     </main>
