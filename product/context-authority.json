@@ -268,11 +268,11 @@
           "kind": "decision",
           "status": "accepted",
           "owner": "agent-systems integrator",
-          "last_reviewed": "2026-08-26",
+          "last_reviewed": "2026-08-31",
           "freshness_days": 90,
           "applies_to": "chopdot-v1-launch",
           "authority": "process architecture only; never product law, participant authority, product priority, or release proof",
-          "sha256": "af5241be3436cdccbda1ca676a2b5c5a749e8bbdf235ce9fb18dd402c95d477e"
+          "sha256": "a742b30a622014bb4ede9ff45ace4d823932d0bf62ecf91ef963458145900db3"
         },
         {
           "path": "docs/superpowers/plans/2026-08-26-portable-agent-outcome-system.md",

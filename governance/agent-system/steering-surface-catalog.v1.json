@@ -35,7 +35,7 @@
       "scripts/"
     ],
     "repository_file_count": 717,
-    "repository_manifest_sha256": "5a9660f4fb38e3869d292ae34a7f0e1c636a9b2d55e92f0252e15fec17504ab1"
+    "repository_manifest_sha256": "b032344ff6fdf308c3e21dbb5484c1dc0e45a22ec2221d526163608ffa563461"
   },
   "lifecycle_summary": {
     "active": 249,
@@ -670,7 +670,7 @@
         "retry_exit": "Refresh from canonical sources or record the blocker; never substitute uncited recall."
       },
       "file_count": 7,
-      "manifest_sha256": "460dc0e2439425db1cb6f9047d3b7f3702db7b20abe48646a7d962338b1b64d3"
+      "manifest_sha256": "f1f74f83b5fd433beef42d844d30ed8a5c7045292ac4ae1b9a41f41a41839131"
     },
     {
       "id": "product-decisions",
@@ -4404,7 +4404,7 @@
     {
       "surface_id": "repo-product-context-authority-json",
       "path": "product/context-authority.json",
-      "sha256": "f66f1bc4d226e8c10703158b4cdc492d5b18313de12b294e5146fcb6222f73fe",
+      "sha256": "3b6864d30e108f6b2f6ed4a1c09d724927dfa9eedf6b1ecaabc97eb7a837df5c",
       "bytes": 13799,
       "group_id": "product-context-and-history",
       "surface_kind": "context_source",
@@ -14315,5 +14315,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "eef8fa527d8f4e26afb0688e07cf52486bc5a14642d81895fac9d73af9f1121c"
+  "catalog_digest": "04b2d187124bbbd7781b5201c6ee61ca906b13e1d7cb8f39e4a436a14bfb63f2"
 }
