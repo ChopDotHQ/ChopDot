@@ -1,7 +1,9 @@
 import {expect, test} from '@playwright/test';
 
+const baseUrl = process.env.AUTHORITY_KEY_TEST_BASE_URL ?? 'http://127.0.0.1:4177';
+
 test('legacy assessments upgrade, encrypt, authenticate, remain immutable, and reset safely', async ({page}) => {
-  await page.goto('http://127.0.0.1:4177/');
+  await page.goto(baseUrl);
 
   const result = await page.evaluate(async () => {
     const dbName = `chopdot-legacy-assessment-test-${crypto.randomUUID()}`;
@@ -181,7 +183,7 @@ test('the production entrypoint persists a redacted source assessment before aut
     activityEvents: {},
     savedRecords: {},
   });
-  await page.goto('http://127.0.0.1:4177/');
+  await page.goto(baseUrl);
 
   await expect.poll(() => page.evaluate(async () => {
     const database = (await indexedDB.databases()).find(item => item.name === 'chopdot-authority-v1');

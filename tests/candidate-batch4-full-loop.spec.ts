@@ -4,6 +4,7 @@ import {expect,test,type Browser,type BrowserContext,type Page} from '@playwrigh
 import type {CanonicalEventV1} from '../src/core/moneyEventKernel.ts';
 
 const proofDir='proof/chopdot-candidate-2026-08-12/screenshots/b4-2026-08-13';
+const baseUrl=process.env.AUTHORITY_KEY_TEST_BASE_URL??'http://127.0.0.1:4177';
 type ActorId='mina'|'leo'|'nina';
 type Actor={id:ActorId;context:BrowserContext;page:Page};
 
@@ -96,7 +97,7 @@ async function actor(browser:Browser,bus:BrowserDinnerBus,id:ActorId,viewport:{w
   await page.exposeBinding('__b4Load',async(_source,groupId:string)=>bus.load(id,groupId));
   await page.exposeBinding('__b4Publish',async(_source,event:CanonicalEventV1)=>bus.publish(id,event));
   bus.add(id,page);
-  await page.goto('http://127.0.0.1:4177/tests/fixtures/candidateBatch4FullLoopApp.html');
+  await page.goto(`${baseUrl}/tests/fixtures/candidateBatch4FullLoopApp.html`);
   return{id,context,page};
 }
 
