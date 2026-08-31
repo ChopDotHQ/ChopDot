@@ -1,7 +1,7 @@
 import { appendEvent, rebuildSnapshot } from './ledger.mjs';
 import { approvalAllowsEffect } from './approvals.mjs';
 import { digestObject, errorRecord, makeId, nowIso } from './core.mjs';
-import { contractRoot } from './contract.mjs';
+import { contractRoot, digestContract } from './contract.mjs';
 import { validateRuntimePacket } from './validate.mjs';
 
 function assertEffect(value) {
@@ -13,6 +13,30 @@ function normalizedReadback(value, status, observedAt) {
   if (value === null || value === undefined) return null;
   if (value.observed_at && value.source && value.digest && value.status) return value;
   return { observed_at: observedAt, source: 'effect-readback', digest: digestObject(value), status };
+}
+
+function expectedEffectRisk(contract) {
+  return contract.task_route?.risk_tier === 'critical' ? 'critical' : contract.task_route?.risk_tier === 'moderate' ? 'medium' : 'low';
+}
+
+export function assertContractEffectAuthority(contract, input = {}) {
+  const allowed = contract.authority?.external_effects ?? [];
+  if (!input.effect_type || !allowed.includes(input.effect_type) || input.effect_type === 'none') throw new Error(`Effect type ${input.effect_type ?? '(missing)'} is not authorized by the contract`);
+  const root = contractRoot(contract);
+  if (input.scope !== undefined && input.scope !== root) throw new Error('Effect scope differs from the contract exact root');
+  const approvalRequired = contract.task_route
+    ? Boolean(contract.task_route.approval_boundary?.approval_required)
+    : Boolean((contract.authority?.required_approvals ?? []).length);
+  const risk = contract.task_route ? expectedEffectRisk(contract) : (input.risk ?? 'low');
+  const authoritySource = contract.task_route ? `task-route:${contract.task_route.route_id}` : 'contract';
+  if (input.approval_required !== undefined && Boolean(input.approval_required) !== approvalRequired) throw new Error('Caller approval_required differs from the contract authority boundary');
+  if (input.risk !== undefined && contract.task_route && input.risk !== risk) throw new Error('Caller risk differs from the routed risk tier');
+  if (input.authority_source !== undefined && input.authority_source !== authoritySource) throw new Error('Caller authority_source differs from the bound authority source');
+  return { root, approvalRequired, risk, authoritySource, readbackRequired: Boolean(contract.task_route?.evidence?.readback_required || contract.task_route?.approval_boundary?.required_readback) };
+}
+
+function assertDeclaredContract(snapshot, contract) {
+  if (!snapshot.contract_digest || snapshot.contract_digest !== digestContract(contract)) throw new Error('Runtime contract differs from the immutable declared contract digest');
 }
 
 export function effectIdempotencyKey(input) {
@@ -29,11 +53,13 @@ export function effectIdempotencyKey(input) {
 }
 
 export async function planEffect(runDirectory, contract, input = {}) {
-  if (input.approval_required && (!input.approval_id || !input.approval_expires_at)) {
+  const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+  assertDeclaredContract(snapshot, contract);
+  const authority = assertContractEffectAuthority(contract, input);
+  if (authority.approvalRequired && (!input.approval_id || !input.approval_expires_at)) {
     throw new Error('Approval-required effects must bind approval_id and approval_expires_at when planned');
   }
   const key = effectIdempotencyKey({ ...input, run_id: contract.run_id });
-  const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
   const existing = Object.values(snapshot.effects).find((effect) => effect.idempotency_key === key);
   if (existing) return { effect: existing, duplicate: true };
   const effect = {
@@ -44,13 +70,13 @@ export async function planEffect(runDirectory, contract, input = {}) {
     effect_type: input.effect_type,
     target: input.target,
     normalized_parameters: input.normalized_parameters ?? {},
-    scope: input.scope ?? contractRoot(contract),
-    risk: input.risk ?? 'low',
+    scope: authority.root,
+    risk: authority.risk,
     expected_change: input.expected_change,
     payload_digest: digestObject(input.intended_payload),
     idempotency_key: key,
-    authority_source: input.authority_source ?? 'contract',
-    approval_required: Boolean(input.approval_required),
+    authority_source: authority.authoritySource,
+    approval_required: authority.approvalRequired,
     ...(input.approval_id ? { approval_id: input.approval_id } : {}),
     ...(input.approval_expires_at ? { approval_expires_at: input.approval_expires_at } : {}),
     state: 'planned',
@@ -67,6 +93,7 @@ export async function planEffect(runDirectory, contract, input = {}) {
 
 export async function approveEffect(runDirectory, contract, effectId, approvalId, actor = 'runner') {
   const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+  assertDeclaredContract(snapshot, contract);
   const effect = snapshot.effects[effectId];
   if (!effect) throw new Error(`Unknown effect: ${effectId}`);
   const approval = snapshot.approvals[approvalId];
@@ -82,8 +109,10 @@ export async function approveEffect(runDirectory, contract, effectId, approvalId
 
 export async function beginEffectDispatch(runDirectory, contract, effectId, options = {}) {
   const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+  assertDeclaredContract(snapshot, contract);
   const effect = snapshot.effects[effectId];
   if (!effect) throw new Error(`Unknown effect: ${effectId}`);
+  assertContractEffectAuthority(contract, effect);
   if (['dispatching', 'unknown_needs_reconciliation', 'observed', 'verified'].includes(effect.state)) {
     throw new Error(`Effect ${effectId} cannot be blindly redispatched from ${effect.state}`);
   }
@@ -115,6 +144,7 @@ export async function beginEffectDispatch(runDirectory, contract, effectId, opti
 
 export async function markEffectDispatched(runDirectory, contract, effectId, dispatchReceipt = {}, actor = 'runner') {
   const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+  assertDeclaredContract(snapshot, contract);
   if (snapshot.effects[effectId]?.state !== 'dispatching') throw new Error(`Effect ${effectId} is not dispatching`);
   return appendEvent(runDirectory, {
     run_id: contract.run_id,
@@ -135,6 +165,7 @@ export async function failEffect(runDirectory, contract, effectId, error, actor 
 
 export async function reconcileEffect(runDirectory, contract, effectId, observation, actor = 'reconciler') {
   const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+  assertDeclaredContract(snapshot, contract);
   const effect = snapshot.effects[effectId];
   if (!effect) throw new Error(`Unknown effect: ${effectId}`);
   if (!['dispatching', 'unknown_needs_reconciliation', 'observed'].includes(effect.state)) {
@@ -158,6 +189,12 @@ export async function reconcileEffect(runDirectory, contract, effectId, observat
 }
 
 export async function dispatchEffect(runDirectory, contract, effectId, executor, readback, options = {}) {
+  const snapshot = await rebuildSnapshot(runDirectory, contract.run_id);
+  assertDeclaredContract(snapshot, contract);
+  const effect = snapshot.effects[effectId];
+  if (!effect) throw new Error(`Unknown effect: ${effectId}`);
+  const authority = assertContractEffectAuthority(contract, effect);
+  if (authority.readbackRequired && !readback) throw new Error(`Effect ${effectId} requires readback before dispatch`);
   await beginEffectDispatch(runDirectory, contract, effectId, options);
   let receipt;
   try {

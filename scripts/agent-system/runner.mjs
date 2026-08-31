@@ -36,6 +36,8 @@ export async function resumeRun(runDirectory, options = {}) {
   const contract = await readJson(path.join(runDirectory, 'contract.json'));
   const validation = validateAgentContract(contract, { expectedRoot: options.expectedRoot ?? contractRoot(contract) });
   if (!validation.valid) throw new Error(`Cannot resume invalid contract: ${validation.issues.map((entry) => entry.message).join('; ')}`);
+  const declared = await rebuildSnapshot(runDirectory, contract.run_id);
+  if (!declared.contract_digest || declared.contract_digest !== digestContract(contract)) throw new Error('Cannot resume: persisted contract differs from the immutable declared contract digest');
   const lease = await acquireLease(runDirectory, { holder: options.holder, ttlMs: options.leaseTtlMs, now: options.now });
   try {
     let snapshot = await rebuildSnapshot(runDirectory, contract.run_id);

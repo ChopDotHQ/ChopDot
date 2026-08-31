@@ -155,7 +155,7 @@
   "authority": {
     "policy_ref": "governance/agent-system/policies/authority-boundaries.json",
     "allowed_reads": ["product law", "category benchmark baseline", "Product Cockpit", "cited E1, E2, and E3 evidence"],
-    "allowed_writes": ["product card candidate", "product definition candidate", "evidence packet"],
+    "allowed_writes": ["product"],
     "allowed_tools": ["shell_read", "product_validator", "agent_validator"],
     "external_effects": ["none"],
     "required_approvals": ["founder approval for product-law, strategy, or intentional category-baseline exclusion changes"]

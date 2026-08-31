@@ -3,6 +3,8 @@ import path from 'node:path';
 import { EFFECT_STATES, TERMINAL_STATES, digestObject, normalizeRoot, readJson } from './core.mjs';
 import { contractBudgetLimits, contractRoot, verifyContractDigest } from './contract.mjs';
 import { loadGovernanceJson, validateGovernanceInstance, validateSchemaDocument } from './schema.mjs';
+import { routeExecutionMode } from './router.mjs';
+import { validateTaskRoutingPolicy } from './routing-policy.mjs';
 
 const REQUIRED_CONTRACT_FIELDS = [
   'contract_version', 'run_id', 'created_at', 'created_by', 'loop_profile', 'task',
@@ -39,6 +41,11 @@ export function validateAgentContract(contract, options = {}) {
   if (!nonEmpty(contract.created_at)) issues.push(issue('created_at', 'Must be a non-empty date-time string'));
   if (!object(contract.created_by) || !nonEmpty(contract.created_by.id) || !['human', 'agent', 'deterministic_runner', 'external_system'].includes(contract.created_by.kind)) issues.push(issue('created_by', 'Created-by actor ID and kind are required'));
   if (!object(contract.loop_profile) || !nonEmpty(contract.loop_profile.id) || contract.loop_profile.version !== '1.0.0' || !nonEmpty(contract.loop_profile.path)) issues.push(issue('loop_profile', 'Profile ID, V1 version, and path are required'));
+  if (contract.task_route) {
+    if (contract.task_route.profile_id !== contract.loop_profile?.id) issues.push(issue('task_route.profile_id', 'Route and contract profile IDs differ', 'route_contract_mismatch'));
+    if (routeExecutionMode({ execution_mode: contract.task_route.execution_mode }) !== contract.architecture?.mode) issues.push(issue('task_route.execution_mode', 'Route and contract execution modes differ', 'route_contract_mismatch'));
+    if (contract.task_route.risk_tier === 'critical' && !contract.task_route.agent_ids?.includes('independent-evaluator')) issues.push(issue('task_route.agent_ids', 'Critical route binding requires an independent evaluator role', 'independent_evaluator_required'));
+  }
   if (!object(contract.task) || !nonEmpty(contract.task.title) || !nonEmpty(contract.task.objective) || !nonEmpty(contract.task.deliverable)) issues.push(issue('task', 'Task title, objective, and deliverable are required'));
   if (!nonEmpty(contract.intent_type)) issues.push(issue('intent_type', 'Intent type is required'));
   if (!Array.isArray(contract.requirement_ids) || contract.requirement_ids.length === 0 || contract.requirement_ids.some((id) => !nonEmpty(id))) {
@@ -170,6 +177,7 @@ export function validatePolicyCatalog(policy, kind = 'policy') {
     for (const entry of budgets) for (const field of ['max_iterations', 'max_retries', 'same_blocker_limit', 'independent_rechecks']) if (!Number.isInteger(entry[field]) || entry[field] < (field === 'max_retries' ? 0 : 1)) issues.push(issue(`budgets.${entry.id ?? '?'}.${field}`, 'Bounded integer budget is required'));
     if (!Array.isArray(policy.consumption_rules) || policy.consumption_rules.length < 5) issues.push(issue('consumption_rules', 'Retry consumption and stop rules are required'));
   }
+  if (kind === 'task-routing.v1') issues.push(...validateTaskRoutingPolicy(policy).issues);
   return { valid: issues.length === 0, issues };
 }
 
@@ -275,7 +283,8 @@ export function validateContractProfileAlignment(contract, profile, retryPolicy 
   if (!expectedArtifacts.every((type) => contract.artifact_contract?.artifact_types?.includes(type))) issues.push(issue('artifact_contract.artifact_types', 'Contract omits profile-required artifact types'));
   const profileAssertions = new Map((profile.expected_outcome?.assertions ?? []).map((entry) => [entry.id, entry]));
   const contractAssertions = new Map((contract.expected_outcome?.assertions ?? []).map((entry) => [entry.id, entry]));
-  if (profileAssertions.size !== contractAssertions.size) issues.push(issue('expected_outcome.assertions', 'Contract assertion count differs from selected profile'));
+  if (!contract.task_route && profileAssertions.size !== contractAssertions.size) issues.push(issue('expected_outcome.assertions', 'Contract assertion count differs from selected profile'));
+  if (contract.task_route && [...contractAssertions.keys()].some((id) => !profileAssertions.has(id) && !id.startsWith('ROUTE-'))) issues.push(issue('expected_outcome.assertions', 'Route-bound contract contains an ungoverned extra assertion'));
   for (const [id, expected] of profileAssertions) {
     const actual = contractAssertions.get(id);
     if (!actual || actual.subject !== expected.measurement || actual.operator !== expected.operator || JSON.stringify(actual.expected) !== JSON.stringify(expected.expected) || actual.minimum_evidence_level !== expected.minimum_evidence_level || actual.hard_fail !== expected.hard_fail) issues.push(issue(`expected_outcome.assertions.${id}`, 'Contract assertion differs from selected profile'));
@@ -289,7 +298,9 @@ export function validateContractProfileAlignment(contract, profile, retryPolicy 
   const rubric = `governance/agent-system/evals/rubrics/${profile.profile_id}.v1.json`;
   if (!contract.evaluator?.rubric_refs?.includes(rubric)) issues.push(issue('evaluator.rubric_refs', 'Selected profile rubric is missing'));
   if (contract.evaluator?.reviewer_independence !== profile.evaluator?.independence || contract.evaluator?.pass_threshold !== profile.evaluator?.pass_threshold) issues.push(issue('evaluator', 'Contract evaluator differs from selected profile'));
-  if (JSON.stringify(contract.evaluator?.hard_fail_assertion_ids ?? []) !== JSON.stringify(profile.evaluator?.hard_failures ?? [])) issues.push(issue('evaluator.hard_fail_assertion_ids', 'Contract hard-fail assertions differ from selected profile'));
+  const routeHardFailures = contract.task_route ? [...contractAssertions.keys()].filter((id) => id.startsWith('ROUTE-')) : [];
+  const expectedHardFailures = [...new Set([...(profile.evaluator?.hard_failures ?? []), ...routeHardFailures])];
+  if (JSON.stringify(contract.evaluator?.hard_fail_assertion_ids ?? []) !== JSON.stringify(expectedHardFailures)) issues.push(issue('evaluator.hard_fail_assertion_ids', 'Contract hard-fail assertions differ from selected profile and routed evidence gates'));
   const failureFields = profile.failure_packet?.required_fields ?? [];
   if (JSON.stringify(contract.failure_outcome?.required_fields ?? []) !== JSON.stringify(failureFields)) issues.push(issue('failure_outcome.required_fields', 'Contract failure packet differs from selected profile'));
   if (JSON.stringify(contract.terminal_states ?? []) !== JSON.stringify(profile.terminal_states ?? [])) issues.push(issue('terminal_states', 'Contract terminal states differ from selected profile'));

@@ -32,6 +32,51 @@
     "run_id": { "$ref": "#/$defs/run_id" },
     "created_at": { "type": "string", "format": "date-time" },
     "created_by": { "$ref": "#/$defs/actor" },
+    "task_route": {
+      "type": "object",
+      "required": ["route_id", "route_digest", "source_path", "task_domain", "run_type", "risk_tier", "profile_id", "execution_mode", "agent_ids", "skill_ids", "expected_outcome", "evidence", "approval_boundary"],
+      "properties": {
+        "route_id": { "type": "string", "pattern": "^route_[a-z0-9][a-z0-9_-]{7,95}$" },
+        "route_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "source_path": { "$ref": "#/$defs/repo_path" },
+        "task_domain": { "enum": ["research", "product-definition", "implementation", "ux", "security-authority", "incident", "release"] },
+        "run_type": { "enum": ["turn", "bounded_goal", "time_based", "proactive"] },
+        "risk_tier": { "enum": ["low", "moderate", "critical"] },
+        "profile_id": { "enum": ["research", "product-definition", "implementation", "ux-creation", "security-authority", "incident-repair", "release-outcome"] },
+        "execution_mode": { "enum": ["deterministic", "single-agent", "parallel-workers", "orchestrator-workers", "evaluator-optimizer"] },
+        "agent_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "skill_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^skill-[a-z0-9-]+$" } },
+        "expected_outcome": { "type": "string", "minLength": 12 },
+        "evidence": {
+          "type": "object",
+          "required": ["minimum_level", "focused_proof", "integration_proof", "screenshots_required", "exact_candidate_required", "readback_required"],
+          "properties": {
+            "minimum_level": { "$ref": "#/$defs/evidence_level" },
+            "focused_proof": { "type": "boolean" },
+            "integration_proof": { "type": "boolean" },
+            "screenshots_required": { "type": "boolean" },
+            "exact_candidate_required": { "type": "boolean" },
+            "readback_required": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "approval_boundary": {
+          "type": "object",
+          "required": ["effect_class", "effect_types", "mutation_allowed", "approval_required", "approval_ref", "new_effect_route_required", "required_readback"],
+          "properties": {
+            "effect_class": { "enum": ["read_only", "repo_local_write", "repository_effect", "external_effect", "critical_external_effect"] },
+            "effect_types": { "type": "array", "uniqueItems": true, "items": { "enum": ["commit", "push", "pr_create", "pr_update", "repository_setting", "credential_use", "publish", "deploy", "chain_write", "message_send", "payment"] } },
+            "mutation_allowed": { "type": "boolean" },
+            "approval_required": { "type": "boolean" },
+            "approval_ref": { "type": ["object", "null"] },
+            "new_effect_route_required": { "type": "boolean" },
+            "required_readback": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "loop_profile": {
       "type": "object",
       "required": ["id", "version", "path"],

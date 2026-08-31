@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/governance/agent-system/contracts/task-route.v1.schema.json",
+  "title": "Task Route V1",
+  "description": "Fail-closed admission receipt that selects process and evidence without deciding domain truth.",
+  "type": "object",
+  "required": [
+    "route_version", "route_id", "created_at", "scope", "task_domain", "run_type",
+    "execution_mode", "risk_tier", "selection", "expected_outcome", "evidence",
+    "budget", "stop_condition", "approval_boundary", "routing_rationale", "verdict",
+    "route_digest"
+  ],
+  "properties": {
+    "route_version": { "const": "1.0.0" },
+    "route_id": { "type": "string", "pattern": "^route_[a-z0-9][a-z0-9_-]{7,95}$" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "scope": {
+      "type": "object",
+      "required": ["root", "branch", "head", "tree", "dirty_paths"],
+      "properties": {
+        "root": { "type": "string", "pattern": "^/" },
+        "branch": { "type": "string", "minLength": 1 },
+        "head": { "$ref": "#/$defs/git_sha" },
+        "tree": { "$ref": "#/$defs/git_sha" },
+        "dirty_paths": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$" } }
+      },
+      "additionalProperties": false
+    },
+    "task_domain": { "enum": ["research", "product-definition", "implementation", "ux", "security-authority", "incident", "release"] },
+    "run_type": { "enum": ["turn", "bounded_goal", "time_based", "proactive"] },
+    "execution_mode": { "enum": ["deterministic", "single-agent", "parallel-workers", "orchestrator-workers", "evaluator-optimizer"] },
+    "risk_tier": { "enum": ["low", "moderate", "critical"] },
+    "selection": {
+      "type": "object",
+      "required": ["profile_id", "agent_ids", "skill_ids", "observed_unapproved_skill_ids"],
+      "properties": {
+        "profile_id": { "enum": ["research", "product-definition", "implementation", "ux-creation", "security-authority", "incident-repair", "release-outcome"] },
+        "agent_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["deterministic-runner", "task-owner", "parallel-worker", "orchestrator", "independent-evaluator"] } },
+        "skill_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^skill-[a-z0-9-]+$" } },
+        "observed_unapproved_skill_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "expected_outcome": { "type": "string", "minLength": 12 },
+    "evidence": {
+      "type": "object",
+      "required": ["minimum_level", "focused_proof", "integration_proof", "screenshots_required", "exact_candidate_required", "readback_required"],
+      "properties": {
+        "minimum_level": { "$ref": "#/$defs/evidence_level" },
+        "focused_proof": { "type": "boolean" },
+        "integration_proof": { "type": "boolean" },
+        "screenshots_required": { "type": "boolean" },
+        "exact_candidate_required": { "type": "boolean" },
+        "readback_required": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "budget": {
+      "type": "object",
+      "required": ["max_iterations", "max_retries", "same_blocker_limit", "max_wall_seconds", "max_tool_calls", "max_model_cost_usd", "max_external_cost_usd"],
+      "properties": {
+        "max_iterations": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "max_retries": { "type": "integer", "minimum": 0, "maximum": 20 },
+        "same_blocker_limit": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "max_wall_seconds": { "type": "integer", "minimum": 1 },
+        "max_tool_calls": { "type": "integer", "minimum": 1 },
+        "max_model_cost_usd": { "type": "number", "minimum": 0 },
+        "max_external_cost_usd": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "stop_condition": {
+      "type": "object",
+      "required": ["success", "failure", "retry_exit"],
+      "properties": {
+        "success": { "type": "string", "minLength": 8 },
+        "failure": { "type": "string", "minLength": 8 },
+        "retry_exit": { "type": "string", "minLength": 8 }
+      },
+      "additionalProperties": false
+    },
+    "approval_boundary": {
+      "type": "object",
+      "required": ["effect_class", "effect_types", "mutation_allowed", "approval_required", "approval_ref", "new_effect_route_required", "required_readback"],
+      "properties": {
+        "effect_class": { "enum": ["read_only", "repo_local_write", "repository_effect", "external_effect", "critical_external_effect"] },
+        "effect_types": { "type": "array", "uniqueItems": true, "items": { "enum": ["commit", "push", "pr_create", "pr_update", "repository_setting", "credential_use", "publish", "deploy", "chain_write", "message_send", "payment"] } },
+        "mutation_allowed": { "type": "boolean" },
+        "approval_required": { "type": "boolean" },
+        "approval_ref": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "required": ["approval_id", "granted_by", "granted_by_kind", "source", "effect_class", "effect_types", "scope_root", "candidate_head", "candidate_tree", "request_digest", "granted_at", "expires_at", "evidence_ref", "approval_digest"],
+              "properties": {
+                "approval_id": { "type": "string", "pattern": "^approval_[a-z0-9][a-z0-9_-]{7,95}$" },
+                "granted_by": { "type": "string", "minLength": 2 },
+                "granted_by_kind": { "const": "human" },
+                "source": { "enum": ["current_thread_user_message", "recorded_operator_envelope"] },
+                "effect_class": { "enum": ["repo_local_write", "repository_effect", "external_effect", "critical_external_effect"] },
+                "effect_types": { "type": "array", "uniqueItems": true, "items": { "enum": ["commit", "push", "pr_create", "pr_update", "repository_setting", "credential_use", "publish", "deploy", "chain_write", "message_send", "payment"] } },
+                "scope_root": { "type": "string", "pattern": "^/" },
+                "candidate_head": { "$ref": "#/$defs/git_sha" },
+                "candidate_tree": { "$ref": "#/$defs/git_sha" },
+                "request_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+                "granted_at": { "type": "string", "format": "date-time" },
+                "expires_at": { "type": "string", "format": "date-time" },
+                "evidence_ref": { "type": "string", "minLength": 8 },
+                "approval_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "new_effect_route_required": { "type": "boolean" },
+        "required_readback": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "routing_rationale": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 8 } },
+    "verdict": { "enum": ["routed", "unverified", "blocked", "approval_required"] },
+    "route_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  },
+  "$defs": {
+    "git_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "evidence_level": { "enum": ["source-only", "unit", "simulated-integration", "simulated-host", "exact-candidate", "real-host-chain", "live-user", "release", "local-blocked"] }
+  },
+  "additionalProperties": false
+}

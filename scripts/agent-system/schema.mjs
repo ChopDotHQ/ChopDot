@@ -161,6 +161,10 @@ export function loadGovernanceJson(...segments) {
   return JSON.parse(readFileSync(path.join(GOVERNANCE_ROOT, ...segments), 'utf8'));
 }
 
+export function loadGovernanceJsonFrom(root, ...segments) {
+  return JSON.parse(readFileSync(path.join(path.resolve(root), 'governance', 'agent-system', ...segments), 'utf8'));
+}
+
 export function validateGovernanceInstance(instance, schemaFile) {
   return validateSchemaInstance(instance, loadGovernanceJson('contracts', schemaFile));
 }

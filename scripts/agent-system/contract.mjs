@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { digestObject, makeId, normalizeRoot, nowIso, sha256 } from './core.mjs';
-import { loadGovernanceJson } from './schema.mjs';
+import { loadGovernanceJson, loadGovernanceJsonFrom } from './schema.mjs';
 
 const INTENT_BY_PROFILE = {
   research: 'research',
@@ -14,6 +14,17 @@ const INTENT_BY_PROFILE = {
 };
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
+
+export function routeEvidenceAssertions(route) {
+  const assertions = [];
+  const add = (id, subject, minimumEvidenceLevel) => assertions.push({ id, description: `${subject.replaceAll('_', ' ')} is passed.`, subject, operator: 'one_of', expected: ['passed'], minimum_evidence_level: minimumEvidenceLevel, hard_fail: true });
+  if (route?.evidence?.focused_proof) add('ROUTE-FOCUSED', 'focused_proof_status', 'unit');
+  if (route?.evidence?.integration_proof) add('ROUTE-INTEGRATION', 'integration_proof_status', 'simulated-integration');
+  if (route?.evidence?.screenshots_required) add('ROUTE-SCREENSHOTS', 'screenshot_review_status', 'simulated-integration');
+  if (route?.evidence?.exact_candidate_required) add('ROUTE-EXACT-CANDIDATE', 'exact_candidate_status', 'exact-candidate');
+  if (route?.evidence?.readback_required) add('ROUTE-READBACK', 'required_readback_status', route.evidence.minimum_level);
+  return assertions;
+}
 
 function requiredProfileCommands(profileId, profile) {
   if (!profile.evaluator?.deterministic_checks?.includes('benchmark_packet_semantics_check')) return [];
@@ -32,26 +43,35 @@ function requiredProfileCommands(profileId, profile) {
   throw new Error(`benchmark_packet_semantics_check has no command mapping for ${profileId}`);
 }
 
-export function loadLoopProfile(profileId) {
+export function loadLoopProfile(profileId, root) {
   if (!(profileId in INTENT_BY_PROFILE)) throw new Error(`Unknown loop profile: ${profileId}`);
-  return loadGovernanceJson('loops', `${profileId}.v1.json`);
+  return root ? loadGovernanceJsonFrom(root, 'loops', `${profileId}.v1.json`) : loadGovernanceJson('loops', `${profileId}.v1.json`);
 }
 
-export function loadExampleContract(profileId) {
+export function loadExampleContract(profileId, root) {
   if (!(profileId in INTENT_BY_PROFILE)) throw new Error(`Unknown loop profile: ${profileId}`);
-  return loadGovernanceJson('loops', 'examples', `${profileId}.contract.v1.json`);
+  return root ? loadGovernanceJsonFrom(root, 'loops', 'examples', `${profileId}.contract.v1.json`) : loadGovernanceJson('loops', 'examples', `${profileId}.contract.v1.json`);
 }
 
 export function createContract(options = {}) {
   const root = normalizeRoot(options.root ?? process.cwd());
   const runId = options.runId ?? makeId('run');
   const createdAt = options.createdAt ?? nowIso();
-  const sourcePath = options.sourcePath ?? 'PRODUCT_TRUTH.md';
+  const routeNeedsProductLaw = ['product-definition', 'ux'].includes(options.taskRoute?.task_domain);
+  const sourcePath = options.sourcePath ?? (options.taskRoute && !routeNeedsProductLaw ? 'governance/agent-system/policies/task-routing.v1.json' : 'PRODUCT_TRUTH.md');
   let sourceHash = '0'.repeat(64);
   try { sourceHash = sha256(readFileSync(path.join(root, sourcePath))); } catch { /* validation reports unavailable context later */ }
   const profileId = String(options.loopProfile ?? 'implementation').replace(/\.v1$/, '');
-  const profile = loadLoopProfile(profileId);
-  const template = clone(loadExampleContract(profileId));
+  const profile = loadLoopProfile(profileId, options.taskRoute ? root : undefined);
+  const template = clone(loadExampleContract(profileId, options.taskRoute ? root : undefined));
+  const routeBound = Boolean(options.taskRoute);
+  const routeScope = options.taskRoute?.scope;
+  const routeBoundary = options.taskRoute?.approval_boundary;
+  const routeAllowsMutation = Boolean(routeBoundary?.mutation_allowed);
+  const profileAssertions = profile.expected_outcome.assertions.map(({ measurement, ...assertion }) => ({ ...assertion, subject: measurement }));
+  const routeAssertions = routeBound ? routeEvidenceAssertions(options.taskRoute) : [];
+  const routeAssertionIds = new Set(routeAssertions.map((entry) => entry.id));
+  const contractAssertions = [...profileAssertions.filter((entry) => !routeAssertionIds.has(entry.id)), ...routeAssertions];
   const task = typeof options.task === 'object' ? options.task : {
     title: String(options.task ?? 'Bounded agent task').slice(0, 120),
     objective: options.objective ?? 'Produce the declared artifact and pass every objective assertion.',
@@ -62,12 +82,29 @@ export function createContract(options = {}) {
     run_id: runId,
     created_at: createdAt,
     created_by: typeof options.createdBy === 'object' ? options.createdBy : { id: options.createdBy ?? 'operator', kind: options.createdByKind ?? 'human' },
+    ...(options.taskRoute ? {
+      task_route: {
+        route_id: options.taskRoute.route_id,
+        route_digest: options.taskRoute.route_digest,
+        source_path: options.taskRoutePath,
+        task_domain: options.taskRoute.task_domain,
+        run_type: options.taskRoute.run_type,
+        risk_tier: options.taskRoute.risk_tier,
+        profile_id: options.taskRoute.selection.profile_id,
+        execution_mode: options.taskRoute.execution_mode,
+        agent_ids: clone(options.taskRoute.selection.agent_ids),
+        skill_ids: clone(options.taskRoute.selection.skill_ids),
+        expected_outcome: options.taskRoute.expected_outcome,
+        evidence: clone(options.taskRoute.evidence),
+        approval_boundary: clone(options.taskRoute.approval_boundary),
+      },
+    } : {}),
     loop_profile: options.loopProfileObject ?? {
       id: profileId,
       version: '1.0.0',
       path: `governance/agent-system/loops/${profileId}.v1.json`,
     },
-    task,
+    task: routeBound ? { ...task, objective: options.taskRoute.expected_outcome } : task,
     intent_type: options.intentType ?? INTENT_BY_PROFILE[profileId],
     requirement_ids: options.requirementIds ?? profile.expected_outcome.assertions.map((entry) => entry.id),
     artifact_contract: options.artifactContract ?? {
@@ -75,11 +112,22 @@ export function createContract(options = {}) {
       artifact_types: clone(profile.artifact_contract.artifact_types),
       required_paths: options.inPaths?.length ? options.inPaths : template.artifact_contract.required_paths,
     },
-    expected_outcome: options.expectedOutcome ?? {
+    expected_outcome: routeBound ? {
       statement: profile.expected_outcome.statement,
-      assertions: profile.expected_outcome.assertions.map(({ measurement, ...assertion }) => ({ ...assertion, subject: measurement })),
+      assertions: contractAssertions,
+    } : options.expectedOutcome ?? {
+      statement: profile.expected_outcome.statement,
+      assertions: profileAssertions,
     },
-    scope: options.scope ?? {
+    scope: routeBound ? {
+      root,
+      branch: routeScope.branch,
+      starting_head: routeScope.head,
+      starting_tree: routeScope.tree,
+      in_paths: options.inPaths?.length ? options.inPaths : template.scope.in_paths,
+      out_paths: options.outPaths ?? [],
+      dirty_paths: clone(routeScope.dirty_paths),
+    } : options.scope ?? {
       root,
       branch: options.branch ?? 'UNKNOWN',
       starting_head: options.startingHead ?? 'UNKNOWN',
@@ -88,19 +136,37 @@ export function createContract(options = {}) {
       out_paths: options.outPaths ?? [],
       dirty_paths: options.dirtyPaths ?? [],
     },
-    authority: options.authority ?? {
+    authority: routeBound ? {
+      ...template.authority,
+      allowed_reads: template.authority.allowed_reads,
+      allowed_writes: routeAllowsMutation ? clone(template.scope.in_paths) : [],
+      external_effects: routeBoundary.effect_types.length ? clone(routeBoundary.effect_types) : ['none'],
+      required_approvals: routeBoundary.approval_required ? ['accepted-task-route-approval'] : template.authority.required_approvals,
+    } : options.authority ?? {
       ...template.authority,
       allowed_reads: options.allowedReads ?? template.authority.allowed_reads,
       allowed_writes: options.allowedWrites ?? template.authority.allowed_writes,
+      external_effects: template.authority.external_effects,
+      required_approvals: template.authority.required_approvals,
     },
     context: options.context ?? {
-      governing_sources: [{ path: sourcePath, sha256: sourceHash, authority_level: 'product_law', observed_at: createdAt }],
+      governing_sources: [{ path: sourcePath, sha256: sourceHash, authority_level: sourcePath === 'PRODUCT_TRUTH.md' ? 'product_law' : 'guardrail', observed_at: createdAt }],
       max_age_seconds: 86_400,
       conflict_policy: 'block_same_level_conflict',
       wrong_root_policy: 'fail_closed',
     },
-    architecture: options.architecture ?? template.architecture,
-    budgets: options.budgets ?? {
+    architecture: routeBound ? {
+      mode: options.routeExecutionMode,
+      justification: options.taskRoute.routing_rationale.join(' '),
+    } : options.architecture ?? template.architecture,
+    budgets: routeBound ? {
+      max_iterations: options.taskRoute.budget.max_iterations,
+      max_retries: options.taskRoute.budget.max_retries,
+      max_wall_seconds: options.taskRoute.budget.max_wall_seconds,
+      max_tool_calls: options.taskRoute.budget.max_tool_calls,
+      max_model_cost_usd: options.taskRoute.budget.max_model_cost_usd,
+      max_external_cost_usd: options.taskRoute.budget.max_external_cost_usd,
+    } : options.budgets ?? {
       ...template.budgets,
       max_iterations: profile.budgets.max_iterations,
       max_retries: profile.budgets.max_retries,
@@ -115,7 +181,7 @@ export function createContract(options = {}) {
       })(),
       reviewer_independence: options.reviewerIndependence ?? profile.evaluator.independence,
       pass_threshold: profile.evaluator.pass_threshold,
-      hard_fail_assertion_ids: clone(profile.evaluator.hard_failures),
+      hard_fail_assertion_ids: routeBound ? [...new Set([...profile.evaluator.hard_failures, ...routeAssertions.map((entry) => entry.id)])] : clone(profile.evaluator.hard_failures),
     },
     environment_observations: options.environmentObservations ?? template.environment_observations,
     failure_outcome: options.failureOutcome ?? {
