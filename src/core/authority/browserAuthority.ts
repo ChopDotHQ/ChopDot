@@ -374,25 +374,39 @@ function request(dbName: string, storeName: string, mode: IDBTransactionMode, op
       if (failed) reject(error);
       else resolve(operationRequest?.result);
     };
-    const fail = (error: unknown) => {
+    const recordError = (error: unknown) => {
       if (!hasFirstError) {
         hasFirstError = true;
         firstError = error;
       }
-      settle(true, firstError);
     };
     try {
       transaction = database.transaction(storeName, mode);
-      operationRequest = operation(transaction.objectStore(storeName));
     } catch (error) {
-      try { transaction?.abort(); } catch { /* Preserve the original synchronous failure. */ }
-      fail(error);
+      settle(true, error);
       return;
     }
-    operationRequest.onerror = () => fail(operationRequest.error ?? new Error('Participant authority storage failed.'));
-    transaction.onerror = () => fail(transaction.error ?? new Error('Participant authority storage failed.'));
-    transaction.onabort = () => fail(transaction.error ?? new Error('Participant authority storage failed.'));
-    transaction.oncomplete = () => settle(false);
+    transaction.onerror = () => recordError(transaction?.error ?? new Error('Participant authority storage failed.'));
+    transaction.onabort = () => {
+      recordError(transaction?.error ?? new Error('Participant authority storage failed.'));
+      settle(true, firstError);
+    };
+    transaction.oncomplete = () => {
+      if (hasFirstError) settle(true, firstError);
+      else settle(false);
+    };
+    try {
+      operationRequest = operation(transaction.objectStore(storeName));
+    } catch (error) {
+      recordError(error);
+      try {
+        transaction.abort();
+      } catch {
+        settle(true, firstError);
+      }
+      return;
+    }
+    operationRequest.onerror = () => recordError(operationRequest?.error ?? new Error('Participant authority storage failed.'));
   }));
 }
 

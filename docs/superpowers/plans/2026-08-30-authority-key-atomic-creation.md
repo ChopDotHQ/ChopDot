@@ -1,10 +1,10 @@
 # Atomic browser authority-key creation
 
 **Kind:** execution plan
-**Status:** implemented and locally verified on the current release base; independent integration review pending
+**Status:** implemented and locally verified on the current release base; repaired exact head pending independent re-review
 **Owner:** core authority implementation owner
 **Last reviewed:** 2026-08-31
-**Applies to:** `codex/authority-key-race-fix`
+**Applies to:** `codex/authority-key-atomic-release`
 **Authority:** browser authority storage only; cannot change product, membership, money, or release policy
 
 ## Goal
@@ -51,6 +51,9 @@ written during that startup remains decryptable.
    and SHALL NOT retry with a newly generated key.
 5. Two concurrent vault startups SHALL converge without creating unreadable
    legacy-assessment ciphertext.
+6. A failed IndexedDB request SHALL reject only after its containing transaction
+   reaches `abort` or `complete`, so callers never observe failure while the
+   database connection is still held open by that transaction.
 
 ## Authority and recovery failure contract
 
@@ -105,3 +108,17 @@ creation.
   The test was aligned to the accepted contextual Home decision—`Start a group`
   remains primary and `Scan a receipt` remains available—without changing product
   code; the corrected StrictMode/full-lifecycle package then passed `10/10`.
+- Independent review then reproduced a real request-lifecycle race: the required
+  package passed `7/8`, and the isolated malformed-key matrix passed `9/10`, with
+  immediate database deletion reporting an open connection. The request wrapper
+  had rejected on `IDBRequest.onerror` before its transaction reached a terminal
+  event. The repair now records the first error but closes and rejects only from
+  `transaction.onabort` or `transaction.oncomplete`; synchronous operation setup
+  failure aborts first and also waits for the terminal event.
+- Without retries or a weakened deletion assertion, the repaired malformed-key
+  matrix passed `10/10`, the complete focused authority/corruption package passed
+  `8/8`, the forced eight-writer race passed `10/10`, and the StrictMode/full-
+  lifecycle production-entrypoint package passed `10/10` from a temporary proof
+  directory.
+- The repaired release-base package also passed all `374/374` Node tests,
+  TypeScript, the production build, and the security baseline (`200` files).
