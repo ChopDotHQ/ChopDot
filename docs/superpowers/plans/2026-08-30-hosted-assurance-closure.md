@@ -129,3 +129,10 @@ or ADR change is expected unless implementation reveals an architecture change.
   regression case. The hosted cleanliness step also prints the bounded status
   before asserting it so a runner-only dirty path is diagnosable rather than an
   opaque exit code.
+- The next hosted run accepted the repaired claim table and exposed two further
+  existing gates rather than hiding them: five Cockpit evidence hashes no
+  longer matched their current test files, and one legacy-assessment browser
+  assertion raced its asynchronous persistence on Linux. The Cockpit now cites
+  the exact current bytes. The browser test polls the required outcome (one
+  redacted assessment and zero authority journals) instead of treating the
+  IndexedDB schema upgrade as proof that persistence has completed.

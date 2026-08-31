@@ -35,7 +35,7 @@
       "scripts/"
     ],
     "repository_file_count": 709,
-    "repository_manifest_sha256": "b571266f77ba790bd8d5c2ae7b2a0d9bd6f953c1e89fe1ce440632044307c905"
+    "repository_manifest_sha256": "e9ade61f943a14b678d96375af490221db3a4a585c2495d2323c8537b189abf5"
   },
   "lifecycle_summary": {
     "active": 242,
@@ -390,7 +390,7 @@
         "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog."
       },
       "file_count": 58,
-      "manifest_sha256": "009c62414d16c886c28e32cf8ffbf6af4b78a45335c12184cbaa3782cdfc238b"
+      "manifest_sha256": "fabeec33f8e84dd7fc5576adb9c372b9b8f7f20d3a468acfaf16bd6d13075019"
     },
     {
       "id": "knowledge-and-wiki-sources",
@@ -428,7 +428,7 @@
         "retry_exit": "Refresh the provider or use exact source, then verify recall against the accepted digest."
       },
       "file_count": 15,
-      "manifest_sha256": "a21f10625a941924b09fb8dbfa6cd883b487e68837db3b9cc9114af1029c25be"
+      "manifest_sha256": "641722ba023359926d5aebd3e0cf3f8d5e9f0e20c8a74baaa74cfb7aa4c105b4"
     },
     {
       "id": "legacy-steering-documents",
@@ -670,7 +670,7 @@
         "retry_exit": "Refresh from canonical sources or record the blocker; never substitute uncited recall."
       },
       "file_count": 7,
-      "manifest_sha256": "2c3b84af6812fbe12ff8a4e4c2e114570f45a6917eb480adf3699cfecfd28c22"
+      "manifest_sha256": "460dc0e2439425db1cb6f9047d3b7f3702db7b20abe48646a7d962338b1b64d3"
     },
     {
       "id": "product-decisions",
@@ -713,7 +713,7 @@
         "retry_exit": "Reconcile the decision at product-owner authority and rerun the product and steering monitors."
       },
       "file_count": 6,
-      "manifest_sha256": "f1efa5b85841bb3c3192026682364b8ceb5a7b441a90b1a4259cb1e5f4f95392"
+      "manifest_sha256": "1df8d5aa0f40ef148abdfb3219e3191c5cf295f14a3343cfaca7659842550609"
     },
     {
       "id": "product-generated-read-models",
@@ -2962,8 +2962,8 @@
     {
       "surface_id": "repo-docs-superpowers-plans-2026-08-30-hosted-assurance-closure-md",
       "path": "docs/superpowers/plans/2026-08-30-hosted-assurance-closure.md",
-      "sha256": "9e2a95cd2c94dadc662317a062254668500fa043e9143a10c0f4d41075baba75",
-      "bytes": 6981,
+      "sha256": "aa8eb703ac755ebcf280db92692f325e07ae5609edb38acd6b28476f664a1e17",
+      "bytes": 7510,
       "group_id": "historical-plans-and-investigations",
       "surface_kind": "historical_evidence",
       "control_kind": "none",
@@ -3186,7 +3186,7 @@
     {
       "surface_id": "repo-docs-wiki-agent-context-generated-md",
       "path": "docs/wiki/agent-context.generated.md",
-      "sha256": "6887d6de5e4f856194ddb337a3ebe8ba71cade07dfa966d46c82fa9e60a053cb",
+      "sha256": "c4e8b8fc2cc79879a117136bba949bee8ac8132cb23f02406d0f0f2b7d6a410e",
       "bytes": 2394,
       "group_id": "knowledge-and-wiki-sources",
       "surface_kind": "context_source",
@@ -4320,7 +4320,7 @@
     {
       "surface_id": "repo-product-cards-md",
       "path": "product/cards.md",
-      "sha256": "9a25bbfab028a0fe36b533194ba4dd16e62ff0da718deda320fc8fd83b96f265",
+      "sha256": "63edd5fa9d7234a80b5518e3ce5e67306bde6ad012a57e9fd53ab970a7ba78ed",
       "bytes": 24891,
       "group_id": "product-decisions",
       "surface_kind": "decision_source",
@@ -4334,7 +4334,7 @@
     {
       "surface_id": "repo-product-context-authority-json",
       "path": "product/context-authority.json",
-      "sha256": "96b6d90d30d746e8218963b24d26680c1ea501e0053ec60dcdae5903a176dec4",
+      "sha256": "f66f1bc4d226e8c10703158b4cdc492d5b18313de12b294e5146fcb6222f73fe",
       "bytes": 13799,
       "group_id": "product-context-and-history",
       "surface_kind": "context_source",
@@ -14203,5 +14203,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "c698bb671d52d0654b04fa18ddeccbd4109ea06f7645289f4ebdb0d2892823a0"
+  "catalog_digest": "1976fd96ee52f613c508a7498cb1bfe96d85fe54b8623b625399e203b2f9997d"
 }

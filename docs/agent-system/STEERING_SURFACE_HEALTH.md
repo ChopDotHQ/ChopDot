@@ -4,8 +4,8 @@
 **Authority:** inventory and monitoring only; never product law, priority, approval, or release proof
 **Registry:** `governance/agent-system/steering-surface-registry.v1.json` v1.0.0 (active)
 **Registry semantic digest:** `de324a6a42d279f746427025b869df5c9e1388eda3b1deeb231474a0c111caea`
-**Repository manifest aggregate:** `b571266f77ba790bd8d5c2ae7b2a0d9bd6f953c1e89fe1ce440632044307c905`
-**Catalog digest:** `c698bb671d52d0654b04fa18ddeccbd4109ea06f7645289f4ebdb0d2892823a0`
+**Repository manifest aggregate:** `e9ade61f943a14b678d96375af490221db3a4a585c2495d2323c8537b189abf5`
+**Catalog digest:** `1976fd96ee52f613c508a7498cb1bfe96d85fe54b8623b625399e203b2f9997d`
 
 This file is deterministic. Current branch, dirty state, optional machine-local availability, and hash drift are reported by `npm run agent:steering:report`. Update sources deliberately, run `npm run agent:steering:build`, review the diff, then run `npm run agent:steering:check`. The monitor never rewrites authority during a check.
 
@@ -42,15 +42,15 @@ Degraded repository groups: `legacy-steering-documents`, `operating-documentatio
 | definition-frameworks | active | 1 | 426935c74c44de7d200d80494e27a01eaaf8d3bd2963f1f7a794588a275b0f7d |
 | definition-profiles | active | 1 | 68e492127a763057c64db65142d17044d708995a2e20f9c92e4b5143b98dc3f3 |
 | deployment-context | active | 10 | d09cf4c1c8a12c12947b1895b37d3324a8d476eaa2693637bcb510801e2713f7 |
-| historical-plans-and-investigations | historical | 58 | 009c62414d16c886c28e32cf8ffbf6af4b78a45335c12184cbaa3782cdfc238b |
-| knowledge-and-wiki-sources | active | 15 | a21f10625a941924b09fb8dbfa6cd883b487e68837db3b9cc9114af1029c25be |
+| historical-plans-and-investigations | historical | 58 | fabeec33f8e84dd7fc5576adb9c372b9b8f7f20d3a468acfaf16bd6d13075019 |
+| knowledge-and-wiki-sources | active | 15 | 641722ba023359926d5aebd3e0cf3f8d5e9f0e20c8a74baaa74cfb7aa4c105b4 |
 | legacy-steering-documents | degraded | 10 | d5a81d892973840dce72a73b0e35d46c33a67136776cdee77706318d1b4acfd0 |
 | native-and-release-context | active | 15 | a54cdcfc22ae6367c0a8d801782b245c55dad0ae4aa314ab8ae07840fb94ddd7 |
 | operating-documentation | degraded | 8 | 5dd0d6f9f0eea23227816d1b8cc24471a9b76158b06ff65676c36e5f4c38ede4 |
 | portable-agent-contracts | active | 27 | 6ac14701ec9447050f06834ed3fdc9976e090d4e56f11c81bb21916d98c75424 |
 | portable-agent-loops | active | 14 | 6f197602235a3e68abeb4aedd58e43ba8a32aa1b495a1a9d58b5a3c42950803e |
-| product-context-and-history | active | 7 | 2c3b84af6812fbe12ff8a4e4c2e114570f45a6917eb480adf3699cfecfd28c22 |
-| product-decisions | active | 6 | f1efa5b85841bb3c3192026682364b8ceb5a7b441a90b1a4259cb1e5f4f95392 |
+| product-context-and-history | active | 7 | 460dc0e2439425db1cb6f9047d3b7f3702db7b20abe48646a7d962338b1b64d3 |
+| product-decisions | active | 6 | 1df8d5aa0f40ef148abdfb3219e3191c5cf295f14a3343cfaca7659842550609 |
 | product-generated-read-models | active | 2 | 04f581082696c3dcb50c27e321b72c1c10c06ab351550fb6b05a81e00709e4c6 |
 | product-law | active | 1 | 5451a6a0aa3d3d15327b8ecf5b5654e3539170fb09dc968bb6e9db5371c20211 |
 | proof-evidence | historical | 345 | f9835225cc38c790877189d550c3ed0806e2f559e2b56aaa7ea5e4ccae73a234 |

@@ -176,7 +176,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/capture-truth.spec.ts
-evidence_sha256: f335fcf523e5b0f1f7f103dd64fed7f6ee661868fb22b96edf16362bf533145d
+evidence_sha256: 963bf5d1e08add2e6860354bbd68ae2e082e722761a01cb0c6e7b1636da70a4c
 pillar: Catch
 journey: A participant just paid and needs ChopDot to capture the receipt so the group gets the right next action.
 next_action: Scan a receipt
@@ -252,7 +252,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: c336775d2c43127a5757b6140671fb4a982226c920b4f89f486cc4ce5ba07cd9
+evidence_sha256: 01a6db4a4f8942a38343fe9e80e25df982511db9823d52a97f8c70f71f815f3b
 pillar: Catch
 journey: A cardholder imports a transaction, attaches its receipt and shares the right amounts.
 next_action: Match a receipt
@@ -290,7 +290,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: c336775d2c43127a5757b6140671fb4a982226c920b4f89f486cc4ce5ba07cd9
+evidence_sha256: 01a6db4a4f8942a38343fe9e80e25df982511db9823d52a97f8c70f71f815f3b
 pillar: Management -> Payout -> History
 journey: A savings circle completes one contribution and payout round transparently.
 next_action: Record this contribution
@@ -328,7 +328,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: c336775d2c43127a5757b6140671fb4a982226c920b4f89f486cc4ce5ba07cd9
+evidence_sha256: 01a6db4a4f8942a38343fe9e80e25df982511db9823d52a97f8c70f71f815f3b
 pillar: Management -> Payout -> History
 journey: A trusted group helps urgently without exposing the private reason.
 next_action: Contribute privately
@@ -366,7 +366,7 @@ reviewed: 2026-08-24
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
-evidence_sha256: c336775d2c43127a5757b6140671fb4a982226c920b4f89f486cc4ce5ba07cd9
+evidence_sha256: 01a6db4a4f8942a38343fe9e80e25df982511db9823d52a97f8c70f71f815f3b
 pillar: Management -> Payout -> History
 journey: A community agrees how to use shared contributions and records the handoff.
 next_action: Review the proposal
