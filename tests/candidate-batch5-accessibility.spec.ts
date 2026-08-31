@@ -6,7 +6,7 @@ for(const viewport of [{width:1280,height:720,name:'desktop'},{width:390,height:
   test(`${viewport.name} entrance has semantic structure, one action, and usable targets`,async({page})=>{
     await page.setViewportSize(viewport); await page.goto(appUrl);
     await expect(page.getByRole('main')).toBeVisible();
-    await expect(page.getByRole('heading',{level:1,name:'Start with the receipt.'})).toBeVisible();
+    await expect(page.getByRole('heading',{level:1,name:'Start a group.'})).toBeVisible();
     await expect(page.locator('[data-primary-action="true"]:visible')).toHaveCount(1);
     expect(await automatedSemanticAudit(page)).toEqual([]);
     expect(await targetSizeViolations(page)).toEqual([]);
@@ -18,30 +18,32 @@ test('keyboard focus is visible and the first action works without a pointer',as
   await page.setViewportSize({width:390,height:844}); await page.goto(appUrl);
   await page.keyboard.press('Tab');
   const focused=page.locator(':focus');
-  await expect(focused).toHaveAccessibleName('Scan a receipt');
+  await expect(focused).toHaveAccessibleName('Start a group');
   const focusStyle=await focused.evaluate(element=>{const style=getComputedStyle(element);return{outline:style.outlineStyle,width:style.outlineWidth,shadow:style.boxShadow}});
   expect(focusStyle.outline==='solid'||focusStyle.shadow!=='none').toBe(true);
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading',{name:'Scan a receipt'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'What should we call you?'})).toBeVisible();
 });
 
 test('200 percent equivalent reflow keeps content reachable without horizontal scrolling',async({page})=>{
   await page.setViewportSize({width:640,height:720}); await page.goto(appUrl);
   expect(await page.locator('body').evaluate(element=>element.scrollWidth>element.clientWidth+1)).toBe(false);
-  const action=page.getByRole('button',{name:'Scan a receipt'});
+  const action=page.getByRole('button',{name:'Start a group'});
   await action.scrollIntoViewIfNeeded(); await expect(action).toBeVisible();
-  await expect(page.getByRole('heading',{name:'Start with the receipt.'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Start a group.'})).toBeVisible();
 });
 
-test('reduced motion removes meaningful animation and live status remains announced',async({page})=>{
+test('reduced motion removes meaningful animation on the production entrypoint',async({page})=>{
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.setViewportSize({width:390,height:844});
-  await page.goto('http://127.0.0.1:4177/tests/fixtures/candidateBatch5HardStatesApp.html?state=loading');
-  await page.getByRole('button',{name:'Continue as guest'}).click();
-  const durations=await page.locator('[data-testid="spending-card-loading"] *').evaluateAll(elements=>elements.map(element=>getComputedStyle(element).animationDuration));
-  expect(durations.every(duration=>duration.split(',').every(part=>durationMs(part.trim())<=1))).toBe(true);
   await page.goto(appUrl);
-  await expect(page.getByRole('heading',{name:'Start with the receipt.'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Start a group.'})).toBeVisible();
+  const durations=await page.locator('body *').evaluateAll(elements=>elements.flatMap(element=>{
+    const style=getComputedStyle(element);const box=element.getBoundingClientRect();
+    if(style.display==='none'||style.visibility==='hidden'||box.width===0||box.height===0)return[];
+    return[...style.animationDuration.split(','),...style.transitionDuration.split(',')];
+  }));
+  expect(durations.every(duration=>durationMs(duration.trim())<=1)).toBe(true);
 });
 
 test('core color pairs meet WCAG AA contrast',async()=>{

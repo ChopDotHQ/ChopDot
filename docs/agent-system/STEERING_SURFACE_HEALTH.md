@@ -4,14 +4,14 @@
 **Authority:** inventory and monitoring only; never product law, priority, approval, or release proof
 **Registry:** `governance/agent-system/steering-surface-registry.v1.json` v1.0.0 (active)
 **Registry semantic digest:** `de324a6a42d279f746427025b869df5c9e1388eda3b1deeb231474a0c111caea`
-**Repository manifest aggregate:** `c47b323951ac834204ac75614d8b8ab738d39fbf1a703df470f41ec2677c902e`
-**Catalog digest:** `7857128f34458de8436015adb94df2c24cf76beac7c5e59e3e913747a11f7640`
+**Repository manifest aggregate:** `725a181256752dc5b185cc6969b846b91c91cb8bea900965279baa83d476a0b5`
+**Catalog digest:** `8703b34526fe914917b615c618b3cbe2f03d74e5111d7c5dafb01267d08aedb8`
 
 This file is deterministic. Current branch, dirty state, optional machine-local availability, and hash drift are reported by `npm run agent:steering:report`. Update sources deliberately, run `npm run agent:steering:build`, review the diff, then run `npm run agent:steering:check`. The monitor never rewrites authority during a check.
 
 ## Baseline
 
-- Repository surfaces: 703
+- Repository surfaces: 704
 - External discovery censuses declared: 4
 - External surfaces declared: 54
 - Runtime classes declared: 4
@@ -28,7 +28,7 @@ Degraded repository groups: `legacy-steering-documents`, `operating-documentatio
 |---|---:|
 | active | 241 |
 | degraded | 50 |
-| historical | 412 |
+| historical | 413 |
 
 ## Governed groups
 
@@ -42,7 +42,7 @@ Degraded repository groups: `legacy-steering-documents`, `operating-documentatio
 | definition-frameworks | active | 1 | 426935c74c44de7d200d80494e27a01eaaf8d3bd2963f1f7a794588a275b0f7d |
 | definition-profiles | active | 1 | 68e492127a763057c64db65142d17044d708995a2e20f9c92e4b5143b98dc3f3 |
 | deployment-context | active | 10 | d09cf4c1c8a12c12947b1895b37d3324a8d476eaa2693637bcb510801e2713f7 |
-| historical-plans-and-investigations | historical | 55 | f8bc228ecdf2ff29f563b9d2380da3d0b7fcc3f3ff1af20f3b2843365d3c1749 |
+| historical-plans-and-investigations | historical | 56 | 4ec73a8ccdc1f9213527c51279e075236abeac0d66622d4db4b20b307075d212 |
 | knowledge-and-wiki-sources | active | 15 | a21f10625a941924b09fb8dbfa6cd883b487e68837db3b9cc9114af1029c25be |
 | legacy-steering-documents | degraded | 10 | d5a81d892973840dce72a73b0e35d46c33a67136776cdee77706318d1b4acfd0 |
 | native-and-release-context | active | 15 | a54cdcfc22ae6367c0a8d801782b245c55dad0ae4aa314ab8ae07840fb94ddd7 |

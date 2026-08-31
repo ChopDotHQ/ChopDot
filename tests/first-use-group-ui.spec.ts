@@ -2,11 +2,12 @@ import {expect, test} from '@playwright/test';
 import {closeHostedProduct, currentProductFrame, openHostedProduct} from './support/hostedProductAccount.ts';
 
 const appUrl = 'http://127.0.0.1:4177/';
+const screenshotRoot = 'test-results/contextual-home-first-group/first-use';
 
-test('empty Home has one receipt action and one secondary New group path', async ({page}) => {
+test('empty Home has one New group action and a secondary receipt path', async ({page}) => {
   await enterAsGuest(page);
 
-  await expect(page.getByRole('heading', {name: 'Start with the receipt.'})).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Your groups'})).toBeVisible();
   await expect(page.locator('[data-primary-action="true"]:visible')).toHaveCount(1);
   await expect(page.getByRole('button', {name: 'Scan a receipt'})).toBeVisible();
   await expect(page.getByRole('button', {name: 'New group'})).toHaveCount(1);
@@ -18,6 +19,71 @@ test('empty Home has one receipt action and one secondary New group path', async
   await expect(groupType.locator('option')).toHaveCount(7);
   await groupType.selectOption('savings_circle');
   await expect(page.getByLabel('Group name')).toHaveValue('Savings circle');
+});
+
+test('Start a group carries first-visit intent through guest setup', async ({page}) => {
+  await page.setViewportSize({width: 390, height: 844});
+  await page.goto(appUrl, {waitUntil: 'domcontentloaded'});
+  await page.evaluate(() => window.localStorage.clear());
+  await page.reload({waitUntil: 'domcontentloaded'});
+  await expect(page.getByRole('heading', {name: 'Start a group.'})).toBeVisible();
+  await page.getByRole('button', {name: 'Start a group'}).click();
+  await page.getByPlaceholder('Display name').fill('Mina');
+  await page.getByRole('button', {name: 'Continue as Mina'}).click();
+  await expect(page.getByRole('heading', {name: 'Start a group'})).toBeVisible();
+  await expect(page.getByLabel('Group name')).toBeFocused();
+  await page.screenshot({path: `${screenshotRoot}/create-group-390x844.png`, fullPage: false});
+});
+
+test('returning Home keeps group cards before one deterministic contextual prompt', async ({page}) => {
+  await page.setViewportSize({width: 390, height: 844});
+  await page.addInitScript(({key, value}) => window.localStorage.setItem(key, value), {
+    key: 'chopdot-portable-shell-state-v1',
+    value: JSON.stringify({
+      mode: 'clean', theme: 'light', currency: 'CHF', preferredPaymentMethod: null, currentUserId: 'mina',
+      users: {mina: {id: 'mina', name: 'Mina'}, leo: {id: 'leo', name: 'Leo'}},
+      groups: {dinner: {id: 'dinner', name: 'Zurich dinner', memberIds: ['mina', 'leo']}},
+      expenses: {meal: {id: 'meal', groupId: 'dinner', description: 'Dinner', amount: 120, paidByUserId: 'mina', date: '2026-08-30T12:00:00.000Z'}},
+      splits: {leoShare: {id: 'leoShare', expenseId: 'meal', userId: 'leo', amount: 60, status: 'marked_paid'}},
+      paymentMethods: {}, activityEvents: {}, savedRecords: {},
+    }),
+  });
+  await page.goto(appUrl, {waitUntil: 'domcontentloaded'});
+  const groupCard = page.getByRole('button', {name: 'Open Zurich dinner'});
+  const prompt = page.getByRole('heading', {name: 'Confirm a payment in Zurich dinner'});
+  await expect(groupCard).toBeVisible();
+  await expect(prompt).toBeVisible();
+  const [groupBox, promptBox] = await Promise.all([groupCard.boundingBox(), prompt.boundingBox()]);
+  expect(groupBox).not.toBeNull();
+  expect(promptBox).not.toBeNull();
+  expect(groupBox!.y).toBeLessThan(promptBox!.y);
+  await expect(page.locator('[data-primary-action="true"]:visible')).toHaveCount(1);
+  await page.screenshot({path: `${screenshotRoot}/home-contextual-prompt-390x844.png`, fullPage: true});
+});
+
+test('a Home payment prompt opens the payer action instead of a static group page', async ({page}) => {
+  await page.setViewportSize({width: 390, height: 844});
+  await page.addInitScript(({key, value}) => window.localStorage.setItem(key, value), {
+    key: 'chopdot-portable-shell-state-v1',
+    value: JSON.stringify({
+      mode: 'clean', theme: 'light', currency: 'CHF', preferredPaymentMethod: null, currentUserId: 'leo',
+      users: {mina: {id: 'mina', name: 'Mina'}, leo: {id: 'leo', name: 'Leo'}},
+      groups: {dinner: {id: 'dinner', name: 'Zurich dinner', memberIds: ['mina', 'leo']}},
+      expenses: {meal: {id: 'meal', groupId: 'dinner', description: 'Dinner', amount: 120, currency: 'CHF', paidByUserId: 'mina', date: '2026-08-30T12:00:00.000Z'}},
+      splits: {leoShare: {id: 'leoShare', expenseId: 'meal', userId: 'leo', amount: 60, status: 'request_sent'}},
+      paymentMethods: {}, activityEvents: {}, savedRecords: {},
+    }),
+  });
+  await page.goto(appUrl, {waitUntil: 'domcontentloaded'});
+
+  await expect(page.getByRole('heading', {name: 'Your share is ready in Zurich dinner'})).toBeVisible();
+  await page.getByRole('button', {name: 'Open group'}).click();
+
+  await expect(page.getByRole('banner').getByText('Pay Mina')).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Zurich dinner'})).toBeVisible();
+  await expect(page.getByText('Your share')).toBeVisible();
+  await expect(page.getByText('Cash')).toBeVisible();
+  await expect(page.getByRole('button', {name: 'I paid Mina'})).toBeVisible();
 });
 
 test('Create group completes existing account setup and keeps signed creation behind one action', async ({browser}) => {
@@ -37,6 +103,7 @@ test('Create group completes existing account setup and keeps signed creation be
 });
 
 test('failed setup keeps the group draft and offers one plain-language retry', async ({page}) => {
+  await page.setViewportSize({width: 390, height: 844});
   await enterAsGuest(page);
   await page.getByRole('button', {name: 'New group'}).click();
   await page.getByLabel('Group name').fill('Zurich dinner');
@@ -47,6 +114,7 @@ test('failed setup keeps the group draft and offers one plain-language retry', a
   await expect(page.getByLabel('Group name')).toHaveValue('Zurich dinner');
   await expect(page.getByRole('button', {name: 'Try again'})).toBeVisible();
   await expect(page.locator('body')).not.toContainText(/Product Account|personhood|protocol|host|adapter/iu);
+  await page.screenshot({path: `${screenshotRoot}/create-group-failure-390x844.png`, fullPage: false});
 });
 
 test('New group restores the exact local draft and candidate after a full reload', async ({page}) => {

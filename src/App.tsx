@@ -8,6 +8,7 @@ import { AppStateProvider, useAppState } from './state/AppStateContext';
 import { Welcome } from './components/Welcome';
 import { GuestSetup } from './components/GuestSetup';
 import { Home } from './components/Home';
+import type {HomeContextualPrompt} from './components/homePresentation';
 import { StateProof } from './components/dev/StateProof';
 import { CreateGroup } from './components/CreateGroup';
 import { GroupDetail } from './components/GroupDetail';
@@ -74,7 +75,7 @@ import type {KeyValueStorage} from './environment/livePayerSync';
 
 type View = 
   | { name: 'welcome' }
-  | { name: 'guest_setup', draft?: ReviewableReceiptDraft }
+  | { name: 'guest_setup', draft?: ReviewableReceiptDraft, intent?: 'create_group' }
   | { name: 'home' }
   | { name: 'receipt_start', returnTo: 'welcome' | 'home' }
   | { name: 'choose_group_for_draft', draft: ReviewableReceiptDraft }
@@ -305,7 +306,7 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
   }, [dependencies?.membershipOrganizerEntry]);
 
   if (view.name === 'state_proof') {
-    if (!isDev) return <Home onStartGroup={() => setView({ name: 'home' })} onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})} onGoToGroup={() => setView({ name: 'home' })} onGoToProfile={() => setView({ name: 'home' })} />;
+    if (!isDev) return <Home onStartGroup={() => setView({ name: 'home' })} onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})} onGoToGroup={() => setView({ name: 'home' })} onOpenPrompt={() => setView({name: 'home'})} onGoToProfile={() => setView({ name: 'home' })} />;
     return <StateProof onBack={() => setView(getEntryView())} />;
   }
 
@@ -373,10 +374,18 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
 
   if (!state.currentUserId) {
     if (view.name === 'guest_setup') {
-      return <GuestSetup onBack={() => setView(view.draft ? {name: 'receipt_start', returnTo: 'welcome'} : {name: 'welcome'})} onComplete={() => setView(view.draft ? {name: 'choose_group_for_draft', draft: view.draft} : { name: 'home' })} />;
+      return <GuestSetup
+        onBack={() => setView(view.draft ? {name: 'receipt_start', returnTo: 'welcome'} : {name: 'welcome'})}
+        onComplete={() => setView(view.draft
+          ? {name: 'choose_group_for_draft', draft: view.draft}
+          : view.intent === 'create_group'
+            ? {name: 'create_group'}
+            : {name: 'home'})}
+      />;
     }
     return <Welcome
       onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'welcome'})}
+      onStartGroup={() => setView({name: 'guest_setup', intent: 'create_group'})}
       onGuest={() => setView(dependencies?.dinnerJourney ? {name: 'dinner_journey'} : { name: 'guest_setup' })}
       onUseProductAccount={dependencies?.productAccount ? async () => { await connectProductAccount(); } : undefined}
     />;
@@ -542,6 +551,7 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
         onStartGroup={() => setView({ name: 'home' })}
         onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})}
         onGoToGroup={() => setView({ name: 'home' })}
+        onOpenPrompt={() => setView({name: 'home'})}
         onGoToProfile={() => setView({ name: 'home' })}
       />;
     } else {
@@ -552,6 +562,13 @@ function AppRouter({dependencies}: {dependencies?: AppDependencies}) {
       onStartGroup={() => setView({ name: 'create_group' })}
       onScanReceipt={() => setView({name: 'receipt_start', returnTo: 'home'})}
       onGoToGroup={(groupId) => setView({ name: 'group_detail', groupId })}
+      onOpenPrompt={(prompt: HomeContextualPrompt) => {
+        if (prompt.kind === 'payment_requested' && state.currentUserId) {
+          setView({name: 'payer_view', groupId: prompt.groupId, memberId: state.currentUserId});
+          return;
+        }
+        setView({name: 'group_detail', groupId: prompt.groupId});
+      }}
       onGoToProfile={() => setView({ name: 'profile' })}
     />;
   }

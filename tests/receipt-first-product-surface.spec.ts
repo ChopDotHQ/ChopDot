@@ -4,13 +4,13 @@ import {closeHostedProduct, openHostedProduct} from './support/hostedProductAcco
 const appUrl = 'http://127.0.0.1:4177/';
 const storageKey = 'chopdot-portable-shell-state-v1';
 
-test('first action captures a local receipt draft before account or money state', async ({page}) => {
+test('explicit Catch action captures a local receipt draft before account or money state', async ({page}) => {
   await page.setViewportSize({width: 390, height: 844});
   await openClean(page);
 
-  await expect(page.getByRole('heading', {name: 'Start with the receipt.'})).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Start a group.'})).toBeVisible();
   await expect(page.locator('[data-primary-action="true"]')).toHaveCount(1);
-  await expect(page.locator('[data-primary-action="true"]')).toHaveText(/Scan a receipt/u);
+  await expect(page.locator('[data-primary-action="true"]')).toHaveText(/Start a group/u);
 
   await page.getByRole('button', {name: 'Scan a receipt'}).click();
   await expect(page.getByRole('heading', {name: 'Start with the receipt.'})).toBeVisible();

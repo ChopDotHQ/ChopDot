@@ -11,7 +11,7 @@ test('src/main.tsx creates and spends from the durable signed authority journal'
   const product = await openHostedProduct(browser);
   let {frame} = product;
   try {
-    await expect(frame.getByRole('heading', {name: 'Start with the receipt.'})).toBeVisible();
+    await expect(frame.getByRole('heading', {name: 'Your groups'})).toBeVisible();
 
     await frame.getByRole('button', {name: 'New group'}).click();
     await frame.getByPlaceholder('e.g. Weekend Trip').fill('Zurich dinner');

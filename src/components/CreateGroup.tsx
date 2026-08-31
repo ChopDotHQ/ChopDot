@@ -112,12 +112,13 @@ export function CreateGroup({
         <button onClick={onBack} className="-ml-2 flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-black/5 dark:hover:bg-white/10" aria-label="Back">
           <ArrowLeft className="w-5 h-5 text-gray-900 dark:text-gray-100" />
         </button>
-        <h1 className="flex-1 pr-9 text-center text-lg font-bold tracking-[-0.03em]">New group</h1>
+        <h1 className="flex-1 pr-9 text-center text-lg font-bold tracking-[-0.03em]">Start a group</h1>
       </header>
 
       <div className="flex-1 overflow-y-auto px-6 pb-8 pt-6">
         <section>
-          <p className="text-sm font-semibold text-[#c40068] dark:text-[#ff65b5]">Start with you</p>
+          <p className="text-sm font-semibold text-[#c40068] dark:text-[#ff65b5]">The basics</p>
+          <p className="mt-2 max-w-[28rem] text-sm leading-5 text-gray-600 dark:text-gray-300">Give the group a name and choose what you will use it for. You can invite everyone after it is ready.</p>
           <label id="group-name-label" htmlFor="group-name" className="mt-3 block text-sm font-semibold text-gray-700 dark:text-gray-300">Group name</label>
           <input 
             id="group-name"

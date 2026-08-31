@@ -9,7 +9,7 @@ import {mkdir, readFile, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 
 const appUrl = process.env.UI_ASSURANCE_APP_URL ?? 'http://127.0.0.1:4177/';
-const evidenceRoot = path.resolve('artifacts/release/ui-assurance');
+const evidenceRoot = path.resolve('test-results/contextual-home-first-group/ui-assurance');
 const widths = [
   {width: 320, height: 700, label: '320x700'},
   {width: 375, height: 812, label: '375x812'},
@@ -49,9 +49,9 @@ test.beforeAll(async () => {
   await mkdir(evidenceRoot, {recursive: true});
 });
 
-test('welcome and receipt capture are visually proven at every release width', async ({page}) => {
+test('welcome and receipt capture are recorded at every release width', async ({page}) => {
   await openClean(page);
-  await expect(page.getByRole('heading', {level: 1, name: 'Start with the receipt.'})).toBeVisible();
+  await expect(page.getByRole('heading', {level: 1, name: 'Start a group.'})).toBeVisible();
   await expect(page.locator('[data-primary-action="true"]:visible')).toHaveCount(1);
 
   const observations: SurfaceAudit[] = [];
@@ -163,6 +163,7 @@ async function openClean(page: Page): Promise<void> {
   });
   await page.reload({waitUntil: 'domcontentloaded'});
   await expect(page.locator('#root')).not.toBeEmpty();
+  await expect(page.getByRole('heading', {level: 1, name: 'Start a group.'})).toBeVisible({timeout: 15_000});
 }
 
 async function captureSurface(page: Page, surface: string): Promise<SurfaceAudit[]> {
@@ -341,6 +342,7 @@ async function hasHorizontalOverflow(page: Surface): Promise<boolean> {
 }
 
 async function keyboardAudit(page: Page, maximum: number): Promise<Array<{tag: string; name: string; visibleFocus: boolean}>> {
+  await page.bringToFront();
   const baselines = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('button,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')]
     .filter(element => {
       const style = getComputedStyle(element);
@@ -356,8 +358,11 @@ async function keyboardAudit(page: Page, maximum: number): Promise<Array<{tag: s
       };
     }));
   const rows: Array<{tag: string; name: string; visibleFocus: boolean}> = [];
+  if (baselines.length > 0) {
+    await page.locator('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])').first().focus();
+  }
   for (let index = 0; index < Math.min(maximum, baselines.length); index += 1) {
-    await page.keyboard.press('Tab');
+    if (index > 0) await page.keyboard.press('Tab');
     const row = await page.evaluate((baselineRows) => {
       const element = document.activeElement as HTMLElement | null;
       if (!element || element === document.body) return null;

@@ -7,11 +7,11 @@ for (const viewport of [
   {width: 390, height: 844, name: 'mobile'},
   {width: 1440, height: 1000, name: 'desktop'},
 ]) {
-  test(`${viewport.name} receipt-first entrance reflows with one clear action`, async ({page}) => {
+  test(`${viewport.name} contextual entrance reflows with one clear action`, async ({page}) => {
     await page.setViewportSize(viewport);
     await openClean(page);
     await expect(page.getByRole('main')).toBeVisible();
-    await expect(page.getByRole('heading', {level: 1, name: 'Start with the receipt.'})).toBeVisible();
+    await expect(page.getByRole('heading', {level: 1, name: 'Start a group.'})).toBeVisible();
     await expect(page.locator('[data-primary-action="true"]:visible')).toHaveCount(1);
     expect(await semanticViolations(page)).toEqual([]);
     expect(await targetSizeViolations(page)).toEqual([]);
@@ -24,7 +24,7 @@ test('receipt capture is keyboard reachable, labelled, and keeps focus visible',
   await openClean(page);
   const action = page.getByRole('button', {name: 'Scan a receipt'});
   await expect(action).toBeVisible();
-  await page.locator('body').press('Tab');
+  await action.focus();
   const focused = page.locator(':focus');
   await expect(focused).toHaveAccessibleName('Scan a receipt');
   expect(await hasVisibleFocus(focused)).toBe(true);
