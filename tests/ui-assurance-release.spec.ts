@@ -431,7 +431,7 @@ async function readyProductFrame(page: Page): Promise<Frame> {
   let ready: Frame | undefined;
   await expect.poll(async () => {
     for (const candidate of page.frames().filter(frame => frame !== page.mainFrame())) {
-      if (await candidate.locator('main').isVisible().catch(() => false)) {
+      if (await candidate.locator('#root h1').first().isVisible().catch(() => false)) {
         ready = candidate;
         return true;
       }

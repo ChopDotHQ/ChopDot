@@ -387,6 +387,10 @@ jobs:
         run: npx --no-install playwright install --with-deps chromium
       - name: Run production-entrypoint browser assurance
         run: npm run test:release-browser
+      - name: Assert machine-readable browser result
+        run: |
+          test -s "$CHOPDOT_RELEASE_EVIDENCE_ROOT/playwright/results.json"
+          node -e 'const fs=require("node:fs"); const report=JSON.parse(fs.readFileSync(process.env.CHOPDOT_RELEASE_EVIDENCE_ROOT + "/playwright/results.json", "utf8")); if (report.stats?.unexpected !== 0 || report.stats?.expected < 1) process.exit(1); console.log(`browser_expected=${report.stats.expected} browser_unexpected=${report.stats.unexpected}`);'
       - name: Assert browser suite left repository clean
         run: |
           git diff --exit-code

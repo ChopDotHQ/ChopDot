@@ -5,9 +5,10 @@ import {cryptoWaitReady, sr25519PairFromSeed, sr25519Sign} from '@polkadot/util-
 import {createSignedLimitedNoAppAction, type SignedLimitedNoAppResponseV1} from '../src/membership/limitedNoAppAction.ts';
 import {limitedNoAppActionUrl} from '../src/membership/limitedNoAppActionLink.ts';
 import type {MembershipGrant} from '../src/membership/membershipLifecycle.ts';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
 const baseUrl = 'http://127.0.0.1:4177/tests/fixtures/candidate-batch2-limited-actual-app.html';
-const screenshotDir = path.resolve('test-results/candidate-batch2-actual-participation/screenshots');
+const screenshotDir = releaseEvidencePath('candidate-batch2-actual-participation', 'screenshots');
 
 test.beforeAll(async () => mkdir(screenshotDir, {recursive: true}));
 

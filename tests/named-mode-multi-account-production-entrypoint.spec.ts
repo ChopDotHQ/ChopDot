@@ -217,7 +217,7 @@ test('Spend Card separate-account proof creates the group and grants signed memb
     await expect(mina.frame.getByRole('button', {name: 'New group'})).toBeVisible({timeout: 15_000});
     await mina.frame.getByRole('button', {name: 'New group'}).click();
     await mina.frame.getByLabel('What is it for?').selectOption('spend_card');
-    await expect(mina.frame.getByRole('heading', {name: 'New group'})).toBeVisible({timeout: 15_000});
+    await expect(mina.frame.getByRole('heading', {name: 'Start a group'})).toBeVisible({timeout: 15_000});
     await expect(mina.frame.getByRole('button', {name: 'Create my group'})).toBeVisible({timeout: 15_000});
     await mina.frame.getByRole('button', {name: 'Create my group'}).click();
     await expect(mina.frame.getByRole('heading', {name: 'Add the card purchase.'})).toBeVisible({timeout: 15_000});

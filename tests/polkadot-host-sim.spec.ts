@@ -7,9 +7,10 @@ import {
 } from '@parity/host-api-test-sdk';
 import {mkdir, writeFile} from 'node:fs/promises';
 import path from 'node:path';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
 const productUrl = 'http://127.0.0.1:4177/?developerChecks=1';
-const proofDirectory = path.resolve('proof/polkadot-host-sim');
+const proofDirectory = releaseEvidencePath('polkadot-host-sim');
 const sessionSecret = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 const groupId = 'friday-crew';
 

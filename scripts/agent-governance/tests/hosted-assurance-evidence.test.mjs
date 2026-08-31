@@ -10,6 +10,8 @@ const workflow = fs.readFileSync(workflowPath, 'utf8');
 const ignorePath = path.join(root, '.gitleaksignore');
 const baseline = fs.readFileSync(ignorePath, 'utf8').trim().split('\n');
 const classification = fs.readFileSync(path.join(root, 'docs/agent-system/GITLEAKS_HISTORY_BASELINE.md'), 'utf8');
+const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+const releaseConfig = fs.readFileSync(path.join(root, 'playwright.release.config.ts'), 'utf8');
 
 const expectedFingerprints = [
   '6cd0e092e662e5b421c28914cb4bfef5f7ea6390:scripts/release-evidence.test.mjs:generic-api-key:113',
@@ -29,17 +31,50 @@ const expectedFingerprints = [
 ];
 
 const releaseSpecs = [
+  'candidate-batch2-actual-participation.spec.ts',
+  'candidate-batch2-limited-actual-route.spec.ts',
   'candidate-batch2-link-qr-no-app.spec.ts',
   'candidate-batch3-fresh-device-recovery.spec.ts',
   'candidate-batch4-full-loop.spec.ts',
   'candidate-batch5-lifecycle-card.spec.ts',
+  'capture-truth.spec.ts',
+  'first-use-group-ui.spec.ts',
   'membership-invitation-ui.spec.ts',
   'named-mode-multi-account-production-entrypoint.spec.ts',
   'named-mode-production-entrypoint.spec.ts',
+  'polkadot-host-five-person-stress.spec.ts',
+  'polkadot-host-sim.spec.ts',
   'product-surface-visual-evidence.spec.ts',
   'showcase-entrance.spec.ts',
+  'statement-store-notification-budget.spec.ts',
   'ui-assurance-release.spec.ts',
 ];
+
+const expectedIgnoredSpecs = [
+  'membership-bootstrap-ui.spec.ts',
+  'deferred-shared-action-restart.spec.ts',
+  'general-shared-action-delivery.spec.ts',
+  'polkadot-host-real-ui.spec.ts',
+  'polkadot-host-wallet-settlement.spec.ts',
+  'guest-payment-return.spec.ts',
+  'late-expense-after-request.spec.ts',
+  'live-payer-sync.spec.ts',
+  'guest-payment-return-live-dot.spec.ts',
+  'dot-host-preview.spec.ts',
+];
+
+function ignoredReleaseSpecs() {
+  const block = releaseConfig.match(/testIgnore:\s*\[([\s\S]*?)\n\s*\],/u)?.[1] ?? '';
+  return [...block.matchAll(/'([^']+\.spec\.ts)'/gu)].map(match => match[1]);
+}
+
+function discoveredActiveEvidenceWriters() {
+  const ignored = new Set(ignoredReleaseSpecs());
+  return fs.readdirSync(path.join(root, 'tests'))
+    .filter(relative => relative.endsWith('.spec.ts') && !ignored.has(relative))
+    .filter(relative => /\.screenshot\(|writeFile\(/u.test(fs.readFileSync(path.join(root, 'tests', relative), 'utf8')))
+    .sort();
+}
 
 function browserEvidenceFailures(source) {
   const start = source.indexOf('\n  application-browser-assurance:\n');
@@ -48,6 +83,8 @@ function browserEvidenceFailures(source) {
   const block = source.slice(start, end);
   const required = [
     'CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence',
+    'test -s "$CHOPDOT_RELEASE_EVIDENCE_ROOT/playwright/results.json"',
+    'report.stats?.unexpected !== 0 || report.stats?.expected < 1',
     'git diff --exit-code',
     'git diff --cached --exit-code',
     'git status --porcelain --untracked-files=all',
@@ -74,18 +111,28 @@ test('broad, missing, duplicate, or reordered baseline entries fail exact compar
   ]) assert.notDeepEqual(changed, expectedFingerprints);
 });
 
-test('all ten active release evidence writers use the containment helper', () => {
+test('all seventeen active release evidence writers use the containment helper', () => {
+  assert.deepEqual([...releaseSpecs].sort(), discoveredActiveEvidenceWriters());
   for (const relative of releaseSpecs) {
     const source = fs.readFileSync(path.join(root, 'tests', relative), 'utf8');
     assert.match(source, /releaseEvidencePath/u, relative);
-    assert.doesNotMatch(source, /(?:artifacts\/release|proof\/chopdot-candidate-2026-08-12)/u, relative);
+    assert.doesNotMatch(source, /(?:artifacts\/release|proof\/|path\.resolve\(['"]test-results)/u, relative);
   }
+});
+
+test('the release browser command, exclusion set, and machine-readable output are bound', () => {
+  assert.equal(packageJson.scripts['test:release-browser'], 'playwright test --config=playwright.release.config.ts --workers=1');
+  assert.deepEqual(ignoredReleaseSpecs(), expectedIgnoredSpecs);
+  assert.match(releaseConfig, /outputDir:\s*releaseEvidencePath\('playwright', 'artifacts'\)/u);
+  assert.match(releaseConfig, /\['json', \{outputFile: releaseEvidencePath\('playwright', 'results\.json'\)\}\]/u);
+  assert.doesNotMatch(releaseConfig, /reporter:\s*'line'/u);
 });
 
 test('browser workflow uploads runtime evidence and proves tracked-source cleanliness', () => {
   assert.deepEqual(browserEvidenceFailures(workflow), []);
   for (const needle of [
     'CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence',
+    'test -s "$CHOPDOT_RELEASE_EVIDENCE_ROOT/playwright/results.json"',
     'git diff --exit-code',
     'git diff --cached --exit-code',
     'git status --porcelain --untracked-files=all',
@@ -97,8 +144,8 @@ test('browser workflow uploads runtime evidence and proves tracked-source cleanl
   }
 });
 
-test('UI assurance waits for a ready main before each hosted screenshot', () => {
+test('UI assurance waits for a visible product heading before each hosted screenshot', () => {
   const source = fs.readFileSync(path.join(root, 'tests/ui-assurance-release.spec.ts'), 'utf8');
   assert.match(source, /activeFrame = await readyProductFrame\(page\);\s*await activeFrame\.locator\('#root'\)\.screenshot/um);
-  assert.match(source, /candidate\.locator\('main'\)\.isVisible\(\)\.catch/u);
+  assert.match(source, /candidate\.locator\('#root h1'\)\.first\(\)\.isVisible\(\)\.catch/u);
 });

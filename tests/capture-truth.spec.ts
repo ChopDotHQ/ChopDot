@@ -1,7 +1,12 @@
 import {expect, type Frame, test} from '@playwright/test';
+import {mkdir} from 'node:fs/promises';
 import {closeHostedProduct, openHostedProduct} from './support/hostedProductAccount.ts';
+import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
 const storageKey = 'chopdot-portable-shell-state-v1';
+const evidenceRoot = releaseEvidencePath('capture-truth');
+
+test.beforeAll(async () => mkdir(evidenceRoot, {recursive: true}));
 
 test('receipt-first capture stays draft-only until Save spend', async ({browser}) => {
   const product = await openHostedProduct(browser, {viewport: {width: 390, height: 844}});
@@ -15,7 +20,7 @@ test('receipt-first capture stays draft-only until Save spend', async ({browser}
   await expect(page.getByRole('button', {name: 'Add receipt'})).toBeVisible();
   await expect(page.getByRole('button', {name: 'Enter amount instead'})).toBeVisible();
   await page.locator('#root').screenshot({
-    path: 'proof/chopdot-candidate-2026-08-12/screenshots/05-capture-receipt-first-mobile.png',
+    path: releaseEvidencePath('capture-truth', '05-capture-receipt-first-mobile.png'),
   });
   expect(await expenseCount(page)).toBe(0);
 
@@ -29,7 +34,7 @@ test('receipt-first capture stays draft-only until Save spend', async ({browser}
   await expect(page.getByLabel('Merchant or reason')).toHaveValue('Gusto Zurich');
   await expect(page.getByRole('button', {name: 'Review split'})).toBeEnabled();
   await page.locator('#root').screenshot({
-    path: 'proof/chopdot-candidate-2026-08-12/screenshots/06-capture-receipt-review-mobile.png',
+    path: releaseEvidencePath('capture-truth', '06-capture-receipt-review-mobile.png'),
   });
   await page.locator('header').click();
 

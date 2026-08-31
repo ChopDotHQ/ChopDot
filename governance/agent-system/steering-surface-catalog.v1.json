@@ -35,7 +35,7 @@
       "scripts/"
     ],
     "repository_file_count": 709,
-    "repository_manifest_sha256": "f3aadc83104f786ed3beecc1ecc33ce85847a0927ee5f800ffa298fdc3c8bcec"
+    "repository_manifest_sha256": "7ad84627af6e445d966866c5809579218f9a0cd4e28bbdf929d75ef11020039d"
   },
   "lifecycle_summary": {
     "active": 242,
@@ -121,7 +121,7 @@
         "retry_exit": "Repair or explicitly change lifecycle through reviewed source, regenerate, and recheck."
       },
       "file_count": 30,
-      "manifest_sha256": "2caac081b59c3ae39d600848fa2ddb0b32ea1d29b7d742a845e661a229affa94"
+      "manifest_sha256": "882de2fc9c841a84bdb262cfabe4ffb02ceb9eb3ccf7344fa95a63944efc9043"
     },
     {
       "id": "agent-policies-and-foundation",
@@ -390,7 +390,7 @@
         "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog."
       },
       "file_count": 58,
-      "manifest_sha256": "af06cf32f4b077170e2d0646a6e6df5dde5783fbcd028f9cc1648b7ce8c37545"
+      "manifest_sha256": "bdf3b3c398ef076e676beb2c5859328cc39b9c15f94295aa85ab40522a8efd9c"
     },
     {
       "id": "knowledge-and-wiki-sources",
@@ -556,7 +556,7 @@
         "retry_exit": "Update source documentation after behavior is accepted, then rerun links and monitor checks."
       },
       "file_count": 8,
-      "manifest_sha256": "f4908e85223e17450ab32cffb8923b964a12374ee9d552725f6c075c54cbf806"
+      "manifest_sha256": "5dd0d6f9f0eea23227816d1b8cc24471a9b76158b06ff65676c36e5f4c38ede4"
     },
     {
       "id": "portable-agent-contracts",
@@ -870,7 +870,7 @@
         "retry_exit": "Repair the candidate, range, source, or enforcement wiring and re-run local preflight plus hosted workflow validation."
       },
       "file_count": 7,
-      "manifest_sha256": "214313c2fc52113d90638d1469eed30a03918028007f302cd48a571d827c1eae"
+      "manifest_sha256": "c92c933fbca8a2aaeff1e5e1f3bf28323d284c921fdb36345c4cdd8d0e80814e"
     },
     {
       "id": "repository-entrypoints",
@@ -1184,8 +1184,8 @@
     {
       "surface_id": "repo-github-workflows-agent-governance-yml",
       "path": ".github/workflows/agent-governance.yml",
-      "sha256": "fb250fe94431822b5b9221833207f8291f3a4a8bf948efd3e3338dd9ff32b93e",
-      "bytes": 29794,
+      "sha256": "c642612b10bde898259ce068b56c64f750a52b765fb5f71a8a0a5a621c467ec4",
+      "bytes": 30295,
       "group_id": "repository-enforcement",
       "surface_kind": "workflow",
       "control_kind": "pipeline",
@@ -1912,8 +1912,8 @@
     {
       "surface_id": "repo-docs-agent-system-hosted-assurance-workflow-disposition-md",
       "path": "docs/agent-system/HOSTED_ASSURANCE_WORKFLOW_DISPOSITION.md",
-      "sha256": "b282346d4188dcb25bf381ad69e93037eca42eeaf575302f8e76429a6bef4636",
-      "bytes": 4249,
+      "sha256": "212bb5b2f33df2b755656cb31c551173c9f677aa2670580e09890751a9cac4d8",
+      "bytes": 4594,
       "group_id": "operating-documentation",
       "surface_kind": "method",
       "control_kind": "none",
@@ -2962,8 +2962,8 @@
     {
       "surface_id": "repo-docs-superpowers-plans-2026-08-30-hosted-assurance-closure-md",
       "path": "docs/superpowers/plans/2026-08-30-hosted-assurance-closure.md",
-      "sha256": "018c8b7084212d1351d8bc243d52d08061243646efe1cc8d14a00ec851fda760",
-      "bytes": 3558,
+      "sha256": "8a15e1cf72f9bd7d40d14d13d403bf3087cdf9ca1d0be3e936f191b5978edac7",
+      "bytes": 6107,
       "group_id": "historical-plans-and-investigations",
       "surface_kind": "historical_evidence",
       "control_kind": "none",
@@ -9556,8 +9556,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-tests-hosted-assurance-evidence-test-mjs",
       "path": "scripts/agent-governance/tests/hosted-assurance-evidence.test.mjs",
-      "sha256": "e18715c9d5d6fed0e9e9f3e07f6af3c0a47501468edc697ae9482a2c6ba9ecd3",
-      "bytes": 5425,
+      "sha256": "47d767a5e12d16df3a2077748560c2c71d46787b2240f2af2447a006b61336f4",
+      "bytes": 7781,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -14203,5 +14203,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "be31ea098b5ba47afeb59d1f8395bbe0c6fee67f469e9f19a38512290233ec81"
+  "catalog_digest": "8fa14f636d97bc75d125addf7446e7cdf6803dc457f077215b52da07bff1a5a3"
 }
