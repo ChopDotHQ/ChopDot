@@ -35,7 +35,7 @@
       "scripts/"
     ],
     "repository_file_count": 709,
-    "repository_manifest_sha256": "f8e1518fa411a6966b73567a10a322eed699ba22e293ece7ae3424200f0b2eb8"
+    "repository_manifest_sha256": "9b2881230dcd4579a535cabbea4ed4e3b0ef3d311923a285604f44b6cd64dff4"
   },
   "lifecycle_summary": {
     "active": 242,
@@ -121,7 +121,7 @@
         "retry_exit": "Repair or explicitly change lifecycle through reviewed source, regenerate, and recheck."
       },
       "file_count": 30,
-      "manifest_sha256": "ef318f886ca6986549e57ec89314e6b88aadf7001c0e5c2805d5c84f8387e7d0"
+      "manifest_sha256": "fe0f40ed9209372d2cc90a9fa4d1f8fa72ac5f2017e14a16424d0c49bf9b15b8"
     },
     {
       "id": "agent-policies-and-foundation",
@@ -390,7 +390,7 @@
         "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog."
       },
       "file_count": 58,
-      "manifest_sha256": "d1546c760c3f3e408510fa905f7c0b2c5335217e8ffb3800162fa91080aa9b7b"
+      "manifest_sha256": "ecead2766af8f52706c07fc433df5497b9e2acf64c47abd9fa9c6407772c86d4"
     },
     {
       "id": "knowledge-and-wiki-sources",
@@ -2962,8 +2962,8 @@
     {
       "surface_id": "repo-docs-superpowers-plans-2026-08-30-hosted-assurance-closure-md",
       "path": "docs/superpowers/plans/2026-08-30-hosted-assurance-closure.md",
-      "sha256": "81d26305f9365c7e6e1301e05b865f12ae1ccdf763327c970682e8429d967ccf",
-      "bytes": 9887,
+      "sha256": "efd9478202313cce5c7682335000da04ca309996debfb006c60368a658404e3b",
+      "bytes": 10210,
       "group_id": "historical-plans-and-investigations",
       "surface_kind": "historical_evidence",
       "control_kind": "none",
@@ -9556,8 +9556,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-tests-hosted-assurance-evidence-test-mjs",
       "path": "scripts/agent-governance/tests/hosted-assurance-evidence.test.mjs",
-      "sha256": "a3b6dfc9347c9255323226fea7a3e105ffb7973337ed9c7635efb95daa9c90a4",
-      "bytes": 11532,
+      "sha256": "5d6c933244b1840bd72a2d79f28fb0046c484bd06a091e4d2cea4cadd38cab06",
+      "bytes": 12379,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -9682,8 +9682,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-tests-workflow-exact-head-test-mjs",
       "path": "scripts/agent-governance/tests/workflow-exact-head.test.mjs",
-      "sha256": "49eff2d05c6f47398dc3a9f0d1a8f4b92cd92b7e9d6c5e3c8639c12f976ee6c8",
-      "bytes": 36275,
+      "sha256": "d83b8bc8e38343afa724b47351c807b3fceb8d776c837c3e01ffffb76177cf85",
+      "bytes": 36481,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -9724,8 +9724,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-validate-workflow-mjs",
       "path": "scripts/agent-governance/validate-workflow.mjs",
-      "sha256": "bf21a0c26e73f8e820f44e088b2c7d2908d94ba68fb72133dda9ce55fd045483",
-      "bytes": 40602,
+      "sha256": "cdb51771aed0e761ad1ed26a6b36abdc64a0e16ad0c37ded4ecfa3794b5d6988",
+      "bytes": 41129,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -14203,5 +14203,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "513541c62697c8c5eaf22f0e52cd90205c391df6ffab28fe77fbfc797ebdc248"
+  "catalog_digest": "181694ed43e24b9b04a638ecde24ed99bd905c2f11f49e868f16d0a5222ff8f6"
 }

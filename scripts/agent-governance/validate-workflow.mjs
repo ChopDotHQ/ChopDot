@@ -572,6 +572,7 @@ export function validateWorkflow(source) {
   const browserEvidenceSteps = browserAssurance?.steps.filter((step) => step.env.CHOPDOT_RELEASE_EVIDENCE_ROOT === '${{ runner.temp }}/chopdot-release-evidence') ?? [];
   const browserExactHead = browserAssurance?.steps.find((step) => step.fields.name === 'Assert exact candidate checkout');
   const browserSummary = browserAssurance?.steps.find((step) => step.fields.name === 'Publish browser assurance summary');
+  const browserClean = browserAssurance?.steps.find((step) => step.fields.name === 'Assert browser suite left repository clean');
   const browserUpload = browserAssurance?.steps.find((step) => step.fields.name === 'Upload browser assurance evidence');
   const browserTail = browserAssurance?.steps.slice(-3).map((step) => step.fields.name) ?? [];
   const expectedBrowserSummary = [
@@ -579,7 +580,13 @@ export function validateWorkflow(source) {
     'echo "Production-entrypoint Playwright results apply only to the exact checked-out candidate." >> "$GITHUB_STEP_SUMMARY"',
     'echo "This is application evidence, not deployment, reachability, ownership, or live-user proof." >> "$GITHUB_STEP_SUMMARY"',
   ].join('\n');
-  checks += 5;
+  const expectedBrowserClean = [
+    'git status --short --untracked-files=all',
+    'git diff --exit-code',
+    'git diff --cached --exit-code',
+    'test -z "$(git status --porcelain --untracked-files=all)"',
+  ].join('\n');
+  checks += 6;
   if (browserAssurance?.env.CHOPDOT_RELEASE_EVIDENCE_ROOT !== undefined) errors.push('Application browser assurance cannot bind CHOPDOT_RELEASE_EVIDENCE_ROOT at job scope');
   if (Object.values(browserAssurance?.env ?? {}).some((value) => value.includes('${{ runner.'))) errors.push('Application browser assurance job-level env cannot use runner context');
   if (JSON.stringify(browserEvidenceSteps.map((step) => step.fields.name)) !== JSON.stringify([
@@ -590,6 +597,7 @@ export function validateWorkflow(source) {
   if (JSON.stringify(browserTail) !== JSON.stringify(['Publish browser assurance summary', 'Assert browser suite left repository clean', 'Upload browser assurance evidence'])) errors.push('Browser assurance must end with summary, then the penultimate clean-checkout assertion, then the final evidence upload');
   if (browserSummary?.fields.if !== 'always()') errors.push('Browser assurance summary must remain an always-run pre-clean diagnostic step');
   if (browserSummary?.run !== expectedBrowserSummary) errors.push('Browser assurance summary must contain only the three reviewed GitHub summary writes before the clean-checkout assertion');
+  if (browserClean?.run !== expectedBrowserClean) errors.push('Browser assurance clean-checkout step must contain only the four reviewed terminal cleanliness commands');
   if (browserUpload?.with.path !== '${{ runner.temp }}/chopdot-release-evidence/') errors.push('Browser assurance must upload only the external release evidence root');
   if (!browserAssurance?.block.includes('${{ runner.temp }}/chopdot-release-evidence/')) errors.push('Browser assurance must upload the external release evidence root directly');
   if (!browserAssurance?.steps.some((step) => step.fields.name === 'Upload browser assurance evidence' && step.with['if-no-files-found'] === 'error')) errors.push('Browser assurance evidence upload must fail when evidence is absent');

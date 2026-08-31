@@ -4,8 +4,8 @@
 **Authority:** inventory and monitoring only; never product law, priority, approval, or release proof
 **Registry:** `governance/agent-system/steering-surface-registry.v1.json` v1.0.0 (active)
 **Registry semantic digest:** `de324a6a42d279f746427025b869df5c9e1388eda3b1deeb231474a0c111caea`
-**Repository manifest aggregate:** `f8e1518fa411a6966b73567a10a322eed699ba22e293ece7ae3424200f0b2eb8`
-**Catalog digest:** `513541c62697c8c5eaf22f0e52cd90205c391df6ffab28fe77fbfc797ebdc248`
+**Repository manifest aggregate:** `9b2881230dcd4579a535cabbea4ed4e3b0ef3d311923a285604f44b6cd64dff4`
+**Catalog digest:** `181694ed43e24b9b04a638ecde24ed99bd905c2f11f49e868f16d0a5222ff8f6`
 
 This file is deterministic. Current branch, dirty state, optional machine-local availability, and hash drift are reported by `npm run agent:steering:report`. Update sources deliberately, run `npm run agent:steering:build`, review the diff, then run `npm run agent:steering:check`. The monitor never rewrites authority during a check.
 
@@ -35,14 +35,14 @@ Degraded repository groups: `legacy-steering-documents`, `operating-documentatio
 | Group | Lifecycle | Files | Ordered manifest SHA-256 |
 |---|---|---:|---|
 | agent-evaluation-system | active | 8 | 56388ea341278c1be9b1e18c6cd557bbfe319b1eed49889ee044846050a33ba4 |
-| agent-governance-runtime | active | 30 | ef318f886ca6986549e57ec89314e6b88aadf7001c0e5c2805d5c84f8387e7d0 |
+| agent-governance-runtime | active | 30 | fe0f40ed9209372d2cc90a9fa4d1f8fa72ac5f2017e14a16424d0c49bf9b15b8 |
 | agent-policies-and-foundation | active | 9 | 6bb5afda8ffcbbe427aef965306c9f4e508f246c7b789d6b265eedd600a05da9 |
 | agent-system-runtime | active | 38 | 39db537172f403c90144162ffad97c878294ac8cf10af885dd1c5bf11806f7f5 |
 | architecture-decisions | active | 6 | c655d48db90d88c8252dbd9f769d1e2e48e3a709e8212013311357b4682a6944 |
 | definition-frameworks | active | 1 | 426935c74c44de7d200d80494e27a01eaaf8d3bd2963f1f7a794588a275b0f7d |
 | definition-profiles | active | 1 | 68e492127a763057c64db65142d17044d708995a2e20f9c92e4b5143b98dc3f3 |
 | deployment-context | active | 10 | d09cf4c1c8a12c12947b1895b37d3324a8d476eaa2693637bcb510801e2713f7 |
-| historical-plans-and-investigations | historical | 58 | d1546c760c3f3e408510fa905f7c0b2c5335217e8ffb3800162fa91080aa9b7b |
+| historical-plans-and-investigations | historical | 58 | ecead2766af8f52706c07fc433df5497b9e2acf64c47abd9fa9c6407772c86d4 |
 | knowledge-and-wiki-sources | active | 15 | 641722ba023359926d5aebd3e0cf3f8d5e9f0e20c8a74baaa74cfb7aa4c105b4 |
 | legacy-steering-documents | degraded | 10 | d5a81d892973840dce72a73b0e35d46c33a67136776cdee77706318d1b4acfd0 |
 | native-and-release-context | active | 15 | a54cdcfc22ae6367c0a8d801782b245c55dad0ae4aa314ab8ae07840fb94ddd7 |

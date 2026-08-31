@@ -101,6 +101,7 @@ function browserEvidenceFailures(source) {
   const expectedTail = ['Publish browser assurance summary', 'Assert browser suite left repository clean', 'Upload browser assurance evidence'];
   const summaryStart = block.indexOf('      - name: Publish browser assurance summary\n');
   const cleanStart = block.indexOf('      - name: Assert browser suite left repository clean\n');
+  const uploadStart = block.indexOf('      - name: Upload browser assurance evidence\n');
   const expectedSummary = [
     '      - name: Publish browser assurance summary',
     '        if: always()',
@@ -110,10 +111,20 @@ function browserEvidenceFailures(source) {
     '          echo "This is application evidence, not deployment, reachability, ownership, or live-user proof." >> "$GITHUB_STEP_SUMMARY"',
     '',
   ].join('\n');
+  const expectedClean = [
+    '      - name: Assert browser suite left repository clean',
+    '        run: |',
+    '          git status --short --untracked-files=all',
+    '          git diff --exit-code',
+    '          git diff --cached --exit-code',
+    '          test -z "$(git status --porcelain --untracked-files=all)"',
+    '',
+  ].join('\n');
   if (evidenceBindingCount !== 2) failures.push(`browser evidence root must bind exactly two runtime steps, found ${evidenceBindingCount}`);
   if (/CHOPDOT_RELEASE_EVIDENCE_ROOT|\$\{\{ runner\./u.test(jobHeader)) failures.push('browser evidence root cannot use runner context at job scope');
   if (JSON.stringify(stepNames.slice(-3)) !== JSON.stringify(expectedTail)) failures.push('browser job must end summary, penultimate cleanliness, then final upload');
   if (summaryStart < 0 || cleanStart <= summaryStart || block.slice(summaryStart, cleanStart) !== expectedSummary) failures.push('browser summary must contain only reviewed pre-clean diagnostic writes');
+  if (cleanStart < 0 || uploadStart <= cleanStart || block.slice(cleanStart, uploadStart) !== expectedClean) failures.push('browser cleanliness step must contain only reviewed terminal commands');
   return failures;
 }
 
@@ -168,6 +179,7 @@ test('browser workflow uploads runtime evidence and proves tracked-source cleanl
   for (const broken of [
     workflow.replace('      - name: Upload browser assurance evidence\n', '      - name: Reintroduce checkout dirtiness after the clean gate\n        run: touch post-clean-dirty.txt\n      - name: Upload browser assurance evidence\n'),
     workflow.replace('          echo "This is application evidence, not deployment, reachability, ownership, or live-user proof." >> "$GITHUB_STEP_SUMMARY"\n', '          echo "This is application evidence, not deployment, reachability, ownership, or live-user proof." >> "$GITHUB_STEP_SUMMARY"\n          touch post-clean-dirty.txt\n'),
+    workflow.replace('          test -z "$(git status --porcelain --untracked-files=all)"\n', '          test -z "$(git status --porcelain --untracked-files=all)"\n          touch post-clean-dirty.txt\n'),
   ]) {
     assert.notEqual(broken, workflow);
     assert.notDeepEqual(browserEvidenceFailures(broken), []);

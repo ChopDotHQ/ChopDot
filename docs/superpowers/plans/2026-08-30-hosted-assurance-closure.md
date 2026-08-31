@@ -169,3 +169,8 @@ or ADR change is expected unless implementation reveals an architecture change.
   exact. Hostile post-clean insertion and summary-write mutations fail closed.
   The expanded focused set passes `54/54` and workflow structure passes `482`
   checks.
+- Re-review closed those two counterexamples but found the equivalent final
+  mutation: appending a write inside the clean step after its assertion. The
+  clean step is now also locked to its exact four-command body, and an appended
+  clean-step write is a hostile regression. Workflow structure now passes `483`
+  checks.
