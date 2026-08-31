@@ -93,7 +93,7 @@ test('simultaneous vault startups converge on one durable assessment key', async
 });
 
 test('forced distinct-record writers converge and leave no blocking loser connections', async ({page}) => {
-  await page.goto(baseUrl);
+  await page.goto(`${baseUrl}/tests/fixtures/authority-key-storage-shell.html`);
 
   const result = await page.evaluate(async () => {
     const dbName = `chopdot-authority-key-distinct-${crypto.randomUUID()}`;
@@ -147,9 +147,10 @@ test('forced distinct-record writers converge and leave no blocking loser connec
     }
   });
 
-  expect(result.aesGenerateCount).toBe(8);
-  expect(result.outcomes).toEqual(Array.from({length: 8}, () => 'stored'));
-  expect(result.recovered).toEqual(Array.from({length: 8}, (_, index) => ({v: 1, index, marker: `value-${index}`})));
+  const writerCount = 8;
+  expect(result.aesGenerateCount).toBe(writerCount);
+  expect(result.outcomes).toEqual(Array.from({length: writerCount}, () => 'stored'));
+  expect(result.recovered).toEqual(Array.from({length: writerCount}, (_, index) => ({v: 1, index, marker: `value-${index}`})));
   expect(result.databaseDeleted).toBe(true);
 });
 

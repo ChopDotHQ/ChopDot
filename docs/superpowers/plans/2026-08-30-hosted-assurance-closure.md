@@ -136,3 +136,18 @@ or ADR change is expected unless implementation reveals an architecture change.
   the exact current bytes. The browser test polls the required outcome (one
   redacted assessment and zero authority journals) instead of treating the
   IndexedDB schema upgrade as proof that persistence has completed.
+- The following hosted run passed governance, contract, runner, knowledge,
+  fast-assurance, secrets, and PR-context jobs, then exposed two independent
+  browser-test readiness defects. The keyboard test sent input before React's
+  entrance had committed; it now waits for the real heading and action before
+  proving that exactly one Tab focuses the action and Enter activates it. The
+  authority concurrency test installed a page-global AES counter while the
+  production app could still generate its own startup key; its strict eight-
+  writer barrier now runs on a same-origin no-script shell, preserving exact
+  generation, recovery, and connection-closure assertions without changing
+  production code.
+- Both repaired browser contracts passed ten consecutive fresh repetitions
+  (`20/20` total). Feature-worktree context (`13` sources), Product Cockpit
+  (`11` cards), wiki (`13` sources), workflow structure (`477` checks), hosted
+  assurance regressions (`46/46`), TypeScript, and diff checks also passed on
+  the repaired local candidate before commit.

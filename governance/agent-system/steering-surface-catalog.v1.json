@@ -35,7 +35,7 @@
       "scripts/"
     ],
     "repository_file_count": 709,
-    "repository_manifest_sha256": "e9ade61f943a14b678d96375af490221db3a4a585c2495d2323c8537b189abf5"
+    "repository_manifest_sha256": "d330cb536efecc490604f7f65344583e4313ff9a6223e7ad1144517cf28dbfe6"
   },
   "lifecycle_summary": {
     "active": 242,
@@ -390,7 +390,7 @@
         "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog."
       },
       "file_count": 58,
-      "manifest_sha256": "fabeec33f8e84dd7fc5576adb9c372b9b8f7f20d3a468acfaf16bd6d13075019"
+      "manifest_sha256": "ae2df4c326ec7f89e43aea2ced80c8f4fd700817ae2e3fbef7f3ecd701c38dbd"
     },
     {
       "id": "knowledge-and-wiki-sources",
@@ -2962,8 +2962,8 @@
     {
       "surface_id": "repo-docs-superpowers-plans-2026-08-30-hosted-assurance-closure-md",
       "path": "docs/superpowers/plans/2026-08-30-hosted-assurance-closure.md",
-      "sha256": "aa8eb703ac755ebcf280db92692f325e07ae5609edb38acd6b28476f664a1e17",
-      "bytes": 7510,
+      "sha256": "5addddd2036734d7b8e3de4ac95b1f0ce380561376fd2313bd33523aee50f0aa",
+      "bytes": 8573,
       "group_id": "historical-plans-and-investigations",
       "surface_kind": "historical_evidence",
       "control_kind": "none",
@@ -14203,5 +14203,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "1976fd96ee52f613c508a7498cb1bfe96d85fe54b8623b625399e203b2f9997d"
+  "catalog_digest": "a2794310292c0f49e17af4e07630d95482bc1a0446067afe4185fd0114994971"
 }

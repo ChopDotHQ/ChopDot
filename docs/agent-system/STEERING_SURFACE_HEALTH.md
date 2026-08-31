@@ -4,8 +4,8 @@
 **Authority:** inventory and monitoring only; never product law, priority, approval, or release proof
 **Registry:** `governance/agent-system/steering-surface-registry.v1.json` v1.0.0 (active)
 **Registry semantic digest:** `de324a6a42d279f746427025b869df5c9e1388eda3b1deeb231474a0c111caea`
-**Repository manifest aggregate:** `e9ade61f943a14b678d96375af490221db3a4a585c2495d2323c8537b189abf5`
-**Catalog digest:** `1976fd96ee52f613c508a7498cb1bfe96d85fe54b8623b625399e203b2f9997d`
+**Repository manifest aggregate:** `d330cb536efecc490604f7f65344583e4313ff9a6223e7ad1144517cf28dbfe6`
+**Catalog digest:** `a2794310292c0f49e17af4e07630d95482bc1a0446067afe4185fd0114994971`
 
 This file is deterministic. Current branch, dirty state, optional machine-local availability, and hash drift are reported by `npm run agent:steering:report`. Update sources deliberately, run `npm run agent:steering:build`, review the diff, then run `npm run agent:steering:check`. The monitor never rewrites authority during a check.
 
@@ -42,7 +42,7 @@ Degraded repository groups: `legacy-steering-documents`, `operating-documentatio
 | definition-frameworks | active | 1 | 426935c74c44de7d200d80494e27a01eaaf8d3bd2963f1f7a794588a275b0f7d |
 | definition-profiles | active | 1 | 68e492127a763057c64db65142d17044d708995a2e20f9c92e4b5143b98dc3f3 |
 | deployment-context | active | 10 | d09cf4c1c8a12c12947b1895b37d3324a8d476eaa2693637bcb510801e2713f7 |
-| historical-plans-and-investigations | historical | 58 | fabeec33f8e84dd7fc5576adb9c372b9b8f7f20d3a468acfaf16bd6d13075019 |
+| historical-plans-and-investigations | historical | 58 | ae2df4c326ec7f89e43aea2ced80c8f4fd700817ae2e3fbef7f3ecd701c38dbd |
 | knowledge-and-wiki-sources | active | 15 | 641722ba023359926d5aebd3e0cf3f8d5e9f0e20c8a74baaa74cfb7aa4c105b4 |
 | legacy-steering-documents | degraded | 10 | d5a81d892973840dce72a73b0e35d46c33a67136776cdee77706318d1b4acfd0 |
 | native-and-release-context | active | 15 | a54cdcfc22ae6367c0a8d801782b245c55dad0ae4aa314ab8ae07840fb94ddd7 |
