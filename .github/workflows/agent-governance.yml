@@ -373,7 +373,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Assert exact candidate checkout
-        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="$GOVERNANCE_REPORT_ROOT/application-browser-exact-head.json"
+        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="${{ runner.temp }}/chopdot-release-evidence/application-browser-exact-head.json"
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -410,9 +410,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: application-browser-assurance-${{ github.run_id }}
-          path: |
-            ${{ env.GOVERNANCE_REPORT_ROOT }}/
-            ${{ runner.temp }}/chopdot-release-evidence/
+          path: ${{ runner.temp }}/chopdot-release-evidence/
           if-no-files-found: error
           retention-days: 30
 

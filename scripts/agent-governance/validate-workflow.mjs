@@ -570,12 +570,17 @@ export function validateWorkflow(source) {
   if (JSON.stringify(prOutcome?.needs ?? []) !== JSON.stringify(requiredNeeds)) errors.push('PR outcome must need all seven exact-head evidence jobs in canonical order');
   if (JSON.stringify(repoGovernance?.needs ?? []) !== JSON.stringify(['pr-context'])) errors.push('Repo governance must need the exact PR context job');
   const browserEvidenceSteps = browserAssurance?.steps.filter((step) => step.env.CHOPDOT_RELEASE_EVIDENCE_ROOT === '${{ runner.temp }}/chopdot-release-evidence') ?? [];
+  const browserExactHead = browserAssurance?.steps.find((step) => step.fields.name === 'Assert exact candidate checkout');
+  const browserUpload = browserAssurance?.steps.find((step) => step.fields.name === 'Upload browser assurance evidence');
+  checks += 2;
   if (browserAssurance?.env.CHOPDOT_RELEASE_EVIDENCE_ROOT !== undefined) errors.push('Application browser assurance cannot bind CHOPDOT_RELEASE_EVIDENCE_ROOT at job scope');
   if (Object.values(browserAssurance?.env ?? {}).some((value) => value.includes('${{ runner.'))) errors.push('Application browser assurance job-level env cannot use runner context');
   if (JSON.stringify(browserEvidenceSteps.map((step) => step.fields.name)) !== JSON.stringify([
     'Run production-entrypoint browser assurance',
     'Assert machine-readable browser result',
   ])) errors.push('Browser assurance must bind the external release evidence root on exactly the two runtime steps where runner context is available');
+  if (browserExactHead?.run !== 'node scripts/agent-governance/assert-exact-head.mjs --json-out="${{ runner.temp }}/chopdot-release-evidence/application-browser-exact-head.json"') errors.push('Browser assurance exact-head evidence must be written outside the repository beneath the uploaded release evidence root');
+  if (browserUpload?.with.path !== '${{ runner.temp }}/chopdot-release-evidence/') errors.push('Browser assurance must upload only the external release evidence root');
   if (!browserAssurance?.block.includes('${{ runner.temp }}/chopdot-release-evidence/')) errors.push('Browser assurance must upload the external release evidence root directly');
   if (!browserAssurance?.steps.some((step) => step.fields.name === 'Upload browser assurance evidence' && step.with['if-no-files-found'] === 'error')) errors.push('Browser assurance evidence upload must fail when evidence is absent');
   const contextCommand = prContext?.steps.map((step) => step.run).filter(Boolean).join('\n') ?? '';

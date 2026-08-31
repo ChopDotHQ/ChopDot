@@ -35,7 +35,7 @@
       "scripts/"
     ],
     "repository_file_count": 709,
-    "repository_manifest_sha256": "d330cb536efecc490604f7f65344583e4313ff9a6223e7ad1144517cf28dbfe6"
+    "repository_manifest_sha256": "0d553d266b885831ba4dbc2c60b44855e4165298d3778b7b99c0ffee6ecccb30"
   },
   "lifecycle_summary": {
     "active": 242,
@@ -121,7 +121,7 @@
         "retry_exit": "Repair or explicitly change lifecycle through reviewed source, regenerate, and recheck."
       },
       "file_count": 30,
-      "manifest_sha256": "bfc5e09ac6fa6dc457439cda601950f203f41fb69719b9532321dcd3c2db0721"
+      "manifest_sha256": "fa4c5579a6a45eb63c3f66a318180b24a7daf84d085ef6f57aab788fd88c81d3"
     },
     {
       "id": "agent-policies-and-foundation",
@@ -390,7 +390,7 @@
         "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog."
       },
       "file_count": 58,
-      "manifest_sha256": "ae2df4c326ec7f89e43aea2ced80c8f4fd700817ae2e3fbef7f3ecd701c38dbd"
+      "manifest_sha256": "3f10b88485691505f3de15ed33ebda9bc8d06e718b6a75a1ea99c25b698c7078"
     },
     {
       "id": "knowledge-and-wiki-sources",
@@ -870,7 +870,7 @@
         "retry_exit": "Repair the candidate, range, source, or enforcement wiring and re-run local preflight plus hosted workflow validation."
       },
       "file_count": 7,
-      "manifest_sha256": "0e7af7e5642b11b4c8d0f2078e9f65f6c6cffe1dc09f8becb5b66292a7153a45"
+      "manifest_sha256": "3de27782bff09d51263a953750ed87ce606d51e4b029d091d409ba9d81935517"
     },
     {
       "id": "repository-entrypoints",
@@ -1184,8 +1184,8 @@
     {
       "surface_id": "repo-github-workflows-agent-governance-yml",
       "path": ".github/workflows/agent-governance.yml",
-      "sha256": "a6d2c9113df14be3a47f635fdbc97f5f0dd0aef645b8df5bb3fca41e5b5e9a50",
-      "bytes": 30455,
+      "sha256": "f038ca0a544560735bd1972c555b2caecd75fee418bdbeffd31712337c584c3c",
+      "bytes": 30414,
       "group_id": "repository-enforcement",
       "surface_kind": "workflow",
       "control_kind": "pipeline",
@@ -2962,8 +2962,8 @@
     {
       "surface_id": "repo-docs-superpowers-plans-2026-08-30-hosted-assurance-closure-md",
       "path": "docs/superpowers/plans/2026-08-30-hosted-assurance-closure.md",
-      "sha256": "5addddd2036734d7b8e3de4ac95b1f0ce380561376fd2313bd33523aee50f0aa",
-      "bytes": 8573,
+      "sha256": "46f780b7c207384091c5ca7426462b09173c6d8a4f233f27021301fd9398c769",
+      "bytes": 9322,
       "group_id": "historical-plans-and-investigations",
       "surface_kind": "historical_evidence",
       "control_kind": "none",
@@ -9556,8 +9556,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-tests-hosted-assurance-evidence-test-mjs",
       "path": "scripts/agent-governance/tests/hosted-assurance-evidence.test.mjs",
-      "sha256": "77d2ee5a46aa5fbd98406ebb23a1553ddba910bdc099b826709bbc9f40539fb0",
-      "bytes": 9136,
+      "sha256": "8a6801b977a6f3a6a1111bd87ecbb4d1716e24dae1420af542365064ef03d232",
+      "bytes": 9506,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -9682,8 +9682,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-tests-workflow-exact-head-test-mjs",
       "path": "scripts/agent-governance/tests/workflow-exact-head.test.mjs",
-      "sha256": "690702613dfed49040fdb85159c40fea387417658fd0fbaa06a830bdd53b4db9",
-      "bytes": 35477,
+      "sha256": "e3f269ed12af511d701617948d886a8d8de28021d50ab5c7216f17eab5fd2e3a",
+      "bytes": 35701,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -9724,8 +9724,8 @@
     {
       "surface_id": "repo-scripts-agent-governance-validate-workflow-mjs",
       "path": "scripts/agent-governance/validate-workflow.mjs",
-      "sha256": "43448eb016d042e11e19e707c4f7ceb9ade2d41f8587c3e363817c405277cf4d",
-      "bytes": 38612,
+      "sha256": "0d8afcb5908fb7c7acd58b8720e855c012f6ec2d4b38d6b99b0577666937942c",
+      "bytes": 39357,
       "group_id": "agent-governance-runtime",
       "surface_kind": "validator",
       "control_kind": "gate",
@@ -14203,5 +14203,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "a2794310292c0f49e17af4e07630d95482bc1a0446067afe4185fd0114994971"
+  "catalog_digest": "d854c6f5c9f7288f3184fd465a57e7cc5c61b80cbcb34a767411c2e9ef43a0ec"
 }

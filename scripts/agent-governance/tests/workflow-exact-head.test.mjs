@@ -469,8 +469,9 @@ test('browser and secrets commands cannot be masked or replaced by inert decoys'
 
 test('browser evidence root, upload, and complete post-suite cleanliness cannot be weakened', () => {
   const cases = [
+    workflow.replace('${{ runner.temp }}/chopdot-release-evidence/application-browser-exact-head.json', '$GOVERNANCE_REPORT_ROOT/application-browser-exact-head.json'),
     workflow.replace('CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence', 'CHOPDOT_RELEASE_EVIDENCE_ROOT: artifacts/release'),
-    workflow.replace('            ${{ runner.temp }}/chopdot-release-evidence/\n', ''),
+    workflow.replace('          path: ${{ runner.temp }}/chopdot-release-evidence/\n', '          path: ${{ env.GOVERNANCE_REPORT_ROOT }}/\n'),
     workflow.replace('          git diff --exit-code\n', ''),
     workflow.replace('          git diff --cached --exit-code\n', ''),
     workflow.replace('          test -z "$(git status --porcelain --untracked-files=all)"\n', ''),

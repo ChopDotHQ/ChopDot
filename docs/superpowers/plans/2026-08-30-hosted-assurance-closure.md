@@ -151,3 +151,13 @@ or ADR change is expected unless implementation reveals an architecture change.
   (`11` cards), wiki (`13` sources), workflow structure (`477` checks), hosted
   assurance regressions (`46/46`), TypeScript, and diff checks also passed on
   the repaired local candidate before commit.
+- Run `33394616175` passed all `90` production browser tests and every other
+  exact-head job, then the clean-checkout gate named its sole remaining dirty
+  path: the job's own `application-browser-exact-head.json` under the
+  repository-relative governance report directory. The browser job now writes
+  that report beneath the same runner-temporary evidence root it uploads, and
+  structural plus hostile tests reject restoring a repository-local report or
+  a split upload path. The clean-checkout assertion itself remains unchanged.
+  A local path simulation proved matching exact-head SHA/tree evidence without
+  changing repository status; focused hosted-assurance regressions remain
+  `46/46`, and workflow structure now passes `479` checks.

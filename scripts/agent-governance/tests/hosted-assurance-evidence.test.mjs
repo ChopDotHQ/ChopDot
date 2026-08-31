@@ -85,6 +85,7 @@ function browserEvidenceFailures(source) {
   if (stepsStart < 0) return ['application-browser-assurance steps missing'];
   const jobHeader = block.slice(0, stepsStart);
   const required = [
+    'assert-exact-head.mjs --json-out="${{ runner.temp }}/chopdot-release-evidence/application-browser-exact-head.json"',
     'CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence',
     'test -s "$CHOPDOT_RELEASE_EVIDENCE_ROOT/playwright/results.json"',
     'report.stats?.unexpected !== 0 || report.stats?.expected < 1',
@@ -158,7 +159,9 @@ test('runner context is used only where GitHub exposes it', () => {
   );
   assert.notDeepEqual(browserEvidenceFailures(broken), []);
   assert.equal((workflow.match(/CHOPDOT_RELEASE_EVIDENCE_ROOT: \$\{\{ runner\.temp \}\}\/chopdot-release-evidence/gu) ?? []).length, 2);
-  assert.match(workflow, /path: \|\s+\$\{\{ env\.GOVERNANCE_REPORT_ROOT \}\}\/\s+\$\{\{ runner\.temp \}\}\/chopdot-release-evidence\//u);
+  assert.match(workflow, /--json-out="\$\{\{ runner\.temp \}\}\/chopdot-release-evidence\/application-browser-exact-head\.json"/u);
+  assert.match(workflow, /path: \$\{\{ runner\.temp \}\}\/chopdot-release-evidence\//u);
+  assert.doesNotMatch(workflow.slice(workflow.indexOf('\n  application-browser-assurance:\n'), workflow.indexOf('\n  secrets-scan:\n')), /GOVERNANCE_REPORT_ROOT/u);
 });
 
 test('UI assurance waits for a visible product heading before each hosted screenshot', () => {
