@@ -100,7 +100,7 @@ or ADR change is expected unless implementation reveals an architecture change.
 
 ## Local verification on the reconciled candidate
 
-- Focused hosted-assurance and hostile workflow tests: `52/52` passed.
+- Focused hosted-assurance and hostile workflow tests: `53/53` passed.
 - Evidence-path boundary tests: `3/3` passed.
 - Workflow structural validator: `477` checks, zero errors and zero warnings.
 - Focused stale-expectation and hosted-frame repair: `9/9` browser tests passed.
@@ -117,3 +117,8 @@ or ADR change is expected unless implementation reveals an architecture change.
 - The first full browser run reproduced twelve tracked proof rewrites. After the
   seventeen-writer repair, the same suite produced no tracked proof or new
   repository output paths.
+- GitHub's workflow parser rejected the first pushed candidate before creating
+  jobs because `runner.temp` is unavailable in job-level `env`. The evidence
+  root is now bound only on the two runtime steps where GitHub exposes the
+  runner context and is referenced directly by the upload step. A hostile test
+  and structural validator now reject moving that binding back to job scope.

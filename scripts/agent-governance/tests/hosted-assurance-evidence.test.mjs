@@ -88,10 +88,13 @@ function browserEvidenceFailures(source) {
     'git diff --exit-code',
     'git diff --cached --exit-code',
     'git status --porcelain --untracked-files=all',
-    '${{ env.CHOPDOT_RELEASE_EVIDENCE_ROOT }}/',
+    '${{ runner.temp }}/chopdot-release-evidence/',
     'if-no-files-found: error',
   ];
-  return required.filter(value => !block.includes(value)).map(value => `browser evidence contract missing ${value}`);
+  const failures = required.filter(value => !block.includes(value)).map(value => `browser evidence contract missing ${value}`);
+  const evidenceBindingCount = (block.match(/CHOPDOT_RELEASE_EVIDENCE_ROOT: \$\{\{ runner\.temp \}\}\/chopdot-release-evidence/gu) ?? []).length;
+  if (evidenceBindingCount !== 2) failures.push(`browser evidence root must bind exactly two runtime steps, found ${evidenceBindingCount}`);
+  return failures;
 }
 
 test('Gitleaks baseline is exactly the 14 reviewed fingerprints', () => {
@@ -136,12 +139,18 @@ test('browser workflow uploads runtime evidence and proves tracked-source cleanl
     'git diff --exit-code',
     'git diff --cached --exit-code',
     'git status --porcelain --untracked-files=all',
-    '${{ env.CHOPDOT_RELEASE_EVIDENCE_ROOT }}/',
+    '${{ runner.temp }}/chopdot-release-evidence/',
   ]) {
     const broken = workflow.replace(needle, 'removed-hostile-fixture');
     assert.notEqual(broken, workflow);
     assert.notDeepEqual(browserEvidenceFailures(broken), []);
   }
+});
+
+test('runner context is used only where GitHub exposes it', () => {
+  assert.doesNotMatch(workflow, /timeout-minutes: 30\s+env:\s+CHOPDOT_RELEASE_EVIDENCE_ROOT: \$\{\{ runner\.temp \}\}/u);
+  assert.equal((workflow.match(/CHOPDOT_RELEASE_EVIDENCE_ROOT: \$\{\{ runner\.temp \}\}\/chopdot-release-evidence/gu) ?? []).length, 2);
+  assert.match(workflow, /path: \|\s+\$\{\{ env\.GOVERNANCE_REPORT_ROOT \}\}\/\s+\$\{\{ runner\.temp \}\}\/chopdot-release-evidence\//u);
 });
 
 test('UI assurance waits for a visible product heading before each hosted screenshot', () => {

@@ -365,8 +365,6 @@ jobs:
     name: Application browser assurance
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -386,8 +384,12 @@ jobs:
       - name: Install exact Playwright Chromium
         run: npx --no-install playwright install --with-deps chromium
       - name: Run production-entrypoint browser assurance
+        env:
+          CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence
         run: npm run test:release-browser
       - name: Assert machine-readable browser result
+        env:
+          CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence
         run: |
           test -s "$CHOPDOT_RELEASE_EVIDENCE_ROOT/playwright/results.json"
           node -e 'const fs=require("node:fs"); const report=JSON.parse(fs.readFileSync(process.env.CHOPDOT_RELEASE_EVIDENCE_ROOT + "/playwright/results.json", "utf8")); if (report.stats?.unexpected !== 0 || report.stats?.expected < 1) process.exit(1); console.log(`browser_expected=${report.stats.expected} browser_unexpected=${report.stats.unexpected}`);'
@@ -409,7 +411,7 @@ jobs:
           name: application-browser-assurance-${{ github.run_id }}
           path: |
             ${{ env.GOVERNANCE_REPORT_ROOT }}/
-            ${{ env.CHOPDOT_RELEASE_EVIDENCE_ROOT }}/
+            ${{ runner.temp }}/chopdot-release-evidence/
           if-no-files-found: error
           retention-days: 30
 
