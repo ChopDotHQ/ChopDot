@@ -35,7 +35,7 @@
       "scripts/"
     ],
     "repository_file_count": 705,
-    "repository_manifest_sha256": "6c34fcba8b6783425e2343e4bf26e77eea0640d4f1684cf16d026314e22c8553"
+    "repository_manifest_sha256": "ba7bf4b35bc7bda54a39c8d3b8aeb732ae23c73b490e1d695e59bf7487e124fa"
   },
   "lifecycle_summary": {
     "active": 241,
@@ -390,7 +390,7 @@
         "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog."
       },
       "file_count": 57,
-      "manifest_sha256": "1de9c1e5c05675fabc16ca6ae9e5714d61f940947d41d56a557cadda82b6813f"
+      "manifest_sha256": "d8dac10935205ff4902eb792dd1fc699c0fe06a659da1c3d362a58f50fc1e197"
     },
     {
       "id": "knowledge-and-wiki-sources",
@@ -2906,8 +2906,8 @@
     {
       "surface_id": "repo-docs-superpowers-plans-2026-08-30-authority-key-atomic-creation-md",
       "path": "docs/superpowers/plans/2026-08-30-authority-key-atomic-creation.md",
-      "sha256": "493842e468614a951f7607474ceb40eec1c5a249498aa16061c1e84a632ee6d7",
-      "bytes": 5513,
+      "sha256": "ac3e54792ea0710c81d9955d127622094c2602ca7f9f34b294558547d3f210bc",
+      "bytes": 6783,
       "group_id": "historical-plans-and-investigations",
       "surface_kind": "historical_evidence",
       "control_kind": "none",
@@ -14147,5 +14147,5 @@
     "issue_count": 0,
     "issues": []
   },
-  "catalog_digest": "db710ac43c84ba085d14da3319be708831e64a1fb51cd69c08e05e92c9c71fdd"
+  "catalog_digest": "b09f5d7675bb201461703e6058f17786cc675350b55000ed7aadbe755f3069e4"
 }
