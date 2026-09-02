@@ -64,3 +64,10 @@ artifacts/agentops/release-repo-graph-packet.json
 
 # Machine-local private context. Never required for normal repository operation.
 .local-private/
+
+# Provider-local agent directories. Machine-local content is invisible to the
+# steering monitor; a deliberately tracked adapter (git add -f, or a negation
+# here) becomes visible and must then be declared in the steering registry.
+.agents/
+.claude/
+.cursor/

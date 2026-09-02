@@ -656,6 +656,26 @@ async function main() {
     requirePromoted: Boolean(options.require_promoted),
     now: options.as_of ? new Date(options.as_of) : new Date(),
   });
+  if (command === 'pin') {
+    // The supported way to acknowledge an intentional change to a protected steering
+    // surface. Never compute a digest by hand: run this, then review the registry diff
+    // in the pull request alongside the instruction change it accompanies.
+    const registryFile = path.join(root, REGISTRY_PATH);
+    const registry = loadSteeringRegistry(root);
+    const catalog = buildSteeringCatalog(root, registry);
+    const observed = new Map(catalog.groups.map((entry) => [entry.id, entry.manifest_sha256]));
+    const changed = [];
+    for (const group of registry.surface_groups) {
+      const next = observed.get(group.id);
+      if (next && group.trusted_manifest_sha256 !== next) {
+        changed.push({ group: group.id, from: group.trusted_manifest_sha256 ?? null, to: next });
+        group.trusted_manifest_sha256 = next;
+      }
+    }
+    if (changed.length) fs.writeFileSync(registryFile, `${JSON.stringify(registry, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify({ pinned: changed }, null, 2)}\n`);
+    return;
+  }
   if (command === 'build') {
     const registry = loadSteeringRegistry(root);
     writeFileChecked(path.join(root, registry.generated_outputs.catalog), result._generated.catalog);

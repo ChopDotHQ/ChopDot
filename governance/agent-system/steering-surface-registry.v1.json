@@ -8,8 +8,11 @@
   "reviewed_on": "2026-09-02",
   "review_interval_days": 30,
   "discovery_roots": [
-    ".github/",
+    ".agents/",
+    ".claude/",
+    ".cursor/",
     ".githooks/",
+    ".github/",
     "governance/agent-system/instructions/",
     "governance/agent-system/policies/"
   ],
@@ -93,7 +96,7 @@
       "control_kind": "profile",
       "domain": "product",
       "influence_class": "operating_method",
-      "lifecycle": "degraded",
+      "lifecycle": "active",
       "activation_mode": "routed",
       "accountable_owner": "product assurance",
       "patterns": [
@@ -116,7 +119,6 @@
         "statement": "Tracked judgment methods ask evidence-bound questions and defer every material product choice to current authority.",
         "evidence": [
           "semantic influence tests",
-          "loader resolution",
           "content hashes"
         ],
         "failure": "Degrade the method and block it from acting as decision authority when it embeds an answer.",
@@ -208,7 +210,7 @@
         "failure": "Block local push on missing, malformed, deletion, multi-ref, rewritten-ref, default-branch, non-fast-forward, ambiguous, dirty, ungoverned, stale, drifted, unexplained-degraded, or blocked evidence; block hosted merge separately when authoritative acceptance fails.",
         "retry_exit": "Repair the candidate, range, source, or enforcement wiring and re-run local preflight plus hosted workflow validation."
       },
-      "trusted_manifest_sha256": "dbd3c6e74f3b80670874b85499e0a6b6f12bed9c2fa206a92c9516db1b929b0a"
+      "trusted_manifest_sha256": "048ccfa1d144ced57bb175d63f8eae6f0f666ffbbb4f7da7721e48eaa923a908"
     }
   ],
   "external_discovery": [],
@@ -365,10 +367,10 @@
     },
     {
       "surface_id": "tracked-judgment-methods",
-      "lifecycle": "degraded",
-      "reviewed_on": "2026-08-28",
+      "lifecycle": "active",
+      "reviewed_on": "2026-09-02",
       "review_interval_days": 14,
-      "reason": "Retained with explicit limitations and prevented from producing an unqualified pass verdict.",
+      "reason": "Both tracked methods declare Status: active and were reviewed 2026-08-27. The prior degraded state carried limitations from the 2026-08-28 steering audit whose findings (F-003 stale KG bridge and AutoBots agents, F-005 duplicated language across provider layers, F-007 Knowns skill lifecycle) concerned external and machine-local provider material now out of this registry scope. No finding recorded a defect in the tracked sources themselves. The structural constraint is unchanged: authority.must_not_decide still bars product hierarchy, universal action, and taste as law, and expected_outcome.failure still degrades the method if it embeds an answer.",
       "replacement": null
     },
     {

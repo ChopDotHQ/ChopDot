@@ -301,6 +301,42 @@ test('reports an unregistered file under a controlled discovery root', (t) => {
   assert.ok(catalog.validation.issues.includes('unregistered steering surface under a controlled root: controlled/unregistered.txt'));
 });
 
+test('a newly introduced provider instruction surface cannot escape monitoring', (t) => {
+  const root = makeFixture(t);
+  const registry = baseRegistry();
+  registry.discovery_roots.push('.claude/', '.cursor/');
+
+  // A committed provider entrypoint nobody declared is the case that must not pass:
+  // it changes agent behaviour automatically and is claimed by no surface group.
+  for (const [relative, body] of [
+    ['.claude/settings.json', '{"hooks":{"SessionStart":[{"command":"anything"}]}}\n'],
+    ['.cursor/rules/undeclared.mdc', 'Always do the undeclared thing.\n'],
+  ]) {
+    fs.mkdirSync(path.dirname(path.join(root, relative)), { recursive: true });
+    fs.writeFileSync(path.join(root, relative), body);
+  }
+
+  const catalog = buildSteeringCatalog(root, registry);
+
+  assert.equal(catalog.validation.valid, false);
+  for (const relative of ['.claude/settings.json', '.cursor/rules/undeclared.mdc']) {
+    assert.ok(
+      catalog.validation.issues.includes(`unregistered steering surface under a controlled root: ${relative}`),
+      `${relative} escaped monitoring; issues were ${JSON.stringify(catalog.validation.issues)}`,
+    );
+  }
+});
+
+test('production registry declares the provider entry roots', () => {
+  const registry = loadSteeringRegistry(REPOSITORY_ROOT);
+  for (const root of ['.agents/', '.claude/', '.cursor/']) {
+    assert.ok(
+      registry.discovery_roots.includes(root),
+      `${root} must be a discovery root or a committed provider instruction surface escapes monitoring`,
+    );
+  }
+});
+
 test('blocks when a pinned steering surface changes without the registry acknowledging it', (t) => {
   const root = makeFixture(t);
   const registry = baseRegistry();
@@ -690,14 +726,33 @@ test('production registry controls agent instruction surfaces and ignores ordina
   }
 });
 
+test('provider directories are ignored so machine-local content stays invisible', () => {
+  // The provider roots are watched, so machine-local content must be gitignored or
+  // every developer's own skills would block them. Tracked content there is the only
+  // thing the monitor should ever see.
+  const ignoreRules = fs.readFileSync(path.join(REPOSITORY_ROOT, '.gitignore'), 'utf8');
+  for (const directory of ['.agents/', '.claude/', '.cursor/', '.local-private/']) {
+    assert.match(
+      ignoreRules,
+      new RegExp(`^${directory.replace('.', '\\.')}$`, 'mu'),
+      `${directory} must be gitignored; machine-local material is never required for normal repository operation`,
+    );
+  }
+});
+
 test('production registry inventories no machine-local or private material', () => {
   const registry = loadSteeringRegistry(REPOSITORY_ROOT);
   const serialized = JSON.stringify(registry);
 
-  // A tracked, shareable governance source must never enumerate filenames, directory
-  // structure, or digests from machine-local or private context.
-  for (const marker of ['.local-private', '.claude/', '.cursor/', '.agents/']) {
-    assert.equal(serialized.includes(marker), false, `registry must not reference ${marker}`);
+  // Naming a provider directory as a discovery boundary is fine and necessary.
+  // Enumerating what is inside one is not: a tracked, shareable governance source
+  // must never publish filenames, directory structure, or digests from machine-local
+  // or private context.
+  assert.equal(serialized.includes('.local-private'), false, 'registry must not reference private context');
+  for (const root of ['.claude/', '.cursor/', '.agents/']) {
+    const inside = new RegExp(`${root.replace('.', '\\.')}[A-Za-z0-9._-]+`, 'gu');
+    const hits = (serialized.match(inside) ?? []).filter((entry) => entry !== root);
+    assert.deepEqual(hits, [], `registry must name ${root} only as a boundary, never enumerate inside it`);
   }
   assert.deepEqual(registry.external_surfaces, [], 'machine-local skill inventory must not be tracked');
   assert.deepEqual(registry.external_discovery, [], 'machine-local censuses must not be required');
