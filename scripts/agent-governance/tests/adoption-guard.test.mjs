@@ -16,7 +16,7 @@ import { startRun } from '../../agent-system/runner.mjs';
 import { fixturePreflightIdentity, recordPassingMeasurementEvidence } from '../../agent-system/tests/helpers.mjs';
 import { digestObject, sha256File } from '../lib.mjs';
 import { buildGithubExecutionAttestation } from '../execution-attestation.mjs';
-import { runSteeringMonitor } from '../steering-surfaces.mjs';
+import { REGISTRY_PATH, buildSteeringCatalog, runSteeringMonitor } from '../steering-surfaces.mjs';
 import {
   adoptionPolicyFailures, buildContextReceipt, classifyChangedPaths,
   buildPushPreflight, evaluateLocalSteering, hookHealth, parsePrePushUpdates, replayAcceptanceReceipt,
@@ -29,8 +29,8 @@ const fixtureJwk = { ...fixtureKeys.publicKey.export({ format: 'jwk' }), kid: 'f
 const fixtureAttestations = new Map();
 const STEERING_NOW = new Date('2026-08-28T13:00:00.000Z');
 const STEERING_REGISTRY_PATH = 'governance/agent-system/steering-surface-registry.v1.json';
-const STEERING_CATALOG_PATH = 'governance/agent-system/steering-surface-catalog.v1.json';
-const STEERING_HEALTH_PATH = 'docs/agent-system/STEERING_SURFACE_HEALTH.md';
+const STEERING_CATALOG_PATH = '.governance-build/steering-surface-catalog.v1.json';
+const STEERING_HEALTH_PATH = '.governance-build/STEERING_SURFACE_HEALTH.md';
 const ZERO_OID_FOR_TEST = '0'.repeat(40);
 
 function validateAcceptance(options) {
@@ -189,6 +189,19 @@ async function fixture(options = {}) {
       freshness_days: 30, sha256: sourceDigest,
     }],
   }));
+  // Manifest pins are required, so the fixture calculates a valid initial pin once all
+  // covered files exist and before the baseline commit. The registry is excluded from
+  // its own group manifest, so writing the pin does not invalidate it.
+  {
+    const registryFile = path.join(root, STEERING_REGISTRY_PATH);
+    const registry = JSON.parse(fs.readFileSync(registryFile, 'utf8'));
+    const built = buildSteeringCatalog(root, registry);
+    for (const entry of registry.surface_groups) {
+      const pin = built.groups.find((candidate) => candidate.id === entry.id)?.manifest_sha256;
+      if (pin) entry.trusted_manifest_sha256 = pin;
+    }
+    fs.writeFileSync(registryFile, `${JSON.stringify(registry, null, 2)}\n`);
+  }
   run(root, ['add', '.']);
   run(root, ['commit', '-qm', 'fixture base']);
   syncFixtureSteeringOutputs(root);
@@ -670,13 +683,24 @@ test('degraded steering is recorded with identity and limitations without automa
 
 test('blocked steering remains unverified and preserves its exact drift evidence', async () => {
   const value = await fixture();
+  // Pin the fixture group at its accepted content, then change a file it covers.
+  // Production pins instruction surfaces the same way; the drift is a content
+  // change to a controlled surface, not a stale generated artifact.
+  const registryFile = path.join(value.root, REGISTRY_PATH);
+  const registry = JSON.parse(fs.readFileSync(registryFile, 'utf8'));
+  const built = buildSteeringCatalog(value.root, registry);
+  for (const group of registry.surface_groups) {
+    const observed = built.groups.find((entry) => entry.id === group.id)?.manifest_sha256;
+    if (observed) group.trusted_manifest_sha256 = observed;
+  }
+  fs.writeFileSync(registryFile, JSON.stringify(registry, null, 2));
   fs.appendFileSync(path.join(value.root, 'product/cards.md'), '\n<!-- unsynchronized steering mutation -->\n');
   const receipt = buildContextReceipt({ root: value.root, loopProfile: 'implementation', now: new Date('2026-08-28T13:00:00Z') });
 
   assert.equal(receipt.verdict, 'unverified');
   assert.equal(receipt.steering_state.monitor_verdict, 'blocked');
   assert.equal(receipt.steering_state.route_relevance, 'not_evaluated');
-  assert.ok(receipt.steering_state.drifts.some((entry) => /generated catalog.+stale/iu.test(entry)));
+  assert.ok(receipt.steering_state.drifts.some((entry) => /steering surface content changed/iu.test(entry)));
   assert.ok(receipt.reasons.some((entry) => entry.startsWith('steering surface monitor:')));
 });
 

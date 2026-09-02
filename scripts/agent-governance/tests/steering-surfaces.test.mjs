@@ -14,14 +14,15 @@ import {
   observeExternalDiscovery,
   observeExternalSurfaces,
   renderSteeringHealth,
+  resolveGeneratedOutput,
   runSteeringMonitor,
   validateSteeringRegistry,
 } from '../steering-surfaces.mjs';
 
 const AS_OF = new Date('2026-08-28T12:00:00.000Z');
 const REGISTRY_PATH = 'governance/agent-system/steering-surface-registry.v1.json';
-const CATALOG_PATH = 'governance/agent-system/steering-surface-catalog.v1.json';
-const HEALTH_PATH = 'docs/agent-system/STEERING_SURFACE_HEALTH.md';
+const CATALOG_PATH = '.governance-build/steering-surface-catalog.v1.json';
+const HEALTH_PATH = '.governance-build/STEERING_SURFACE_HEALTH.md';
 const FRAMEWORK_PATH = 'governance/agent-system/frameworks/evidence-bound-definition-loop.v1.json';
 const PROFILE_PATH = 'governance/agent-system/profiles/experience-definition.v1.json';
 const REPOSITORY_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -166,7 +167,7 @@ function baseRegistry() {
     reason: 'Reviewed for current bounded use under the declared authority and expected outcome.',
     replacement: null,
   }));
-  return registry;
+  return pinGroups(registry);
 }
 
 function addExternalSurface(registry, surface) {
@@ -235,6 +236,20 @@ function profile() {
   };
 }
 
+// Manifest pins are required, so a fixture must calculate a valid initial pin during
+// setup. Fixture content is identical across roots and digests are taken over
+// relative path plus content, so one calculated set is correct for every fixture.
+let FIXTURE_PINS = null;
+
+function pinGroups(registry) {
+  if (!FIXTURE_PINS) return registry;
+  for (const entry of registry.surface_groups) {
+    const pin = FIXTURE_PINS.get(entry.id);
+    if (pin) entry.trusted_manifest_sha256 = pin;
+  }
+  return registry;
+}
+
 function makeFixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-steering-test-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
@@ -246,6 +261,11 @@ function makeFixture(t) {
   write(root, PROFILE_PATH, profile());
   write(root, 'controlled/guide.md', '# Bounded guidance\n');
   fs.mkdirSync(path.join(root, '.agents/skills'), { recursive: true });
+  if (!FIXTURE_PINS) {
+    const bootstrap = buildSteeringCatalog(root, baseRegistry());
+    FIXTURE_PINS = new Map(bootstrap.groups.map((entry) => [entry.id, entry.manifest_sha256]));
+  }
+  write(root, REGISTRY_PATH, baseRegistry());
   git(root, 'add', '.');
   execFileSync('git', [
     '-c', 'user.name=Steering Test',
@@ -301,16 +321,159 @@ test('reports an unregistered file under a controlled discovery root', (t) => {
   assert.ok(catalog.validation.issues.includes('unregistered steering surface under a controlled root: controlled/unregistered.txt'));
 });
 
-test('blocks when generated catalog and health hashes are stale after source drift', (t) => {
+test('a newly introduced provider instruction surface cannot escape monitoring', (t) => {
   const root = makeFixture(t);
-  syncGenerated(root);
-  fs.appendFileSync(path.join(root, 'controlled/guide.md'), 'Changed steering instruction.\n');
+  const registry = baseRegistry();
+  registry.discovery_roots.push('.claude/', '.cursor/');
 
-  const result = monitor(root);
+  // A committed provider entrypoint nobody declared is the case that must not pass:
+  // it changes agent behaviour automatically and is claimed by no surface group.
+  for (const [relative, body] of [
+    ['.claude/settings.json', '{"hooks":{"SessionStart":[{"command":"anything"}]}}\n'],
+    ['.cursor/rules/undeclared.mdc', 'Always do the undeclared thing.\n'],
+  ]) {
+    fs.mkdirSync(path.dirname(path.join(root, relative)), { recursive: true });
+    fs.writeFileSync(path.join(root, relative), body);
+  }
+
+  const catalog = buildSteeringCatalog(root, registry);
+
+  assert.equal(catalog.validation.valid, false);
+  for (const relative of ['.claude/settings.json', '.cursor/rules/undeclared.mdc']) {
+    assert.ok(
+      catalog.validation.issues.includes(`unregistered steering surface under a controlled root: ${relative}`),
+      `${relative} escaped monitoring; issues were ${JSON.stringify(catalog.validation.issues)}`,
+    );
+  }
+});
+
+test('a generated-output path outside the build container is rejected before any write', (t) => {
+  const root = makeFixture(t);
+  const before = fs.existsSync(path.join(root, '.governance-build'));
+
+  for (const [label, target] of [
+    ['in-tree governance path', 'governance/agent-system/steering-surface-catalog.v1.json'],
+    ['in-tree docs path', 'docs/agent-system/STEERING_SURFACE_HEALTH.md'],
+    ['sibling of the container', '.governance-build-evil/catalog.json'],
+    ['traversal out of the container', '.governance-build/../escaped.json'],
+    ['bare traversal', '../escaped.json'],
+    ['absolute path', path.join(root, 'escaped.json')],
+  ]) {
+    assert.throws(
+      () => resolveGeneratedOutput(root, target, 'generated catalog'),
+      /must resolve strictly beneath \.governance-build\/|must be repository-relative/u,
+      `${label} must be rejected: ${target}`,
+    );
+    assert.equal(fs.existsSync(path.resolve(root, target)), false, `${label} must not be written: ${target}`);
+  }
+
+  // The container itself is not a valid target either; only paths beneath it are.
+  assert.throws(() => resolveGeneratedOutput(root, '.governance-build', 'generated catalog'), /strictly beneath/u);
+  assert.equal(fs.existsSync(path.join(root, '.governance-build')), before, 'rejection must not create the container');
+
+  // A contained path resolves.
+  assert.equal(
+    resolveGeneratedOutput(root, '.governance-build/steering-surface-catalog.v1.json', 'generated catalog'),
+    path.join(root, '.governance-build', 'steering-surface-catalog.v1.json'),
+  );
+});
+
+test('a registry naming an out-of-container generated output is invalid', () => {
+  const registry = baseRegistry();
+  registry.generated_outputs.catalog = 'governance/agent-system/steering-surface-catalog.v1.json';
+
+  const validation = validateSteeringRegistry(registry);
+
+  assert.equal(validation.valid, false);
+  assert.ok(
+    validation.issues.some((entry) => /generated output must resolve strictly beneath \.governance-build\//u.test(entry)),
+    `expected a containment issue, got ${JSON.stringify(validation.issues)}`,
+  );
+});
+
+test('an active steering group without a manifest pin is invalid', () => {
+  const registry = baseRegistry();
+  const target = registry.surface_groups.find((entry) => entry.id === 'controlled-guidance');
+  delete target.trusted_manifest_sha256;
+
+  const validation = validateSteeringRegistry(registry);
+
+  assert.equal(validation.valid, false);
+  assert.ok(
+    validation.issues.includes('controlled-guidance: trusted manifest SHA-256 is required'),
+    `expected a required-pin issue, got ${JSON.stringify(validation.issues)}`,
+  );
+});
+
+test('a steering group blocks the monitor when its manifest pin is missing', (t) => {
+  const root = makeFixture(t);
+  const registry = baseRegistry();
+  delete registry.surface_groups.find((entry) => entry.id === 'controlled-guidance').trusted_manifest_sha256;
+
+  const result = monitor(root, registry);
 
   assert.equal(result.verdict, 'blocked');
-  assert.ok(result.drifts.includes(`${CATALOG_PATH}: generated catalog is missing, unsafe, or stale`));
-  assert.ok(result.drifts.includes(`${HEALTH_PATH}: generated health report is missing, unsafe, or stale`));
+  assert.ok(result.drifts.includes('controlled-guidance: trusted manifest SHA-256 is required'));
+});
+
+test('production registry pins every steering group', () => {
+  const registry = loadSteeringRegistry(REPOSITORY_ROOT);
+  for (const entry of registry.surface_groups) {
+    assert.match(
+      entry.trusted_manifest_sha256 ?? '',
+      /^[0-9a-f]{64}$/u,
+      `${entry.id} must pin a manifest digest; the pin replaces committed-catalog equality`,
+    );
+  }
+});
+
+test('production registry keeps generated outputs inside the build container', () => {
+  const registry = loadSteeringRegistry(REPOSITORY_ROOT);
+  for (const [name, value] of Object.entries(registry.generated_outputs)) {
+    assert.ok(value.startsWith('.governance-build/'), `${name} must live under .governance-build/, got ${value}`);
+    assert.equal(value.split('/').includes('..'), false, `${name} must not traverse`);
+  }
+});
+
+test('production registry declares the provider entry roots', () => {
+  const registry = loadSteeringRegistry(REPOSITORY_ROOT);
+  for (const root of ['.agents/', '.claude/', '.cursor/']) {
+    assert.ok(
+      registry.discovery_roots.includes(root),
+      `${root} must be a discovery root or a committed provider instruction surface escapes monitoring`,
+    );
+  }
+});
+
+test('blocks when a pinned steering surface changes without the registry acknowledging it', (t) => {
+  const root = makeFixture(t);
+  const registry = baseRegistry();
+  const group = registry.surface_groups.find((entry) => entry.patterns.includes('controlled/*.md'));
+  assert.ok(group, 'fixture must declare a controlled group to pin');
+
+  // Pin the group at its current content, then drift the source underneath it.
+  group.trusted_manifest_sha256 = buildSteeringCatalog(root, registry)
+    .groups.find((entry) => entry.id === group.id).manifest_sha256;
+  fs.appendFileSync(path.join(root, 'controlled/guide.md'), 'Changed steering instruction.\n');
+
+  const result = monitor(root, registry);
+
+  assert.equal(result.verdict, 'blocked');
+  assert.ok(
+    result.drifts.some((entry) => entry.startsWith(`${group.id}: steering surface content changed`)),
+    `expected a content-change drift for ${group.id}, got ${JSON.stringify(result.drifts)}`,
+  );
+});
+
+test('an unpinned group tolerates source change without blocking', (t) => {
+  const root = makeFixture(t);
+  const registry = baseRegistry();
+  for (const group of registry.surface_groups) delete group.trusted_manifest_sha256;
+  fs.appendFileSync(path.join(root, 'controlled/guide.md'), 'Ordinary documentation edit.\n');
+
+  const result = monitor(root, registry);
+
+  assert.equal(result.drifts.some((entry) => entry.includes('steering surface content changed')), false);
 });
 
 test('rejects a repository steering surface implemented as a symlink', (t) => {
@@ -617,15 +780,37 @@ test('surfaces untracked steering files as unpromoted and blocks when promotion 
   assert.ok(result.drifts.includes('1 steering surfaces are untracked/unpromoted'));
 });
 
-test('requires generated catalog and health outputs to be promoted with their sources', (t) => {
+test('strict promotion requires steering sources but never generated outputs', (t) => {
+  // The exact path the local suite missed: --require-promoted is what the pre-push
+  // hook runs, and generated outputs are derived and untracked by design. Requiring
+  // them to be committed failed every clean checkout.
   const root = makeFixture(t);
+
+  // 1. Outputs absent entirely.
+  let result = monitor(root, baseRegistry(), { requirePromoted: true });
+  assert.deepEqual(result.worktree.unpromoted, [], 'absent generated outputs must not be unpromoted');
+  assert.equal(result.drifts.some((entry) => /untracked\/unpromoted/u.test(entry)), false);
+
+  // 2. Outputs present on disk but untracked.
   syncGenerated(root);
+  result = monitor(root, baseRegistry(), { requirePromoted: true });
+  for (const relative of [CATALOG_PATH, HEALTH_PATH]) {
+    assert.equal(
+      result.worktree.unpromoted.includes(relative),
+      false,
+      `${relative} is derived and must never be required to be promoted`,
+    );
+  }
+  assert.equal(result.drifts.some((entry) => /untracked\/unpromoted/u.test(entry)), false);
 
-  const result = monitor(root, baseRegistry(), { requirePromoted: true });
-
+  // 3. A steering SOURCE that is untracked is still required.
+  write(root, 'controlled/new-instruction.md', '# Undeclared but controlled\n');
+  result = monitor(root, baseRegistry(), { requirePromoted: true });
   assert.equal(result.verdict, 'blocked');
-  assert.deepEqual(result.worktree.unpromoted, [HEALTH_PATH, CATALOG_PATH].sort());
-  assert.ok(result.drifts.includes('2 steering surfaces are untracked/unpromoted'));
+  assert.ok(
+    result.worktree.unpromoted.includes('controlled/new-instruction.md'),
+    `steering sources must still be required; unpromoted was ${JSON.stringify(result.worktree.unpromoted)}`,
+  );
 });
 
 test('ignores an ordinary non-steering file outside controlled roots', (t) => {
@@ -641,38 +826,64 @@ test('ignores an ordinary non-steering file outside controlled roots', (t) => {
   assert.equal(result.worktree.changed.some((entry) => entry.path === 'src/ordinary.js'), false);
 });
 
-test('production registry controls every tracked root plan, proof, deployment, and script exactly once', () => {
+test('production registry controls agent instruction surfaces and ignores ordinary documentation', () => {
   const registry = loadSteeringRegistry(REPOSITORY_ROOT);
-  const targets = {
-    plans: trackedPaths(REPOSITORY_ROOT, 'plans'),
-    proof: trackedPaths(REPOSITORY_ROOT, 'proof'),
-    deployment: trackedPaths(REPOSITORY_ROOT, 'deployment'),
-    scripts: trackedPaths(REPOSITORY_ROOT, 'scripts'),
-  };
+  const controls = (relative) => registry.surface_groups
+    .some((entry) => entry.patterns.some((pattern) => globToRegExp(pattern).test(relative)));
 
-  assert.deepEqual(Object.fromEntries(Object.entries(targets).filter(([key]) => key !== 'scripts').map(([key, files]) => [key, files.length])), {
-    plans: 12,
-    proof: 345,
-    deployment: 10,
-  });
-  assert.ok(targets.scripts.length >= 117, `expected the reconciled 117-script baseline or a reviewed extension, got ${targets.scripts.length}`);
-  for (const relative of Object.values(targets).flat()) {
-    const matches = registry.surface_groups.filter((entry) => entry.patterns.some((pattern) => globToRegExp(pattern).test(relative)));
-    assert.equal(matches.length, 1, `${relative} must resolve to exactly one steering group, got ${matches.map((entry) => entry.id).join(', ')}`);
+  // Surfaces an agent obeys must be controlled.
+  for (const relative of [
+    'AGENTS.md',
+    'CLAUDE.md',
+    'PRODUCT_TRUTH.md',
+    'governance/agent-system/instructions/chopdot-product-judgment.md',
+    'governance/agent-system/instructions/chopdot-frontend-design.md',
+    'governance/agent-system/policies/adoption-boundary.v1.json',
+  ]) {
+    assert.equal(controls(relative), true, `${relative} must be a controlled steering surface`);
+  }
+
+  // Ordinary documentation must not be, or every doc edit rebuilds a governance artifact.
+  for (const relative of [
+    'docs/CHOPDOT_LOOP_RUNNER.md',
+    'docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json',
+    'docs/superpowers/plans/2026-08-26-portable-agent-outcome-system.md',
+    'plans/2026-07-14-dot-host-browser-polish.md',
+    'proof/host-matrix.json',
+    'product/cards.md',
+  ]) {
+    assert.equal(controls(relative), false, `${relative} must not be a controlled steering surface`);
   }
 });
 
-test('production registry explicitly quarantines every Claude duplicate and Cursor rule', () => {
-  const registry = loadSteeringRegistry(REPOSITORY_ROOT);
-  const claude = registry.external_surfaces.filter((entry) => entry.id.startsWith('claude-skill-'));
-  const cursor = registry.external_surfaces.filter((entry) => entry.id.startsWith('cursor-rule-'));
-
-  assert.equal(claude.length, 14);
-  assert.equal(cursor.length, 7);
-  for (const entry of [...claude, ...cursor]) {
-    assert.equal(entry.lifecycle, 'quarantined');
-    assert.equal(entry.activation_mode, 'disabled');
-    assert.match(entry.trusted_sha256, /^[0-9a-f]{64}$/u);
+test('provider directories are ignored so machine-local content stays invisible', () => {
+  // The provider roots are watched, so machine-local content must be gitignored or
+  // every developer's own skills would block them. Tracked content there is the only
+  // thing the monitor should ever see.
+  const ignoreRules = fs.readFileSync(path.join(REPOSITORY_ROOT, '.gitignore'), 'utf8');
+  for (const directory of ['.agents/', '.claude/', '.cursor/', '.local-private/']) {
+    assert.match(
+      ignoreRules,
+      new RegExp(`^${directory.replace('.', '\\.')}$`, 'mu'),
+      `${directory} must be gitignored; machine-local material is never required for normal repository operation`,
+    );
   }
-  for (const entry of claude) assert.match(entry.trusted_package_manifest_sha256, /^[0-9a-f]{64}$/u);
+});
+
+test('production registry inventories no machine-local or private material', () => {
+  const registry = loadSteeringRegistry(REPOSITORY_ROOT);
+  const serialized = JSON.stringify(registry);
+
+  // Naming a provider directory as a discovery boundary is fine and necessary.
+  // Enumerating what is inside one is not: a tracked, shareable governance source
+  // must never publish filenames, directory structure, or digests from machine-local
+  // or private context.
+  assert.equal(serialized.includes('.local-private'), false, 'registry must not reference private context');
+  for (const root of ['.claude/', '.cursor/', '.agents/']) {
+    const inside = new RegExp(`${root.replace('.', '\\.')}[A-Za-z0-9._-]+`, 'gu');
+    const hits = (serialized.match(inside) ?? []).filter((entry) => entry !== root);
+    assert.deepEqual(hits, [], `registry must name ${root} only as a boundary, never enumerate inside it`);
+  }
+  assert.deepEqual(registry.external_surfaces, [], 'machine-local skill inventory must not be tracked');
+  assert.deepEqual(registry.external_discovery, [], 'machine-local censuses must not be required');
 });

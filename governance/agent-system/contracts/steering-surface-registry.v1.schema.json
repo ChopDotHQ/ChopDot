@@ -21,26 +21,99 @@
     "generated_outputs"
   ],
   "properties": {
-    "schema": { "const": "chopdot.steering-surface-registry.v1" },
-    "registry_id": { "const": "chopdot-steering-surfaces" },
-    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
-    "status": { "enum": ["candidate", "active", "degraded", "superseded", "retired"] },
-    "authority": { "type": "string", "minLength": 30 },
-    "accountable_owner": { "type": "string", "minLength": 3 },
-    "reviewed_on": { "type": "string", "format": "date" },
-    "review_interval_days": { "type": "integer", "minimum": 1, "maximum": 365 },
-    "discovery_roots": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-    "surface_groups": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/group" } },
-    "external_discovery": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/external_discovery" } },
-    "external_surfaces": { "type": "array", "items": { "$ref": "#/$defs/external" } },
-    "runtime_classes": { "type": "array", "items": { "$ref": "#/$defs/runtime" } },
-    "lifecycle_reviews": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/lifecycle_review" } },
+    "schema": {
+      "const": "chopdot.steering-surface-registry.v1"
+    },
+    "registry_id": {
+      "const": "chopdot-steering-surfaces"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "status": {
+      "enum": [
+        "candidate",
+        "active",
+        "degraded",
+        "superseded",
+        "retired"
+      ]
+    },
+    "authority": {
+      "type": "string",
+      "minLength": 30
+    },
+    "accountable_owner": {
+      "type": "string",
+      "minLength": 3
+    },
+    "reviewed_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "review_interval_days": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 365
+    },
+    "discovery_roots": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "surface_groups": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/group"
+      }
+    },
+    "external_discovery": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "$ref": "#/$defs/external_discovery"
+      }
+    },
+    "external_surfaces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/external"
+      }
+    },
+    "runtime_classes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/runtime"
+      }
+    },
+    "lifecycle_reviews": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "$ref": "#/$defs/lifecycle_review"
+      }
+    },
     "generated_outputs": {
       "type": "object",
-      "required": ["catalog", "health_report"],
+      "required": [
+        "catalog",
+        "health_report"
+      ],
       "properties": {
-        "catalog": { "type": "string", "pattern": "^governance/agent-system/.+\\.json$" },
-        "health_report": { "type": "string", "pattern": "^docs/agent-system/.+\\.md$" }
+        "catalog": {
+          "type": "string",
+          "pattern": "^\\.governance-build/[A-Za-z0-9._-]+\\.json$"
+        },
+        "health_report": {
+          "type": "string",
+          "pattern": "^\\.governance-build/[A-Za-z0-9._-]+\\.md$"
+        }
       },
       "additionalProperties": false
     }
@@ -48,123 +121,509 @@
   "$defs": {
     "authority": {
       "type": "object",
-      "required": ["may_influence", "must_not_decide"],
+      "required": [
+        "may_influence",
+        "must_not_decide"
+      ],
       "properties": {
-        "may_influence": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 4 } },
-        "must_not_decide": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 4 } }
+        "may_influence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 4
+          }
+        },
+        "must_not_decide": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 4
+          }
+        }
       },
       "additionalProperties": false
     },
     "outcome": {
       "type": "object",
-      "required": ["statement", "evidence", "failure", "retry_exit"],
+      "required": [
+        "statement",
+        "evidence",
+        "failure",
+        "retry_exit"
+      ],
       "properties": {
-        "statement": { "type": "string", "minLength": 15 },
-        "evidence": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 5 } },
-        "failure": { "type": "string", "minLength": 10 },
-        "retry_exit": { "type": "string", "minLength": 10 }
+        "statement": {
+          "type": "string",
+          "minLength": 15
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 5
+          }
+        },
+        "failure": {
+          "type": "string",
+          "minLength": 10
+        },
+        "retry_exit": {
+          "type": "string",
+          "minLength": 10
+        }
       },
       "additionalProperties": false
     },
     "group": {
       "type": "object",
-      "required": ["id", "surface_kind", "control_kind", "domain", "influence_class", "lifecycle", "activation_mode", "accountable_owner", "patterns", "allow_empty", "authority", "expected_outcome"],
+      "required": [
+        "id",
+        "surface_kind",
+        "control_kind",
+        "domain",
+        "influence_class",
+        "lifecycle",
+        "activation_mode",
+        "accountable_owner",
+        "patterns",
+        "allow_empty",
+        "authority",
+        "expected_outcome",
+        "trusted_manifest_sha256"
+      ],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
-        "surface_kind": { "enum": ["authority_source", "decision_source", "method", "instruction_loader", "policy", "contract_schema", "rubric", "eval_suite", "agent_definition", "context_source", "generated_read_model", "executor", "validator", "workflow", "hook", "historical_evidence"] },
-        "control_kind": { "enum": ["framework", "profile", "gate", "pipeline", "adapter", "evaluation_flywheel", "none"] },
-        "domain": { "type": "string", "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$" },
-        "influence_class": { "enum": ["product_law", "product_decision", "operating_method", "supporting_technique", "generated_context", "external_constraint"] },
-        "lifecycle": { "enum": ["candidate", "active", "degraded", "deprecated", "quarantined", "superseded", "retired", "historical"] },
-        "activation_mode": { "enum": ["automatic", "routed", "explicit_only", "scheduled", "dependency_only", "disabled"] },
-        "accountable_owner": { "type": "string", "minLength": 3 },
-        "patterns": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-        "allow_empty": { "type": "boolean" },
-        "authority": { "$ref": "#/$defs/authority" },
-        "expected_outcome": { "$ref": "#/$defs/outcome" }
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "surface_kind": {
+          "enum": [
+            "authority_source",
+            "decision_source",
+            "method",
+            "instruction_loader",
+            "policy",
+            "contract_schema",
+            "rubric",
+            "eval_suite",
+            "agent_definition",
+            "context_source",
+            "generated_read_model",
+            "executor",
+            "validator",
+            "workflow",
+            "hook",
+            "historical_evidence"
+          ]
+        },
+        "control_kind": {
+          "enum": [
+            "framework",
+            "profile",
+            "gate",
+            "pipeline",
+            "adapter",
+            "evaluation_flywheel",
+            "none"
+          ]
+        },
+        "domain": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$"
+        },
+        "influence_class": {
+          "enum": [
+            "product_law",
+            "product_decision",
+            "operating_method",
+            "supporting_technique",
+            "generated_context",
+            "external_constraint"
+          ]
+        },
+        "lifecycle": {
+          "enum": [
+            "candidate",
+            "active",
+            "degraded",
+            "deprecated",
+            "quarantined",
+            "superseded",
+            "retired",
+            "historical"
+          ]
+        },
+        "activation_mode": {
+          "enum": [
+            "automatic",
+            "routed",
+            "explicit_only",
+            "scheduled",
+            "dependency_only",
+            "disabled"
+          ]
+        },
+        "accountable_owner": {
+          "type": "string",
+          "minLength": 3
+        },
+        "patterns": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "allow_empty": {
+          "type": "boolean"
+        },
+        "authority": {
+          "$ref": "#/$defs/authority"
+        },
+        "expected_outcome": {
+          "$ref": "#/$defs/outcome"
+        },
+        "trusted_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
       },
       "additionalProperties": false
     },
     "external": {
       "type": "object",
-      "required": ["id", "surface_kind", "control_kind", "domain", "influence_class", "lifecycle", "activation_mode", "accountable_owner", "patterns", "allow_empty", "authority", "expected_outcome", "presence_policy", "locator", "trusted_sha256"],
+      "required": [
+        "id",
+        "surface_kind",
+        "control_kind",
+        "domain",
+        "influence_class",
+        "lifecycle",
+        "activation_mode",
+        "accountable_owner",
+        "patterns",
+        "allow_empty",
+        "authority",
+        "expected_outcome",
+        "presence_policy",
+        "locator",
+        "trusted_sha256"
+      ],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
-        "surface_kind": { "enum": ["authority_source", "decision_source", "method", "instruction_loader", "policy", "contract_schema", "rubric", "eval_suite", "agent_definition", "context_source", "generated_read_model", "executor", "validator", "workflow", "hook", "historical_evidence"] },
-        "control_kind": { "enum": ["framework", "profile", "gate", "pipeline", "adapter", "evaluation_flywheel", "none"] },
-        "domain": { "type": "string", "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$" },
-        "influence_class": { "enum": ["product_law", "product_decision", "operating_method", "supporting_technique", "generated_context", "external_constraint"] },
-        "lifecycle": { "enum": ["candidate", "active", "degraded", "deprecated", "quarantined", "superseded", "retired", "historical"] },
-        "activation_mode": { "enum": ["automatic", "routed", "explicit_only", "scheduled", "dependency_only", "disabled"] },
-        "accountable_owner": { "type": "string", "minLength": 3 },
-        "patterns": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-        "allow_empty": { "type": "boolean" },
-        "authority": { "$ref": "#/$defs/authority" },
-        "expected_outcome": { "$ref": "#/$defs/outcome" },
-        "presence_policy": { "enum": ["optional", "recommended", "required"] },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "surface_kind": {
+          "enum": [
+            "authority_source",
+            "decision_source",
+            "method",
+            "instruction_loader",
+            "policy",
+            "contract_schema",
+            "rubric",
+            "eval_suite",
+            "agent_definition",
+            "context_source",
+            "generated_read_model",
+            "executor",
+            "validator",
+            "workflow",
+            "hook",
+            "historical_evidence"
+          ]
+        },
+        "control_kind": {
+          "enum": [
+            "framework",
+            "profile",
+            "gate",
+            "pipeline",
+            "adapter",
+            "evaluation_flywheel",
+            "none"
+          ]
+        },
+        "domain": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$"
+        },
+        "influence_class": {
+          "enum": [
+            "product_law",
+            "product_decision",
+            "operating_method",
+            "supporting_technique",
+            "generated_context",
+            "external_constraint"
+          ]
+        },
+        "lifecycle": {
+          "enum": [
+            "candidate",
+            "active",
+            "degraded",
+            "deprecated",
+            "quarantined",
+            "superseded",
+            "retired",
+            "historical"
+          ]
+        },
+        "activation_mode": {
+          "enum": [
+            "automatic",
+            "routed",
+            "explicit_only",
+            "scheduled",
+            "dependency_only",
+            "disabled"
+          ]
+        },
+        "accountable_owner": {
+          "type": "string",
+          "minLength": 3
+        },
+        "patterns": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "allow_empty": {
+          "type": "boolean"
+        },
+        "authority": {
+          "$ref": "#/$defs/authority"
+        },
+        "expected_outcome": {
+          "$ref": "#/$defs/outcome"
+        },
+        "presence_policy": {
+          "enum": [
+            "optional",
+            "recommended",
+            "required"
+          ]
+        },
         "locator": {
           "type": "object",
-          "required": ["base", "path"],
+          "required": [
+            "base",
+            "path"
+          ],
           "properties": {
-            "base": { "enum": ["exact_worktree_root", "canonical_repo_root", "autobots_root"] },
-            "path": { "type": "string", "minLength": 1 }
+            "base": {
+              "enum": [
+                "exact_worktree_root",
+                "canonical_repo_root",
+                "autobots_root"
+              ]
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            }
           },
           "additionalProperties": false
         },
-        "trusted_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
-        "trusted_package_manifest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        "trusted_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "trusted_package_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
       },
       "additionalProperties": false
     },
     "external_discovery": {
       "type": "object",
-      "required": ["id", "lifecycle", "activation_mode", "accountable_owner", "presence_policy", "locator", "patterns", "authority", "expected_outcome"],
+      "required": [
+        "id",
+        "lifecycle",
+        "activation_mode",
+        "accountable_owner",
+        "presence_policy",
+        "locator",
+        "patterns",
+        "authority",
+        "expected_outcome"
+      ],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
-        "lifecycle": { "const": "active" },
-        "activation_mode": { "const": "automatic" },
-        "accountable_owner": { "type": "string", "minLength": 3 },
-        "presence_policy": { "enum": ["optional", "recommended", "required"] },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "lifecycle": {
+          "const": "active"
+        },
+        "activation_mode": {
+          "const": "automatic"
+        },
+        "accountable_owner": {
+          "type": "string",
+          "minLength": 3
+        },
+        "presence_policy": {
+          "enum": [
+            "optional",
+            "recommended",
+            "required"
+          ]
+        },
         "locator": {
           "type": "object",
-          "required": ["base", "path"],
+          "required": [
+            "base",
+            "path"
+          ],
           "properties": {
-            "base": { "enum": ["exact_worktree_root", "canonical_repo_root", "autobots_root"] },
-            "path": { "type": "string", "minLength": 1 }
+            "base": {
+              "enum": [
+                "exact_worktree_root",
+                "canonical_repo_root",
+                "autobots_root"
+              ]
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            }
           },
           "additionalProperties": false
         },
-        "patterns": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-        "authority": { "$ref": "#/$defs/authority" },
-        "expected_outcome": { "$ref": "#/$defs/outcome" }
+        "patterns": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "authority": {
+          "$ref": "#/$defs/authority"
+        },
+        "expected_outcome": {
+          "$ref": "#/$defs/outcome"
+        }
       },
       "additionalProperties": false
     },
     "lifecycle_review": {
       "type": "object",
-      "required": ["surface_id", "lifecycle", "reviewed_on", "review_interval_days", "reason", "replacement"],
+      "required": [
+        "surface_id",
+        "lifecycle",
+        "reviewed_on",
+        "review_interval_days",
+        "reason",
+        "replacement"
+      ],
       "properties": {
-        "surface_id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
-        "lifecycle": { "enum": ["candidate", "active", "degraded", "deprecated", "quarantined", "superseded", "retired", "historical"] },
-        "reviewed_on": { "type": "string", "format": "date" },
-        "review_interval_days": { "type": "integer", "minimum": 1, "maximum": 365 },
-        "reason": { "type": "string", "minLength": 15 },
-        "replacement": { "type": ["string", "null"], "minLength": 5 }
+        "surface_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "lifecycle": {
+          "enum": [
+            "candidate",
+            "active",
+            "degraded",
+            "deprecated",
+            "quarantined",
+            "superseded",
+            "retired",
+            "historical"
+          ]
+        },
+        "reviewed_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "review_interval_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 365
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 15
+        },
+        "replacement": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 5
+        }
       },
       "additionalProperties": false
     },
     "runtime": {
       "type": "object",
-      "required": ["id", "surface_kind", "influence_class", "lifecycle", "activation_mode", "accountable_owner", "authority", "expected_outcome"],
+      "required": [
+        "id",
+        "surface_kind",
+        "influence_class",
+        "lifecycle",
+        "activation_mode",
+        "accountable_owner",
+        "authority",
+        "expected_outcome"
+      ],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
-        "surface_kind": { "const": "external_constraint" },
-        "influence_class": { "const": "external_constraint" },
-        "lifecycle": { "enum": ["active", "degraded", "quarantined"] },
-        "activation_mode": { "enum": ["automatic", "routed", "explicit_only"] },
-        "accountable_owner": { "type": "string", "minLength": 3 },
-        "authority": { "$ref": "#/$defs/authority" },
-        "expected_outcome": { "$ref": "#/$defs/outcome" }
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "surface_kind": {
+          "const": "external_constraint"
+        },
+        "influence_class": {
+          "const": "external_constraint"
+        },
+        "lifecycle": {
+          "enum": [
+            "active",
+            "degraded",
+            "quarantined"
+          ]
+        },
+        "activation_mode": {
+          "enum": [
+            "automatic",
+            "routed",
+            "explicit_only"
+          ]
+        },
+        "accountable_owner": {
+          "type": "string",
+          "minLength": 3
+        },
+        "authority": {
+          "$ref": "#/$defs/authority"
+        },
+        "expected_outcome": {
+          "$ref": "#/$defs/outcome"
+        }
       },
       "additionalProperties": false
     }

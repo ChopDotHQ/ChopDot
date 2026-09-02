@@ -113,10 +113,11 @@ test('changed installed definition requires explicit replacement', (t) => {
 test('scheduled check writes only the host-local report', (t) => {
   const home = fixtureHome(t);
   const definition = launchAgentDefinition({ root: ROOT, home });
+  // The catalog and health report are no longer committed; they build into the
+  // gitignored .governance-build/ directory. The registry is the only tracked
+  // governed file the scheduled check must never rewrite.
   const governed = [
     'governance/agent-system/steering-surface-registry.v1.json',
-    'governance/agent-system/steering-surface-catalog.v1.json',
-    'docs/agent-system/STEERING_SURFACE_HEALTH.md',
   ];
   const before = Object.fromEntries(governed.map((relative) => [relative, digest(path.join(ROOT, relative))]));
 

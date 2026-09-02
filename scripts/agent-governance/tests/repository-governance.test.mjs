@@ -6,6 +6,7 @@ import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { validateProviderIndependence, validateRepository } from '../validate-repository.mjs';
+import { buildSteeringCatalog } from '../steering-surfaces.mjs';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 
@@ -26,11 +27,9 @@ function fixtureRoot() {
   copy('.github/workflows/agent-governance.yml');
   copy('.githooks/pre-push');
   copy('governance/agent-system/steering-surface-registry.v1.json');
-  copy('governance/agent-system/steering-surface-catalog.v1.json');
-  copy('docs/agent-system/STEERING_SURFACE_HEALTH.md');
-  const steeringCatalog = JSON.parse(fs.readFileSync(
-    path.join(repositoryRoot, 'governance/agent-system/steering-surface-catalog.v1.json'),
-  ));
+  // The catalog is derived, not committed: build it on demand rather than copying
+  // a tracked artifact that no longer exists.
+  const steeringCatalog = buildSteeringCatalog(repositoryRoot);
   for (const surface of steeringCatalog.repository_surfaces ?? []) {
     if (fs.existsSync(path.join(repositoryRoot, surface.path))) copy(surface.path);
   }

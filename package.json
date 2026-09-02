@@ -60,6 +60,7 @@
     "agent:hooks:install": "node scripts/agent-governance/install-hooks.mjs",
     "agent:hooks:check": "node scripts/agent-governance/adoption-guard.mjs hooks-check",
     "agent:steering:build": "node scripts/agent-governance/steering-surfaces.mjs build",
+    "agent:steering:pin": "node scripts/agent-governance/steering-surfaces.mjs pin",
     "agent:steering:check": "node scripts/agent-governance/steering-surfaces.mjs check --require-promoted",
     "agent:steering:report": "node scripts/agent-governance/steering-surfaces.mjs report --require-promoted",
     "agent:steering:test": "node --test scripts/agent-governance/tests/steering-surfaces.test.mjs scripts/agent-governance/tests/steering-wiring.test.mjs scripts/agent-governance/tests/steering-schedule.test.mjs",

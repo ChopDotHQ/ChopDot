@@ -10,6 +10,7 @@ import { canonicalize, digestObject, parseArgs, sha256File } from './lib.mjs';
 import { validateGovernanceInstance } from '../agent-system/schema.mjs';
 
 export const REGISTRY_PATH = 'governance/agent-system/steering-surface-registry.v1.json';
+export const GENERATED_ROOT = '.governance-build';
 const FRAMEWORK_SCHEMA_PATH = 'governance/agent-system/contracts/definition-framework.v1.schema.json';
 const PROFILE_SCHEMA_PATH = 'governance/agent-system/contracts/definition-profile.v1.schema.json';
 const LIFECYCLES = new Set(['candidate', 'active', 'degraded', 'deprecated', 'quarantined', 'superseded', 'retired', 'historical']);
@@ -198,7 +199,9 @@ export function validateSteeringRegistry(registry) {
   if (!/^\d{4}-\d{2}-\d{2}$/u.test(registry?.reviewed_on ?? '')) issues.push('registry review date is invalid');
   if (!Number.isInteger(registry?.review_interval_days) || registry.review_interval_days < 1) issues.push('registry review interval is invalid');
   if (!Array.isArray(registry?.discovery_roots) || !registry.discovery_roots.length) issues.push('registry discovery roots are required');
-  if (!Array.isArray(registry?.external_discovery) || !registry.external_discovery.length) issues.push('external discovery censuses are required');
+  // Machine-local censuses (.claude, .cursor, .agents) are optional. Private and
+  // machine-local material must never be required for normal repository operation.
+  if (!Array.isArray(registry?.external_discovery)) issues.push('external discovery censuses must be an array');
   for (const root of registry?.discovery_roots ?? []) if (!safeRelative(root)) issues.push(`discovery root must be relative: ${root}`);
   for (const group of registry?.surface_groups ?? []) validateCommonSurface(group, issues);
   for (const discovery of registry?.external_discovery ?? []) validateExternalDiscovery(discovery, issues);
@@ -235,7 +238,19 @@ export function validateSteeringRegistry(registry) {
   }
   for (const review of registry?.lifecycle_reviews ?? []) if (!lifecycleById.has(review.surface_id)) issues.push(`${review.surface_id}: lifecycle review targets an unknown surface`);
   const outputPaths = Object.values(registry?.generated_outputs ?? {});
-  for (const output of outputPaths) if (!safeRelative(output)) issues.push(`generated output must be relative: ${output}`);
+  for (const output of outputPaths) {
+    if (!safeRelative(output)) issues.push(`generated output must be relative: ${output}`);
+    else if (!output.startsWith(`${GENERATED_ROOT}/`) || output.split('/').includes('..')) {
+      issues.push(`generated output must resolve strictly beneath ${GENERATED_ROOT}/: ${output}`);
+    }
+  }
+  // The manifest pin replaces committed-catalog content equality; a group without one
+  // is unprotected, so it is invalid rather than merely unpinned.
+  for (const group of registry?.surface_groups ?? []) {
+    if (!/^[0-9a-f]{64}$/u.test(group?.trusted_manifest_sha256 ?? '')) {
+      issues.push(`${group?.id ?? '(group)'}: trusted manifest SHA-256 is required`);
+    }
+  }
   return { valid: issues.length === 0, issues: unique(issues) };
 }
 
@@ -322,7 +337,12 @@ export function buildSteeringCatalog(rootInput, registry = loadSteeringRegistry(
   const groupsSummary = groups.map(({ regexes: _regexes, matches, ...group }) => ({
     ...group,
     file_count: matches.length,
-    manifest_sha256: aggregateManifest(repositorySurfaces.filter((entry) => entry.group_id === group.id)),
+    // The registry is excluded from every group manifest it would otherwise join.
+    // A file cannot contain its own hash: pinning a digest into the registry would
+    // change the digest being pinned, and the check could never converge.
+    manifest_sha256: aggregateManifest(
+      repositorySurfaces.filter((entry) => entry.group_id === group.id && entry.path !== REGISTRY_PATH),
+    ),
   })).sort((left, right) => compareText(left.id, right.id));
   const body = {
     schema: 'chopdot.steering-surface-catalog.v1',
@@ -492,12 +512,17 @@ function candidateIdentity(root) {
 }
 
 function steeringWorktreeState(root, catalog) {
+  const generated = new Set(Object.values(catalog.generated_outputs ?? {}));
   const paths = new Set([
     ...catalog.repository_surfaces.map((entry) => entry.path),
-    ...Object.values(catalog.generated_outputs ?? {}),
+    ...generated,
   ]);
   const tracked = new Set(gitPaths(root, ['ls-files', '-z', '--cached']));
-  const unpromoted = [...paths].filter((entry) => !tracked.has(entry)).sort();
+  // Only steering *sources* participate in the promoted-source requirement. Generated
+  // outputs are derived and untracked by design, so requiring them to be committed
+  // would fail every clean checkout under --require-promoted. They stay in `paths`,
+  // so if one is deliberately tracked its dirty state is still reported.
+  const unpromoted = [...paths].filter((entry) => !tracked.has(entry) && !generated.has(entry)).sort();
   const trackedDirty = unique([
     ...gitPaths(root, ['diff', '--name-only', '-z', '--']),
     ...gitPaths(root, ['diff', '--cached', '--name-only', '-z', '--']),
@@ -561,19 +586,28 @@ export function runSteeringMonitor(rootInput, options = {}) {
   const root = fs.realpathSync(path.resolve(rootInput));
   const registry = options.registry ?? loadSteeringRegistry(root);
   const catalog = buildSteeringCatalog(root, registry);
+  // The catalog and health report are derived, not durable evidence: they are built
+  // on demand into a gitignored path and uploaded as CI artifacts for diagnostics.
+  // Drift is now detected from the registry itself — declared digests and undeclared
+  // surfaces under the discovery roots — so an ordinary documentation edit no longer
+  // has to rebuild a governance artifact.
   const expectedCatalog = serialize(catalog);
   const expectedHealth = renderSteeringHealth(catalog);
-  const catalogPath = path.join(root, registry.generated_outputs.catalog);
-  const healthPath = path.join(root, registry.generated_outputs.health_report);
   const outputDrifts = [];
-  const outputMatches = (file, expected) => {
-    try {
-      const stat = fs.lstatSync(file);
-      return stat.isFile() && !stat.isSymbolicLink() && fs.readFileSync(file, 'utf8') === expected;
-    } catch { return false; }
-  };
-  if (!outputMatches(catalogPath, expectedCatalog)) outputDrifts.push(`${registry.generated_outputs.catalog}: generated catalog is missing, unsafe, or stale`);
-  if (!outputMatches(healthPath, expectedHealth)) outputDrifts.push(`${registry.generated_outputs.health_report}: generated health report is missing, unsafe, or stale`);
+  // Content-change detection for tracked steering surfaces. Each group may pin the
+  // aggregate digest of its matched files; a mismatch means an instruction an agent
+  // obeys changed without the registry being updated to acknowledge it. This replaces
+  // the committed-catalog equality check, which could not distinguish an edited
+  // instruction from an edited research file.
+  const catalogGroups = new Map(catalog.groups.map((entry) => [entry.id, entry]));
+  for (const group of registry.surface_groups) {
+    const trusted = group.trusted_manifest_sha256;
+    if (!trusted) continue;
+    const observed = catalogGroups.get(group.id)?.manifest_sha256;
+    if (observed !== trusted) {
+      outputDrifts.push(`${group.id}: steering surface content changed; expected manifest ${trusted}, observed ${observed ?? '(missing)'}`);
+    }
+  }
   const externalDiscovery = observeExternalDiscovery(root, registry, options.env);
   const external = observeExternalSurfaces(root, registry, options.env);
   const worktree = steeringWorktreeState(root, catalog);
@@ -627,6 +661,20 @@ function publicResult(result) {
   return value;
 }
 
+// Generated outputs are derived and must never be written anywhere but the ignored
+// build directory. Resolve and contain before any filesystem write, so a registry
+// that names an in-tree path or escapes with traversal fails without touching disk.
+export function resolveGeneratedOutput(root, relative, label) {
+  if (typeof relative !== 'string' || !relative) throw new Error(`${label} must be a repository-relative path`);
+  if (path.isAbsolute(relative)) throw new Error(`${label} must be repository-relative, not absolute: ${relative}`);
+  const container = path.resolve(root, GENERATED_ROOT);
+  const resolved = path.resolve(root, relative);
+  if (resolved === container || !resolved.startsWith(`${container}${path.sep}`)) {
+    throw new Error(`${label} must resolve strictly beneath ${GENERATED_ROOT}/: ${relative}`);
+  }
+  return resolved;
+}
+
 function writeFileChecked(file, content) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, content);
@@ -640,10 +688,33 @@ async function main() {
     requirePromoted: Boolean(options.require_promoted),
     now: options.as_of ? new Date(options.as_of) : new Date(),
   });
+  if (command === 'pin') {
+    // The supported way to acknowledge an intentional change to a protected steering
+    // surface. Never compute a digest by hand: run this, then review the registry diff
+    // in the pull request alongside the instruction change it accompanies.
+    const registryFile = path.join(root, REGISTRY_PATH);
+    const registry = loadSteeringRegistry(root);
+    const catalog = buildSteeringCatalog(root, registry);
+    const observed = new Map(catalog.groups.map((entry) => [entry.id, entry.manifest_sha256]));
+    const changed = [];
+    for (const group of registry.surface_groups) {
+      const next = observed.get(group.id);
+      if (next && group.trusted_manifest_sha256 !== next) {
+        changed.push({ group: group.id, from: group.trusted_manifest_sha256 ?? null, to: next });
+        group.trusted_manifest_sha256 = next;
+      }
+    }
+    if (changed.length) fs.writeFileSync(registryFile, `${JSON.stringify(registry, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify({ pinned: changed }, null, 2)}\n`);
+    return;
+  }
   if (command === 'build') {
     const registry = loadSteeringRegistry(root);
-    writeFileChecked(path.join(root, registry.generated_outputs.catalog), result._generated.catalog);
-    writeFileChecked(path.join(root, registry.generated_outputs.health_report), result._generated.health);
+    // Resolve both targets before either write, so a rejected path leaves no partial output.
+    const catalogFile = resolveGeneratedOutput(root, registry.generated_outputs.catalog, 'generated catalog');
+    const healthFile = resolveGeneratedOutput(root, registry.generated_outputs.health_report, 'generated health report');
+    writeFileChecked(catalogFile, result._generated.catalog);
+    writeFileChecked(healthFile, result._generated.health);
     const rebuilt = runSteeringMonitor(root, { requirePromoted: Boolean(options.require_promoted), now: options.as_of ? new Date(options.as_of) : new Date() });
     process.stdout.write(`${JSON.stringify(publicResult(rebuilt), null, 2)}\n`);
     if (rebuilt.verdict === 'blocked') process.exitCode = 1;
