@@ -14,14 +14,15 @@ import {
   observeExternalDiscovery,
   observeExternalSurfaces,
   renderSteeringHealth,
+  resolveGeneratedOutput,
   runSteeringMonitor,
   validateSteeringRegistry,
 } from '../steering-surfaces.mjs';
 
 const AS_OF = new Date('2026-08-28T12:00:00.000Z');
 const REGISTRY_PATH = 'governance/agent-system/steering-surface-registry.v1.json';
-const CATALOG_PATH = 'governance/agent-system/steering-surface-catalog.v1.json';
-const HEALTH_PATH = 'docs/agent-system/STEERING_SURFACE_HEALTH.md';
+const CATALOG_PATH = '.governance-build/steering-surface-catalog.v1.json';
+const HEALTH_PATH = '.governance-build/STEERING_SURFACE_HEALTH.md';
 const FRAMEWORK_PATH = 'governance/agent-system/frameworks/evidence-bound-definition-loop.v1.json';
 const PROFILE_PATH = 'governance/agent-system/profiles/experience-definition.v1.json';
 const REPOSITORY_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -166,7 +167,7 @@ function baseRegistry() {
     reason: 'Reviewed for current bounded use under the declared authority and expected outcome.',
     replacement: null,
   }));
-  return registry;
+  return pinGroups(registry);
 }
 
 function addExternalSurface(registry, surface) {
@@ -235,6 +236,20 @@ function profile() {
   };
 }
 
+// Manifest pins are required, so a fixture must calculate a valid initial pin during
+// setup. Fixture content is identical across roots and digests are taken over
+// relative path plus content, so one calculated set is correct for every fixture.
+let FIXTURE_PINS = null;
+
+function pinGroups(registry) {
+  if (!FIXTURE_PINS) return registry;
+  for (const entry of registry.surface_groups) {
+    const pin = FIXTURE_PINS.get(entry.id);
+    if (pin) entry.trusted_manifest_sha256 = pin;
+  }
+  return registry;
+}
+
 function makeFixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-steering-test-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
@@ -246,6 +261,11 @@ function makeFixture(t) {
   write(root, PROFILE_PATH, profile());
   write(root, 'controlled/guide.md', '# Bounded guidance\n');
   fs.mkdirSync(path.join(root, '.agents/skills'), { recursive: true });
+  if (!FIXTURE_PINS) {
+    const bootstrap = buildSteeringCatalog(root, baseRegistry());
+    FIXTURE_PINS = new Map(bootstrap.groups.map((entry) => [entry.id, entry.manifest_sha256]));
+  }
+  write(root, REGISTRY_PATH, baseRegistry());
   git(root, 'add', '.');
   execFileSync('git', [
     '-c', 'user.name=Steering Test',
@@ -324,6 +344,94 @@ test('a newly introduced provider instruction surface cannot escape monitoring',
       catalog.validation.issues.includes(`unregistered steering surface under a controlled root: ${relative}`),
       `${relative} escaped monitoring; issues were ${JSON.stringify(catalog.validation.issues)}`,
     );
+  }
+});
+
+test('a generated-output path outside the build container is rejected before any write', (t) => {
+  const root = makeFixture(t);
+  const before = fs.existsSync(path.join(root, '.governance-build'));
+
+  for (const [label, target] of [
+    ['in-tree governance path', 'governance/agent-system/steering-surface-catalog.v1.json'],
+    ['in-tree docs path', 'docs/agent-system/STEERING_SURFACE_HEALTH.md'],
+    ['sibling of the container', '.governance-build-evil/catalog.json'],
+    ['traversal out of the container', '.governance-build/../escaped.json'],
+    ['bare traversal', '../escaped.json'],
+    ['absolute path', path.join(root, 'escaped.json')],
+  ]) {
+    assert.throws(
+      () => resolveGeneratedOutput(root, target, 'generated catalog'),
+      /must resolve strictly beneath \.governance-build\/|must be repository-relative/u,
+      `${label} must be rejected: ${target}`,
+    );
+    assert.equal(fs.existsSync(path.resolve(root, target)), false, `${label} must not be written: ${target}`);
+  }
+
+  // The container itself is not a valid target either; only paths beneath it are.
+  assert.throws(() => resolveGeneratedOutput(root, '.governance-build', 'generated catalog'), /strictly beneath/u);
+  assert.equal(fs.existsSync(path.join(root, '.governance-build')), before, 'rejection must not create the container');
+
+  // A contained path resolves.
+  assert.equal(
+    resolveGeneratedOutput(root, '.governance-build/steering-surface-catalog.v1.json', 'generated catalog'),
+    path.join(root, '.governance-build', 'steering-surface-catalog.v1.json'),
+  );
+});
+
+test('a registry naming an out-of-container generated output is invalid', () => {
+  const registry = baseRegistry();
+  registry.generated_outputs.catalog = 'governance/agent-system/steering-surface-catalog.v1.json';
+
+  const validation = validateSteeringRegistry(registry);
+
+  assert.equal(validation.valid, false);
+  assert.ok(
+    validation.issues.some((entry) => /generated output must resolve strictly beneath \.governance-build\//u.test(entry)),
+    `expected a containment issue, got ${JSON.stringify(validation.issues)}`,
+  );
+});
+
+test('an active steering group without a manifest pin is invalid', () => {
+  const registry = baseRegistry();
+  const target = registry.surface_groups.find((entry) => entry.id === 'controlled-guidance');
+  delete target.trusted_manifest_sha256;
+
+  const validation = validateSteeringRegistry(registry);
+
+  assert.equal(validation.valid, false);
+  assert.ok(
+    validation.issues.includes('controlled-guidance: trusted manifest SHA-256 is required'),
+    `expected a required-pin issue, got ${JSON.stringify(validation.issues)}`,
+  );
+});
+
+test('a steering group blocks the monitor when its manifest pin is missing', (t) => {
+  const root = makeFixture(t);
+  const registry = baseRegistry();
+  delete registry.surface_groups.find((entry) => entry.id === 'controlled-guidance').trusted_manifest_sha256;
+
+  const result = monitor(root, registry);
+
+  assert.equal(result.verdict, 'blocked');
+  assert.ok(result.drifts.includes('controlled-guidance: trusted manifest SHA-256 is required'));
+});
+
+test('production registry pins every steering group', () => {
+  const registry = loadSteeringRegistry(REPOSITORY_ROOT);
+  for (const entry of registry.surface_groups) {
+    assert.match(
+      entry.trusted_manifest_sha256 ?? '',
+      /^[0-9a-f]{64}$/u,
+      `${entry.id} must pin a manifest digest; the pin replaces committed-catalog equality`,
+    );
+  }
+});
+
+test('production registry keeps generated outputs inside the build container', () => {
+  const registry = loadSteeringRegistry(REPOSITORY_ROOT);
+  for (const [name, value] of Object.entries(registry.generated_outputs)) {
+    assert.ok(value.startsWith('.governance-build/'), `${name} must live under .governance-build/, got ${value}`);
+    assert.equal(value.split('/').includes('..'), false, `${name} must not traverse`);
   }
 });
 

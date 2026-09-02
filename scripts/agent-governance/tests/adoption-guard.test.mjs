@@ -29,8 +29,8 @@ const fixtureJwk = { ...fixtureKeys.publicKey.export({ format: 'jwk' }), kid: 'f
 const fixtureAttestations = new Map();
 const STEERING_NOW = new Date('2026-08-28T13:00:00.000Z');
 const STEERING_REGISTRY_PATH = 'governance/agent-system/steering-surface-registry.v1.json';
-const STEERING_CATALOG_PATH = 'governance/agent-system/steering-surface-catalog.v1.json';
-const STEERING_HEALTH_PATH = 'docs/agent-system/STEERING_SURFACE_HEALTH.md';
+const STEERING_CATALOG_PATH = '.governance-build/steering-surface-catalog.v1.json';
+const STEERING_HEALTH_PATH = '.governance-build/STEERING_SURFACE_HEALTH.md';
 const ZERO_OID_FOR_TEST = '0'.repeat(40);
 
 function validateAcceptance(options) {
@@ -189,6 +189,19 @@ async function fixture(options = {}) {
       freshness_days: 30, sha256: sourceDigest,
     }],
   }));
+  // Manifest pins are required, so the fixture calculates a valid initial pin once all
+  // covered files exist and before the baseline commit. The registry is excluded from
+  // its own group manifest, so writing the pin does not invalidate it.
+  {
+    const registryFile = path.join(root, STEERING_REGISTRY_PATH);
+    const registry = JSON.parse(fs.readFileSync(registryFile, 'utf8'));
+    const built = buildSteeringCatalog(root, registry);
+    for (const entry of registry.surface_groups) {
+      const pin = built.groups.find((candidate) => candidate.id === entry.id)?.manifest_sha256;
+      if (pin) entry.trusted_manifest_sha256 = pin;
+    }
+    fs.writeFileSync(registryFile, `${JSON.stringify(registry, null, 2)}\n`);
+  }
   run(root, ['add', '.']);
   run(root, ['commit', '-qm', 'fixture base']);
   syncFixtureSteeringOutputs(root);

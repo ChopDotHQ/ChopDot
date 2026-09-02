@@ -108,11 +108,11 @@
       "properties": {
         "catalog": {
           "type": "string",
-          "pattern": "^[A-Za-z0-9._/-]+\\.json$"
+          "pattern": "^\\.governance-build/[A-Za-z0-9._-]+\\.json$"
         },
         "health_report": {
           "type": "string",
-          "pattern": "^[A-Za-z0-9._/-]+\\.md$"
+          "pattern": "^\\.governance-build/[A-Za-z0-9._-]+\\.md$"
         }
       },
       "additionalProperties": false
@@ -194,7 +194,8 @@
         "patterns",
         "allow_empty",
         "authority",
-        "expected_outcome"
+        "expected_outcome",
+        "trusted_manifest_sha256"
       ],
       "properties": {
         "id": {

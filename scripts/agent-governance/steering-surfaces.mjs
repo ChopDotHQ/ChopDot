@@ -10,6 +10,7 @@ import { canonicalize, digestObject, parseArgs, sha256File } from './lib.mjs';
 import { validateGovernanceInstance } from '../agent-system/schema.mjs';
 
 export const REGISTRY_PATH = 'governance/agent-system/steering-surface-registry.v1.json';
+export const GENERATED_ROOT = '.governance-build';
 const FRAMEWORK_SCHEMA_PATH = 'governance/agent-system/contracts/definition-framework.v1.schema.json';
 const PROFILE_SCHEMA_PATH = 'governance/agent-system/contracts/definition-profile.v1.schema.json';
 const LIFECYCLES = new Set(['candidate', 'active', 'degraded', 'deprecated', 'quarantined', 'superseded', 'retired', 'historical']);
@@ -237,7 +238,19 @@ export function validateSteeringRegistry(registry) {
   }
   for (const review of registry?.lifecycle_reviews ?? []) if (!lifecycleById.has(review.surface_id)) issues.push(`${review.surface_id}: lifecycle review targets an unknown surface`);
   const outputPaths = Object.values(registry?.generated_outputs ?? {});
-  for (const output of outputPaths) if (!safeRelative(output)) issues.push(`generated output must be relative: ${output}`);
+  for (const output of outputPaths) {
+    if (!safeRelative(output)) issues.push(`generated output must be relative: ${output}`);
+    else if (!output.startsWith(`${GENERATED_ROOT}/`) || output.split('/').includes('..')) {
+      issues.push(`generated output must resolve strictly beneath ${GENERATED_ROOT}/: ${output}`);
+    }
+  }
+  // The manifest pin replaces committed-catalog content equality; a group without one
+  // is unprotected, so it is invalid rather than merely unpinned.
+  for (const group of registry?.surface_groups ?? []) {
+    if (!/^[0-9a-f]{64}$/u.test(group?.trusted_manifest_sha256 ?? '')) {
+      issues.push(`${group?.id ?? '(group)'}: trusted manifest SHA-256 is required`);
+    }
+  }
   return { valid: issues.length === 0, issues: unique(issues) };
 }
 
@@ -648,6 +661,20 @@ function publicResult(result) {
   return value;
 }
 
+// Generated outputs are derived and must never be written anywhere but the ignored
+// build directory. Resolve and contain before any filesystem write, so a registry
+// that names an in-tree path or escapes with traversal fails without touching disk.
+export function resolveGeneratedOutput(root, relative, label) {
+  if (typeof relative !== 'string' || !relative) throw new Error(`${label} must be a repository-relative path`);
+  if (path.isAbsolute(relative)) throw new Error(`${label} must be repository-relative, not absolute: ${relative}`);
+  const container = path.resolve(root, GENERATED_ROOT);
+  const resolved = path.resolve(root, relative);
+  if (resolved === container || !resolved.startsWith(`${container}${path.sep}`)) {
+    throw new Error(`${label} must resolve strictly beneath ${GENERATED_ROOT}/: ${relative}`);
+  }
+  return resolved;
+}
+
 function writeFileChecked(file, content) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, content);
@@ -683,8 +710,11 @@ async function main() {
   }
   if (command === 'build') {
     const registry = loadSteeringRegistry(root);
-    writeFileChecked(path.join(root, registry.generated_outputs.catalog), result._generated.catalog);
-    writeFileChecked(path.join(root, registry.generated_outputs.health_report), result._generated.health);
+    // Resolve both targets before either write, so a rejected path leaves no partial output.
+    const catalogFile = resolveGeneratedOutput(root, registry.generated_outputs.catalog, 'generated catalog');
+    const healthFile = resolveGeneratedOutput(root, registry.generated_outputs.health_report, 'generated health report');
+    writeFileChecked(catalogFile, result._generated.catalog);
+    writeFileChecked(healthFile, result._generated.health);
     const rebuilt = runSteeringMonitor(root, { requirePromoted: Boolean(options.require_promoted), now: options.as_of ? new Date(options.as_of) : new Date() });
     process.stdout.write(`${JSON.stringify(publicResult(rebuilt), null, 2)}\n`);
     if (rebuilt.verdict === 'blocked') process.exitCode = 1;
