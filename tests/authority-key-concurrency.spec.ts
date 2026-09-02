@@ -281,17 +281,23 @@ test('invalid stored CryptoKey classes fail closed without replacement', async (
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error ?? new Error('IndexedDB inspection open failed.'));
       });
+      // Resolve on transaction completion, not request success. A request succeeds
+      // while its transaction is still active, and close() only takes effect once
+      // every transaction has completed — so resolving on onsuccess let
+      // deleteDatabase() run against a still-open connection and hit onblocked.
       const rawKey = await new Promise<unknown>((resolve, reject) => {
         const transaction = inspection.transaction('keys', 'readonly');
         const request = transaction.objectStore('keys').get('journal-encryption-key');
-        request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error ?? new Error('IndexedDB key inspection failed.'));
+        transaction.onabort = () => reject(transaction.error ?? new Error('IndexedDB key inspection aborted.'));
+        transaction.oncomplete = () => resolve(request.result);
       });
       const assessmentCount = await new Promise<number>((resolve, reject) => {
         const transaction = inspection.transaction('legacy-assessments', 'readonly');
         const request = transaction.objectStore('legacy-assessments').count();
-        request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error ?? new Error('IndexedDB assessment count failed.'));
+        transaction.onabort = () => reject(transaction.error ?? new Error('IndexedDB assessment count aborted.'));
+        transaction.oncomplete = () => resolve(request.result);
       });
       inspection.close();
       await new Promise<void>((resolve, reject) => {
