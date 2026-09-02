@@ -198,7 +198,9 @@ export function validateSteeringRegistry(registry) {
   if (!/^\d{4}-\d{2}-\d{2}$/u.test(registry?.reviewed_on ?? '')) issues.push('registry review date is invalid');
   if (!Number.isInteger(registry?.review_interval_days) || registry.review_interval_days < 1) issues.push('registry review interval is invalid');
   if (!Array.isArray(registry?.discovery_roots) || !registry.discovery_roots.length) issues.push('registry discovery roots are required');
-  if (!Array.isArray(registry?.external_discovery) || !registry.external_discovery.length) issues.push('external discovery censuses are required');
+  // Machine-local censuses (.claude, .cursor, .agents) are optional. Private and
+  // machine-local material must never be required for normal repository operation.
+  if (!Array.isArray(registry?.external_discovery)) issues.push('external discovery censuses must be an array');
   for (const root of registry?.discovery_roots ?? []) if (!safeRelative(root)) issues.push(`discovery root must be relative: ${root}`);
   for (const group of registry?.surface_groups ?? []) validateCommonSurface(group, issues);
   for (const discovery of registry?.external_discovery ?? []) validateExternalDiscovery(discovery, issues);
@@ -322,7 +324,12 @@ export function buildSteeringCatalog(rootInput, registry = loadSteeringRegistry(
   const groupsSummary = groups.map(({ regexes: _regexes, matches, ...group }) => ({
     ...group,
     file_count: matches.length,
-    manifest_sha256: aggregateManifest(repositorySurfaces.filter((entry) => entry.group_id === group.id)),
+    // The registry is excluded from every group manifest it would otherwise join.
+    // A file cannot contain its own hash: pinning a digest into the registry would
+    // change the digest being pinned, and the check could never converge.
+    manifest_sha256: aggregateManifest(
+      repositorySurfaces.filter((entry) => entry.group_id === group.id && entry.path !== REGISTRY_PATH),
+    ),
   })).sort((left, right) => compareText(left.id, right.id));
   const body = {
     schema: 'chopdot.steering-surface-catalog.v1',
@@ -561,19 +568,28 @@ export function runSteeringMonitor(rootInput, options = {}) {
   const root = fs.realpathSync(path.resolve(rootInput));
   const registry = options.registry ?? loadSteeringRegistry(root);
   const catalog = buildSteeringCatalog(root, registry);
+  // The catalog and health report are derived, not durable evidence: they are built
+  // on demand into a gitignored path and uploaded as CI artifacts for diagnostics.
+  // Drift is now detected from the registry itself — declared digests and undeclared
+  // surfaces under the discovery roots — so an ordinary documentation edit no longer
+  // has to rebuild a governance artifact.
   const expectedCatalog = serialize(catalog);
   const expectedHealth = renderSteeringHealth(catalog);
-  const catalogPath = path.join(root, registry.generated_outputs.catalog);
-  const healthPath = path.join(root, registry.generated_outputs.health_report);
   const outputDrifts = [];
-  const outputMatches = (file, expected) => {
-    try {
-      const stat = fs.lstatSync(file);
-      return stat.isFile() && !stat.isSymbolicLink() && fs.readFileSync(file, 'utf8') === expected;
-    } catch { return false; }
-  };
-  if (!outputMatches(catalogPath, expectedCatalog)) outputDrifts.push(`${registry.generated_outputs.catalog}: generated catalog is missing, unsafe, or stale`);
-  if (!outputMatches(healthPath, expectedHealth)) outputDrifts.push(`${registry.generated_outputs.health_report}: generated health report is missing, unsafe, or stale`);
+  // Content-change detection for tracked steering surfaces. Each group may pin the
+  // aggregate digest of its matched files; a mismatch means an instruction an agent
+  // obeys changed without the registry being updated to acknowledge it. This replaces
+  // the committed-catalog equality check, which could not distinguish an edited
+  // instruction from an edited research file.
+  const catalogGroups = new Map(catalog.groups.map((entry) => [entry.id, entry]));
+  for (const group of registry.surface_groups) {
+    const trusted = group.trusted_manifest_sha256;
+    if (!trusted) continue;
+    const observed = catalogGroups.get(group.id)?.manifest_sha256;
+    if (observed !== trusted) {
+      outputDrifts.push(`${group.id}: steering surface content changed; expected manifest ${trusted}, observed ${observed ?? '(missing)'}`);
+    }
+  }
   const externalDiscovery = observeExternalDiscovery(root, registry, options.env);
   const external = observeExternalSurfaces(root, registry, options.env);
   const worktree = steeringWorktreeState(root, catalog);

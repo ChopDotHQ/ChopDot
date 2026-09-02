@@ -49,15 +49,32 @@ agents, knowledge bridges, and runtime-injected classes. Its purpose is to make
 cognitive influence visible, owned, lifecycle-bound, and reviewable. It is not
 a second product cockpit and cannot choose what ChopDot should build.
 
-The deterministic monitor in
-`scripts/agent-governance/steering-surfaces.mjs` discovers repository surfaces
-under the declared roots, hashes each file, validates framework/profile
-relationships and external identities, and writes two read models:
+The registry covers **agent instruction and control surfaces only** — the files
+an agent obeys. It is deliberately not an inventory of ChopDot documentation.
+Editing an ordinary document under `docs/`, `product/`, `proof/` or `plans/`
+does not rebuild a governance artifact; changing `AGENTS.md`, `CLAUDE.md`,
+`PRODUCT_TRUTH.md`, a tracked judgment method, or an agent policy does.
 
-- `steering-surface-catalog.v1.json` — the complete path, kind, lifecycle,
-  owner, activation mode, and SHA-256 census;
-- `docs/agent-system/STEERING_SURFACE_HEALTH.md` — the human-readable aggregate,
-  lifecycle, and expected-verdict view.
+Drift is detected two ways, both from the registry itself:
+
+- **Content** — each group pins `trusted_manifest_sha256`. A mismatch means an
+  instruction changed without the registry acknowledging it. The registry is
+  excluded from every group manifest, since a file cannot contain its own hash.
+- **Discovery** — a file under a declared root that no group claims is an
+  undeclared steering surface.
+
+The monitor in `scripts/agent-governance/steering-surfaces.mjs` also writes two
+read models. Both are **derived, not durable evidence**: they build into the
+gitignored `.governance-build/` directory and upload as CI artifacts.
+
+- `.governance-build/steering-surface-catalog.v1.json` — the path, kind,
+  lifecycle, owner, activation mode, and SHA-256 census;
+- `.governance-build/STEERING_SURFACE_HEALTH.md` — the human-readable
+  aggregate, lifecycle, and expected-verdict view.
+
+Machine-local material (`.claude/`, `.cursor/`, `.agents/`, `.local-private/`)
+is never inventoried here and is never required for normal repository
+operation.
 
 Run:
 

@@ -1,31 +1,17 @@
 {
   "schema": "chopdot.steering-surface-registry.v1",
   "registry_id": "chopdot-steering-surfaces",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "status": "active",
-  "authority": "Inventory, cognitive-influence boundaries, lifecycle, and monitoring only. This registry cannot create product law, choose product priority, approve work, or promote evidence.",
+  "authority": "Narrow inventory of agent instruction and control surfaces only. Protects the files an agent obeys; does not inventory ordinary documentation. This registry cannot create product law, choose product priority, approve work, or promote evidence.",
   "accountable_owner": "agent-systems integrator",
-  "reviewed_on": "2026-08-28",
+  "reviewed_on": "2026-09-02",
   "review_interval_days": 30,
   "discovery_roots": [
     ".github/",
     ".githooks/",
-    "artifacts/agentops/",
-    "docs/adr/",
-    "docs/agent-system/",
-    "docs/chopdot-dot/",
-    "docs/evidence/agent-pilots/",
-    "docs/investigations/",
-    "docs/release/",
-    "docs/research/",
-    "docs/superpowers/plans/",
-    "docs/wiki/",
-    "deployment/",
-    "governance/agent-system/",
-    "plans/",
-    "product/",
-    "proof/",
-    "scripts/"
+    "governance/agent-system/instructions/",
+    "governance/agent-system/policies/"
   ],
   "surface_groups": [
     {
@@ -37,10 +23,34 @@
       "lifecycle": "active",
       "activation_mode": "automatic",
       "accountable_owner": "repository owner",
-      "patterns": ["AGENTS.md", "CLAUDE.md", "PROJECT_DIRECTIVES.md", ".cursor/rules/**"],
+      "patterns": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "PROJECT_DIRECTIVES.md"
+      ],
       "allow_empty": false,
-      "authority": { "may_influence": ["read order", "tool and process routing"], "must_not_decide": ["product law", "product priority", "success verdict"] },
-      "expected_outcome": { "statement": "Every automatic repository entrypoint routes to current tracked authority without adding an independent product doctrine.", "evidence": ["path inventory", "content hash", "instruction validation"], "failure": "Block or degrade routing when an entrypoint is missing, conflicting, or untracked.", "retry_exit": "Repair the source or routing declaration, regenerate the catalog, and re-run validation." }
+      "authority": {
+        "may_influence": [
+          "read order",
+          "tool and process routing"
+        ],
+        "must_not_decide": [
+          "product law",
+          "product priority",
+          "success verdict"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Every automatic repository entrypoint routes to current tracked authority without adding an independent product doctrine.",
+        "evidence": [
+          "path inventory",
+          "content hash",
+          "instruction validation"
+        ],
+        "failure": "Block or degrade routing when an entrypoint is missing, conflicting, or untracked.",
+        "retry_exit": "Repair the source or routing declaration, regenerate the catalog, and re-run validation."
+      },
+      "trusted_manifest_sha256": "ef06c4b845b0ea2693cddf925743d54d54b6b15066f55b07ac8f57cb0d2706db"
     },
     {
       "id": "product-law",
@@ -51,122 +61,31 @@
       "lifecycle": "active",
       "activation_mode": "routed",
       "accountable_owner": "product owner",
-      "patterns": ["PRODUCT_TRUTH.md"],
+      "patterns": [
+        "PRODUCT_TRUTH.md"
+      ],
       "allow_empty": false,
-      "authority": { "may_influence": ["durable product invariants"], "must_not_decide": ["current priority", "implementation proof", "release proof"] },
-      "expected_outcome": { "statement": "Durable product claims resolve to one explicit source and are never inferred from methods or generated context.", "evidence": ["single path", "content hash", "authority references"], "failure": "Block a product-law claim when sources conflict or the law source is unavailable.", "retry_exit": "Resolve the authority conflict through the product owner, then regenerate and recheck." }
-    },
-    {
-      "id": "product-decisions",
-      "surface_kind": "decision_source",
-      "control_kind": "none",
-      "domain": "product",
-      "influence_class": "product_decision",
-      "lifecycle": "active",
-      "activation_mode": "routed",
-      "accountable_owner": "product owner",
-      "patterns": ["product/benchmark-baseline.md", "product/cards.md", "product/decisions.md", "product/decision-contracts.md", "product/roadmap.md", "product/story-map.md"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["revocable priority", "accepted scope", "category baseline"], "must_not_decide": ["product law", "implementation proof", "live-user proof"] },
-      "expected_outcome": { "statement": "Current product recommendations cite a compatible decision source, its scope, and its evidence instead of prompt repetition.", "evidence": ["path inventory", "content hashes", "product validation"], "failure": "Block the affected recommendation when current decisions conflict or lack evidence.", "retry_exit": "Reconcile the decision at product-owner authority and rerun the product and steering monitors." }
-    },
-    {
-      "id": "product-context-and-history",
-      "surface_kind": "context_source",
-      "control_kind": "adapter",
-      "domain": "product",
-      "influence_class": "generated_context",
-      "lifecycle": "active",
-      "activation_mode": "automatic",
-      "accountable_owner": "product systems",
-      "patterns": ["product/context-authority.json", "product/history/events/**", ".knowns/tasks"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["source routing", "decision history", "task read models"], "must_not_decide": ["product law", "new priority", "completion"] },
-      "expected_outcome": { "statement": "Context and history identify current sources and provenance without becoming a parallel decision authority.", "evidence": ["identity validation", "lineage", "content hashes"], "failure": "Report stale, wrong-root, or incompatible context and stop dependent routing.", "retry_exit": "Refresh from canonical sources or record the blocker; never substitute uncited recall." }
-    },
-    {
-      "id": "product-generated-read-models",
-      "surface_kind": "generated_read_model",
-      "control_kind": "adapter",
-      "domain": "product",
-      "influence_class": "generated_context",
-      "lifecycle": "active",
-      "activation_mode": "dependency_only",
-      "accountable_owner": "product systems",
-      "patterns": ["product/generated/**", "product/board.html"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["operator navigation", "source presentation"], "must_not_decide": ["product law", "priority", "acceptance"] },
-      "expected_outcome": { "statement": "Every generated product view has identifiable source lineage and is never cited as the source decision.", "evidence": ["generated-file inventory", "source validation", "content hashes"], "failure": "Mark the read model stale and route readers to source documents.", "retry_exit": "Regenerate from valid sources and confirm deterministic output." }
-    },
-    {
-      "id": "definition-frameworks",
-      "surface_kind": "method",
-      "control_kind": "framework",
-      "domain": "generic",
-      "influence_class": "operating_method",
-      "lifecycle": "active",
-      "activation_mode": "dependency_only",
-      "accountable_owner": "agent-systems integrator",
-      "patterns": ["governance/agent-system/frameworks/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["definition mechanics", "evidence and terminal-state requirements"], "must_not_decide": ["domain answer", "product hierarchy", "brand direction"] },
-      "expected_outcome": { "statement": "Portable frameworks define generic mechanics only and activate through a compatible domain profile.", "evidence": ["framework schema", "profile reference checks", "hostile conformance tests"], "failure": "Reject a framework that embeds domain assumptions or activates directly.", "retry_exit": "Remove the assumption or move it to an authority-bound profile, then rerun conformance." }
-    },
-    {
-      "id": "definition-profiles",
-      "surface_kind": "method",
-      "control_kind": "profile",
-      "domain": "product_experience",
-      "influence_class": "operating_method",
-      "lifecycle": "active",
-      "activation_mode": "routed",
-      "accountable_owner": "profile owner",
-      "patterns": ["governance/agent-system/profiles/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["domain-specific required outputs", "evaluation evidence"], "must_not_decide": ["product law", "uncited hierarchy", "universal action"] },
-      "expected_outcome": { "statement": "Each profile extends a named framework and adds only requirement-bound domain criteria.", "evidence": ["profile schema", "resolved framework reference", "hostile conformance tests"], "failure": "Reject a profile with a missing framework, excessive authority, or hidden universal choice.", "retry_exit": "Repair the profile boundary and re-run schema plus semantic checks." }
-    },
-    {
-      "id": "portable-agent-contracts",
-      "surface_kind": "contract_schema",
-      "control_kind": "gate",
-      "domain": "generic",
-      "influence_class": "operating_method",
-      "lifecycle": "active",
-      "activation_mode": "dependency_only",
-      "accountable_owner": "agent-systems integrator",
-      "patterns": ["governance/agent-system/contracts/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["packet shape", "fail-closed validation"], "must_not_decide": ["product answer", "acceptance without evidence"] },
-      "expected_outcome": { "statement": "Every persisted agent-governance artifact fails closed against a tracked versioned schema.", "evidence": ["schema validation", "negative fixtures", "content hashes"], "failure": "Reject malformed, unknown-version, or semantically inconsistent artifacts.", "retry_exit": "Repair the artifact or versioned schema without weakening accepted invariants." }
-    },
-    {
-      "id": "portable-agent-loops",
-      "surface_kind": "method",
-      "control_kind": "profile",
-      "domain": "agent_execution",
-      "influence_class": "operating_method",
-      "lifecycle": "active",
-      "activation_mode": "routed",
-      "accountable_owner": "loop profile owner",
-      "patterns": ["governance/agent-system/loops/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["artifact creation workflow", "repair budget", "terminal state"], "must_not_decide": ["product law", "unrecorded priority", "success without evaluation"] },
-      "expected_outcome": { "statement": "Every loop creates one bounded artifact and terminates with evidence against an objective expected outcome.", "evidence": ["profile validation", "example-contract alignment", "runner tests"], "failure": "Return a recognized non-success state with failed assertions and remaining work.", "retry_exit": "Retry only with a changed hypothesis inside the declared budget." }
-    },
-    {
-      "id": "agent-evaluation-system",
-      "surface_kind": "rubric",
-      "control_kind": "evaluation_flywheel",
-      "domain": "agent_execution",
-      "influence_class": "operating_method",
-      "lifecycle": "active",
-      "activation_mode": "dependency_only",
-      "accountable_owner": "product assurance",
-      "patterns": ["governance/agent-system/evals/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["evaluation criteria", "regression evidence"], "must_not_decide": ["product law", "human approval", "success beyond measured assertions"] },
-      "expected_outcome": { "statement": "Rubrics and suites measure declared outcomes and reproduce known failures without copying the candidate's assumptions as evidence.", "evidence": ["rubric validation", "suite results", "candidate identity"], "failure": "Fail or block when required assertions, independence, or candidate identity are absent.", "retry_exit": "Repair the candidate or evaluator and rerun the same versioned case." }
+      "authority": {
+        "may_influence": [
+          "durable product invariants"
+        ],
+        "must_not_decide": [
+          "current priority",
+          "implementation proof",
+          "release proof"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Durable product claims resolve to one explicit source and are never inferred from methods or generated context.",
+        "evidence": [
+          "single path",
+          "content hash",
+          "authority references"
+        ],
+        "failure": "Block a product-law claim when sources conflict or the law source is unavailable.",
+        "retry_exit": "Resolve the authority conflict through the product owner, then regenerate and recheck."
+      },
+      "trusted_manifest_sha256": "5451a6a0aa3d3d15327b8ecf5b5654e3539170fb09dc968bb6e9db5371c20211"
     },
     {
       "id": "tracked-judgment-methods",
@@ -177,10 +96,33 @@
       "lifecycle": "degraded",
       "activation_mode": "routed",
       "accountable_owner": "product assurance",
-      "patterns": ["governance/agent-system/instructions/**"],
+      "patterns": [
+        "governance/agent-system/instructions/**"
+      ],
       "allow_empty": false,
-      "authority": { "may_influence": ["questions asked", "evidence required", "verification method"], "must_not_decide": ["product hierarchy", "universal action", "taste as law"] },
-      "expected_outcome": { "statement": "Tracked judgment methods ask evidence-bound questions and defer every material product choice to current authority.", "evidence": ["semantic influence tests", "loader resolution", "content hashes"], "failure": "Degrade the method and block it from acting as decision authority when it embeds an answer.", "retry_exit": "Separate the method from the domain decision and re-run hostile cases." }
+      "authority": {
+        "may_influence": [
+          "questions asked",
+          "evidence required",
+          "verification method"
+        ],
+        "must_not_decide": [
+          "product hierarchy",
+          "universal action",
+          "taste as law"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Tracked judgment methods ask evidence-bound questions and defer every material product choice to current authority.",
+        "evidence": [
+          "semantic influence tests",
+          "loader resolution",
+          "content hashes"
+        ],
+        "failure": "Degrade the method and block it from acting as decision authority when it embeds an answer.",
+        "retry_exit": "Separate the method from the domain decision and re-run hostile cases."
+      },
+      "trusted_manifest_sha256": "b04fd513ec97c8545a0fe4799cc0db37a2a855fd81d357dd22575a41ef177964"
     },
     {
       "id": "agent-policies-and-foundation",
@@ -191,38 +133,37 @@
       "lifecycle": "active",
       "activation_mode": "dependency_only",
       "accountable_owner": "agent-systems integrator",
-      "patterns": ["governance/agent-system/policies/**", "governance/agent-system/README.md", "governance/agent-system/taxonomy.json", "governance/agent-system/project-authority.v1.json", "governance/agent-system/steering-surface-registry.v1.json"],
+      "patterns": [
+        "governance/agent-system/README.md",
+        "governance/agent-system/policies/**",
+        "governance/agent-system/project-authority.v1.json",
+        "governance/agent-system/steering-surface-registry.v1.json",
+        "governance/agent-system/taxonomy.json"
+      ],
       "allow_empty": false,
-      "authority": { "may_influence": ["authority boundaries", "lifecycle", "classification"], "must_not_decide": ["product law", "participant authority", "release proof"] },
-      "expected_outcome": { "statement": "Foundational policies define explicit, non-overlapping process authority and remain portable across agents and knowledge providers.", "evidence": ["schema validation", "cross-reference checks", "content hashes"], "failure": "Fail closed on conflicting process authority, dangling references, or unsupported lifecycle state.", "retry_exit": "Reconcile at the accountable policy owner and rerun all dependent validations." }
-    },
-    {
-      "id": "agent-system-runtime",
-      "surface_kind": "executor",
-      "control_kind": "pipeline",
-      "domain": "agent_execution",
-      "influence_class": "operating_method",
-      "lifecycle": "active",
-      "activation_mode": "routed",
-      "accountable_owner": "agent-systems integrator",
-      "patterns": ["scripts/agent-system/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["contract execution", "evaluation", "effect reconciliation"], "must_not_decide": ["product law", "implicit external effects", "success without evidence"] },
-      "expected_outcome": { "statement": "Runtime behavior preserves contract identity, finite execution, explicit effects, objective evaluation, and honest terminal states.", "evidence": ["unit tests", "fail-closed tests", "source hashes"], "failure": "Return a non-success terminal state and preserve a resumable evidence packet.", "retry_exit": "Repair with a changed hypothesis and rerun focused plus core regression suites." }
-    },
-    {
-      "id": "agent-governance-runtime",
-      "surface_kind": "validator",
-      "control_kind": "gate",
-      "domain": "agent_governance",
-      "influence_class": "operating_method",
-      "lifecycle": "active",
-      "activation_mode": "automatic",
-      "accountable_owner": "agent-systems integrator",
-      "patterns": ["scripts/agent-governance/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["integration admission", "drift detection", "evidence reporting"], "must_not_decide": ["product answer", "merge approval", "release proof by itself"] },
-      "expected_outcome": { "statement": "Repository and cognitive-influence gates detect stale, unowned, wrong-root, mutated, or incompatible steering surfaces before integration.", "evidence": ["hostile tests", "generated catalog equality", "runtime health report"], "failure": "Fail the relevant gate with exact surface IDs and repair guidance.", "retry_exit": "Repair or explicitly change lifecycle through reviewed source, regenerate, and recheck." }
+      "authority": {
+        "may_influence": [
+          "authority boundaries",
+          "lifecycle",
+          "classification"
+        ],
+        "must_not_decide": [
+          "product law",
+          "participant authority",
+          "release proof"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Foundational policies define explicit, non-overlapping process authority and remain portable across agents and knowledge providers.",
+        "evidence": [
+          "schema validation",
+          "cross-reference checks",
+          "content hashes"
+        ],
+        "failure": "Fail closed on conflicting process authority, dangling references, or unsupported lifecycle state.",
+        "retry_exit": "Reconcile at the accountable policy owner and rerun all dependent validations."
+      },
+      "trusted_manifest_sha256": "825c476e26de0aafb6c3592d555bac6782a559aa3e3528f505965f5fdd48999f"
     },
     {
       "id": "repository-enforcement",
@@ -233,611 +174,238 @@
       "lifecycle": "active",
       "activation_mode": "automatic",
       "accountable_owner": "repository owner",
-      "patterns": [".githooks/**", ".github/CODEOWNERS", ".github/pull_request_template.md", ".github/workflows/agent-governance.yml", ".github/workflows/agent-steering-monitor.yml", "package.json", "package-lock.json"],
+      "patterns": [
+        ".githooks/**",
+        ".github/CODEOWNERS",
+        ".github/pull_request_template.md",
+        ".github/workflows/agent-governance.yml",
+        ".github/workflows/agent-steering-monitor.yml",
+        "package.json",
+        "package-lock.json"
+      ],
       "allow_empty": false,
-      "authority": { "may_influence": ["local push admission", "PR checks", "scheduled monitoring"], "must_not_decide": ["product law", "human approval", "release outcome"] },
-      "expected_outcome": { "statement": "Local pre-push gives bounded clean-candidate, exact-range, governed-path, and strict steering feedback; declared drift-free degradation remains explicitly local_preflight_degraded; hosted pr_merge alone authoritatively accepts repository code; scheduled monitoring detects drift without silently repairing sources.", "evidence": ["hostile pre-push stdin and range tests", "exact explained and unexplained degraded IDs", "workflow validation", "hook health", "monitor test suite"], "failure": "Block local push on missing, malformed, deletion, multi-ref, rewritten-ref, default-branch, non-fast-forward, ambiguous, dirty, ungoverned, stale, drifted, unexplained-degraded, or blocked evidence; block hosted merge separately when authoritative acceptance fails.", "retry_exit": "Repair the candidate, range, source, or enforcement wiring and re-run local preflight plus hosted workflow validation." }
-    },
-    {
-      "id": "operating-documentation",
-      "surface_kind": "method",
-      "control_kind": "none",
-      "domain": "agent_governance",
-      "influence_class": "operating_method",
-      "lifecycle": "degraded",
-      "activation_mode": "routed",
-      "accountable_owner": "agent-systems integrator",
-      "patterns": ["docs/CHOPDOT_OPERATING_LOOPS.md", "docs/CHOPDOT_LOOP_RUNNER.md", "docs/AGENTOPS_TASK_QUEUE.md", "docs/AGENT_DOCTRINE_FEEDBACK.md", "docs/agent-system/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["operator understanding", "execution procedure"], "must_not_decide": ["product law", "current priority", "proof by prose"] },
-      "expected_outcome": { "statement": "Operating documentation accurately describes executable controls, their expected outcomes, and their current limitations.", "evidence": ["command references", "source links", "freshness review"], "failure": "Mark documentation degraded when it claims behavior not present in code or current authority.", "retry_exit": "Update source documentation after behavior is accepted, then rerun links and monitor checks." }
-    },
-    {
-      "id": "architecture-decisions",
-      "surface_kind": "decision_source",
-      "control_kind": "none",
-      "domain": "architecture",
-      "influence_class": "product_decision",
-      "lifecycle": "active",
-      "activation_mode": "routed",
-      "accountable_owner": "architecture owner",
-      "patterns": ["docs/adr/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["accepted technical constraints", "recorded architecture decisions"], "must_not_decide": ["product law", "current priority", "implementation proof"] },
-      "expected_outcome": { "statement": "Material architecture choices resolve to dated decisions with status, alternatives, and consequences.", "evidence": ["ADR inventory", "status fields", "content hashes"], "failure": "Block a conflicting architecture assumption or classify an unresolved choice explicitly.", "retry_exit": "Record or supersede the decision through the architecture owner and update dependents." }
-    },
-    {
-      "id": "historical-plans-and-investigations",
-      "surface_kind": "historical_evidence",
-      "control_kind": "none",
-      "domain": "history",
-      "influence_class": "supporting_technique",
-      "lifecycle": "historical",
-      "activation_mode": "explicit_only",
-      "accountable_owner": "repository owner",
-      "patterns": ["docs/superpowers/plans/**", "docs/investigations/**", "docs/evidence/agent-pilots/**", "artifacts/agentops/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["historical context", "counterevidence", "provenance"], "must_not_decide": ["current product law", "current priority", "current completion"] },
-      "expected_outcome": { "statement": "Historical plans and investigations remain discoverable as dated evidence without silently reactivating superseded instructions.", "evidence": ["path inventory", "date and status metadata", "content hashes"], "failure": "Treat ambiguous historical material as non-authoritative and require current-source confirmation.", "retry_exit": "Add explicit supersession or current-source linkage, then rerun the catalog." }
-    },
-    {
-      "id": "legacy-steering-documents",
-      "surface_kind": "historical_evidence",
-      "control_kind": "none",
-      "domain": "history",
-      "influence_class": "supporting_technique",
-      "lifecycle": "degraded",
-      "activation_mode": "explicit_only",
-      "accountable_owner": "repository owner",
-      "patterns": ["DESIGN.md", "HOSTS.md", "PAYMENT_INTENT_CONTRACT.md", "PAYMENT_INTENT_SERVICE_FOUNDATION.md", "PORTABLE_SHELL_TRIAL.md", "SECURITY_FOUNDATION.md", "TELEGRAM_SANDBOX.md", "docs/CHOPDOT_STACK_AND_DELIVERY_UNRAVELLING_2026-07-28.md", "docs/CHOPDOT_V1_EXECUTION_BOARD.md", "docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["historical constraints and implementation context"], "must_not_decide": ["current product direction", "current architecture", "release status"] },
-      "expected_outcome": { "statement": "Active-looking legacy documents are visible, explicitly degraded, and never preferred over current authority by filename alone.", "evidence": ["path inventory", "content hashes", "supersession review"], "failure": "Require current-source confirmation before using a legacy claim.", "retry_exit": "Supersede, retire, or reconcile each document through its accountable owner." }
-    },
-    {
-      "id": "research-and-benchmark-context",
-      "surface_kind": "context_source",
-      "control_kind": "none",
-      "domain": "research",
-      "influence_class": "supporting_technique",
-      "lifecycle": "degraded",
-      "activation_mode": "explicit_only",
-      "accountable_owner": "research assurance",
-      "patterns": ["docs/research/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["benchmark evidence", "capability discovery", "alternatives"], "must_not_decide": ["product priority", "implementation state", "deployment state"] },
-      "expected_outcome": { "statement": "Research packets expose dates, source grades, limitations, and current-source checks before influencing a decision.", "evidence": ["source citations", "evidence grades", "content hashes"], "failure": "Treat stale, uncited, or discovery-only material as non-authoritative.", "retry_exit": "Refresh from primary sources or explicitly carry the uncertainty into the decision." }
-    },
-    {
-      "id": "native-and-release-context",
-      "surface_kind": "context_source",
-      "control_kind": "pipeline",
-      "domain": "release",
-      "influence_class": "generated_context",
-      "lifecycle": "active",
-      "activation_mode": "routed",
-      "accountable_owner": "release integrator",
-      "patterns": ["README.md", "metadata.json", "docs/chopdot-dot/**", "docs/release/**", "docs/statement-store-bulletin-split.md"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["native routing", "release procedure", "observed release state"], "must_not_decide": ["product law", "release proof without readback", "current priority"] },
-      "expected_outcome": { "statement": "Native and release context distinguishes plans, local checks, live observations, and immutable release proof with exact identity.", "evidence": ["path inventory", "candidate and release hashes", "environment readback"], "failure": "Downgrade or block claims that exceed their candidate, host, or chain evidence.", "retry_exit": "Refresh the applicable source or produce a new verified candidate and readback." }
-    },
-    {
-      "id": "knowledge-and-wiki-sources",
-      "surface_kind": "context_source",
-      "control_kind": "adapter",
-      "domain": "knowledge",
-      "influence_class": "generated_context",
-      "lifecycle": "active",
-      "activation_mode": "routed",
-      "accountable_owner": "knowledge systems",
-      "patterns": ["docs/wiki/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["cited recall", "source navigation", "generated context"], "must_not_decide": ["product law", "priority", "accepted outcome"] },
-      "expected_outcome": { "statement": "Knowledge adapters and generated context expose provider, freshness, fallback, citations, and exact source identity without promoting evidence.", "evidence": ["adapter conformance", "wiki validation", "exact-root citations"], "failure": "Report stale or wrong-root recall and fall back only with explicit downgraded status.", "retry_exit": "Refresh the provider or use exact source, then verify recall against the accepted digest." }
-    },
-    {
-      "id": "tracked-root-plans",
-      "surface_kind": "historical_evidence",
-      "control_kind": "none",
-      "domain": "history",
-      "influence_class": "supporting_technique",
-      "lifecycle": "historical",
-      "activation_mode": "explicit_only",
-      "accountable_owner": "repository owner",
-      "patterns": ["plans/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["dated plan provenance", "historical scope and intent"], "must_not_decide": ["current product law", "current priority", "implementation status"] },
-      "expected_outcome": { "statement": "Tracked root plans remain complete, dated evidence without silently becoming current operating authority.", "evidence": ["complete path inventory", "content hashes", "current-source linkage"], "failure": "Treat an unlinked plan as historical evidence only and require a current authority source.", "retry_exit": "Link or supersede the plan through current authority, then regenerate the catalog." }
-    },
-    {
-      "id": "proof-evidence",
-      "surface_kind": "historical_evidence",
-      "control_kind": "none",
-      "domain": "quality",
-      "influence_class": "supporting_technique",
-      "lifecycle": "historical",
-      "activation_mode": "explicit_only",
-      "accountable_owner": "product assurance",
-      "patterns": ["proof/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["dated verification evidence", "regression investigation"], "must_not_decide": ["current completion", "current release state", "product law"] },
-      "expected_outcome": { "statement": "Proof artifacts stay discoverable with exact identity while remaining bounded to the candidate and observation they actually prove.", "evidence": ["complete path inventory", "content hashes", "candidate provenance"], "failure": "Reject proof as current when its candidate identity or observation scope is absent or stale.", "retry_exit": "Produce current candidate-bound evidence or explicitly retain the artifact as historical." }
-    },
-    {
-      "id": "deployment-context",
-      "surface_kind": "context_source",
-      "control_kind": "pipeline",
-      "domain": "release",
-      "influence_class": "operating_method",
-      "lifecycle": "active",
-      "activation_mode": "routed",
-      "accountable_owner": "release integrator",
-      "patterns": ["deployment/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["bounded deployment configuration", "release verification procedure"], "must_not_decide": ["product law", "release success without readback", "external publication approval"] },
-      "expected_outcome": { "statement": "Deployment configuration is completely inventoried and used only with explicit environment, candidate, approval, and readback evidence.", "evidence": ["complete path inventory", "configuration hashes", "environment and release readback"], "failure": "Block publication claims when deployment identity, environment, approval, or readback is uncertain.", "retry_exit": "Repair the configuration or produce a new verified candidate and rerun bounded release checks." }
-    },
-    {
-      "id": "root-script-runtime",
-      "surface_kind": "executor",
-      "control_kind": "pipeline",
-      "domain": "agent_execution",
-      "influence_class": "operating_method",
-      "lifecycle": "active",
-      "activation_mode": "routed",
-      "accountable_owner": "engineering assurance",
-      "patterns": ["scripts/*.mjs", "scripts/*.sh"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["declared repository automation", "bounded validation and generation"], "must_not_decide": ["product law", "implicit external effects", "success without command evidence"] },
-      "expected_outcome": { "statement": "Every root-level repository script is inventoried, hash-bound, and executed only for its declared bounded outcome.", "evidence": ["complete path inventory", "source hashes", "command exit and artifact evidence"], "failure": "Fail or degrade when a script is undeclared, ambiguous, unsafe, or produces unverified effects.", "retry_exit": "Repair or explicitly reclassify the script, then rerun focused and governing checks." }
-    },
-    {
-      "id": "shared-script-libraries",
-      "surface_kind": "executor",
-      "control_kind": "adapter",
-      "domain": "agent_execution",
-      "influence_class": "operating_method",
-      "lifecycle": "active",
-      "activation_mode": "dependency_only",
-      "accountable_owner": "engineering assurance",
-      "patterns": ["scripts/lib/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["shared script mechanics", "deterministic helper behavior"], "must_not_decide": ["product law", "standalone activation", "success beyond caller evidence"] },
-      "expected_outcome": { "statement": "Shared script libraries are completely inventoried and influence execution only through a declared caller with equivalent verification.", "evidence": ["complete path inventory", "source hashes", "caller test coverage"], "failure": "Block or degrade callers when a shared helper is undeclared, ambiguous, or violates its bounded contract.", "retry_exit": "Repair the helper and rerun its focused callers plus the governing suite." }
-    },
-    {
-      "id": "research-script-tools",
-      "surface_kind": "executor",
-      "control_kind": "pipeline",
-      "domain": "research",
-      "influence_class": "supporting_technique",
-      "lifecycle": "degraded",
-      "activation_mode": "explicit_only",
-      "accountable_owner": "research assurance",
-      "patterns": ["scripts/research/**"],
-      "allow_empty": false,
-      "authority": { "may_influence": ["bounded evidence collection", "research artifact generation"], "must_not_decide": ["product priority", "source authority", "success from discovery-only output"] },
-      "expected_outcome": { "statement": "Research scripts remain visible and explicitly limited until each output path, source grade, and reproducibility claim is reconciled.", "evidence": ["complete path inventory", "source hashes", "source-graded reproducibility checks"], "failure": "Keep research output degraded when provenance, reproducibility, or current-source verification is incomplete.", "retry_exit": "Reconcile the tool and rerun it against current primary sources before promotion." }
+      "authority": {
+        "may_influence": [
+          "local push admission",
+          "PR checks",
+          "scheduled monitoring"
+        ],
+        "must_not_decide": [
+          "product law",
+          "human approval",
+          "release outcome"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Local pre-push gives bounded clean-candidate, exact-range, governed-path, and strict steering feedback; declared drift-free degradation remains explicitly local_preflight_degraded; hosted pr_merge alone authoritatively accepts repository code; scheduled monitoring detects drift without silently repairing sources.",
+        "evidence": [
+          "hostile pre-push stdin and range tests",
+          "exact explained and unexplained degraded IDs",
+          "workflow validation",
+          "hook health",
+          "monitor test suite"
+        ],
+        "failure": "Block local push on missing, malformed, deletion, multi-ref, rewritten-ref, default-branch, non-fast-forward, ambiguous, dirty, ungoverned, stale, drifted, unexplained-degraded, or blocked evidence; block hosted merge separately when authoritative acceptance fails.",
+        "retry_exit": "Repair the candidate, range, source, or enforcement wiring and re-run local preflight plus hosted workflow validation."
+      },
+      "trusted_manifest_sha256": "dbd3c6e74f3b80670874b85499e0a6b6f12bed9c2fa206a92c9516db1b929b0a"
     }
   ],
-  "external_discovery": [
-    {
-      "id": "canonical-project-skill-census",
-      "lifecycle": "active",
-      "activation_mode": "automatic",
-      "accountable_owner": "agent-systems integrator",
-      "presence_policy": "optional",
-      "locator": { "base": "canonical_repo_root", "path": ".agents/skills" },
-      "patterns": ["*/SKILL.md"],
-      "authority": {
-        "may_influence": ["external skill inventory completeness", "undeclared package blocking"],
-        "must_not_decide": ["skill activation", "product law", "product priority"]
-      },
-      "expected_outcome": {
-        "statement": "Every canonical ChopDot project skill entrypoint resolves to one declared external surface before it can influence governed work.",
-        "evidence": ["deterministic directory census", "locator-to-registry reconciliation"],
-        "failure": "Block when a canonical project skill entrypoint is undeclared or the census contains a symlink.",
-        "retry_exit": "Declare and review the package identity or remove it from the governed runtime, then rerun the census."
-      }
-    },
-    {
-      "id": "autobots-chopdot-agent-census",
-      "lifecycle": "active",
-      "activation_mode": "automatic",
-      "accountable_owner": "agent-systems integrator",
-      "presence_policy": "optional",
-      "locator": { "base": "autobots_root", "path": "agentops/registry/agents" },
-      "patterns": ["chopdot*.json"],
-      "authority": {
-        "may_influence": ["external ChopDot agent inventory completeness", "undeclared agent blocking"],
-        "must_not_decide": ["agent activation", "product law", "product priority"]
-      },
-      "expected_outcome": {
-        "statement": "Every AutoBots ChopDot agent definition resolves to one declared external surface before it can influence governed work.",
-        "evidence": ["deterministic directory census", "locator-to-registry reconciliation"],
-        "failure": "Block when a ChopDot agent definition is undeclared or the census contains a symlink.",
-        "retry_exit": "Declare and review the agent identity or retire the definition, then rerun the census."
-      }
-    },
-    {
-      "id": "canonical-claude-skill-census",
-      "lifecycle": "active",
-      "activation_mode": "automatic",
-      "accountable_owner": "agent-systems integrator",
-      "presence_policy": "optional",
-      "locator": { "base": "canonical_repo_root", "path": ".claude/skills" },
-      "patterns": ["*/SKILL.md"],
-      "authority": {
-        "may_influence": ["external Claude skill inventory completeness", "undeclared package blocking"],
-        "must_not_decide": ["skill activation", "product law", "product priority"]
-      },
-      "expected_outcome": {
-        "statement": "Every canonical ChopDot Claude skill entrypoint resolves to one declared external surface before governed use.",
-        "evidence": ["deterministic directory census", "locator-to-registry reconciliation"],
-        "failure": "Block when a canonical Claude skill entrypoint is undeclared or the census contains a symlink.",
-        "retry_exit": "Declare and review the package identity or remove it from the governed runtime, then rerun the census."
-      }
-    },
-    {
-      "id": "canonical-cursor-rule-census",
-      "lifecycle": "active",
-      "activation_mode": "automatic",
-      "accountable_owner": "agent-systems integrator",
-      "presence_policy": "optional",
-      "locator": { "base": "canonical_repo_root", "path": ".cursor/rules" },
-      "patterns": ["*.mdc"],
-      "authority": {
-        "may_influence": ["external Cursor rule inventory completeness", "undeclared rule blocking"],
-        "must_not_decide": ["rule activation", "product law", "product priority"]
-      },
-      "expected_outcome": {
-        "statement": "Every canonical ChopDot Cursor rule resolves to one declared external surface before governed use.",
-        "evidence": ["deterministic directory census", "locator-to-registry reconciliation"],
-        "failure": "Block when a canonical Cursor rule is undeclared or the census contains a symlink.",
-        "retry_exit": "Declare and review the rule identity or remove it from the governed runtime, then rerun the census."
-      }
-    }
-  ],
-  "external_surfaces": [
-    {"id":"claude-skill-accessibility-compliance-accessibility-audit","surface_kind":"instruction_loader","control_kind":"none","domain":"accessibility","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/accessibility-compliance-accessibility-audit/SKILL.md"},"trusted_sha256":"1908ca0d91481d2ae7f1b627d4717196d94d4a0c0afc1d9324dc7bfb7953bfca","trusted_package_manifest_sha256":"9c1dbb7aa64576aa4585bd805f21b02c74843a2ee9bd048f063e9e5fe53dd400"},
-    {"id":"claude-skill-knowns-commit","surface_kind":"instruction_loader","control_kind":"none","domain":"knowledge","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/knowns.commit/SKILL.md"},"trusted_sha256":"7b4ce7ce3347b1efe7e5a43a950e8e912c4e7556828d068a801b68db00ceda7b","trusted_package_manifest_sha256":"99219e6411cab3b66cf88a7c36f81a595915f945ab1b67356a130182d6525ced"},
-    {"id":"claude-skill-knowns-doc","surface_kind":"instruction_loader","control_kind":"none","domain":"knowledge","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/knowns.doc/SKILL.md"},"trusted_sha256":"ee8273713be5a0e7973eb138d0d131755c6ba921ff0a69c381b8277f9f32dc54","trusted_package_manifest_sha256":"ecd63a4a9797d0c0a0e0e7c2186605761a697e898d1a8f1c10b35d59fc1b683b"},
-    {"id":"claude-skill-knowns-init","surface_kind":"instruction_loader","control_kind":"none","domain":"knowledge","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/knowns.init/SKILL.md"},"trusted_sha256":"f6a3862ecc2ac736efededfc0a85afffde4229d72f6c4860a14040c80c6511b0","trusted_package_manifest_sha256":"2b5adc750d4afbe3d1b5bd60d98bc4b0dc1d07bde8934ae425738e2ea5819f31"},
-    {"id":"claude-skill-knowns-research","surface_kind":"instruction_loader","control_kind":"none","domain":"knowledge","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/knowns.research/SKILL.md"},"trusted_sha256":"1aa5372e5af719146816be07012ded35ce0778fc142785788a02f77e9895ac7e","trusted_package_manifest_sha256":"3f467a82443e67ef609f8a3152d9f95a06493b4548e63af2b0a963f9be8803ff"},
-    {"id":"claude-skill-knowns-task","surface_kind":"instruction_loader","control_kind":"none","domain":"knowledge","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/knowns.task/SKILL.md"},"trusted_sha256":"55c0c390466dbb619da155cdb8b98501e011f2b4c19fb9ac406389d80e616e3b","trusted_package_manifest_sha256":"ad5d47ef0d6deeb79422954f9f604ca6d51b8ed65719a956ce271612c8df009f"},
-    {"id":"claude-skill-knowns-task-brainstorm","surface_kind":"instruction_loader","control_kind":"none","domain":"knowledge","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/knowns.task.brainstorm/SKILL.md"},"trusted_sha256":"aff0bf832f7b93d0f28a62706265343b3cfde1b1e0ce2bbba5405624f526c834","trusted_package_manifest_sha256":"914ed64397ef6f6553dcc55fcfe6053553c984dc81807dfd7de249091cc1f32b"},
-    {"id":"claude-skill-knowns-task-extract","surface_kind":"instruction_loader","control_kind":"none","domain":"knowledge","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/knowns.task.extract/SKILL.md"},"trusted_sha256":"aeb17cdcddc9ad661faab3204ec35177620b506e0e154ccff4ff0f06900c5e5e","trusted_package_manifest_sha256":"5cc6be7b9c79298f3ba891df53808cc2b5240013a7a85e1fc0ecab1ab84552fc"},
-    {"id":"claude-skill-knowns-task-reopen","surface_kind":"instruction_loader","control_kind":"none","domain":"knowledge","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/knowns.task.reopen/SKILL.md"},"trusted_sha256":"1a6ef1858e0eeb5fb1ed197b9d2578eb2a271cd4d03be425a1a719e6d906b469","trusted_package_manifest_sha256":"7636cae04fab60d2451055b5343d1cec46e71219acde49bf4f33a263db548deb"},
-    {"id":"claude-skill-solidity-security","surface_kind":"instruction_loader","control_kind":"none","domain":"security","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/solidity-security/SKILL.md"},"trusted_sha256":"45a642bc3060acef7c200b28922dc92ff7901f9ade34ff9944832ee5d9aee12a","trusted_package_manifest_sha256":"e2ba2cc926232668e0356f7c10f1e2cae887fad0868de9f9d13f5155e4268e0c"},
-    {"id":"claude-skill-ui-ux-pro-max","surface_kind":"instruction_loader","control_kind":"none","domain":"product_experience","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/ui-ux-pro-max/SKILL.md"},"trusted_sha256":"fff024e58ee4aeef4f06d3ec93bbf4aa0c6af12ec8e680182fa60d90d7f070e4","trusted_package_manifest_sha256":"6ed809beb219ee146231962c30362e6cc0cdab80bfefede2ab046d0c14fca7b8"},
-    {"id":"claude-skill-ui-visual-validator","surface_kind":"instruction_loader","control_kind":"none","domain":"product_experience","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/ui-visual-validator/SKILL.md"},"trusted_sha256":"2bd7895f9ce5998accba090994bb47a51f37f0f65350e816ab80af4753a98907","trusted_package_manifest_sha256":"8597dcfbbc5217a17f4648814b43470652ca25d42920d607ec5da91fb7ce10d0"},
-    {"id":"claude-skill-web3-testing","surface_kind":"instruction_loader","control_kind":"none","domain":"security","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/web3-testing/SKILL.md"},"trusted_sha256":"13867bb2549739f88b2d31f0832d23e3fbbb6583660caaba4cc9ab3a3ddb00ab","trusted_package_manifest_sha256":"272107a296f0d6ded0f2e45c8233f072ca3a9ea3e2aac8622b13500b8a4af759"},
-    {"id":"claude-skill-webapp-testing","surface_kind":"instruction_loader","control_kind":"none","domain":"quality","influence_class":"supporting_technique","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["SKILL.md"],"allow_empty":false,"authority":{"may_influence":["none while the duplicate provider-specific loader is quarantined"],"must_not_decide":["product law","product priority","skill activation"]},"expected_outcome":{"statement":"A provider-specific duplicate loader remains visible and disabled until reconciled with one tracked portable method.","evidence":["entrypoint digest","package manifest digest","loader reconciliation"],"failure":"Keep the duplicate loader disabled when identity, authority, or compatibility is unresolved.","retry_exit":"Reconcile it to one reviewed portable method or retire the duplicate, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".claude/skills/webapp-testing/SKILL.md"},"trusted_sha256":"51b7349e77ec63b7744a6f63647e7566a0b4d2e301121cc10e8c2113af6556a2","trusted_package_manifest_sha256":"893f7eb2bc3ef9ae2d1f072975f2d8677cce23b94143410252c77400c95a218a"},
-    {"id":"cursor-rule-auth","surface_kind":"instruction_loader","control_kind":"none","domain":"release","influence_class":"operating_method","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["*.mdc"],"allow_empty":false,"authority":{"may_influence":["none while the machine-local rule is quarantined"],"must_not_decide":["product law","product priority","automatic agent routing"]},"expected_outcome":{"statement":"A machine-local Cursor rule remains visible and disabled until reconciled with current tracked repository authority.","evidence":["rule digest","activation review","tracked replacement mapping"],"failure":"Keep the rule disabled when it is stale, automatic, duplicated, or not reconciled.","retry_exit":"Reconcile it to tracked authority or retire it, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".cursor/rules/auth.mdc"},"trusted_sha256":"076e5f6e2f5b33e706be9a97b987804ff767a839872916e894cb00bfa19be13b"},
-    {"id":"cursor-rule-chain","surface_kind":"instruction_loader","control_kind":"none","domain":"architecture","influence_class":"operating_method","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["*.mdc"],"allow_empty":false,"authority":{"may_influence":["none while the machine-local rule is quarantined"],"must_not_decide":["product law","product priority","automatic agent routing"]},"expected_outcome":{"statement":"A machine-local Cursor rule remains visible and disabled until reconciled with current tracked repository authority.","evidence":["rule digest","activation review","tracked replacement mapping"],"failure":"Keep the rule disabled when it is stale, automatic, duplicated, or not reconciled.","retry_exit":"Reconcile it to tracked authority or retire it, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".cursor/rules/chain.mdc"},"trusted_sha256":"f9236051816d9bb863a832f26a081d903a13cb806222172c650c0dece1b55ee9"},
-    {"id":"cursor-rule-chopdot-dot-implementation","surface_kind":"instruction_loader","control_kind":"none","domain":"release","influence_class":"operating_method","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["*.mdc"],"allow_empty":false,"authority":{"may_influence":["none while the machine-local rule is quarantined"],"must_not_decide":["product law","product priority","automatic agent routing"]},"expected_outcome":{"statement":"A machine-local Cursor rule remains visible and disabled until reconciled with current tracked repository authority.","evidence":["rule digest","activation review","tracked replacement mapping"],"failure":"Keep the rule disabled when it is stale, automatic, duplicated, or not reconciled.","retry_exit":"Reconcile it to tracked authority or retire it, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".cursor/rules/chopdot-dot-implementation.mdc"},"trusted_sha256":"29a656fea33d6afe4e7c46a868a3dbd21a32c44f13c756ee73d208e527c25692"},
-    {"id":"cursor-rule-chopdot-dot-programme","surface_kind":"instruction_loader","control_kind":"none","domain":"release","influence_class":"operating_method","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["*.mdc"],"allow_empty":false,"authority":{"may_influence":["none while the machine-local rule is quarantined"],"must_not_decide":["product law","product priority","automatic agent routing"]},"expected_outcome":{"statement":"A machine-local Cursor rule remains visible and disabled until reconciled with current tracked repository authority.","evidence":["rule digest","activation review","tracked replacement mapping"],"failure":"Keep the rule disabled when it is stale, automatic, duplicated, or not reconciled.","retry_exit":"Reconcile it to tracked authority or retire it, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".cursor/rules/chopdot-dot-programme.mdc"},"trusted_sha256":"f1e7bfaafe89238d20a986f4acc25a288a4e7fb674dd38505aa1cf17d19270cb"},
-    {"id":"cursor-rule-env","surface_kind":"instruction_loader","control_kind":"none","domain":"release","influence_class":"operating_method","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["*.mdc"],"allow_empty":false,"authority":{"may_influence":["none while the machine-local rule is quarantined"],"must_not_decide":["product law","product priority","automatic agent routing"]},"expected_outcome":{"statement":"A machine-local Cursor rule remains visible and disabled until reconciled with current tracked repository authority.","evidence":["rule digest","activation review","tracked replacement mapping"],"failure":"Keep the rule disabled when it is stale, automatic, duplicated, or not reconciled.","retry_exit":"Reconcile it to tracked authority or retire it, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".cursor/rules/env.mdc"},"trusted_sha256":"da7dfaea2d3a999c6f36c1a5c34cfbfd7410206684653d06bb963bc2661ddb0a"},
-    {"id":"cursor-rule-modularity","surface_kind":"instruction_loader","control_kind":"none","domain":"release","influence_class":"operating_method","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["*.mdc"],"allow_empty":false,"authority":{"may_influence":["none while the machine-local rule is quarantined"],"must_not_decide":["product law","product priority","automatic agent routing"]},"expected_outcome":{"statement":"A machine-local Cursor rule remains visible and disabled until reconciled with current tracked repository authority.","evidence":["rule digest","activation review","tracked replacement mapping"],"failure":"Keep the rule disabled when it is stale, automatic, duplicated, or not reconciled.","retry_exit":"Reconcile it to tracked authority or retire it, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".cursor/rules/modularity.mdc"},"trusted_sha256":"9e345b513ef8c06b26be55b1197b7c7bcc96d0e77fa6f9c8a1399831f15d7105"},
-    {"id":"cursor-rule-ui","surface_kind":"instruction_loader","control_kind":"none","domain":"release","influence_class":"operating_method","lifecycle":"quarantined","activation_mode":"disabled","accountable_owner":"agent-systems integrator","patterns":["*.mdc"],"allow_empty":false,"authority":{"may_influence":["none while the machine-local rule is quarantined"],"must_not_decide":["product law","product priority","automatic agent routing"]},"expected_outcome":{"statement":"A machine-local Cursor rule remains visible and disabled until reconciled with current tracked repository authority.","evidence":["rule digest","activation review","tracked replacement mapping"],"failure":"Keep the rule disabled when it is stale, automatic, duplicated, or not reconciled.","retry_exit":"Reconcile it to tracked authority or retire it, then rerun the census."},"presence_policy":"optional","locator":{"base":"canonical_repo_root","path":".cursor/rules/ui.mdc"},"trusted_sha256":"84355c7fb43c1ea07015bc3554470b04e56d8300813fd990469b223fbbb90b13"},
-    {
-      "id": "skill-accessibility-compliance",
-      "surface_kind": "instruction_loader", "control_kind": "none", "domain": "accessibility", "influence_class": "supporting_technique", "lifecycle": "active", "activation_mode": "routed", "accountable_owner": "accessibility assurance", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["accessibility evaluation technique"], "must_not_decide": ["product scope", "product hierarchy"] },
-      "expected_outcome": { "statement": "Accessibility guidance verifies accepted behavior against explicit requirements.", "evidence": ["skill digest", "requirement-bound audit"], "failure": "Report unsupported guidance without changing product behavior.", "retry_exit": "Update or replace the skill through reviewed provenance." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/accessibility-compliance-accessibility-audit/SKILL.md" }, "trusted_sha256": "1908ca0d91481d2ae7f1b627d4717196d94d4a0c0afc1d9324dc7bfb7953bfca", "trusted_package_manifest_sha256": "9c1dbb7aa64576aa4585bd805f21b02c74843a2ee9bd048f063e9e5fe53dd400"
-    },
-    {
-      "id": "skill-chopdot-engineering-judgment",
-      "surface_kind": "instruction_loader", "control_kind": "profile", "domain": "engineering", "influence_class": "operating_method", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "engineering assurance", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["engineering questions after explicit review"], "must_not_decide": ["product journey", "universal action", "architecture law"] },
-      "expected_outcome": { "statement": "Engineering judgment loads a tracked, evidence-bound method without embedding product or architecture answers.", "evidence": ["skill digest", "thin-loader test"], "failure": "Keep the current broad skill quarantined from ChopDot routing.", "retry_exit": "Replace it with a thin tracked loader and pass semantic influence tests." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/chopdot-engineering-judgment/SKILL.md" }, "trusted_sha256": "d2af62c3f63209b806f6ceb06d70560d865d1cf6be53830f8eb45ab5cc46bbcb", "trusted_package_manifest_sha256": "cf453914d0a650e8df6a7d7d37991e4474bd535df6bb775f05e83756efdc1a1f"
-    },
-    {
-      "id": "skill-chopdot-frontend-design", "surface_kind": "instruction_loader", "control_kind": "profile", "domain": "product_experience", "influence_class": "operating_method", "lifecycle": "active", "activation_mode": "routed", "accountable_owner": "product assurance", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["tracked frontend method loading"], "must_not_decide": ["product hierarchy", "universal action"] },
-      "expected_outcome": { "statement": "The loader resolves only the tracked exact-worktree frontend method.", "evidence": ["skill digest", "resolved target"], "failure": "Stop on wrong root or missing tracked target.", "retry_exit": "Repair the loader or tracked method and recheck." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/chopdot-frontend-design/SKILL.md" }, "trusted_sha256": "bea618c6675abebba559a3602e27c3c660410cbd137f2f43e2768db60a5c91fc", "trusted_package_manifest_sha256": "2eafba5e0d196e42327b5d135d09b0a8be940a3c74b5c85db95682a411e09781"
-    },
-    {
-      "id": "skill-chopdot-product-judgment", "surface_kind": "instruction_loader", "control_kind": "profile", "domain": "product", "influence_class": "operating_method", "lifecycle": "active", "activation_mode": "routed", "accountable_owner": "product assurance", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["tracked product method loading"], "must_not_decide": ["product law", "priority before evidence"] },
-      "expected_outcome": { "statement": "The loader resolves only the tracked exact-worktree product judgment method.", "evidence": ["skill digest", "resolved target"], "failure": "Stop on wrong root or missing tracked target.", "retry_exit": "Repair the loader or tracked method and recheck." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/chopdot-product-judgment/SKILL.md" }, "trusted_sha256": "ddd50cd9782d99a44e90fea5e7796d1bbe9b3aa5d9fbcc6fb19b98253abdb455", "trusted_package_manifest_sha256": "073fe38226100b40d7b295bafe3bd2c5c2236147168724ad6a68a6d0c2750142"
-    },
-    {
-      "id": "skill-knowns-commit", "surface_kind": "instruction_loader", "control_kind": "none", "domain": "repository", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "repository owner", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["explicit commit workflow"], "must_not_decide": ["commit authorization", "accepted scope"] },
-      "expected_outcome": { "statement": "Commit assistance runs only when explicitly requested and preserves the governed candidate.", "evidence": ["skill digest", "explicit invocation"], "failure": "Do not activate as a default ChopDot workflow.", "retry_exit": "Use the repository-native governed path or review the integration." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/knowns.commit/SKILL.md" }, "trusted_sha256": "eb46000f24dbf506188c8ebd58c3d31dd9c18b5bda2346747dff134a5ce4f345", "trusted_package_manifest_sha256": "87ab1c72cddfbe26f7d24f4012404a1d657b454fa867b589acc1f16c6a863c76"
-    },
-    {
-      "id": "skill-knowns-doc", "surface_kind": "instruction_loader", "control_kind": "none", "domain": "knowledge", "influence_class": "supporting_technique", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "knowledge systems", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["none until adapted"], "must_not_decide": ["documentation authority", "current product source"] },
-      "expected_outcome": { "statement": "A documentation helper cannot create a parallel ChopDot source hierarchy.", "evidence": ["skill digest", "backing-store compatibility"], "failure": "Keep the skill quarantined for ChopDot.", "retry_exit": "Adapt it to tracked context authority and test for duplicate-source creation." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/knowns.doc/SKILL.md" }, "trusted_sha256": "ee8273713be5a0e7973eb138d0d131755c6ba921ff0a69c381b8277f9f32dc54", "trusted_package_manifest_sha256": "ecd63a4a9797d0c0a0e0e7c2186605761a697e898d1a8f1c10b35d59fc1b683b"
-    },
-    {
-      "id": "skill-knowns-init", "surface_kind": "instruction_loader", "control_kind": "gate", "domain": "knowledge", "influence_class": "generated_context", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "knowledge systems", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["none until adapted"], "must_not_decide": ["first read order", "task authority"] },
-      "expected_outcome": { "statement": "Session initialization must respect the exact-worktree read order and backing-store type.", "evidence": ["skill digest", "compatibility probe"], "failure": "Keep the skill quarantined for ChopDot.", "retry_exit": "Adapt it to the exact root and pass file-backed task compatibility tests." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/knowns.init/SKILL.md" }, "trusted_sha256": "f6a3862ecc2ac736efededfc0a85afffde4229d72f6c4860a14040c80c6511b0", "trusted_package_manifest_sha256": "2b5adc750d4afbe3d1b5bd60d98bc4b0dc1d07bde8934ae425738e2ea5819f31"
-    },
-    {
-      "id": "skill-knowns-research", "surface_kind": "instruction_loader", "control_kind": "none", "domain": "research", "influence_class": "supporting_technique", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "research assurance", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["none until adapted"], "must_not_decide": ["current authority", "task state"] },
-      "expected_outcome": { "statement": "Research helpers preserve source dates and never mutate an incompatible task authority.", "evidence": ["skill digest", "compatibility tests"], "failure": "Keep the skill quarantined for ChopDot.", "retry_exit": "Adapt it to the portable research profile and tracked task boundary." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/knowns.research/SKILL.md" }, "trusted_sha256": "1aa5372e5af719146816be07012ded35ce0778fc142785788a02f77e9895ac7e", "trusted_package_manifest_sha256": "3f467a82443e67ef609f8a3152d9f95a06493b4548e63af2b0a963f9be8803ff"
-    },
-    {
-      "id": "skill-knowns-task", "surface_kind": "instruction_loader", "control_kind": "pipeline", "domain": "agent_execution", "influence_class": "operating_method", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "agent-systems integrator", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["none until adapted"], "must_not_decide": ["task ownership", "approval", "completion"] },
-      "expected_outcome": { "statement": "No external task helper creates a parallel execution, approval, or completion authority.", "evidence": ["skill digest", "backing-store compatibility"], "failure": "Keep the skill quarantined for ChopDot.", "retry_exit": "Implement a provider adapter behind the portable task contract and pass conformance." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/knowns.task/SKILL.md" }, "trusted_sha256": "55c0c390466dbb619da155cdb8b98501e011f2b4c19fb9ac406389d80e616e3b", "trusted_package_manifest_sha256": "ad5d47ef0d6deeb79422954f9f604ca6d51b8ed65719a956ce271612c8df009f"
-    },
-    {
-      "id": "skill-knowns-brainstorm", "surface_kind": "instruction_loader", "control_kind": "none", "domain": "research", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "product assurance", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["explicit option generation"], "must_not_decide": ["product priority", "task authority"] },
-      "expected_outcome": { "statement": "Brainstorming produces bounded alternatives without writing current product or task authority.", "evidence": ["skill digest", "explicit invocation"], "failure": "Do not activate for product prioritization or task mutation.", "retry_exit": "Route through the evidence-bound definition framework if accepted." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/knowns.task.brainstorm/SKILL.md" }, "trusted_sha256": "aff0bf832f7b93d0f28a62706265343b3cfde1b1e0ce2bbba5405624f526c834", "trusted_package_manifest_sha256": "914ed64397ef6f6553dcc55fcfe6053553c984dc81807dfd7de249091cc1f32b"
-    },
-    {
-      "id": "skill-knowns-extract", "surface_kind": "instruction_loader", "control_kind": "evaluation_flywheel", "domain": "knowledge", "influence_class": "generated_context", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "knowledge systems", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["none until adapted"], "must_not_decide": ["portable doctrine", "product law"] },
-      "expected_outcome": { "statement": "Task-specific patterns cannot become durable doctrine without provenance and reviewed promotion.", "evidence": ["skill digest", "promotion tests"], "failure": "Keep the skill quarantined for ChopDot.", "retry_exit": "Adapt to the evaluation flywheel with explicit candidate and reviewer evidence." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/knowns.task.extract/SKILL.md" }, "trusted_sha256": "aeb17cdcddc9ad661faab3204ec35177620b506e0e154ccff4ff0f06900c5e5e", "trusted_package_manifest_sha256": "5cc6be7b9c79298f3ba891df53808cc2b5240013a7a85e1fc0ecab1ab84552fc"
-    },
-    {
-      "id": "skill-knowns-reopen", "surface_kind": "instruction_loader", "control_kind": "pipeline", "domain": "agent_execution", "influence_class": "operating_method", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "agent-systems integrator", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["none until adapted"], "must_not_decide": ["task status", "acceptance criteria"] },
-      "expected_outcome": { "statement": "Reopening work preserves the portable task and evidence authority rather than mutating a second state store.", "evidence": ["skill digest", "task adapter conformance"], "failure": "Keep the skill quarantined for ChopDot.", "retry_exit": "Adapt through a portable task provider and pass lifecycle tests." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/knowns.task.reopen/SKILL.md" }, "trusted_sha256": "1a6ef1858e0eeb5fb1ed197b9d2578eb2a271cd4d03be425a1a719e6d906b469", "trusted_package_manifest_sha256": "7636cae04fab60d2451055b5343d1cec46e71219acde49bf4f33a263db548deb"
-    },
-    {
-      "id": "skill-solidity-security", "surface_kind": "instruction_loader", "control_kind": "none", "domain": "security", "influence_class": "supporting_technique", "lifecycle": "active", "activation_mode": "routed", "accountable_owner": "security assurance", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["contract security technique"], "must_not_decide": ["contract scope", "chain architecture"] },
-      "expected_outcome": { "statement": "Contract security guidance evaluates an already accepted contract scope against explicit threats.", "evidence": ["skill digest", "threat-bound findings"], "failure": "Report incompatible assumptions and do not expand the contract.", "retry_exit": "Adapt the technique to the named environment and rerun tests." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/solidity-security/SKILL.md" }, "trusted_sha256": "45a642bc3060acef7c200b28922dc92ff7901f9ade34ff9944832ee5d9aee12a", "trusted_package_manifest_sha256": "e2ba2cc926232668e0356f7c10f1e2cae887fad0868de9f9d13f5155e4268e0c"
-    },
-    {
-      "id": "skill-ui-ux-pro-max", "surface_kind": "instruction_loader", "control_kind": "profile", "domain": "product_experience", "influence_class": "supporting_technique", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "product assurance", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["none until requirement-bound"], "must_not_decide": ["visual direction", "product type", "layout hierarchy"] },
-      "expected_outcome": { "statement": "Generic design heuristics cannot overwrite accepted ChopDot experience or brand decisions.", "evidence": ["skill digest", "requirement-bound evaluation"], "failure": "Keep the skill quarantined as ChopDot authority.", "retry_exit": "Expose techniques as optional references under the Experience Definition profile." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/ui-ux-pro-max/SKILL.md" }, "trusted_sha256": "d891ea3dbef820786a83f03f7e8dd8cee40a3b52b83ad9a187efe1a733f171e3", "trusted_package_manifest_sha256": "b22597cc2ac3994b7c54eae840533886e5efde0c41c071ac039abc5d27a8d33c"
-    },
-    {
-      "id": "skill-ui-visual-validator", "surface_kind": "instruction_loader", "control_kind": "gate", "domain": "product_experience", "influence_class": "supporting_technique", "lifecycle": "active", "activation_mode": "routed", "accountable_owner": "product assurance", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["requirement-bound visual verification"], "must_not_decide": ["design system", "product hierarchy"] },
-      "expected_outcome": { "statement": "Visual validation tests the accepted experience against stated requirements and real screens.", "evidence": ["skill digest", "screenshots", "finding traceability"], "failure": "Report the exact requirement gap without inventing a replacement direction.", "retry_exit": "Repair the artifact or accepted requirement and rerun the same viewports." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/ui-visual-validator/SKILL.md" }, "trusted_sha256": "2bd7895f9ce5998accba090994bb47a51f37f0f65350e816ab80af4753a98907", "trusted_package_manifest_sha256": "8597dcfbbc5217a17f4648814b43470652ca25d42920d607ec5da91fb7ce10d0"
-    },
-    {
-      "id": "skill-web3-testing", "surface_kind": "instruction_loader", "control_kind": "none", "domain": "security", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "security assurance", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["adapted test techniques"], "must_not_decide": ["network", "toolchain", "coverage threshold"] },
-      "expected_outcome": { "statement": "Web3 test guidance is adapted to the named ChopDot chain, toolchain, and threat model before use.", "evidence": ["skill digest", "environment compatibility"], "failure": "Reject stale or Ethereum-specific defaults that do not fit the target.", "retry_exit": "Adapt or replace the guidance and rerun environment-specific tests." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/web3-testing/SKILL.md" }, "trusted_sha256": "13867bb2549739f88b2d31f0832d23e3fbbb6583660caaba4cc9ab3a3ddb00ab", "trusted_package_manifest_sha256": "272107a296f0d6ded0f2e45c8233f072ca3a9ea3e2aac8622b13500b8a4af759"
-    },
-    {
-      "id": "skill-webapp-testing", "surface_kind": "instruction_loader", "control_kind": "none", "domain": "quality", "influence_class": "supporting_technique", "lifecycle": "active", "activation_mode": "explicit_only", "accountable_owner": "quality assurance", "patterns": ["SKILL.md"], "allow_empty": false,
-      "authority": { "may_influence": ["optional browser-test technique"], "must_not_decide": ["production entrypoint", "test sufficiency"] },
-      "expected_outcome": { "statement": "Generic browser techniques supplement but never replace repository-native production-entrypoint proof.", "evidence": ["skill digest", "test provenance"], "failure": "Report technique incompatibility and preserve the native test path.", "retry_exit": "Adapt to the repository runner or use the tracked test system." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".agents/skills/webapp-testing/SKILL.md" }, "trusted_sha256": "51b7349e77ec63b7744a6f63647e7566a0b4d2e301121cc10e8c2113af6556a2", "trusted_package_manifest_sha256": "893f7eb2bc3ef9ae2d1f072975f2d8677cce23b94143410252c77400c95a218a"
-    },
-    {
-      "id": "research-competitor-app-lane", "surface_kind": "context_source", "control_kind": "none", "domain": "research", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "research assurance", "patterns": ["research source"], "allow_empty": false,
-      "authority": { "may_influence": ["dated category comparison"], "must_not_decide": ["current priority", "current competitor state"] },
-      "expected_outcome": { "statement": "Dated competitor research is used only at its recorded evidence grade and refreshed before current claims.", "evidence": ["source digest", "source dates"], "failure": "Treat stale claims as discovery evidence only.", "retry_exit": "Refresh primary sources or carry the limitation explicitly." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": "docs/chopdot-dot/competitor-app-research-lane-2026-06-23.md" }, "trusted_sha256": "432b5b016c2a72da72a78092cd81cacfd27ec7e0203f52fc7591152cd46038bf"
-    },
-    {
-      "id": "research-competitor-scenario-scorecards", "surface_kind": "context_source", "control_kind": "none", "domain": "research", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "research assurance", "patterns": ["research source"], "allow_empty": false,
-      "authority": { "may_influence": ["dated scenario comparison"], "must_not_decide": ["current product score", "current parity"] },
-      "expected_outcome": { "statement": "Scenario scorecards provide dated counterevidence without becoming current product authority.", "evidence": ["source digest", "scenario provenance"], "failure": "Do not treat a historical score as current parity proof.", "retry_exit": "Repeat the scenario against current products before relying on it." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": "docs/chopdot-dot/competitor-scenario-scorecards-2026-06-23.md" }, "trusted_sha256": "9c080d2b0f1185fbed84877df9f78e78a0228522ce8f6705c0b1af2437995e15"
-    },
-    {
-      "id": "research-chopdot-experience-thesis", "surface_kind": "context_source", "control_kind": "none", "domain": "product_experience", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "product assurance", "patterns": ["research source"], "allow_empty": false,
-      "authority": { "may_influence": ["candidate differentiation hypotheses"], "must_not_decide": ["product law", "accepted experience"] },
-      "expected_outcome": { "statement": "A dated experience thesis remains a falsifiable hypothesis until current authority and user evidence accept it.", "evidence": ["source digest", "falsifiers"], "failure": "Do not convert the thesis into a method rule or product decision.", "retry_exit": "Test it through Experience Definition and current benchmark evidence." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": "docs/chopdot-dot/chopdot-10x-experience-thesis-2026-06-23.md" }, "trusted_sha256": "385c75518a873282904ad6e55e2f66b7d9849b2606a7b5108d8ab271c6051db4"
-    },
-    {
-      "id": "research-competitive-gap-decisions", "surface_kind": "decision_source", "control_kind": "none", "domain": "product", "influence_class": "product_decision", "lifecycle": "superseded", "activation_mode": "disabled", "accountable_owner": "product owner", "patterns": ["historical decision"], "allow_empty": false,
-      "authority": { "may_influence": ["historical decision provenance"], "must_not_decide": ["current priority", "current home action"] },
-      "expected_outcome": { "statement": "Superseded competitive-gap decisions remain visible only as historical evidence.", "evidence": ["source digest", "tracked successors"], "failure": "Block activation of the superseded priority.", "retry_exit": "Use current tracked decisions or deliberately reopen through product authority." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": "docs/chopdot-dot/competitive-gap-decisions-2026-06-23.md" }, "trusted_sha256": "7de1e381b80ed666bf8adfaf6cfa22a8a71e4d4939a5b7f5b1a220af8d2c95c3"
-    },
-    {
-      "id": "research-source-backed-capability-matrix", "surface_kind": "context_source", "control_kind": "none", "domain": "research", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "research assurance", "patterns": ["machine-local research"], "allow_empty": false,
-      "authority": { "may_influence": ["dated capability evidence"], "must_not_decide": ["current parity", "priority"] },
-      "expected_outcome": { "statement": "Machine-local capability evidence is pinned, dated, and reproduced into tracked decisions before use.", "evidence": ["source digest", "tracked reproduction"], "failure": "Disable the source when missing or changed.", "retry_exit": "Review the changed source and deliberately update its trusted identity." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".local-private/chopdot-architecture-os/taxonomy-wiki/COMPETITOR_CAPABILITY_MATRIX_SOURCE_BACKED_2026-05-14.csv" }, "trusted_sha256": "97b39dec8356cf05e304a2030a7841fd3c0707d7be8ee25a0cc0a08f64812659"
-    },
-    {
-      "id": "research-competitor-user-feedback", "surface_kind": "context_source", "control_kind": "none", "domain": "research", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "research assurance", "patterns": ["machine-local research"], "allow_empty": false,
-      "authority": { "may_influence": ["anecdotal pain hypotheses"], "must_not_decide": ["user truth", "feature priority"] },
-      "expected_outcome": { "statement": "Anecdotal feedback creates testable hypotheses and never substitutes for current user evidence.", "evidence": ["source digest", "evidence grade"], "failure": "Keep unsupported conclusions out of current product decisions.", "retry_exit": "Gather representative evidence or retain the uncertainty." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".local-private/chopdot-architecture-os/taxonomy-wiki/COMPETITOR_USER_FEEDBACK_REVIEW_2026-05-14.md" }, "trusted_sha256": "cf0a5dc3c5099e672224ce12d8e4432a6a79e3adc14319212fb5374030c38f83"
-    },
-    {
-      "id": "research-user-facing-copy-decision", "surface_kind": "context_source", "control_kind": "none", "domain": "product_experience", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "product assurance", "patterns": ["machine-local research"], "allow_empty": false,
-      "authority": { "may_influence": ["dated copy hypotheses"], "must_not_decide": ["current product language", "product law"] },
-      "expected_outcome": { "statement": "Dated copy input is checked against current state semantics and user evidence before adoption.", "evidence": ["source digest", "current decision citation"], "failure": "Do not render historical copy as a current rule.", "retry_exit": "Re-evaluate through the current Experience Definition profile." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".local-private/chopdot-architecture-os/taxonomy-wiki/USER_FACING_COPY_DECISION_AFTER_COMPETITOR_REVIEW_2026-05-14.md" }, "trusted_sha256": "fbbe9c360c54bcf7a3d7d97b770fc22f42d078cc500ff767794b3f154200ebda"
-    },
-    {
-      "id": "research-competitor-terminology-matrix", "surface_kind": "context_source", "control_kind": "none", "domain": "research", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "research assurance", "patterns": ["machine-local research"], "allow_empty": false,
-      "authority": { "may_influence": ["dated terminology evidence"], "must_not_decide": ["mandatory copy", "priority"] },
-      "expected_outcome": { "statement": "Terminology evidence remains source-graded and contextual rather than becoming mandatory language.", "evidence": ["source digest", "source labels"], "failure": "Reject uncited or stale language claims.", "retry_exit": "Refresh primary sources or test language with users." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".local-private/chopdot-architecture-os/taxonomy-wiki/COMPETITOR_TERMINOLOGY_MATRIX_2026-05-14.csv" }, "trusted_sha256": "84a66edf07d9fa872de6d25adcdc49e7d64cc443598383b9d7aa003553915e95"
-    },
-    {
-      "id": "research-competitor-terminology-review", "surface_kind": "context_source", "control_kind": "none", "domain": "research", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "research assurance", "patterns": ["machine-local research"], "allow_empty": false,
-      "authority": { "may_influence": ["dated terminology synthesis"], "must_not_decide": ["mandatory copy", "current product truth"] },
-      "expected_outcome": { "statement": "Terminology synthesis supplies dated implications with proof-safe limitations.", "evidence": ["source digest", "citation mapping"], "failure": "Do not promote synthesis into current product law.", "retry_exit": "Refresh evidence or carry the limitation." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".local-private/chopdot-architecture-os/taxonomy-wiki/COMPETITOR_TERMINOLOGY_SOURCE_REVIEW_2026-05-14.md" }, "trusted_sha256": "f980fdf706f2dfc276f2ff3db930a3cc370d1c13b4709b605c1edd8d4429ae4d"
-    },
-    {
-      "id": "research-parity-stack-adapter-atlas", "surface_kind": "context_source", "control_kind": "none", "domain": "architecture", "influence_class": "supporting_technique", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "architecture owner", "patterns": ["machine-local research"], "allow_empty": false,
-      "authority": { "may_influence": ["dated platform capability mapping"], "must_not_decide": ["current architecture", "deployment state"] },
-      "expected_outcome": { "statement": "A pinned adapter atlas informs current architecture only after live capability and limit checks.", "evidence": ["source digest", "live readback"], "failure": "Disable changed or missing mapping and preserve current tracked boundaries.", "retry_exit": "Refresh the mapping and record an accepted architecture decision." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".local-private/chopdot-tech-adapter-atlas/reports/PARITY_PRODUCT_STACK_CHOPDOT_MAPPING_2026_06_09.md" }, "trusted_sha256": "124af963c14cb71a76d853d37f417e9687b46c8e00352cb66f9d9ead9d22d062"
-    },
-    {
-      "id": "context-repo-graph-packet", "surface_kind": "context_source", "control_kind": "adapter", "domain": "knowledge", "influence_class": "generated_context", "lifecycle": "degraded", "activation_mode": "explicit_only", "accountable_owner": "knowledge systems", "patterns": ["knowledge packet"], "allow_empty": false,
-      "authority": { "may_influence": ["cited repository recall when exact"], "must_not_decide": ["product law", "accepted outcome", "current facts when absent"] },
-      "expected_outcome": { "statement": "Repo Graph recall names packet root, branch, commit, digest, dirty paths, and stale reasons for the exact worktree.", "evidence": ["packet identity", "source citations"], "failure": "Report the adapter unavailable or stale and use exact source without calling it a graph fact.", "retry_exit": "Generate an exact-worktree packet and pass adapter conformance." },
-      "presence_policy": "optional", "locator": { "base": "exact_worktree_root", "path": ".local-private/agentops/repo-graph-packet.json" }, "trusted_sha256": null
-    },
-    {
-      "id": "agent-chopdot-daily-operator", "surface_kind": "agent_definition", "control_kind": "pipeline", "domain": "operations", "influence_class": "generated_context", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "agent operations", "patterns": ["agent definition"], "allow_empty": false,
-      "authority": { "may_influence": ["none for the launch worktree until adapted"], "must_not_decide": ["exact-worktree routing", "current priority"] },
-      "expected_outcome": { "statement": "Scheduled operator output is bound to the exact target root, current sources, and explicit operator authority.", "evidence": ["agent digest", "input identity", "freshness"], "failure": "Keep cross-root output quarantined from exact-worktree routing.", "retry_exit": "Parameterize the target root, update inputs, and pass exact-root conformance." },
-      "presence_policy": "optional", "locator": { "base": "autobots_root", "path": "agentops/registry/agents/chopdot-daily-operator.json" }, "trusted_sha256": "06d0ceccb06c7ff5cb82d1820de24c560bfdacc9d4ce53d11b9d133ec561f920"
-    },
-    {
-      "id": "agent-chopdot-product-systems-steward", "surface_kind": "agent_definition", "control_kind": "pipeline", "domain": "product", "influence_class": "generated_context", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "agent operations", "patterns": ["agent definition"], "allow_empty": false,
-      "authority": { "may_influence": ["none for the launch worktree until adapted"], "must_not_decide": ["current product authority", "exact-worktree routing"] },
-      "expected_outcome": { "statement": "Product-system synthesis cites the exact target root and current authority sources.", "evidence": ["agent digest", "source identity", "freshness"], "failure": "Keep cross-root synthesis quarantined from launch routing.", "retry_exit": "Parameterize the target and pass current-source conformance." },
-      "presence_policy": "optional", "locator": { "base": "autobots_root", "path": "agentops/registry/agents/chopdot-product-systems-steward.json" }, "trusted_sha256": "16af3806597674b8402297914047d92eca28c647929b0578a104d2a0fd6310a9"
-    },
-    {
-      "id": "context-agentops-kg-json", "surface_kind": "context_source", "control_kind": "adapter", "domain": "knowledge", "influence_class": "generated_context", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "knowledge systems", "patterns": ["context bridge"], "allow_empty": false,
-      "authority": { "may_influence": ["none for exact-worktree routing until refreshed"], "must_not_decide": ["current facts", "priority", "completion"] },
-      "expected_outcome": { "statement": "Knowledge context names its provider, exact root, commit, freshness, fallback, facts, and citations.", "evidence": ["context digest", "exact-source citations"], "failure": "Report stale cross-root context and do not substitute it for current facts.", "retry_exit": "Refresh through the provider-neutral port and verify exact-digest recall." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".local-private/agentops/kg_context.json" }, "trusted_sha256": "486617372b8bc80f715ad2ab381bd6a6a59241e572445e2184d834b18352b8b0"
-    },
-    {
-      "id": "context-agentops-kg-markdown", "surface_kind": "context_source", "control_kind": "adapter", "domain": "knowledge", "influence_class": "generated_context", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "knowledge systems", "patterns": ["context bridge"], "allow_empty": false,
-      "authority": { "may_influence": ["none for exact-worktree routing until refreshed"], "must_not_decide": ["current facts", "priority"] },
-      "expected_outcome": { "statement": "Human-readable context is a derived view of a current exact-source receipt.", "evidence": ["context digest", "source linkage"], "failure": "Report stale cross-root context and route to exact sources.", "retry_exit": "Regenerate after accepted provider recall." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".local-private/agentops/kg_context.md" }, "trusted_sha256": "8e24cfd5c55afaada69751584da2bb733af10c454ad409a6f3ea2a4d91958b47"
-    },
-    {
-      "id": "context-agentops-next-work", "surface_kind": "context_source", "control_kind": "adapter", "domain": "product", "influence_class": "generated_context", "lifecycle": "quarantined", "activation_mode": "disabled", "accountable_owner": "knowledge systems", "patterns": ["decision card"], "allow_empty": false,
-      "authority": { "may_influence": ["none for exact-worktree routing until refreshed"], "must_not_decide": ["current priority", "task scope"] },
-      "expected_outcome": { "statement": "A generated next-work card cites current exact-worktree product decisions and remains a read model.", "evidence": ["card digest", "source citations"], "failure": "Keep stale or cross-root next-work guidance quarantined.", "retry_exit": "Regenerate from the current Cockpit and verify citations." },
-      "presence_policy": "optional", "locator": { "base": "canonical_repo_root", "path": ".local-private/agentops/decision_cards/chopdot-next-work.md" }, "trusted_sha256": "2c8e4161e4e0a601281cde19aa591663168da6feeefb2ee2aac299326782c000"
-    }
-  ],
+  "external_discovery": [],
+  "external_surfaces": [],
   "runtime_classes": [
     {
-      "id": "codex-platform-instructions", "surface_kind": "external_constraint", "influence_class": "external_constraint", "lifecycle": "active", "activation_mode": "automatic", "accountable_owner": "runtime provider",
-      "authority": { "may_influence": ["tool use", "safety", "task execution"], "must_not_decide": ["durable ChopDot product law", "participant authority"] },
-      "expected_outcome": { "statement": "Runtime constraints remain visible as external operating authority and never masquerade as repository product truth.", "evidence": ["runtime identity", "task-visible instructions"], "failure": "Stop on a same-level conflict or unavailable required capability.", "retry_exit": "Resolve with the operator or provider; do not record runtime text as product law." }
+      "id": "codex-platform-instructions",
+      "surface_kind": "external_constraint",
+      "influence_class": "external_constraint",
+      "lifecycle": "active",
+      "activation_mode": "automatic",
+      "accountable_owner": "runtime provider",
+      "authority": {
+        "may_influence": [
+          "tool use",
+          "safety",
+          "task execution"
+        ],
+        "must_not_decide": [
+          "durable ChopDot product law",
+          "participant authority"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Runtime constraints remain visible as external operating authority and never masquerade as repository product truth.",
+        "evidence": [
+          "runtime identity",
+          "task-visible instructions"
+        ],
+        "failure": "Stop on a same-level conflict or unavailable required capability.",
+        "retry_exit": "Resolve with the operator or provider; do not record runtime text as product law."
+      }
     },
     {
-      "id": "global-and-plugin-skills", "surface_kind": "external_constraint", "influence_class": "external_constraint", "lifecycle": "active", "activation_mode": "routed", "accountable_owner": "runtime operator",
-      "authority": { "may_influence": ["optional techniques after disclosure"], "must_not_decide": ["ChopDot authority", "priority", "approval"] },
-      "expected_outcome": { "statement": "External skills are announced, requirement-bound, and subordinate to exact repository authority.", "evidence": ["callable identity", "activation disclosure", "output review"], "failure": "Do not use an unverified or authority-expanding skill for ChopDot decisions.", "retry_exit": "Verify the exact capability or use a tracked repository method." }
+      "id": "global-and-plugin-skills",
+      "surface_kind": "external_constraint",
+      "influence_class": "external_constraint",
+      "lifecycle": "active",
+      "activation_mode": "routed",
+      "accountable_owner": "runtime operator",
+      "authority": {
+        "may_influence": [
+          "optional techniques after disclosure"
+        ],
+        "must_not_decide": [
+          "ChopDot authority",
+          "priority",
+          "approval"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "External skills are announced, requirement-bound, and subordinate to exact repository authority.",
+        "evidence": [
+          "callable identity",
+          "activation disclosure",
+          "output review"
+        ],
+        "failure": "Do not use an unverified or authority-expanding skill for ChopDot decisions.",
+        "retry_exit": "Verify the exact capability or use a tracked repository method."
+      }
     },
     {
-      "id": "ephemeral-subagents", "surface_kind": "external_constraint", "influence_class": "external_constraint", "lifecycle": "active", "activation_mode": "explicit_only", "accountable_owner": "delegating agent",
-      "authority": { "may_influence": ["bounded delegated evidence", "independent agent perspective"], "must_not_decide": ["human approval", "product law", "proof beyond task evidence"] },
-      "expected_outcome": { "statement": "Each subagent has bounded ownership, preserves shared work, and returns evidence that the primary agent independently integrates.", "evidence": ["delegation prompt", "agent result", "primary verification"], "failure": "Discard or bound results that exceed scope, conflict, or lack evidence.", "retry_exit": "Clarify the task or verify locally; agent count never substitutes for proof." }
+      "id": "ephemeral-subagents",
+      "surface_kind": "external_constraint",
+      "influence_class": "external_constraint",
+      "lifecycle": "active",
+      "activation_mode": "explicit_only",
+      "accountable_owner": "delegating agent",
+      "authority": {
+        "may_influence": [
+          "bounded delegated evidence",
+          "independent agent perspective"
+        ],
+        "must_not_decide": [
+          "human approval",
+          "product law",
+          "proof beyond task evidence"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Each subagent has bounded ownership, preserves shared work, and returns evidence that the primary agent independently integrates.",
+        "evidence": [
+          "delegation prompt",
+          "agent result",
+          "primary verification"
+        ],
+        "failure": "Discard or bound results that exceed scope, conflict, or lack evidence.",
+        "retry_exit": "Clarify the task or verify locally; agent count never substitutes for proof."
+      }
     },
     {
-      "id": "github-repository-governance", "surface_kind": "external_constraint", "influence_class": "external_constraint", "lifecycle": "active", "activation_mode": "routed", "accountable_owner": "repository owner",
-      "authority": { "may_influence": ["merge admission", "required hosted checks", "release environment controls"], "must_not_decide": ["product law", "product priority", "test success without check evidence"] },
-      "expected_outcome": { "statement": "Live branch rules, required checks, reviewer settings, bypass rights, and release environments match tracked governance intent and exact candidate evidence.", "evidence": ["authenticated settings readback", "required-check conclusions", "exact head identity"], "failure": "Report live configuration as unknown or drifted; never infer enforcement from tracked YAML alone.", "retry_exit": "Reconcile through authorized repository settings, then independently read back the live state." }
+      "id": "github-repository-governance",
+      "surface_kind": "external_constraint",
+      "influence_class": "external_constraint",
+      "lifecycle": "active",
+      "activation_mode": "routed",
+      "accountable_owner": "repository owner",
+      "authority": {
+        "may_influence": [
+          "merge admission",
+          "required hosted checks",
+          "release environment controls"
+        ],
+        "must_not_decide": [
+          "product law",
+          "product priority",
+          "test success without check evidence"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Live branch rules, required checks, reviewer settings, bypass rights, and release environments match tracked governance intent and exact candidate evidence.",
+        "evidence": [
+          "authenticated settings readback",
+          "required-check conclusions",
+          "exact head identity"
+        ],
+        "failure": "Report live configuration as unknown or drifted; never infer enforcement from tracked YAML alone.",
+        "retry_exit": "Reconcile through authorized repository settings, then independently read back the live state."
+      }
     }
   ],
   "lifecycle_reviews": [
-    {"surface_id":"claude-skill-accessibility-compliance-accessibility-audit","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-knowns-commit","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-knowns-doc","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-knowns-init","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-knowns-research","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-knowns-task","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-knowns-task-brainstorm","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-knowns-task-extract","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-knowns-task-reopen","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-solidity-security","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-ui-ux-pro-max","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-ui-visual-validator","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-web3-testing","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"claude-skill-webapp-testing","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"cursor-rule-auth","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"cursor-rule-chain","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"cursor-rule-chopdot-dot-implementation","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"cursor-rule-chopdot-dot-programme","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"cursor-rule-env","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"cursor-rule-modularity","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"cursor-rule-ui","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"agent-chopdot-daily-operator","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"agent-chopdot-product-systems-steward","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"agent-evaluation-system","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"agent-governance-runtime","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"agent-policies-and-foundation","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"agent-system-runtime","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"architecture-decisions","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"autobots-chopdot-agent-census","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"canonical-claude-skill-census","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"canonical-cursor-rule-census","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"canonical-project-skill-census","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"codex-platform-instructions","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"context-agentops-kg-json","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"context-agentops-kg-markdown","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"context-agentops-next-work","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"context-repo-graph-packet","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"definition-frameworks","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"definition-profiles","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"ephemeral-subagents","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"github-repository-governance","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"global-and-plugin-skills","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"historical-plans-and-investigations","lifecycle":"historical","reviewed_on":"2026-08-28","review_interval_days":90,"reason":"Retained only as dated evidence and never treated as current operating authority.","replacement":null},
-    {"surface_id":"knowledge-and-wiki-sources","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"legacy-steering-documents","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"native-and-release-context","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"operating-documentation","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"portable-agent-contracts","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"portable-agent-loops","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"product-context-and-history","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"product-decisions","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"product-generated-read-models","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"product-law","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"repository-enforcement","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"repository-entrypoints","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"research-and-benchmark-context","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"research-chopdot-experience-thesis","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"research-competitive-gap-decisions","lifecycle":"superseded","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled and retained only for provenance after a reviewed successor replaced its use.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"research-competitor-app-lane","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"research-competitor-scenario-scorecards","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"research-competitor-terminology-matrix","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"research-competitor-terminology-review","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"research-competitor-user-feedback","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"research-parity-stack-adapter-atlas","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"research-source-backed-capability-matrix","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"research-user-facing-copy-decision","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"skill-accessibility-compliance","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"skill-chopdot-engineering-judgment","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"skill-chopdot-frontend-design","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"skill-chopdot-product-judgment","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"skill-knowns-brainstorm","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"skill-knowns-commit","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"skill-knowns-doc","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"skill-knowns-extract","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"skill-knowns-init","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"skill-knowns-reopen","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"skill-knowns-research","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"skill-knowns-task","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"skill-solidity-security","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"skill-ui-ux-pro-max","lifecycle":"quarantined","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Disabled until compatibility, authority, and hostile evaluation evidence are accepted.","replacement":"Reviewed compatible successor or repaired same surface"},
-    {"surface_id":"skill-ui-visual-validator","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"skill-web3-testing","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"skill-webapp-testing","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"deployment-context","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"proof-evidence","lifecycle":"historical","reviewed_on":"2026-08-28","review_interval_days":90,"reason":"Retained only as dated evidence and never treated as current operating authority.","replacement":null},
-    {"surface_id":"research-script-tools","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null},
-    {"surface_id":"root-script-runtime","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"shared-script-libraries","lifecycle":"active","reviewed_on":"2026-08-28","review_interval_days":30,"reason":"Reviewed for current bounded use under the declared authority and expected outcome.","replacement":null},
-    {"surface_id":"tracked-root-plans","lifecycle":"historical","reviewed_on":"2026-08-28","review_interval_days":90,"reason":"Retained only as dated evidence and never treated as current operating authority.","replacement":null},
-    {"surface_id":"tracked-judgment-methods","lifecycle":"degraded","reviewed_on":"2026-08-28","review_interval_days":14,"reason":"Retained with explicit limitations and prevented from producing an unqualified pass verdict.","replacement":null}
+    {
+      "surface_id": "agent-policies-and-foundation",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "product-law",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "repository-enforcement",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "repository-entrypoints",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "tracked-judgment-methods",
+      "lifecycle": "degraded",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 14,
+      "reason": "Retained with explicit limitations and prevented from producing an unqualified pass verdict.",
+      "replacement": null
+    },
+    {
+      "surface_id": "codex-platform-instructions",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "ephemeral-subagents",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "github-repository-governance",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "global-and-plugin-skills",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    }
   ],
   "generated_outputs": {
-    "catalog": "governance/agent-system/steering-surface-catalog.v1.json",
-    "health_report": "docs/agent-system/STEERING_SURFACE_HEALTH.md"
+    "catalog": ".governance-build/steering-surface-catalog.v1.json",
+    "health_report": ".governance-build/STEERING_SURFACE_HEALTH.md"
   }
 }

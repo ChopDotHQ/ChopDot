@@ -58,3 +58,9 @@ artifacts/release/
 artifacts/agentops/release-agentops-verification.json
 artifacts/agentops/release-kgv2-recall.json
 artifacts/agentops/release-repo-graph-packet.json
+
+# Derived agent-governance outputs: built on demand, uploaded as CI artifacts.
+.governance-build/
+
+# Machine-local private context. Never required for normal repository operation.
+.local-private/

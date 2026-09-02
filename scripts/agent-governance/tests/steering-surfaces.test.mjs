@@ -301,16 +301,35 @@ test('reports an unregistered file under a controlled discovery root', (t) => {
   assert.ok(catalog.validation.issues.includes('unregistered steering surface under a controlled root: controlled/unregistered.txt'));
 });
 
-test('blocks when generated catalog and health hashes are stale after source drift', (t) => {
+test('blocks when a pinned steering surface changes without the registry acknowledging it', (t) => {
   const root = makeFixture(t);
-  syncGenerated(root);
+  const registry = baseRegistry();
+  const group = registry.surface_groups.find((entry) => entry.patterns.includes('controlled/*.md'));
+  assert.ok(group, 'fixture must declare a controlled group to pin');
+
+  // Pin the group at its current content, then drift the source underneath it.
+  group.trusted_manifest_sha256 = buildSteeringCatalog(root, registry)
+    .groups.find((entry) => entry.id === group.id).manifest_sha256;
   fs.appendFileSync(path.join(root, 'controlled/guide.md'), 'Changed steering instruction.\n');
 
-  const result = monitor(root);
+  const result = monitor(root, registry);
 
   assert.equal(result.verdict, 'blocked');
-  assert.ok(result.drifts.includes(`${CATALOG_PATH}: generated catalog is missing, unsafe, or stale`));
-  assert.ok(result.drifts.includes(`${HEALTH_PATH}: generated health report is missing, unsafe, or stale`));
+  assert.ok(
+    result.drifts.some((entry) => entry.startsWith(`${group.id}: steering surface content changed`)),
+    `expected a content-change drift for ${group.id}, got ${JSON.stringify(result.drifts)}`,
+  );
+});
+
+test('an unpinned group tolerates source change without blocking', (t) => {
+  const root = makeFixture(t);
+  const registry = baseRegistry();
+  for (const group of registry.surface_groups) delete group.trusted_manifest_sha256;
+  fs.appendFileSync(path.join(root, 'controlled/guide.md'), 'Ordinary documentation edit.\n');
+
+  const result = monitor(root, registry);
+
+  assert.equal(result.drifts.some((entry) => entry.includes('steering surface content changed')), false);
 });
 
 test('rejects a repository steering surface implemented as a symlink', (t) => {
@@ -641,38 +660,45 @@ test('ignores an ordinary non-steering file outside controlled roots', (t) => {
   assert.equal(result.worktree.changed.some((entry) => entry.path === 'src/ordinary.js'), false);
 });
 
-test('production registry controls every tracked root plan, proof, deployment, and script exactly once', () => {
+test('production registry controls agent instruction surfaces and ignores ordinary documentation', () => {
   const registry = loadSteeringRegistry(REPOSITORY_ROOT);
-  const targets = {
-    plans: trackedPaths(REPOSITORY_ROOT, 'plans'),
-    proof: trackedPaths(REPOSITORY_ROOT, 'proof'),
-    deployment: trackedPaths(REPOSITORY_ROOT, 'deployment'),
-    scripts: trackedPaths(REPOSITORY_ROOT, 'scripts'),
-  };
+  const controls = (relative) => registry.surface_groups
+    .some((entry) => entry.patterns.some((pattern) => globToRegExp(pattern).test(relative)));
 
-  assert.deepEqual(Object.fromEntries(Object.entries(targets).filter(([key]) => key !== 'scripts').map(([key, files]) => [key, files.length])), {
-    plans: 12,
-    proof: 345,
-    deployment: 10,
-  });
-  assert.ok(targets.scripts.length >= 117, `expected the reconciled 117-script baseline or a reviewed extension, got ${targets.scripts.length}`);
-  for (const relative of Object.values(targets).flat()) {
-    const matches = registry.surface_groups.filter((entry) => entry.patterns.some((pattern) => globToRegExp(pattern).test(relative)));
-    assert.equal(matches.length, 1, `${relative} must resolve to exactly one steering group, got ${matches.map((entry) => entry.id).join(', ')}`);
+  // Surfaces an agent obeys must be controlled.
+  for (const relative of [
+    'AGENTS.md',
+    'CLAUDE.md',
+    'PRODUCT_TRUTH.md',
+    'governance/agent-system/instructions/chopdot-product-judgment.md',
+    'governance/agent-system/instructions/chopdot-frontend-design.md',
+    'governance/agent-system/policies/adoption-boundary.v1.json',
+  ]) {
+    assert.equal(controls(relative), true, `${relative} must be a controlled steering surface`);
+  }
+
+  // Ordinary documentation must not be, or every doc edit rebuilds a governance artifact.
+  for (const relative of [
+    'docs/CHOPDOT_LOOP_RUNNER.md',
+    'docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json',
+    'docs/superpowers/plans/2026-08-26-portable-agent-outcome-system.md',
+    'plans/2026-07-14-dot-host-browser-polish.md',
+    'proof/host-matrix.json',
+    'product/cards.md',
+  ]) {
+    assert.equal(controls(relative), false, `${relative} must not be a controlled steering surface`);
   }
 });
 
-test('production registry explicitly quarantines every Claude duplicate and Cursor rule', () => {
+test('production registry inventories no machine-local or private material', () => {
   const registry = loadSteeringRegistry(REPOSITORY_ROOT);
-  const claude = registry.external_surfaces.filter((entry) => entry.id.startsWith('claude-skill-'));
-  const cursor = registry.external_surfaces.filter((entry) => entry.id.startsWith('cursor-rule-'));
+  const serialized = JSON.stringify(registry);
 
-  assert.equal(claude.length, 14);
-  assert.equal(cursor.length, 7);
-  for (const entry of [...claude, ...cursor]) {
-    assert.equal(entry.lifecycle, 'quarantined');
-    assert.equal(entry.activation_mode, 'disabled');
-    assert.match(entry.trusted_sha256, /^[0-9a-f]{64}$/u);
+  // A tracked, shareable governance source must never enumerate filenames, directory
+  // structure, or digests from machine-local or private context.
+  for (const marker of ['.local-private', '.claude/', '.cursor/', '.agents/']) {
+    assert.equal(serialized.includes(marker), false, `registry must not reference ${marker}`);
   }
-  for (const entry of claude) assert.match(entry.trusted_package_manifest_sha256, /^[0-9a-f]{64}$/u);
+  assert.deepEqual(registry.external_surfaces, [], 'machine-local skill inventory must not be tracked');
+  assert.deepEqual(registry.external_discovery, [], 'machine-local censuses must not be required');
 });
