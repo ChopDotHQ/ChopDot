@@ -499,12 +499,17 @@ function candidateIdentity(root) {
 }
 
 function steeringWorktreeState(root, catalog) {
+  const generated = new Set(Object.values(catalog.generated_outputs ?? {}));
   const paths = new Set([
     ...catalog.repository_surfaces.map((entry) => entry.path),
-    ...Object.values(catalog.generated_outputs ?? {}),
+    ...generated,
   ]);
   const tracked = new Set(gitPaths(root, ['ls-files', '-z', '--cached']));
-  const unpromoted = [...paths].filter((entry) => !tracked.has(entry)).sort();
+  // Only steering *sources* participate in the promoted-source requirement. Generated
+  // outputs are derived and untracked by design, so requiring them to be committed
+  // would fail every clean checkout under --require-promoted. They stay in `paths`,
+  // so if one is deliberately tracked its dirty state is still reported.
+  const unpromoted = [...paths].filter((entry) => !tracked.has(entry) && !generated.has(entry)).sort();
   const trackedDirty = unique([
     ...gitPaths(root, ['diff', '--name-only', '-z', '--']),
     ...gitPaths(root, ['diff', '--cached', '--name-only', '-z', '--']),

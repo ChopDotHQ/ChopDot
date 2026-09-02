@@ -672,15 +672,37 @@ test('surfaces untracked steering files as unpromoted and blocks when promotion 
   assert.ok(result.drifts.includes('1 steering surfaces are untracked/unpromoted'));
 });
 
-test('requires generated catalog and health outputs to be promoted with their sources', (t) => {
+test('strict promotion requires steering sources but never generated outputs', (t) => {
+  // The exact path the local suite missed: --require-promoted is what the pre-push
+  // hook runs, and generated outputs are derived and untracked by design. Requiring
+  // them to be committed failed every clean checkout.
   const root = makeFixture(t);
+
+  // 1. Outputs absent entirely.
+  let result = monitor(root, baseRegistry(), { requirePromoted: true });
+  assert.deepEqual(result.worktree.unpromoted, [], 'absent generated outputs must not be unpromoted');
+  assert.equal(result.drifts.some((entry) => /untracked\/unpromoted/u.test(entry)), false);
+
+  // 2. Outputs present on disk but untracked.
   syncGenerated(root);
+  result = monitor(root, baseRegistry(), { requirePromoted: true });
+  for (const relative of [CATALOG_PATH, HEALTH_PATH]) {
+    assert.equal(
+      result.worktree.unpromoted.includes(relative),
+      false,
+      `${relative} is derived and must never be required to be promoted`,
+    );
+  }
+  assert.equal(result.drifts.some((entry) => /untracked\/unpromoted/u.test(entry)), false);
 
-  const result = monitor(root, baseRegistry(), { requirePromoted: true });
-
+  // 3. A steering SOURCE that is untracked is still required.
+  write(root, 'controlled/new-instruction.md', '# Undeclared but controlled\n');
+  result = monitor(root, baseRegistry(), { requirePromoted: true });
   assert.equal(result.verdict, 'blocked');
-  assert.deepEqual(result.worktree.unpromoted, [HEALTH_PATH, CATALOG_PATH].sort());
-  assert.ok(result.drifts.includes('2 steering surfaces are untracked/unpromoted'));
+  assert.ok(
+    result.worktree.unpromoted.includes('controlled/new-instruction.md'),
+    `steering sources must still be required; unpromoted was ${JSON.stringify(result.worktree.unpromoted)}`,
+  );
 });
 
 test('ignores an ordinary non-steering file outside controlled roots', (t) => {
