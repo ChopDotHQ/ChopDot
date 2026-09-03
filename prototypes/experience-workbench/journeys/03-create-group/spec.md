@@ -1,8 +1,8 @@
 # Journey 03 — Create a Group
 
 **Priority:** P0  
-**Status:** V2 Golden Candidate / Review pending  
-**Production:** Existing screen; needs UX simplification
+**Status:** Design Approved / Golden Journey #2  
+**Prototype:** V2  
 
 ## User goal
 Create a shared expense space with the minimum necessary decisions.
@@ -11,62 +11,38 @@ Create a shared expense space with the minimum necessary decisions.
 Home → **Start a group**
 
 ## Success exit
-New group state with obvious next actions:
+New group state with two obvious next actions:
 - invite people → Journey 04
 - add first expense → Journey 05
 
-## Production mapping
-- `src/components/screens/CreatePot.tsx`
-- `src/routing/screen-props/misc-screens.tsx`
-- `src/hooks/useBusinessActions.ts`
-
-The underlying create service can likely remain. The UX layer is what needs simplification.
-
-## Current production complexity
-The production Create Pot screen currently asks for type, name, currency, cash/bank behavior, members, optional wallet addresses, invite handling, and savings-specific goal information.
-
-## Approved direction carried into V2
-- Core expense-group creation should feel almost instant.
-- Group name is the only required conceptual decision.
-- Currency is visible and preselected, not hidden.
-- People are invited after the group exists.
-- Wallet addresses are not part of creation.
-- Savings is a separate journey.
-- Success is a full state with obvious next actions, not toast-only feedback.
-
-## V1
-The initial V1 proved the basic path:
-
-`Home → Start group → Name → Currency → Create → Invite people / Add expense`
-
-It also proved that review artifacts should use normal HTML links rather than JavaScript-only navigation because the ChatGPT/iOS preview did not reliably execute the earlier JS interactions.
-
-V1 is retained as historical exploration only. It predates the Golden inheritance rules.
-
-## V2 Golden Candidate
-
-Current file:
-
+## Golden source
 `v2-golden-candidate.html`
 
-V2 was rebuilt from Journey 02 Home V1.4 rather than from the old Create Pot screen.
+The filename remains historical; V2 is now the approved Golden reference.
 
-### Inherited system
+## Approved experience
+- Start with the group name.
+- Currency is visible and preselected.
+- People are invited after creation.
+- Wallet addresses do not belong in creation.
+- Savings is a separate journey.
+- Success is an explicit state, not toast-only feedback.
+- Copy stays short and action-led.
+
+## Core path
+`Start a group → Currency → Create group → Group created → Invite people / Add expense`
+
+## Inherited system
 - locked viewport frame
 - fixed header
 - scrollable center content
 - fixed action footer
 - Golden background/surface/border/shadow/radius language
 - Lucide-style SVG icon language
-- short, action-led copy
-- no Unicode icon placeholders
+- no Unicode/emoji placeholders
 - no floating controls over content
 
-### Primary path
-
-`Start a group → Currency → Create group → Group created → Invite people / Add expense`
-
-### V2 copy
+## Golden copy
 Entry:
 - `Start a group.`
 - `Name it. Pick a currency.`
@@ -76,46 +52,34 @@ Success:
 - `Geneva Weekend is ready.`
 - `Invite people or add an expense.`
 
-### Edge states designed
-- create failure with details preserved
+## Edge states included in the prototype
+- create failure
 - offline/local-save proposal
-- alternate currency states
+- alternate currencies
 - savings handoff kept separate
 
-### QA
-Visual QA file:
-
+## QA
+Visual QA:
 `visual-qa/README.md`
 
-Rendered and reviewed at:
+Reviewed at:
 - 393 × 852
 - 430 × 890
 
-Automated checks passed:
+Checks passed:
 - zero horizontal overflow
 - no header/content/footer overlap
-- all 37 internal links resolve
+- all internal links resolve
 - core click path completes
-- EUR/USD choices remain currency-correct
+- alternate currency states remain currency-correct
 - no placeholder glyph icons
 
-## Open product questions
+## Prototype truth
+Journey 03 is now frozen as **Golden Journey #2 / Design Approved**.
 
-### CHF support
-V2 uses CHF as product truth, consistent with the Swiss use case and Golden Home examples. Current production `CreatePot.tsx` does not include CHF in its visible currency options. Do not silently resolve this during implementation; reconcile it deliberately.
+Later journeys may expose a genuine weakness. If that happens, mark Journey 03 **Needs revisit** and create a deliberate new Golden version; do not casually rewrite V2.
 
-### Offline creation
-V2 proposes:
-
-`Offline. Save now. Sync later.`
-
-This is a product proposal consistent with the local-first direction, but implementation feasibility/state semantics must be validated against the actual data layer before production work.
-
-## Approval rule
-V2 is **not Design Approved yet**. It is a Golden Candidate awaiting user review.
-
-If approved:
-1. mark Journey 03 Design Approved;
-2. add it as Golden Journey #2;
-3. update the current state checkpoint;
-4. then begin Journey 04 Invite / Join using Home V1.4 + Create Group V2 as inherited references.
+## Next
+Journey 04 — Invite / Join inherits from:
+1. Home V1.4
+2. Create Group V2
