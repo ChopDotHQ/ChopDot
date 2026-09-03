@@ -848,7 +848,7 @@ test('production registry controls agent instruction surfaces and ignores ordina
     'docs/CHOPDOT_LOOP_RUNNER.md',
     'docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json',
     'docs/superpowers/plans/2026-08-26-portable-agent-outcome-system.md',
-    'plans/2026-07-14-dot-host-browser-polish.md',
+    'docs/statement-store-bulletin-split.md',
     'proof/host-matrix.json',
     'product/cards.md',
   ]) {
