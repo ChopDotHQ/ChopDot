@@ -38,31 +38,23 @@ Source:
 - explicit success state
 - fixed header + fixed action footer
 
-## Golden Candidate #3 — Invite / Join
+## Golden Journey #3 — Invite / Join
 
-**Status:** Review pending  
+**Status:** Design Approved  
 **Version:** V1
 
 Source:
 `journeys/04-invite-join/v1-golden-candidate.html`
 
-Visual QA:
-`journeys/04-invite-join/visual-qa/README.md`
-
-### Inviter path
-`Invite people → Share link / Add someone → Pending/sent → Open group`
-
-### Joiner path
-`Open invite → Understand group + inviter → Join / Not now → Joined → Open group`
-
-### Candidate decisions
+### Establishes
 - invite people as people, not wallets
-- no blockchain terminology
-- share link and direct-add are both simple entry paths
-- pre-join context is limited to group name, inviter, people count, and currency
+- no blockchain terminology in Invite / Join
+- simple share-link and direct-add paths
+- pre-join context limited to group-level information
 - expense details/balances remain private until join
-- pending invites remain visible to the inviter
-- join success hands off to Journey 08 Group Home
+- explicit `Join group` / `Not now` exits
+- pending invites remain visible
+- successful join hands off to Group Home
 
 ### QA
 - rendered at 393 × 852 and 430 × 890
@@ -73,7 +65,47 @@ Visual QA:
 - no placeholder glyph icons
 - expired / already joined / offline states included
 
-If approved, promote Journey 04 to **Golden Journey #3 / Design Approved** and begin Journey 08 — Group Home.
+## Golden Candidate #4 — Group Home
+
+**Status:** Review pending  
+**Version:** V1
+
+Source:
+`journeys/08-group-home/v1-golden-candidate.html`
+
+Visual QA:
+`journeys/08-group-home/visual-qa/README.md`
+
+### Core hierarchy
+`Group identity → Attention → Your position → Recent activity → People / Settle`
+
+### Candidate decisions
+- Group Home is overview-first, not tab-first.
+- Attention is first when the group needs the user.
+- User position outranks dense accounting metrics.
+- Total group spend stays visible as context, not the hero.
+- Recent expenses answer “what happened?” without becoming the full ledger.
+- People and Settle are compact secondary handoffs.
+- Bottom navigation remains global ChopDot navigation.
+- Add Expense stays available from the inherited center action except while settlement locks expense changes.
+
+### Designed states
+- active / needs review
+- nothing needs you
+- new / empty group
+- settlement in progress
+- everyone square
+- offline / saved data
+
+### QA
+- rendered at 393 × 852 and 430 × 890
+- 96 internal hash links resolve
+- zero horizontal overflow
+- zero header/content/footer overlap
+- no placeholder glyph icons
+- semantic exit pass completed for Back, global tabs, and `See all`
+
+If approved, promote Journey 08 to **Golden Journey #4 / Design Approved** and begin Journey 05 — Add Expense.
 
 ## Golden rule
 A new journey may add necessary content and patterns, but should not casually redefine frame, spacing rhythm, icon language, typography hierarchy, financial color semantics, card language, or navigation behavior.
@@ -83,12 +115,13 @@ If a later journey reveals a genuine weakness, mark the affected Golden referenc
 ## Current Golden set
 - Home / Orientation — Golden V1.4
 - Create Group — Golden V2
+- Invite / Join — Golden V1
 
 ## Current candidate
-- Invite / Join — V1 Golden Candidate
+- Group Home — V1 Golden Candidate
 
 ## Next after approval
-- Group Home — Journey 08
+- Add Expense — Journey 05
 
 ## Golden Patterns
 Started:
@@ -102,13 +135,16 @@ Started:
 - Invite Card
 - Member Row
 - Invite Status
+- Group Summary
+- Group Position
+- Recent Expense Row
+- Settlement Progress State
 
 Likely next:
-- Group Summary
-- Expense Row
-- Group Attention State
+- Add Expense Amount Entry
+- Split Selector
+- Payer Selector
+- Expense Review State
 - Wallet Strip
 - Overall Position
-- Empty State
-- Bottom Navigation
 - Bottom Sheet
