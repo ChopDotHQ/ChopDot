@@ -4,6 +4,9 @@ Golden Screens are the visual/product references used to prevent design drift.
 
 ## Golden Screen #1 — Home / Orientation
 
+**Status:** Design Approved  
+**Version:** V1.4
+
 Current source:
 `journeys/02-home-orientation/v1.4-inherited-icons.html`
 
@@ -25,7 +28,7 @@ Visual QA reference viewports:
 - header remains visible
 - bottom navigation remains visible
 - only center content scrolls
-- no unpredictable controls covering content
+- no controls unpredictably cover content
 - safe-area aware
 
 **Visual character**
@@ -48,15 +51,53 @@ Visual QA reference viewports:
 - currentColor line icons
 - no Unicode/emoji placeholder icons
 
+## Golden Candidate #2 — Create a Group
+
+**Status:** Review pending  
+**Version:** V2
+
+Candidate source:
+`journeys/03-create-group/v2-golden-candidate.html`
+
+Visual QA:
+`journeys/03-create-group/visual-qa/README.md`
+
+### What V2 inherits
+- Golden Home viewport frame
+- fixed header + fixed action footer
+- center-only scrolling
+- same background/surface/border/shadow/radius family
+- same Lucide-style icon language
+- short, direct copy
+- no placeholder glyphs
+- clear journey exits rather than feature sprawl
+
+### Core path
+`Start a group → Currency → Create group → Invite people / Add expense`
+
+### Candidate product decisions
+- group name is the only required conceptual input
+- currency remains visible and preselected
+- inviting people happens after creation
+- wallet addresses do not belong in creation
+- savings remains a separate journey
+- success is an explicit state, not toast-only feedback
+
+### Open before implementation
+- reconcile CHF support with current production currency options
+- validate offline creation semantics against the data layer
+
+If the user approves V2, promote it to **Golden Journey #2 / Design Approved** before starting Journey 04.
+
 ## Golden Screen rule
 
-A new journey may add new content and necessary patterns, but should not casually redefine frame, spacing rhythm, icon language, typography hierarchy, financial color semantics, card language, or navigation behavior.
+A new journey may add necessary content and patterns, but should not casually redefine frame, spacing rhythm, icon language, typography hierarchy, financial color semantics, card language, or navigation behavior.
 
 If a later journey reveals a real weakness, mark the affected decision **Needs revisit** and create a new Golden version deliberately.
 
 ## Planned Golden Screens
-- Home / Orientation — V1.4 current
-- Create Group — next candidate
+- Home / Orientation — Golden V1.4
+- Create Group — V2 Golden Candidate
 - Group Home
 - Add Expense
 - Expense Detail / Review
@@ -73,14 +114,15 @@ Started:
 - Group Card
 - Completion State
 - Iconography
+- Locked App Frame
+- Currency Picker
+- Error / Recovery State
 
 Likely next:
 - Wallet Strip
 - Overall Position
 - Empty State
-- Error / Recovery State
 - Member Row
 - Expense Row
 - Bottom Navigation
 - Bottom Sheet
-- Currency Picker
