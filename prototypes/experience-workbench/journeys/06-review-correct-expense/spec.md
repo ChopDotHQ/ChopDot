@@ -1,29 +1,30 @@
 # Journey 06 — Review / Correct an Expense
 
 **Priority:** P0  
-**Status:** V1 Golden Candidate / Review pending  
-**Prototype:** `v1-golden-candidate.html`
+**Status:** Design Approved / Golden Journey #6  
+**Version:** V1.1  
+**Prototype:** `v1.1-golden.html`
 
 ## User goal
+
 Open an existing expense, understand it immediately, and correct it when permitted.
 
-## Entry
-- Group Home → expense row
-- Activity → expense
-- Attention → expense
-- Add Expense success → view expense
-
 ## Core paths
+
 Owner:
+
 `Expense detail → Edit → Save changes → Updated expense`
 
 Other member:
+
 `Expense detail → Review expense → Journey 07`
 
 Delete:
+
 `Expense detail → More → Delete → Balances updated → Group Home`
 
 ## Information hierarchy
+
 1. Total amount
 2. Expense name
 3. Review/change status
@@ -32,7 +33,8 @@ Delete:
 6. Receipt and history
 7. Contextual actions
 
-## Candidate decisions
+## Approved decisions
+
 - Detail is readable before it is editable.
 - Edit Expense reuses Journey 05 fields and controls with values prefilled.
 - The user's personal share remains visible near the top.
@@ -42,39 +44,28 @@ Delete:
 - Delete is a separate confirmation state and explains the balance impact.
 - Important changes show what changed.
 - History and receipt are available without dominating the first screen.
-- Journey 06 owns detail, edit, delete, and history.
-- Journey 07 owns confirm, question, and dispute.
+- Journey 06 owns detail, edit, delete, receipt, history, permissions, and recovery.
+- Journey 07 owns review, agreement, questions, and issues.
 
-## States
-Core:
-- own expense
-- someone else's expense
-- fully reviewed
-- changed since review
-- updated expense
+## Visual correction in V1.1
 
-Supporting:
-- full split
-- receipt viewer
-- expense history
-- change comparison
+The sync-conflict state initially had missing semantic icon treatment. V1.1 restores:
 
-Control:
-- edit
-- delete confirmation
-- deleted
-- settlement lock
-- no edit permission
+- compare icon in the conflict heading;
+- person icon for the remote version;
+- device icon for the locally saved version;
+- compare/check icons in the footer actions.
 
-Recovery:
-- offline detail/edit/save
-- failed save with edits preserved
-- sync conflict
-- loading
-- not found
+## QA
 
-## Approval rule
-If approved:
-1. freeze as Golden Journey #6;
-2. promote Expense Detail, Change Status, Expense History, and Delete Confirmation patterns;
-3. begin Journey 07 — Confirm / Agree / Dispute.
+- 31 explicit states
+- 128/128 links resolve
+- 393 × 852 and 430 × 890
+- zero horizontal overflow
+- zero header/content/footer overlap
+- no placeholder icons
+- visual comparison against the Golden set completed
+
+## Next
+
+Journey 07 — Review / Agree / Raise an Issue.
