@@ -1,0 +1,33 @@
+{
+  "checkpoint": "2026-09-03-j05-approved",
+  "branch": "ux/experience-workbench",
+  "golden": {
+    "02": {"name": "Home / Orientation", "version": "v1.4", "status": "Design Approved"},
+    "03": {"name": "Create a Group", "version": "v2", "status": "Design Approved"},
+    "04": {"name": "Invite / Join a Group", "version": "v1", "status": "Design Approved"},
+    "08": {"name": "Group Home", "version": "v1", "status": "Design Approved"},
+    "05": {
+      "name": "Add an Expense",
+      "version": "v1",
+      "status": "Design Approved",
+      "file": "journeys/05-add-expense/v1-golden.html",
+      "qa": "journeys/05-add-expense/visual-qa/README.md",
+      "checks": {
+        "states": 27,
+        "internal_links": "98/98",
+        "horizontal_overflow": "pass",
+        "frame_overlap": "pass",
+        "icon_placeholders": "pass",
+        "golden_visual_comparison": "pass"
+      }
+    }
+  },
+  "promoted_patterns": [
+    "Amount Entry",
+    "Payer Selector",
+    "Participants and Split",
+    "Expense Success",
+    "Expense Recovery"
+  ],
+  "next_action": "Build Journey 06 Review / Correct Expense using Journey 05 fields and controls as inherited patterns."
+}
