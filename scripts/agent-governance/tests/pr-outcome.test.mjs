@@ -432,7 +432,6 @@ function exemptionInputs(value, overrides = {}) {
 const batchAShapedPaths = [
   'plans/2026-07-14-dot-host-browser-polish.md',
   'docs/superpowers/plans/2026-08-27-product-prioritization-repair.md',
-  'scripts/agent-governance/tests/steering-surfaces.test.mjs',
 ];
 
 test('a deterministic exemption concludes successfully without a run ID or an outcome packet', async () => {
@@ -499,6 +498,8 @@ test('a deterministic exemption is bound to the real candidate scope and fails c
     'workflow': ['.github/workflows/agent-governance.yml'],
     'governance runtime': ['scripts/agent-governance/validate-pr.mjs'],
     'governance policy': ['governance/agent-system/policies/evidence-levels.json'],
+    'governance test (the enforcement layer)': ['scripts/agent-governance/tests/steering-surfaces.test.mjs'],
+    'governance test alongside eligible documentation': [...batchAShapedPaths, 'scripts/agent-governance/tests/pr-outcome.test.mjs'],
     'runtime manifest': ['package.json'],
     'product law': ['PRODUCT_TRUTH.md'],
     'authority record': ['product/context-authority.json'],
@@ -508,7 +509,7 @@ test('a deterministic exemption is bound to the real candidate scope and fails c
     const value = fixture({ candidatePaths });
     await assert.rejects(
       generatePrOutcome(exemptionInputs(value)),
-      /Deterministic exemption is limited to plan documents and governance tests/,
+      /Deterministic exemption is limited to plan documents/,
       label,
     );
   }
@@ -532,6 +533,15 @@ test('the exemption path allowlist rejects anything it does not name', () => {
     exemptionIneligiblePaths(['plans/nested/deep.md', 'docs/other/plans/x.md', 'scripts/agent-governance/validate-workflow.mjs']),
     ['plans/nested/deep.md', 'docs/other/plans/x.md', 'scripts/agent-governance/validate-workflow.mjs'],
   );
-  // Non-test files under the governance test directory are not eligible either.
-  assert.deepEqual(exemptionIneligiblePaths(['scripts/agent-governance/tests/helper.mjs']), ['scripts/agent-governance/tests/helper.mjs']);
+  // The enforcement layer is never inside the exemption: no path under the governance
+  // test directory is eligible, on its own or beside eligible documentation.
+  for (const candidate of [
+    'scripts/agent-governance/tests/steering-surfaces.test.mjs',
+    'scripts/agent-governance/tests/pr-outcome.test.mjs',
+    'scripts/agent-governance/tests/helper.mjs',
+    'scripts/agent-system/tests/core-contract.test.mjs',
+  ]) {
+    assert.deepEqual(exemptionIneligiblePaths([candidate]), [candidate], candidate);
+    assert.deepEqual(exemptionIneligiblePaths([...batchAShapedPaths, candidate]), [candidate], candidate);
+  }
 });

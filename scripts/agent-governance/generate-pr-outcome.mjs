@@ -45,12 +45,14 @@ export const DETERMINISTIC_EXEMPTION_PROFILE = 'deterministic exemption';
 // governance scripts, package and runtime manifests, product law, governance policy,
 // and every authority, security, or release control.
 //
-// It is deliberately scoped to plan documents and governance test files rather than
-// generalised. Widening it is a governance decision, not a refactor.
+// It is deliberately scoped to plan documents rather than generalised. Governance
+// tests are excluded on purpose: they are the enforcement layer for steering digests,
+// promotion rules, and false-green controls, so a change that weakens enforcement must
+// never be able to skip the acceptance path built to catch it. Widening this list is a
+// governance decision, not a refactor.
 const EXEMPTION_ELIGIBLE_PATHS = [
   /^plans\/[^/]+\.md$/u,
   /^docs\/superpowers\/plans\/[^/]+\.md$/u,
-  /^scripts\/agent-governance\/tests\/[^/]+\.test\.mjs$/u,
 ];
 
 export function exemptionIneligiblePaths(changedPaths) {
@@ -176,7 +178,7 @@ function deterministicExemptionOutcome({
   if (!changedPaths.length) throw new Error('Deterministic exemption requires a non-empty candidate range');
   const ineligible = exemptionIneligiblePaths(changedPaths);
   if (ineligible.length) {
-    throw new Error(`Deterministic exemption is limited to plan documents and governance tests; ineligible paths: ${ineligible.join(', ')}`);
+    throw new Error(`Deterministic exemption is limited to plan documents; ineligible paths: ${ineligible.join(', ')}`);
   }
   if (!catalog || !evidencePolicy) throw new Error('Deterministic exemption requires the invariant catalog and evidence policy');
   const validation = validatePullRequestBody({
