@@ -24,8 +24,9 @@ This work belongs on `ux/experience-workbench`.
 
 - Journey 02 — Home / Orientation: **Golden Screen #1 / Design Approved / V1.4.**
 - Journey 03 — Create a Group: **Golden Journey #2 / Design Approved / V2.**
-- Journey 04 — Invite / Join: **V1 Golden Candidate built, rendered, QA-tested, awaiting user approval.**
-- Journey 08 — Group Home: **next only after Journey 04 approval.**
+- Journey 04 — Invite / Join: **Golden Journey #3 / Design Approved / V1.**
+- Journey 08 — Group Home: **V1 Golden Candidate built, rendered, QA-tested, awaiting user approval.**
+- Journey 05 — Add Expense: **next only after Journey 08 approval.**
 
 ## Current references
 
@@ -38,23 +39,37 @@ This work belongs on `ux/experience-workbench`.
 ### Journey 04 — Invite / Join
 `journeys/04-invite-join/v1-golden-candidate.html`
 
-Journey 04 QA:
-`journeys/04-invite-join/visual-qa/README.md`
+### Journey 08 — Group Home
+`journeys/08-group-home/v1-golden-candidate.html`
 
-## Journey 04 prototype truth
+Journey 08 QA:
+`journeys/08-group-home/visual-qa/README.md`
 
-Inviter:
-`Invite people → Share link / Add someone → Pending/sent → Open group`
+## Journey 08 candidate truth
 
-Joiner:
-`Open invite → Understand group + inviter → Join / Not now → Joined → Open group`
+Group Home answers four questions first:
+1. What happened?
+2. What needs me?
+3. Where do I stand?
+4. What can I do next?
 
-Prototype rules:
-- no wallet addresses
-- no blockchain terminology
-- invitee sees group-level context only before joining
-- expenses/balances stay private until join
-- expired / already joined / offline states are explicit
+Hierarchy:
+`Group identity → Attention → Your position → Recent activity → People / Settle`
+
+Designed states:
+- active / needs review
+- nothing needs you
+- new / empty group
+- settlement in progress
+- everyone square
+- offline / saved data
+
+Core product direction:
+- overview-first, not tab-first
+- user position outranks dense accounting metrics
+- recent activity is contextual, not the full ledger
+- detailed Expenses / People / Settings remain downstream handoffs
+- global ChopDot bottom navigation remains inherited
 
 ## Non-negotiable principle
 
