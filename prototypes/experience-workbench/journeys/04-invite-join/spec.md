@@ -1,7 +1,7 @@
 # Journey 04 — Invite / Join a Group
 
 **Priority:** P0  
-**Status:** V1 Golden Candidate / Review pending  
+**Status:** Design Approved / Golden Journey #3  
 **Prototype:** `v1-golden-candidate.html`
 
 ## User goal
@@ -19,7 +19,7 @@ Bring people into a shared group, or understand and accept an invitation without
 1. Home V1.4 — Golden Screen #1
 2. Create Group V2 — Golden Journey #2
 
-## Prototype decisions
+## Approved prototype decisions
 - Invite people as people, not as wallet addresses.
 - No blockchain terminology in the invite flow.
 - Inviter gets two simple paths: share a group link or add someone directly.
@@ -75,10 +75,7 @@ Checks passed:
 - inviter and joiner happy paths complete
 - expired / already joined / offline states exist
 
-## Approval rule
-V1 is a Golden Candidate. User approval is required before it becomes Golden Journey #3.
+## Approval
+Approved by the user on 2026-09-03 and frozen as **Golden Journey #3**.
 
-If approved:
-1. freeze Journey 04 as Design Approved;
-2. update Golden registry/checkpoint;
-3. continue to Journey 08 — Group Home.
+Next: Journey 08 — Group Home.
