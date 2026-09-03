@@ -1,0 +1,38 @@
+{
+  "checkpoint": "2026-09-03-j08-v1",
+  "branch": "ux/experience-workbench",
+  "golden": {
+    "02": {"name": "Home / Orientation", "version": "v1.4", "status": "Design Approved"},
+    "03": {"name": "Create a Group", "version": "v2", "status": "Design Approved"},
+    "04": {"name": "Invite / Join a Group", "version": "v1", "status": "Design Approved"}
+  },
+  "candidate": {
+    "08": {
+      "name": "Group Home",
+      "version": "v1",
+      "status": "Golden Candidate — review pending",
+      "file": "journeys/08-group-home/v1-golden-candidate.html",
+      "qa": "journeys/08-group-home/visual-qa/README.md",
+      "rendered_viewports": ["393x852", "430x890"],
+      "states": ["active", "waiting", "empty", "settling", "square", "offline"],
+      "checks": {
+        "internal_links": "96/96",
+        "horizontal_overflow": "pass",
+        "frame_overlap": "pass",
+        "icon_placeholders": "pass",
+        "semantic_exits": "pass"
+      }
+    }
+  },
+  "prototype_decisions": [
+    "Group Home is overview-first, not tab-first.",
+    "Attention leads when the group needs the user.",
+    "User position outranks dense accounting metrics.",
+    "Total group spend stays contextual.",
+    "Recent activity is visible without becoming the full ledger.",
+    "People and Settle are compact handoffs.",
+    "Global bottom navigation remains inherited.",
+    "Add Expense is unavailable while settlement locks expense changes."
+  ],
+  "next_action": "User reviews Group Home V1. If approved, freeze as Golden Journey #4 and begin Journey 05 Add Expense."
+}
