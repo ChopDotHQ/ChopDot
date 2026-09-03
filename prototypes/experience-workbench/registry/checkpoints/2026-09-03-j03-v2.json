@@ -1,0 +1,49 @@
+{
+  "checkpoint": "2026-09-03-j03-v2",
+  "branch": "ux/experience-workbench",
+  "golden": {
+    "02": {
+      "name": "Home / Orientation",
+      "version": "v1.4",
+      "status": "Design Approved",
+      "file": "journeys/02-home-orientation/v1.4-inherited-icons.html",
+      "production_verified": false
+    }
+  },
+  "candidates": {
+    "03": {
+      "name": "Create a Group",
+      "version": "v2",
+      "status": "Golden Candidate — review pending",
+      "file": "journeys/03-create-group/v2-golden-candidate.html",
+      "qa": "journeys/03-create-group/visual-qa/README.md",
+      "rendered_viewports": ["393x852", "430x890"],
+      "checks": {
+        "horizontal_overflow": "pass",
+        "frame_overlap": "pass",
+        "internal_links": "37/37",
+        "icon_placeholders": "pass",
+        "currency_variants": "pass",
+        "core_path": "pass"
+      }
+    }
+  },
+  "open_questions": [
+    {
+      "id": "J03-CURRENCY-CHF",
+      "status": "open",
+      "summary": "Prototype uses CHF; current production CreatePot currency options omit CHF. Reconcile deliberately before implementation."
+    },
+    {
+      "id": "J03-OFFLINE-CREATE",
+      "status": "open",
+      "summary": "Validate the proposed Save now / Sync later behavior against the actual data/service layer."
+    },
+    {
+      "id": "J03-SAVINGS-SEPARATION",
+      "status": "approved-direction",
+      "summary": "Savings remains Journey 16 and does not complicate core expense-group creation."
+    }
+  ],
+  "next_action": "User reviews Journey 03 V2. If approved, freeze it as Golden Journey #2, update status to Design Approved, then begin Journey 04 Invite / Join."
+}
