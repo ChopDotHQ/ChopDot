@@ -12,30 +12,42 @@ This work belongs on `ux/experience-workbench`.
 
 ## Read in this order
 
-1. `SESSION_HANDOFF_2026-09-03.md` — what happened in the originating design thread and where to resume.
-2. `journey-map.html` — all 28 journeys and current status.
-3. `WORKFLOW.md` — the quality/consistency process every journey must follow.
-4. `GOLDEN_SCREENS.md` — approved visual references and inheritance rules.
-5. `registry/state-snapshot.json` — journey, feature, edge-case, decision, and icon state at this checkpoint.
-6. `patterns/DESIGN_INHERITANCE.md` — frame, tokens, components, copy, and icon inheritance contract.
-7. `docs/implementation-map.md` — prototype → production mapping.
-8. `docs/dead-ends-and-gaps.md` — orphan, stale, duplicate, and dead-end controls.
+1. `SESSION_HANDOFF_2026-09-03.md` — originating design-thread history and decisions.
+2. `registry/checkpoints/2026-09-03-j03-v2.json` — newest compact checkpoint.
+3. `journey-map.html` — all 28 journeys and current status.
+4. `WORKFLOW.md` — quality/consistency process every journey must follow.
+5. `GOLDEN_SCREENS.md` — approved visual references and Golden candidates.
+6. `registry/state-snapshot.json` — full earlier journey/feature/edge/decision/icon snapshot.
+7. `patterns/DESIGN_INHERITANCE.md` — frame, tokens, components, copy, and icon inheritance contract.
+8. `docs/implementation-map.md` — prototype → production mapping.
+9. `docs/dead-ends-and-gaps.md` — orphan, stale, duplicate, and dead-end controls.
 
 ## Current product state
 
-- Journey 02 — Home / Orientation: **Golden Screen #1 / Design Approved. V1.4 is the current reference.**
-- Journey 03 — Create a Group: **V1 prototype exists; rebuild/retest through the inherited system before approval.**
-- Journey 04 — Invite / Join: **next after Journey 03 reaches Golden quality.**
+- Journey 02 — Home / Orientation: **Golden Screen #1 / Design Approved. V1.4 is the visual reference.**
+- Journey 03 — Create a Group: **V2 Golden Candidate built, rendered, QA-tested, and awaiting user approval.**
+- Journey 04 — Invite / Join: **next only after Journey 03 is approved/frozen.**
 
-## Current Home reference
+## Current references
 
+### Journey 02 — Home
 `journeys/02-home-orientation/v1.4-inherited-icons.html`
 
-Visual QA was performed at:
+### Journey 03 — Create Group
+`journeys/03-create-group/v2-golden-candidate.html`
+
+Create Group visual QA:
+`journeys/03-create-group/visual-qa/README.md`
+
+Both Home and Create Group were reviewed at:
 - 393 × 852
 - 430 × 890
 
-The QA findings and regeneration rules are in `journeys/02-home-orientation/visual-qa/README.md`.
+## Important open questions before implementation
+
+- **CHF:** Create Group V2 uses CHF as product truth, while the current production CreatePot screen does not visibly offer CHF. Reconcile deliberately.
+- **Offline creation:** V2 proposes `Offline. Save now. Sync later.` Validate against the actual data/service layer before implementation.
+- **Savings:** keep separate from core shared-expense creation.
 
 ## Non-negotiable principle
 
