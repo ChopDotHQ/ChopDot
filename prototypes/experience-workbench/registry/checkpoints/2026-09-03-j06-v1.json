@@ -1,0 +1,35 @@
+{
+  "checkpoint": "2026-09-03-j06-v1",
+  "branch": "ux/experience-workbench",
+  "golden": {
+    "02": {"name": "Home / Orientation", "version": "v1.4", "status": "Design Approved"},
+    "03": {"name": "Create a Group", "version": "v2", "status": "Design Approved"},
+    "04": {"name": "Invite / Join", "version": "v1", "status": "Design Approved"},
+    "08": {"name": "Group Home", "version": "v1", "status": "Design Approved"},
+    "05": {"name": "Add an Expense", "version": "v1", "status": "Design Approved"}
+  },
+  "candidate": {
+    "06": {
+      "name": "Review / Correct an Expense",
+      "version": "v1",
+      "status": "Golden Candidate — review pending",
+      "file": "journeys/06-review-correct-expense/v1-golden-candidate.html",
+      "qa": "journeys/06-review-correct-expense/visual-qa/README.md",
+      "structured_source": "journeys/06-review-correct-expense/source/",
+      "checks": {
+        "states": 31,
+        "internal_links": "128/128",
+        "representative_renders": 44,
+        "horizontal_overflow": "pass",
+        "frame_overlap": "pass",
+        "icon_placeholders": "pass",
+        "golden_visual_comparison": "pass"
+      }
+    }
+  },
+  "boundary": {
+    "journey_06": "understand, edit, delete, receipt, history",
+    "journey_07": "confirm, question, dispute"
+  },
+  "next_action": "User reviews Journey 06 V1. If approved, freeze as Golden #6 and begin Journey 07 Confirm / Agree / Dispute."
+}
