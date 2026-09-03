@@ -1,76 +1,71 @@
 # ChopDot Experience Workbench — Start Here
 
-This folder is the durable product/UX continuity layer for the ChopDot redesign. It exists so work can continue across ChatGPT, Codex, teammates, and future threads without depending on chat history.
+This folder is the durable prototype and UX continuity layer for ChopDot.
 
 ## Branch safety
 
-This work belongs on `ux/experience-workbench`.
-
-- `main` is production/implementation truth and must not be changed by prototype work.
-- This folder is product/design truth in progress.
-- Nothing here is production implementation until a journey is explicitly marked **Implemented** and later **Production Verified**.
+All work here belongs on `ux/experience-workbench`.
+`main` remains untouched by prototype work.
 
 ## Read in this order
 
-1. `SESSION_HANDOFF_2026-09-03.md`
-2. newest file in `registry/checkpoints/`
-3. `journey-map.html`
+1. newest file in `registry/checkpoints/`
+2. `journey-map.html`
+3. `GOLDEN_SCREENS.md`
 4. `WORKFLOW.md`
-5. `GOLDEN_SCREENS.md`
+5. current journey spec and visual QA
 6. `patterns/DESIGN_INHERITANCE.md`
-7. `docs/dead-ends-and-gaps.md`
 
-## Current product state
+## Current Golden set
 
-- Journey 02 — Home / Orientation: **Golden Screen #1 / Design Approved / V1.4.**
-- Journey 03 — Create a Group: **Golden Journey #2 / Design Approved / V2.**
-- Journey 04 — Invite / Join: **Golden Journey #3 / Design Approved / V1.**
-- Journey 08 — Group Home: **V1 Golden Candidate built, rendered, QA-tested, awaiting user approval.**
-- Journey 05 — Add Expense: **next only after Journey 08 approval.**
+- Journey 02 — Home / Orientation: **Golden #1 / V1.4**
+- Journey 03 — Create a Group: **Golden #2 / V2**
+- Journey 04 — Invite / Join: **Golden #3 / V1**
+- Journey 08 — Group Home: **Golden #4 / V1**
+- Journey 05 — Add an Expense: **Golden #5 / V1**
 
-## Current references
+## Current review
 
-### Journey 02 — Home
-`journeys/02-home-orientation/v1.4-inherited-icons.html`
+Journey 06 — Review / Correct an Expense: **V1 Golden Candidate**
 
-### Journey 03 — Create Group
-`journeys/03-create-group/v2-golden-candidate.html`
+Read:
+- `journeys/06-review-correct-expense/spec.md`
+- `journeys/06-review-correct-expense/STATE_INVENTORY.md`
+- `journeys/06-review-correct-expense/visual-qa/README.md`
+- `registry/checkpoints/2026-09-03-j06-v1.json`
 
-### Journey 04 — Invite / Join
-`journeys/04-invite-join/v1-golden-candidate.html`
+## Journey boundary
 
-### Journey 08 — Group Home
-`journeys/08-group-home/v1-golden-candidate.html`
+Journey 06 owns:
+- understanding an expense
+- editing
+- split/receipt/history detail
+- deleting
+- edit permissions and recovery
 
-Journey 08 QA:
-`journeys/08-group-home/visual-qa/README.md`
+Journey 07 owns:
+- confirm
+- question
+- dispute
 
-## Journey 08 candidate truth
+## Latest quality gate
 
-Group Home answers four questions first:
-1. What happened?
-2. What needs me?
-3. Where do I stand?
-4. What can I do next?
+Journey 06:
+- 31 explicit states
+- 128/128 internal links
+- 44 representative renders
+- 393 × 852 and 430 × 890
+- no horizontal overflow
+- no header/footer overlap
+- no placeholder icons
+- compared against the Golden screens
 
-Hierarchy:
-`Group identity → Attention → Your position → Recent activity → People / Settle`
+## Next
 
-Designed states:
-- active / needs review
-- nothing needs you
-- new / empty group
-- settlement in progress
-- everyone square
-- offline / saved data
+Review Journey 06. If approved, freeze it as Golden #6 and begin Journey 07 — Confirm / Agree / Dispute.
 
-Core product direction:
-- overview-first, not tab-first
-- user position outranks dense accounting metrics
-- recent activity is contextual, not the full ledger
-- detailed Expenses / People / Settings remain downstream handoffs
-- global ChopDot bottom navigation remains inherited
+## Non-negotiable workflow
 
-## Non-negotiable principle
+**Inherit → Build → Render → Inspect → State QA → Journey QA → Approve → Freeze**
 
-Do not recreate ChopDot screen-by-screen from memory. **Inherit the system → build → render → inspect the rendered image → test states/exits → approve.**
+Do not recreate ChopDot from memory.
