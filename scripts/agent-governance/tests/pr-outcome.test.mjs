@@ -296,3 +296,181 @@ test('missing or stale browser and secrets exact-head reports fail closed', asyn
     );
   }
 });
+
+// --- deterministic exemption -------------------------------------------------
+// A deterministic-exemption PR declares that no agent loop ran. It therefore has
+// no run_id and no OutcomePacketV1, which the implementation path requires.
+
+function exemptionBody(overrides = {}) {
+  const values = {
+    base: 'a'.repeat(40),
+    head: 'CURRENT_PR_HEAD',
+    profile: 'deterministic exemption',
+    runId: 'None — deterministic exemption; no agent loop run',
+    decision: 'READY FOR INDEPENDENT VERIFY',
+    ...overrides,
+  };
+  return `## Summary
+
+This bounded documentation change removes plan files that no longer have any consumer in the repository tree.
+
+## Outcome traceability
+
+- **Exact base SHA:** \`${values.base}\`
+- **Exact head SHA:** \`${values.head}\`
+- **Change class:** documentation
+- **Agent loop profile:** ${values.profile}
+- **Run ID:** ${values.runId}
+- **OutcomePacketV1 path and digest:** \`CI_GENERATED\`
+- **Terminal state:** succeeded
+- **Requirement / assertion IDs:** NONE
+- **Affected product card IDs:** NONE
+- **Affected invariant IDs:** NONE
+- **ADRs added or updated:** NONE
+- **Investigations added or updated:** NONE
+
+## Expected outcome and artifact
+
+- **Artifact contract:** none; no artifact is produced or promoted by this change
+- **Objective expected outcome:** the named files are removed and no reference resolves to them
+- **Pass/fail assertions:** a repository-wide reference scan over every deleted path returns zero hits
+- **Required real-environment observations:** none; the change has no runtime surface
+- **Known limitations:** a textual scan cannot prove that no external system referenced these paths
+
+## Authority and effect analysis
+
+This change deletes documentation only. It does not create or alter participant, product-law, money, membership, recovery, or release authority, and it dispatches no external effect. All permissions and participant authorities remain unchanged.
+
+## Failure and recovery analysis
+
+The only failure mode is a missed consumer, which surfaces as a broken reference and is fully recovered by reverting the single commit. Cancellation, retry, and duplicate submission have no effect beyond the push itself.
+
+## Claim-to-evidence table
+
+| Requirement or assertion | Claimed outcome | Evidence level | Exact command, artifact, or readback | Literal candidate / artifact identity | Result or gap |
+|---|---|---|---|---|---|
+| No reference resolves to a deleted path | zero dangling references | exact-candidate | git grep over every deleted path | CURRENT_PR_HEAD | pass |
+
+## Independent evaluation
+
+- **Evaluator / reviewer identity:** deterministic fixture evaluator
+- **Independence from author:** deterministic-only
+- **Evaluation packet / artifact:** this exact test output
+- **Pass / fail / skip counts:** 1 / 0 / 0
+- **Hard failures:** none
+- **Repair iterations and changed hypotheses:** none
+
+## Side investigations
+
+\`None — no trigger applies\`
+
+## Provider independence and privacy
+
+- [x]
+- [x]
+- [x]
+- [x]
+- [x]
+
+## Verification
+
+${Array.from({ length: 10 }, () => '- [x]').join('\n')}
+
+## Product and release state
+
+- **Product card status:** unchanged
+- **implemented:** true
+- **tested:** true
+- **committed:** true
+- **pushed:** true
+- **candidate_built:** false
+- **staged:** false
+- **promoted:** false
+- **reachable:** false
+- **user_owned:** false
+- **user_proven:** false
+- **knowledge_verified:** false
+- **ci_enforced:** false
+- **branch_protected:** false
+
+Requested decision: ${values.decision}
+
+Why the evidence permits that decision: the deletion set is bounded and every removed path is proven to have no consumer.
+
+## Remaining risk and next bounded proof
+
+A textual reference scan cannot detect a dynamically constructed path. Next bounded proof: one hosted CI run on this exact head.
+`;
+}
+
+const catalog = JSON.parse(fs.readFileSync(path.join(repositoryRoot, 'scripts/agent-governance/catalog/invariants.v1.json')));
+const evidencePolicy = JSON.parse(fs.readFileSync(path.join(repositoryRoot, 'governance/agent-system/policies/evidence-levels.json')));
+
+function exemptionInputs(value, overrides = {}) {
+  return {
+    ...value,
+    runId: null,
+    branch: 'codex/test',
+    headBranch: 'codex/test',
+    expectedSha: value.head,
+    workflowRunId: '12345',
+    jobResults: successfulJobs,
+    loopProfile: 'deterministic exemption',
+    evaluatorIdentity: 'github-actions:pr-outcome:12345:1',
+    evaluatorSource: 'github-actions-run-and-job',
+    prSubmitterIdentity: 'fixture-submitter',
+    catalog,
+    evidencePolicy,
+    prBody: exemptionBody({ base: value.baseSha }),
+    ...overrides,
+  };
+}
+
+test('a deterministic exemption concludes successfully without a run ID or an outcome packet', async () => {
+  const value = fixture();
+  const result = await generatePrOutcome(exemptionInputs(value));
+  assert.equal(result.ok, true);
+  assert.equal(result.deterministic_exemption, true);
+  assert.equal(result.loop_profile, 'deterministic exemption');
+  assert.equal(result.result, 'deterministic exemption / no agent outcome required');
+  assert.deepEqual(result.job_results, successfulJobs);
+  assert.equal(result.pr_description_validation.ok, true);
+  // No fabricated agent run: no run_id, and none of the packet machinery on disk.
+  const record = JSON.parse(fs.readFileSync(result.output_path));
+  assert.equal(record.run_id, null);
+  assert.equal(record.candidate.commit, value.head);
+  assert.equal(fs.existsSync(path.join(value.outputDirectory, 'outcome.json')), false);
+  assert.equal(fs.existsSync(path.join(value.outputDirectory, 'acceptance-contract.json')), false);
+  assert.equal(fs.existsSync(path.join(value.outputDirectory, 'validation.md')), true);
+  assert.match(record.limitations[0], /is not an OutcomePacketV1 and proves no agent run/);
+});
+
+test('the implementation profile still requires a schema-compatible run ID', async () => {
+  const value = fixture();
+  await assert.rejects(
+    generatePrOutcome({ ...value, ...identities, runId: null, branch: 'codex/test', expectedSha: value.head, workflowRunId: '12345', jobResults: successfulJobs }),
+    /PR outcome requires a schema-compatible run_id/,
+  );
+  await assert.rejects(
+    generatePrOutcome({ ...value, ...identities, runId: 'None — deterministic exemption', branch: 'codex/test', expectedSha: value.head, workflowRunId: '12345', jobResults: successfulJobs }),
+    /PR outcome requires a schema-compatible run_id/,
+  );
+});
+
+test('an invalid deterministic exemption does not get a free pass', async () => {
+  const failingJobs = { ...successfulJobs, 'application-browser-assurance': 'failure' };
+  await assert.rejects(
+    generatePrOutcome(exemptionInputs(fixture(), { jobResults: failingJobs })),
+    /PR outcome requires same-run application-browser-assurance=success/,
+  );
+  const value = fixture();
+  await assert.rejects(
+    generatePrOutcome(exemptionInputs(value, { prBody: exemptionBody({ base: value.baseSha, runId: 'run_not_an_exemption_001' }) })),
+    /Deterministic exemption requires a valid PR description/,
+  );
+  const other = fixture();
+  await assert.rejects(
+    generatePrOutcome(exemptionInputs(other, { prBody: 'not a governed pull request description' })),
+    /Deterministic exemption requires a valid PR description/,
+  );
+});

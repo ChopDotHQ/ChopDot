@@ -623,6 +623,27 @@ test('arbitrary step conditions cannot silently skip required execution', () => 
   assert(result.errors.some((error) => error.includes('cannot be conditionally skipped')));
 });
 
+test('only the pinned deterministic-exemption condition may skip a pr-outcome step', () => {
+  // The real workflow already carries the pinned condition, so the shipped file must pass.
+  assert.equal(validateWorkflow(workflow).ok, true);
+  // A near-miss on the same job is still rejected: the allowance is one exact string.
+  const nearMiss = workflow.replaceAll(
+    "        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'",
+    "        if: steps.outcome-mode.outputs.deterministic_exemption == 'false'",
+  );
+  const nearMissResult = validateWorkflow(nearMiss);
+  assert.equal(nearMissResult.ok, false);
+  assert(nearMissResult.errors.some((error) => error.includes('cannot be conditionally skipped')));
+  // The allowance is scoped to pr-outcome; the same string elsewhere is still rejected.
+  const otherJob = workflow.replace(
+    '      - name: Test durable runner and effect controls',
+    "      - name: Test durable runner and effect controls\n        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'",
+  );
+  const otherJobResult = validateWorkflow(otherJob);
+  assert.equal(otherJobResult.ok, false);
+  assert(otherJobResult.errors.some((error) => error.includes('cannot be conditionally skipped')));
+});
+
 test('broadened workflow or job permissions are rejected', () => {
   const broken = workflow
     .replace('permissions:\n  contents: read', 'permissions:\n  contents: write\n  actions: write')

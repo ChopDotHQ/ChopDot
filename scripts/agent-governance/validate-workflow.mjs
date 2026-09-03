@@ -265,6 +265,15 @@ function executableStepCommands(step) {
   return commands;
 }
 
+// The deterministic-exemption short-circuit is the single condition the pr-outcome
+// job may use. It is pinned to one exact string in one job so that no other step can
+// become conditional, and so a reviewer can grep for every skippable step.
+const PR_OUTCOME_EXEMPTION_CONDITION = "steps.outcome-mode.outputs.deterministic_exemption != 'true'";
+
+function isPrOutcomeExemptionCondition(job, condition) {
+  return job === 'pr-outcome' && condition === PR_OUTCOME_EXEMPTION_CONDITION;
+}
+
 function shellWeakeningReason(step, invocation) {
   const source = String(step?.run ?? '');
   if (/^\s*(?:if|elif|else|fi|case|esac|while|until|for|select|function)\b/gmu.test(source)
@@ -281,7 +290,7 @@ function requireDirectInvocation(job, specification, errors) {
     return;
   }
   const step = steps[0];
-  if (step.fields.if) errors.push(`${specification.job} required command ${specification.command} cannot be conditionally skipped`);
+  if (step.fields.if && !isPrOutcomeExemptionCondition(specification.job, step.fields.if)) errors.push(`${specification.job} required command ${specification.command} cannot be conditionally skipped`);
   for (const [key, value] of Object.entries(specification.env ?? {})) {
     if (step.env?.[key] !== value) errors.push(`${specification.job} required command ${specification.command} requires ${key}: ${value}`);
   }
@@ -526,7 +535,8 @@ export function validateWorkflow(source) {
           "github.event_name == 'pull_request'",
           "github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'pr_validation')",
         ].includes(step.fields.if) && /pull-request/i.test(step.fields.name ?? '');
-        if (!allowedAlways && !allowedPullRequest) errors.push(`${id} step ${index + 1} cannot be conditionally skipped`);
+        const allowedExemption = isPrOutcomeExemptionCondition(id, step.fields.if);
+        if (!allowedAlways && !allowedPullRequest && !allowedExemption) errors.push(`${id} step ${index + 1} cannot be conditionally skipped`);
       }
     }
     for (const [index, step] of job.steps.entries()) {

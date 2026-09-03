@@ -14,6 +14,7 @@ import { writeRunnerProvenance } from '../agent-system/provenance.mjs';
 import { validateAgentContract, validateContractProfileAlignment } from '../agent-system/validate.mjs';
 import { digestObject, parseArgs, readJson, sha256File, writeReport } from './lib.mjs';
 import { buildGithubExecutionAttestation, requestGithubOidcToken } from './execution-attestation.mjs';
+import { validatePullRequestBody } from './validate-pr.mjs';
 
 const REQUIRED_REPORTS = new Map([
   ['CI-AGENT-CONTRACT', 'agent-contract-exact-head.json'],
@@ -24,6 +25,24 @@ const REQUIRED_REPORTS = new Map([
   ['CI-APPLICATION-BROWSER-ASSURANCE', 'application-browser-exact-head.json'],
   ['CI-SECRETS-SCAN', 'secrets-scan-exact-head.json'],
 ]);
+
+const REQUIRED_JOBS = [
+  'agent-contract',
+  'agent-runner',
+  'knowledge-adapters',
+  'repo-governance',
+  'application-fast-assurance',
+  'application-browser-assurance',
+  'secrets-scan',
+];
+
+export const DETERMINISTIC_EXEMPTION_PROFILE = 'deterministic exemption';
+
+// The profile is two words, so the single-token body regexes below cannot carry it.
+// Match the exact declared value instead; every other profile is left untouched.
+export function isDeterministicExemption(body) {
+  return /^- \*\*Agent loop profile:\*\*\s*`?deterministic exemption`?\s*$/mi.test(body ?? '');
+}
 
 function git(root, args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
@@ -114,11 +133,95 @@ function independenceRecord({ provenance, prSubmitterIdentity, prSubmitterSource
   };
 }
 
+function requireSuccessfulPrerequisiteJobs(jobResults) {
+  for (const job of REQUIRED_JOBS) {
+    if (jobResults[job] !== 'success') throw new Error(`PR outcome requires same-run ${job}=success; observed ${jobResults[job] ?? '(missing)'}`);
+  }
+}
+
+// A deterministic-exemption PR declares that no agent loop ran, so there is no run_id
+// and no OutcomePacketV1 to promote. The check still has to mean something, so it
+// proves the same prerequisite jobs and re-runs the description validation that the
+// repo-governance job already applied, then concludes explicitly.
+function deterministicExemptionOutcome({
+  root, outputDirectory, branch, actualHead, actualTree, baseSha,
+  workflowRunId, workflowRunAttempt, jobResults, prBody, catalog, evidencePolicy,
+  evaluatorIdentity, headBranch,
+}) {
+  if (!branch) throw new Error('PR outcome requires the pull-request head branch');
+  if (!String(workflowRunId ?? '').trim()) throw new Error('PR outcome requires a workflow run ID');
+  requireSuccessfulPrerequisiteJobs(jobResults);
+  if (!catalog || !evidencePolicy) throw new Error('Deterministic exemption requires the invariant catalog and evidence policy');
+  const validation = validatePullRequestBody({
+    body: prBody ?? '',
+    catalog,
+    evidencePolicy,
+    root,
+    baseSha,
+    headSha: actualHead,
+    headBranch: headBranch ?? branch,
+    allowCiGenerated: true,
+    requireCiGeneratedOutcome: true,
+    ciOutcomePath: null,
+  });
+  if (!validation.ok) throw new Error(`Deterministic exemption requires a valid PR description: ${validation.errors.join('; ')}`);
+  if (validation.summary?.loop_profile !== DETERMINISTIC_EXEMPTION_PROFILE) {
+    throw new Error(`Deterministic exemption requires the ${DETERMINISTIC_EXEMPTION_PROFILE} profile; observed ${validation.summary?.loop_profile ?? '(missing)'}`);
+  }
+  fs.mkdirSync(outputDirectory, { recursive: true });
+  const createdAt = new Date().toISOString();
+  const record = {
+    pr_outcome_exemption_version: '1.0.0',
+    result: 'deterministic exemption / no agent outcome required',
+    deterministic_exemption: true,
+    loop_profile: DETERMINISTIC_EXEMPTION_PROFILE,
+    run_id: null,
+    workflow_run_id: String(workflowRunId),
+    workflow_run_attempt: String(workflowRunAttempt),
+    evaluator: { id: evaluatorIdentity ?? null, kind: 'deterministic_runner', source: 'github-actions-run-and-job' },
+    candidate: { root, branch, commit: actualHead, tree: actualTree, git_status: [] },
+    pull_request_range: { base_sha: baseSha, head_sha: actualHead },
+    job_results: Object.fromEntries(REQUIRED_JOBS.map((job) => [job, jobResults[job]])),
+    pr_description_validation: { ok: true, checks: validation.checks, warnings: validation.warnings },
+    created_at: createdAt,
+    limitations: [
+      'A deterministic exemption proves the required same-run prerequisite jobs and a valid exemption description; it is not an OutcomePacketV1 and proves no agent run, human or CODEOWNER review, release, deployment, reachability, ownership, or user proof.',
+    ],
+  };
+  const outputPath = path.join(outputDirectory, 'pr-outcome-exemption.json');
+  fs.writeFileSync(outputPath, `${JSON.stringify(record, null, 2)}\n`);
+  const summaryLines = [
+    '## PR outcome: deterministic exemption',
+    '',
+    'No agent outcome is required for this candidate.',
+    '',
+    `- Candidate: \`${actualHead}\` on \`${branch}\``,
+    `- Required prerequisite jobs: ${REQUIRED_JOBS.length} succeeded`,
+    `- PR description validation: passed (${validation.checks} checks)`,
+    '',
+    record.limitations[0],
+    '',
+  ];
+  fs.writeFileSync(path.join(outputDirectory, 'validation.md'), `${summaryLines.join('\n')}\n`);
+  return {
+    ok: true,
+    deterministic_exemption: true,
+    loop_profile: DETERMINISTIC_EXEMPTION_PROFILE,
+    result: record.result,
+    output_path: outputPath,
+    candidate: record.candidate,
+    job_results: record.job_results,
+    pr_description_validation: record.pr_description_validation,
+    limitations: record.limitations,
+  };
+}
+
 export async function generatePrOutcome({
   root, evidenceRoot, outputDirectory, runId, branch, expectedSha, workflowRunId,
   workflowRunAttempt = '1', jobResults = {}, baseSha, prSubmitterIdentity,
   prSubmitterSource = 'explicit-input', evaluatorIdentity,
   evaluatorSource = 'explicit-input', loopProfile, executionToken = null,
+  prBody = null, catalog = null, evidencePolicy = null, headBranch = null,
 }) {
   const actualHead = git(root, ['rev-parse', 'HEAD']);
   const actualTree = git(root, ['rev-parse', 'HEAD^{tree}']);
@@ -126,6 +229,13 @@ export async function generatePrOutcome({
   const status = git(root, ['status', '--porcelain=v1', '--untracked-files=all']);
   if (!/^[0-9a-f]{40}$/.test(expectedSha ?? '') || actualHead !== expectedSha) throw new Error(`PR outcome requires exact head ${expectedSha}; observed ${actualHead}`);
   if (status) throw new Error(`PR outcome candidate is dirty: ${status.replaceAll('\n', '; ')}`);
+  if (loopProfile === DETERMINISTIC_EXEMPTION_PROFILE) {
+    return deterministicExemptionOutcome({
+      root: actualRoot, outputDirectory, branch, actualHead, actualTree, baseSha,
+      workflowRunId, workflowRunAttempt, jobResults, prBody, catalog, evidencePolicy,
+      evaluatorIdentity, headBranch,
+    });
+  }
   if (!/^run_[a-z0-9][a-z0-9_-]{7,95}$/.test(runId ?? '')) throw new Error('PR outcome requires a schema-compatible run_id');
   if (!branch) throw new Error('PR outcome requires the pull-request head branch');
   if (!loopProfile) throw new Error('PR outcome requires an explicit agent loop profile');
@@ -136,16 +246,8 @@ export async function generatePrOutcome({
     provenance, prSubmitterIdentity, prSubmitterSource, evaluatorIdentity,
     evaluatorSource, workflowRunId, workflowRunAttempt,
   });
-  const expectedJobs = [
-    'agent-contract',
-    'agent-runner',
-    'knowledge-adapters',
-    'repo-governance',
-    'application-fast-assurance',
-    'application-browser-assurance',
-    'secrets-scan',
-  ];
-  for (const job of expectedJobs) if (jobResults[job] !== 'success') throw new Error(`PR outcome requires same-run ${job}=success; observed ${jobResults[job] ?? '(missing)'}`);
+  const expectedJobs = REQUIRED_JOBS;
+  requireSuccessfulPrerequisiteJobs(jobResults);
 
   const checks = [];
   for (const [requirementId, filename] of REQUIRED_REPORTS) {
@@ -281,6 +383,7 @@ async function main() {
     throw new Error(`Explicit evaluator identity ${options.evaluator_identity} conflicts with runtime identity ${derivedEvaluatorIdentity}`);
   }
   const evaluatorIdentity = derivedEvaluatorIdentity;
+  const deterministicExemption = isDeterministicExemption(body);
   const result = await generatePrOutcome({
     root,
     evidenceRoot: path.resolve(options.evidence_root),
@@ -296,7 +399,11 @@ async function main() {
     prSubmitterSource: eventSubmitterIdentity ? 'pull_request.user.login' : 'explicit-input',
     evaluatorIdentity,
     evaluatorSource: 'github-actions-run-and-job',
-    loopProfile: options.loop_profile ?? bodyLoopProfile,
+    loopProfile: options.loop_profile ?? (deterministicExemption ? DETERMINISTIC_EXEMPTION_PROFILE : bodyLoopProfile),
+    prBody: body,
+    headBranch: event?.pull_request?.head?.ref ?? null,
+    catalog: deterministicExemption ? readJson(path.join(root, 'scripts/agent-governance/catalog/invariants.v1.json')) : null,
+    evidencePolicy: deterministicExemption ? readJson(path.join(root, 'governance/agent-system/policies/evidence-levels.json')) : null,
   });
   if (options.json_out) writeReport(path.resolve(options.json_out), { ...result, packet: undefined });
   process.stdout.write(`${JSON.stringify({ ...result, packet: undefined }, null, 2)}\n`);
