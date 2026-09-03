@@ -12,21 +12,22 @@ This work belongs on `ux/experience-workbench`.
 
 ## Read in this order
 
-1. `SESSION_HANDOFF_2026-09-03.md` — originating design-thread history and decisions.
-2. newest file in `registry/checkpoints/` — compact current checkpoint.
-3. `journey-map.html` — all journeys and current status.
-4. `WORKFLOW.md` — quality/consistency process every journey must follow.
-5. `GOLDEN_SCREENS.md` — approved visual references and current candidates.
-6. `patterns/DESIGN_INHERITANCE.md` — frame, tokens, components, copy, and icon inheritance contract.
-7. `docs/dead-ends-and-gaps.md` — orphan, stale, duplicate, and dead-end controls.
+1. `SESSION_HANDOFF_2026-09-03.md`
+2. newest file in `registry/checkpoints/`
+3. `journey-map.html`
+4. `WORKFLOW.md`
+5. `GOLDEN_SCREENS.md`
+6. `patterns/DESIGN_INHERITANCE.md`
+7. `docs/dead-ends-and-gaps.md`
 
 ## Current product state
 
 - Journey 02 — Home / Orientation: **Golden Screen #1 / Design Approved / V1.4.**
 - Journey 03 — Create a Group: **Golden Journey #2 / Design Approved / V2.**
-- Journey 04 — Invite / Join: **currently being prototyped.**
+- Journey 04 — Invite / Join: **V1 Golden Candidate built, rendered, QA-tested, awaiting user approval.**
+- Journey 08 — Group Home: **next only after Journey 04 approval.**
 
-## Current Golden references
+## Current references
 
 ### Journey 02 — Home
 `journeys/02-home-orientation/v1.4-inherited-icons.html`
@@ -34,25 +35,26 @@ This work belongs on `ux/experience-workbench`.
 ### Journey 03 — Create Group
 `journeys/03-create-group/v2-golden-candidate.html`
 
-Both were rendered and reviewed at:
-- 393 × 852
-- 430 × 890
+### Journey 04 — Invite / Join
+`journeys/04-invite-join/v1-golden-candidate.html`
 
-## What Journey 04 must solve
-Two connected sides of one experience:
+Journey 04 QA:
+`journeys/04-invite-join/visual-qa/README.md`
 
-**Invite side**
-`Group created / Group Home → Invite people → Share/send → Pending/sent`
+## Journey 04 prototype truth
 
-**Join side**
-`Open invite → Understand group + inviter → Join → Land in group`
+Inviter:
+`Invite people → Share link / Add someone → Pending/sent → Open group`
 
-Keep it human:
+Joiner:
+`Open invite → Understand group + inviter → Join / Not now → Joined → Open group`
+
+Prototype rules:
 - no wallet addresses
 - no blockchain terminology
-- no permissions/configuration unless truly necessary
-- enough context to know what is being joined
-- obvious success and decline/not-now exits
+- invitee sees group-level context only before joining
+- expenses/balances stay private until join
+- expired / already joined / offline states are explicit
 
 ## Non-negotiable principle
 
