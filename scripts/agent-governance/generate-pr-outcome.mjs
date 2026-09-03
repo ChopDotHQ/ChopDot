@@ -38,6 +38,25 @@ const REQUIRED_JOBS = [
 
 export const DETERMINISTIC_EXEMPTION_PROFILE = 'deterministic exemption';
 
+// A deterministic exemption skips the packet-dependent acceptance steps, so it must be
+// bound to what the candidate actually changes rather than to what its description
+// claims. This is an allowlist: anything unlisted fails closed without being
+// enumerated, which covers src/, server/, contracts/, .github/workflows/, runtime
+// governance scripts, package and runtime manifests, product law, governance policy,
+// and every authority, security, or release control.
+//
+// It is deliberately scoped to plan documents and governance test files rather than
+// generalised. Widening it is a governance decision, not a refactor.
+const EXEMPTION_ELIGIBLE_PATHS = [
+  /^plans\/[^/]+\.md$/u,
+  /^docs\/superpowers\/plans\/[^/]+\.md$/u,
+  /^scripts\/agent-governance\/tests\/[^/]+\.test\.mjs$/u,
+];
+
+export function exemptionIneligiblePaths(changedPaths) {
+  return changedPaths.filter((candidate) => !EXEMPTION_ELIGIBLE_PATHS.some((pattern) => pattern.test(candidate)));
+}
+
 // The profile is two words, so the single-token body regexes below cannot carry it.
 // Match the exact declared value instead; every other profile is left untouched.
 export function isDeterministicExemption(body) {
@@ -151,6 +170,14 @@ function deterministicExemptionOutcome({
   if (!branch) throw new Error('PR outcome requires the pull-request head branch');
   if (!String(workflowRunId ?? '').trim()) throw new Error('PR outcome requires a workflow run ID');
   requireSuccessfulPrerequisiteJobs(jobResults);
+  // Scope comes from the authenticated range, never from the description.
+  if (!/^[0-9a-f]{40}$/.test(baseSha ?? '')) throw new Error('Deterministic exemption requires an exact base SHA to derive candidate scope');
+  const changedPaths = git(root, ['diff', '--name-only', '--no-renames', `${baseSha}..${actualHead}`, '--']).split('\n').filter(Boolean);
+  if (!changedPaths.length) throw new Error('Deterministic exemption requires a non-empty candidate range');
+  const ineligible = exemptionIneligiblePaths(changedPaths);
+  if (ineligible.length) {
+    throw new Error(`Deterministic exemption is limited to plan documents and governance tests; ineligible paths: ${ineligible.join(', ')}`);
+  }
   if (!catalog || !evidencePolicy) throw new Error('Deterministic exemption requires the invariant catalog and evidence policy');
   const validation = validatePullRequestBody({
     body: prBody ?? '',
@@ -180,7 +207,8 @@ function deterministicExemptionOutcome({
     workflow_run_attempt: String(workflowRunAttempt),
     evaluator: { id: evaluatorIdentity ?? null, kind: 'deterministic_runner', source: 'github-actions-run-and-job' },
     candidate: { root, branch, commit: actualHead, tree: actualTree, git_status: [] },
-    pull_request_range: { base_sha: baseSha, head_sha: actualHead },
+    pull_request_range: { base_sha: baseSha, head_sha: actualHead, changed_paths: changedPaths },
+    scope: { source: 'git diff --name-only --no-renames base..head', changed_path_count: changedPaths.length, ineligible_paths: [] },
     job_results: Object.fromEntries(REQUIRED_JOBS.map((job) => [job, jobResults[job]])),
     pr_description_validation: { ok: true, checks: validation.checks, warnings: validation.warnings },
     created_at: createdAt,
@@ -197,6 +225,7 @@ function deterministicExemptionOutcome({
     '',
     `- Candidate: \`${actualHead}\` on \`${branch}\``,
     `- Required prerequisite jobs: ${REQUIRED_JOBS.length} succeeded`,
+    `- Candidate scope: ${changedPaths.length} changed path(s), all eligible for exemption`,
     `- PR description validation: passed (${validation.checks} checks)`,
     '',
     record.limitations[0],

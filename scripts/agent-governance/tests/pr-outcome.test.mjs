@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { generatePrOutcome } from '../generate-pr-outcome.mjs';
+import { exemptionIneligiblePaths, generatePrOutcome } from '../generate-pr-outcome.mjs';
 import { digestContract, loadLoopProfile } from '../../agent-system/contract.mjs';
 import { validateOutcomePacket } from '../../agent-system/outcome.mjs';
 import { validateAgentContract, validateContractProfileAlignment } from '../../agent-system/validate.mjs';
@@ -58,7 +58,7 @@ function commit(root, file, contents, message, identity = {}) {
   });
 }
 
-function fixture() {
+function fixture({ candidatePaths = ['candidate.txt'] } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-pr-outcome-root-'));
   execFileSync('git', ['init', '-q', '-b', 'codex/test'], { cwd: root });
   execFileSync('git', ['config', 'user.email', 'fixture@example.invalid'], { cwd: root });
@@ -76,7 +76,10 @@ function fixture() {
   execFileSync('git', ['commit', '-qm', 'runner fixture'], { cwd: root });
   commit(root, 'base.txt', 'base\n', 'base');
   const baseSha = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
-  commit(root, 'candidate.txt', 'candidate\n', 'candidate');
+  for (const relative of candidatePaths) {
+    fs.mkdirSync(path.dirname(path.join(root, relative)), { recursive: true });
+    commit(root, relative, `candidate ${relative}\n`, `candidate ${relative}`);
+  }
   const head = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
   const tree = execFileSync('git', ['rev-parse', 'HEAD^{tree}'], { cwd: root, encoding: 'utf8' }).trim();
   const evidenceRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'chopdot-pr-outcome-input-'));
@@ -426,8 +429,14 @@ function exemptionInputs(value, overrides = {}) {
   };
 }
 
+const batchAShapedPaths = [
+  'plans/2026-07-14-dot-host-browser-polish.md',
+  'docs/superpowers/plans/2026-08-27-product-prioritization-repair.md',
+  'scripts/agent-governance/tests/steering-surfaces.test.mjs',
+];
+
 test('a deterministic exemption concludes successfully without a run ID or an outcome packet', async () => {
-  const value = fixture();
+  const value = fixture({ candidatePaths: batchAShapedPaths });
   const result = await generatePrOutcome(exemptionInputs(value));
   assert.equal(result.ok, true);
   assert.equal(result.deterministic_exemption, true);
@@ -443,6 +452,11 @@ test('a deterministic exemption concludes successfully without a run ID or an ou
   assert.equal(fs.existsSync(path.join(value.outputDirectory, 'acceptance-contract.json')), false);
   assert.equal(fs.existsSync(path.join(value.outputDirectory, 'validation.md')), true);
   assert.match(record.limitations[0], /is not an OutcomePacketV1 and proves no agent run/);
+  // Scope is derived from the range and recorded, not taken from the description.
+  assert.deepEqual([...record.pull_request_range.changed_paths].sort(), [...batchAShapedPaths].sort());
+  assert.equal(record.scope.changed_path_count, batchAShapedPaths.length);
+  assert.deepEqual(record.scope.ineligible_paths, []);
+  assert.equal(record.pull_request_range.base_sha, value.baseSha);
 });
 
 test('the implementation profile still requires a schema-compatible run ID', async () => {
@@ -460,17 +474,64 @@ test('the implementation profile still requires a schema-compatible run ID', asy
 test('an invalid deterministic exemption does not get a free pass', async () => {
   const failingJobs = { ...successfulJobs, 'application-browser-assurance': 'failure' };
   await assert.rejects(
-    generatePrOutcome(exemptionInputs(fixture(), { jobResults: failingJobs })),
+    generatePrOutcome(exemptionInputs(fixture({ candidatePaths: batchAShapedPaths }), { jobResults: failingJobs })),
     /PR outcome requires same-run application-browser-assurance=success/,
   );
-  const value = fixture();
+  const value = fixture({ candidatePaths: batchAShapedPaths });
   await assert.rejects(
     generatePrOutcome(exemptionInputs(value, { prBody: exemptionBody({ base: value.baseSha, runId: 'run_not_an_exemption_001' }) })),
     /Deterministic exemption requires a valid PR description/,
   );
-  const other = fixture();
+  const other = fixture({ candidatePaths: batchAShapedPaths });
   await assert.rejects(
     generatePrOutcome(exemptionInputs(other, { prBody: 'not a governed pull request description' })),
     /Deterministic exemption requires a valid PR description/,
   );
+});
+
+// The exemption skips the packet-dependent acceptance steps, so eligibility is bound to
+// the authenticated range. A PR cannot talk its way into it with its description.
+test('a deterministic exemption is bound to the real candidate scope and fails closed off it', async () => {
+  const ineligible = {
+    'application code': ['src/payments/settle.ts'],
+    'server code': ['server/payment-intents/index.ts'],
+    'contract code': ['contracts/recovery-head-index/src/Index.sol'],
+    'workflow': ['.github/workflows/agent-governance.yml'],
+    'governance runtime': ['scripts/agent-governance/validate-pr.mjs'],
+    'governance policy': ['governance/agent-system/policies/evidence-levels.json'],
+    'runtime manifest': ['package.json'],
+    'product law': ['PRODUCT_TRUTH.md'],
+    'authority record': ['product/context-authority.json'],
+    'eligible paths plus one ineligible path': [...batchAShapedPaths, 'src/state/store.ts'],
+  };
+  for (const [label, candidatePaths] of Object.entries(ineligible)) {
+    const value = fixture({ candidatePaths });
+    await assert.rejects(
+      generatePrOutcome(exemptionInputs(value)),
+      /Deterministic exemption is limited to plan documents and governance tests/,
+      label,
+    );
+  }
+});
+
+test('a deterministic exemption cannot derive scope without an authenticated base', async () => {
+  const value = fixture({ candidatePaths: batchAShapedPaths });
+  await assert.rejects(
+    generatePrOutcome(exemptionInputs(value, { baseSha: null })),
+    /Deterministic exemption requires an exact base SHA/,
+  );
+  await assert.rejects(
+    generatePrOutcome(exemptionInputs(value, { baseSha: 'not-a-sha' })),
+    /Deterministic exemption requires an exact base SHA/,
+  );
+});
+
+test('the exemption path allowlist rejects anything it does not name', () => {
+  assert.deepEqual(exemptionIneligiblePaths(batchAShapedPaths), []);
+  assert.deepEqual(
+    exemptionIneligiblePaths(['plans/nested/deep.md', 'docs/other/plans/x.md', 'scripts/agent-governance/validate-workflow.mjs']),
+    ['plans/nested/deep.md', 'docs/other/plans/x.md', 'scripts/agent-governance/validate-workflow.mjs'],
+  );
+  // Non-test files under the governance test directory are not eligible either.
+  assert.deepEqual(exemptionIneligiblePaths(['scripts/agent-governance/tests/helper.mjs']), ['scripts/agent-governance/tests/helper.mjs']);
 });
