@@ -1,0 +1,12 @@
+{
+  "checkpoint": "2026-09-03-j06-v1.1-approved",
+  "branch": "ux/experience-workbench",
+  "journey": "06",
+  "name": "Review / Correct an Expense",
+  "version": "v1.1",
+  "status": "Design Approved",
+  "approved_by_user": true,
+  "golden_number": 6,
+  "correction": "Restored inherited semantic icons on the sync-conflict state.",
+  "next": "Journey 07 — Review / Agree / Raise an Issue"
+}

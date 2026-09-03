@@ -1,0 +1,32 @@
+{
+  "checkpoint": "2026-09-03-j07-v1.1",
+  "branch": "ux/experience-workbench",
+  "golden": {
+    "02": {"name": "Home / Orientation", "version": "v1.4"},
+    "03": {"name": "Create a Group", "version": "v2"},
+    "04": {"name": "Invite / Join", "version": "v1"},
+    "08": {"name": "Group Home", "version": "v1"},
+    "05": {"name": "Add an Expense", "version": "v1"},
+    "06": {"name": "Review / Correct Expense", "version": "v1.1"}
+  },
+  "candidate": {
+    "07": {
+      "name": "Review / Agree / Raise an Issue",
+      "version": "v1.1",
+      "status": "Golden Candidate — review pending",
+      "file": "journeys/07-review-agree/v1.1-golden-candidate.html.xz",
+      "states": 61,
+      "checks": {
+        "links": "176/176",
+        "duplicate_ids": "pass",
+        "horizontal_overflow": "pass",
+        "frame_overlap": "pass",
+        "icon_placeholders": "pass",
+        "icon_alignment": "pass",
+        "semantic_variants": "pass",
+        "golden_visual_comparison": "pass"
+      }
+    }
+  },
+  "next_action": "User reviews Journey 07. If approved, freeze as Golden #7 and continue to Journey 10 Overall Position."
+}
