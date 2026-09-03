@@ -1,0 +1,46 @@
+{
+  "checkpoint": "2026-09-03-j04-v1",
+  "branch": "ux/experience-workbench",
+  "golden": {
+    "02": {
+      "name": "Home / Orientation",
+      "version": "v1.4",
+      "status": "Design Approved",
+      "file": "journeys/02-home-orientation/v1.4-inherited-icons.html"
+    },
+    "03": {
+      "name": "Create a Group",
+      "version": "v2",
+      "status": "Design Approved",
+      "file": "journeys/03-create-group/v2-golden-candidate.html"
+    }
+  },
+  "candidate": {
+    "04": {
+      "name": "Invite / Join a Group",
+      "version": "v1",
+      "status": "Golden Candidate — review pending",
+      "file": "journeys/04-invite-join/v1-golden-candidate.html",
+      "qa": "journeys/04-invite-join/visual-qa/README.md",
+      "rendered_viewports": ["393x852", "430x890"],
+      "checks": {
+        "states": 14,
+        "internal_links": "37/37",
+        "horizontal_overflow": "pass",
+        "frame_overlap": "pass",
+        "icon_placeholders": "pass",
+        "inviter_path": "pass",
+        "joiner_path": "pass"
+      }
+    }
+  },
+  "prototype_decisions": [
+    "Invite people as people, not wallet addresses.",
+    "No blockchain terminology in Invite / Join.",
+    "Invitee sees group name, inviter, people count, and currency before joining.",
+    "Expense details and balances stay private until join.",
+    "Join group and Not now are explicit exits.",
+    "Successful join hands off to Journey 08 Group Home."
+  ],
+  "next_action": "User reviews Journey 04 V1. If approved, freeze it as Golden Journey #3, then begin Journey 08 Group Home."
+}
