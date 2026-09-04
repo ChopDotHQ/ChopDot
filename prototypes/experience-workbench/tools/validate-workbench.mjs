@@ -33,7 +33,11 @@ for (const j of journeys) {
   if (!(j.next?.length) && !j.terminal) errors.push(`Journey ${j.id} is an unapproved dead end.`);
   if (j.status === "golden") {
     for (const key of ["version","approved_on","prototype_path","spec_path","qa_path"]) {
-      if (!j[key]) errors.push(`Golden journey ${j.id} lacks ${key}.`);
+      if (!j[key]) {
+        errors.push(`Golden journey ${j.id} lacks ${key}.`);
+      } else if (["prototype_path","spec_path","qa_path"].includes(key) && !fs.existsSync(path.join(root, j[key]))) {
+        errors.push(`Golden journey ${j.id} points to missing ${key}: ${j[key]}.`);
+      }
     }
   }
 }
