@@ -1,0 +1,530 @@
+[
+  {
+    "screen": "settle",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "breakdown",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "methods",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "twint-review",
+    "payment_state": "intent-prepared",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "bank",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "bank-copied",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "bank-review",
+    "payment_state": "intent-prepared",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "bank-sent",
+    "payment_state": "intent-prepared",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "paypal",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "cash",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "cash-confirm",
+    "payment_state": "intent-prepared",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "wallet",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "wallet-dot",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "wallet-usdc",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "wallet-review",
+    "payment_state": "intent-prepared",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "wallet-review-usdc",
+    "payment_state": "intent-prepared",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "amount",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "amount-partial",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-20-00-partial"
+  },
+  {
+    "screen": "partial-review",
+    "payment_state": "intent-prepared",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-20-00-partial"
+  },
+  {
+    "screen": "group-select",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "group-jeanine",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-group-jeanine-chf-24-30"
+  },
+  {
+    "screen": "group-nina",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-group-nina-chf-18-00"
+  },
+  {
+    "screen": "currency-select",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "open-issue",
+    "payment_state": "disputed",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "no-method",
+    "payment_state": "blocked",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "request-details",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "offline",
+    "payment_state": "blocked",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "balance-changed",
+    "payment_state": "blocked",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "already-progress",
+    "payment_state": "blocked",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "wallet-connect",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "wallet-connected",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "wallet-wrong",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "invalid-address",
+    "payment_state": "blocked",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "insufficient",
+    "payment_state": "blocked",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "fee-unavailable",
+    "payment_state": "blocked",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "twint-handoff",
+    "payment_state": "payment-started",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "bank-handoff",
+    "payment_state": "payment-started",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "paypal-handoff",
+    "payment_state": "payment-started",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "external-handoff",
+    "payment_state": "payer-marked-sent",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "cash-handoff",
+    "payment_state": "payer-marked-sent",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "wallet-handoff",
+    "payment_state": "payment-started",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "partial-handoff",
+    "payment_state": "payment-started",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "j12-progress",
+    "payment_state": "awaiting-confirmation",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "issue-handoff",
+    "payment_state": "disputed",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "position",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "group-home",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "request-wallet",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "settle-updated",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-59-30"
+  },
+  {
+    "screen": "cash-nina",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-nina-chf-30-00"
+  },
+  {
+    "screen": "group-breakdown",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "settle-eur",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-luca-eur-18-00"
+  },
+  {
+    "screen": "settle-dot",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "scope-luca-dot-2-400000"
+  },
+  {
+    "screen": "eur-handoff",
+    "payment_state": "payment-started",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "dot-handoff",
+    "payment_state": "payment-started",
+    "transition_authority": "payer",
+    "scope_ref": "scope-luca-dot-2-400000"
+  },
+  {
+    "screen": "wallet-rejected",
+    "payment_state": "cancelled",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "quote-expired",
+    "payment_state": "expired",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "payment-waiting",
+    "payment_state": "awaiting-confirmation",
+    "transition_authority": "receiver",
+    "scope_ref": null
+  },
+  {
+    "screen": "payment-received",
+    "payment_state": "receiver-confirmed",
+    "transition_authority": "receiver",
+    "scope_ref": null
+  },
+  {
+    "screen": "payment-failed",
+    "payment_state": "failed",
+    "transition_authority": "provider-or-system",
+    "scope_ref": null
+  },
+  {
+    "screen": "payment-complete",
+    "payment_state": "closed",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "partial-sent",
+    "payment_state": "payer-marked-sent",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "partial-waiting",
+    "payment_state": "awaiting-confirmation",
+    "transition_authority": "receiver",
+    "scope_ref": null
+  },
+  {
+    "screen": "partial-complete",
+    "payment_state": "partial",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "payment-sent-eur",
+    "payment_state": "payer-marked-sent",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "wallet-received",
+    "payment_state": "received-cleared",
+    "transition_authority": "provider-or-chain",
+    "scope_ref": null
+  },
+  {
+    "screen": "wallet-complete",
+    "payment_state": "closed",
+    "transition_authority": "system",
+    "scope_ref": null
+  },
+  {
+    "screen": "wallet-received-dot",
+    "payment_state": "received-cleared",
+    "transition_authority": "provider-or-chain",
+    "scope_ref": "scope-luca-dot-2-400000"
+  },
+  {
+    "screen": "wallet-complete-dot",
+    "payment_state": "closed",
+    "transition_authority": "system",
+    "scope_ref": "scope-luca-dot-2-400000"
+  },
+  {
+    "screen": "twint-sent",
+    "payment_state": "payer-marked-sent",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "paypal-sent",
+    "payment_state": "payer-marked-sent",
+    "transition_authority": "payer",
+    "scope_ref": null
+  },
+  {
+    "screen": "group-breakdown-nina",
+    "payment_state": "draft",
+    "transition_authority": "payer",
+    "scope_ref": "twint-review-group-nina"
+  },
+  {
+    "screen": "twint-review-group-jeanine",
+    "payment_state": "intent-prepared",
+    "transition_authority": "payer",
+    "scope_ref": "scope-group-jeanine-chf-24-30"
+  },
+  {
+    "screen": "twint-handoff-group-jeanine",
+    "payment_state": "payment-started",
+    "transition_authority": "payer",
+    "scope_ref": "scope-group-jeanine-chf-24-30"
+  },
+  {
+    "screen": "twint-sent-group-jeanine",
+    "payment_state": "payer-marked-sent",
+    "transition_authority": "payer",
+    "scope_ref": "scope-group-jeanine-chf-24-30"
+  },
+  {
+    "screen": "payment-waiting-group-jeanine",
+    "payment_state": "awaiting-confirmation",
+    "transition_authority": "receiver",
+    "scope_ref": "scope-group-jeanine-chf-24-30"
+  },
+  {
+    "screen": "group-jeanine-received",
+    "payment_state": "receiver-confirmed",
+    "transition_authority": "receiver",
+    "scope_ref": "scope-group-jeanine-chf-24-30"
+  },
+  {
+    "screen": "group-jeanine-complete",
+    "payment_state": "closed",
+    "transition_authority": "system",
+    "scope_ref": "scope-group-jeanine-chf-24-30"
+  },
+  {
+    "screen": "twint-review-group-nina",
+    "payment_state": "intent-prepared",
+    "transition_authority": "payer",
+    "scope_ref": "scope-group-nina-chf-18-00"
+  },
+  {
+    "screen": "twint-handoff-group-nina",
+    "payment_state": "payment-started",
+    "transition_authority": "payer",
+    "scope_ref": "scope-group-nina-chf-18-00"
+  },
+  {
+    "screen": "twint-sent-group-nina",
+    "payment_state": "payer-marked-sent",
+    "transition_authority": "payer",
+    "scope_ref": "scope-group-nina-chf-18-00"
+  },
+  {
+    "screen": "payment-waiting-group-nina",
+    "payment_state": "awaiting-confirmation",
+    "transition_authority": "receiver",
+    "scope_ref": "scope-group-nina-chf-18-00"
+  },
+  {
+    "screen": "group-nina-received",
+    "payment_state": "receiver-confirmed",
+    "transition_authority": "receiver",
+    "scope_ref": "scope-group-nina-chf-18-00"
+  },
+  {
+    "screen": "group-nina-complete",
+    "payment_state": "closed",
+    "transition_authority": "system",
+    "scope_ref": "scope-group-nina-chf-18-00"
+  },
+  {
+    "screen": "cash-confirm-nina",
+    "payment_state": "intent-prepared",
+    "transition_authority": "payer",
+    "scope_ref": "scope-nina-chf-30-00"
+  },
+  {
+    "screen": "cash-handoff-nina",
+    "payment_state": "payer-marked-sent",
+    "transition_authority": "payer",
+    "scope_ref": "scope-nina-chf-30-00"
+  },
+  {
+    "screen": "payment-waiting-nina",
+    "payment_state": "awaiting-confirmation",
+    "transition_authority": "receiver",
+    "scope_ref": "scope-nina-chf-30-00"
+  },
+  {
+    "screen": "cash-nina-received",
+    "payment_state": "receiver-confirmed",
+    "transition_authority": "receiver",
+    "scope_ref": "scope-nina-chf-30-00"
+  },
+  {
+    "screen": "cash-nina-complete",
+    "payment_state": "closed",
+    "transition_authority": "system",
+    "scope_ref": "scope-nina-chf-30-00"
+  }
+]

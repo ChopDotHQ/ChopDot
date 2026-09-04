@@ -1,65 +1,66 @@
-# Journey 11 — Visual and Journey QA
+# Journey 11 V1.1 — Visual, Contract and Journey QA
 
-## Inherited Golden references
+## Preserved Golden language
 
-Home V1.4, Create Group V2, Invite / Join V1, Group Home V1, Add Expense V1, Review / Correct Expense V1.1, Review / Agree V1.1, and Overall Position V1.
+No broad redesign was made. The candidate retains the Journey 1–10 frame, typography, surfaces, spacing, Lucide-style icons, restrained pink accent and focused footer actions.
 
-## Rendered viewports
+## Contract-driven visible corrections
 
-- 393 × 852
-- 430 × 890
+- Removed workshop copy such as `Journey 12 handoff` from product screens.
+- Replaced it with human states and actions.
+- Changed cash/manual wording from `Mark as paid` to `Record a payment` and `Record as sent`.
+- Kept **sent** visually and semantically separate from **complete**.
+- Added clear Journey 12 boundary previews for **Sent**, **Waiting for confirmation**, **Received**, **Failed** and **Complete**.
+- Added separate exact wallet-received/complete and partial-payment waiting/complete states.
+- Kept one obvious primary action on the default Journey 11 screen.
 
-## Automated checks
+## Contract mapping
 
-- 56 explicit states
-- 203/203 internal links resolve
-- no duplicate IDs
-- 96 representative state/viewport renders
-- zero horizontal overflow
-- zero header/content/footer overlap
-- zero clipped settlement rows
-- no Unicode or emoji placeholder icons
-- no review-only copy leaked into user-facing screens
-- Nina-specific avatar semantics passed
+- 88 explicit screens.
+- Every screen has `data-payment-state` and `data-transition-authority`.
+- Every primary action has `data-domain-event` and `data-authority`.
+- Complete mappings are stored in `SCREEN_STATE_MAPPING.json` and `UI_EVENT_MAPPING.json`.
+- No visible product screen contains the prohibited architecture terms.
 
-## Visual inspection
+## Required visual states
 
-Reviewed directly:
+The QA render set includes, at both 393 × 852 and 430 × 890:
 
-- default settlement
-- payment methods
-- TWINT review
-- bank review
-- wallet quote and wallet review
-- partial payment
-- group person selection
-- currency selection
-- open issue
-- missing payment details
-- balance changed
-- payment cancelled
-- quote expired
-- Golden comparison
+- default settlement;
+- TWINT review;
+- external app opened;
+- payer marked sent;
+- waiting for receiver confirmation;
+- receiver-confirmed/received;
+- failed with safe retry;
+- complete with updated balance;
+- wallet approval;
+- exact wallet received and complete;
+- partial payment waiting and complete;
+- open issue;
+- balance changed;
+- wallet cancellation;
+- quote expiry.
 
-## Defects found and fixed
+## Functional checks
 
-1. Three group/currency links initially pointed to missing states.
-2. Nina-specific settlement screens inherited Jeanine's `JA` initials.
-3. The default wallet balance was lower than the amount required.
-4. Wallet cancellation was missing.
-5. Quote expiry was missing.
-6. A review-only link leaked into the wallet surface and was removed.
+- 284/284 internal hash links resolve;
+- no duplicate IDs;
+- 176 full-layout checks across all 88 states and both target phone sizes;
+- 78 retained screenshots covering the important flows and contract states;
+- no horizontal overflow;
+- no header/content/footer overlap;
+- no clipped primary cards;
+- no placeholder icon glyphs;
+- repeated-click retry maps to the same idempotency scope;
+- external/manual sent states never route directly to complete;
+- wallet status advances through provider/network refresh, not a payer receipt claim;
+- mixed-currency estimates never appear as payment instructions.
 
-## Above-the-fold copy audit
+## Small Golden correction
 
-The default settlement contains only the approved task, person, amount, readiness, method, full-balance choice, Continue, and Cancel labels. No explanatory paragraph appears in the first viewport.
-
-## Intentional deviations
-
-- Global tabs are absent inside the focused settlement flow.
-- External methods end at a Journey 12 handoff rather than simulating completion.
-- Wallet and fiat details are prototype examples, not live financial instructions.
+Journey 07's earlier group-wide blocking wording is narrowed: only payment items dependent on the disputed expense are blocked. The Journey 07 interaction design does not change.
 
 ## Verdict
 
-**Golden Candidate — ready for user review.**
+**Contract-strengthened Golden Candidate. Not Golden until the actual HTML/spec/QA exist on `ux/experience-workbench`, the expanded workbench gate passes, and the user approves it.**

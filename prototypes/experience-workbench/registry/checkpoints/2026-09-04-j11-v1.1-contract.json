@@ -1,0 +1,18 @@
+{
+  "checkpoint": "2026-09-04-j11-v1.1-contract",
+  "branch": "ux/experience-workbench",
+  "golden_count": 8,
+  "current_journey": "11",
+  "candidate_version": "v1.1",
+  "actual_html": "journeys/11-settle-up/v1.1-golden-candidate.html",
+  "screen_count": 88,
+  "hash_links": "284/284",
+  "layout_checks": "176/176",
+  "primary_actions_mapped": 85,
+  "all_actions_mapped": 129,
+  "contract_validation": "pass-local",
+  "branch_gate": "pending",
+  "approval": "pending",
+  "small_golden_correction": "Journey 07 blocks only payment items dependent on the disputed expense.",
+  "next_on_approval": "Freeze Journey 11 as Golden #9 and build Journey 12."
+}

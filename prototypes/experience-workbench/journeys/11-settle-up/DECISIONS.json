@@ -1,17 +1,19 @@
 {
   "journey": "11",
-  "version": "v1",
-  "status": "golden-candidate",
+  "version": "v1.1",
+  "status": "golden-candidate-contract-review",
   "decisions": [
-    "One person, currency, and amount per settlement.",
-    "Full payment is default; partial payment is deliberate.",
-    "Preferred available payment method appears first.",
-    "External methods never masquerade as automatic payment.",
-    "Wallet payment keeps the original balance as source of truth.",
-    "No normal-versus-smart infrastructure mode is exposed.",
-    "Open issues block only the affected settlement.",
-    "Balance changes force a fresh review.",
-    "Existing in-progress settlements reopen instead of duplicating.",
-    "Journey 12 owns progress, confirmation, failure, proof, and completion."
+    "Journey 10 Overall Position is a derived read model and is never mutated by settlement.",
+    "Settlement resolves exact payer, recipient, amount, one currency, source groups/items and method.",
+    "Journey 11 prepares or authorizes a scoped payment and never closes it.",
+    "Payer-marked-sent never equals receiver-confirmed or closed.",
+    "External/manual payments require canonical receiver confirmation.",
+    "An exact finalized transfer may close only its exact deterministically matched payment item.",
+    "Partial payments preserve the remaining balance and source lineage.",
+    "Disputes block only dependent payment items.",
+    "Agents prepare by default and execute only under exact valid delegation.",
+    "Authorization, replay, idempotency and transition checks are deterministic backend logic.",
+    "Payment systems and agent protocols remain replaceable integrations.",
+    "Credentials, wallet secrets and private keys never become ChopDot domain data."
   ]
 }

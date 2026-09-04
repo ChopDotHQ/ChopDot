@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "artifacts": [
+    {
+      "source": "journeys/10-overall-position/v1-golden.html.gz.b64",
+      "target": "journeys/10-overall-position/v1-golden.html",
+      "sha256": "418dee449aa76ed027ea7de520f930f63ebaeb349c0f46735c390a43294d7c98"
+    },
+    {
+      "sources": [
+        "journeys/11-settle-up/v1.1-golden-candidate.html.gz.b64.parts/000.part",
+        "journeys/11-settle-up/v1.1-golden-candidate.html.gz.b64.parts/001.part",
+        "journeys/11-settle-up/v1.1-golden-candidate.html.gz.b64.parts/002.part",
+        "journeys/11-settle-up/v1.1-golden-candidate.html.gz.b64.parts/003.part",
+        "journeys/11-settle-up/v1.1-golden-candidate.html.gz.b64.parts/004.part",
+        "journeys/11-settle-up/v1.1-golden-candidate.html.gz.b64.parts/005.part",
+        "journeys/11-settle-up/v1.1-golden-candidate.html.gz.b64.parts/006.part",
+        "journeys/11-settle-up/v1.1-golden-candidate.html.gz.b64.parts/007.part"
+      ],
+      "target": "journeys/11-settle-up/v1.1-golden-candidate.html",
+      "sha256": "a556658e93f91e150b4d0568e155bac19f699e8be1f52d8c8c00cbcd3274fe5e"
+    }
+  ]
+}

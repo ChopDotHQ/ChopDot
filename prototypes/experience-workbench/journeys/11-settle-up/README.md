@@ -1,35 +1,29 @@
-# Journey 11 — Settle Up
+# Journey 11 — Settle Up V1.1 Contract Candidate
 
-**Status:** V1 Golden Candidate / Review pending
+Open `v1.1-golden-candidate.html`.
 
-The full clickable prototype is preserved as:
+## Preserved flow
 
-`v1-golden-candidate.html.gz.b64`
+`Overall Position → Settle with one person → Confirm exact scope → Choose method and amount → Review → Start or record payment → Journey 12`
 
-Restore it with:
+## Added guardrail
 
-```bash
-base64 --decode v1-golden-candidate.html.gz.b64 | gzip -d > v1-golden-candidate.html
-```
+- actual payment states and authorities remain distinct;
+- payer-marked-sent never closes a payment;
+- external/manual payment waits for receiver confirmation;
+- exact finalized wallet/provider transfers close only exact matched items;
+- retries are idempotent;
+- agents prepare by default and execute only under exact valid delegation;
+- payment systems remain replaceable integrations.
 
-Then open `v1-golden-candidate.html` in a browser.
+## Review files
 
-## Core path
-
-`Overall Position → Settle with a person → Confirm amount and method → Review payment → Start payment → Journey 12`
-
-## Boundary
-
-Journey 11 chooses who, currency, scope, amount, and method.
-
-Journey 12 owns payment progress, external-app return, confirmation, failure, proof, and updated balances.
-
-## Candidate principles
-
-- One person, currency, and amount per settlement.
-- Full payment by default; partial payment is deliberate.
-- Preferred available method appears first.
-- External payments are never presented as automatically complete.
-- Wallet payments keep the original balance as source of truth.
-- No `normal` versus `smart` infrastructure modes in the UI.
-- Open issues block only the affected settlement.
+- `spec.md`
+- `STATE_AND_AUTHORITY.md`
+- `GIVEN_WHEN_THEN.md`
+- `UI_TO_DOMAIN_EVENTS.md`
+- `PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md`
+- `SCREEN_STATE_MAPPING.json`
+- `UI_EVENT_MAPPING.json`
+- `VISUAL_QA.md`
+- `contract-validation.json`

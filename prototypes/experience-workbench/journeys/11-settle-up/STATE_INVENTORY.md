@@ -1,21 +1,21 @@
-# Journey 11 state inventory
+# Journey 11 V1.1 State Inventory
 
-## Core and external methods
+## Journey 11 selection and review
 
-`settle`, `breakdown`, `methods`, `twint-review`, `bank`, `bank-copied`, `bank-review`, `bank-sent`, `paypal`, `cash`, `cash-confirm`
+The original 56 Journey 11 states remain. Their visible design is preserved except for the minimum wording and boundary corrections required by the payment contract.
 
-## Wallet
+## Journey 12 boundary previews
 
-`wallet`, `wallet-dot`, `wallet-usdc`, `wallet-review`, `wallet-review-usdc`, `wallet-connect`, `wallet-connected`, `wallet-wrong`, `invalid-address`, `insufficient`, `fee-unavailable`, `wallet-rejected`, `quote-expired`
+- `twint-handoff`, `bank-handoff`, `paypal-handoff`, `eur-handoff`, `partial-handoff` — external payment started, not sent;
+- `wallet-handoff`, `dot-handoff` — wallet approval requested, provider/network status required;
+- `twint-sent`, `external-handoff`, `paypal-sent`, `cash-handoff`, `partial-sent`, `payment-sent-eur` — payer marked sent;
+- `payment-waiting`, `partial-waiting`, `j12-progress` — waiting for confirmation;
+- `payment-received` — receiver confirmed external/manual receipt;
+- `wallet-received`, `wallet-received-dot` — provider/network reported exact receipt or finality;
+- `payment-failed` — failed with safe retry;
+- `payment-complete`, `wallet-complete`, `wallet-complete-dot` — exact item closed and balances refreshed;
+- `partial-complete` — confirmed partial amount closed, remainder preserved.
 
-## Scope and amount
+## Total
 
-`amount`, `amount-partial`, `partial-review`, `group-select`, `group-jeanine`, `group-nina`, `group-breakdown`, `currency-select`, `settle-eur`, `settle-dot`
-
-## Safety and recovery
-
-`open-issue`, `no-method`, `request-details`, `cash-nina`, `offline`, `balance-changed`, `settle-updated`, `already-progress`
-
-## Handoffs
-
-`twint-handoff`, `bank-handoff`, `paypal-handoff`, `external-handoff`, `cash-handoff`, `wallet-handoff`, `partial-handoff`, `j12-progress`, `issue-handoff`, `position`, `group-home`, `request-wallet`, `eur-handoff`, `dot-handoff`
+88 explicit screens, each mapped in `SCREEN_STATE_MAPPING.json`.

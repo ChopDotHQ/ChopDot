@@ -1,173 +1,185 @@
 # Journey 11 — Settle Up
 
 **Priority:** P0  
-**Status:** V1 Golden Candidate / Review pending  
-**Prototype:** `v1-golden-candidate.html.gz.b64`
+**Status:** V1.1 Golden Candidate / contract review pending  
+**Prototype:** `v1.1-golden-candidate.html`
 
 ## User goal
 
-Turn an understood debt into one clear payment without losing sight of who is paid, what amount is being settled, which balances are included, or what happens next.
+Turn an understood balance into one clearly scoped payment without losing sight of who is paid, the exact amount and currency, which groups and expense/payment items are included, the selected method, or what happens next.
 
-## Entry
+## Existing design direction preserved
 
-- Overall Position → Settle with a person
-- Group Home → Settle group balance
-- Home attention → Settle task
-- People → Person balance
-- Existing settlement → View progress
+The approved interaction model remains:
 
-## Journey boundary
+`Review → Method → Amount → Pay`
 
-Journey 11 owns:
+Journey 11 still owns:
 
-- who is being paid;
-- settlement scope;
-- currency;
-- amount;
-- payment method;
-- payment details;
-- final review before payment starts.
+- canonical payer and recipient;
+- exact amount;
+- one currency;
+- person-scoped or group-scoped source lineage;
+- included expense/payment items;
+- selected payment method;
+- final human review before payment starts.
 
-Journey 12 owns:
+Journey 12 still owns:
 
 - external-app return;
-- wallet approval progress;
-- transaction pending;
-- recipient confirmation;
-- success;
-- failure;
-- proof and finality;
-- updated balances.
+- wallet/provider submission progress;
+- payer-marked-sent status;
+- waiting for receipt or confirmation;
+- received or cleared status;
+- receiver confirmation where required;
+- failure, expiry, cancellation, reversal and safe retry;
+- closure and the resulting balance refresh.
 
-## Primary path
+A payment being requested, prepared, authorized, started, submitted or marked sent, received or cleared, receiver-confirmed, and closed are distinct events. A payer saying **I paid** or **I sent it** never closes the payment.
 
-`Overall Position → Settle with Jeanine → Confirm amount and method → Review payment → Start payment → Journey 12`
+## Primary Journey 11 path
+
+`Overall Position → Settle with Jeanine → Resolve exact CHF scope → Choose TWINT → Choose full amount → Review payment → Open TWINT → Journey 12`
 
 Default example:
 
-- You pay Jeanine
-- CHF 54.30
-- Across two CHF groups
-- TWINT is preferred
-- Full balance is selected
+- payer: Devinson;
+- recipient: Jeanine;
+- exact amount: CHF 54.30;
+- currency: CHF;
+- source: Apartment and Ski Trip;
+- included items: the exact reviewed items contributing to the eligible balance;
+- method: TWINT;
+- amount choice: full balance.
+
+## Payment and Agentic Compatibility Contract
+
+This section is an internal implementation contract. Its terms must not appear as technical architecture in the normal product UI.
+
+1. **Overall Position is read-only.** Journey 10 is a derived read model. Selecting Settle never edits that display value. The backend resolves it into a concrete payment scope.
+
+2. **Settlement scope is canonical and exact.** Before payment can be authorized, the backend resolves and persists the payer, recipient, amount, one currency, source groups, source expense/payment items, selected method, expiry and unique idempotency key.
+
+3. **Journey 11 prepares or authorizes; it does not complete.** The final Journey 11 action creates or authorizes the scoped payment intent. It does not mark the payment received, receiver-confirmed or closed.
+
+4. **States remain typed and persisted.** The internal model distinguishes prepared, authorized, started, submitted or payer-marked-sent, awaiting confirmation, received or cleared, receiver-confirmed, closed, failed, expired, cancelled, partial, disputed and reversed. A method may skip states it cannot meaningfully produce, but no method may collapse them dishonestly.
+
+5. **Authority is explicit.** The payer authorizes or marks sent. A payment provider or chain reports execution or finality. The receiver confirms external or manual receipt. Deterministic backend rules decide whether the exact payment item may close.
+
+6. **Agents prepare by default.** A future agent may assemble the scope, compare methods and recommend the next action. Without valid delegation it cannot execute the payment.
+
+7. **Delegation is narrowly scoped.** Any delegated action is constrained to the exact recipient, amount, currency, source items, allowed method, expiry and unique nonce/idempotency key. The agent cannot expand scope, approve itself, confirm receipt, close unrelated items or reuse an expired/revoked authorization.
+
+8. **Critical verification is deterministic.** Authorization, signature, balance, replay, idempotency and state-transition checks are backend logic. An LLM does not decide whether a payment is valid or complete.
+
+9. **Payment systems remain replaceable.** Web2 and Web3 implementations sit behind replaceable connectors. Payment credentials, wallet secrets and private keys never become ChopDot domain data.
+
+10. **Retries are idempotent.** A timeout, page refresh or repeated click reuses the original idempotency scope. It cannot create a duplicate payment intent or duplicate transfer.
+
+## State and closure rules
+
+### External or manual payment
+
+TWINT, bank, PayPal, cash or another external method follows this semantic path when ChopDot cannot independently verify receipt:
+
+`Prepared → Authorized → Started → Payer marked sent → Waiting for receiver → Receiver confirmed → Closed`
+
+The payer's sent claim is useful status, not proof of receipt.
+
+### Exact finalized transfer
+
+A provider or chain may report an exact finalized transfer. Deterministic matching may close only the exact payment item when all of the following match:
+
+- canonical payer;
+- canonical recipient;
+- exact amount;
+- currency or selected settlement asset;
+- source payment item;
+- final transfer identity;
+- expected authorization and idempotency scope.
+
+It may not close a broader person balance, another group, another currency or an unrelated payment item.
+
+### Partial payment
+
+A partial payment closes only the confirmed partial amount. The remainder stays open with preserved source lineage and its own future settlement path.
+
+### Disputed source item
+
+A disputed expense blocks only payment items that depend on that expense. Other people, groups, currencies and independent payment items remain actionable.
 
 ## Scope rules
 
-### Person-scoped
+### Person-scoped settlement
 
 A person balance may combine multiple groups only when:
 
-- both sides are the same two people;
-- all included balances use the same currency.
+- the payer and recipient are the same pair;
+- the currency is the same;
+- every included source item is eligible and not disputed;
+- the group-level lineage remains available before payment.
 
-The user can open the group breakdown before paying.
+### Group-scoped settlement
 
-### Group-scoped
+When a group contains several payable people:
 
-If a group has more than one person to pay:
-
-`Group Home → Settle → Choose person → Review settlement`
+`Group Home → Settle → Choose person → Resolve exact source items → Review payment`
 
 ### Multiple currencies
 
-Currencies settle separately.
-
-`Choose currency → Settle that currency`
-
-No cross-currency settlement or silent conversion is allowed.
+Currencies settle independently. An estimated home-currency amount is orientation only and can never become a payment instruction.
 
 ## Amount rules
 
-Full balance is the default.
+Full payment remains the default.
 
-Partial payment is available but must show:
+A partial payment must show:
 
 - amount paid now;
-- balance remaining afterward;
-- that another settlement will still be needed.
+- remaining balance;
+- included source items;
+- that a later settlement remains necessary.
 
 The amount cannot exceed the current eligible balance.
 
 ## Method rules
 
-Available candidate methods:
+Candidate methods remain:
 
-- TWINT
-- Bank transfer
-- Wallet
-- Cash / paid elsewhere
-- PayPal
+- TWINT;
+- bank transfer;
+- wallet payment;
+- cash or paid elsewhere;
+- PayPal.
 
-A recipient's preferred available method appears first and is labeled recommended.
+The recipient's preferred available method appears first. Journey 20 owns method maintenance. Journey 21 owns wallet/account management. Journey 11 consumes available methods without making any method or network part of ChopDot's product truth.
 
-Payment-method maintenance belongs to Journey 20. Journey 11 consumes available methods and may request missing details.
+## Visible UI rules
 
-## External payment methods
+- Keep one obvious next action.
+- Show person, exact amount, currency and source scope before payment starts.
+- Separate Payment method and Amount.
+- Use human labels: **Open TWINT**, **I've sent it**, **Waiting for Jeanine**, **Payment received**, **Payment failed**, **Settlement complete**.
+- Do not show internal architecture terms.
+- Do not imply that opening an app, marking sent or receiving a request completes the settlement.
+- Do not imply atomic cross-currency or cross-method settlement.
 
-For TWINT, bank, PayPal, or cash:
+## Small correction to earlier Golden assumptions
 
-- ChopDot does not pretend it moved the money.
-- The user sees the amount, recipient, reference, and expected next step.
-- External methods hand off to Journey 12 for return and confirmation.
-- Cash / paid elsewhere explicitly says that it only records what happened.
+Journey 07 previously documented that an unresolved issue could block settlement for the affected group. Journey 10 and this contract establish the narrower rule:
 
-## Wallet payment
+> Block only payment items whose amount depends on the disputed expense.
 
-The original balance and currency remain the source of truth.
+This is a wording and dependency-scope correction, not a Journey 07 redesign. Its review/issue flow remains unchanged.
 
-A wallet payment may use an agreed DOT or USDC equivalent when both people support it.
-
-Before wallet approval, show:
-
-- asset and amount;
-- recipient address;
-- estimated fee;
-- original balance being settled;
-- quote freshness;
-- connected account.
-
-ChopDot tracks a wallet payment automatically after approval.
-
-The user never chooses between product-internal labels such as `normal`, `smart`, `onchain`, or `offchain`.
-
-## Readiness and safety
-
-A settlement cannot start when:
-
-- the affected balance has an unresolved expense issue;
-- the balance changed after the review screen opened;
-- a settlement for the same balance is already in progress;
-- no usable payment method exists;
-- the device is offline;
-- the required wallet is not connected;
-- the wrong wallet is connected;
-- the recipient address is invalid;
-- funds are insufficient;
-- the network fee cannot be estimated;
-- the wallet quote expired.
-
-Wallet cancellation must clearly state that nothing was sent.
-
-Unaffected balances remain actionable.
-
-## Product decisions
-
-- Keep one clear payer, recipient, currency, and amount per settlement.
-- Show why the amount exists before payment.
-- Full payment is default; partial payment is deliberate.
-- Put the recipient's preferred method first.
-- Never pretend an external app payment completed automatically.
-- Track wallet payments automatically when possible.
-- Avoid exposing infrastructure modes.
-- Stop and refresh when the eligible balance changes.
-- Open issues block only the affected settlement.
-- An existing in-progress settlement must reopen rather than duplicate.
-- Every payment-start action hands off to Journey 12.
+Journey 10's optional estimated CHF view remains valid only as orientation. It cannot be selected as Journey 11's amount or currency source.
 
 ## Approval rule
 
-If approved:
+Journey 11 may become Golden only when:
 
-1. freeze as Golden Journey #9;
-2. promote Settlement Summary, Payment Method, Partial Settlement, Payment Review, and Settlement Blocker patterns;
-3. continue to Journey 12 — Complete Settlement.
+1. the actual HTML, updated specification and QA files exist on `ux/experience-workbench`;
+2. all Journey 11 screens and primary actions pass the contract mapping check;
+3. sent, waiting, received, failed and complete are visually distinct at both target phone sizes;
+4. the workbench gate passes on the branch;
+5. the candidate is approved by the user.

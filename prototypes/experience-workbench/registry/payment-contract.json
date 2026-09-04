@@ -1,0 +1,88 @@
+{
+  "version": "1.1",
+  "candidate": "Journey 11 V1.1",
+  "candidate_journey": "11",
+  "candidate_html": "journeys/11-settle-up/v1.1-golden-candidate.html",
+  "required_docs": [
+    "spec.md",
+    "STATE_AND_AUTHORITY.md",
+    "GIVEN_WHEN_THEN.md",
+    "UI_TO_DOMAIN_EVENTS.md",
+    "PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md",
+    "VISUAL_QA.md"
+  ],
+  "required_visible_states": [
+    "Marked as sent.",
+    "Waiting for Jeanine.",
+    "Payment received",
+    "Payment failed",
+    "Settlement complete"
+  ],
+  "banned_visible_terms": [
+    "mandate",
+    "protocol",
+    "adapter",
+    "rail",
+    "state machine",
+    "credential",
+    "obligation",
+    "evidence",
+    "AP2",
+    "Journey 11",
+    "Journey 12",
+    "handoff"
+  ],
+  "allowed_payment_states": [
+    "draft",
+    "intent-prepared",
+    "authorized",
+    "payment-started",
+    "payer-marked-sent",
+    "awaiting-confirmation",
+    "received-cleared",
+    "receiver-confirmed",
+    "closed",
+    "failed",
+    "expired",
+    "cancelled",
+    "partial",
+    "disputed",
+    "reversed",
+    "blocked"
+  ],
+  "allowed_authorities": [
+    "payer",
+    "receiver",
+    "provider-or-chain",
+    "provider-or-system",
+    "system"
+  ],
+  "required_scenarios": [
+    "Human-present external or manual payment",
+    "Exact finalized on-chain payment",
+    "Failure followed by safe retry",
+    "Partial payment",
+    "Disputed source expense",
+    "Agent prepares a payment for human approval",
+    "Expired, revoked or replayed delegated authorization",
+    "One person across several groups"
+  ],
+  "required_data_attributes": [
+    "data-payment-state",
+    "data-transition-authority",
+    "data-domain-event",
+    "data-authority"
+  ],
+  "rules": [
+    "Overall Position is a derived read model and is never mutated by Settle Up.",
+    "Selecting Settle resolves one canonical payer, recipient, amount, currency, source scope and payment method.",
+    "The Journey 11 primary confirmation prepares or authorizes an exact payment intent; it does not mark receipt or closure.",
+    "Payer-marked-sent is not closed.",
+    "External or manual receipt requires receiver confirmation.",
+    "An exact finalized transfer may close only the exact matched payment item.",
+    "Retries reuse the original idempotency scope.",
+    "Agents may execute only with valid exact delegation and may not approve themselves or confirm receipt.",
+    "Signatures, balances, replay prevention and transition checks are deterministic backend logic.",
+    "Payment implementations remain replaceable and secrets never become ChopDot domain data."
+  ]
+}
