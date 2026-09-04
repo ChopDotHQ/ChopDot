@@ -61,7 +61,7 @@ This contract is storage-neutral.
 
 9. Realtime delivery is ephemeral and never authoritative. It may be lost, duplicated, delayed or arrive out of order.
 10. Reconnect and refresh reconcile from accepted durable history and the current user-readable Saved record.
-11. Durable delivery retries until acknowledged; consumers deduplicate by stable event ID, payment item ID, stream version and idempotency key.
+11. Outbox delivery retries until acknowledged; consumers deduplicate by stable event ID, payment item ID, stream version and idempotency key.
 12. History is append-only and replay-safe. Replay rebuilds projections and Saved records but never opens a payment app, requests wallet approval, resubmits a transfer, marks sent, confirms receipt or closes again.
 13. Unknown save results reconcile by event and idempotency identity. They never create a replacement payment or a second Saved record by assumption.
 `);
