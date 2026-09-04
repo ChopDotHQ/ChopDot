@@ -1,14 +1,15 @@
 # Journey 07 — Review / Agree / Raise an Issue
 
 **Priority:** P0  
-**Status:** V1.1 Golden Candidate / Review pending  
+**Status:** Golden Journey #7 / Design Approved  
+**Version:** V1.1  
 **Prototype:** `v1.1-golden-candidate.html.xz`
 
 ## User goal
 
 Decide whether another person's expense is accurate, or raise a clear issue without social friction.
 
-## Human language
+## Approved human language
 
 Primary question:
 
@@ -22,11 +23,11 @@ Primary choices:
 
 Do not expose `attestation` or `dispute` terminology in the user experience.
 
-## Core reviewer path
+## Approved reviewer path
 
 `Group attention → Review queue → Expense → Looks right → Next expense / caught up`
 
-## Issue path
+## Approved issue path
 
 `Something's off → Choose reason → Optional note → Send → Waiting on owner`
 
@@ -38,7 +39,7 @@ Reasons:
 - Possible duplicate
 - Ask a question
 
-## Owner-resolution loop
+## Approved owner-resolution loop
 
 The owner may edit the expense through Journey 06 or reply with context.
 
@@ -56,9 +57,9 @@ Journey 06 owns expense detail, edit, delete, receipt, history, permissions, and
 
 Journey 07 owns review, agreement, questions, issues, and resolution status.
 
-Checkpoint confirmation that all expenses are entered is a separate pre-settlement concern.
+Checkpoint confirmation that all expenses are entered remains a separate pre-settlement concern.
 
-## Candidate decisions
+## Approved decisions
 
 - Review one expense at a time.
 - A queue helps with multiple expenses but does not blindly approve all.
@@ -67,25 +68,29 @@ Checkpoint confirmation that all expenses are entered is a separate pre-settleme
 - Changed expenses invalidate the prior review and explain what changed.
 - Issues use structured reasons plus an optional note.
 - Issues remain visible until resolved or withdrawn.
-- Open issues block settlement in this candidate.
+- An unresolved issue blocks settlement for the group in the approved prototype.
 - Offline reviews may save locally and sync later in the prototype.
 - Removed expenses leave no dead review task.
 - Alternate issue paths preserve the correct person, expense, and reason.
 
-## Review questions
+## QA record
 
-- Is `Does this look right?` the right central question?
-- Are `Looks right` and `Something's off` natural?
-- Does the queue help without feeling bureaucratic?
-- Are the five reasons enough?
-- Is the owner response loop fair and understandable?
-- Should an open issue block settlement?
-- Does the flow reduce social friction?
+- 61 explicit states.
+- 176/176 internal links resolve.
+- Rendered at 393 × 852 and 430 × 890.
+- No horizontal overflow.
+- No header/content/footer overlap.
+- No duplicate IDs.
+- No placeholder icons.
+- Icon and avatar alignment passed.
+- Reason, person, and expense variants passed.
 
-## Approval rule
+## Approval record
 
-If approved:
+Approved by the product owner on September 4, 2026.
 
-1. freeze as Golden Journey #7;
-2. promote Review Queue, Review Prompt, Issue Reason, Review Status, and Resolution patterns;
-3. continue to Journey 10 — Overall Position.
+This is now product truth and should not be silently redesigned. If Journey 11 exposes a genuine conflict with the settlement-blocking rule, mark this decision **Needs revisit** and version it deliberately.
+
+## Next
+
+Continue to Journey 10 — Overall Position.
