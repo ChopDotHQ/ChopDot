@@ -1,1 +1,433 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ChopDot Experience Map</title><style>:root{--bg:#f7f7f8;--s:#fff;--ink:#111113;--m:#66666d;--b:#e6e6e9}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}.w{max-width:960px;margin:auto;padding:28px 16px 72px}h1{font-size:30px;letter-spacing:-.04em;margin:0 0 7px}p{color:var(--m);line-height:1.5}.loop,.i,.stat{background:var(--s);border:1px solid var(--b);border-radius:16px}.loop{padding:16px;margin:18px 0}.flow{font-size:13px;font-weight:750;line-height:1.8}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 18px}.stat{padding:14px}.stat b{display:block;font-size:24px}.stat span{font-size:10px;color:var(--m)}.g{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.i{padding:14px;display:flex;justify-content:space-between;gap:10px;align-items:center}.i b{font-size:12px}.p{font-size:9px;font-weight:750;padding:5px 8px;border-radius:999px;white-space:nowrap}.gold{background:#e5f7ee;color:#0b7549}.next{background:#fde8f3;color:#a00055}.todo{background:#ededf0;color:#666}.partial{background:#fff2d2;color:#835800}@media(max-width:650px){.g,.stats{grid-template-columns:1fr}}</style></head><body><main class="w"><h1>ChopDot Experience Map</h1><p>Prototype control tower. Golden references remain frozen until deliberately revisited.</p><div class="stats"><div class="stat"><b>28</b><span>registered journeys</span></div><div class="stat"><b>7</b><span>Golden / approved</span></div><div class="stat"><b>21</b><span>remaining overall</span></div></div><section class="loop"><b>Core loop</b><div class="flow">Enter → Create / Join → Group Home → Add Expense → Review / Correct → Review / Agree → Overall Position → Settle → Complete</div><p>Golden #1–#7 established. Journey 10 — Overall Position is next.</p></section><div class="g"><div class="i"><b>02 · Home</b><span class="p gold">Golden V1.4</span></div><div class="i"><b>03 · Create Group</b><span class="p gold">Golden V2</span></div><div class="i"><b>04 · Invite / Join</b><span class="p gold">Golden V1</span></div><div class="i"><b>08 · Group Home</b><span class="p gold">Golden V1</span></div><div class="i"><b>05 · Add Expense</b><span class="p gold">Golden V1</span></div><div class="i"><b>06 · Review / Correct</b><span class="p gold">Golden V1.1</span></div><div class="i"><b>07 · Review / Agree</b><span class="p gold">Golden V1.1</span></div><div class="i"><b>10 · Overall Position</b><span class="p next">Next</span></div><div class="i"><b>01 · Enter ChopDot</b><span class="p partial">Core later</span></div><div class="i"><b>11 · Settle Up</b><span class="p todo">Not started</span></div><div class="i"><b>12 · Complete Settlement</b><span class="p todo">Not started</span></div><div class="i"><b>All secondary journeys</b><span class="p todo">17 remaining</span></div></div></main></body></html>
+<!doctype html>
+<html lang="en" data-registry-fingerprint="aa37e232fb9c986c">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ChopDot Experience Map</title>
+<style>
+:root{--bg:#f7f7f8;--surface:#fff;--ink:#111113;--secondary:#66666d;--muted:#929299;--border:#e6e6e9;--pink:#e6007a;--green:#0b7549;--blue:#315aa8;--orange:#835800;--shadow:0 10px 30px rgba(0,0,0,.05)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}
+a{color:inherit;text-decoration:none}.wrap{max-width:1240px;margin:auto;padding:32px 22px 90px}
+header{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.title h1{font-size:34px;letter-spacing:-.045em;margin:0}.title p{max-width:700px;color:var(--secondary);font-size:12px;line-height:1.55}
+.meta{font-size:10px;color:var(--secondary);text-align:right}.meta code{display:block;margin-top:6px;font-size:9px}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin:22px 0}.stat{background:var(--surface);border:1px solid var(--border);border-radius:15px;padding:13px}.stat b{display:block;font-size:23px}.stat span{font-size:9px;color:var(--secondary)}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:19px;padding:17px;margin:13px 0;box-shadow:var(--shadow)}.panel h2{font-size:17px;margin:0 0 5px}.panel p{font-size:10px;color:var(--secondary);margin:0}
+.core{display:flex;align-items:center;gap:6px;overflow:auto;padding:13px 0 4px}.node{min-width:118px;padding:10px;border:1px solid var(--border);border-radius:12px;background:#fafafa;font-size:10px;font-weight:720}.node span{display:block;font-size:8px;color:var(--muted);margin-bottom:3px}.arrow{color:var(--muted)}
+.golden{background:#e5f7ee!important;color:var(--green)!important;border-color:#b8e1ce!important}.current{background:#fde8f3!important;color:#a00055!important;border-color:#edbfd7!important}.cross{background:#e9edf9!important;color:#304c91!important;border-color:#c9d3ee!important}.todo{background:#efeff1!important;color:#666!important}
+.section-title{display:flex;align-items:end;justify-content:space-between;margin:30px 0 10px}.section-title h2{font-size:21px;margin:0}.section-title span{font-size:10px;color:var(--secondary)}
+.mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.mini{display:flex;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:9px}.mini b{font-size:9px}.mini span{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.catalog{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:12px}.journey{background:var(--surface);border:1px solid var(--border);border-radius:17px;padding:14px;scroll-margin-top:15px}.jhead{display:flex;justify-content:space-between;gap:8px}.jtitle{display:flex;gap:8px;align-items:center}.jid{width:25px;height:25px;border-radius:8px;background:#f0f0f2;display:grid;place-items:center;font-size:9px;font-weight:800}.jtitle h3{font-size:12px;margin:0}.jtitle small{font-size:8px;color:var(--secondary)}
+.pill{font-size:8px;font-weight:780;border-radius:999px;padding:4px 7px;height:max-content;white-space:nowrap}.journey>p{font-size:10px;color:var(--secondary);line-height:1.45;min-height:42px}
+dl{margin:0}dl div{display:grid;grid-template-columns:48px 1fr;gap:6px;margin-top:6px;font-size:9px;line-height:1.4}dt{color:var(--muted);font-weight:700}dd{margin:0;color:var(--secondary)}dd a{color:var(--pink);font-weight:700}.bad{color:#a73338;font-weight:700}
+.jfoot{display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--border);margin-top:10px;padding-top:9px;font-size:8px;color:var(--secondary)}.artifact{color:var(--pink);font-weight:750}.muted{color:var(--muted)}
+.gate{display:flex;gap:8px;align-items:center;font-size:10px;color:var(--secondary);margin-top:10px}.gate b{color:var(--green)}
+@media(max-width:980px){.stats{grid-template-columns:repeat(3,1fr)}.catalog{grid-template-columns:repeat(2,1fr)}.mini-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.wrap{padding:22px 13px 70px}header{display:block}.meta{text-align:left;margin-top:12px}.stats{grid-template-columns:repeat(2,1fr)}.catalog{grid-template-columns:1fr}.mini-grid{grid-template-columns:repeat(2,1fr)}.title h1{font-size:28px}}
+</style>
+</head>
+<body><main class="wrap">
+<header><div class="title"><h1>ChopDot Experience Map</h1><p>All 28 journeys, their entry and exit contracts, connections, current status, artifacts, and recovery ownership. This page is generated from the canonical registry and must not be edited by hand.</p></div><div class="meta">Generated 2026-09-04<code>aa37e232fb9c986c</code></div></header>
+<section class="stats">
+<div class="stat"><b>28</b><span>registered journeys</span></div>
+<div class="stat"><b>7</b><span>Golden / approved</span></div>
+<div class="stat"><b>21</b><span>remaining overall</span></div>
+<div class="stat"><b>35/35</b><span>features mapped</span></div>
+<div class="stat"><b>10</b><span>edge cases covered</span></div>
+<div class="stat"><b>7</b><span>partial or current</span></div>
+</section>
+<section class="panel"><h2>Core product loop</h2><p>Simple user path over the full system.</p><div class="core"><a class="node todo" href="#j01"><span>01</span>Enter ChopDot</a><span class="arrow">→</span><a class="node golden" href="#j02"><span>02</span>Home / Orientation</a><span class="arrow">→</span><a class="node golden" href="#j03"><span>03</span>Create a Group</a><span class="arrow">→</span><a class="node golden" href="#j04"><span>04</span>Invite / Join a Group</a><span class="arrow">→</span><a class="node golden" href="#j08"><span>08</span>Group Home</a><span class="arrow">→</span><a class="node golden" href="#j05"><span>05</span>Add an Expense</a><span class="arrow">→</span><a class="node golden" href="#j06"><span>06</span>Review / Correct an Expense</a><span class="arrow">→</span><a class="node golden" href="#j07"><span>07</span>Review / Agree / Raise an Issue</a><span class="arrow">→</span><a class="node current" href="#j10"><span>10</span>Overall Position</a><span class="arrow">→</span><a class="node todo" href="#j11"><span>11</span>Settle Up</a><span class="arrow">→</span><a class="node todo" href="#j12"><span>12</span>Complete a Settlement</a></div><div class="gate"><b>Registry gate active.</b><span>Run <code>npm run gate</code> before freezing any journey.</span></div></section>
+<section class="phase"><div class="section-title"><h2>Core loop</h2><span>11 journeys</span></div><div class="mini-grid"><a href="#j01" class="mini todo"><b>01</b><span>Enter ChopDot</span></a><a href="#j02" class="mini golden"><b>02</b><span>Home / Orientation</span></a><a href="#j03" class="mini golden"><b>03</b><span>Create a Group</span></a><a href="#j04" class="mini golden"><b>04</b><span>Invite / Join a Group</span></a><a href="#j05" class="mini golden"><b>05</b><span>Add an Expense</span></a><a href="#j06" class="mini golden"><b>06</b><span>Review / Correct an Expense</span></a><a href="#j07" class="mini golden"><b>07</b><span>Review / Agree / Raise an Issue</span></a><a href="#j08" class="mini golden"><b>08</b><span>Group Home</span></a><a href="#j10" class="mini current"><b>10</b><span>Overall Position</span></a><a href="#j11" class="mini todo"><b>11</b><span>Settle Up</span></a><a href="#j12" class="mini todo"><b>12</b><span>Complete a Settlement</span></a></div></section><section class="phase"><div class="section-title"><h2>Support</h2><span>8 journeys</span></div><div class="mini-grid"><a href="#j09" class="mini todo"><b>09</b><span>Manage People</span></a><a href="#j13" class="mini todo"><b>13</b><span>Request Money</span></a><a href="#j14" class="mini todo"><b>14</b><span>Receive / Share Payment Details</span></a><a href="#j15" class="mini todo"><b>15</b><span>Settlement History</span></a><a href="#j18" class="mini todo"><b>18</b><span>Activity &amp; Notifications</span></a><a href="#j20" class="mini todo"><b>20</b><span>Payment Methods</span></a><a href="#j21" class="mini todo"><b>21</b><span>Wallet &amp; Crypto</span></a><a href="#j26" class="mini todo"><b>26</b><span>Group Lifecycle</span></a></div></section><section class="phase"><div class="section-title"><h2>Expansion</h2><span>8 journeys</span></div><div class="mini-grid"><a href="#j16" class="mini todo"><b>16</b><span>Savings Group</span></a><a href="#j17" class="mini todo"><b>17</b><span>Contribute / Withdraw Savings</span></a><a href="#j19" class="mini todo"><b>19</b><span>Insights</span></a><a href="#j22" class="mini todo"><b>22</b><span>QR Flows</span></a><a href="#j23" class="mini todo"><b>23</b><span>Import Data / Group</span></a><a href="#j24" class="mini todo"><b>24</b><span>Export / Portability</span></a><a href="#j25" class="mini todo"><b>25</b><span>Storage / Backup / Recovery</span></a><a href="#j27" class="mini todo"><b>27</b><span>Account &amp; Preferences</span></a></div></section><section class="phase"><div class="section-title"><h2>Cross-cutting</h2><span>1 journeys</span></div><div class="mini-grid"><a href="#j28" class="mini cross"><b>28</b><span>Things Go Wrong / Recovery</span></a></div></section>
+<div class="section-title"><h2>Journey registry</h2><span>Every journey shown individually</span></div>
+<section class="catalog"><article class="journey" id="j01" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">01</span><div><h3>Enter ChopDot</h3><small>Core loop · P0</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Understand ChopDot, authenticate or continue as guest, and arrive somewhere useful.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>App launch or invite deep link</dd></div>
+      <div><dt>Exit</dt><dd>Home or invite acceptance</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j27">27</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j02">02</a>, <a href="#j04">04</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j02" data-status="golden">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">02</span><div><h3>Home / Orientation</h3><small>Core loop · P0</small></div></div>
+      <span class="pill golden">Golden · v1.4</span>
+    </div>
+    <p>Know what needs attention, where groups stand, and what to do next.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Successful entry or Pots tab</dd></div>
+      <div><dt>Exit</dt><dd>Group, task, create group, or add expense</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j01">01</a>, <a href="#j12">12</a>, <a href="#j26">26</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j03">03</a>, <a href="#j04">04</a>, <a href="#j05">05</a>, <a href="#j08">08</a>, <a href="#j10">10</a>, <a href="#j11">11</a>, <a href="#j16">16</a>, <a href="#j27">27</a></dd></div>
+    </dl>
+    <div class="jfoot"><a class="artifact" href="journeys/02-home-orientation/v1.4-golden.html">Open artifact</a><span>design-approved</span></div>
+  </article>
+<article class="journey" id="j03" data-status="golden">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">03</span><div><h3>Create a Group</h3><small>Core loop · P0</small></div></div>
+      <span class="pill golden">Golden · v2</span>
+    </div>
+    <p>Create a shared expense space with minimal decisions.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Home → Start a group</dd></div>
+      <div><dt>Exit</dt><dd>Group Home, Invite, or Add Expense</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j02">02</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j04">04</a>, <a href="#j05">05</a>, <a href="#j08">08</a></dd></div>
+    </dl>
+    <div class="jfoot"><a class="artifact" href="journeys/03-create-group/v2-golden.html">Open artifact</a><span>design-approved</span></div>
+  </article>
+<article class="journey" id="j04" data-status="golden">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">04</span><div><h3>Invite / Join a Group</h3><small>Core loop · P0</small></div></div>
+      <span class="pill golden">Golden · v1</span>
+    </div>
+    <p>Invite people or join with clear group context and privacy.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Create success, Group Home, or invite link</dd></div>
+      <div><dt>Exit</dt><dd>Group Home</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j01">01</a>, <a href="#j02">02</a>, <a href="#j03">03</a>, <a href="#j18">18</a>, <a href="#j22">22</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j08">08</a>, <a href="#j05">05</a>, <a href="#j22">22</a></dd></div>
+    </dl>
+    <div class="jfoot"><a class="artifact" href="journeys/04-invite-join/v1-golden.html">Open artifact</a><span>design-approved</span></div>
+  </article>
+<article class="journey" id="j05" data-status="golden">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">05</span><div><h3>Add an Expense</h3><small>Core loop · P0</small></div></div>
+      <span class="pill golden">Golden · v1</span>
+    </div>
+    <p>Record a shared cost quickly and split it correctly.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Home, Group Home, or Create success</dd></div>
+      <div><dt>Exit</dt><dd>Updated group or Expense Detail</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j02">02</a>, <a href="#j03">03</a>, <a href="#j04">04</a>, <a href="#j08">08</a>, <a href="#j18">18</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j06">06</a>, <a href="#j07">07</a>, <a href="#j08">08</a></dd></div>
+    </dl>
+    <div class="jfoot"><a class="artifact" href="journeys/05-add-expense/v1-golden.html">Open artifact</a><span>design-approved</span></div>
+  </article>
+<article class="journey" id="j06" data-status="golden">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">06</span><div><h3>Review / Correct an Expense</h3><small>Core loop · P0</small></div></div>
+      <span class="pill golden">Golden · v1.1</span>
+    </div>
+    <p>Understand, edit, correct, or remove an expense without ambiguity.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Expense row, activity item, or review task</dd></div>
+      <div><dt>Exit</dt><dd>Group, updated expense, or Journey 07</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j05">05</a>, <a href="#j08">08</a>, <a href="#j18">18</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j07">07</a>, <a href="#j08">08</a></dd></div>
+    </dl>
+    <div class="jfoot"><a class="artifact" href="journeys/06-review-correct-expense/v1.1-golden.html">Open artifact</a><span>design-approved</span></div>
+  </article>
+<article class="journey" id="j07" data-status="golden">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">07</span><div><h3>Review / Agree / Raise an Issue</h3><small>Core loop · P0</small></div></div>
+      <span class="pill golden">Golden · v1.1</span>
+    </div>
+    <p>Agree, ask a question, or resolve an expense with minimal social friction.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Attention queue, Expense Detail, or Group Home</dd></div>
+      <div><dt>Exit</dt><dd>Resolved expense, queue, group, or blocked settlement</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j05">05</a>, <a href="#j06">06</a>, <a href="#j08">08</a>, <a href="#j18">18</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j08">08</a>, <a href="#j10">10</a>, <a href="#j11">11</a>, <a href="#j18">18</a></dd></div>
+    </dl>
+    <div class="jfoot"><a class="artifact" href="journeys/07-review-agree/v1.1-golden.html">Open artifact</a><span>design-approved</span></div>
+  </article>
+<article class="journey" id="j08" data-status="golden">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">08</span><div><h3>Group Home</h3><small>Core loop · P0</small></div></div>
+      <span class="pill golden">Golden · v1</span>
+    </div>
+    <p>Know what happened, who owes what, what remains unresolved, and what to do next.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Home group card, invite acceptance, or create success</dd></div>
+      <div><dt>Exit</dt><dd>Expense, people, settle, invite, or settings</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j02">02</a>, <a href="#j03">03</a>, <a href="#j04">04</a>, <a href="#j05">05</a>, <a href="#j06">06</a>, <a href="#j07">07</a>, <a href="#j10">10</a>, <a href="#j12">12</a>, <a href="#j15">15</a>, <a href="#j18">18</a>, <a href="#j19">19</a>, <a href="#j23">23</a>, <a href="#j26">26</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j05">05</a>, <a href="#j06">06</a>, <a href="#j07">07</a>, <a href="#j09">09</a>, <a href="#j11">11</a>, <a href="#j26">26</a></dd></div>
+    </dl>
+    <div class="jfoot"><a class="artifact" href="journeys/08-group-home/v1-golden.html">Open artifact</a><span>design-approved</span></div>
+  </article>
+<article class="journey" id="j09" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">09</span><div><h3>Manage People</h3><small>Support · P1</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Understand relationships, members, and payment preferences.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>People tab or Group Home</dd></div>
+      <div><dt>Exit</dt><dd>Member detail, group, request, or settle</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j08">08</a>, <a href="#j10">10</a>, <a href="#j15">15</a>, <a href="#j22">22</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j11">11</a>, <a href="#j13">13</a>, <a href="#j20">20</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j10" data-status="current">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">10</span><div><h3>Overall Position</h3><small>Core loop · P0</small></div></div>
+      <span class="pill current">Current · v1</span>
+    </div>
+    <p>Know what I owe, what I am owed, who is involved, and across which groups.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Home, People, Group Home, or review completion</dd></div>
+      <div><dt>Exit</dt><dd>Group, person, request, or settlement</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j02">02</a>, <a href="#j07">07</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j08">08</a>, <a href="#j09">09</a>, <a href="#j11">11</a>, <a href="#j13">13</a></dd></div>
+    </dl>
+    <div class="jfoot"><a class="artifact" href="journeys/10-overall-position/v1-golden-candidate.html">Open artifact</a><span>in-progress</span></div>
+  </article>
+<article class="journey" id="j11" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">11</span><div><h3>Settle Up</h3><small>Core loop · P0</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Turn a calculated debt into an actual payment with minimal uncertainty.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Home, Overall Position, Group Home, or People</dd></div>
+      <div><dt>Exit</dt><dd>Settlement confirmation or progress</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j02">02</a>, <a href="#j07">07</a>, <a href="#j08">08</a>, <a href="#j09">09</a>, <a href="#j10">10</a>, <a href="#j18">18</a>, <a href="#j20">20</a>, <a href="#j21">21</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j12">12</a>, <a href="#j20">20</a>, <a href="#j21">21</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j12" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">12</span><div><h3>Complete a Settlement</h3><small>Core loop · P0</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Understand progress, success, failure, proof, and updated balances.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Settlement initiated</dd></div>
+      <div><dt>Exit</dt><dd>Updated Home, Group Home, or history</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j11">11</a>, <a href="#j15">15</a>, <a href="#j21">21</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j02">02</a>, <a href="#j08">08</a>, <a href="#j15">15</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j13" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">13</span><div><h3>Request Money</h3><small>Support · P1</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Ask someone to pay without awkward manual coordination.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Overall Position, Group Home, or People</dd></div>
+      <div><dt>Exit</dt><dd>Request sent or pending state</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j09">09</a>, <a href="#j10">10</a>, <a href="#j18">18</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j18">18</a>, <a href="#j14">14</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j14" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">14</span><div><h3>Receive / Share Payment Details</h3><small>Support · P1</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Share the right payment destination or receive flow safely.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>You, person, request, or settlement</dd></div>
+      <div><dt>Exit</dt><dd>QR, payment details, or payment handoff</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j13">13</a>, <a href="#j20">20</a>, <a href="#j21">21</a>, <a href="#j22">22</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j20">20</a>, <a href="#j21">21</a>, <a href="#j22">22</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j15" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">15</span><div><h3>Settlement History</h3><small>Support · P1</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Verify what was paid, when, how, and whether it is final.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Settlement complete, Group Home, or Activity</dd></div>
+      <div><dt>Exit</dt><dd>Receipt, proof, group, or person</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j12">12</a>, <a href="#j18">18</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j08">08</a>, <a href="#j09">09</a>, <a href="#j12">12</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j16" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">16</span><div><h3>Savings Group</h3><small>Expansion · P1</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Pool money toward a shared goal instead of splitting past expenses.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Home → Start saving together</dd></div>
+      <div><dt>Exit</dt><dd>Savings Group Home</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j02">02</a>, <a href="#j17">17</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j17">17</a>, <a href="#j18">18</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j17" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">17</span><div><h3>Contribute / Withdraw Savings</h3><small>Expansion · P1</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Add or remove shared savings safely and transparently.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Savings Group Home</dd></div>
+      <div><dt>Exit</dt><dd>Updated savings group or transaction state</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j16">16</a>, <a href="#j21">21</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j16">16</a>, <a href="#j18">18</a>, <a href="#j21">21</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j18" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">18</span><div><h3>Activity &amp; Notifications</h3><small>Support · P1</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Understand what changed and what requires attention without checking every group.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Activity tab or notification deep link</dd></div>
+      <div><dt>Exit</dt><dd>Relevant task, expense, group, or person</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j07">07</a>, <a href="#j13">13</a>, <a href="#j16">16</a>, <a href="#j17">17</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j04">04</a>, <a href="#j05">05</a>, <a href="#j06">06</a>, <a href="#j07">07</a>, <a href="#j08">08</a>, <a href="#j11">11</a>, <a href="#j13">13</a>, <a href="#j15">15</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j19" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">19</span><div><h3>Insights</h3><small>Expansion · P2</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Understand useful spending and group patterns rather than raw transactions.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>You, Home, or Group Home</dd></div>
+      <div><dt>Exit</dt><dd>Relevant group or settings</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j27">27</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j08">08</a>, <a href="#j27">27</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j20" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">20</span><div><h3>Payment Methods</h3><small>Support · P1</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Add and choose bank or crypto payment methods and understand visibility.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>You, settlement, receive, or member detail</dd></div>
+      <div><dt>Exit</dt><dd>Settings, receive, or settlement</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j09">09</a>, <a href="#j11">11</a>, <a href="#j14">14</a>, <a href="#j27">27</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j11">11</a>, <a href="#j14">14</a>, <a href="#j21">21</a>, <a href="#j27">27</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j21" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">21</span><div><h3>Wallet &amp; Crypto</h3><small>Support · P1</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Connect or switch wallet and approve blockchain actions without crypto anxiety.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Account, settlement, savings, or receive</dd></div>
+      <div><dt>Exit</dt><dd>Connected state, signed action, or prior task</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j11">11</a>, <a href="#j14">14</a>, <a href="#j17">17</a>, <a href="#j20">20</a>, <a href="#j27">27</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j11">11</a>, <a href="#j12">12</a>, <a href="#j14">14</a>, <a href="#j17">17</a>, <a href="#j27">27</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j22" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">22</span><div><h3>QR Flows</h3><small>Expansion · P2</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Scan, show identity, receive, or join using QR.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Invite, Receive, or You</dd></div>
+      <div><dt>Exit</dt><dd>Person, group, or payment flow</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j04">04</a>, <a href="#j14">14</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j04">04</a>, <a href="#j09">09</a>, <a href="#j14">14</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j23" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">23</span><div><h3>Import Data / Group</h3><small>Expansion · P2</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Bring an existing history or group into ChopDot safely.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Home, group list, or Account</dd></div>
+      <div><dt>Exit</dt><dd>Imported group or review</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j27">27</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j08">08</a>, <a href="#j24">24</a>, <a href="#j28">28</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j24" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">24</span><div><h3>Export / Portability</h3><small>Expansion · P2</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Take records out of ChopDot and retain ownership.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Group settings, Account, or Import</dd></div>
+      <div><dt>Exit</dt><dd>Exported artifact</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j23">23</a>, <a href="#j26">26</a></dd></div>
+      <div><dt>Next</dt><dd>Terminal</dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j25" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">25</span><div><h3>Storage / Backup / Recovery</h3><small>Expansion · P2</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Understand storage choices and recover data safely.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Account, security, or recovery scenario</dd></div>
+      <div><dt>Exit</dt><dd>Recovered or synced state</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j27">27</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j27">27</a>, <a href="#j28">28</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j26" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">26</span><div><h3>Group Lifecycle</h3><small>Support · P1</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Rename, configure, archive, leave, or delete a group safely.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Group settings</dd></div>
+      <div><dt>Exit</dt><dd>Group Home or Home</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j08">08</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j02">02</a>, <a href="#j08">08</a>, <a href="#j24">24</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j27" data-status="not-started">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">27</span><div><h3>Account &amp; Preferences</h3><small>Expansion · P2</small></div></div>
+      <span class="pill todo">Not started</span>
+    </div>
+    <p>Manage identity, notifications, appearance, security, and account deletion.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>You tab or account menu</dd></div>
+      <div><dt>Exit</dt><dd>Previous context or signed out</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j02">02</a>, <a href="#j19">19</a>, <a href="#j20">20</a>, <a href="#j21">21</a>, <a href="#j25">25</a></dd></div>
+      <div><dt>Next</dt><dd><a href="#j01">01</a>, <a href="#j19">19</a>, <a href="#j20">20</a>, <a href="#j21">21</a>, <a href="#j23">23</a>, <a href="#j25">25</a></dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article>
+<article class="journey" id="j28" data-status="cross-cutting">
+    <div class="jhead">
+      <div class="jtitle"><span class="jid">28</span><div><h3>Things Go Wrong / Recovery</h3><small>Cross-cutting · P0</small></div></div>
+      <span class="pill cross">Cross-cutting</span>
+    </div>
+    <p>Keep every journey understandable when offline, failed, expired, conflicting, or partial.</p>
+    <dl>
+      <div><dt>Entry</dt><dd>Any journey failure or degraded state</dd></div>
+      <div><dt>Exit</dt><dd>Recovered state, safe retry, or explicit terminal state</dd></div>
+      <div><dt>Inbound</dt><dd><a href="#j23">23</a>, <a href="#j25">25</a></dd></div>
+      <div><dt>Next</dt><dd>Terminal</dd></div>
+    </dl>
+    <div class="jfoot"><span class="muted">No artifact yet</span><span>not-reviewed</span></div>
+  </article></section>
+</main></body></html>
