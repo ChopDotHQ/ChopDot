@@ -11,7 +11,7 @@ The UI remains human. The right column is an internal implementation mapping. Th
 | **Open TWINT / Open bank app / Open PayPal** | `PaymentIntentAuthorized` then `PaymentStarted` | Payer | Does not mean sent, received or complete |
 | **I've sent it** | `PayerMarkedSent` | Payer | Does not confirm receipt or close |
 | **Record as sent** for cash/manual payment | `PayerMarkedSent` | Payer | Does not confirm receipt or close |
-| **Approve in wallet** | `PaymentIntentAuthorized` | Payer or valid narrowly delegated actor | Does not let ChopDot or an agent self-approve |
+| **Approve in wallet** | `PaymentApprovalRequested` | Payer | Requests approval for the exact scope; does not authorize, submit or close payment |
 | Provider/network reports submission | `PaymentSubmitted` | Provider/network connector | Does not close without required finality/match |
 | **Refresh status** | `PaymentStatusRefreshRequested` | Read-only backend query | Does not advance state by itself |
 | Provider/network reports exact finality | `PaymentCleared` | Provider/network connector + deterministic verifier | Cannot close unrelated items |
@@ -25,7 +25,7 @@ The UI remains human. The right column is an internal implementation mapping. Th
 
 ## Agent rule
 
-An agent may create `PaymentIntentPrepared`. It may create `PaymentIntentAuthorized` only when a valid delegation exactly matches recipient, amount, currency, source items, method, expiry and nonce/idempotency key. It may never create `ReceiverConfirmed` or `PaymentClosed` on its own.
+An agent may create `PaymentIntentPrepared`. With a valid exact delegation it may request wallet approval for the constrained scope, but it may not emit `PaymentIntentAuthorized`, approve itself, confirm receipt or close a payment. Only a verified provider/integration result may authorize the wallet payment.
 
 <!-- J11_COMPATIBILITY_CLOSEOUT:START -->
 ## Wallet approval correction

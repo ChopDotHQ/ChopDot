@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "exact_candidate_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d",
+  "html_unchanged": true,
+  "stale_wallet_authorization_mappings": 0,
+  "saved_record_web_retrieval_required": true,
+  "product_sdk_cid_optional": true,
+  "e25_status": "partial",
+  "errors": []
+}

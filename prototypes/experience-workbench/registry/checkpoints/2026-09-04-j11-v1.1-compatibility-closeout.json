@@ -24,5 +24,20 @@
   "edge_case_registry_entries": 40,
   "branch_gate": "must-pass-on-exact-head",
   "approval": "pending",
-  "next_on_approval": "Freeze Journey 11 as Golden #9 and build Journey 12."
+  "next_on_approval": "Freeze Journey 11 as Golden #9 and build Journey 12.",
+  "final_golden_consistency_pass": "complete",
+  "wallet_approval_ui_event": "PaymentApprovalRequested",
+  "wallet_authorization_source": "verified-provider-result-only",
+  "durable_event_acceptance_distinct_from_user_saved_record": true,
+  "saved_record_ordinary_web_retrieval_required": true,
+  "product_sdk_cid": {
+    "optional_integration_metadata": true,
+    "publicly_readable_assumed": false,
+    "sole_retrieval_key_allowed": false
+  },
+  "e25": {
+    "status": "partial",
+    "journey_11": "failure preview",
+    "journey_12": "complete recovery"
+  }
 }
