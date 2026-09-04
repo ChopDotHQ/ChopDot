@@ -3,8 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "bundle:apply": "node tools/apply-contract-bundle.mjs",
+    "prototypes:materialize": "node tools/materialize-prototypes.mjs",
     "map:build": "node tools/build-journey-map.mjs",
     "map:check": "node tools/validate-workbench.mjs",
-    "gate": "npm run map:build && npm run map:check"
+    "contract:check": "node tools/validate-payment-contract.mjs",
+    "gate": "npm run bundle:apply && npm run prototypes:materialize && npm run map:build && npm run map:check && npm run contract:check"
   }
 }
