@@ -17,6 +17,7 @@
   "build_id": "chopdot-cd61093b2af1-68ce7c04192f",
   "car_sha256": "b9fa8263b7f83c05a32547803078db1bbb47c232c5fc8d07b4f8f5657a34a6ae",
   "outer_cid": "bafybeifuwlobydydh2ezprm57qix6s6xwnm47fy3u6zvsnghd27i6cdztq",
+  "inner_app_cid": "bafybeiejtx4iarex7lfsl6azal3dwx4xgrsxliwvxh7u4pgcdaz66wfrrq",
   "readbacks": [
     {
       "surface": "paseo-pinned-direct-ipfs",

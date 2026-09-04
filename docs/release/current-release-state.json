@@ -65,11 +65,11 @@
     },
     "storage_uploaded": {
       "path": "docs/release/2026-09-04-cd61093b-gateway-readback.json",
-      "sha256": "987ac7c71edd6a1557f8dcaa7bee387dd4b5bd3b0abeb4f985dc411efb85486e"
+      "sha256": "4c616745d2c02dfdd4c032fa057c6d003ee294a22c4f182cfd50996894106015"
     },
     "byte_reachable": {
       "path": "docs/release/2026-09-04-cd61093b-gateway-readback.json",
-      "sha256": "987ac7c71edd6a1557f8dcaa7bee387dd4b5bd3b0abeb4f985dc411efb85486e"
+      "sha256": "4c616745d2c02dfdd4c032fa057c6d003ee294a22c4f182cfd50996894106015"
     }
   },
   "blockers": [
