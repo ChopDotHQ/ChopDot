@@ -1,0 +1,17 @@
+{
+  "journey": "11",
+  "version": "v1",
+  "status": "golden-candidate",
+  "decisions": [
+    "One person, currency, and amount per settlement.",
+    "Full payment is default; partial payment is deliberate.",
+    "Preferred available payment method appears first.",
+    "External methods never masquerade as automatic payment.",
+    "Wallet payment keeps the original balance as source of truth.",
+    "No normal-versus-smart infrastructure mode is exposed.",
+    "Open issues block only the affected settlement.",
+    "Balance changes force a fresh review.",
+    "Existing in-progress settlements reopen instead of duplicating.",
+    "Journey 12 owns progress, confirmation, failure, proof, and completion."
+  ]
+}
