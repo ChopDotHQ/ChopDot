@@ -1,0 +1,35 @@
+{
+  "checkpoint": "2026-09-04-j11-v1",
+  "branch": "ux/experience-workbench",
+  "golden_count": 8,
+  "golden": {
+    "02": "Home V1.4",
+    "03": "Create Group V2",
+    "04": "Invite / Join V1",
+    "08": "Group Home V1",
+    "05": "Add Expense V1",
+    "06": "Review / Correct Expense V1.1",
+    "07": "Review / Agree V1.1",
+    "10": "Overall Position V1"
+  },
+  "candidate": {
+    "11": {
+      "name": "Settle Up",
+      "version": "v1",
+      "status": "Golden Candidate — review pending",
+      "file": "journeys/11-settle-up/v1-golden-candidate.html.gz.b64",
+      "states": 56,
+      "checks": {
+        "links": "203/203",
+        "duplicate_ids": "pass",
+        "horizontal_overflow": "pass",
+        "frame_overlap": "pass",
+        "clipped_rows": "pass",
+        "icon_placeholders": "pass",
+        "semantic_identity": "pass",
+        "golden_visual_comparison": "pass"
+      }
+    }
+  },
+  "next_action": "User reviews Journey 11. If approved, freeze as Golden #9 and begin Journey 12 Complete Settlement."
+}
