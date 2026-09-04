@@ -9,65 +9,51 @@
 5. Add an Expense — V1
 6. Review / Correct Expense — V1.1
 7. Review / Agree / Raise an Issue — V1.1
+8. Overall Position — V1
 
-## Golden Journey #7 — Review / Agree / Raise an Issue
+## Golden Journey #8 — Overall Position
 
-**Version:** V1.1  
-**Status:** Design Approved
+**Version:** V1  
+**Status:** Design Approved  
+**Approved:** September 4, 2026
 
-Core reviewer path:
+Approved rules:
 
-`Group attention → Review queue → Expense → Looks right → Next / caught up`
+- show gross obligations with net;
+- People is the default and Groups is secondary;
+- offset only the same people and currency;
+- never combine currencies silently;
+- optional estimates are visibly approximate;
+- open issues affect only relevant balances;
+- Settle and Request remain separate journeys.
 
-Issue path:
+## Golden Candidate #9 — Settle Up
 
-`Something's off → Reason → Optional note → Send → Waiting`
+**Version:** V1  
+**Status:** Review pending
 
-Resolution loop:
+Core path:
 
-`Owner edits or replies → Reviewer sees update/reply → Looks right / Still off`
+`Overall Position → Settle with a person → Confirm amount and method → Review payment → Start payment → Journey 12`
 
-Approved decisions:
+Candidate rules:
 
-- human language instead of `attestation` or `dispute`;
-- one expense reviewed at a time;
-- queue without blind approval;
-- personal share visible before the decision;
-- owners see review status but do not review their own expenses;
-- changed expenses require review again;
-- structured reasons and optional notes;
-- unresolved issues remain visible and block settlement for the group;
-- issue loops close through edit or reply.
+- one person, currency, and amount per settlement;
+- full payment is default and partial payment is deliberate;
+- preferred available method appears first;
+- external methods never masquerade as automatic payment;
+- wallet payments keep the original balance as source of truth;
+- no infrastructure mode selector;
+- open issues block only the affected settlement;
+- balance changes force a fresh review;
+- existing in-progress settlements reopen rather than duplicate;
+- Journey 12 owns progress, confirmation, failure, proof, and completion.
 
 QA:
 
-- 61 states;
-- 176/176 links;
+- 56 explicit states;
+- 203/203 links;
+- 96 representative renders;
 - both target phone sizes;
-- no overflow;
-- no frame overlap;
-- no duplicate IDs;
-- no placeholder icons;
-- aligned iconography;
-- semantic variants passed.
-
-Approved September 4, 2026.
-
-## Current design system
-
-The Golden set now establishes:
-
-- locked mobile frame;
-- fixed header and contextual footer actions;
-- Lucide-style semantic icons;
-- group-first shared-money hierarchy;
-- compact, human copy;
-- visible personal financial impact;
-- focused create, invite, expense, correction, and review flows;
-- explicit recovery and resolution states.
-
-## Next Golden candidate
-
-Journey 10 — Overall Position.
-
-It must answer what the user owes, what they are owed, who is involved, which groups created the balances, and what needs action without becoming a banking dashboard.
+- no overflow, frame overlap, clipped rows, or placeholder icons;
+- semantic identity and Golden comparison passed.

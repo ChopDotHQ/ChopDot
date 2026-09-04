@@ -1,57 +1,57 @@
 # ChopDot Experience Workbench — Start Here
 
-## Current state
+## Golden journeys
 
-- 28 registered journeys
-- 7 Golden / Design Approved
-- Journey 10 — Overall Position is current
-- 21 journeys remain overall
-- 3 journeys remain in the in-app money loop: 10, 11, 12
+1. Home / Orientation — V1.4
+2. Create a Group — V2
+3. Invite / Join — V1
+4. Group Home — V1
+5. Add an Expense — V1
+6. Review / Correct Expense — V1.1
+7. Review / Agree / Raise an Issue — V1.1
+8. Overall Position — V1
 
-## Canonical control files
+## Current review
 
-1. `registry/journeys.json`
-2. `registry/features.json`
-3. `registry/edge-cases.json`
-4. `registry/progress.json`
-5. generated `journey-map.html`
+Journey 11 — Settle Up — **V1 Golden Candidate**
 
-## Map rule
+Read:
 
-Never edit `journey-map.html`, `feature-coverage.html`, or `edge-case-ledger.html` directly.
+- `journeys/11-settle-up/README.md`
+- `journeys/11-settle-up/spec.md`
+- `journeys/11-settle-up/STATE_INVENTORY.md`
+- `journeys/11-settle-up/VISUAL_QA.md`
+- `registry/checkpoints/2026-09-04-j11-v1.json`
 
-Run:
+Restore the clickable prototype:
 
 ```bash
-npm run gate
+base64 --decode journeys/11-settle-up/v1-golden-candidate.html.gz.b64 | gzip -d > /tmp/chopdot-j11.html
 ```
 
-before freezing any journey. The gate regenerates the control surfaces and rejects stale counts, missing paths, orphan features, broken references, dead ends, or a fingerprint mismatch.
+## Journey boundary
 
-## Current work
+Journey 11 chooses the person, scope, currency, amount, and payment method.
 
-Journey 10 must answer:
+Journey 12 owns payment progress, external-app return, recipient confirmation, failure, proof, and updated balances.
 
-- What do I owe?
-- What am I owed?
-- Who is involved?
-- Across which groups?
-- What needs action?
+## Current progress
 
-## Golden set
+- Registered journeys: 28
+- Golden / Design Approved: 8
+- Current journey: 11
+- Remaining overall: 20
+- Remaining in the in-app money loop: Journeys 11 and 12
+- Full core loop still also needs Journey 01 — Enter ChopDot
 
-02 Home V1.4  
-03 Create Group V2  
-04 Invite / Join V1  
-05 Add Expense V1  
-06 Review / Correct V1.1  
-07 Review / Agree V1.1  
-08 Group Home V1
+## Map governance
 
-## Reading order
+`registry/journeys.json` is canonical. Generated maps must never be hand-edited or shortened.
 
-1. `docs/MAP_GOVERNANCE.md`
-2. `journey-map.html`
-3. `GOLDEN_SCREENS.md`
-4. `WORKFLOW.md`
-5. newest file in `registry/checkpoints/`
+Run `npm run gate` before freezing any journey.
+
+## Workflow
+
+**Registry → Generate map → Validate → Inherit → Build → Render → Inspect → State QA → Journey QA → Approve → Freeze**
+
+Do not recreate the design from memory.
