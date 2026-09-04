@@ -29,7 +29,7 @@ requireText(ui, "Only a verified provider/integration result may authorize the w
 
 const stateFile = `${j11}/STATE_AND_AUTHORITY.md`;
 const state = read(stateFile);
-if (/`authorized`[^\n]*Approve in wallet/.test(state)) {
+if (/^\| `authorized`[^\n]*Approve in wallet[^\n]*$/m.test(state)) {
   errors.push(`${stateFile}: authorized row still names Approve in wallet`);
 }
 requireText(state, "For wallet payments, no UI action creates `authorized`", stateFile);
