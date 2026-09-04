@@ -105,12 +105,14 @@ classification in the security baseline, and keep the governance test's exact
 list and negative variants. Do not add a path, rule, regex, value, workflow, or
 history-wide exclusion.
 
-This conclusion does not authorize merge. The candidate still requires hosted
-exact-head execution and independent human review because it changes a secret
-scan baseline.
+This conclusion does not itself authorize merge. The candidate still requires
+hosted exact-head execution and satisfaction of the active
+`delegated-owner-principal` acceptance gates; no independent human review is
+required.
 
 ## Next bounded proof
 
-Run the hosted governance workflow against the exact PR head, require the
-`Secrets scan` job to report zero findings with Gitleaks `8.30.1`, and obtain a
-recorded independent human review before merge.
+Run the hosted governance workflow against the exact PR head and require the
+`Secrets scan` job to report zero findings with Gitleaks `8.30.1`. If the
+required hosted checks pass and review threads are resolved, no separate
+human-review gate remains under the active authority profile.
