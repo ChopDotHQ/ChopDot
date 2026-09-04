@@ -1,0 +1,10 @@
+{
+  "name": "chopdot-experience-workbench",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "map:build": "node tools/build-journey-map.mjs",
+    "map:check": "node tools/validate-workbench.mjs",
+    "gate": "npm run map:build && npm run map:check"
+  }
+}
