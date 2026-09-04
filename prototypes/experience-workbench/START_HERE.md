@@ -1,35 +1,36 @@
 # ChopDot Experience Workbench — Start Here
 
-## Golden journeys
+## Current state
 
-1. Home / Orientation — V1.4
-2. Create a Group — V2
-3. Invite / Join — V1
-4. Group Home — V1
-5. Add an Expense — V1
-6. Review / Correct Expense — V1.1
-7. Review / Agree / Raise an Issue — V1.1
+- 28 registered journeys
+- 7 Golden / Design Approved
+- Journey 10 — Overall Position is current
+- 21 journeys remain overall
+- 3 journeys remain in the in-app money loop: 10, 11, 12
 
-## Current status
+## Canonical control files
 
-Journey 07 is frozen as **Golden Journey #7 / Design Approved**.
+1. `registry/journeys.json`
+2. `registry/features.json`
+3. `registry/edge-cases.json`
+4. `registry/progress.json`
+5. generated `journey-map.html`
 
-Approved language:
+## Map rule
 
-- `Does this look right?`
-- `Looks right`
-- `Something's off`
-- `Not now`
+Never edit `journey-map.html`, `feature-coverage.html`, or `edge-case-ledger.html` directly.
 
-Journey 06 owns detail/edit/delete. Journey 07 owns review/questions/issues/resolution.
+Run:
 
-An unresolved issue blocks settlement for the affected group in the approved prototype. Retest this deliberately during Journey 11 rather than changing it silently.
+```bash
+npm run gate
+```
+
+before freezing any journey. The gate regenerates the control surfaces and rejects stale counts, missing paths, orphan features, broken references, dead ends, or a fingerprint mismatch.
 
 ## Current work
 
-Journey 10 — Overall Position is next.
-
-Its job is to make these answers unmistakable:
+Journey 10 must answer:
 
 - What do I owe?
 - What am I owed?
@@ -37,23 +38,20 @@ Its job is to make these answers unmistakable:
 - Across which groups?
 - What needs action?
 
-## Progress count
+## Golden set
 
-- Registered journeys: 28
-- Golden / Design Approved: 7
-- Remaining overall: 21
-- Remaining to finish the full core loop, including entry: 4 — Journeys 01, 10, 11, and 12
-- Remaining in the in-app money loop from Home through completion: 3 — Journeys 10, 11, and 12
+02 Home V1.4  
+03 Create Group V2  
+04 Invite / Join V1  
+05 Add Expense V1  
+06 Review / Correct V1.1  
+07 Review / Agree V1.1  
+08 Group Home V1
 
-## Read next
+## Reading order
 
-- `GOLDEN_SCREENS.md`
-- `journey-map.html`
-- `registry/checkpoints/2026-09-04-j07-approved.json`
-- `patterns/REVIEW_AND_RESOLUTION.md`
-
-## Workflow
-
-**Inherit → Build → Render → Inspect → State QA → Journey QA → Approve → Freeze**
-
-Do not recreate the design from memory.
+1. `docs/MAP_GOVERNANCE.md`
+2. `journey-map.html`
+3. `GOLDEN_SCREENS.md`
+4. `WORKFLOW.md`
+5. newest file in `registry/checkpoints/`
