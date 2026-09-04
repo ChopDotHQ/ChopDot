@@ -6,10 +6,12 @@
     "bundle:apply": "node tools/apply-contract-bundle.mjs",
     "prototypes:materialize": "node tools/materialize-prototypes.mjs",
     "compat:apply": "node tools/apply-j11-compatibility-closeout.mjs",
+    "golden-consistency:apply": "node tools/apply-j11-final-golden-consistency.mjs",
     "map:build": "node tools/build-journey-map.mjs",
     "map:check": "node tools/validate-workbench.mjs",
     "contract:check": "node tools/validate-payment-contract.mjs",
     "compat:check": "node tools/validate-j11-compatibility-closeout.mjs",
-    "gate": "npm run bundle:apply && npm run prototypes:materialize && npm run compat:apply && npm run map:build && npm run map:check && npm run contract:check && npm run compat:check"
+    "golden-consistency:check": "node tools/validate-j11-final-golden-consistency.mjs",
+    "gate": "npm run bundle:apply && npm run prototypes:materialize && npm run compat:apply && npm run golden-consistency:apply && npm run map:build && npm run map:check && npm run contract:check && npm run compat:check && npm run golden-consistency:check"
   }
 }
