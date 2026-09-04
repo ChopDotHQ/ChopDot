@@ -19,3 +19,7 @@ The original 56 Journey 11 states remain. Their visible design is preserved exce
 ## Total
 
 88 explicit screens, each mapped in `SCREEN_STATE_MAPPING.json`.
+
+## Wallet approval recovery
+
+`wallet-handoff`, `dot-handoff`, `wallet-rejected`, `wallet-approval-expired`, `wallet-connect`, `wallet-result-unknown`, `wallet-recovering`, `wallet-cancelled`, `wallet-cancelled-dot`

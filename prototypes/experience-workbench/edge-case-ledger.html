@@ -1,4 +1,4 @@
-<!doctype html><html lang="en" data-registry-fingerprint="57e89d21bacbb462"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ChopDot Edge Case Ledger</title><style>
+<!doctype html><html lang="en" data-registry-fingerprint="3ba940c8a31bc002"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ChopDot Edge Case Ledger</title><style>
 :root{--bg:#f7f7f8;--surface:#fff;--ink:#111113;--secondary:#66666d;--muted:#929299;--border:#e6e6e9;--pink:#e6007a;--green:#0b7549;--blue:#315aa8;--orange:#835800}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}.wrap{max-width:1180px;margin:auto;padding:30px 20px 80px}a{color:inherit;text-decoration:none}
 header{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:20px}h1{font-size:31px;letter-spacing:-.04em;margin:0 0 6px}header p{font-size:11px;color:var(--secondary);line-height:1.5;margin:0;max-width:690px}.nav{display:flex;gap:7px;flex-wrap:wrap}.nav a{background:#111;color:white;padding:8px 10px;border-radius:10px;font-size:9px}
@@ -7,7 +7,7 @@ header{display:flex;justify-content:space-between;gap:20px;align-items:flex-star
 @media(max-width:720px){header{display:block}.nav{margin-top:12px}.stats{grid-template-columns:1fr 1fr}.row{font-size:9px}}
 .row a{color:var(--pink);font-weight:700}</style></head><body><main class="wrap">
 <header><div><h1>Edge & Failure Coverage</h1><p>Offline, failure, permission, conflict, stale-link, and recovery states mapped to their owning journeys. Generated from the canonical registry.</p></div><nav class="nav"><a href="journey-map.html">Journeys</a><a href="feature-coverage.html">Features</a></nav></header>
-<section class="stats"><div class="stat"><b>32</b><span>tracked cases</span></div><div class="stat"><b>11</b><span>covered</span></div><div class="stat"><b>13</b><span>partial/current</span></div><div class="stat"><b>8</b><span>uncovered</span></div></section>
+<section class="stats"><div class="stat"><b>40</b><span>tracked cases</span></div><div class="stat"><b>11</b><span>covered</span></div><div class="stat"><b>23</b><span>partial/current</span></div><div class="stat"><b>6</b><span>uncovered</span></div></section>
 <section class="table"><div class="row head" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px"><div>ID</div><div>Area</div><div>Case</div><div>Journey owners</div><div>Status</div></div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
     <div>E01</div><div class="sub">App</div><div class="name">Launch offline</div>
     <div class="sub"><a href="journey-map.html#j01">01 Enter ChopDot</a><br><a href="journey-map.html#j02">02 Home / Orientation</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill partial">partial</span></div>
@@ -63,7 +63,7 @@ header{display:flex;justify-content:space-between;gap:20px;align-items:flex-star
     <div>E18</div><div class="sub">Settlement</div><div class="name">No payment method</div>
     <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j20">20 Payment Methods</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
-    <div>E19</div><div class="sub">Settlement</div><div class="name">Wallet not connected</div>
+    <div>E19</div><div class="sub">Settlement</div><div class="name">Wallet not connected or disconnects during approval</div>
     <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j21">21 Wallet &amp; Crypto</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
     <div>E20</div><div class="sub">Settlement</div><div class="name">Invalid recipient address</div>
@@ -72,20 +72,20 @@ header{display:flex;justify-content:space-between;gap:20px;align-items:flex-star
     <div>E21</div><div class="sub">Settlement</div><div class="name">Insufficient funds or fee</div>
     <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
-    <div>E22</div><div class="sub">Settlement</div><div class="name">User rejects signature</div>
+    <div>E22</div><div class="sub">Settlement</div><div class="name">Wallet approval rejected or cancelled</div>
     <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
-    <div>E23</div><div class="sub">Settlement</div><div class="name">Network unavailable</div>
+    <div>E23</div><div class="sub">Settlement</div><div class="name">Network or payment provider unavailable</div>
     <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
-    <div>E24</div><div class="sub">Settlement</div><div class="name">Transaction remains pending</div>
-    <div class="sub"><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill uncovered">uncovered</span></div>
+    <div>E24</div><div class="sub">Settlement</div><div class="name">Payment or approval remains pending</div>
+    <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
     <div>E25</div><div class="sub">Settlement</div><div class="name">Transaction fails</div>
     <div class="sub"><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill uncovered">uncovered</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
-    <div>E26</div><div class="sub">Settlement</div><div class="name">Chain succeeds but local state fails</div>
-    <div class="sub"><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill uncovered">uncovered</span></div>
+    <div>E26</div><div class="sub">Persistence</div><div class="name">Execution succeeds but saved record acceptance is unknown</div>
+    <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
     <div>E27</div><div class="sub">Settlement</div><div class="name">Partial or external payment</div>
     <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j15">15 Settlement History</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
@@ -104,5 +104,29 @@ header{display:flex;justify-content:space-between;gap:20px;align-items:flex-star
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
     <div>E32</div><div class="sub">Permissions</div><div class="name">Action attempted without permission</div>
     <div class="sub"><a href="journey-map.html#j04">04 Invite / Join a Group</a><br><a href="journey-map.html#j06">06 Review / Correct an Expense</a><br><a href="journey-map.html#j09">09 Manage People</a><br><a href="journey-map.html#j26">26 Group Lifecycle</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill partial">partial</span></div>
+  </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
+    <div>E33</div><div class="sub">Wallet approval</div><div class="name">Approval request waits without a verified result</div>
+    <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
+  </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
+    <div>E34</div><div class="sub">Wallet approval</div><div class="name">Approval request expires</div>
+    <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
+  </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
+    <div>E35</div><div class="sub">Wallet approval</div><div class="name">Approval result is unknown after timeout or lost response</div>
+    <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
+  </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
+    <div>E36</div><div class="sub">Wallet approval</div><div class="name">Existing approval or payment is recovering after reconnect</div>
+    <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
+  </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
+    <div>E37</div><div class="sub">Realtime</div><div class="name">Ephemeral update is lost, duplicated, delayed or out of order</div>
+    <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j18">18 Activity &amp; Notifications</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
+  </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
+    <div>E38</div><div class="sub">Delivery</div><div class="name">Durable outbox delivery retries after missing acknowledgement</div>
+    <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j18">18 Activity &amp; Notifications</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
+  </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
+    <div>E39</div><div class="sub">History</div><div class="name">Duplicate or replayed payment-history event</div>
+    <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j15">15 Settlement History</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
+  </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
+    <div>E40</div><div class="sub">Persistence</div><div class="name">Duplicate save or retry reuses the accepted idempotency result</div>
+    <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
   </div></section>
 </main></body></html>

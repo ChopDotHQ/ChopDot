@@ -1,0 +1,28 @@
+{
+  "checkpoint": "2026-09-04-j11-v1.1-compatibility-closeout",
+  "branch": "ux/experience-workbench",
+  "golden_count": 8,
+  "current_journey": "11",
+  "candidate_version": "v1.1",
+  "payment_contract_version": "1.2",
+  "storage_contract_version": "1.0",
+  "actual_html": "journeys/11-settle-up/v1.1-golden-candidate.html",
+  "happy_path_screens_added": 0,
+  "required_approval_states": [
+    "approval-waiting",
+    "approval-rejected",
+    "approval-expired",
+    "approval-disconnected",
+    "approval-result-unknown",
+    "approval-recovering"
+  ],
+  "visible_chain_branding_removed": true,
+  "saved_record_event": "SavedRecordAccepted",
+  "realtime_authoritative": false,
+  "durable_outbox_required": true,
+  "replay_safe_history_required": true,
+  "edge_case_registry_entries": 40,
+  "branch_gate": "must-pass-on-exact-head",
+  "approval": "pending",
+  "next_on_approval": "Freeze Journey 11 as Golden #9 and build Journey 12."
+}

@@ -59,3 +59,29 @@
 **GIVEN** Jeanine receives a request to confirm an external CHF 54.30 payment.  
 **WHEN** she confirms receipt.  
 **THEN** only that exact payment item becomes eligible to close; her confirmation cannot close a different amount, currency, person or unrelated item.
+
+<!-- J11_COMPATIBILITY_CLOSEOUT:START -->
+## Wallet approval request before authorization
+
+**GIVEN** an exact wallet payment is prepared. **WHEN** the payer taps **Approve in wallet**. **THEN** ChopDot records `PaymentApprovalRequested` and waits; no authorization exists until a valid wallet result is verified and accepted.
+
+## Wallet approval result unknown and recovery
+
+**GIVEN** the wallet result is lost or times out. **WHEN** the outcome cannot be determined. **THEN** ChopDot shows **Still checking**, blocks a second payment and reconciles the existing request with the same idempotency key.
+
+## Realtime update missed
+
+**GIVEN** a transition was durably accepted but the realtime message was lost. **WHEN** the user reconnects or refreshes. **THEN** the screen rebuilds from accepted history.
+
+## Durable outbox retry
+
+**GIVEN** delivery was not acknowledged. **WHEN** the outbox retries. **THEN** consumers deduplicate the event and no transfer or closure happens twice.
+
+## Replay-safe history
+
+**GIVEN** a read model must be rebuilt. **WHEN** accepted history is replayed. **THEN** the same state is reconstructed without payment side effects.
+
+## Saved record acceptance is unknown
+
+**GIVEN** persistence acknowledgement timed out. **WHEN** acceptance is unknown. **THEN** the result is reconciled by event/idempotency identity rather than assumed successful, failed or replaced.
+<!-- J11_COMPATIBILITY_CLOSEOUT:END -->

@@ -27,3 +27,9 @@ Open `v1.1-golden-candidate.html`.
 - `UI_EVENT_MAPPING.json`
 - `VISUAL_QA.md`
 - `contract-validation.json`
+
+<!-- J11_COMPATIBILITY_CLOSEOUT:START -->
+## Compatibility closeout
+
+Wallet approval now uses request → wait → verified result. The candidate also specifies storage-neutral `SavedRecordAccepted`, ephemeral realtime, a durable outbox and replay-safe history. No happy-path screens or broad visual changes were added.
+<!-- J11_COMPATIBILITY_CLOSEOUT:END -->

@@ -1,5 +1,5 @@
 {
-  "version": "1.1",
+  "version": "1.2",
   "candidate": "Journey 11 V1.1",
   "candidate_journey": "11",
   "candidate_html": "journeys/11-settle-up/v1.1-golden-candidate.html",
@@ -9,7 +9,8 @@
     "GIVEN_WHEN_THEN.md",
     "UI_TO_DOMAIN_EVENTS.md",
     "PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md",
-    "VISUAL_QA.md"
+    "VISUAL_QA.md",
+    "STORAGE_AND_REPLAY_CONTRACT.md"
   ],
   "required_visible_states": [
     "Marked as sent.",
@@ -30,7 +31,26 @@
     "AP2",
     "Journey 11",
     "Journey 12",
-    "handoff"
+    "handoff",
+    "x402",
+    "Visa Trusted Agent Protocol",
+    "Polkadot",
+    "blockchain",
+    "onchain",
+    "offchain",
+    "private key",
+    "seed phrase",
+    "outbox",
+    "idempotency",
+    "nonce",
+    "replay-safe",
+    "event stream",
+    "database",
+    "backend",
+    "connector",
+    "SavedRecordAccepted",
+    "PaymentApprovalRequested",
+    "PaymentIntentAuthorized"
   ],
   "allowed_payment_states": [
     "draft",
@@ -48,14 +68,21 @@
     "partial",
     "disputed",
     "reversed",
-    "blocked"
+    "blocked",
+    "approval-waiting",
+    "approval-rejected",
+    "approval-expired",
+    "approval-disconnected",
+    "approval-result-unknown",
+    "approval-recovering"
   ],
   "allowed_authorities": [
     "payer",
     "receiver",
     "provider-or-chain",
     "provider-or-system",
-    "system"
+    "system",
+    "payment-provider"
   ],
   "required_scenarios": [
     "Human-present external or manual payment",
@@ -84,5 +111,17 @@
     "Agents may execute only with valid exact delegation and may not approve themselves or confirm receipt.",
     "Signatures, balances, replay prevention and transition checks are deterministic backend logic.",
     "Payment implementations remain replaceable and secrets never become ChopDot domain data."
-  ]
+  ],
+  "storage_contract_version": "1.0",
+  "required_approval_states": [
+    "approval-waiting",
+    "approval-rejected",
+    "approval-expired",
+    "approval-disconnected",
+    "approval-result-unknown",
+    "approval-recovering"
+  ],
+  "approval_request_event": "PaymentApprovalRequested",
+  "authorization_event": "PaymentIntentAuthorized",
+  "saved_record_event": "SavedRecordAccepted"
 }

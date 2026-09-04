@@ -1,7 +1,15 @@
 {
-  "states": 88,
-  "viewports": 2,
-  "checks": 176,
-  "screenshots": 78,
-  "failures": []
+  "candidate": "Journey 11 V1.1 compatibility closeout",
+  "screens": 93,
+  "hash_links": "304/304",
+  "layout_checks": "186/186",
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "happy_path_screens_added": 0,
+  "recovery_screens_added": 5,
+  "horizontal_overflow": 0,
+  "frame_overlap": 0,
+  "visual_drift": "none outside chain-neutral wallet copy"
 }

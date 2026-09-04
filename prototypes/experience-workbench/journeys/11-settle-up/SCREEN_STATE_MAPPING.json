@@ -175,9 +175,9 @@
   },
   {
     "screen": "wallet-connect",
-    "payment_state": "draft",
-    "transition_authority": "payer",
-    "scope_ref": null
+    "payment_state": "approval-disconnected",
+    "transition_authority": "system",
+    "scope_ref": "scope-jeanine-chf-54-30"
   },
   {
     "screen": "wallet-connected",
@@ -241,9 +241,9 @@
   },
   {
     "screen": "wallet-handoff",
-    "payment_state": "payment-started",
-    "transition_authority": "payer",
-    "scope_ref": null
+    "payment_state": "approval-waiting",
+    "transition_authority": "provider-or-system",
+    "scope_ref": "scope-jeanine-chf-54-30"
   },
   {
     "screen": "partial-handoff",
@@ -319,15 +319,15 @@
   },
   {
     "screen": "dot-handoff",
-    "payment_state": "payment-started",
-    "transition_authority": "payer",
+    "payment_state": "approval-waiting",
+    "transition_authority": "provider-or-system",
     "scope_ref": "scope-luca-dot-2-400000"
   },
   {
     "screen": "wallet-rejected",
-    "payment_state": "cancelled",
-    "transition_authority": "payer",
-    "scope_ref": null
+    "payment_state": "approval-rejected",
+    "transition_authority": "provider-or-system",
+    "scope_ref": "scope-jeanine-chf-54-30"
   },
   {
     "screen": "quote-expired",
@@ -386,8 +386,8 @@
   {
     "screen": "wallet-received",
     "payment_state": "received-cleared",
-    "transition_authority": "provider-or-chain",
-    "scope_ref": null
+    "transition_authority": "payment-provider",
+    "scope_ref": "scope-jeanine-chf-54-30"
   },
   {
     "screen": "wallet-complete",
@@ -398,7 +398,7 @@
   {
     "screen": "wallet-received-dot",
     "payment_state": "received-cleared",
-    "transition_authority": "provider-or-chain",
+    "transition_authority": "payment-provider",
     "scope_ref": "scope-luca-dot-2-400000"
   },
   {
@@ -526,5 +526,35 @@
     "payment_state": "closed",
     "transition_authority": "system",
     "scope_ref": "scope-nina-chf-30-00"
+  },
+  {
+    "screen": "wallet-cancelled",
+    "payment_state": "cancelled",
+    "transition_authority": "payer",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "wallet-cancelled-dot",
+    "payment_state": "cancelled",
+    "transition_authority": "payer",
+    "scope_ref": "scope-luca-dot-2-400000"
+  },
+  {
+    "screen": "wallet-approval-expired",
+    "payment_state": "approval-expired",
+    "transition_authority": "system",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "wallet-result-unknown",
+    "payment_state": "approval-result-unknown",
+    "transition_authority": "provider-or-system",
+    "scope_ref": "scope-jeanine-chf-54-30"
+  },
+  {
+    "screen": "wallet-recovering",
+    "payment_state": "approval-recovering",
+    "transition_authority": "provider-or-system",
+    "scope_ref": "scope-jeanine-chf-54-30"
   }
 ]

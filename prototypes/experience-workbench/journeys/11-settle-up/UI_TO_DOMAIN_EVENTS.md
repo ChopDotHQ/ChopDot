@@ -26,3 +26,15 @@ The UI remains human. The right column is an internal implementation mapping. Th
 ## Agent rule
 
 An agent may create `PaymentIntentPrepared`. It may create `PaymentIntentAuthorized` only when a valid delegation exactly matches recipient, amount, currency, source items, method, expiry and nonce/idempotency key. It may never create `ReceiverConfirmed` or `PaymentClosed` on its own.
+
+<!-- J11_COMPATIBILITY_CLOSEOUT:START -->
+## Wallet approval correction
+
+| UI action | Internal event | Authority | Does not do |
+|---|---|---|---|
+| **Approve in wallet** | `PaymentApprovalRequested` | Payer | Does not authorize or submit payment |
+| Verified wallet approval result | `PaymentIntentAuthorized` | Wallet/provider result plus deterministic verification | Cannot expand scope |
+| **Request again** | `PaymentApprovalRequested` with reused idempotency key | Payer | Cannot create a second payment |
+| **Recover status** | `PaymentRecoveryRequested` | System query | Cannot prepare, authorize or start replacement payment |
+| Valid event plus durable delivery acceptance | `SavedRecordAccepted` | Storage-neutral durability boundary | Does not imply payment success |
+<!-- J11_COMPATIBILITY_CLOSEOUT:END -->

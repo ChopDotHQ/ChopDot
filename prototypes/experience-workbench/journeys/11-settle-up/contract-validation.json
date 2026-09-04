@@ -1,13 +1,13 @@
 {
   "ok": true,
   "candidate": "Journey 11 V1.1",
-  "candidate_sha256": "a556658e93f91e150b4d0568e155bac19f699e8be1f52d8c8c00cbcd3274fe5e",
-  "screen_count": 88,
-  "mapped_screens": 88,
-  "mapped_actions": 129,
-  "primary_actions": 85,
-  "authorization_actions": 10,
-  "retry_actions": 2,
+  "candidate_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d",
+  "screen_count": 93,
+  "mapped_screens": 93,
+  "mapped_actions": 139,
+  "primary_actions": 90,
+  "authorization_actions": 7,
+  "retry_actions": 1,
   "visible_banned_terms": [],
   "errors": []
 }

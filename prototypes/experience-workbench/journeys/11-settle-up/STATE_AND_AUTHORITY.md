@@ -23,3 +23,22 @@ This table is internal. Normal UI uses human status copy rather than these imple
 ## Exact finalized transfer exception
 
 A finalized provider/network transfer may close an exact item without manual receiver confirmation only when payer, recipient, amount, currency/asset, source item, authorization and transfer identity all match deterministically. It never closes unrelated items.
+
+<!-- J11_COMPATIBILITY_CLOSEOUT:START -->
+## Wallet approval states
+
+| Internal state | Meaning | Authority | Can authorize or close? |
+|---|---|---|---|
+| `approval_waiting` | Approval was requested and no verified result has returned. | Wallet/provider result plus deterministic verifier | No |
+| `approval_rejected` | The wallet rejected the request. | Wallet/provider result | No |
+| `approval_expired` | The approval window expired. | Deterministic clock/verifier | No |
+| `approval_disconnected` | The wallet is not available for the request. | Connection status | No |
+| `approval_result_unknown` | A request may have been handled, but its result is unavailable. | Reconciliation only | No new payment |
+| `approval_recovering` | ChopDot is reconciling the existing request. | Provider/system query | No new payment |
+
+A verified wallet approval may create `PaymentIntentAuthorized` only after exact scope, expiry, account, signature, nonce and replay checks pass.
+
+### Saved record acceptance
+
+`SavedRecordAccepted` is emitted only after a valid event and durable outbox entry are accepted together. Before that acceptance, the transition is not authoritative. After acceptance, realtime delivery may fail without losing the transition.
+<!-- J11_COMPATIBILITY_CLOSEOUT:END -->

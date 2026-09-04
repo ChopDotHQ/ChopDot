@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "exact_candidate_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d",
+  "screen_count": 93,
+  "mapped_screens": 93,
+  "mapped_actions": 139,
+  "primary_actions": 90,
+  "wallet_approval_actions": 3,
+  "direct_wallet_authorization_actions": 0,
+  "approval_states": [
+    "approval-waiting",
+    "approval-rejected",
+    "approval-expired",
+    "approval-disconnected",
+    "approval-result-unknown",
+    "approval-recovering"
+  ],
+  "saved_record_event": "SavedRecordAccepted",
+  "realtime_authoritative": false,
+  "edge_case_entries": 40,
+  "visible_banned_terms": [],
+  "errors": []
+}

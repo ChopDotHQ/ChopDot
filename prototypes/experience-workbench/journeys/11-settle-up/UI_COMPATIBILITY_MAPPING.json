@@ -3,1529 +3,1529 @@
     "screen": "settle",
     "label": "Continue",
     "primary": true,
-    "target": "#twint-review",
-    "domain_event": "PaymentIntentPrepared",
+    "event": "PaymentIntentPrepared",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "settle",
     "label": "Cancel",
     "primary": false,
-    "target": "#position",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "breakdown",
     "label": "Done",
     "primary": true,
-    "target": "#settle",
-    "domain_event": "SettlementScopeViewed",
+    "event": "SettlementScopeViewed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "methods",
     "label": "Cancel",
     "primary": false,
-    "target": "#settle",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "twint-review",
     "label": "Open TWINT",
     "primary": true,
-    "target": "#twint-handoff",
-    "domain_event": "PaymentIntentAuthorized",
+    "event": "PaymentIntentAuthorized",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": "scope-jeanine-chf-54-30-001",
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "twint-review",
     "label": "Change method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "bank",
     "label": "Review transfer",
     "primary": true,
-    "target": "#bank-review",
-    "domain_event": "PaymentIntentPrepared",
+    "event": "PaymentIntentPrepared",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "bank",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "bank-copied",
     "label": "Back",
     "primary": true,
-    "target": "#bank",
-    "domain_event": "NavigationRequested",
+    "event": "NavigationRequested",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "bank-review",
     "label": "Open bank app",
     "primary": true,
-    "target": "#bank-handoff",
-    "domain_event": "PaymentIntentAuthorized",
+    "event": "PaymentIntentAuthorized",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": "scope-jeanine-chf-54-30-001",
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "bank-review",
     "label": "I already sent it",
     "primary": false,
-    "target": "#bank-sent",
-    "domain_event": "PayerSentClaimPrepared",
+    "event": "PayerSentClaimPrepared",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "bank-sent",
     "label": "Yes, mark as sent",
     "primary": true,
-    "target": "#external-handoff",
-    "domain_event": "PayerMarkedSent",
+    "event": "PayerMarkedSent",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "bank-sent",
     "label": "Not yet",
     "primary": false,
-    "target": "#bank-review",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "paypal",
     "label": "Open PayPal",
     "primary": true,
-    "target": "#paypal-handoff",
-    "domain_event": "PaymentIntentAuthorized",
+    "event": "PaymentIntentAuthorized",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": "scope-jeanine-chf-54-30-001",
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "paypal",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "cash",
     "label": "Record a payment",
     "primary": true,
-    "target": "#cash-confirm",
-    "domain_event": "PayerSentClaimPrepared",
+    "event": "PayerSentClaimPrepared",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "cash",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "cash-confirm",
     "label": "Record as sent",
     "primary": true,
-    "target": "#cash-handoff",
-    "domain_event": "PayerMarkedSent",
+    "event": "PayerMarkedSent",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "cash-confirm",
     "label": "Cancel",
     "primary": false,
-    "target": "#cash",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet",
     "label": "Review wallet payment",
     "primary": true,
-    "target": "#wallet-review",
-    "domain_event": "PaymentIntentPrepared",
+    "event": "PaymentIntentPrepared",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "wallet",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-dot",
     "label": "Review wallet payment",
     "primary": true,
-    "target": "#wallet-review",
-    "domain_event": "PaymentIntentPrepared",
+    "event": "PaymentIntentPrepared",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "wallet-dot",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-usdc",
     "label": "Review wallet payment",
     "primary": true,
-    "target": "#wallet-review-usdc",
-    "domain_event": "PaymentIntentPrepared",
+    "event": "PaymentIntentPrepared",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "wallet-usdc",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-review",
     "label": "Approve in wallet",
     "primary": true,
-    "target": "#wallet-handoff",
-    "domain_event": "PaymentApprovalRequested",
+    "event": "PaymentApprovalRequested",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": "scope-jeanine-chf-54-30-001",
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "wallet-review-usdc",
     "label": "Approve in wallet",
     "primary": true,
-    "target": "#wallet-handoff",
-    "domain_event": "PaymentApprovalRequested",
+    "event": "PaymentApprovalRequested",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": "scope-jeanine-chf-54-30-001",
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "amount",
     "label": "Use CHF 54.30",
     "primary": true,
-    "target": "#settle",
-    "domain_event": "PaymentAmountSelected",
+    "event": "PaymentAmountSelected",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "amount-partial",
     "label": "Use CHF 20.00",
     "primary": true,
-    "target": "#partial-review",
-    "domain_event": "PartialPaymentSelected",
+    "event": "PartialPaymentSelected",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-20-00-partial",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "amount-partial",
     "label": "Cancel",
     "primary": false,
-    "target": "#settle",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "partial-review",
     "label": "Open TWINT",
     "primary": true,
-    "target": "#partial-handoff",
-    "domain_event": "PaymentIntentAuthorized",
+    "event": "PaymentIntentAuthorized",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-20-00-partial",
     "idempotency_key": "scope-jeanine-chf-20-00-partial-001",
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "partial-review",
     "label": "Change amount",
     "primary": false,
-    "target": "#amount-partial",
-    "domain_event": "PaymentAmountSelectionOpened",
+    "event": "PaymentAmountSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "group-select",
     "label": "Cancel",
     "primary": false,
-    "target": "#group-home",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "group-jeanine",
     "label": "Continue",
     "primary": true,
-    "target": "#twint-review-group-jeanine",
-    "domain_event": "PaymentIntentPrepared",
+    "event": "PaymentIntentPrepared",
     "authority": "payer",
     "scope_ref": "scope-group-jeanine-chf-24-30",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "group-jeanine",
     "label": "Cancel",
     "primary": false,
-    "target": "#position",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "group-nina",
     "label": "Continue",
     "primary": true,
-    "target": "#twint-review-group-nina",
-    "domain_event": "PaymentIntentPrepared",
+    "event": "PaymentIntentPrepared",
     "authority": "payer",
     "scope_ref": "scope-group-nina-chf-18-00",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "group-nina",
     "label": "Cancel",
     "primary": false,
-    "target": "#position",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "currency-select",
     "label": "Cancel",
     "primary": false,
-    "target": "#position",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "open-issue",
     "label": "Review issue",
     "primary": true,
-    "target": "#issue-handoff",
-    "domain_event": "DependentIssueReviewRequested",
+    "event": "DependentIssueReviewRequested",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "no-method",
     "label": "Ask Nina",
     "primary": true,
-    "target": "#request-details",
-    "domain_event": "PaymentDetailsRequested",
+    "event": "PaymentDetailsRequested",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "request-details",
     "label": "Back to balances",
     "primary": true,
-    "target": "#position",
-    "domain_event": "SettlementExitRequested",
+    "event": "SettlementExitRequested",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "offline",
     "label": "Pay CHF 54.30",
     "primary": true,
-    "target": "#offline",
-    "domain_event": "PaymentStartBlocked",
+    "event": "PaymentStartBlocked",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "balance-changed",
     "label": "Review CHF 59.30",
     "primary": true,
-    "target": "#settle-updated",
-    "domain_event": "SettlementScopeRefreshed",
+    "event": "SettlementScopeRefreshed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "balance-changed",
     "label": "Cancel",
     "primary": false,
-    "target": "#position",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "already-progress",
     "label": "View progress",
     "primary": true,
-    "target": "#j12-progress",
-    "domain_event": "ExistingPaymentOpened",
+    "event": "ExistingPaymentOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "wallet-connect",
     "label": "Connect wallet",
     "primary": true,
-    "target": "#wallet-connected",
-    "domain_event": "WalletConnectionRequested",
+    "event": "WalletConnectionRequested",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "wallet-connect",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-connected",
     "label": "Continue",
     "primary": true,
-    "target": "#wallet-dot",
-    "domain_event": "PaymentIntentPrepared",
+    "event": "PaymentIntentPrepared",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "wallet-wrong",
     "label": "Switch account",
     "primary": true,
-    "target": "#wallet-review",
-    "domain_event": "WalletSwitchRequested",
+    "event": "WalletSwitchRequested",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "wallet-wrong",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "invalid-address",
     "label": "Ask Jeanine",
     "primary": true,
-    "target": "#request-wallet",
-    "domain_event": "PaymentDetailsRequested",
+    "event": "PaymentDetailsRequested",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "invalid-address",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "insufficient",
     "label": "Use USDC",
     "primary": true,
-    "target": "#wallet-usdc",
-    "domain_event": "PaymentMethodSelected",
+    "event": "PaymentMethodSelected",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "insufficient",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "fee-unavailable",
     "label": "Refresh",
     "primary": true,
-    "target": "#wallet-review",
-    "domain_event": "PaymentStatusRefreshRequested",
+    "event": "PaymentStatusRefreshRequested",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "fee-unavailable",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "twint-handoff",
     "label": "I've sent it",
     "primary": true,
-    "target": "#twint-sent",
-    "domain_event": "PayerMarkedSent",
+    "event": "PayerMarkedSent",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "twint-handoff",
     "label": "Back to payment",
     "primary": false,
-    "target": "#twint-review",
-    "domain_event": "PaymentIntentReviewResumed",
+    "event": "PaymentIntentReviewResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "bank-handoff",
     "label": "I've sent it",
     "primary": true,
-    "target": "#external-handoff",
-    "domain_event": "PayerMarkedSent",
+    "event": "PayerMarkedSent",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "bank-handoff",
     "label": "Back to payment",
     "primary": false,
-    "target": "#bank-review",
-    "domain_event": "PaymentIntentReviewResumed",
+    "event": "PaymentIntentReviewResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "paypal-handoff",
     "label": "I've sent it",
     "primary": true,
-    "target": "#paypal-sent",
-    "domain_event": "PayerMarkedSent",
+    "event": "PayerMarkedSent",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "paypal-handoff",
     "label": "Back to payment",
     "primary": false,
-    "target": "#paypal",
-    "domain_event": "PaymentIntentReviewResumed",
+    "event": "PaymentIntentReviewResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "external-handoff",
     "label": "View confirmation status",
     "primary": true,
-    "target": "#payment-waiting",
-    "domain_event": "PaymentStatusViewed",
+    "event": "PaymentStatusViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "cash-handoff",
     "label": "View confirmation status",
     "primary": true,
-    "target": "#payment-waiting",
-    "domain_event": "PaymentStatusViewed",
+    "event": "PaymentStatusViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-handoff",
     "label": "Refresh status",
     "primary": true,
-    "target": "#wallet-received",
-    "domain_event": "PaymentStatusRefreshRequested",
+    "event": "PaymentStatusRefreshRequested",
     "authority": "system",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": null,
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "wallet-handoff",
     "label": "Cancel",
     "primary": false,
-    "target": "#wallet-cancelled",
-    "domain_event": "PaymentApprovalCancellationRequested",
+    "event": "PaymentApprovalCancellationRequested",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": null,
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "partial-handoff",
     "label": "I've sent it",
     "primary": true,
-    "target": "#partial-sent",
-    "domain_event": "PayerMarkedSent",
+    "event": "PayerMarkedSent",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "partial-handoff",
     "label": "Back to payment",
     "primary": false,
-    "target": "#partial-review",
-    "domain_event": "PaymentIntentReviewResumed",
+    "event": "PaymentIntentReviewResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "j12-progress",
     "label": "Refresh status",
     "primary": true,
-    "target": "#payment-waiting",
-    "domain_event": "PaymentStatusRefreshRequested",
+    "event": "PaymentStatusRefreshRequested",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "issue-handoff",
     "label": "Back",
     "primary": true,
-    "target": "#open-issue",
-    "domain_event": "SettlementFlowResumed",
+    "event": "SettlementFlowResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "position",
     "label": "Back",
     "primary": true,
-    "target": "#settle",
-    "domain_event": "SettlementFlowResumed",
+    "event": "SettlementFlowResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "group-home",
     "label": "Back",
     "primary": true,
-    "target": "#group-select",
-    "domain_event": "SettlementFlowResumed",
+    "event": "SettlementFlowResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "request-wallet",
     "label": "Back",
     "primary": true,
-    "target": "#invalid-address",
-    "domain_event": "SettlementFlowResumed",
+    "event": "SettlementFlowResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "settle-updated",
     "label": "Continue",
     "primary": true,
-    "target": "#twint-review",
-    "domain_event": "PaymentIntentPrepared",
+    "event": "PaymentIntentPrepared",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-59-30",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "settle-updated",
     "label": "Cancel",
     "primary": false,
-    "target": "#position",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "cash-nina",
     "label": "Record a payment",
     "primary": true,
-    "target": "#cash-confirm-nina",
-    "domain_event": "PayerSentClaimPrepared",
+    "event": "PayerSentClaimPrepared",
     "authority": "payer",
     "scope_ref": "scope-nina-chf-30-00",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "cash-nina",
     "label": "Choose another method",
     "primary": false,
-    "target": "#no-method",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "group-breakdown",
     "label": "Done",
     "primary": true,
-    "target": "#group-jeanine",
-    "domain_event": "SettlementScopeViewed",
+    "event": "SettlementScopeViewed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "settle-eur",
     "label": "Open bank app",
     "primary": true,
-    "target": "#eur-handoff",
-    "domain_event": "PaymentIntentAuthorized",
+    "event": "PaymentIntentAuthorized",
     "authority": "payer",
     "scope_ref": "scope-luca-eur-18-00",
     "idempotency_key": "scope-luca-eur-18-00-001",
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "settle-eur",
     "label": "Cancel",
     "primary": false,
-    "target": "#currency-select",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "settle-dot",
     "label": "Approve in wallet",
     "primary": true,
-    "target": "#dot-handoff",
-    "domain_event": "PaymentApprovalRequested",
+    "event": "PaymentApprovalRequested",
     "authority": "payer",
     "scope_ref": "scope-luca-dot-2-400000",
     "idempotency_key": "scope-luca-dot-2-400000-001",
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "settle-dot",
     "label": "Cancel",
     "primary": false,
-    "target": "#currency-select",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "eur-handoff",
     "label": "I've sent it",
     "primary": true,
-    "target": "#payment-sent-eur",
-    "domain_event": "PayerMarkedSent",
+    "event": "PayerMarkedSent",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "eur-handoff",
     "label": "Back to payment",
     "primary": false,
-    "target": "#settle-eur",
-    "domain_event": "PaymentIntentReviewResumed",
+    "event": "PaymentIntentReviewResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "dot-handoff",
     "label": "Refresh status",
     "primary": true,
-    "target": "#wallet-received-dot",
-    "domain_event": "PaymentStatusRefreshRequested",
+    "event": "PaymentStatusRefreshRequested",
     "authority": "system",
     "scope_ref": "scope-luca-dot-2-400000",
     "idempotency_key": null,
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "dot-handoff",
     "label": "Cancel",
     "primary": false,
-    "target": "#wallet-cancelled-dot",
-    "domain_event": "PaymentApprovalCancellationRequested",
+    "event": "PaymentApprovalCancellationRequested",
     "authority": "payer",
     "scope_ref": "scope-luca-dot-2-400000",
     "idempotency_key": null,
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "wallet-rejected",
     "label": "Request again",
     "primary": true,
-    "target": "#wallet-handoff",
-    "domain_event": "PaymentApprovalRequested",
+    "event": "PaymentApprovalRequested",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": "scope-jeanine-chf-54-30-001",
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "wallet-rejected",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "quote-expired",
     "label": "Refresh quote",
     "primary": true,
-    "target": "#wallet-dot",
-    "domain_event": "PaymentQuoteRefreshRequested",
+    "event": "PaymentQuoteRefreshRequested",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "quote-expired",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "payment-waiting",
     "label": "Refresh status",
     "primary": true,
-    "target": "#payment-received",
-    "domain_event": "PaymentStatusRefreshRequested",
+    "event": "PaymentStatusRefreshRequested",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "payment-waiting",
     "label": "Back to balances",
     "primary": false,
-    "target": "#position",
-    "domain_event": "SettlementExitRequested",
+    "event": "SettlementExitRequested",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "payment-received",
     "label": "View updated balance",
     "primary": true,
-    "target": "#payment-complete",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "payment-failed",
     "label": "Try again",
     "primary": true,
-    "target": "#twint-review",
-    "domain_event": "PaymentRetryRequested",
+    "event": "PaymentRetryRequested",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "payment-failed",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "payment-complete",
     "label": "Back to balances",
     "primary": true,
-    "target": "#position",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "partial-sent",
     "label": "View confirmation status",
     "primary": true,
-    "target": "#partial-waiting",
-    "domain_event": "PaymentStatusViewed",
+    "event": "PaymentStatusViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "partial-waiting",
     "label": "Refresh status",
     "primary": true,
-    "target": "#partial-complete",
-    "domain_event": "PaymentStatusRefreshRequested",
+    "event": "PaymentStatusRefreshRequested",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "partial-complete",
     "label": "Back to balances",
     "primary": true,
-    "target": "#position",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "payment-sent-eur",
     "label": "Back to balances",
     "primary": true,
-    "target": "#position",
-    "domain_event": "PaymentStatusViewed",
+    "event": "PaymentStatusViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-received",
     "label": "View updated balance",
     "primary": true,
-    "target": "#wallet-complete",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-complete",
     "label": "Back to balances",
     "primary": true,
-    "target": "#position",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-received-dot",
     "label": "View updated balance",
     "primary": true,
-    "target": "#wallet-complete-dot",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-complete-dot",
     "label": "Back to balances",
     "primary": true,
-    "target": "#position",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "twint-sent",
     "label": "View confirmation status",
     "primary": true,
-    "target": "#payment-waiting",
-    "domain_event": "PaymentStatusViewed",
+    "event": "PaymentStatusViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "paypal-sent",
     "label": "View confirmation status",
     "primary": true,
-    "target": "#payment-waiting",
-    "domain_event": "PaymentStatusViewed",
+    "event": "PaymentStatusViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "group-breakdown-nina",
     "label": "Done",
     "primary": true,
-    "target": "#group-nina",
-    "domain_event": "SettlementScopeViewed",
+    "event": "SettlementScopeViewed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "twint-review-group-jeanine",
     "label": "Open TWINT",
     "primary": true,
-    "target": "#twint-handoff-group-jeanine",
-    "domain_event": "PaymentIntentAuthorized",
+    "event": "PaymentIntentAuthorized",
     "authority": "payer",
     "scope_ref": "twint-review-group-jeanine",
     "idempotency_key": "twint-review-group-jeanine-001",
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "twint-review-group-jeanine",
     "label": "Back",
     "primary": false,
-    "target": "#group-jeanine",
-    "domain_event": "PaymentIntentReviewResumed",
+    "event": "PaymentIntentReviewResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "twint-handoff-group-jeanine",
     "label": "I've sent it",
     "primary": true,
-    "target": "#twint-sent-group-jeanine",
-    "domain_event": "PayerMarkedSent",
+    "event": "PayerMarkedSent",
     "authority": "payer",
     "scope_ref": "scope-group-jeanine-chf-24-30",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "twint-handoff-group-jeanine",
     "label": "Back to payment",
     "primary": false,
-    "target": "#twint-review-group-jeanine",
-    "domain_event": "PaymentIntentReviewResumed",
+    "event": "PaymentIntentReviewResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "twint-sent-group-jeanine",
     "label": "View confirmation status",
     "primary": true,
-    "target": "#payment-waiting-group-jeanine",
-    "domain_event": "PaymentStatusViewed",
+    "event": "PaymentStatusViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "payment-waiting-group-jeanine",
     "label": "Refresh status",
     "primary": true,
-    "target": "#group-jeanine-received",
-    "domain_event": "PaymentStatusRefreshRequested",
+    "event": "PaymentStatusRefreshRequested",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "group-jeanine-received",
     "label": "View updated balance",
     "primary": true,
-    "target": "#group-jeanine-complete",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "group-jeanine-complete",
     "label": "Back to balances",
     "primary": true,
-    "target": "#position",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "twint-review-group-nina",
     "label": "Open TWINT",
     "primary": true,
-    "target": "#twint-handoff-group-nina",
-    "domain_event": "PaymentIntentAuthorized",
+    "event": "PaymentIntentAuthorized",
     "authority": "payer",
     "scope_ref": "twint-review-group-nina",
     "idempotency_key": "twint-review-group-nina-001",
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "twint-review-group-nina",
     "label": "Back",
     "primary": false,
-    "target": "#group-nina",
-    "domain_event": "PaymentIntentReviewResumed",
+    "event": "PaymentIntentReviewResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "twint-handoff-group-nina",
     "label": "I've sent it",
     "primary": true,
-    "target": "#twint-sent-group-nina",
-    "domain_event": "PayerMarkedSent",
+    "event": "PayerMarkedSent",
     "authority": "payer",
     "scope_ref": "scope-group-nina-chf-18-00",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "twint-handoff-group-nina",
     "label": "Back to payment",
     "primary": false,
-    "target": "#twint-review-group-nina",
-    "domain_event": "PaymentIntentReviewResumed",
+    "event": "PaymentIntentReviewResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "twint-sent-group-nina",
     "label": "View confirmation status",
     "primary": true,
-    "target": "#payment-waiting-group-nina",
-    "domain_event": "PaymentStatusViewed",
+    "event": "PaymentStatusViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "payment-waiting-group-nina",
     "label": "Refresh status",
     "primary": true,
-    "target": "#group-nina-received",
-    "domain_event": "PaymentStatusRefreshRequested",
+    "event": "PaymentStatusRefreshRequested",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "group-nina-received",
     "label": "View updated balance",
     "primary": true,
-    "target": "#group-nina-complete",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "group-nina-complete",
     "label": "Back to balances",
     "primary": true,
-    "target": "#position",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "cash-confirm-nina",
     "label": "Record as sent",
     "primary": true,
-    "target": "#cash-handoff-nina",
-    "domain_event": "PayerMarkedSent",
+    "event": "PayerMarkedSent",
     "authority": "payer",
     "scope_ref": "scope-nina-chf-30-00",
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "cash-confirm-nina",
     "label": "Cancel",
     "primary": false,
-    "target": "#cash-nina",
-    "domain_event": "PaymentIntentReviewCancelled",
+    "event": "PaymentIntentReviewCancelled",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "cash-handoff-nina",
     "label": "View confirmation status",
     "primary": true,
-    "target": "#payment-waiting-nina",
-    "domain_event": "PaymentStatusViewed",
+    "event": "PaymentStatusViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "payment-waiting-nina",
     "label": "Refresh status",
     "primary": true,
-    "target": "#cash-nina-received",
-    "domain_event": "PaymentStatusRefreshRequested",
+    "event": "PaymentStatusRefreshRequested",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "cash-nina-received",
     "label": "View updated balance",
     "primary": true,
-    "target": "#cash-nina-complete",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "system",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "cash-nina-complete",
     "label": "Back to balances",
     "primary": true,
-    "target": "#position",
-    "domain_event": "SettlementResultViewed",
+    "event": "SettlementResultViewed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-cancelled",
     "label": "Request again",
     "primary": true,
-    "target": "#wallet-handoff",
-    "domain_event": "PaymentApprovalRequested",
+    "event": "PaymentApprovalRequested",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": "scope-jeanine-chf-54-30-001",
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "wallet-cancelled",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-cancelled-dot",
     "label": "Request again",
     "primary": true,
-    "target": "#dot-handoff",
-    "domain_event": "PaymentApprovalRequested",
+    "event": "PaymentApprovalRequested",
     "authority": "payer",
     "scope_ref": "scope-luca-dot-2-400000",
     "idempotency_key": "scope-luca-dot-2-400000-001",
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "wallet-cancelled-dot",
     "label": "Back to payment",
     "primary": false,
-    "target": "#settle-dot",
-    "domain_event": "PaymentIntentReviewResumed",
+    "event": "PaymentIntentReviewResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-approval-expired",
     "label": "Request again",
     "primary": true,
-    "target": "#wallet-handoff",
-    "domain_event": "PaymentApprovalRequested",
+    "event": "PaymentApprovalRequested",
     "authority": "payer",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": "scope-jeanine-chf-54-30-001",
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "required-before-authoritative"
   },
   {
     "screen": "wallet-approval-expired",
     "label": "Choose another method",
     "primary": false,
-    "target": "#methods",
-    "domain_event": "PaymentMethodSelectionOpened",
+    "event": "PaymentMethodSelectionOpened",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-result-unknown",
     "label": "Recover status",
     "primary": true,
-    "target": "#wallet-recovering",
-    "domain_event": "PaymentRecoveryRequested",
+    "event": "PaymentRecoveryRequested",
     "authority": "system",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": null,
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "wallet-result-unknown",
     "label": "Back to payment",
     "primary": false,
-    "target": "#wallet-review",
-    "domain_event": "PaymentIntentReviewResumed",
+    "event": "PaymentIntentReviewResumed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   },
   {
     "screen": "wallet-recovering",
     "label": "Refresh status",
     "primary": true,
-    "target": "#wallet-received",
-    "domain_event": "PaymentStatusRefreshRequested",
+    "event": "PaymentStatusRefreshRequested",
     "authority": "system",
     "scope_ref": "scope-jeanine-chf-54-30",
     "idempotency_key": null,
-    "retry_behavior": "reuse"
+    "retry_behavior": "reuse",
+    "saved_record_acceptance": "conditional-on-new-result"
   },
   {
     "screen": "wallet-recovering",
     "label": "Back",
     "primary": false,
-    "target": "#wallet-result-unknown",
-    "domain_event": "PaymentStatusViewed",
+    "event": "PaymentStatusViewed",
     "authority": "payer",
     "scope_ref": null,
     "idempotency_key": null,
-    "retry_behavior": null
+    "retry_behavior": null,
+    "saved_record_acceptance": "not-applicable"
   }
 ]

@@ -14,6 +14,12 @@
     "Agents prepare by default and execute only under exact valid delegation.",
     "Authorization, replay, idempotency and transition checks are deterministic backend logic.",
     "Payment systems and agent protocols remain replaceable integrations.",
-    "Credentials, wallet secrets and private keys never become ChopDot domain data."
-  ]
+    "Credentials, wallet secrets and private keys never become ChopDot domain data.",
+    "Approve in wallet requests approval before authorization.",
+    "Approval recovery reuses the exact payment scope.",
+    "SavedRecordAccepted is storage-neutral.",
+    "Realtime is ephemeral; durable outbox and replay-safe history preserve truth.",
+    "Visible chain branding is removed."
+  ],
+  "compatibility_closeout": "1.0"
 }

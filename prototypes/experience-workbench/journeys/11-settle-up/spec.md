@@ -183,3 +183,23 @@ Journey 11 may become Golden only when:
 3. sent, waiting, received, failed and complete are visually distinct at both target phone sizes;
 4. the workbench gate passes on the branch;
 5. the candidate is approved by the user.
+
+<!-- J11_COMPATIBILITY_CLOSEOUT:START -->
+## Compatibility closeout
+
+### Wallet approval before authorization
+
+**Approve in wallet** creates `PaymentApprovalRequested` for the exact payer, recipient, amount, currency/asset, source items, wallet method, expiry and idempotency key. It does not create authorization. Authorization may be recorded only after a verified wallet result is accepted. The internal lifecycle distinguishes approval waiting, rejected, expired, disconnected, result unknown and recovering. Retry or recovery reuses the exact scope and may not create a second payment.
+
+### Storage-neutral Saved record acceptance
+
+A valid transition becomes authoritative only after the event and its durable delivery entry are accepted in one storage-neutral durability boundary. The internal acceptance event is `SavedRecordAccepted`. It means the record is durable; it does not mean the payment succeeded, was received or closed.
+
+### Realtime, outbox and history
+
+Realtime updates are ephemeral and never authoritative. Reconnect and refresh rebuild from accepted history. Each accepted event has a durable outbox entry, stable event ID, payment item ID, stream version and idempotency key. Delivery retries until acknowledged; consumers deduplicate. History is append-only and replay-safe. Replaying it rebuilds read models without reopening a wallet, resubmitting a transfer, marking sent, confirming receipt or closing again.
+
+### Visible language
+
+Normal UI remains chain neutral. Do not show chain or protocol branding as product truth. Internal persistence and delivery terms remain in specifications and QA only.
+<!-- J11_COMPATIBILITY_CLOSEOUT:END -->
