@@ -1,9 +1,15 @@
 name: Prototype workbench gate
 
+permissions:
+  contents: write
+
 on:
   push:
+    branches:
+      - ux/experience-workbench
     paths:
       - 'prototypes/experience-workbench/**'
+      - '.github/workflows/prototype-workbench-gate.yml'
   pull_request:
     paths:
       - 'prototypes/experience-workbench/**'
@@ -16,10 +22,29 @@ jobs:
         working-directory: prototypes/experience-workbench
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Regenerate and validate the experience map
+      - name: Regenerate and validate control surfaces
         run: npm run gate
-      - name: Fail if generated files changed
+      - name: Commit generated control surfaces on prototype branch
+        if: github.event_name == 'push'
+        working-directory: .
+        run: |
+          if git diff --quiet -- prototypes/experience-workbench/journey-map.html prototypes/experience-workbench/feature-coverage.html prototypes/experience-workbench/edge-case-ledger.html prototypes/experience-workbench/registry/map-fingerprint.json; then
+            echo "Generated control surfaces are current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prototypes/experience-workbench/journey-map.html \
+                  prototypes/experience-workbench/feature-coverage.html \
+                  prototypes/experience-workbench/edge-case-ledger.html \
+                  prototypes/experience-workbench/registry/map-fingerprint.json
+          git commit -m "Regenerate prototype experience map"
+          git push
+      - name: Fail pull request when generated files are stale
+        if: github.event_name == 'pull_request'
         run: git diff --exit-code -- journey-map.html feature-coverage.html edge-case-ledger.html registry/map-fingerprint.json
