@@ -1,0 +1,33 @@
+{
+  "checkpoint": "2026-09-04-j10-approved",
+  "branch": "ux/experience-workbench",
+  "golden_count": 8,
+  "approved": {
+    "journey": "10",
+    "name": "Overall Position",
+    "version": "v1",
+    "status": "Design Approved",
+    "approved_on": "2026-09-04",
+    "golden_number": 8
+  },
+  "checks": {
+    "states": 34,
+    "links": "171/171",
+    "duplicate_ids": "pass",
+    "horizontal_overflow": "pass",
+    "frame_overlap": "pass",
+    "clipped_cards": "pass",
+    "icon_placeholders": "pass",
+    "golden_visual_comparison": "pass"
+  },
+  "approved_rules": [
+    "Show gross and net together",
+    "People is the default; Groups is secondary",
+    "Offset only the same people and currency",
+    "Never combine currencies silently",
+    "Optional estimates are visibly approximate",
+    "Open issues affect only relevant balances",
+    "Settle and Request remain separate journeys"
+  ],
+  "next_action": "Build Journey 11 — Settle Up using eight Golden references."
+}
