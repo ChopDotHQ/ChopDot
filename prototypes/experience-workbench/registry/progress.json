@@ -1,0 +1,23 @@
+{
+  "schema_version": 2,
+  "updated_on": "2026-09-04",
+  "registered_journeys": 28,
+  "golden_count": 7,
+  "current_journey": "10",
+  "remaining_overall": 21,
+  "remaining_core_including_entry": [
+    "01",
+    "10",
+    "11",
+    "12"
+  ],
+  "remaining_in_app_money_loop": [
+    "10",
+    "11",
+    "12"
+  ],
+  "map_source": "registry/journeys.json",
+  "generated_map": "journey-map.html",
+  "validation_command": "npm run gate",
+  "next_action": "Build Journey 10 — Overall Position."
+}
