@@ -1,71 +1,53 @@
-# ChopDot Experience Quality Workflow
+# ChopDot Prototype Workflow
 
-Every journey follows the same pipeline.
+## Journey pipeline
 
-## 1. Define
-Before visual work, record the user goal, entry points, success exit, cancellation/back exits, dependencies, relevant feature coverage, and relevant edge/failure states.
+1. Define the user goal, entry, exit, and boundaries.
+2. Update the canonical registry before building.
+3. Inherit the Golden frame, tokens, components, copy, and icons.
+4. Build the review artifact and structured source.
+5. Render at 393 × 852 and 430 × 890.
+6. Inspect actual screenshots against Golden references.
+7. Test happy, empty, loading, offline, permission, conflict, and failure states as relevant.
+8. Validate links, overflow, frame overlap, IDs, icons, and semantic variants.
+9. Update feature and edge-case coverage.
+10. Run `npm run gate`.
+11. User reviews.
+12. Freeze as Golden only after approval.
 
-## 2. Inherit
-Do not recreate foundations locally. Inherit the app frame, design tokens, typography hierarchy, cards/buttons, iconography, copy rules, and approved Golden Patterns. If a shared pattern is missing, define it first.
+## Control rule
 
-## 3. Build small
-A journey is not a mini-app. If a flow grows, split it into explicit states/screens.
+The visual map may never be shortened manually. It is generated from `registry/journeys.json`.
 
-## 4. Render
-Mandatory before review:
-- 393 × 852
-- 430 × 890
-- important scrolled/terminal states where relevant
+`feature-coverage.html` and `edge-case-ledger.html` are generated from the same fingerprint.
 
-Prototype review is not complete from code/CSS inspection alone.
+## Freeze gate
 
-## 5. Visual QA
-Inspect actual rendered images for overlap, clipping, density, hierarchy regression, spacing rhythm, typography regression, icon inconsistency, header/footer behavior, unsafe text wrapping, color semantics, and whether it still feels like ChopDot.
+```bash
+npm run gate
+```
 
-The originating thread proved why this matters: a flex-shrink bug collapsed the Home attention card even though the CSS looked structurally reasonable.
+The gate rejects:
 
-## 6. State QA
-Review relevant normal, empty, loading, refreshing, offline, error, permission/role, conflict, retry, and terminal-success states.
+- stale journey, Golden, or remaining counts;
+- missing or duplicate journey IDs;
+- broken journey connections;
+- undeclared dead ends;
+- Golden journeys without prototype/spec/QA paths;
+- orphan features or edge cases;
+- missing journeys in the visual map;
+- stale generated control surfaces;
+- registry/map fingerprint mismatch.
 
-## 7. Journey QA
-Check:
-- Can the user enter from every expected entry?
-- Do they understand where they are?
-- Is the next action obvious?
-- Can they cancel/back out safely?
-- Does success show what changed?
-- Is there a meaningful next destination?
-- Any dead ends?
-- Do notifications/deep links resolve somewhere valid?
+If the gate fails, the journey is not ready to freeze.
 
-## 8. Automated prototype checks
-Review-ready artifacts should pass:
-- no Unicode/emoji placeholder icons
-- no horizontal overflow
-- no content hidden behind fixed navigation
-- header/footer remain in frame
-- links resolve
-- duplicate IDs absent
-- no missing icon mapping
-- no giant monolithic prototype file
+## Generated-file rule
 
-## 9. Compare to Golden Screens
-Before approval ask:
-- Is this as good as or better than the Golden quality bar?
-- Did we inherit instead of recreate?
-- Did density increase without user benefit?
-- Did prose replace good hierarchy?
-- Did system/crypto complexity leak into the UX?
+Do not hand-edit:
 
-## 10. Approve and freeze
-Status progression:
+- `journey-map.html`
+- `feature-coverage.html`
+- `edge-case-ledger.html`
+- `registry/map-fingerprint.json`
 
-`Not Started → Prototype → Review → Design Approved → Implemented → Production Verified`
-
-Approved work is frozen. Later changes create a new version and explicitly identify affected journeys/patterns.
-
-## 11. Implement separately
-Engineering receives the approved prototype version, journey spec, decisions, reusable patterns, implementation map, and edge cases. Implement one approved journey at a time; do not broadly “redesign ChopDot.”
-
-## 12. Production verification
-After implementation, render the real app at the same viewports, compare with the Golden Screen, test real exits/states, update the implementation map, and only then mark **Production Verified**.
+Update the registries, then rerun the gate.
