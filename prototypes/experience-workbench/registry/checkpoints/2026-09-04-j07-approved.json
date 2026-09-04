@@ -1,0 +1,36 @@
+{
+  "checkpoint": "2026-09-04-j07-approved",
+  "branch": "ux/experience-workbench",
+  "registered_journeys": 28,
+  "golden_count": 7,
+  "remaining_overall": 21,
+  "golden": {
+    "02": {"name": "Home / Orientation", "version": "v1.4", "status": "Design Approved"},
+    "03": {"name": "Create a Group", "version": "v2", "status": "Design Approved"},
+    "04": {"name": "Invite / Join", "version": "v1", "status": "Design Approved"},
+    "08": {"name": "Group Home", "version": "v1", "status": "Design Approved"},
+    "05": {"name": "Add an Expense", "version": "v1", "status": "Design Approved"},
+    "06": {"name": "Review / Correct Expense", "version": "v1.1", "status": "Design Approved"},
+    "07": {"name": "Review / Agree / Raise an Issue", "version": "v1.1", "status": "Design Approved"}
+  },
+  "journey_07": {
+    "prototype": "journeys/07-review-agree/v1.1-golden-candidate.html.xz",
+    "status": "Golden Journey #7",
+    "approved_on": "2026-09-04",
+    "states": 61,
+    "checks": {
+      "links": "176/176",
+      "duplicate_ids": "pass",
+      "horizontal_overflow": "pass",
+      "frame_overlap": "pass",
+      "icon_placeholders": "pass",
+      "icon_alignment": "pass",
+      "semantic_variants": "pass",
+      "golden_visual_comparison": "pass"
+    },
+    "approved_assumption": "An unresolved expense issue blocks settlement for the affected group. Retest deliberately in Journey 11."
+  },
+  "remaining_core_including_entry": ["01", "10", "11", "12"],
+  "remaining_in_app_money_loop": ["10", "11", "12"],
+  "next_action": "Build Journey 10 — Overall Position using the seven Golden references."
+}
