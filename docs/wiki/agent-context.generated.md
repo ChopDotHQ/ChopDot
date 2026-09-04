@@ -13,7 +13,7 @@ Generated read model. It is navigation, not product authority.
 - Product cards SHA-256: `63edd5fa9d7234a80b5518e3ce5e67306bde6ad012a57e9fd53ab970a7ba78ed`
 - Product decisions SHA-256: `45fcb3c7ad18036d5aa4f7a325aa1c0f084f2566514b390877d9cc036a92ab7b`
 - Product benchmark baseline SHA-256: `eb0bad42e37a3d6b61ca98414dfc03ff123a0c67c016ee612aab7b6b54c76b50`
-- Current release state SHA-256: `48bbff0d8cb8e20e66769d90c2f0e7e7e8882aae1404f3319ea3bac1d27dccab`
+- Current release state SHA-256: `182c423ad21dffd67a6bdc62eaec4c1b1594c59b8b466b2bd37991c9414fd39a`
 - Active cards: P-035, P-013, P-022, P-034, P-032, P-012
 - Explicit next card: P-035 — Account, contact and membership lifecycle
 - Operator next action: Repair and reprove first shared-group creation and intentional invite acceptance
