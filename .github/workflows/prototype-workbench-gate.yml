@@ -1,0 +1,25 @@
+name: Prototype workbench gate
+
+on:
+  push:
+    paths:
+      - 'prototypes/experience-workbench/**'
+  pull_request:
+    paths:
+      - 'prototypes/experience-workbench/**'
+
+jobs:
+  validate-workbench:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: prototypes/experience-workbench
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Regenerate and validate the experience map
+        run: npm run gate
+      - name: Fail if generated files changed
+        run: git diff --exit-code -- journey-map.html feature-coverage.html edge-case-ledger.html registry/map-fingerprint.json
