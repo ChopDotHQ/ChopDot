@@ -107,7 +107,7 @@
       "kind": "measurement",
       "status": "active",
       "owner": "release-integrator",
-      "last_reviewed": "UNSIGNED-PENDING-RELEASE-INTEGRATOR",
+      "last_reviewed": "2026-09-04",
       "freshness_days": 7,
       "applies_to": "chopdot-v1-launch",
       "authority": "Machine-readable current release verdicts only; this cannot change product intent or replace immutable bytes and live readback.",
