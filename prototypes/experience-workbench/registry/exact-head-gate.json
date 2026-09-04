@@ -1,8 +1,9 @@
 {
-  "checkpoint": "2026-09-04-j11-v1.1-compatibility-closeout",
-  "purpose": "Trigger and attest the exact-head workbench gate after generated files were materialized.",
-  "expected_candidate_sha256": "554d97589e31138000ad9242d9df3f249dd0ef7e7ac57dc7629a4049996b705d",
+  "checkpoint": "2026-09-04-j11-v1.1-final-golden-consistency",
+  "purpose": "Trigger and attest the exact-head workbench gate after final Golden consistency files were materialized.",
+  "expected_candidate_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d",
   "payment_contract_version": "1.2",
   "storage_contract_version": "1.0",
-  "product_state_changed": false
+  "final_golden_consistency_pass": true,
+  "html_changed": false
 }
