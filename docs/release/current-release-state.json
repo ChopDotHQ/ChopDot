@@ -3,7 +3,7 @@
   "kind": "measurement",
   "status": "active",
   "owner": "release-integrator",
-  "observed_at": "2026-08-27",
+  "observed_at": "2026-09-04",
   "applies_to": "chopdot-v1-launch",
   "authority": "Machine-readable current release verdicts only; this cannot change product intent or replace immutable bytes and live readback.",
   "branch": "codex/chopdot-v1-launch",
@@ -41,10 +41,10 @@
     "committed": "The frozen candidate commit and matching tree exist in this repository.",
     "pushed": "The candidate commit is an ancestor of origin/codex/chopdot-v1-launch.",
     "candidate_built": "The CAR identity is bound to a tracked evidence record and locally available bytes.",
-    "storage_uploaded": "A fresh direct read from the pinned Paseo IPFS gateway matched the complete CAR byte count and SHA-256.",
+    "storage_uploaded": "Re-observed on 2026-09-04: two independent direct reads from the pinned Paseo IPFS gateway returned the complete CAR, matching the declared 2234529 bytes and SHA-256.",
     "staged": "No accepted DotNS stage/name mutation is established for this candidate.",
     "promoted": "No public-testnet promotion is established and P0/P1 blockers prohibit it.",
-    "byte_reachable": "The pinned direct Paseo IPFS gateway returned the exact CAR bytes.",
+    "byte_reachable": "Re-observed on 2026-09-04: the pinned direct Paseo IPFS gateway returned the exact CAR bytes, with etag and x-ipfs-roots both echoing the declared outer CID.",
     "user_journey_reachable": "The guest-to-shared-group path fails live with no visible recovery action.",
     "user_owned": "No accepted release-name transfer and ownership readback is recorded.",
     "user_proven": "No real organizer and two-participant acceptance is recorded.",
@@ -64,12 +64,12 @@
       "sha256": "6ecff7aed5f5b3e887fd3c1f6820a2e356c3da0fae2a08b7af310ede579ddb7e"
     },
     "storage_uploaded": {
-      "path": "docs/release/frozen-candidate-cd61093b-evidence.json",
-      "sha256": "6ecff7aed5f5b3e887fd3c1f6820a2e356c3da0fae2a08b7af310ede579ddb7e"
+      "path": "docs/release/2026-09-04-cd61093b-gateway-readback.json",
+      "sha256": "987ac7c71edd6a1557f8dcaa7bee387dd4b5bd3b0abeb4f985dc411efb85486e"
     },
     "byte_reachable": {
-      "path": "docs/release/frozen-candidate-cd61093b-evidence.json",
-      "sha256": "6ecff7aed5f5b3e887fd3c1f6820a2e356c3da0fae2a08b7af310ede579ddb7e"
+      "path": "docs/release/2026-09-04-cd61093b-gateway-readback.json",
+      "sha256": "987ac7c71edd6a1557f8dcaa7bee387dd4b5bd3b0abeb4f985dc411efb85486e"
     }
   },
   "blockers": [
@@ -126,5 +126,28 @@
       "The stored recall does not cite the context authority manifest, ADR 0004, or live blocker evidence."
     ]
   },
-  "next_required_outcome": "Repair and live-prove P-035; refresh and execute the Phase 1 P-013 same-task baseline; use that evidence to repair and prove P-022; then freeze a new immutable candidate."
+  "next_required_outcome": "Repair and live-prove P-035; refresh and execute the Phase 1 P-013 same-task baseline; use that evidence to repair and prove P-022; then freeze a new immutable candidate.",
+  "reattestation": {
+    "observed_at": "2026-09-04T08:33:18Z",
+    "object": "frozen candidate cd61093b2af158ca1ba08f26c84c732f30007d4d",
+    "reobserved": [
+      "storage_uploaded",
+      "byte_reachable"
+    ],
+    "reverified_mechanically": [
+      "committed",
+      "pushed"
+    ],
+    "carried_forward_unreobserved": [
+      "implemented",
+      "tested",
+      "staged",
+      "promoted",
+      "user_journey_reachable",
+      "user_owned",
+      "user_proven",
+      "kg_known"
+    ],
+    "note": "Only the two byte-level verdicts were re-observed live. The remaining verdicts are carried forward from 2026-08-27 because their blockers are still open: P-035 remains the live P0 and the referenced blocker evidence digests are unchanged. This record refreshes the measurement of the frozen candidate; it makes no claim about any later commit, and no candidate is built at the current release head."
+  }
 }

@@ -107,11 +107,11 @@
       "kind": "measurement",
       "status": "active",
       "owner": "release-integrator",
-      "last_reviewed": "2026-08-27",
+      "last_reviewed": "UNSIGNED-PENDING-RELEASE-INTEGRATOR",
       "freshness_days": 7,
       "applies_to": "chopdot-v1-launch",
       "authority": "Machine-readable current release verdicts only; this cannot change product intent or replace immutable bytes and live readback.",
-      "sha256": "48bbff0d8cb8e20e66769d90c2f0e7e7e8882aae1404f3319ea3bac1d27dccab"
+      "sha256": "476374092ef6c147a928ce8f3a8ae06c09b551f7312327ca6b8af98dd3070f26"
     },
     {
       "path": "docs/superpowers/plans/2026-08-27-chopdot-full-product-public-testnet-execution.md",
