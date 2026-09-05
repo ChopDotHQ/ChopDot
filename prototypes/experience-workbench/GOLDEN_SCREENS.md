@@ -11,9 +11,12 @@
 9. Settle Up — v1.1 · Design Approved
 10. Complete Settlement — v1.1 · Design Approved
 11. Enter ChopDot — v1 · Design Approved
+12. Manage People — v1 · Design Approved
 
-Journey 01 V1 is Golden #11: email-code default, wallet alternative. Reviewed HTML is unchanged.
+Journey 09 V1 is Golden #12. Owner-only removal requires no open items in the selected group; past records and other memberships remain intact. Reviewed HTML is unchanged.
 
-Current candidate: Journey 09 — Manage People v1. Not Golden.
+Journey 01 remains email-code first, with wallet sign-in as the alternative.
+
+Next: Journey 13 — Request Money.
 
 TYPO-01: shared typography/readability remains deferred.

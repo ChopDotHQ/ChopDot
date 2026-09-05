@@ -53,5 +53,10 @@
     "journey": "01",
     "path": "journeys/01-enter-chopdot/v1-candidate.html",
     "sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46"
+  },
+  {
+    "journey": "09",
+    "path": "journeys/09-manage-people/v1-candidate.html",
+    "sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d"
   }
 ]

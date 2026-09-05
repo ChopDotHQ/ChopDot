@@ -199,14 +199,16 @@
       "13",
       "20"
     ],
-    "status": "current",
-    "approval": "review-pending",
+    "status": "golden",
+    "approval": "design-approved",
     "entry_mode": "tab",
     "version": "v1",
     "prototype_path": "journeys/09-manage-people/v1-candidate.html",
     "prototype_sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d",
     "spec_path": "journeys/09-manage-people/spec.md",
-    "qa_path": "journeys/09-manage-people/VISUAL_QA.md"
+    "qa_path": "journeys/09-manage-people/VISUAL_QA.md",
+    "golden_number": 12,
+    "approved_on": "2026-09-06"
   },
   {
     "id": "10",

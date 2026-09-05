@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "status": "golden",
+  "golden_number": 12,
+  "prototype_sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d",
+  "html_unchanged": true,
+  "approved_policy": {
+    "removal_authority": "current-group-owner-only",
+    "removal_condition": "no-open-items-for-this-person-in-this-group",
+    "zero-net-is-not-sufficient": true,
+    "past_records_preserved": true,
+    "other_memberships_preserved": true
+  },
+  "all_golden_locks_pass": true,
+  "typography": "TYPO-01 deferred"
+}
