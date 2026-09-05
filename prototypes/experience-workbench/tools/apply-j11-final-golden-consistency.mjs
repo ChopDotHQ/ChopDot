@@ -12,6 +12,9 @@ const loadJson = (relative) => JSON.parse(read(relative));
 const writeJson = (relative, value) => write(relative, JSON.stringify(value, null, 2));
 
 const j11 = "journeys/11-settle-up";
+const candidatePath = `${j11}/v1.1-golden-candidate.html`;
+const candidateSha256 = "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d";
+const approvedOn = "2026-09-05";
 
 let ui = read(`${j11}/UI_TO_DOMAIN_EVENTS.md`);
 ui = ui.replace(
@@ -76,24 +79,122 @@ e25.journeys = ["11", "12", "28"];
 e25.status = "partial";
 write(edgeCasesPath, JSON.stringify(edgeCases));
 
+const journeysPath = "registry/journeys.json";
+const journeys = loadJson(journeysPath);
+const journey11 = journeys.find((journey) => journey.id === "11");
+const journey12 = journeys.find((journey) => journey.id === "12");
+if (!journey11 || !journey12) throw new Error("Journey 11 or 12 is missing from the registry");
+Object.assign(journey11, {
+  status: "golden",
+  approval: "design-approved",
+  version: "v1.1",
+  approved_on: approvedOn,
+  prototype_path: candidatePath,
+  prototype_sha256: candidateSha256,
+  golden_number: 9,
+});
+journey12.status = "not-started";
+journey12.approval = "not-reviewed";
+write(journeysPath, JSON.stringify(journeys));
+
+const progressPath = "registry/progress.json";
+const progress = loadJson(progressPath);
+Object.assign(progress, {
+  schema_version: 5,
+  updated_on: approvedOn,
+  golden_count: 9,
+  current_journey: null,
+  remaining_overall: 19,
+  remaining_core_including_entry: ["01", "12"],
+  remaining_in_app_money_loop: ["12"],
+  next_action: "Paused after Journey 11 V1.1 Golden freeze. Journey 12 remains not started.",
+  paused_after_freeze: true,
+  last_approved_journey: "11",
+  last_approved_version: "v1.1",
+  last_approved_sha256: candidateSha256,
+});
+writeJson(progressPath, progress);
+
 const checkpointPath = "registry/checkpoints/2026-09-04-j11-v1.1-compatibility-closeout.json";
 const checkpoint = loadJson(checkpointPath);
-checkpoint.final_golden_consistency_pass = "complete";
-checkpoint.wallet_approval_ui_event = "PaymentApprovalRequested";
-checkpoint.wallet_authorization_source = "verified-provider-result-only";
-checkpoint.durable_event_acceptance_distinct_from_user_saved_record = true;
-checkpoint.saved_record_ordinary_web_retrieval_required = true;
-checkpoint.product_sdk_cid = {
-  optional_integration_metadata: true,
-  publicly_readable_assumed: false,
-  sole_retrieval_key_allowed: false,
-};
-checkpoint.e25 = {
-  status: "partial",
-  journey_11: "failure preview",
-  journey_12: "complete recovery",
-};
-checkpoint.branch_gate = "must-pass-on-exact-head";
+Object.assign(checkpoint, {
+  golden_count: 9,
+  current_journey: null,
+  candidate_version: "v1.1",
+  actual_html: candidatePath,
+  exact_candidate_sha256: candidateSha256,
+  html_preserved: true,
+  approval: "design-approved",
+  approved_on: approvedOn,
+  golden_number: 9,
+  status: "golden",
+  final_golden_consistency_pass: "complete",
+  wallet_approval_ui_event: "PaymentApprovalRequested",
+  wallet_authorization_source: "verified-provider-result-only",
+  durable_event_acceptance_distinct_from_user_saved_record: true,
+  saved_record_ordinary_web_retrieval_required: true,
+  product_sdk_cid: {
+    optional_integration_metadata: true,
+    publicly_readable_assumed: false,
+    sole_retrieval_key_allowed: false,
+  },
+  e25: {
+    status: "partial",
+    journey_11: "failure preview",
+    journey_12: "complete recovery",
+  },
+  branch_gate: "must-pass-on-exact-head",
+  next_on_approval: null,
+  freeze_boundary: "Stop after Journey 11. Journey 12 remains not started.",
+});
 writeJson(checkpointPath, checkpoint);
 
-console.log("Applied Journey 11 final Golden consistency pass without changing HTML.");
+write("GOLDEN_SCREENS.md", `# ChopDot Golden Screens & Journeys
+
+## Golden set
+
+1. Home / Orientation — V1.4
+2. Create a Group — V2
+3. Invite / Join — V1
+4. Group Home — V1
+5. Add an Expense — V1
+6. Review / Correct Expense — V1.1
+7. Review / Agree / Raise an Issue — V1.1
+8. Overall Position — V1
+9. Settle Up — V1.1
+
+## Golden #9 — Settle Up V1.1
+
+Approved ${approvedOn}. The reviewed candidate HTML remains unchanged at \`${candidatePath}\` with SHA-256 \`${candidateSha256}\`.
+
+Journey 12 remains not started. This checkpoint stops at the Journey 11 Golden freeze.
+`);
+
+write("START_HERE.md", `# ChopDot Experience Workbench — Start Here
+
+## Current truth
+
+- 28 registered journeys
+- 9 Golden journeys
+- Journey 11 — Settle Up V1.1 is Golden #9
+- Journey 12 — Complete Settlement remains not started
+- Work is intentionally paused after the Journey 11 freeze
+
+## Frozen artifact
+
+\`${candidatePath}\`
+
+SHA-256:
+
+\`${candidateSha256}\`
+
+## Resume boundary
+
+Do not alter Journey 11 or begin Journey 12 without a new explicit instruction.
+
+## Gate
+
+Run \`npm run gate\` against the exact branch head. The candidate checksum, registry, checkpoint and generated views must remain consistent.
+`);
+
+console.log("Applied Journey 11 Golden #9 freeze without changing HTML or starting Journey 12.");

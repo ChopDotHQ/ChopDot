@@ -23,9 +23,16 @@ if (progress.registered_journeys !== journeys.length) errors.push("Progress jour
 const golden = journeys.filter(j => j.status === "golden");
 if (progress.golden_count !== golden.length) errors.push("Golden count is stale.");
 if (progress.remaining_overall !== journeys.length - golden.length) errors.push("Remaining count is stale.");
-if (!unique.has(progress.current_journey)) errors.push("Current journey does not exist.");
-if (journeys.filter(j => j.status === "current").length !== 1) errors.push("Exactly one journey must be current.");
-if (journeys.find(j => j.status === "current")?.id !== progress.current_journey) errors.push("Current journey status and progress disagree.");
+
+const current = journeys.filter(j => j.status === "current");
+if (progress.paused_after_freeze === true) {
+  if (progress.current_journey !== null) errors.push("Paused freeze must not name a current journey.");
+  if (current.length !== 0) errors.push("Paused freeze must not begin another journey.");
+} else {
+  if (!unique.has(progress.current_journey)) errors.push("Current journey does not exist.");
+  if (current.length !== 1) errors.push("Exactly one journey must be current.");
+  if (current[0]?.id !== progress.current_journey) errors.push("Current journey status and progress disagree.");
+}
 
 for (const j of journeys) {
   if (!j.name || !j.goal || !j.entry || !j.exit) errors.push(`Journey ${j.id} lacks an entry/exit contract.`);
@@ -57,7 +64,7 @@ if (fingerprintRecord.fingerprint !== fingerprint) errors.push("Map fingerprint 
 if (!html.includes(`data-registry-fingerprint="${fingerprint}"`)) errors.push("Journey map was not generated from the current registry.");
 if (!featureHtml.includes(`data-registry-fingerprint="${fingerprint}"`)) errors.push("Feature coverage page is stale.");
 if (!edgeHtml.includes(`data-registry-fingerprint="${fingerprint}"`)) errors.push("Edge-case ledger is stale.");
-for (const id of ids) if (!html.includes(`id="j${id}"`)) errors.push(`Journey ${id} is absent from the map.`);
+for (const id of ids) if (!html.includes(`id=2j${id}"`)) errors.push(`Journey ${id} is absent from the map.`);
 if ((html.match(/class="journey"/g) ?? []).length !== journeys.length) errors.push("Map card count does not match registry.");
 
 const inbound = new Map(ids.map(id => [id, 0]));
