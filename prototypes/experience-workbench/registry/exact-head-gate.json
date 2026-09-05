@@ -1,13 +1,14 @@
 {
-  "checkpoint": "2026-09-05-j12-v1.1-golden",
-  "purpose": "Verify the exact resulting Golden #10 freeze head before starting Journey 01.",
-  "journey_11_golden_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d",
+  "checkpoint": "2026-09-05-j01-v1-candidate",
+  "purpose": "Verify the exact materialized Enter ChopDot review candidate and preservation of all Golden HTML.",
+  "freeze_commit": "a86359adc9a39cd6b1a623970ff75a4335c59a10",
+  "freeze_gate_run": 33982261473,
   "journey_12_golden_sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d",
-  "journey_12_status": "golden",
-  "journey_12_approval": "design-approved",
+  "journey_01_candidate_sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46",
   "golden_count": 10,
-  "current_journey": null,
+  "current_journey": "01",
+  "journey_01_approval": "review-pending",
   "existing_goldens_changed": false,
-  "html_changed": false,
-  "typography_note": "TYPO-01 deferred to later shared pass"
+  "typography_note": "TYPO-01 deferred to later shared pass",
+  "prototype_only": true
 }
