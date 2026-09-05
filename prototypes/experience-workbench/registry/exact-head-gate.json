@@ -1,6 +1,7 @@
 {
   "checkpoint": "2026-09-05-j09-v1-candidate",
-  "purpose": "Verify the exact materialized Manage People review candidate and preservation of all approved Golden HTML.",
+  "purpose": "Verify the final materialized Manage People head after the shared edge-case count refresh to 41.",
+  "materialized_head": "61aa425aad60ecd4c8950f21e5ca2380646ae322",
   "freeze_commit": "bf8c42103f898ddf020610967d90e881af367014",
   "freeze_gate_run": 33992126435,
   "freeze_gate_number": 49,
