@@ -1,40 +1,40 @@
-# ChopDot contributor review routing. @Devpen787 is the project owner and
-# @Gizmotronn is an existing contributor. CODEOWNERS may request either person;
-# it does not make a contributor mandatory, prove reviewer independence, or
-# create project/release authority.
+# ChopDot owner review routing. @Devpen787 is the project owner and the only
+# account routed by this file. Contributor access and history are managed
+# independently of CODEOWNERS; this file does not create project/release
+# authority or require approval.
 
 # Default coverage prevents an unowned path from silently entering the repo.
-* @Devpen787 @Gizmotronn
+* @Devpen787
 
 # Product law and current product decisions.
-/PRODUCT_TRUTH.md @Devpen787 @Gizmotronn
-/product/ @Devpen787 @Gizmotronn
+/PRODUCT_TRUTH.md @Devpen787
+/product/ @Devpen787
 
 # Portable agent contracts, runner, evaluations, and instruction surfaces.
-/governance/agent-system/ @Devpen787 @Gizmotronn
-/scripts/agent-system/ @Devpen787 @Gizmotronn
-/.github/CODEOWNERS @Devpen787 @Gizmotronn
-/.github/pull_request_template.md @Devpen787 @Gizmotronn
-/.github/workflows/ @Devpen787 @Gizmotronn
-/AGENTS.md @Devpen787 @Gizmotronn
-/CLAUDE.md @Devpen787 @Gizmotronn
-/.cursor/rules/ @Devpen787 @Gizmotronn
-/docs/CHOPDOT_OPERATING_LOOPS.md @Devpen787 @Gizmotronn
-/docs/CHOPDOT_LOOP_RUNNER.md @Devpen787 @Gizmotronn
+/governance/agent-system/ @Devpen787
+/scripts/agent-system/ @Devpen787
+/.github/CODEOWNERS @Devpen787
+/.github/pull_request_template.md @Devpen787
+/.github/workflows/ @Devpen787
+/AGENTS.md @Devpen787
+/CLAUDE.md @Devpen787
+/.cursor/rules/ @Devpen787
+/docs/CHOPDOT_OPERATING_LOOPS.md @Devpen787
+/docs/CHOPDOT_LOOP_RUNNER.md @Devpen787
 
 # Dated decisions, investigations, and release evidence.
-/docs/adr/ @Devpen787 @Gizmotronn
-/docs/investigations/ @Devpen787 @Gizmotronn
-/docs/release/ @Devpen787 @Gizmotronn
-/artifacts/agentops/outcomes/ @Devpen787 @Gizmotronn
+/docs/adr/ @Devpen787
+/docs/investigations/ @Devpen787
+/docs/release/ @Devpen787
+/artifacts/agentops/outcomes/ @Devpen787
 
 # Authority, money, membership, privacy, recovery, contracts, and release paths.
-/src/core/ @Devpen787 @Gizmotronn
-/src/contacts/ @Devpen787 @Gizmotronn
-/src/membership/ @Devpen787 @Gizmotronn
-/src/payments/ @Devpen787 @Gizmotronn
-/src/recovery/ @Devpen787 @Gizmotronn
-/src/environment/ @Devpen787 @Gizmotronn
-/contracts/ @Devpen787 @Gizmotronn
-/deployment/ @Devpen787 @Gizmotronn
-/scripts/ @Devpen787 @Gizmotronn
+/src/core/ @Devpen787
+/src/contacts/ @Devpen787
+/src/membership/ @Devpen787
+/src/payments/ @Devpen787
+/src/recovery/ @Devpen787
+/src/environment/ @Devpen787
+/contracts/ @Devpen787
+/deployment/ @Devpen787
+/scripts/ @Devpen787
