@@ -1,0 +1,15 @@
+{
+  "journey": "01",
+  "version": "v1",
+  "golden_number": 11,
+  "approval": "design-approved",
+  "approved_on": "2026-09-05",
+  "reviewed_at_commit": "3b0876656b9f25297f88ea0adbdeae63088f415f",
+  "prototype_path": "journeys/01-enter-chopdot/v1-candidate.html",
+  "prototype_sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46",
+  "default_sign_in": "email-code",
+  "alternative_sign_in": "wallet",
+  "html_change_authorized": false,
+  "next_journey": "09",
+  "deferred_note": {"id":"TYPO-01","status":"deferred","change_now":false,"note":"Shared typography and small progress-label readability: later shared pass."}
+}
