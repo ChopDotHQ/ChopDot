@@ -1,0 +1,24 @@
+{
+  "journey": "12",
+  "version": "v1.1",
+  "golden_number": 10,
+  "approval": "design-approved",
+  "approved_on": "2026-09-05",
+  "reviewed_at_commit": "d09888ae049a4e5d0e49be92d1106662a1a5bc9f",
+  "prototype_path": "journeys/12-complete-settlement/v1.1-continuity-candidate.html",
+  "prototype_sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d",
+  "next_journey": "01",
+  "deferred_note": {
+    "id": "TYPO-01",
+    "note": "Small progress-label readability: revisit during a later shared typography pass.",
+    "status": "deferred",
+    "change_now": false
+  },
+  "html_change_authorized": false,
+  "status": "golden",
+  "golden_count": 10,
+  "html_preserved": true,
+  "existing_goldens_changed": false,
+  "gate_requirement": "exact-resulting-head",
+  "in_app_money_loop": "design-approved"
+}

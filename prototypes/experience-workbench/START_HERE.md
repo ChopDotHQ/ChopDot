@@ -1,29 +1,19 @@
 # ChopDot Experience Workbench — Start Here
 
-## Current truth
+28 journeys; 10 Golden; 18 remaining.
 
-- 28 registered journeys
-- 9 Golden journeys
-- Journey 11 — Settle Up V1.1 remains frozen as Golden #9
-- Journey 12 — Complete Settlement V1.1 is the current Golden Candidate
-- Running the gate preserves Journey 12 progress
+Journey 12 V1.1 is Golden #10. The complete in-app money loop is design-approved.
 
-## Open first
+## Next
 
-`journeys/12-complete-settlement/v1.1-continuity-candidate.html`
+Journey 01 — Enter ChopDot. Finish entry before supporting journeys.
 
-Then read:
+## Preserve
 
-1. `journeys/12-complete-settlement/spec.md`
-2. `journeys/12-complete-settlement/STATE_AND_AUTHORITY.md`
-3. `journeys/12-complete-settlement/GIVEN_WHEN_THEN.md`
-4. `journeys/12-complete-settlement/UI_TO_DOMAIN_EVENTS.md`
-5. `journeys/12-complete-settlement/VISUAL_QA.md`
+Approved HTML is checksum-locked in registry/golden-artifact-locks.json. Never edit approved screens as part of later journeys.
 
-## Review boundary
-
-Do not alter Journeys 1–11. Do not freeze Journey 12 without explicit user approval.
+TYPO-01: Small progress-label readability is deferred to a shared typography pass. No font changes now.
 
 ## Gate
 
-Run `npm run gate`. It must preserve Journey 12 as current and verify the Journey 11 Golden checksum.
+`npm run gate` replays historical bundles, restores explicit approvals/current candidate, regenerates maps, and validates the final state. A later candidate is declared in registry/active-candidate.json; old freeze tasks must not erase it.

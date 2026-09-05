@@ -1,0 +1,52 @@
+[
+  {
+    "journey": "02",
+    "path": "journeys/02-home-orientation/v1.4-golden.html",
+    "sha256": "578ff52775d7205b7f2262676f322807849e2f5788f219dc9eacbb9e5d3aec2f"
+  },
+  {
+    "journey": "03",
+    "path": "journeys/03-create-group/v2-golden.html",
+    "sha256": "683267a9f474a48b9df4278256dc3b51f92e4c2cd5ff7076e5f0af013400804d"
+  },
+  {
+    "journey": "04",
+    "path": "journeys/04-invite-join/v1-golden.html",
+    "sha256": "143f6702e64f608729a79cbd9baf74d087492dc40e8275a46698633ae36c8725"
+  },
+  {
+    "journey": "05",
+    "path": "journeys/05-add-expense/v1-golden.html",
+    "sha256": "1aa7c723f60ada46d739c33749690ea493c8a2121cf85b3f1678a3798d638b23"
+  },
+  {
+    "journey": "06",
+    "path": "journeys/06-review-correct-expense/v1.1-golden.html",
+    "sha256": "aece70448ae1979f6a0bf3abfc46affc75da2c1540cb91dbeda32efc8722b55c"
+  },
+  {
+    "journey": "07",
+    "path": "journeys/07-review-agree/v1.1-golden.html",
+    "sha256": "90c11c09125dc8ba8a7d97530b33b7fff685b3a4fd0979992acf3910736db3ce"
+  },
+  {
+    "journey": "08",
+    "path": "journeys/08-group-home/v1-golden.html",
+    "sha256": "7bd47a9ea9987a2bc0e5912b99cddbfe0fea3f1b16d85aa76d76e919747cecf7"
+  },
+  {
+    "journey": "10",
+    "path": "journeys/10-overall-position/v1-golden.html",
+    "sha256": "418dee449aa76ed027ea7de520f930f63ebaeb349c0f46735c390a43294d7c98"
+  },
+  {
+    "journey": "11",
+    "path": "journeys/11-settle-up/v1.1-golden-candidate.html",
+    "sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d"
+  },
+  {
+    "journey": "12",
+    "path": "journeys/12-complete-settlement/v1.1-continuity-candidate.html",
+    "sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d"
+  }
+]
