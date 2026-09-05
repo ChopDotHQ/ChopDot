@@ -64,7 +64,7 @@ if (fingerprintRecord.fingerprint !== fingerprint) errors.push("Map fingerprint 
 if (!html.includes(`data-registry-fingerprint="${fingerprint}"`)) errors.push("Journey map was not generated from the current registry.");
 if (!featureHtml.includes(`data-registry-fingerprint="${fingerprint}"`)) errors.push("Feature coverage page is stale.");
 if (!edgeHtml.includes(`data-registry-fingerprint="${fingerprint}"`)) errors.push("Edge-case ledger is stale.");
-for (const id of ids) if (!html.includes(`id=2j${id}"`)) errors.push(`Journey ${id} is absent from the map.`);
+for (const id of ids) if (!html.includes(`id="j${id}"`)) errors.push(`Journey ${id} is absent from the map.`);
 if ((html.match(/class="journey"/g) ?? []).length !== journeys.length) errors.push("Map card count does not match registry.");
 
 const inbound = new Map(ids.map(id => [id, 0]));
