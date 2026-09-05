@@ -1,9 +1,11 @@
 {
-  "checkpoint": "2026-09-05-j11-v1.1-golden-freeze",
-  "purpose": "Trigger and attest the exact-head workbench gate after Journey 11 Golden #9 materialization.",
-  "expected_candidate_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d",
+  "checkpoint": "2026-09-05-j12-v1-candidate",
+  "purpose": "Trigger and attest the exact-head workbench gate after Journey 12 candidate materialization.",
+  "journey_11_golden_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d",
+  "journey_12_candidate_sha256": "b6cc690e6993f3d8e611a0b793d0bf8fd17953af176f3bebdeca668235272dec",
   "golden_count": 9,
-  "current_journey": null,
-  "journey_12_status": "not-started",
-  "html_changed": false
+  "current_journey": "12",
+  "journey_12_status": "current",
+  "freeze_script_preserves_journey_12": true,
+  "existing_goldens_changed": false
 }
