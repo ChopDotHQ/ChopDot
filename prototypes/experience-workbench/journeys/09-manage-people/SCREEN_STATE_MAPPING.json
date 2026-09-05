@@ -1,0 +1,110 @@
+[
+  {
+    "screen": "access-changed",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "directory",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "error",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "groups",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "handoff",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "loading",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "manage",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "members",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "offline",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "person",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "preferences",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "remove-blocked",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "remove-confirm",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "remove-failed",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "remove-saving",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "remove-unknown",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "removed",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  },
+  {
+    "screen": "roles",
+    "journey": "09",
+    "authority": "simulated authorized view or guarded owner command",
+    "approved": false
+  }
+]

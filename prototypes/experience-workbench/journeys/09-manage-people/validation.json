@@ -1,0 +1,17 @@
+{
+  "ok": true,
+  "candidate_sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d",
+  "states": 18,
+  "model_assertions": 67,
+  "browser_scenarios": 32,
+  "product_clicks": 110,
+  "state_layout_checks": 36,
+  "mapped_actions": 87,
+  "inherited_css_unchanged": true,
+  "all_golden_locks_pass": true,
+  "golden_count": 11,
+  "current_journey": "09",
+  "review_status": "review-pending",
+  "typography_note": "TYPO-01 deferred",
+  "limitations": "Simulated data and Playwright inline Chromium. Boundary previews are not cross-journey execution; no real service, payment, invitation or backend integration."
+}

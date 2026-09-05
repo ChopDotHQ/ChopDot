@@ -10,5 +10,18 @@
   "previous_golden": "01",
   "previous_golden_number": 11,
   "basis": "First unfinished supporting journey in existing registry order",
-  "typography_note": "TYPO-01 deferred"
+  "typography_note": "TYPO-01 deferred",
+  "checkpoint": "2026-09-05-j09-v1-candidate",
+  "golden_count": 11,
+  "candidate_number": 12,
+  "freeze_commit": "bf8c42103f898ddf020610967d90e881af367014",
+  "freeze_gate_run": 33992126435,
+  "freeze_gate_number": 49,
+  "screens": 18,
+  "model_assertions": 67,
+  "browser_scenarios": 32,
+  "clicks": 110,
+  "layout_checks": 36,
+  "scope": "prototype-only",
+  "existing_goldens_changed": false
 }

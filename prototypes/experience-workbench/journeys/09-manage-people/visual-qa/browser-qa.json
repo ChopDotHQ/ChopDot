@@ -1,0 +1,1134 @@
+{
+  "ok": true,
+  "artifact_sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d",
+  "browser": "Chromium",
+  "method": "Playwright set_content; Browser plugin not available",
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "scenarios": 32,
+  "clicks": 110,
+  "layout_checks": 36,
+  "page_errors": [],
+  "checks": [
+    {
+      "name": "Member \u2192 preference \u2192 group scope \u2192 exact settlement handoff \u2192 return",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Search and result preserved across exact all-group balance handoff",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Two currencies remain separate through request handoff",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "EUR and bank preference retained on return",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Other person preferences are read-only and do not expose destinations",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Group role and own payment-method handoff",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Non-owner cannot remove a member even from a forced manage route",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Open group items prevent removal without changing balances",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Zero-group removal preserves records and other-group balances",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Unknown save requires status recovery and one accepted result",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Verified failure retries the same removal identity",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Permission revoked while saving does not apply change or reopen group",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Offline saved roster is readable; invitations and payments are disabled",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "One open expense issue affects only its dependent person/scope",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Invitation remains pending; handoff creates no membership",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Only-owner group invitation preserves group name",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "name": "Member \u2192 preference \u2192 group scope \u2192 exact settlement handoff \u2192 return",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Search and result preserved across exact all-group balance handoff",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Two currencies remain separate through request handoff",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "EUR and bank preference retained on return",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Other person preferences are read-only and do not expose destinations",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Group role and own payment-method handoff",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Non-owner cannot remove a member even from a forced manage route",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Open group items prevent removal without changing balances",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Zero-group removal preserves records and other-group balances",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Unknown save requires status recovery and one accepted result",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Verified failure retries the same removal identity",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Permission revoked while saving does not apply change or reopen group",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Offline saved roster is readable; invitations and payments are disabled",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "One open expense issue affects only its dependent person/scope",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Invitation remains pending; handoff creates no membership",
+      "viewport": "430x890",
+      "passed": true
+    },
+    {
+      "name": "Only-owner group invitation preserves group name",
+      "viewport": "430x890",
+      "passed": true
+    }
+  ],
+  "layouts": [
+    {
+      "route": "members",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 10
+    },
+    {
+      "route": "directory",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 7
+    },
+    {
+      "route": "person",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 5
+    },
+    {
+      "route": "groups",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 4
+    },
+    {
+      "route": "preferences",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "roles",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "manage",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 3
+    },
+    {
+      "route": "remove-confirm",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "remove-blocked",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "remove-saving",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "remove-unknown",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "remove-failed",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "removed",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "access-changed",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "offline",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "loading",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 1
+    },
+    {
+      "route": "error",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "handoff",
+      "viewport": "393x852",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 3
+    },
+    {
+      "route": "members",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 10
+    },
+    {
+      "route": "directory",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 7
+    },
+    {
+      "route": "person",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 5
+    },
+    {
+      "route": "groups",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 4
+    },
+    {
+      "route": "preferences",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "roles",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "manage",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 3
+    },
+    {
+      "route": "remove-confirm",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "remove-blocked",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "remove-saving",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "remove-unknown",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "remove-failed",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "removed",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "access-changed",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "offline",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "loading",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 1
+    },
+    {
+      "route": "error",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 2
+    },
+    {
+      "route": "handoff",
+      "viewport": "430x890",
+      "passed": true,
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "svg": 3
+    }
+  ],
+  "observed_actions": [
+    {
+      "route": "members",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "members",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "members",
+      "action": "person",
+      "label": "DPYouGroup ownerYou",
+      "disabled": false
+    },
+    {
+      "route": "members",
+      "action": "person",
+      "label": "JAJeanineMember",
+      "disabled": false
+    },
+    {
+      "route": "members",
+      "action": "person",
+      "label": "MMarcMember",
+      "disabled": false
+    },
+    {
+      "route": "members",
+      "action": "person",
+      "label": "SSamMember",
+      "disabled": false
+    },
+    {
+      "route": "members",
+      "action": "invite-detail",
+      "label": "NinaHas not joined yetPending",
+      "disabled": false
+    },
+    {
+      "route": "members",
+      "action": "roles",
+      "label": "Group rolesWho can do what",
+      "disabled": false
+    },
+    {
+      "route": "members",
+      "action": "directory",
+      "label": "All your peopleAcross your shared groups",
+      "disabled": false
+    },
+    {
+      "route": "members",
+      "action": "invite",
+      "label": "Invite someone",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "preferences",
+      "label": "Payment preferenceTWINT preferred",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "groups",
+      "label": "Shared groups3 together",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "manage",
+      "label": "Manage in this group",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "members",
+      "label": "Back to people",
+      "disabled": false
+    },
+    {
+      "route": "preferences",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "preferences",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "preferences",
+      "action": "back",
+      "label": "Back to Jeanine",
+      "disabled": false
+    },
+    {
+      "route": "groups",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "groups",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "groups",
+      "action": "open-group",
+      "label": "Zurich WeekendNothing to settleCHF 0.00",
+      "disabled": false
+    },
+    {
+      "route": "groups",
+      "action": "open-group",
+      "label": "ApartmentYou owe JeanineCHF 74.30",
+      "disabled": false
+    },
+    {
+      "route": "groups",
+      "action": "open-group",
+      "label": "Ski TripJeanine owes youCHF 20.00",
+      "disabled": false
+    },
+    {
+      "route": "groups",
+      "action": "back",
+      "label": "Back to Jeanine",
+      "disabled": false
+    },
+    {
+      "route": "handoff",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "handoff",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "handoff",
+      "action": "back",
+      "label": "Back to Jeanine",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "payment",
+      "label": "Settle CHF 54.30",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "directory",
+      "label": "Back to people",
+      "disabled": false
+    },
+    {
+      "route": "directory",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "directory",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "directory",
+      "action": "members",
+      "label": "Back to group",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "payment",
+      "label": "Request CHF 91.10",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "payment",
+      "label": "Request DOT 2.400000",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "preferences",
+      "label": "Payment preferenceWallet preferred",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "groups",
+      "label": "Shared groups4 together",
+      "disabled": false
+    },
+    {
+      "route": "handoff",
+      "action": "back",
+      "label": "Back to Sam",
+      "disabled": false
+    },
+    {
+      "route": "roles",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "roles",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "roles",
+      "action": "back",
+      "label": "Back to people",
+      "disabled": false
+    },
+    {
+      "route": "access-changed",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "access-changed",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "access-changed",
+      "action": "safe-directory",
+      "label": "Back to your people",
+      "disabled": false
+    },
+    {
+      "route": "remove-blocked",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "remove-blocked",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "remove-blocked",
+      "action": "person-return",
+      "label": "View balance",
+      "disabled": false
+    },
+    {
+      "route": "remove-blocked",
+      "action": "back",
+      "label": "Back",
+      "disabled": false
+    },
+    {
+      "route": "manage",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "manage",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "manage",
+      "action": "remove",
+      "label": "Remove from this groupReview before removing",
+      "disabled": false
+    },
+    {
+      "route": "manage",
+      "action": "back",
+      "label": "Back to Jeanine",
+      "disabled": false
+    },
+    {
+      "route": "remove-confirm",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "remove-confirm",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "remove-confirm",
+      "action": "confirm-remove",
+      "label": "Remove from group",
+      "disabled": false
+    },
+    {
+      "route": "remove-confirm",
+      "action": "back",
+      "label": "Keep Jeanine",
+      "disabled": false
+    },
+    {
+      "route": "remove-saving",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "remove-saving",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "remove-saving",
+      "action": "noop",
+      "label": "Saving\u2026",
+      "disabled": true
+    },
+    {
+      "route": "removed",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "removed",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "removed",
+      "action": "members",
+      "label": "Back to people",
+      "disabled": false
+    },
+    {
+      "route": "remove-unknown",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "remove-unknown",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "remove-unknown",
+      "action": "recover",
+      "label": "Check status",
+      "disabled": false
+    },
+    {
+      "route": "remove-failed",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "remove-failed",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "remove-failed",
+      "action": "retry",
+      "label": "Try again",
+      "disabled": false
+    },
+    {
+      "route": "remove-failed",
+      "action": "members",
+      "label": "Back to people",
+      "disabled": false
+    },
+    {
+      "route": "offline",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "offline",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "offline",
+      "action": "members",
+      "label": "View saved people",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "review-issue",
+      "label": "Review open issue",
+      "disabled": false
+    },
+    {
+      "route": "person",
+      "action": "preferences",
+      "label": "Payment preferenceBank transfer preferred",
+      "disabled": false
+    },
+    {
+      "route": "handoff",
+      "action": "back",
+      "label": "Back to people",
+      "disabled": false
+    },
+    {
+      "route": "directory",
+      "action": "person",
+      "label": "JAJeanine3 shared groups",
+      "disabled": false
+    },
+    {
+      "route": "directory",
+      "action": "person",
+      "label": "MMarc4 shared groups",
+      "disabled": false
+    },
+    {
+      "route": "directory",
+      "action": "person",
+      "label": "SSam3 shared groups",
+      "disabled": false
+    },
+    {
+      "route": "directory",
+      "action": "person",
+      "label": "NNina1 shared group",
+      "disabled": false
+    },
+    {
+      "route": "directory",
+      "action": "person",
+      "label": "LLuca1 shared group",
+      "disabled": false
+    },
+    {
+      "route": "loading",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "loading",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "loading",
+      "action": "members",
+      "label": "Back",
+      "disabled": false
+    },
+    {
+      "route": "error",
+      "action": "back",
+      "label": "",
+      "disabled": false
+    },
+    {
+      "route": "error",
+      "action": "demo",
+      "label": "Demo",
+      "disabled": false
+    },
+    {
+      "route": "error",
+      "action": "members",
+      "label": "Try again",
+      "disabled": false
+    },
+    {
+      "route": "handoff",
+      "action": "back",
+      "label": "Back",
+      "disabled": false
+    }
+  ]
+}

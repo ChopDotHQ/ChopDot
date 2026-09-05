@@ -4,9 +4,11 @@
 
 Journey 01 V1 is Golden #11. Email-code is the default; wallet sign-in is an alternative.
 
-## Next
+## Review now
 
-Journey 09 — Manage People. This freeze does not start it.
+Journey 09 — Manage People v1.
+
+Open `journeys/09-manage-people/v1-candidate.html`; read `journeys/09-manage-people/spec.md` and `journeys/09-manage-people/VISUAL_QA.md`.
 
 ## Preserve
 

@@ -14,6 +14,6 @@
 
 Journey 01 V1 is Golden #11: email-code default, wallet alternative. Reviewed HTML is unchanged.
 
-Next: Journey 09 — Manage People. Not started in this freeze.
+Current candidate: Journey 09 — Manage People v1. Not Golden.
 
 TYPO-01: shared typography/readability remains deferred.

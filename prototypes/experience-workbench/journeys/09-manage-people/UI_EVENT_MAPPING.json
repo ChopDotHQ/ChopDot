@@ -1,0 +1,785 @@
+[
+  {
+    "route": "members",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "members",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "members",
+    "action": "person",
+    "label": "DPYouGroup ownerYou",
+    "disabled": false,
+    "domain_event": "PersonDetailViewed",
+    "kind": "read",
+    "guard": "Canonical person ID and original group scope"
+  },
+  {
+    "route": "members",
+    "action": "person",
+    "label": "JAJeanineMember",
+    "disabled": false,
+    "domain_event": "PersonDetailViewed",
+    "kind": "read",
+    "guard": "Canonical person ID and original group scope"
+  },
+  {
+    "route": "members",
+    "action": "person",
+    "label": "MMarcMember",
+    "disabled": false,
+    "domain_event": "PersonDetailViewed",
+    "kind": "read",
+    "guard": "Canonical person ID and original group scope"
+  },
+  {
+    "route": "members",
+    "action": "person",
+    "label": "SSamMember",
+    "disabled": false,
+    "domain_event": "PersonDetailViewed",
+    "kind": "read",
+    "guard": "Canonical person ID and original group scope"
+  },
+  {
+    "route": "members",
+    "action": "invite-detail",
+    "label": "NinaHas not joined yetPending",
+    "disabled": false,
+    "domain_event": "InviteStatusViewed",
+    "kind": "handoff",
+    "guard": "Pending invite is not active membership"
+  },
+  {
+    "route": "members",
+    "action": "roles",
+    "label": "Group rolesWho can do what",
+    "disabled": false,
+    "domain_event": "GroupCapabilitiesViewed",
+    "kind": "read",
+    "guard": "No payment authorization implied"
+  },
+  {
+    "route": "members",
+    "action": "directory",
+    "label": "All your peopleAcross your shared groups",
+    "disabled": false,
+    "domain_event": "RelatedPeopleViewed",
+    "kind": "read",
+    "guard": "Existing shared relationships only"
+  },
+  {
+    "route": "members",
+    "action": "invite",
+    "label": "Invite someone",
+    "disabled": false,
+    "domain_event": "InviteHandoffOpened",
+    "kind": "handoff",
+    "guard": "Online; no invitation sent yet"
+  },
+  {
+    "route": "person",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "person",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "person",
+    "action": "preferences",
+    "label": "Payment preferenceTWINT preferred",
+    "disabled": false,
+    "domain_event": "SharedPaymentPreferenceViewed",
+    "kind": "read",
+    "guard": "No editing another person or revealing destinations"
+  },
+  {
+    "route": "person",
+    "action": "groups",
+    "label": "Shared groups3 together",
+    "disabled": false,
+    "domain_event": "SharedGroupsViewed",
+    "kind": "read",
+    "guard": "Keep person; show each currency separately"
+  },
+  {
+    "route": "person",
+    "action": "manage",
+    "label": "Manage in this group",
+    "disabled": false,
+    "domain_event": "MemberManagementOpened",
+    "kind": "read",
+    "guard": "Current owner only; not self"
+  },
+  {
+    "route": "person",
+    "action": "members",
+    "label": "Back to people",
+    "disabled": false,
+    "domain_event": "GroupMembersViewed",
+    "kind": "read",
+    "guard": "Authorized saved/active group context"
+  },
+  {
+    "route": "preferences",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "preferences",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "preferences",
+    "action": "back",
+    "label": "Back to Jeanine",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "groups",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "groups",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "groups",
+    "action": "open-group",
+    "label": "Zurich WeekendNothing to settleCHF 0.00",
+    "disabled": false,
+    "domain_event": "PersonScopeSelected",
+    "kind": "read",
+    "guard": "Choose exact group, retaining return context"
+  },
+  {
+    "route": "groups",
+    "action": "open-group",
+    "label": "ApartmentYou owe JeanineCHF 74.30",
+    "disabled": false,
+    "domain_event": "PersonScopeSelected",
+    "kind": "read",
+    "guard": "Choose exact group, retaining return context"
+  },
+  {
+    "route": "groups",
+    "action": "open-group",
+    "label": "Ski TripJeanine owes youCHF 20.00",
+    "disabled": false,
+    "domain_event": "PersonScopeSelected",
+    "kind": "read",
+    "guard": "Choose exact group, retaining return context"
+  },
+  {
+    "route": "groups",
+    "action": "back",
+    "label": "Back to Jeanine",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "handoff",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "handoff",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "handoff",
+    "action": "back",
+    "label": "Back to Jeanine",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "person",
+    "action": "payment",
+    "label": "Settle CHF 54.30",
+    "disabled": false,
+    "domain_event": "SettlementScopeResolvedOrRequestScopeResolved",
+    "kind": "handoff",
+    "guard": "One person/currency/source set; no payment authorized or request sent"
+  },
+  {
+    "route": "person",
+    "action": "directory",
+    "label": "Back to people",
+    "disabled": false,
+    "domain_event": "RelatedPeopleViewed",
+    "kind": "read",
+    "guard": "Existing shared relationships only"
+  },
+  {
+    "route": "directory",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "directory",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "directory",
+    "action": "members",
+    "label": "Back to group",
+    "disabled": false,
+    "domain_event": "GroupMembersViewed",
+    "kind": "read",
+    "guard": "Authorized saved/active group context"
+  },
+  {
+    "route": "person",
+    "action": "payment",
+    "label": "Request CHF 91.10",
+    "disabled": false,
+    "domain_event": "SettlementScopeResolvedOrRequestScopeResolved",
+    "kind": "handoff",
+    "guard": "One person/currency/source set; no payment authorized or request sent"
+  },
+  {
+    "route": "person",
+    "action": "payment",
+    "label": "Request DOT 2.400000",
+    "disabled": false,
+    "domain_event": "SettlementScopeResolvedOrRequestScopeResolved",
+    "kind": "handoff",
+    "guard": "One person/currency/source set; no payment authorized or request sent"
+  },
+  {
+    "route": "person",
+    "action": "preferences",
+    "label": "Payment preferenceWallet preferred",
+    "disabled": false,
+    "domain_event": "SharedPaymentPreferenceViewed",
+    "kind": "read",
+    "guard": "No editing another person or revealing destinations"
+  },
+  {
+    "route": "person",
+    "action": "groups",
+    "label": "Shared groups4 together",
+    "disabled": false,
+    "domain_event": "SharedGroupsViewed",
+    "kind": "read",
+    "guard": "Keep person; show each currency separately"
+  },
+  {
+    "route": "handoff",
+    "action": "back",
+    "label": "Back to Sam",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "roles",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "roles",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "roles",
+    "action": "back",
+    "label": "Back to people",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "access-changed",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "access-changed",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "access-changed",
+    "action": "safe-directory",
+    "label": "Back to your people",
+    "disabled": false,
+    "domain_event": "AuthorizedRelationshipsRequested",
+    "kind": "read",
+    "guard": "Exclude revoked group; do not grant access"
+  },
+  {
+    "route": "remove-blocked",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "remove-blocked",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "remove-blocked",
+    "action": "person-return",
+    "label": "View balance",
+    "disabled": false,
+    "domain_event": "PersonDetailViewed",
+    "kind": "read",
+    "guard": "Keep same dependent group and person"
+  },
+  {
+    "route": "remove-blocked",
+    "action": "back",
+    "label": "Back",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "manage",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "manage",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "manage",
+    "action": "remove",
+    "label": "Remove from this groupReview before removing",
+    "disabled": false,
+    "domain_event": "MemberRemovalReviewed",
+    "kind": "read",
+    "guard": "Fresh role, scope and group-item checks"
+  },
+  {
+    "route": "manage",
+    "action": "back",
+    "label": "Back to Jeanine",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "remove-confirm",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "remove-confirm",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "remove-confirm",
+    "action": "confirm-remove",
+    "label": "Remove from group",
+    "disabled": false,
+    "domain_event": "MemberRemovalRequested",
+    "kind": "request",
+    "guard": "Exact actor, person, group, version and stable command ID"
+  },
+  {
+    "route": "remove-confirm",
+    "action": "back",
+    "label": "Keep Jeanine",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "remove-saving",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "remove-saving",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "remove-saving",
+    "action": "noop",
+    "label": "Saving\u2026",
+    "disabled": true,
+    "domain_event": "None",
+    "kind": "disabled",
+    "guard": "No event emitted"
+  },
+  {
+    "route": "removed",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "removed",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "removed",
+    "action": "members",
+    "label": "Back to people",
+    "disabled": false,
+    "domain_event": "GroupMembersViewed",
+    "kind": "read",
+    "guard": "Authorized saved/active group context"
+  },
+  {
+    "route": "remove-unknown",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "remove-unknown",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "remove-unknown",
+    "action": "recover",
+    "label": "Check status",
+    "disabled": false,
+    "domain_event": "MemberRemovalStatusRequested",
+    "kind": "read",
+    "guard": "Unknown/recovering same command; cannot imply acceptance"
+  },
+  {
+    "route": "remove-failed",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "remove-failed",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "remove-failed",
+    "action": "retry",
+    "label": "Try again",
+    "disabled": false,
+    "domain_event": "MemberRemovalRetryRequested",
+    "kind": "request",
+    "guard": "Verified non-acceptance; same command and rechecked authority"
+  },
+  {
+    "route": "remove-failed",
+    "action": "members",
+    "label": "Back to people",
+    "disabled": false,
+    "domain_event": "GroupMembersViewed",
+    "kind": "read",
+    "guard": "Authorized saved/active group context"
+  },
+  {
+    "route": "offline",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "offline",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "offline",
+    "action": "members",
+    "label": "View saved people",
+    "disabled": false,
+    "domain_event": "GroupMembersViewed",
+    "kind": "read",
+    "guard": "Authorized saved/active group context"
+  },
+  {
+    "route": "person",
+    "action": "review-issue",
+    "label": "Review open issue",
+    "disabled": false,
+    "domain_event": "ExpenseReviewHandoffOpened",
+    "kind": "handoff",
+    "guard": "Dependent issue only; no payment event"
+  },
+  {
+    "route": "person",
+    "action": "preferences",
+    "label": "Payment preferenceBank transfer preferred",
+    "disabled": false,
+    "domain_event": "SharedPaymentPreferenceViewed",
+    "kind": "read",
+    "guard": "No editing another person or revealing destinations"
+  },
+  {
+    "route": "handoff",
+    "action": "back",
+    "label": "Back to people",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "directory",
+    "action": "person",
+    "label": "JAJeanine3 shared groups",
+    "disabled": false,
+    "domain_event": "PersonDetailViewed",
+    "kind": "read",
+    "guard": "Canonical person ID and original group scope"
+  },
+  {
+    "route": "directory",
+    "action": "person",
+    "label": "MMarc4 shared groups",
+    "disabled": false,
+    "domain_event": "PersonDetailViewed",
+    "kind": "read",
+    "guard": "Canonical person ID and original group scope"
+  },
+  {
+    "route": "directory",
+    "action": "person",
+    "label": "SSam3 shared groups",
+    "disabled": false,
+    "domain_event": "PersonDetailViewed",
+    "kind": "read",
+    "guard": "Canonical person ID and original group scope"
+  },
+  {
+    "route": "directory",
+    "action": "person",
+    "label": "NNina1 shared group",
+    "disabled": false,
+    "domain_event": "PersonDetailViewed",
+    "kind": "read",
+    "guard": "Canonical person ID and original group scope"
+  },
+  {
+    "route": "directory",
+    "action": "person",
+    "label": "LLuca1 shared group",
+    "disabled": false,
+    "domain_event": "PersonDetailViewed",
+    "kind": "read",
+    "guard": "Canonical person ID and original group scope"
+  },
+  {
+    "route": "loading",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "loading",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "loading",
+    "action": "members",
+    "label": "Back",
+    "disabled": false,
+    "domain_event": "GroupMembersViewed",
+    "kind": "read",
+    "guard": "Authorized saved/active group context"
+  },
+  {
+    "route": "error",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  },
+  {
+    "route": "error",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "kind": "demo",
+    "guard": "Not a product-domain event"
+  },
+  {
+    "route": "error",
+    "action": "members",
+    "label": "Try again",
+    "disabled": false,
+    "domain_event": "GroupMembersViewed",
+    "kind": "read",
+    "guard": "Authorized saved/active group context"
+  },
+  {
+    "route": "handoff",
+    "action": "back",
+    "label": "Back",
+    "disabled": false,
+    "domain_event": "NavigationReturned",
+    "kind": "read",
+    "guard": "Preserve context; never undo an accepted removal"
+  }
+]
