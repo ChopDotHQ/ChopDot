@@ -1,11 +1,15 @@
 {
-  "checkpoint": "2026-09-05-j12-v1-candidate",
-  "purpose": "Trigger and attest the exact-head workbench gate after Journey 12 candidate materialization.",
+  "checkpoint": "2026-09-05-j12-v1.1-continuity",
+  "purpose": "Request exact-head verification of the materialized Journey 12 continuity candidate and regression checks.",
   "journey_11_golden_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d",
-  "journey_12_candidate_sha256": "b6cc690e6993f3d8e611a0b793d0bf8fd17953af176f3bebdeca668235272dec",
+  "journey_12_candidate_sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d",
   "golden_count": 9,
   "current_journey": "12",
   "journey_12_status": "current",
+  "journey_12_approval": "review-pending",
   "freeze_script_preserves_journey_12": true,
-  "existing_goldens_changed": false
+  "existing_goldens_changed": false,
+  "payer_refresh_read_only": true,
+  "unknown_timeout_requires_recovery": true,
+  "screens_added": 0
 }
