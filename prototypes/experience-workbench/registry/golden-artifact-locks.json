@@ -58,5 +58,10 @@
     "journey": "09",
     "path": "journeys/09-manage-people/v1-candidate.html",
     "sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d"
+  },
+  {
+    "journey": "13",
+    "path": "journeys/13-request-money/v1-candidate.html",
+    "sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707"
   }
 ]

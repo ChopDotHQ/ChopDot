@@ -1,0 +1,30 @@
+{
+  "journey": "13",
+  "version": "v1",
+  "golden_number": 13,
+  "approval": "design-approved",
+  "approved_on": "2026-09-06",
+  "reviewed_at_commit": "74b2d28b91188c82a5759caf8dd5b93bf03cee82",
+  "prototype_path": "journeys/13-request-money/v1-candidate.html",
+  "prototype_sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707",
+  "html_change_authorized": false,
+  "approved_policy": {
+    "private_in_app_request": true,
+    "one_active_request_per_overlapping_source_scope": true,
+    "no_automatic_reminders": true,
+    "withdrawal_preserves_record_balance_and_memberships": true,
+    "withdrawal_blocked_during_payment": true
+  },
+  "next_journey": "14",
+  "deferred_note": {
+    "id": "TYPO-01",
+    "status": "deferred",
+    "change_now": false,
+    "note": "Shared typography and readability remain deferred."
+  },
+  "status": "golden",
+  "golden_count": 13,
+  "html_preserved": true,
+  "existing_goldens_changed": false,
+  "gate_requirement": "exact-resulting-head"
+}

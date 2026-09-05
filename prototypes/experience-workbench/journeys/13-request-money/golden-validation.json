@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "status": "golden",
+  "golden_number": 13,
+  "prototype_sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707",
+  "html_unchanged": true,
+  "approved_policy": {
+    "private_in_app_request": true,
+    "one_active_request_per_overlapping_source_scope": true,
+    "no_automatic_reminders": true,
+    "withdrawal_preserves_record_balance_and_memberships": true,
+    "withdrawal_blocked_during_payment": true
+  },
+  "all_golden_locks_pass": true,
+  "typography": "TYPO-01 deferred"
+}

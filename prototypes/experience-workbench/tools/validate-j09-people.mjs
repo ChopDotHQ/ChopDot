@@ -29,7 +29,7 @@ assert.equal(p.golden_count,11);assert.equal(p.current_journey,'09');assert.equa
 assert.equal(journeys.find(x=>x.id==='01').golden_number,11);assert.equal(journeys.find(x=>x.id==='01').status,'golden');
 assert.equal(journeys.find(x=>x.id==='09').status,'current');assert.equal(journeys.find(x=>x.id==='09').approval,'review-pending');
 const locks=json('registry/golden-artifact-locks.json');
-assert(locks.length===11||locks.length===12,'Unexpected Golden lock count');
+assert(locks.length===11||locks.length===12||locks.length===13,'Unexpected Golden lock count');
 if(locks.length===12){assert.equal(json('registry/approvals/09-v1.json').prototype_sha256,sha);assert.equal(locks.find(x=>x.journey==='09')?.sha256,sha);}
 for(const lock of locks)assert.equal(hash(read(lock.path)),lock.sha256,`Golden changed: ${lock.path}`);
 assert.equal(json('registry/approvals/01-v1.json').deferred_note.change_now,false);

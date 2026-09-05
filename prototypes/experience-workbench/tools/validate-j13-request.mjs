@@ -32,7 +32,7 @@ assert.equal(progress.golden_count,12);assert.equal(progress.remaining_overall,1
 assert.equal(journeys.find(x=>x.id==='09').status,'golden');assert.equal(journeys.find(x=>x.id==='09').golden_number,12);
 assert.equal(journeys.find(x=>x.id==='13').status,'current');assert.equal(journeys.find(x=>x.id==='13').approval,'review-pending');
 for(const manifest of ['next-support-candidate','support-candidate','active-candidate']){const a=json(`registry/${manifest}.json`);assert.equal(a.journey,'13');assert.equal(a.prototype_sha256,sha);}
-const locks=json('registry/golden-artifact-locks.json');assert.equal(locks.length,12);assert(!locks.some(l=>l.journey==='13'));
+const locks=json('registry/golden-artifact-locks.json');assert(locks.length===12||locks.length===13);if(locks.length===13){assert.equal(json('registry/approvals/13-v1.json').prototype_sha256,sha);assert.equal(locks.find(l=>l.journey==='13')?.sha256,sha);}
 for(const l of locks)assert.equal(hash(fs.readFileSync(path.join(root,l.path))),l.sha256,`Golden changed: ${l.path}`);
 const approval=json('registry/approvals/09-v1.json');assert.equal(approval.deferred_note.change_now,false);
 assert.equal(approval.approved_policy.removal_authority,'current-group-owner-only');assert.equal(approval.approved_policy.removal_condition,'no-open-items-for-this-person-in-this-group');

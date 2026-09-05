@@ -1,21 +1,17 @@
 # ChopDot Experience Workbench — Start Here
 
-28 registered journeys; 12 Golden; 16 remaining.
+28 registered journeys; 13 Golden; 15 remaining.
 
-Journey 09 V1 is Golden #12. The reviewed HTML is checksum-locked; past records and other memberships survive group-specific removal. Journey 01 remains email-code first, wallet alternative.
+Journey 13 V1 is Golden #13. All approved HTML is checksum-locked.
 
-## Review now
+## Next
 
-Journey 13 — Request Money V1. Not Golden.
-
-Open `journeys/13-request-money/v1-candidate.html`; read `journeys/13-request-money/spec.md` and `journeys/13-request-money/VISUAL_QA.md`.
+Journey 14 — Receive / Share Payment Details. This freeze does not start it.
 
 ## Preserve
 
-All 12 approved HTML files are checksum-locked. TYPO-01 shared typography/readability is deferred.
+Email-code remains the default sign-in. Group removal and private-request policies remain approved. TYPO-01 shared typography/readability stays deferred.
 
 ## Gate and continuity
 
-Run `npm run gate`. Preflight checks the locked bytes before historical materialization. Historical review validators run before the final J09 approval overlay. registry/next-support-candidate.json declares the next candidate; the final overlay restores canonical progress, active-candidate and support-candidate. Do not infer approval from historical QA text or the retained candidate filename.
-
-The final branch head must have a successful workbench gate with no generated changes left.
+Run `npm run gate`. Preflight verifies locked bytes before replay. Historical QA records remain historical; final approval overlays restore current state. registry/j14-candidate.json declares the next candidate. Final freeze checks validate every Golden lock and current progress. Require a successful exact-head run with no generated changes left.
