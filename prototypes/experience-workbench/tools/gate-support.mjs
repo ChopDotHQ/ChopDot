@@ -1,0 +1,10 @@
+import {execFileSync} from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..');
+const run=(file,args=[])=>execFileSync(process.execPath,[path.join(root,'tools',file),...args],{cwd:root,stdio:'inherit'});
+run('apply-j09-golden-freeze.mjs',['--preflight']);
+execFileSync('npm',['run','gate:historical'],{cwd:root,stdio:'inherit'});
+if(fs.existsSync(path.join(root,'tools/build-j13-candidate.mjs')))run('build-j13-candidate.mjs');
+run('apply-j09-golden-freeze.mjs');run('build-journey-map.mjs');run('validate-workbench.mjs');run('apply-j09-golden-freeze.mjs',['--check']);
+if(fs.existsSync(path.join(root,'tools/validate-j13-request.mjs')))run('validate-j13-request.mjs');
