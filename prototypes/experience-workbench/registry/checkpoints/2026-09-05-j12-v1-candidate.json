@@ -1,0 +1,24 @@
+{
+  "checkpoint": "2026-09-05-j12-v1-candidate",
+  "branch": "ux/experience-workbench",
+  "journey": "12",
+  "name": "Complete Settlement",
+  "version": "v1",
+  "status": "golden-candidate",
+  "approval": "review-pending",
+  "golden_count": 9,
+  "prototype_path": "journeys/12-complete-settlement/v1-golden-candidate.html",
+  "spec_path": "journeys/12-complete-settlement/spec.md",
+  "qa_path": "journeys/12-complete-settlement/VISUAL_QA.md",
+  "prototype_sha256": "b6cc690e6993f3d8e611a0b793d0bf8fd17953af176f3bebdeca668235272dec",
+  "states": 67,
+  "links": "194/194",
+  "primary_actions_mapped": "65/65",
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "journey_11_html_unchanged": true,
+  "freeze_script_preserves_j12": true,
+  "next_action": "User reviews Journey 12 V1. Do not freeze without explicit approval."
+}

@@ -1,0 +1,17 @@
+{
+  "viewports": ["393x852", "430x890"],
+  "representative_state_viewport_renders": 88,
+  "horizontal_overflow_failures": 0,
+  "header_footer_overlap_failures": 0,
+  "clipped_card_or_row_failures": 0,
+  "visual_sequences_reviewed": [
+    "external/manual lifecycle",
+    "receiver confirmation",
+    "wallet lifecycle",
+    "partial payment and remainder",
+    "failure and replay-safe retry",
+    "unknown result and recovery",
+    "reversal",
+    "Saved record"
+  ]
+}

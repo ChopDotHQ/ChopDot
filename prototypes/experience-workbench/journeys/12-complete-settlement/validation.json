@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "exact_candidate_sha256": "b6cc690e6993f3d8e611a0b793d0bf8fd17953af176f3bebdeca668235272dec",
+  "screens": 67,
+  "links": 194,
+  "primary_actions": 65,
+  "visible_banned_terms": [],
+  "journey_11_preserved": true,
+  "errors": []
+}

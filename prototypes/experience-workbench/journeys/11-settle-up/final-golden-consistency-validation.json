@@ -5,6 +5,6 @@
   "stale_wallet_authorization_mappings": 0,
   "saved_record_web_retrieval_required": true,
   "product_sdk_cid_optional": true,
-  "e25_status": "partial",
+  "e25_status": "current",
   "errors": []
 }

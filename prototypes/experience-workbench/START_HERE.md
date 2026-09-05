@@ -4,22 +4,26 @@
 
 - 28 registered journeys
 - 9 Golden journeys
-- Journey 11 — Settle Up V1.1 is Golden #9
-- Journey 12 — Complete Settlement remains not started
-- Work is intentionally paused after the Journey 11 freeze
+- Journey 11 — Settle Up V1.1 remains frozen as Golden #9
+- Journey 12 — Complete Settlement V1 is the current Golden Candidate
+- Running the gate preserves Journey 12 progress
 
-## Frozen artifact
+## Open first
 
-`journeys/11-settle-up/v1.1-golden-candidate.html`
+`journeys/12-complete-settlement/v1-golden-candidate.html`
 
-SHA-256:
+Then read:
 
-`d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d`
+1. `journeys/12-complete-settlement/spec.md`
+2. `journeys/12-complete-settlement/STATE_AND_AUTHORITY.md`
+3. `journeys/12-complete-settlement/GIVEN_WHEN_THEN.md`
+4. `journeys/12-complete-settlement/UI_TO_DOMAIN_EVENTS.md`
+5. `journeys/12-complete-settlement/VISUAL_QA.md`
 
-## Resume boundary
+## Review boundary
 
-Do not alter Journey 11 or begin Journey 12 without a new explicit instruction.
+Do not alter Journeys 1–11. Do not freeze Journey 12 without explicit user approval.
 
 ## Gate
 
-Run `npm run gate` against the exact branch head. The candidate checksum, registry, checkpoint and generated views must remain consistent.
+Run `npm run gate`. It must preserve Journey 12 as current and verify the Journey 11 Golden checksum.

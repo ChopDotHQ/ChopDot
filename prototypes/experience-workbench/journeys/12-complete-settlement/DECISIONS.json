@@ -1,0 +1,17 @@
+{
+  "journey": "12",
+  "version": "v1",
+  "status": "golden-candidate",
+  "decisions": [
+    "Sent, waiting, received and complete remain separate visible states.",
+    "External and manual payments require canonical recipient confirmation unless an exact trusted provider result supplies equivalent receipt.",
+    "Payer-marked sent never closes payment.",
+    "Exact wallet receipt may close only the exact matching payment item.",
+    "Partial payment closes only the confirmed amount and preserves the remainder.",
+    "Retries and recovery reuse the existing payment identity.",
+    "Overall Position and group balances are recomputed derived views.",
+    "Saved payment records are human-readable and retrievable through an ordinary authenticated web path.",
+    "Reversal reopens only the exact affected payment item.",
+    "Journeys 1–11 remain unchanged."
+  ]
+}

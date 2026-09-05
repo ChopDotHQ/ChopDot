@@ -12,8 +12,9 @@
 8. Overall Position — V1
 9. Settle Up — V1.1
 
-## Golden #9 — Settle Up V1.1
+## Golden Candidate #10 — Complete Settlement V1
 
-Approved 2026-09-05. The reviewed candidate HTML remains unchanged at `journeys/11-settle-up/v1.1-golden-candidate.html` with SHA-256 `d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d`.
+Journey 12 is in review. It preserves the Journey 11 payment scope and distinguishes Sent, Waiting, Received, Failed, Partial, Reversed and Complete.
 
-Journey 12 remains not started. This checkpoint stops at the Journey 11 Golden freeze.
+Prototype: `journeys/12-complete-settlement/v1-golden-candidate.html`
+SHA-256: `b6cc690e6993f3d8e611a0b793d0bf8fd17953af176f3bebdeca668235272dec`

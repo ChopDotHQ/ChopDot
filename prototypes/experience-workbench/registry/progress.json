@@ -1,9 +1,9 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "updated_on": "2026-09-05",
   "registered_journeys": 28,
   "golden_count": 9,
-  "current_journey": null,
+  "current_journey": "12",
   "remaining_overall": 19,
   "remaining_core_including_entry": [
     "01",
@@ -16,9 +16,9 @@
   "generated_map": "journey-map.html",
   "validation_command": "npm run gate",
   "payment_contract_version": "1.2",
-  "next_action": "Paused after Journey 11 V1.1 Golden freeze. Journey 12 remains not started.",
+  "next_action": "Review Journey 12 V1 Complete Settlement candidate. Do not freeze without explicit approval.",
   "storage_contract_version": "1.0",
-  "paused_after_freeze": true,
+  "paused_after_freeze": false,
   "last_approved_journey": "11",
   "last_approved_version": "v1.1",
   "last_approved_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d"

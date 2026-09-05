@@ -2,7 +2,7 @@
   "checkpoint": "2026-09-04-j11-v1.1-compatibility-closeout",
   "branch": "ux/experience-workbench",
   "golden_count": 9,
-  "current_journey": null,
+  "current_journey": "12",
   "candidate_version": "v1.1",
   "payment_contract_version": "1.2",
   "storage_contract_version": "1.0",
@@ -41,9 +41,9 @@
     "sole_retrieval_key_allowed": false
   },
   "e25": {
-    "status": "partial",
+    "status": "current",
     "journey_11": "failure preview",
     "journey_12": "complete recovery"
   },
-  "freeze_boundary": "Stop after Journey 11. Journey 12 remains not started."
+  "freeze_boundary": "Journey 11 remains frozen. Later journey progress must be preserved."
 }
