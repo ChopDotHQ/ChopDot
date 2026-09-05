@@ -1,9 +1,9 @@
 {
-  "checkpoint": "2026-09-04-j11-v1.1-final-golden-consistency",
-  "purpose": "Trigger and attest the exact-head workbench gate after final Golden consistency files were materialized.",
+  "checkpoint": "2026-09-05-j11-v1.1-golden-freeze",
+  "purpose": "Trigger and attest the exact-head workbench gate after Journey 11 Golden #9 materialization.",
   "expected_candidate_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d",
-  "payment_contract_version": "1.2",
-  "storage_contract_version": "1.0",
-  "final_golden_consistency_pass": true,
+  "golden_count": 9,
+  "current_journey": null,
+  "journey_12_status": "not-started",
   "html_changed": false
 }
