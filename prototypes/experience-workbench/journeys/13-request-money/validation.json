@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "journey": "13",
+  "version": "v1",
+  "candidate_sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707",
+  "states": 22,
+  "model_assertions": 112,
+  "model_scenarios": 44,
+  "browser_scenarios": 30,
+  "product_clicks": 80,
+  "state_layout_checks": 44,
+  "mapped_actions": 72,
+  "inherited_css_unchanged": true,
+  "inherited_people_css_unchanged": true,
+  "all_golden_locks_pass": true,
+  "golden_count": 12,
+  "current_journey": "13",
+  "review_status": "review-pending",
+  "typography_note": "TYPO-01 deferred",
+  "ci_executes": "Model tests and verification of checksum-bound recorded browser evidence; browser suite is not rerun by this gate.",
+  "limitations": "Synthetic in-memory prototype. Playwright inline installed Chromium; no real backend, notifications, payment, hosted/native-file delivery or full cross-journey integration."
+}

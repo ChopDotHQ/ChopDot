@@ -17,6 +17,6 @@ Journey 09 V1 is Golden #12. Owner-only removal requires no open items in the se
 
 Journey 01 remains email-code first, with wallet sign-in as the alternative.
 
-Next: Journey 13 — Request Money.
+Current candidate: Journey 13 — Request Money V1. Not Golden.
 
 TYPO-01: shared typography/readability remains deferred.

@@ -4,9 +4,11 @@
 
 Journey 09 V1 is Golden #12. The reviewed HTML is checksum-locked; past records and other memberships survive group-specific removal. Journey 01 remains email-code first, wallet alternative.
 
-## Next
+## Review now
 
-Journey 13 — Request Money. This freeze does not start it.
+Journey 13 — Request Money V1. Not Golden.
+
+Open `journeys/13-request-money/v1-candidate.html`; read `journeys/13-request-money/spec.md` and `journeys/13-request-money/VISUAL_QA.md`.
 
 ## Preserve
 

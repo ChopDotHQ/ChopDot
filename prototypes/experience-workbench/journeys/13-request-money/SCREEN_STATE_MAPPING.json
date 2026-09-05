@@ -1,0 +1,178 @@
+[
+  {
+    "screen": "compose",
+    "visible_copy": "You and Marc\nRequest money.\n\nA clear amount. A little less chasing.\n\nM\nMarc\nZurich Weekend\nMarc owes you\nCHF 30.00\n\nZurich Weekend\n\nWhat this covers\n1 shared group\nNote\nOptional \u00b7 0/160\n\nThis is a request, not a payment. Your balance stays unchanged.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "review",
+    "visible_copy": "Ready to send.\n\nCheck the person and amount. Marc decides when and how to pay.\n\nM\nMarc\nZurich Weekend\nRequest amount\nCHF 30.00\n\nZurich Weekend\n\nMarc will see\nDev requests CHF 30.00\nZurich Weekend \u00b7 Only shared with Marc\nSend through\nChopDot \u00b7 private request\nYour preference\nTWINT\n\nYour preference is a suggestion. Payment is reviewed separately.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "sources",
+    "visible_copy": "You and Marc\nThe shared balance.\n\nZurich Weekend\n\nRequest amount\nCHF 30.00\n\nZurich Weekend\n\nZurich Weekend\nMarc owes you\nCHF 30.00\n\nBased on existing shared records. Sending a request does not add an expense or change what anyone owes.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "submitting",
+    "visible_copy": "Creating your request.\n\nKeep this open while the request is saved.\n\nRequest amount\nCHF 30.00\n\nZurich Weekend\n\nNo payment has been made. We will not create a second request while this one is unresolved.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "unknown",
+    "visible_copy": "Did it go through?\n\nWe have not confirmed whether the request was created. Check this same request before trying again.\n\nRequest amount\nCHF 30.00\n\nZurich Weekend\n\nNo payment has been made. We will not create a second request while this one is unresolved.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "failed",
+    "visible_copy": "Nothing was sent.\n\nThe service confirmed this request was not created. Your note is still here.\n\nRequest amount\nCHF 30.00\n\nZurich Weekend\n\nDev requests CHF 30.00\nZurich Weekend \u00b7 Only shared with Marc",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "detail",
+    "visible_copy": "Request created.\n\nYour request is saved. We are still waiting for delivery.\n\nRequest amount\nCHF 30.00\n\nZurich Weekend\n\nTo\nMarc\nDelivery\nQueued\nPayment\nNot paid\nDev requests CHF 30.00\nZurich Weekend \u00b7 Only shared with Marc\n\nNo automatic reminders. No money has moved.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "duplicate",
+    "visible_copy": "Already asked.\n\nThere is an active request covering some or all of these same items. Open it instead of asking twice.\n\nM\nMarc\nZurich Weekend\nExisting request\nCHF 30.00\n\nZurich Weekend\n\nDifferent notes or entry points do not create a new request for the same items.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "changed",
+    "visible_copy": "Let\u2019s check that again.\n\nThe balance or request changed before your action completed. Nothing new was accepted.\n\nYou reviewed\nCHF 30.00\nCurrent balance\nCHF 20.00\n\nReview the current state. We will not silently send a different amount.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "nothing-due",
+    "visible_copy": "Nothing to request.\n\nThere is no outstanding amount to request in this scope.\n\nCurrent balance\nCHF 0.00\n\nZurich Weekend",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "unavailable",
+    "visible_copy": "An expense needs review.\n\nAn item in this request is still being reviewed. Other people and unrelated items are not blocked.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "offline",
+    "visible_copy": "Your draft is here.\n\nReconnect before creating, checking or withdrawing a request. We will not send it automatically.\n\nNothing was sent.\n\nYou can return to your draft. The balance must be reviewed again when you reconnect.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "payment-progress",
+    "visible_copy": "Payment is being checked.\n\nA payment for this request is in progress. Please wait before requesting again or withdrawing.\n\nRequest amount\nCHF 30.00\n\nZurich Weekend\n\nA request cannot approve a payment or mark it complete.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "paid",
+    "visible_copy": "Payment confirmed.\n\nThis demonstration uses a verified settlement result from the payment journey, not a sender\u2019s \u201cmark paid\u201d button.\n\nConfirmed payment\nCHF 30.00\n\nZurich Weekend\n\nThis request is complete. The payment record belongs to Journey 12.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "withdraw-confirm",
+    "visible_copy": "Withdraw this request?\n\nThis stops the request. It does not cancel the balance or remove past records.\n\nRequest amount\nCHF 30.00\n\nZurich Weekend\n\nYour shared balance stays.\n\nCHF 30.00 is the current balance. Withdrawing will not change it.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "withdrawing",
+    "visible_copy": "Withdrawing request.\n\nUntil the result is confirmed, the request may still be active. Your balance stays unchanged.\n\nRequest amount\nCHF 30.00\n\nZurich Weekend",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "withdraw-unknown",
+    "visible_copy": "Still checking.\n\nUntil the result is confirmed, the request may still be active. Your balance stays unchanged.\n\nRequest amount\nCHF 30.00\n\nZurich Weekend",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "withdraw-failed",
+    "visible_copy": "Not withdrawn.\n\nThe service confirmed no change was saved. You can try the same withdrawal again.\n\nRequest amount\nCHF 30.00\n\nZurich Weekend",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "withdrawn",
+    "visible_copy": "Request withdrawn.\n\nThe request has stopped. Your shared balance and past records are unchanged.\n\nCurrent shared balance\nCHF 30.00",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "handoff",
+    "visible_copy": "Marc.\n\nZurich Weekend. Your original person and group context are kept. Journey 09 remains unchanged.\n\nBoundary preview only. This does not execute the adjacent journey, change settings or start a payment.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "loading",
+    "visible_copy": "One moment.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  },
+  {
+    "screen": "error",
+    "visible_copy": "Request could not load.\n\nWe could not check the request. Do not send another until its status is known.",
+    "layout_checked": [
+      "393x852",
+      "430x890"
+    ]
+  }
+]

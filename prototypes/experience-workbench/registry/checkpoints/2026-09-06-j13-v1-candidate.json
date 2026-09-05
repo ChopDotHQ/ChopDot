@@ -10,5 +10,13 @@
   "previous_golden": "09",
   "previous_golden_number": 12,
   "previous_golden_sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d",
-  "typography_note": "TYPO-01 deferred"
+  "typography_note": "TYPO-01 deferred",
+  "status": "current",
+  "golden_count": 12,
+  "remaining_overall": 16,
+  "freeze_commit": "db9f34b8ad8fc21bb2dbf3d7c914df5c94935a16",
+  "freeze_gate_run": 33995995523,
+  "freeze_gate_number": 54,
+  "prototype_only": true,
+  "existing_goldens_changed": false
 }

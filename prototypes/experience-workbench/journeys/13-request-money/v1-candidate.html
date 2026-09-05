@@ -1,0 +1,479 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>ChopDot — Request Money V1</title><style>
+:root{
+  --bg:#f7f7f8;--surface:#fff;--surface2:#f0f0f2;--ink:#111113;--secondary:#66666d;--muted:#929299;
+  --border:#e6e6e9;--accent:#e6007a;--accent-soft:#fde9f3;--success:#17a66b;
+  --shadow:0 1px 2px rgba(0,0,0,.025),0 10px 28px rgba(0,0,0,.05);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#ececef;color:var(--ink);font-family:var(--font)}
+a{text-decoration:none;color:inherit}
+
+/* REVIEW WRAPPER */
+.lab{height:100vh;height:100dvh;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:28px;padding:28px;overflow:hidden}
+.stage{min-height:0;display:flex;justify-content:center;align-items:stretch;overflow:hidden}
+.device{width:min(430px,100%);height:100%;max-height:890px;border-radius:34px;overflow:hidden;background:var(--bg);border:1px solid rgba(0,0,0,.12);box-shadow:0 30px 75px rgba(0,0,0,.17);position:relative}
+
+/* LOCKED APP FRAME */
+.app{position:absolute;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:var(--bg);overflow:hidden}
+.app-header{padding:calc(15px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(247,247,248,.96);border-bottom:1px solid rgba(0,0,0,.04);z-index:5}
+.app-content{min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:16px;display:flex;flex-direction:column;gap:12px}
+.app-content>*{flex:0 0 auto}
+.app-footer{background:rgba(255,255,255,.96);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+.tabbar{height:78px;display:grid;grid-template-columns:1fr 1fr 72px 1fr 1fr;padding:5px 8px 8px;align-items:end}
+.tab{height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--muted);font-size:10px}.tab.active{color:var(--ink);font-weight:700}.tab .nav-icon{width:20px;height:20px;display:block}.tab.active .nav-icon{stroke-width:2.2}
+.add-tab{align-self:center;justify-self:center;width:56px;height:56px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;box-shadow:0 12px 28px rgba(230,0,122,.28);transform:translateY(-12px)}
+
+/* HEADER */
+.brand{display:flex;align-items:center;gap:9px;font-weight:770;font-size:17px;letter-spacing:-.02em}.mark{width:26px;height:26px;border-radius:50%;background:var(--accent);position:relative;overflow:hidden;flex:none}.mark:after{content:"";position:absolute;left:-5px;right:-5px;top:11px;height:4px;background:var(--surface);transform:rotate(-35deg)}
+.header-actions{display:flex;align-items:center;gap:8px}.bell{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;position:relative}.bell .icon{width:18px;height:18px}.notif{position:absolute;right:0;top:0;width:14px;height:14px;border-radius:50%;background:#d8484d;color:#fff;font-size:9px;display:grid;place-items:center}.avatar{width:29px;height:29px;border-radius:50%;background:#151515;color:#fff;display:grid;place-items:center;font-weight:750;font-size:10px}
+
+/* TYPOGRAPHY */
+.eyebrow{font-size:11px;color:var(--secondary);margin-bottom:4px}.hero{font-size:26px;line-height:1.08;margin:0;letter-spacing:-.045em;font-weight:780}.h2{font-size:15px;font-weight:700;margin:0}.caption{font-size:11px;color:var(--secondary)}.micro{font-size:10px;color:var(--secondary)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}.clamp{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ATTENTION — original visual weight */
+.attention{overflow:hidden}.attention-head{padding:15px;display:flex;align-items:center;gap:9px}.attention-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px var(--accent-soft);flex:none}.attention-title{font-size:14px;font-weight:730}.attention-sub{font-size:11px;color:var(--secondary);margin-top:2px}
+.attention-item{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:11px;padding:13px 15px;border-top:1px solid var(--border)}.ai-icon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);flex:none}.ai-icon .icon{width:17px;height:17px}.ai-icon.pink{background:var(--accent-soft);color:var(--accent)}.ai-title{font-size:13px;font-weight:680}.ai-sub{font-size:11px;color:var(--secondary);margin-top:2px}.chev{color:var(--muted);display:grid;place-items:center}.chev .icon{width:18px;height:18px}
+
+/* WALLET — present, calm, not tiny */
+.wallet{padding:13px 15px;display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:11px;align-items:center}.wallet-icon{width:36px;height:36px;border-radius:12px;background:var(--surface2);display:grid;place-items:center}.wallet-icon .icon{width:18px;height:18px}.wallet-name{font-size:13px;font-weight:700}.wallet-meta{font-size:11px;color:var(--secondary);margin-top:2px}.wallet-amount{text-align:right}.wallet-amount b{display:block;font-size:14px}.wallet-amount span{font-size:10px;color:var(--secondary)}
+
+/* POSITION */
+.balance{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:end;padding:14px 15px}.netline{font-size:11px;color:var(--secondary)}.netvalue{font-size:24px;letter-spacing:-.04em;font-weight:790;color:var(--success);margin-top:1px;font-variant-numeric:tabular-nums}.balance-side{text-align:right;font-size:11px;color:var(--secondary);line-height:1.6}.balance-side b{color:var(--ink);font-weight:680}
+
+/* GROUPS */
+.section-head{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 0}.section-head span{color:var(--accent);font-size:12px}.groups{display:flex;flex-direction:column;gap:10px}.group{padding:15px}.group-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px}.group-name{font-size:14px;font-weight:740}.group-meta{font-size:11px;color:var(--secondary);margin-top:3px}.group-balance{font-size:17px;font-weight:760;white-space:nowrap;font-variant-numeric:tabular-nums}.positive{color:var(--success)}.group-status{margin-top:12px;padding-top:11px;border-top:1px solid var(--border);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}.status-left{display:grid;grid-template-columns:7px minmax(0,1fr);gap:7px;align-items:center}.status-dot{width:7px;height:7px;border-radius:50%;background:var(--success)}.status-dot.pink{background:var(--accent)}.status-text{font-size:11px;color:var(--secondary)}.status-action{font-size:11px;font-weight:700}
+.start{min-height:46px;border:1px dashed #ccccd2;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:7px;color:var(--secondary);font-size:12px}
+
+/* LAB PANEL */
+.labpanel{height:100%;overflow:auto;background:#151516;color:white;border-radius:22px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.18)}.labpanel h2{font-size:17px;margin:0 0 5px}.labpanel p{font-size:12px;line-height:1.5;color:#b9b9bf;margin:0}.labsec{margin-top:16px;padding-top:14px;border-top:1px solid #303034}.lablabel{font-size:10px;color:#929299;text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px}.note{font-size:11px;line-height:1.5;color:#a9a9af}.pass{color:#bcebd4}.compare{display:block;border:1px solid #37373a;background:#222225;color:#fff;border-radius:12px;padding:10px 12px;margin-top:7px;font-size:11px}
+
+@media(max-width:860px){
+  .lab{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;display:block;padding:0;overflow:hidden}.labpanel{display:none}.stage{position:absolute;inset:0}.device{position:absolute;inset:0;width:100%;height:100%;max-height:none;border:0;border-radius:0;box-shadow:none}
+}
+
+/* JOURNEY 10 — OVERALL POSITION */
+.screen{position:absolute;inset:0;display:none;grid-template-rows:auto minmax(0,1fr) auto;background:var(--bg);overflow:hidden}
+.screen:target{display:grid}
+body:not(:has(.screen:target)) #people{display:grid}
+.root-header{padding:calc(15px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(247,247,248,.96);border-bottom:1px solid rgba(0,0,0,.04);z-index:5}
+.detail-header{padding:calc(12px + env(safe-area-inset-top)) 14px 11px;display:grid;grid-template-columns:38px minmax(0,1fr) 38px;align-items:center;gap:8px;background:rgba(247,247,248,.97);border-bottom:1px solid rgba(0,0,0,.04);z-index:5}
+.header-title{text-align:center}.header-title b{display:block;font-size:15px;line-height:1.1}.header-title span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}
+.icon-btn{width:36px;height:36px;border-radius:11px;display:grid;place-items:center}.icon-btn svg{width:18px;height:18px}
+.position-card{overflow:hidden}
+.position-main{padding:15px}
+.position-label{font-size:10px;color:var(--secondary)}
+.position-net{font-size:32px;line-height:1.04;font-weight:790;letter-spacing:-.05em;color:var(--success);margin-top:3px;font-variant-numeric:tabular-nums}
+.position-net.negative{color:var(--ink)}.position-net.zero{color:var(--ink)}
+.gross-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--border)}
+.gross{padding:12px 15px}.gross+.gross{border-left:1px solid var(--border)}
+.gross span{display:block;font-size:9px;color:var(--secondary)}.gross b{display:block;font-size:14px;margin-top:3px;font-variant-numeric:tabular-nums}
+.ready-line{display:grid;grid-template-columns:17px minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px 15px;border-top:1px solid var(--border);font-size:10px}
+.ready-line svg{width:16px;height:16px;color:var(--success)}.ready-line .action{font-weight:720;color:var(--accent)}
+.segmented{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:#e9e9ed;border-radius:13px}
+.segment{min-height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--secondary)}
+.segment.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.07);font-weight:700}
+.section-title{display:flex;align-items:end;justify-content:space-between;padding:3px 2px 0}.section-title h2{font-size:14px;margin:0}.section-title span{font-size:10px;color:var(--secondary)}
+.people-list,.group-list,.currency-list{overflow:hidden}
+.person-row,.group-row,.currency-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;border-top:1px solid var(--border)}
+.person-row:first-child,.group-row:first-child,.currency-row:first-child{border-top:0}
+.person-avatar,.row-icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#dedee3;color:#303036;font-size:10px;font-weight:760}
+.row-icon{border-radius:12px;background:var(--surface2)}.row-icon svg{width:18px;height:18px}
+.person-copy b,.group-copy b,.currency-copy b{display:block;font-size:13px}.person-copy span,.group-copy span,.currency-copy span{display:block;font-size:10px;color:var(--secondary);margin-top:2px}
+.row-money{text-align:right}.row-money b{display:block;font-size:14px;font-variant-numeric:tabular-nums}.row-money b.positive{color:var(--success)}.row-money span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.row-money span.ready{color:var(--ink);font-weight:720}.row-money span.issue{color:var(--accent);font-weight:720}
+.mini-note{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:center;padding:11px 12px;border-radius:13px;background:var(--accent-soft);color:#7f174d;font-size:10px;line-height:1.4;border:1px solid #f2cde0}
+.mini-note svg{width:17px;height:17px}.mini-note .action{font-weight:740;white-space:nowrap}
+.detail-summary{padding:17px 16px 15px;text-align:center}
+.detail-summary .direction{font-size:10px;color:var(--secondary)}
+.detail-summary .amount{font-size:34px;line-height:1.05;font-weight:790;letter-spacing:-.05em;margin-top:4px;font-variant-numeric:tabular-nums}
+.detail-summary .amount.positive{color:var(--success)}
+.detail-summary .sub{font-size:10px;color:var(--secondary);margin-top:5px}
+.breakdown{overflow:hidden}.break-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 15px;border-top:1px solid var(--border)}
+.break-row:first-child{border-top:0}.break-row .row-icon{width:38px;height:38px}.break-row b{display:block;font-size:12px}.break-row span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}
+.break-money{text-align:right;font-size:12px;font-weight:720;font-variant-numeric:tabular-nums}.break-money.positive{color:var(--success)}
+.net-explainer{padding:13px 15px}.net-explainer h3{font-size:12px;margin:0}.net-equation{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px;font-size:10px;color:var(--secondary)}.net-equation b{color:var(--ink);font-size:11px}
+.focus-footer{background:rgba(255,255,255,.97);border-top:1px solid var(--border);padding:10px 16px calc(12px + env(safe-area-inset-bottom));z-index:5}
+.footer-stack{display:flex;flex-direction:column;gap:7px}.primary{min-height:46px;border-radius:14px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:730}.primary.pink{background:var(--accent)}.primary svg,.secondary svg{width:16px;height:16px}
+.secondary{min-height:42px;border-radius:13px;background:var(--surface2);display:flex;align-items:center;justify-content:center;gap:7px;font-size:11px;font-weight:700}
+.text-link{min-height:30px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--secondary)}
+.currency-summary{padding:14px 15px}.currency-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.currency-head b{font-size:14px}.currency-head .currency-net{font-size:18px;font-weight:780;font-variant-numeric:tabular-nums}.currency-net.positive{color:var(--success)}
+.currency-gross{display:flex;gap:14px;margin-top:9px;font-size:10px;color:var(--secondary)}.currency-gross strong{color:var(--ink)}
+.estimate-card{padding:14px 15px;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:11px;align-items:center}.estimate-card .row-icon{width:38px;height:38px}.estimate-card b{display:block;font-size:12px}.estimate-card span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.estimate-card .value{font-size:10px;font-weight:720;color:var(--accent)}
+.estimate-hero{padding:16px;text-align:center}.estimate-hero span{font-size:10px;color:var(--secondary)}.estimate-hero b{display:block;font-size:30px;letter-spacing:-.05em;color:var(--success);margin-top:4px}.estimate-hero small{display:block;font-size:9px;color:var(--secondary);margin-top:5px}
+.state-wrap{padding:24px 18px;text-align:center}.state-icon{width:52px;height:52px;border-radius:16px;background:var(--surface2);display:grid;place-items:center;margin:2px auto 13px}.state-icon.good{background:#e9f8f1;color:var(--success)}.state-icon svg{width:22px;height:22px}.state-wrap h1{font-size:25px;letter-spacing:-.04em;margin:0}.state-wrap p{font-size:11px;color:var(--secondary);line-height:1.5;max-width:255px;margin:6px auto 15px}
+.notice{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;align-items:start;padding:11px 12px;border-radius:13px;background:#fff5dd;border:1px solid #ead7a9;color:#6d4c11;font-size:10px;line-height:1.45}.notice svg{width:17px;height:17px}
+.loading-card{padding:16px}.skel{height:11px;border-radius:999px;background:#e8e8eb;margin-top:10px}.skel.big{height:31px;width:52%}.skel.med{width:72%}.skel.short{width:38%}
+.action-card{padding:14px 15px;display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center}.action-card b{display:block;font-size:12px}.action-card span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.action-card .row-icon{width:40px;height:40px}.action-card .action{font-size:10px;font-weight:720;color:var(--accent)}
+.tabbar .people-active{color:var(--ink);font-weight:700}.tabbar .people-active .nav-icon{stroke-width:2.2}
+
+.add-tab .icon{width:23px;height:23px}
+.currency-list{display:flex;flex-direction:column;gap:10px;overflow:visible}
+.currency-list>.card{display:block}
+.ready-line.changing svg{color:var(--accent)}
+
+/* JOURNEY 11 — SETTLE UP */
+.settle-hero{padding:18px 16px 16px;text-align:center}
+.settle-hero .person-avatar{width:52px;height:52px;margin:0 auto 10px;font-size:12px}
+.settle-hero .direction{font-size:10px;color:var(--secondary)}
+.settle-hero .amount-display{font-size:40px;line-height:1.04;font-weight:790;letter-spacing:-.055em;margin-top:3px;font-variant-numeric:tabular-nums}
+.settle-hero h1{font-size:18px;margin:8px 0 0;letter-spacing:-.025em}
+.settle-hero .sub{font-size:10px;color:var(--secondary);margin-top:4px}
+.ready-card{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px}
+.ready-icon{width:38px;height:38px;border-radius:50%;background:#e9f8f1;color:var(--success);display:grid;place-items:center}
+.ready-icon.warning{background:var(--accent-soft);color:var(--accent)}
+.ready-icon.neutral{background:var(--surface2);color:var(--ink)}
+.ready-icon svg{width:18px;height:18px}
+.ready-card b{display:block;font-size:12px}.ready-card>div>span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}
+.ready-action{font-size:10px;font-weight:720;color:var(--accent);white-space:nowrap}
+.method-card{overflow:hidden}.method-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;border-top:1px solid var(--border)}
+.method-row:first-child{border-top:0}.method-icon{width:40px;height:40px;border-radius:12px;background:var(--surface2);display:grid;place-items:center}
+.method-icon.preferred{background:var(--accent-soft);color:var(--accent)}
+.method-icon svg{width:19px;height:19px}.method-copy b{display:block;font-size:12px}.method-copy span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}
+.method-side{text-align:right}.method-side b{display:block;font-size:10px}.method-side span{display:block;font-size:8px;color:var(--secondary);margin-top:2px}
+.summary-card{overflow:hidden}.summary-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:12px 15px;border-top:1px solid var(--border);font-size:10px}
+.summary-row:first-child{border-top:0}.summary-row span{color:var(--secondary)}.summary-row b{text-align:right;font-size:11px}
+.breakdown-card{overflow:hidden}.breakdown-row{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 14px;border-top:1px solid var(--border)}
+.breakdown-row:first-child{border-top:0}.breakdown-row .row-icon{width:36px;height:36px}.breakdown-row b{display:block;font-size:11px}.breakdown-row span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.breakdown-money{font-size:11px;font-weight:720}
+.section-title{display:flex;align-items:end;justify-content:space-between;padding:3px 2px 0}.section-title h2{font-size:13px;margin:0}.section-title a,.section-title span{font-size:9px;color:var(--secondary)}
+.detail-box{padding:14px 15px}.detail-box h3{font-size:12px;margin:0 0 9px}.detail-line{display:flex;justify-content:space-between;gap:10px;font-size:10px;margin-top:7px}.detail-line span{color:var(--secondary)}.detail-line b{font-size:11px;text-align:right}
+.account-box{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px}.account-box .method-icon{width:38px;height:38px}.account-box b{display:block;font-size:12px}.account-box span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.account-box .action{font-size:10px;font-weight:720;color:var(--accent)}
+.amount-edit{padding:17px 15px;text-align:center}.amount-edit label{font-size:10px;color:var(--secondary)}.amount-input{width:100%;border:0;background:transparent;text-align:center;font:inherit;font-size:38px;font-weight:790;letter-spacing:-.05em;outline:0;margin-top:4px}.amount-edit .remaining{font-size:10px;color:var(--secondary);margin-top:8px}
+.amount-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:13px}.amount-chip{min-height:36px;border-radius:11px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:10px}.amount-chip.active{background:#111;color:#fff}
+.copy-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px;border-top:1px solid var(--border)}.copy-row:first-child{border-top:0}.copy-row span{display:block;font-size:9px;color:var(--secondary)}.copy-row b{display:block;font-size:11px;margin-top:2px;overflow-wrap:anywhere}.copy-button{width:34px;height:34px;border-radius:10px;background:var(--surface2);display:grid;place-items:center}.copy-button svg{width:16px;height:16px}
+.quote-card{padding:14px 15px}.quote-card .quote-amount{font-size:26px;font-weight:790;letter-spacing:-.04em}.quote-card .quote-sub{font-size:9px;color:var(--secondary);margin-top:3px}.quote-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:13px -15px -14px;border-top:1px solid var(--border)}.quote-cell{padding:11px 15px;background:var(--surface)}.quote-cell+.quote-cell{border-left:1px solid var(--border)}.quote-cell span{display:block;font-size:8px;color:var(--secondary)}.quote-cell b{display:block;font-size:10px;margin-top:3px}
+.asset-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:#e9e9ed;border-radius:13px}.asset-tab{min-height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:10px;color:var(--secondary)}.asset-tab.active{background:var(--surface);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.07);font-weight:700}.asset-tab svg{width:15px;height:15px}
+.notice-card{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;align-items:start;padding:11px 12px;border-radius:13px;font-size:10px;line-height:1.45}.notice-card.info{background:#edf3ff;border:1px solid #cbd9f3;color:#2d4c83}.notice-card.warning{background:#fff5dd;border:1px solid #ead7a9;color:#6d4c11}.notice-card.danger{background:#fff0f1;border:1px solid #f0c8ca;color:#842f34}.notice-card svg{width:17px;height:17px}
+.state-wrap{padding:24px 18px;text-align:center}.state-icon{width:52px;height:52px;border-radius:16px;background:var(--surface2);display:grid;place-items:center;margin:2px auto 13px}.state-icon.good{background:#e9f8f1;color:var(--success)}.state-icon.warning{background:var(--accent-soft);color:var(--accent)}.state-icon svg{width:22px;height:22px}.state-wrap h1{font-size:24px;letter-spacing:-.04em;margin:0}.state-wrap p{font-size:11px;color:var(--secondary);line-height:1.5;max-width:260px;margin:6px auto 15px}
+.primary{min-height:46px;border-radius:14px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:730}.primary.pink{background:var(--accent)}.primary.disabled{background:#d9d9de;color:#919197;pointer-events:none}.primary svg,.secondary svg{width:16px;height:16px}
+.secondary{min-height:42px;border-radius:13px;background:var(--surface2);display:flex;align-items:center;justify-content:center;gap:7px;font-size:11px;font-weight:700}.text-link{min-height:30px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--secondary)}
+.footer-stack{display:flex;flex-direction:column;gap:7px}.focus-footer{background:rgba(255,255,255,.97);border-top:1px solid var(--border);padding:10px 16px calc(12px + env(safe-area-inset-bottom));z-index:5}
+.selection-list{overflow:hidden}.selection-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;border-top:1px solid var(--border)}.selection-row:first-child{border-top:0}.selection-row .person-avatar{width:40px;height:40px}.selection-row b{display:block;font-size:12px}.selection-row>div>span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.selection-row .amount{font-size:12px;font-weight:720;text-align:right}.selection-row .amount span{display:block;font-size:8px;color:var(--secondary);margin-top:2px}
+.progress-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 2px}.progress-step{font-size:8px;color:var(--muted);text-align:center}.progress-step:before{content:"";display:block;height:4px;border-radius:99px;background:#e2e2e6;margin-bottom:5px}.progress-step.active{color:var(--ink);font-weight:700}.progress-step.active:before{background:#111}.progress-step.done:before{background:var(--success)}
+
+/* Payment compatibility contract — visible states stay human */
+.payment-status-card{padding:20px 16px 17px;text-align:center}
+.payment-status-card .state-icon{margin:2px auto 13px}
+.state-icon.sent{background:#e8efff;color:#315aa8}
+.state-icon.waiting{background:var(--warning-soft);color:#835800}
+.state-icon.received{background:var(--success-soft);color:var(--success)}
+.state-icon.failed{background:var(--danger-soft);color:var(--danger)}
+.payment-status-card h1{font-size:26px;letter-spacing:-.042em;margin:0}
+.payment-status-card>p{font-size:11px;color:var(--secondary);line-height:1.5;max-width:270px;margin:6px auto 0}
+.payment-status-meta{margin-top:15px;padding-top:13px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left}
+.payment-status-meta span{display:block;font-size:9px;color:var(--secondary)}
+.payment-status-meta b{display:block;font-size:12px;margin-top:3px}
+.status-rail{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:11px 13px}
+.status-step{height:5px;border-radius:999px;background:#e1e1e5}
+.status-step.on{background:#315aa8}.status-step.wait{background:#b27b18}.status-step.good{background:var(--success)}.status-step.bad{background:var(--danger)}
+.state-caption{text-align:center;font-size:9px;color:var(--secondary);margin-top:-3px}
+.primary[data-domain-event],.secondary[data-domain-event]{position:relative}
+
+/* Journey 12 — Complete Settlement */
+body:not(:has(.screen:target)) #twint-return{display:grid}
+.status-note{font-size:9px;color:var(--secondary);text-align:center;line-height:1.45;padding:0 8px}
+.progress-labels{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:0 5px 11px;font-size:8px;color:var(--muted);text-align:center}
+.progress-labels .active{color:var(--ink);font-weight:700}.progress-labels .waiting{color:#946400;font-weight:700}.progress-labels .done{color:var(--success);font-weight:700}.progress-labels .bad{color:var(--danger);font-weight:700}
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.choice-grid .secondary{min-height:44px}
+.timeline{overflow:hidden}.timeline-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px;border-top:1px solid var(--border)}.timeline-row:first-child{border-top:0}
+.timeline-icon{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);color:var(--secondary)}.timeline-icon svg{width:16px;height:16px}.timeline-icon.done{background:var(--success-soft);color:var(--success)}.timeline-icon.wait{background:var(--warning-soft);color:#946400}.timeline-icon.bad{background:var(--danger-soft);color:var(--danger)}
+.timeline-row b{display:block;font-size:11px}.timeline-row span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}.timeline-row time{font-size:9px;color:var(--muted);white-space:nowrap}
+.record-card{overflow:hidden}.record-head{padding:15px;text-align:center;border-bottom:1px solid var(--border)}.record-head .record-mark{width:42px;height:42px;border-radius:14px;background:var(--success-soft);color:var(--success);display:grid;place-items:center;margin:0 auto 9px}.record-head .record-mark svg{width:20px;height:20px}.record-head h2{font-size:17px;margin:0}.record-head p{font-size:9px;color:var(--secondary);margin:4px 0 0}
+.record-row{display:grid;grid-template-columns:100px minmax(0,1fr);gap:10px;padding:10px 14px;border-top:1px solid var(--border);font-size:10px}.record-row:first-of-type{border-top:0}.record-row span{color:var(--secondary)}.record-row b{font-weight:700;text-align:right;overflow-wrap:anywhere}
+.balance-after{padding:14px 15px}.balance-after .label{font-size:9px;color:var(--secondary)}.balance-after .amount{font-size:28px;font-weight:790;letter-spacing:-.045em;margin-top:3px}.balance-after .amount.good{color:var(--success)}.balance-after .sub{font-size:9px;color:var(--secondary);margin-top:4px}
+.notice-soft{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;align-items:start;padding:11px 12px;border-radius:13px;background:var(--surface2);border:1px solid var(--border);font-size:10px;line-height:1.45;color:var(--secondary)}.notice-soft svg{width:17px;height:17px;color:var(--ink)}
+.receiver-card{padding:16px;text-align:center}.receiver-card .avatar-big{width:52px;height:52px;border-radius:50%;background:#dedee3;display:grid;place-items:center;margin:0 auto 11px;font-size:12px;font-weight:780}.receiver-card h1{font-size:24px;letter-spacing:-.04em;margin:0}.receiver-card p{font-size:11px;color:var(--secondary);line-height:1.5;margin:7px auto 0;max-width:270px}
+.amount-check{font-size:35px;line-height:1.05;font-weight:790;letter-spacing:-.05em;margin-top:13px;font-variant-numeric:tabular-nums}
+.issue-card{padding:14px 15px}.issue-card h2{font-size:15px;margin:0}.issue-card p{font-size:10px;color:var(--secondary);line-height:1.5;margin:5px 0 0}
+.method-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:var(--surface2);font-size:9px;font-weight:700;margin-top:9px}.method-chip svg{width:14px;height:14px}
+.detail-pair{display:grid;grid-template-columns:1fr 1fr;gap:1px;overflow:hidden}.detail-pair>div{padding:12px 14px;background:var(--surface)}.detail-pair>div+div{border-left:1px solid var(--border)}.detail-pair span{display:block;font-size:9px;color:var(--secondary)}.detail-pair b{display:block;font-size:12px;margin-top:3px}
+.error-list{overflow:hidden}.error-row{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:center;padding:12px 14px;border-top:1px solid var(--border)}.error-row:first-child{border-top:0}.error-row .timeline-icon{width:34px;height:34px}.error-row b{display:block;font-size:11px}.error-row span{display:block;font-size:9px;color:var(--secondary);margin-top:2px}
+.labpanel .compare{display:block;width:100%;padding:9px 10px;margin-top:6px;border:1px solid #37373a;border-radius:11px;background:#222225;color:#fff;font-size:10px}
+
+.method-row>div b{display:block;font-size:12px}
+.method-row>div span{display:block;font-size:9px;color:var(--secondary);margin-top:2px;line-height:1.35}
+.method-row>svg{width:16px;height:16px;color:var(--muted)}
+</style><style>/* Scoped Journey 09 components. The inherited Golden stylesheet is untouched. */
+.mp-screen{display:grid!important}
+.mp-screen button,.mp-lab button{font-family:var(--font);cursor:pointer}
+.mp-screen button{color:inherit;border:0;padding:0;background:none;text-align:inherit}
+.mp-screen .primary{color:white;background:var(--ink);text-align:center;width:100%;border:0;padding:0 14px}
+.mp-screen .secondary{background:var(--surface2);width:100%;justify-content:center;padding:0 14px}
+.mp-screen .primary.danger{background:#b73445}
+.mp-screen button:disabled{opacity:.45;cursor:default}
+.mp-screen button:focus-visible,.mp-lab button:focus-visible,.mp-screen input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.mp-demo{font-size:9px!important;text-align:center!important;color:var(--secondary)!important;border:1px solid var(--border)!important;border-radius:8px;padding:7px 3px!important;background:var(--surface)!important}
+.mp-screen .detail-header{grid-template-columns:38px minmax(0,1fr) 42px}
+.mp-top{display:flex;align-items:center;gap:13px;padding:5px 0 6px}
+.mp-top .person-avatar{width:50px;height:50px;font-size:14px}
+.mp-top h1{font-size:26px;letter-spacing:-.045em;line-height:1.08;margin:0 0 4px;font-weight:780}
+.mp-meta{font-size:11px;color:var(--secondary);line-height:1.5;margin:5px 0 0}
+.mp-screen .mp-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;width:100%;border-top:1px solid var(--border)}
+.mp-screen .mp-row:first-child{border-top:0}
+.mp-row b{display:block;font-size:13px;font-weight:700;line-height:1.3}.mp-row span.sub{display:block;font-size:10px;color:var(--secondary);margin-top:3px;line-height:1.4}
+.mp-row svg{width:18px;height:18px}
+.mp-row .chevron{color:var(--muted);width:16px;height:16px}
+.mp-badge{font-size:9px;background:var(--surface2);color:var(--secondary);border-radius:6px;padding:4px 6px;white-space:nowrap}
+.mp-card{overflow:hidden}
+.mp-card-copy{padding:14px 15px}.mp-card-copy h2{font-size:13px;margin:0 0 5px}.mp-card-copy p{font-size:11px;line-height:1.5;color:var(--secondary);margin:0}
+.mp-search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:0 12px;height:44px;color:var(--secondary)}
+.mp-search svg{width:17px;height:17px}.mp-search input{font-family:var(--font);font-size:12px;color:var(--ink);width:100%;border:0;background:none;outline:none;height:40px}
+.mp-money{padding:15px}.mp-money .value{font-size:28px;font-weight:780;letter-spacing:-.04em;margin-top:4px;font-variant-numeric:tabular-nums}.mp-money .label{font-size:10px;color:var(--secondary)}
+.mp-balance-action{padding:10px 15px!important;width:100%;border-top:1px solid var(--border)!important;font-size:11px;font-weight:700;color:var(--accent)!important;display:flex;align-items:center;justify-content:space-between}
+.mp-balance-action svg{width:16px;height:16px}
+.mp-row-money{text-align:right;white-space:nowrap}.mp-row-money b{font-size:12px}.mp-row-money span{font-size:9px;color:var(--secondary)}
+.mp-pill{background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:4px 6px;font-size:9px}
+.mp-rule{font-size:10px;color:var(--secondary);line-height:1.5;padding:0 2px;margin:0}
+.mp-section{display:flex;justify-content:space-between;align-items:center;margin:3px 2px 0}.mp-section h2{font-size:14px;margin:0}.mp-section span{font-size:10px;color:var(--secondary)}
+.mp-empty{padding:22px 16px;text-align:center}.mp-empty p{font-size:11px;color:var(--secondary);line-height:1.5;margin:6px auto 0;max-width:270px}.mp-empty h2{font-size:18px;letter-spacing:-.025em;margin:0}
+.mp-status{padding:18px 0 4px}.mp-status .state-icon{margin:0 0 15px}.mp-status h1{font-size:26px;line-height:1.08;letter-spacing:-.045em;margin:0;font-weight:780}.mp-status p{font-size:11px;line-height:1.5;color:var(--secondary);max-width:285px;margin:7px 0 0}
+.mp-inline{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface2);padding:11px 12px;border-radius:12px;font-size:10px;line-height:1.45;color:var(--secondary)}.mp-inline svg{width:16px;height:16px;flex:none}
+.mp-lab .compare{width:100%;text-align:left;font-family:var(--font);cursor:pointer}.mp-lab .labsec:first-child{border:0;margin-top:0;padding-top:0}
+.mp-dialog{max-height:82dvh;width:min(380px,94vw);border:1px solid #343438;border-radius:22px;background:#151516;color:white;padding:20px;font-family:var(--font)}
+.mp-dialog::backdrop{background:rgba(0,0,0,.35)}.mp-dialog .close-demo{font-size:12px;padding:9px 0;color:white;background:none;border:0;cursor:pointer}
+</style><style>/* Journey 13 only. Inherit the approved J09 component family without changing its styles. */
+.rq-person{display:flex;align-items:center;gap:11px;padding:13px 15px}.rq-person b{font-size:13px}.rq-person .sub{display:block;font-size:10px;color:var(--secondary);margin-top:3px}
+.rq-amount{padding:17px 15px}.rq-amount .label{font-size:10px;color:var(--secondary)}.rq-amount .value{font-size:35px;font-weight:790;letter-spacing:-.05em;line-height:1.05;margin:8px 0;font-variant-numeric:tabular-nums}
+.rq-note{display:block;padding:14px 15px}.rq-note>span{display:flex;justify-content:space-between;font-size:11px;font-weight:700}.rq-note small{font-size:10px;color:var(--secondary);font-weight:400}.rq-note textarea{display:block;width:100%;resize:vertical;min-height:78px;border:0;background:transparent;font-family:var(--font);font-size:12px;line-height:1.5;color:var(--ink);padding:10px 0 0;outline:0}.rq-note:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.rq-message{padding:16px}.rq-message p{font-size:12px;line-height:1.55;margin:9px 0 0;overflow-wrap:anywhere;white-space:pre-wrap}.rq-message .sender{font-size:11px;font-weight:700}.rq-message .message-meta{font-size:10px;color:var(--secondary)}
+.rq-facts{padding:1px 15px}.rq-facts>div{display:flex;justify-content:space-between;align-items:start;gap:18px;padding:12px 0;border-top:1px solid var(--border);font-size:10px}.rq-facts>div:first-child{border-top:0}.rq-facts span{color:var(--secondary)}.rq-facts b{font-size:11px;text-align:right;font-weight:700}
+.rq-status-line{display:flex;align-items:center;gap:7px;font-size:10px;color:var(--secondary);margin-top:8px}.rq-status-line svg{width:15px;height:15px}.rq-status-line.good{color:var(--success)}
+.rq-balance{display:flex;justify-content:space-between;gap:12px;padding:12px 15px;font-size:11px}.rq-balance span{color:var(--secondary)}
+.rq-rule{display:flex;align-items:start;gap:8px;font-size:10px;line-height:1.5;color:var(--secondary);margin:0 2px}.rq-rule svg{width:16px;height:16px;flex:none}
+.rq-chip{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:700;border-radius:6px;padding:5px 7px;background:var(--surface2);color:var(--secondary)}
+.rq-screen .mp-row .rq-row-amount{font-size:12px;text-align:right;font-weight:700;white-space:nowrap}.rq-screen .text-link.danger{color:#b73445}.rq-screen h1:focus{outline:none}
+</style></head><body><div class="lab"><div class="stage"><div class="device" id="device"></div></div><aside class="labpanel mp-lab"><h2>Journey 13 · Request Money</h2><p>Review candidate · simulated data only.</p><div class="labsec"><div class="lablabel">Current context</div><p id="lab-state"></p></div><div class="labsec"><div class="lablabel">Click-through scenarios</div><div data-demo-list></div></div><div class="labsec"><div class="lablabel">Simulated service results</div><button class="compare" data-result="accepted">Save accepted</button><button class="compare" data-result="not-saved">Verified not saved</button><button class="compare" data-result="delivered">Delivery confirmed</button><button class="compare" data-result="delivery-failed">Delivery failed</button><button class="compare" data-result="reconnect">Reconnect · review again</button></div><div class="labsec"><p>No real request, notification or payment is sent. Creation, delivery and payment are separate. All 12 Goldens remain unchanged. TYPO-01 stays deferred.</p></div></aside></div><dialog class="mp-dialog mp-lab" id="demo-dialog"><button class="close-demo" onclick="this.closest('dialog').close()">Close demo controls</button><p>Prototype only · no real requests or payments</p><div data-demo-list></div><div class="labsec"><div class="lablabel">Simulated service results</div><button class="compare" data-result="accepted">Save accepted</button><button class="compare" data-result="not-saved">Verified not saved</button><button class="compare" data-result="delivered">Delivery confirmed</button><button class="compare" data-result="delivery-failed">Delivery failed</button><button class="compare" data-result="reconnect">Reconnect · review again</button></div></dialog><script>/* Journey 09 prototype model. No network, accounts, messages or money are changed. */
+(function(root,factory){const api=factory();if(typeof module==='object')module.exports=api;else root.PeopleModel=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
+ 'use strict';
+ const PEOPLE={dev:{name:'You',initials:'DP',preferred:'TWINT'},jeanine:{name:'Jeanine',initials:'JA',preferred:'TWINT'},marc:{name:'Marc',initials:'M',preferred:'Bank transfer'},sam:{name:'Sam',initials:'S',preferred:'Wallet'},nina:{name:'Nina',initials:'N',preferred:null},luca:{name:'Luca',initials:'L',preferred:'Bank transfer'}};
+ const GROUPS={zurich:{name:'Zurich Weekend',currency:'CHF',owner:'dev'},apartment:{name:'Apartment',currency:'CHF',owner:'jeanine'},ski:{name:'Ski Trip',currency:'CHF',owner:'marc'},geneva:{name:'Geneva Day',currency:'CHF',owner:'nina'},lisbon:{name:'Lisbon Weekend',currency:'EUR',owner:'luca'},hackathon:{name:'Hackathon',currency:'DOT',owner:'dev'},solo:{name:'Summer plans',currency:'CHF',owner:'dev'}};
+ // Fixture read model from the approved balance examples; signed amounts are from Dev's view.
+ const ITEMS=[['ja-apartment','jeanine','apartment','CHF',-7430],['ja-ski','jeanine','ski','CHF',2000],['marc-apartment','marc','apartment','CHF',2000],['marc-zurich','marc','zurich','CHF',3000],['marc-ski','marc','ski','CHF',3000],['marc-geneva','marc','geneva','CHF',4540],['sam-zurich','sam','zurich','CHF',2290],['sam-ski','sam','ski','CHF',2930],['sam-geneva','sam','geneva','CHF',3890],['nina-geneva','nina','geneva','CHF',-3000],['luca-lisbon','luca','lisbon','EUR',-1800],['sam-hackathon','sam','hackathon','DOT',2400000]].map(([id,person,group,currency,minor])=>({id,person,group,currency,minor}));
+ const MEMBERS={zurich:['dev','jeanine','marc','sam'],apartment:['dev','jeanine','marc'],ski:['dev','jeanine','marc','sam'],geneva:['dev','marc','sam','nina'],lisbon:['dev','luca'],hackathon:['dev','sam'],solo:['dev']};
+ const clone=x=>JSON.parse(JSON.stringify(x));
+ const routes=['members','directory','person','groups','preferences','roles','manage','remove-confirm','remove-blocked','remove-saving','remove-unknown','remove-failed','removed','access-changed','offline','loading','error','handoff'];
+ function create(){return {route:'members',group:'zurich',scope:'zurich',person:null,viewer:'dev',owners:Object.fromEntries(Object.entries(GROUPS).map(([k,v])=>[k,v.owner])),online:true,access:true,query:'',mixed:false,privatePreference:false,issue:false,version:1,members:clone(MEMBERS),items:clone(ITEMS),invites:[{id:'invite-nina-zurich',person:'nina',group:'zurich'}],command:null,sequence:0,saveMode:'accepted',handoff:null};}
+ function visibleGroups(s,p){return Object.keys(GROUPS).filter(g=>g!=='solo'&&(s.mixed||g!=='hackathon')&&s.members[g].includes('dev')&&s.members[g].includes(p));}
+ function rows(s,p,scope=s.scope){return s.items.filter(x=>x.person===p&&(scope==='all'?s.mixed||x.group!=='hackathon':x.group===scope));}
+ function balances(s,p,scope=s.scope){const out={};for(const x of rows(s,p,scope))out[x.currency]=(out[x.currency]||0)+x.minor;return out;}
+ function amount(minor,currency){return currency+' '+(Math.abs(minor)/(currency==='DOT'?1e6:100)).toFixed(currency==='DOT'?6:2);}
+ function name(p){if(!PEOPLE[p])throw Error('Unknown person');return PEOPLE[p].name;}
+ function owner(s,g=s.group){return s.owners[g];}
+ function canView(s){return s.scope==='all'||(s.access&&s.members[s.scope]?.includes(s.viewer));}
+ function directory(s){return Object.keys(PEOPLE).filter(p=>p!=='dev'&&visibleGroups(s,p).length&&name(p).toLowerCase().includes(s.query.trim().toLowerCase()));}
+ function affected(s,p,scope=s.scope){return s.issue&&rows(s,p,scope).some(x=>x.id==='marc-zurich');}
+ function removalBlock(s){
+  if(!canView(s))return 'access';
+  if(!s.online)return 'offline';
+  if(!GROUPS[s.group]||owner(s)!==s.viewer)return 'permission';
+  if(s.person===s.viewer||s.person===owner(s))return 'owner';
+  if(!s.members[s.group]?.includes(s.person))return 'missing';
+  // Group membership removal requires the person to have no open group items, not just zero net.
+  if(rows(s,s.person,s.group).some(x=>x.minor!==0)||affected(s,s.person,s.group))return 'balance';
+  return null;
+ }
+ function requestRemoval(s){
+  if(s.command&&['pending','unknown','recovering','accepted'].includes(s.command.status)){
+   if(s.command.person===s.person&&s.command.group===s.group&&s.command.actor===s.viewer)return clone(s.command);
+   if(s.command.status!=='accepted')return {blocked:'existing'};
+  }
+  const block=removalBlock(s);if(block)return {blocked:block};
+  const c={id:'demo-remove-'+(++s.sequence),actor:s.viewer,person:s.person,group:s.group,expectedVersion:s.version,status:'pending'};s.command=c;return clone(c);
+ }
+ function acceptRemoval(s,id){
+  const c=s.command;if(!c||c.id!==id)return 'stale';
+  if(c.status==='accepted')return 'accepted';
+  if(!['pending','unknown','recovering'].includes(c.status))return 'invalid';
+  if(c.actor!==s.viewer||owner(s,c.group)!==s.viewer||!s.access){c.status='denied';return 'denied';}
+  if(s.version!==c.expectedVersion){c.status='conflict';return 'conflict';}
+  if(s.items.some(x=>x.group===c.group&&x.person===c.person&&x.minor!==0)){c.status='blocked';return 'blocked';}
+  s.members[c.group]=s.members[c.group].filter(x=>x!==c.person);s.version++;c.status='accepted';return 'accepted';
+ }
+ function resolveScope(s,currency){
+  if(!canView(s)||!s.online||s.viewer!=='dev'||s.person==='dev')return null;
+  if(s.scope!=='all'&&!s.members[s.scope].includes(s.person))return null;
+  if(affected(s,s.person))return null;
+  const xs=rows(s,s.person).filter(x=>x.currency===currency);const net=xs.reduce((a,x)=>a+x.minor,0);if(!net)return null;
+  return {kind:net<0?'settle':'request',payer:net<0?'dev':s.person,recipient:net<0?s.person:'dev',amountMinor:Math.abs(net),currency,person:s.person,scope:s.scope,sourceItems:xs.map(x=>x.id),sourceGroups:[...new Set(xs.map(x=>x.group))],paymentMethod:currency==='DOT'?'Wallet':PEOPLE[net<0?s.person:'dev'].preferred||null,version:s.version};
+ }
+ function preference(s){if(!canView(s)||s.privatePreference)return null;return PEOPLE[s.person]?.preferred||null;}
+ function navigate(s,route,patch={}){if(!routes.includes(route))throw Error('Unknown route');Object.assign(s,patch,{route});return s;}
+ return {PEOPLE,GROUPS,ITEMS,MEMBERS,routes,owner,create,clone,visibleGroups,rows,balances,amount,name,canView,directory,affected,removalBlock,requestRemoval,acceptRemoval,resolveScope,preference,navigate};
+});
+</script><script>/* Journey 13. Synthetic request service; no network, notifications, or payment execution. */
+(function(root,factory){if(typeof module==='object')module.exports=factory(require('./people-fixtures.cjs'));else root.RequestModel=factory(root.PeopleModel);})(globalThis,function(P){
+'use strict';
+const clone=P.clone;
+const routes=['compose','review','sources','submitting','unknown','failed','detail','duplicate','changed','nothing-due','unavailable','offline','payment-progress','paid','withdraw-confirm','withdrawing','withdraw-unknown','withdraw-failed','withdrawn','handoff','loading','error'];
+function create(person='marc',scope='zurich',currency='CHF'){
+ const data=P.create();data.mixed=true;
+ return {data,context:{person,scope,currency,returnTo:{journey:'09',route:'person',person,scope,query:''}},route:'compose',note:'',review:null,command:null,requests:[],selected:null,sequence:0,saveMode:'success',handoff:null,settledSourceIds:[]};
+}
+function rawSource(s){return s.data.items.filter(x=>x.person===s.context.person&&x.currency===s.context.currency&&(s.context.scope==='all'||x.group===s.context.scope));}
+function source(s){return rawSource(s).filter(x=>!s.settledSourceIds.includes(x.id));}
+function amount(s){return source(s).reduce((n,x)=>n+(s.settledSourceIds.includes(x.id)?0:x.minor),0);}
+function allowed(s){const {person,scope}=s.context;return s.data.viewer==='dev'&&person!=='dev'&&!!P.PEOPLE[person]&&(scope==='all'||!!P.GROUPS[scope])&&s.data.access&&(scope==='all'?rawSource(s).length>0:s.data.members[scope]?.includes(person))&&rawSource(s).every(x=>s.data.members[x.group]?.includes('dev')&&s.data.members[x.group]?.includes(person));}
+function snapshot(s){const xs=source(s);return {requester:'dev',payer:s.context.person,recipient:'dev',currency:s.context.currency,amountMinor:amount(s),displayScale:s.context.currency==='DOT'?6:2,scope:s.context.scope,sourceItems:xs.map(x=>x.id),sourceGroups:[...new Set(xs.map(x=>x.group))],sourceVersion:JSON.stringify(xs.map(x=>[x.id,x.minor,x.version||1,s.settledSourceIds.includes(x.id)])),note:s.note.trim(),audience:['dev',s.context.person],returnTo:clone(s.context.returnTo)};}
+function conflict(s){const ids=new Set(source(s).map(x=>x.id));return s.requests.find(r=>['active','payment-progress'].includes(r.status)&&r.payload.currency===s.context.currency&&r.payload.payer===s.context.person&&r.payload.sourceItems.some(id=>ids.has(id)));}
+function guard(s){if(!s.data.online)return 'offline';if(!allowed(s))return 'unavailable';if(s.data.issue&&source(s).some(x=>x.id==='marc-zurich'))return 'issue';if(amount(s)<=0)return 'nothing-due';if(s.note.length>160)return 'note';return null;}
+function preview(s){const g=guard(s);if(g)return {blocked:g};const existing=conflict(s);if(existing){s.selected=existing.id;return {blocked:'duplicate',id:existing.id};}s.review=snapshot(s);return clone(s.review);}
+function sameScope(s,p){if(!allowed(s))return false;const n=snapshot(s);return ['requester','payer','recipient','currency','scope','amountMinor','displayScale','sourceVersion'].every(k=>n[k]===p[k])&&['sourceItems','sourceGroups','audience'].every(k=>JSON.stringify(n[k])===JSON.stringify(p[k]));}
+function pending(s){return s.command&&['pending','unknown','recovering'].includes(s.command.status);}
+function submit(s){
+ if(pending(s))return clone(s.command);
+ const g=guard(s);if(g)return {blocked:g};const e=conflict(s);if(e){s.selected=e.id;return {blocked:'duplicate',id:e.id};}
+ if(!s.review||!sameScope(s,s.review)||s.note.trim()!==s.review.note)return {blocked:'changed'};
+ const c={id:'demo-request-'+(++s.sequence),kind:'create',status:'pending',payload:clone(s.review)};s.command=c;return clone(c);
+}
+function current(s){return s.requests.find(r=>r.id===s.selected)||null;}
+function accept(s,id){
+ const c=s.command;if(!c||c.id!==id)return 'stale';if(c.status==='accepted')return 'accepted';if(!['pending','unknown','recovering'].includes(c.status))return 'invalid';
+ if(c.kind==='withdraw'){
+  const r=s.requests.find(x=>x.id===c.requestId);
+  if(!r||s.data.viewer!==r.payload.requester||!allowed(s)){c.status='denied';return 'unavailable';}
+  if(r.status==='payment-progress'||r.status==='paid'||r.version!==c.expectedVersion){c.status='conflict';return 'changed';}
+  if(r.status!=='active'){c.status='conflict';return 'changed';}
+  r.status='withdrawn';r.version++;c.status='accepted';return 'accepted';
+ }
+ if(!allowed(s)){c.status='denied';return 'unavailable';}
+ if(!sameScope(s,c.payload)||(s.data.issue&&source(s).some(x=>x.id==='marc-zurich'))){c.status='conflict';return 'changed';}
+ const e=conflict(s);if(e){c.status='duplicate';s.selected=e.id;return 'duplicate';}
+ s.requests.push({id:c.id,payload:clone(c.payload),status:'active',delivery:'queued',version:1});s.selected=c.id;c.status='accepted';return 'accepted';
+}
+function notSaved(s,id){const c=s.command;if(!c||c.id!==id||!['pending','unknown','recovering'].includes(c.status))return false;c.status='not-saved';return true;}
+function unknown(s,id){const c=s.command;if(!c||c.id!==id||c.status!=='pending')return false;c.status='unknown';return true;}
+function recover(s){if(!s.data.online||!pending(s))return false;s.command.status='recovering';return true;}
+function retry(s){if(!s.data.online||s.command?.status!=='not-saved')return null;s.command.status='pending';return clone(s.command);}
+function deliver(s,id,result){const r=s.requests.find(x=>x.id===id);if(!r||r.status!=='active'||!['delivered','failed'].includes(result)||r.delivery==='delivered')return false;r.delivery=result;return true;}
+function withdraw(s){
+ if(pending(s))return clone(s.command);
+ const r=current(s);if(!s.data.online)return {blocked:'offline'};if(!r||!allowed(s)||s.data.viewer!==r.payload.requester)return {blocked:'unavailable'};
+ if(r.status!=='active')return {blocked:r.status==='payment-progress'?'payment-progress':'changed'};
+ const c={id:'demo-withdraw-'+(++s.sequence),kind:'withdraw',status:'pending',requestId:r.id,expectedVersion:r.version};s.command=c;return clone(c);
+}
+// Demo-only observation from J11/J12. Request commands never change the expense read model.
+function observePayment(s,status){const r=current(s);if(!r||!['payment-progress','paid'].includes(status)||r.status==='withdrawn'||r.status==='paid')return false;r.status=status;r.version++;if(status==='paid')s.settledSourceIds=[...new Set([...s.settledSourceIds,...r.payload.sourceItems])];return true;}
+function restore(s){if(pending(s))return s.command.kind==='withdraw'?'withdraw-unknown':'unknown';const r=current(s);if(!r)return 'compose';return r.status==='active'?'detail':r.status;}
+function routeBlocked(s,b){return b==='issue'?'unavailable':b==='note'?'compose':b;}
+return {P,clone,routes,create,source,amount,allowed,snapshot,conflict,guard,preview,sameScope,pending,submit,current,accept,notSaved,unknown,recover,retry,deliver,withdraw,observePayment,restore,routeBlocked};
+});
+</script><script>(function(){'use strict';
+const M=RequestModel,P=M.P;let s=M.create(),trail=[],timer=null;
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const paths={back:'<path d="m15 18-6-6 6-6"/>',chev:'<path d="m9 18 6-6-6-6"/>',check:'<path d="m5 12 4 4L19 6"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M12 11v6"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',send:'<path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13"/>',group:'<path d="M3 7h18v12H3zM6 7V4h12v3M8 11h8"/>',wallet:'<path d="M20 8V5a2 2 0 0 0-2-2H5a3 3 0 0 0 0 6h15v11H5a3 3 0 0 1-3-3V6"/><path d="M20 12h-5v4h5"/>',refresh:'<path d="M20 7v5h-5M4 17v-5h5"/><path d="M18 7a7 7 0 0 0-11-2L4 8m2 9a7 7 0 0 0 11 2l3-3"/>',close:'<path d="m6 6 12 12M6 18 18 6"/>'};
+const icon=id=>`<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[id]||paths.info}</svg>`;
+const btn=(label,action,cl='primary',attrs='')=>`<button type="button" class="${cl}" data-action="${action}" ${attrs}>${label}</button>`;
+const row=(title,sub,action,ic='group',tail='')=>`<button type="button" class="mp-row" data-action="${action}"><span class="row-icon">${icon(ic)}</span><span><b>${esc(title)}</b><span class="sub">${esc(sub)}</span></span>${tail||icon('chev')}</button>`;
+const card=(title,copy)=>`<section class="card mp-card-copy"><h2>${title}</h2><p>${copy}</p></section>`;
+const status=(title,copy,ic='info',good=false)=>`<div class="mp-status"><div class="state-icon ${good?'good':''}">${icon(ic)}</div><h1 tabindex="-1">${title}</h1><p>${copy}</p></div>`;
+const rule=text=>`<p class="rq-rule">${icon('info')}<span>${text}</span></p>`;
+const money=(n=M.amount(s),currency=s.context.currency)=>P.amount(n,currency);
+const scopeName=p=>p.scope==='all'?'Across shared groups':P.GROUPS[p.scope]?.name||'Shared group';
+const who=()=>P.name(s.context.person);
+const payload=()=>M.current(s)?.payload||s.command?.payload||s.review||M.snapshot(s);
+const person=(p=payload())=>`<section class="card rq-person"><span class="person-avatar">${P.PEOPLE[p.payer].initials}</span><span><b>${esc(P.name(p.payer))}</b><span class="sub">${esc(scopeName(p))}</span></span></section>`;
+const total=(p=payload(),label='Request amount')=>`<section class="card rq-amount"><span class="label">${label}</span><div class="value">${money(p.amountMinor,p.currency)}</div><p class="mp-meta">${esc(scopeName(p))}</p></section>`;
+const notePreview=p=>`<section class="card rq-message"><div class="sender">Dev requests ${money(p.amountMinor,p.currency)}</div><div class="message-meta">${esc(scopeName(p))} · Only shared with ${esc(P.name(p.payer))}</div>${p.note?`<p>${esc(p.note)}</p>`:''}</section>`;
+function screen(){
+ let header='Request money',sub=scopeName(s.context),body='',foot='';const w=esc(who()),r=M.current(s),p=payload(),disabled=!s.data.online?'disabled':'';
+ switch(s.route){
+ case 'compose':{
+  const g=M.guard(s);body=`<div><div class="eyebrow">You and ${w}</div><h1 class="hero" tabindex="-1">Request money.</h1><p class="mp-meta">A clear amount. A little less chasing.</p></div>`+person(M.snapshot(s))+total(M.snapshot(s),w+' owes you');
+  body+=`<section class="card mp-card">${row('What this covers',M.source(s).length===1?'1 shared group':new Set(M.source(s).map(x=>x.group)).size+' shared groups','sources')}</section>`;
+  body+=`<label class="card rq-note"><span>Note <small>Optional · <span id="note-count">${s.note.length}</span>/160</small></span><textarea id="request-note" aria-label="Optional note" maxlength="160" placeholder="Thanks for the weekend!">${esc(s.note)}</textarea></label>`+rule('This is a request, not a payment. Your balance stays unchanged.');
+  if(!s.data.online)body+=card('You are offline.','Your draft is here. Reconnect and review the current balance before sending.');
+  if(g==='note')body+=card('Keep it short.','Your note can be up to 160 characters.');
+  foot=btn('Review request','review','primary',g?'disabled':'');break;}
+ case 'sources':{
+  header='What this covers';body=`<div><div class="eyebrow">You and ${w}</div><h1 class="hero" tabindex="-1">The shared balance.</h1><p class="mp-meta">${esc(scopeName(s.context))}</p></div>`+total(p);
+  const rows=M.source(s);body+=`<section class="card mp-card">${rows.map(x=>`<div class="mp-row"><span class="row-icon">${icon('group')}</span><span><b>${esc(P.GROUPS[x.group].name)}</b><span class="sub">${x.minor<0?'You owe '+w:w+' owes you'}</span></span><span class="rq-row-amount">${x.minor<0?'−':''}${money(x.minor,x.currency)}</span></div>`).join('')}</section>`+rule('Based on existing shared records. Sending a request does not add an expense or change what anyone owes.');foot=btn('Back to request','back');break;}
+ case 'review':
+  header='Review request';body=status('Ready to send.','Check the person and amount. '+w+' decides when and how to pay.','send')+person(s.review)+total(s.review);
+  body+=`<div class="mp-section"><h2>${w} will see</h2></div>`+notePreview(s.review)+`<section class="card rq-facts"><div><span>Send through</span><b>ChopDot · private request</b></div><div><span>Your preference</span><b>${s.context.currency==='DOT'?'Wallet':'TWINT'}</b></div></section>`+rule('Your preference is a suggestion. Payment is reviewed separately.');
+  foot=btn('Send request','send','primary',disabled)+btn('Edit note','edit','text-link');break;
+ case 'submitting':case 'unknown':{
+  header='Creating request';const recovering=s.command?.status==='recovering';body=status(s.route==='submitting'?'Creating your request.':recovering?'Still checking.':'Did it go through?',s.route==='submitting'?'Keep this open while the request is saved.':'We have not confirmed whether the request was created. Check this same request before trying again.','refresh')+total(p)+rule('No payment has been made. We will not create a second request while this one is unresolved.');foot=s.route==='submitting'?btn('Creating…','noop','primary','disabled'):btn(recovering?'Check again':'Check status','recover','primary',disabled);break;}
+ case 'failed':header='Request not created';body=status('Nothing was sent.','The service confirmed this request was not created. Your note is still here.','refresh')+total(p)+notePreview(p);foot=btn('Try again','retry','primary',disabled);break;
+ case 'detail':{
+  header='Your request';const delivered=r?.delivery==='delivered',failed=r?.delivery==='failed';body=status(delivered?'Request sent.':failed?'Saved. Not delivered yet.':'Request created.',delivered?w+' can open it in ChopDot. Payment is still up to them.':failed?'Delivery did not complete. Retry delivery without creating another request.':'Your request is saved. We are still waiting for delivery.','send',delivered)+total(r.payload,M.amount(s)!==r.payload.amountMinor?'Originally requested':'Request amount');
+  if(M.amount(s)!==r.payload.amountMinor)body+=card('The balance has changed.','Current balance: '+money()+'. Payment must use a freshly reviewed balance, not this old request.');
+  body+=`<section class="card rq-facts"><div><span>To</span><b>${w}</b></div><div><span>Delivery</span><b>${delivered?'Delivered':failed?'Not delivered':'Queued'}</b></div><div><span>Payment</span><b>Not paid</b></div></section>`+notePreview(r.payload)+rule('No automatic reminders. No money has moved.');
+  foot=btn('Back to '+w,'return')+(failed?btn('Retry delivery','retry-delivery','secondary',disabled):'')+btn('Withdraw request','withdraw-review','text-link danger',disabled);break;}
+ case 'duplicate':header='Request already exists';body=status('Already asked.','There is an active request covering some or all of these same items. Open it instead of asking twice.','clock')+person(r.payload)+total(r.payload,'Existing request')+rule('Different notes or entry points do not create a new request for the same items.');foot=btn('View existing request','open-existing');break;
+ case 'changed':{
+  header='Balance changed';const was=s.command?.payload||s.review,now=M.snapshot(s);body=status('Let’s check that again.','The balance or request changed before your action completed. Nothing new was accepted.','refresh');
+  if(was)body+=`<section class="card rq-facts"><div><span>You reviewed</span><b>${money(was.amountMinor,was.currency)}</b></div><div><span>Current balance</span><b>${money(now.amountMinor,now.currency)}</b></div></section>`;
+  body+=rule('Review the current state. We will not silently send a different amount.');foot=btn(r?'View current request':'Review current balance',r?'open-existing':'refresh-review','primary',disabled);break;}
+ case 'nothing-due':{
+  header='Your balance';const n=M.amount(s);body=status(n<0?'You owe '+w+'.':'Nothing to request.',n<0?'This balance goes the other way. You can review a payment instead.':'There is no outstanding amount to request in this scope.','check',n===0)+total(M.snapshot(s),n<0?'You owe '+w:'Current balance');foot=btn(n<0?'Review settlement':'Back to '+w,n<0?'settle':'return');break;}
+ case 'unavailable':header='Cannot continue';body=status(s.data.issue?'An expense needs review.':'This view has changed.',s.data.issue?'An item in this request is still being reviewed. Other people and unrelated items are not blocked.':'Your access or membership changed. Go back before trying again.','info');foot=btn(s.data.issue?'Review expense':'Back to people',s.data.issue?'issue':'safe-return');break;
+ case 'offline':header='You are offline';body=status('Your draft is here.','Reconnect before creating, checking or withdrawing a request. We will not send it automatically.','info')+card('Nothing was sent.','You can return to your draft. The balance must be reviewed again when you reconnect.');foot=btn('Back to draft','edit');break;
+ case 'payment-progress':header='Payment in progress';body=status('Payment is being checked.','A payment for this request is in progress. Please wait before requesting again or withdrawing.','clock')+total(r.payload)+rule('A request cannot approve a payment or mark it complete.');foot=btn('View payment progress','payment');break;
+ case 'paid':header='Request completed';body=status('Payment confirmed.','This demonstration uses a verified settlement result from the payment journey, not a sender’s “mark paid” button.','check',true)+total(r.payload,'Confirmed payment')+rule('This request is complete. The payment record belongs to Journey 12.');foot=btn('View payment record','payment');break;
+ case 'withdraw-confirm':header='Withdraw request';body=status('Withdraw this request?','This stops the request. It does not cancel the balance or remove past records.','close')+total(r.payload)+card('Your shared balance stays.',money()+' is the current balance. Withdrawing will not change it.');foot=btn('Withdraw request','withdraw','primary danger',disabled)+btn('Keep request','open-existing','secondary');break;
+ case 'withdrawing':case 'withdraw-unknown':header='Withdrawing request';body=status(s.route==='withdrawing'?'Withdrawing request.':'Still checking.','Until the result is confirmed, the request may still be active. Your balance stays unchanged.','refresh')+total(r.payload);foot=s.route==='withdrawing'?btn('Withdrawing…','noop','primary','disabled'):btn('Check status','recover','primary',disabled);break;
+ case 'withdraw-failed':header='Request still active';body=status('Not withdrawn.','The service confirmed no change was saved. You can try the same withdrawal again.','refresh')+total(r.payload);foot=btn('Try again','retry','primary',disabled)+btn('Keep request','open-existing','text-link');break;
+ case 'withdrawn':header='Request withdrawn';body=status('Request withdrawn.','The request has stopped. Your shared balance and past records are unchanged.','check',true)+`<section class="card rq-balance"><span>Current shared balance</span><b>${money()}</b></section>`;foot=btn('Back to '+w,'return');break;
+ case 'loading':header='Loading request';body=`<h1 class="hero" tabindex="-1">One moment.</h1><section class="card loading-card"><div class="skel short"></div><div class="skel"></div><div class="skel med"></div></section>`;foot=btn('Back to '+w,'return');break;
+ case 'error':header='Could not load';body=status('Request could not load.','We could not check the request. Do not send another until its status is known.','refresh');foot=btn('Try again','reload-request');break;
+ case 'handoff':header=s.handoff?.title||'People';sub='Preview only';body=status(esc(s.handoff?.title||'Back to people')+'.',esc(s.handoff?.copy||'Return to the same person and group.'),'info')+rule('Boundary preview only. This does not execute the adjacent journey, change settings or start a payment.');foot=btn('Return to request','resume');break;
+ }
+ return {header,sub,body,foot};
+}
+function render(focus=false){
+ if(s.route==='compose'&&M.allowed(s)&&M.amount(s)<=0)s.route='nothing-due';
+ if(!M.allowed(s)&&!['unavailable','handoff','loading','error'].includes(s.route))s.route='unavailable';
+ const d=screen();document.getElementById('device').innerHTML=`<section class="screen mp-screen rq-screen" data-route="${s.route}"><header class="detail-header">${btn(icon('back'),'back','icon-btn','aria-label="Back"')}<div class="header-title"><b>${esc(d.header)}</b><span>${esc(d.sub)}</span></div>${btn('Demo','demo','mp-demo','aria-label="Open prototype scenarios"')}</header><main class="app-content">${d.body}</main><footer class="focus-footer"><div class="footer-stack">${d.foot}</div></footer></section>`;document.getElementById('lab-state').textContent=s.route+' · '+who()+' · '+s.context.currency;if(focus)document.querySelector('h1')?.focus({preventScroll:true});
+}
+function go(route){if(!M.routes.includes(route))throw Error('Unknown route');trail.push(s.route);s.route=route;history.pushState({route},'','#'+route);render(true);}
+function back(){if(!trail.length){action('return');return;}let target=trail.pop()||'compose';if(M.pending(s)&&!['sources','handoff'].includes(target))target=M.restore(s);else if(M.current(s)&&['compose','review','submitting','unknown','failed','withdraw-confirm','withdrawing','withdraw-unknown','withdraw-failed'].includes(target))target=M.restore(s);goBack(target);}
+function goBack(route){s.route=route;history.replaceState({route},'','#'+route);render(true);}
+function blocked(b){if(b==='issue')s.handoff={title:'Review expense',copy:'The related Zurich Weekend item needs review in Journey 07.'};go(M.routeBlocked(s,b));}
+function reply(result){
+ const c=s.command;if(!c)return;clearTimeout(timer);
+ if(result==='accepted'){const outcome=M.accept(s,c.id);if(outcome==='accepted')go(c.kind==='withdraw'?'withdrawn':'detail');else if(outcome!=='invalid'&&outcome!=='stale')blocked(outcome);}
+ else if(result==='not-saved'){if(M.notSaved(s,c.id))go(c.kind==='withdraw'?'withdraw-failed':'failed');}
+ else if(result==='unknown'){if(M.unknown(s,c.id))go(c.kind==='withdraw'?'withdraw-unknown':'unknown');}
+}
+function perform(c){if(c.blocked){blocked(c.blocked);return;}if(c.status!=='pending'){go(M.restore(s));return;}go(c.kind==='withdraw'?'withdrawing':'submitting');const id=c.id;
+ timer=setTimeout(()=>{if(s.command?.id!==id)return;reply(s.saveMode==='unknown'?'unknown':s.saveMode==='failed'?'not-saved':'accepted');if(s.saveMode==='success'&&c.kind==='create'&&M.current(s)?.id===id){M.deliver(s,id,'delivered');render(true);}},260);
+}
+function action(a){switch(a){
+ case 'demo':document.getElementById('demo-dialog').showModal();break;
+ case 'back':back();break;
+ case 'sources':go('sources');break;
+ case 'review':{if(M.pending(s)){go(M.restore(s));break;}const p=M.preview(s);p.blocked?blocked(p.blocked):go('review');break;}
+ case 'send':perform(M.submit(s));break;
+ case 'edit':if(M.pending(s))go(M.restore(s));else if(M.current(s))go(M.restore(s));else go('compose');break;
+ case 'recover':if(M.recover(s))render(true);break;
+ case 'retry':{const c=M.retry(s);if(c)perform(c);break;}
+ case 'retry-delivery':{const r=M.current(s);if(s.data.online&&r?.status==='active'&&r.delivery==='failed'){r.delivery='queued';render(true);}break;}
+ case 'withdraw-review':if(M.current(s)?.status==='active'&&s.data.online&&!M.pending(s))go('withdraw-confirm');break;
+ case 'withdraw':perform(M.withdraw(s));break;
+ case 'open-existing':case 'reload-request':go(M.restore(s));break;
+ case 'refresh-review':s.review=null;s.command=null;go(M.amount(s)>0?'compose':'nothing-due');break;
+ case 'return':case 'safe-return':s.handoff={title:a==='safe-return'?'Your people':who(),copy:a==='safe-return'?'Return to authorized people and groups in Journey 09.':scopeName(s.context)+'. Your original person and group context are kept. Journey 09 remains unchanged.'};go('handoff');break;
+ case 'settle':s.handoff={title:'Settle Up',copy:'Journey 11 · You pay '+who()+' '+money()+'. Payment still requires your separate review and authorization.'};go('handoff');break;
+ case 'issue':s.handoff={title:'Review expense',copy:'Journey 07 · Review the dependent Zurich Weekend item. Other people are not blocked.'};go('handoff');break;
+ case 'payment':s.handoff={title:'Payment record',copy:'Journey 12 owns payment progress and confirmation for this exact request. No payment is started here.'};go('handoff');break;
+ case 'resume':go(M.restore(s));break;
+ }}
+function scenario(id){clearTimeout(timer);s=M.create();trail=[];
+ if(id==='all')s=M.create('marc','all');if(id==='sam-chf')s=M.create('sam','all');if(id==='sam-dot')s=M.create('sam','all','DOT');if(id==='reverse'){s=M.create('jeanine','all');s.route='nothing-due';}if(id==='zero'){s=M.create('jeanine','zurich');s.route='nothing-due';}
+ if(['queued','delivery-failed','duplicate','payment-progress','paid','withdrawn','withdraw-unknown','withdraw-failed'].includes(id)){M.preview(s);M.submit(s);M.accept(s,s.command.id);s.route='detail';}
+ if(id==='delivery-failed')M.deliver(s,s.selected,'failed');if(id==='duplicate'){M.preview(s);s.route='duplicate';}
+ if(['payment-progress','paid'].includes(id)){M.observePayment(s,id);s.route=id;}
+ if(['withdrawn','withdraw-unknown','withdraw-failed'].includes(id)){M.withdraw(s);if(id==='withdrawn')M.accept(s,s.command.id);else if(id==='withdraw-unknown')M.unknown(s,s.command.id);else M.notSaved(s,s.command.id);s.route=id;}
+ if(['unknown','failed','changed'].includes(id)){M.preview(s);M.submit(s);if(id==='unknown')M.unknown(s,s.command.id);if(id==='failed')M.notSaved(s,s.command.id);if(id==='changed'){s.data.items.find(x=>x.id==='marc-zurich').minor=2000;M.accept(s,s.command.id);}s.route=id;}
+ if(id==='issue'){s.data.issue=true;s.route='unavailable';}if(id==='offline'){s.data.online=false;s.note='Thanks for the weekend!';}if(id==='access'){s.data.access=false;s.route='unavailable';}if(['loading','error'].includes(id))s.route=id;
+ history.replaceState({route:s.route},'','#'+s.route);render(true);
+}
+const demos=[['Marc · Zurich · CHF 30.00','compose'],['Marc · four groups · CHF 125.40','all'],['Sam · CHF 91.10','sam-chf'],['Sam · DOT 2.400000','sam-dot'],['You owe Jeanine','reverse'],['Nothing to request','zero'],['Delivery queued','queued'],['Delivery failed','delivery-failed'],['Existing request','duplicate'],['Create result unknown','unknown'],['Confirmed not created','failed'],['Balance changed','changed'],['Expense in review','issue'],['Offline draft','offline'],['Access changed','access'],['Payment in progress','payment-progress'],['Verified payment result','paid'],['Withdrawal unknown','withdraw-unknown'],['Withdrawal not saved','withdraw-failed'],['Request withdrawn','withdrawn'],['Loading','loading'],['Load error','error']];
+document.querySelectorAll('[data-demo-list]').forEach(el=>el.innerHTML=demos.map(([name,id])=>`<button class="compare" data-demo="${id}">${name}</button>`).join(''));
+document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(b&&!b.disabled)action(b.dataset.action);const d=e.target.closest('[data-demo]');if(d){scenario(d.dataset.demo);document.getElementById('demo-dialog').close();}const result=e.target.closest('[data-result]');if(result){const val=result.dataset.result;if(val==='delivered'||val==='delivery-failed'){M.deliver(s,s.selected,val==='delivered'?'delivered':'failed');render();}else if(val==='reconnect'){s.data.online=true;s.review=null;go(M.restore(s));}else reply(val);document.getElementById('demo-dialog').close();}});
+document.addEventListener('input',e=>{if(e.target.id==='request-note'){s.note=e.target.value;document.getElementById('note-count').textContent=s.note.length;}});
+window.addEventListener('popstate',e=>{const route=e.state?.route;if(M.routes.includes(route)){s.route=M.pending(s)||M.current(s)?M.restore(s):route;render(true);}});
+window.RequestDemo={get state(){return M.clone(s);},scenario,go,result:reply,configure:patch=>{Object.assign(s,patch);render();},changeAmount:n=>{s.data.items.find(x=>x.id==='marc-zurich').minor=n;},revoke:()=>{s.data.access=false;render();},render};
+history.replaceState({route:s.route},'','#compose');render();
+})();
+</script></body></html>

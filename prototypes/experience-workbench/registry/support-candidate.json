@@ -1,1 +1,14 @@
-null
+{
+  "journey": "13",
+  "name": "Request Money",
+  "version": "v1",
+  "approval": "review-pending",
+  "prototype_path": "journeys/13-request-money/v1-candidate.html",
+  "prototype_sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707",
+  "spec_path": "journeys/13-request-money/spec.md",
+  "qa_path": "journeys/13-request-money/VISUAL_QA.md",
+  "previous_golden": "09",
+  "previous_golden_number": 12,
+  "previous_golden_sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d",
+  "typography_note": "TYPO-01 deferred"
+}

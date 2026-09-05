@@ -1,0 +1,578 @@
+[
+  {
+    "route": "compose",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "compose",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "compose",
+    "action": "sources",
+    "label": "What this covers1 shared group",
+    "disabled": false,
+    "domain_event": "RequestSourceBreakdownOpened",
+    "guard": "One person, currency and source scope"
+  },
+  {
+    "route": "compose",
+    "action": "review",
+    "label": "Review request",
+    "disabled": false,
+    "domain_event": "RequestReviewed",
+    "guard": "Authorized, online, positive exact balance; no overlapping active request"
+  },
+  {
+    "route": "review",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "review",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "review",
+    "action": "send",
+    "label": "Send request",
+    "disabled": false,
+    "domain_event": "CreateRequestRequested",
+    "guard": "Current reviewed scope and note; immutable command and replay exclusion"
+  },
+  {
+    "route": "review",
+    "action": "edit",
+    "label": "Edit note",
+    "disabled": false,
+    "domain_event": "RequestDraftReopened",
+    "guard": "No accepted or unresolved create may be reopened as a new draft"
+  },
+  {
+    "route": "sources",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "sources",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "sources",
+    "action": "back",
+    "label": "Back to request",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "submitting",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "submitting",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "submitting",
+    "action": "noop",
+    "label": "Creating\u2026",
+    "disabled": true,
+    "domain_event": "NoCommand",
+    "guard": "Disabled transient control"
+  },
+  {
+    "route": "unknown",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "unknown",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "unknown",
+    "action": "recover",
+    "label": "Check status",
+    "disabled": false,
+    "domain_event": "CommandOutcomeCheckRequested",
+    "guard": "Existing unresolved command; online; never implies success"
+  },
+  {
+    "route": "failed",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "failed",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "failed",
+    "action": "retry",
+    "label": "Try again",
+    "disabled": false,
+    "domain_event": "RetrySameCommandRequested",
+    "guard": "Verified not saved; same command ID/payload; online"
+  },
+  {
+    "route": "detail",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "detail",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "detail",
+    "action": "return",
+    "label": "Back to Marc",
+    "disabled": false,
+    "domain_event": "Journey09ReturnRequested",
+    "guard": "Preserve person, currency, group scope and original return context"
+  },
+  {
+    "route": "detail",
+    "action": "withdraw-review",
+    "label": "Withdraw request",
+    "disabled": false,
+    "domain_event": "WithdrawalReviewOpened",
+    "guard": "Active request owned by current requester; online"
+  },
+  {
+    "route": "duplicate",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "duplicate",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "duplicate",
+    "action": "open-existing",
+    "label": "View existing request",
+    "disabled": false,
+    "domain_event": "ExistingRequestOpened",
+    "guard": "Current authorized request and unresolved-operation recovery"
+  },
+  {
+    "route": "changed",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "changed",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "changed",
+    "action": "refresh-review",
+    "label": "Review current balance",
+    "disabled": false,
+    "domain_event": "SourceSnapshotReviewRestarted",
+    "guard": "Rejected stale command; re-review current balance"
+  },
+  {
+    "route": "nothing-due",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "nothing-due",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "nothing-due",
+    "action": "return",
+    "label": "Back to Jeanine",
+    "disabled": false,
+    "domain_event": "Journey09ReturnRequested",
+    "guard": "Preserve person, currency, group scope and original return context"
+  },
+  {
+    "route": "unavailable",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "unavailable",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "unavailable",
+    "action": "issue",
+    "label": "Review expense",
+    "disabled": false,
+    "domain_event": "Journey07HandoffPreviewed",
+    "guard": "Dependent item only"
+  },
+  {
+    "route": "offline",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "offline",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "offline",
+    "action": "edit",
+    "label": "Back to draft",
+    "disabled": false,
+    "domain_event": "RequestDraftReopened",
+    "guard": "No accepted or unresolved create may be reopened as a new draft"
+  },
+  {
+    "route": "payment-progress",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "payment-progress",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "payment-progress",
+    "action": "payment",
+    "label": "View payment progress",
+    "disabled": false,
+    "domain_event": "Journey12HandoffPreviewed",
+    "guard": "Exact request context; no invented payment result"
+  },
+  {
+    "route": "paid",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "paid",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "paid",
+    "action": "payment",
+    "label": "View payment record",
+    "disabled": false,
+    "domain_event": "Journey12HandoffPreviewed",
+    "guard": "Exact request context; no invented payment result"
+  },
+  {
+    "route": "withdraw-confirm",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "withdraw-confirm",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "withdraw-confirm",
+    "action": "withdraw",
+    "label": "Withdraw request",
+    "disabled": false,
+    "domain_event": "WithdrawRequestRequested",
+    "guard": "Current actor, request version, active state; no payment in progress"
+  },
+  {
+    "route": "withdraw-confirm",
+    "action": "open-existing",
+    "label": "Keep request",
+    "disabled": false,
+    "domain_event": "ExistingRequestOpened",
+    "guard": "Current authorized request and unresolved-operation recovery"
+  },
+  {
+    "route": "withdrawing",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "withdrawing",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "withdrawing",
+    "action": "noop",
+    "label": "Withdrawing\u2026",
+    "disabled": true,
+    "domain_event": "NoCommand",
+    "guard": "Disabled transient control"
+  },
+  {
+    "route": "withdraw-unknown",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "withdraw-unknown",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "withdraw-unknown",
+    "action": "recover",
+    "label": "Check status",
+    "disabled": false,
+    "domain_event": "CommandOutcomeCheckRequested",
+    "guard": "Existing unresolved command; online; never implies success"
+  },
+  {
+    "route": "withdraw-failed",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "withdraw-failed",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "withdraw-failed",
+    "action": "retry",
+    "label": "Try again",
+    "disabled": false,
+    "domain_event": "RetrySameCommandRequested",
+    "guard": "Verified not saved; same command ID/payload; online"
+  },
+  {
+    "route": "withdraw-failed",
+    "action": "open-existing",
+    "label": "Keep request",
+    "disabled": false,
+    "domain_event": "ExistingRequestOpened",
+    "guard": "Current authorized request and unresolved-operation recovery"
+  },
+  {
+    "route": "withdrawn",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "withdrawn",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "withdrawn",
+    "action": "return",
+    "label": "Back to Marc",
+    "disabled": false,
+    "domain_event": "Journey09ReturnRequested",
+    "guard": "Preserve person, currency, group scope and original return context"
+  },
+  {
+    "route": "handoff",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "handoff",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "handoff",
+    "action": "resume",
+    "label": "Return to request",
+    "disabled": false,
+    "domain_event": "RequestContextResumed",
+    "guard": "Never undo accepted changes; unresolved commands first"
+  },
+  {
+    "route": "loading",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "loading",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "loading",
+    "action": "return",
+    "label": "Back to Marc",
+    "disabled": false,
+    "domain_event": "Journey09ReturnRequested",
+    "guard": "Preserve person, currency, group scope and original return context"
+  },
+  {
+    "route": "error",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationBackRequested",
+    "guard": "No business-state rollback or access escalation"
+  },
+  {
+    "route": "error",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeControlsOpened",
+    "guard": "Development only; no production event"
+  },
+  {
+    "route": "error",
+    "action": "reload-request",
+    "label": "Try again",
+    "disabled": false,
+    "domain_event": "RequestReadRetried",
+    "guard": "Restore existing state; no new send"
+  },
+  {
+    "route": "compose",
+    "action": "note-input",
+    "label": "Optional note",
+    "disabled": false,
+    "domain_event": "RequestDraftNoteChanged",
+    "guard": "Maximum 160 characters; render as literal text; review again before submit"
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "journey": "13",
+  "version": "v1",
+  "review_status": "review-pending",
+  "artifact_sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707",
+  "inherited_css_sha256": "7fdf48665ca5e823ac98752df0cf7fe5a106484f9738113d9c730018d3d6f2d2",
+  "inherited_people_css_sha256": "670a70382097f7456e4b8202fbeddc29b0d42b8ab5f7a40f0b7a2bb0d9207df4",
+  "states": 22,
+  "mapped_actions": 72,
+  "model_assertions": 112,
+  "model_scenarios": 44,
+  "browser_scenarios": 30,
+  "product_clicks": 80,
+  "layout_checks": 44,
+  "viewports": [
+    [
+      393,
+      852
+    ],
+    [
+      430,
+      890
+    ],
+    [
+      1440,
+      1000
+    ]
+  ],
+  "page_errors": [],
+  "typography": "TYPO-01 deferred",
+  "limitations": "In-memory synthetic service; Playwright inline Chromium; no real backend, notification, payment, native-file, hosted or cross-journey execution."
+}

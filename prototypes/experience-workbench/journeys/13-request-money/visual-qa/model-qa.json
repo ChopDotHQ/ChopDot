@@ -1,0 +1,183 @@
+{
+  "ok": true,
+  "assertions": 112,
+  "scenarios": 44,
+  "cases": [
+    {
+      "name": "J09 group scope is preserved",
+      "passed": true
+    },
+    {
+      "name": "All-group request has exactly four source groups",
+      "passed": true
+    },
+    {
+      "name": "Currencies stay separate with explicit scale",
+      "passed": true
+    },
+    {
+      "name": "Reverse debt and zero balance cannot be requested",
+      "passed": true
+    },
+    {
+      "name": "No owner role needed to request your own balance",
+      "passed": true
+    },
+    {
+      "name": "Requester cannot impersonate another payer or viewer",
+      "passed": true
+    },
+    {
+      "name": "Requests are private to the two participants",
+      "passed": true
+    },
+    {
+      "name": "Review required before send",
+      "passed": true
+    },
+    {
+      "name": "Changing a note requires another review",
+      "passed": true
+    },
+    {
+      "name": "Note length validated in model",
+      "passed": true
+    },
+    {
+      "name": "Offline cannot send",
+      "passed": true
+    },
+    {
+      "name": "Reconnection never sends automatically",
+      "passed": true
+    },
+    {
+      "name": "Repeat submit returns the same pending command",
+      "passed": true
+    },
+    {
+      "name": "Acceptance creates one request but never a payment",
+      "passed": true
+    },
+    {
+      "name": "Creation delivery and payment are different states",
+      "passed": true
+    },
+    {
+      "name": "Late delivery failure does not regress delivered state",
+      "passed": true
+    },
+    {
+      "name": "Unknown result cannot create a duplicate",
+      "passed": true
+    },
+    {
+      "name": "Check status is not evidence of acceptance",
+      "passed": true
+    },
+    {
+      "name": "Unknown can resolve accepted without resubmission",
+      "passed": true
+    },
+    {
+      "name": "Verified not saved enables same-payload retry",
+      "passed": true
+    },
+    {
+      "name": "Unrelated or late results are ignored",
+      "passed": true
+    },
+    {
+      "name": "Current balance must match reviewed exact amount",
+      "passed": true
+    },
+    {
+      "name": "Version change after send invalidates acceptance",
+      "passed": true
+    },
+    {
+      "name": "Unrelated item does not block this request",
+      "passed": true
+    },
+    {
+      "name": "Only dependent review issues block",
+      "passed": true
+    },
+    {
+      "name": "Access revoked between send and acceptance denies save",
+      "passed": true
+    },
+    {
+      "name": "Group member removed between review and send denies request",
+      "passed": true
+    },
+    {
+      "name": "All-group scope cannot silently drop inaccessible sources",
+      "passed": true
+    },
+    {
+      "name": "Identical source request opens existing regardless of note",
+      "passed": true
+    },
+    {
+      "name": "Overlapping group/global request is also blocked",
+      "passed": true
+    },
+    {
+      "name": "Separate currency requests do not block each other",
+      "passed": true
+    },
+    {
+      "name": "Forged amount or source group is rejected",
+      "passed": true
+    },
+    {
+      "name": "Forged audience is rejected",
+      "passed": true
+    },
+    {
+      "name": "Withdrawal requires requester and preserves data",
+      "passed": true
+    },
+    {
+      "name": "Duplicate withdrawal cannot remove twice",
+      "passed": true
+    },
+    {
+      "name": "Unknown withdrawal stays active and checks do not close it",
+      "passed": true
+    },
+    {
+      "name": "Withdrawal retry retains command identity",
+      "passed": true
+    },
+    {
+      "name": "Payment in progress blocks withdrawal",
+      "passed": true
+    },
+    {
+      "name": "Payment race invalidates an in-flight withdrawal",
+      "passed": true
+    },
+    {
+      "name": "Verified payment observation closes request and prevents re-request",
+      "passed": true
+    },
+    {
+      "name": "A withdrawn request cannot be delivered afterward",
+      "passed": true
+    },
+    {
+      "name": "Back/resume cannot reopen accepted commands",
+      "passed": true
+    },
+    {
+      "name": "Settled items are excluded from later broader scope",
+      "passed": true
+    },
+    {
+      "name": "Late payment progress cannot regress verified paid",
+      "passed": true
+    }
+  ]
+}

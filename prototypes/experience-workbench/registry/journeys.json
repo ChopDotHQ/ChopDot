@@ -295,8 +295,13 @@
       "18",
       "14"
     ],
-    "status": "not-started",
-    "approval": "not-reviewed"
+    "status": "current",
+    "approval": "review-pending",
+    "version": "v1",
+    "prototype_path": "journeys/13-request-money/v1-candidate.html",
+    "prototype_sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707",
+    "spec_path": "journeys/13-request-money/spec.md",
+    "qa_path": "journeys/13-request-money/VISUAL_QA.md"
   },
   {
     "id": "14",
