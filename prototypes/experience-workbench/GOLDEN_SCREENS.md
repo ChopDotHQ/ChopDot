@@ -17,7 +17,9 @@ Journey 12 V1.1 approved 2026-09-05. Original reviewed HTML path retained, uncha
 
 SHA-256: `2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d`
 
-Journey 01 — Enter ChopDot is next. Not started in this freeze.
+## Current candidate
+
+Journey 01 — Enter ChopDot v1. Review pending; not Golden.
 
 ## Deferred
 

@@ -1,0 +1,23 @@
+{
+  "journey": "01",
+  "name": "Enter ChopDot",
+  "version": "v1",
+  "approval": "review-pending",
+  "prototype_path": "journeys/01-enter-chopdot/v1-candidate.html",
+  "prototype_sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46",
+  "spec_path": "journeys/01-enter-chopdot/spec.md",
+  "qa_path": "journeys/01-enter-chopdot/VISUAL_QA.md",
+  "basis": "Complete entry after the in-app money loop",
+  "previous_golden": "12",
+  "previous_golden_sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d",
+  "typography_note": "TYPO-01 deferred",
+  "checkpoint": "2026-09-05-j01-v1-candidate",
+  "status": "golden-candidate",
+  "golden_count": 10,
+  "remaining_overall": 18,
+  "states": 17,
+  "model_checks": 43,
+  "browser_scenarios": 18,
+  "layout_checks": 34,
+  "existing_goldens_changed": false
+}

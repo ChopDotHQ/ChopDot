@@ -1,4 +1,4 @@
-<!doctype html><html lang="en" data-registry-fingerprint="516e628ec1227d27"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ChopDot Edge Case Ledger</title><style>
+<!doctype html><html lang="en" data-registry-fingerprint="4b79a302c159c89a"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ChopDot Edge Case Ledger</title><style>
 :root{--bg:#f7f7f8;--surface:#fff;--ink:#111113;--secondary:#66666d;--muted:#929299;--border:#e6e6e9;--pink:#e6007a;--green:#0b7549;--blue:#315aa8;--orange:#835800}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Arial,sans-serif}.wrap{max-width:1180px;margin:auto;padding:30px 20px 80px}a{color:inherit;text-decoration:none}
 header{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:20px}h1{font-size:31px;letter-spacing:-.04em;margin:0 0 6px}header p{font-size:11px;color:var(--secondary);line-height:1.5;margin:0;max-width:690px}.nav{display:flex;gap:7px;flex-wrap:wrap}.nav a{background:#111;color:white;padding:8px 10px;border-radius:10px;font-size:9px}
@@ -7,13 +7,13 @@ header{display:flex;justify-content:space-between;gap:20px;align-items:flex-star
 @media(max-width:720px){header{display:block}.nav{margin-top:12px}.stats{grid-template-columns:1fr 1fr}.row{font-size:9px}}
 .row a{color:var(--pink);font-weight:700}</style></head><body><main class="wrap">
 <header><div><h1>Edge & Failure Coverage</h1><p>Offline, failure, permission, conflict, stale-link, and recovery states mapped to their owning journeys. Generated from the canonical registry.</p></div><nav class="nav"><a href="journey-map.html">Journeys</a><a href="feature-coverage.html">Features</a></nav></header>
-<section class="stats"><div class="stat"><b>40</b><span>tracked cases</span></div><div class="stat"><b>11</b><span>covered</span></div><div class="stat"><b>24</b><span>partial/current</span></div><div class="stat"><b>5</b><span>uncovered</span></div></section>
+<section class="stats"><div class="stat"><b>40</b><span>tracked cases</span></div><div class="stat"><b>11</b><span>covered</span></div><div class="stat"><b>25</b><span>partial/current</span></div><div class="stat"><b>4</b><span>uncovered</span></div></section>
 <section class="table"><div class="row head" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px"><div>ID</div><div>Area</div><div>Case</div><div>Journey owners</div><div>Status</div></div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
     <div>E01</div><div class="sub">App</div><div class="name">Launch offline</div>
-    <div class="sub"><a href="journey-map.html#j01">01 Enter ChopDot</a><br><a href="journey-map.html#j02">02 Home / Orientation</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill partial">partial</span></div>
+    <div class="sub"><a href="journey-map.html#j01">01 Enter ChopDot</a><br><a href="journey-map.html#j02">02 Home / Orientation</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
     <div>E02</div><div class="sub">Auth</div><div class="name">Session expired</div>
-    <div class="sub"><a href="journey-map.html#j01">01 Enter ChopDot</a><br><a href="journey-map.html#j27">27 Account &amp; Preferences</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill uncovered">uncovered</span></div>
+    <div class="sub"><a href="journey-map.html#j01">01 Enter ChopDot</a><br><a href="journey-map.html#j27">27 Account &amp; Preferences</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
     <div>E03</div><div class="sub">Invite</div><div class="name">Invite expired</div>
     <div class="sub"><a href="journey-map.html#j04">04 Invite / Join a Group</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill covered">covered</span></div>
@@ -103,7 +103,7 @@ header{display:flex;justify-content:space-between;gap:20px;align-items:flex-star
     <div class="sub"><a href="journey-map.html#j18">18 Activity &amp; Notifications</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill partial">partial</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
     <div>E32</div><div class="sub">Permissions</div><div class="name">Action attempted without permission</div>
-    <div class="sub"><a href="journey-map.html#j04">04 Invite / Join a Group</a><br><a href="journey-map.html#j06">06 Review / Correct an Expense</a><br><a href="journey-map.html#j09">09 Manage People</a><br><a href="journey-map.html#j26">26 Group Lifecycle</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill partial">partial</span></div>
+    <div class="sub"><a href="journey-map.html#j04">04 Invite / Join a Group</a><br><a href="journey-map.html#j06">06 Review / Correct an Expense</a><br><a href="journey-map.html#j09">09 Manage People</a><br><a href="journey-map.html#j26">26 Group Lifecycle</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a><br><a href="journey-map.html#j01">01 Enter ChopDot</a></div><div><span class="pill partial">partial</span></div>
   </div><div class="row" style="grid-template-columns:55px 90px 1.4fr 1.7fr 110px">
     <div>E33</div><div class="sub">Wallet approval</div><div class="name">Approval request waits without a verified result</div>
     <div class="sub"><a href="journey-map.html#j11">11 Settle Up</a><br><a href="journey-map.html#j12">12 Complete Settlement</a><br><a href="journey-map.html#j28">28 Things Go Wrong / Recovery</a></div><div><span class="pill current">current</span></div>

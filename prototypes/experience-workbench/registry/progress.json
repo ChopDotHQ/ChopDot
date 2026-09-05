@@ -3,7 +3,7 @@
   "updated_on": "2026-09-05",
   "registered_journeys": 28,
   "golden_count": 10,
-  "current_journey": null,
+  "current_journey": "01",
   "remaining_overall": 18,
   "remaining_core_including_entry": [
     "01"
@@ -13,9 +13,9 @@
   "generated_map": "journey-map.html",
   "validation_command": "npm run gate",
   "payment_contract_version": "1.2",
-  "next_action": "Journey 12 frozen. Next in the core-loop sequence: Journey 01 Enter ChopDot.",
+  "next_action": "Review Journey 01 v1; explicit approval required before freeze.",
   "storage_contract_version": "1.0",
-  "paused_after_freeze": true,
+  "paused_after_freeze": false,
   "last_approved_journey": "12",
   "last_approved_version": "v1.1",
   "last_approved_sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d"

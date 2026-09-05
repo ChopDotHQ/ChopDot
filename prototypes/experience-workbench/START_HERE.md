@@ -4,9 +4,11 @@
 
 Journey 12 V1.1 is Golden #10. The complete in-app money loop is design-approved.
 
-## Next
+## Current review
 
-Journey 01 — Enter ChopDot. Finish entry before supporting journeys.
+Journey 01 — Enter ChopDot v1.
+
+Open `journeys/01-enter-chopdot/v1-candidate.html`. Read `journeys/01-enter-chopdot/spec.md`, then `journeys/01-enter-chopdot/VISUAL_QA.md`.
 
 ## Preserve
 
