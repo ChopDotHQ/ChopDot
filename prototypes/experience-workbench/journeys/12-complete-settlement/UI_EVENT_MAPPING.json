@@ -1,11 +1,51 @@
 [
   {
     "screen": "twint-return",
+    "label": "Back",
+    "href": "#j11-handoff",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "twint-return",
     "label": "Yes, I sent it",
     "href": "#twint-sent",
     "domain_event": "PayerMarkedSent",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "twint-return",
+    "label": "Not yet",
+    "href": "#j11-handoff",
+    "domain_event": "PaymentIntentReviewResumed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "twint-sent",
+    "label": "Back",
+    "href": "#twint-return",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "twint-sent",
@@ -13,15 +53,71 @@
     "href": "#twint-waiting",
     "domain_event": "PaymentStatusViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "twint-waiting",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "twint-waiting",
     "label": "Refresh status",
-    "href": "#payment-received",
+    "href": "#twint-waiting",
     "domain_event": "PaymentStatusRefreshRequested",
     "authority": "system",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": "accepted-status-only",
+    "required_outcome": null
+  },
+  {
+    "screen": "twint-waiting",
+    "label": "Back to balances",
+    "href": "#position",
+    "domain_event": "SettlementExitRequested",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-review",
+    "label": "Back",
+    "href": "#receiver-inbox",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-review",
+    "label": "Apartment and Ski Trip",
+    "href": "#receiver-breakdown",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "receiver-review",
@@ -29,7 +125,47 @@
     "href": "#receiver-confirming",
     "domain_event": "ReceiverConfirmationRequested",
     "authority": "receiver",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-review",
+    "label": "Not yet",
+    "href": "#receiver-not-yet",
+    "domain_event": "ReceiverNotYetReported",
+    "authority": "receiver",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-review",
+    "label": "Something\u2019s wrong",
+    "href": "#receiver-problem",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-not-yet",
+    "label": "Back",
+    "href": "#receiver-review",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "receiver-not-yet",
@@ -37,7 +173,23 @@
     "href": "#receiver-review",
     "domain_event": "PaymentStatusViewed",
     "authority": "receiver",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-confirming",
+    "label": "Back",
+    "href": "#receiver-review",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "receiver-confirming",
@@ -45,7 +197,23 @@
     "href": "#payment-received",
     "domain_event": "PaymentStatusViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "payment-received",
+    "label": "Back",
+    "href": "#twint-waiting",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "payment-received",
@@ -53,7 +221,23 @@
     "href": "#payment-complete",
     "domain_event": "SettlementResultViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "payment-complete",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "payment-complete",
@@ -61,7 +245,35 @@
     "href": "#position-updated",
     "domain_event": "SettlementResultViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "payment-complete",
+    "label": "View payment record",
+    "href": "#saved-record",
+    "domain_event": "SavedRecordViewed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "position-updated",
+    "label": "Back",
+    "href": "#payment-complete",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "position-updated",
@@ -69,7 +281,35 @@
     "href": "#position",
     "domain_event": "SettlementResultViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "position-updated",
+    "label": "View payment record",
+    "href": "#saved-record",
+    "domain_event": "SavedRecordViewed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "saved-record",
+    "label": "Back",
+    "href": "#payment-complete",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "saved-record",
@@ -77,7 +317,35 @@
     "href": "#payment-complete",
     "domain_event": "SavedRecordViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "saved-record",
+    "label": "Open payment history",
+    "href": "#history-handoff",
+    "domain_event": "SettlementHistoryOpened",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-breakdown",
+    "label": "Back",
+    "href": "#receiver-review",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "receiver-breakdown",
@@ -85,7 +353,83 @@
     "href": "#receiver-review",
     "domain_event": "PaymentStatusViewed",
     "authority": "receiver",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-problem",
+    "label": "Back",
+    "href": "#receiver-review",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-problem",
+    "label": "It hasn\u2019t arrived Keep waiting",
+    "href": "#receiver-not-yet",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-problem",
+    "label": "The amount is different Record what arrived",
+    "href": "#amount-different",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-problem",
+    "label": "Something else Get help",
+    "href": "#support-handoff",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-problem",
+    "label": "Cancel",
+    "href": "#receiver-review",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "receiver",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "amount-different",
+    "label": "Back",
+    "href": "#receiver-problem",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "amount-different",
@@ -93,7 +437,35 @@
     "href": "#partial-received-different",
     "domain_event": "ReceiverConfirmedPartial",
     "authority": "receiver",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "amount-different",
+    "label": "Back",
+    "href": "#receiver-problem",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "receiver",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "partial-received-different",
+    "label": "Back",
+    "href": "#amount-different",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "partial-received-different",
@@ -101,7 +473,23 @@
     "href": "#partial-different-complete",
     "domain_event": "SettlementResultViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "partial-different-complete",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "partial-different-complete",
@@ -109,7 +497,23 @@
     "href": "#position-partial-different",
     "domain_event": "SettlementResultViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "bank-return",
+    "label": "Back",
+    "href": "#j11-handoff",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "bank-return",
@@ -117,7 +521,35 @@
     "href": "#bank-sent",
     "domain_event": "PayerMarkedSent",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "bank-return",
+    "label": "Not yet",
+    "href": "#j11-handoff",
+    "domain_event": "PaymentIntentReviewResumed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "bank-sent",
+    "label": "Back",
+    "href": "#bank-return",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "bank-sent",
@@ -125,15 +557,59 @@
     "href": "#bank-waiting",
     "domain_event": "PaymentStatusViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "bank-waiting",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "bank-waiting",
     "label": "Refresh status",
-    "href": "#bank-receiver",
+    "href": "#bank-waiting",
     "domain_event": "PaymentStatusRefreshRequested",
     "authority": "system",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": "accepted-status-only",
+    "required_outcome": null
+  },
+  {
+    "screen": "bank-waiting",
+    "label": "Back to balances",
+    "href": "#position",
+    "domain_event": "SettlementExitRequested",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "bank-receiver",
+    "label": "Back",
+    "href": "#receiver-inbox",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "bank-receiver",
@@ -141,7 +617,35 @@
     "href": "#bank-received",
     "domain_event": "ReceiverConfirmationRequested",
     "authority": "receiver",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "bank-receiver",
+    "label": "Not yet",
+    "href": "#bank-waiting",
+    "domain_event": "ReceiverNotYetReported",
+    "authority": "receiver",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "bank-received",
+    "label": "Back",
+    "href": "#bank-receiver",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "bank-received",
@@ -149,7 +653,23 @@
     "href": "#bank-complete",
     "domain_event": "SettlementResultViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "bank-complete",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "bank-complete",
@@ -157,7 +677,35 @@
     "href": "#position-updated",
     "domain_event": "SettlementResultViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "bank-complete",
+    "label": "View payment record",
+    "href": "#saved-record-bank",
+    "domain_event": "SavedRecordViewed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "saved-record-bank",
+    "label": "Back",
+    "href": "#bank-complete",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "saved-record-bank",
@@ -165,7 +713,23 @@
     "href": "#bank-complete",
     "domain_event": "SavedRecordViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "cash-sent",
+    "label": "Back",
+    "href": "#j11-handoff",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "cash-sent",
@@ -173,15 +737,59 @@
     "href": "#cash-waiting",
     "domain_event": "PaymentStatusViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "cash-waiting",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "cash-waiting",
     "label": "Refresh status",
-    "href": "#cash-receiver",
+    "href": "#cash-waiting",
     "domain_event": "PaymentStatusRefreshRequested",
     "authority": "system",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": "accepted-status-only",
+    "required_outcome": null
+  },
+  {
+    "screen": "cash-waiting",
+    "label": "Back to balances",
+    "href": "#position",
+    "domain_event": "SettlementExitRequested",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "cash-receiver",
+    "label": "Back",
+    "href": "#receiver-inbox",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "cash-receiver",
@@ -189,7 +797,35 @@
     "href": "#cash-received",
     "domain_event": "ReceiverConfirmationRequested",
     "authority": "receiver",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "cash-receiver",
+    "label": "Not yet",
+    "href": "#cash-waiting",
+    "domain_event": "ReceiverNotYetReported",
+    "authority": "receiver",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "cash-received",
+    "label": "Back",
+    "href": "#cash-receiver",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "cash-received",
@@ -197,7 +833,23 @@
     "href": "#cash-complete",
     "domain_event": "SettlementResultViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "cash-complete",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "cash-complete",
@@ -205,31 +857,119 @@
     "href": "#position",
     "domain_event": "SettlementResultViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-approval-waiting",
+    "label": "Back",
+    "href": "#j11-handoff",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-approval-waiting",
     "label": "Refresh status",
-    "href": "#wallet-submitted",
+    "href": "#wallet-approval-waiting",
     "domain_event": "PaymentStatusRefreshRequested",
     "authority": "system",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": "accepted-status-only",
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-approval-waiting",
+    "label": "Cancel",
+    "href": "#wallet-cancelled",
+    "domain_event": "PaymentApprovalCancellationRequested",
+    "authority": "payer",
+    "idempotency": "reuse",
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-submitted",
+    "label": "Back",
+    "href": "#wallet-approval-waiting",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-submitted",
     "label": "Check payment",
-    "href": "#wallet-checking",
+    "href": "#wallet-submitted",
     "domain_event": "PaymentStatusRefreshRequested",
     "authority": "system",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": "accepted-status-only",
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-checking",
+    "label": "Back",
+    "href": "#wallet-submitted",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-checking",
     "label": "Refresh status",
-    "href": "#wallet-received",
+    "href": "#wallet-checking",
     "domain_event": "PaymentStatusRefreshRequested",
     "authority": "system",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": "accepted-status-only",
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-checking",
+    "label": "Result unclear",
+    "href": "#wallet-result-unknown",
+    "domain_event": "PaymentRecoveryRequested",
+    "authority": "payer",
+    "idempotency": "reuse",
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-received",
+    "label": "Back",
+    "href": "#wallet-checking",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-received",
@@ -237,7 +977,23 @@
     "href": "#wallet-complete",
     "domain_event": "SettlementResultViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-complete",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-complete",
@@ -245,7 +1001,35 @@
     "href": "#position-updated",
     "domain_event": "SettlementResultViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-complete",
+    "label": "View payment record",
+    "href": "#saved-record-wallet",
+    "domain_event": "SavedRecordViewed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "saved-record-wallet",
+    "label": "Back",
+    "href": "#wallet-complete",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "saved-record-wallet",
@@ -253,7 +1037,23 @@
     "href": "#wallet-complete",
     "domain_event": "SavedRecordViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-result-unknown",
+    "label": "Back",
+    "href": "#wallet-checking",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-result-unknown",
@@ -261,15 +1061,71 @@
     "href": "#wallet-recovering",
     "domain_event": "PaymentRecoveryRequested",
     "authority": "payer",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-result-unknown",
+    "label": "Back to status",
+    "href": "#wallet-checking",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-recovering",
+    "label": "Back",
+    "href": "#wallet-result-unknown",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-recovering",
     "label": "Refresh status",
-    "href": "#wallet-received",
+    "href": "#wallet-recovering",
     "domain_event": "PaymentStatusRefreshRequested",
     "authority": "system",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": "accepted-status-only",
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-recovering",
+    "label": "Still not clear",
+    "href": "#wallet-result-unknown",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-rejected",
+    "label": "Back",
+    "href": "#wallet-approval-waiting",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-rejected",
@@ -277,7 +1133,35 @@
     "href": "#j11-handoff",
     "domain_event": "PaymentRetryRequested",
     "authority": "payer",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": "verified-not-executed"
+  },
+  {
+    "screen": "wallet-rejected",
+    "label": "Back to balances",
+    "href": "#position",
+    "domain_event": "SettlementExitRequested",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-expired",
+    "label": "Back",
+    "href": "#wallet-approval-waiting",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-expired",
@@ -285,7 +1169,35 @@
     "href": "#j11-handoff",
     "domain_event": "PaymentRetryRequested",
     "authority": "payer",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": "verified-not-executed"
+  },
+  {
+    "screen": "wallet-expired",
+    "label": "Back to balances",
+    "href": "#position",
+    "domain_event": "SettlementExitRequested",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-disconnected",
+    "label": "Back",
+    "href": "#wallet-approval-waiting",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-disconnected",
@@ -293,7 +1205,35 @@
     "href": "#wallet-recovering",
     "domain_event": "PaymentRecoveryRequested",
     "authority": "payer",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-disconnected",
+    "label": "Back to balances",
+    "href": "#position",
+    "domain_event": "SettlementExitRequested",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-cancelled",
+    "label": "Back",
+    "href": "#wallet-approval-waiting",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-cancelled",
@@ -301,7 +1241,23 @@
     "href": "#position",
     "domain_event": "SettlementExitRequested",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-reversed",
+    "label": "Back",
+    "href": "#wallet-complete",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "wallet-reversed",
@@ -309,7 +1265,35 @@
     "href": "#position-reopened",
     "domain_event": "SettlementResultViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "wallet-reversed",
+    "label": "View payment record",
+    "href": "#saved-record-wallet",
+    "domain_event": "SavedRecordViewed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "partial-sent",
+    "label": "Back",
+    "href": "#j11-handoff",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "partial-sent",
@@ -317,15 +1301,59 @@
     "href": "#partial-waiting",
     "domain_event": "PaymentStatusViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "partial-waiting",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "partial-waiting",
     "label": "Refresh status",
-    "href": "#partial-receiver",
+    "href": "#partial-waiting",
     "domain_event": "PaymentStatusRefreshRequested",
     "authority": "system",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": "accepted-status-only",
+    "required_outcome": null
+  },
+  {
+    "screen": "partial-waiting",
+    "label": "Back to balances",
+    "href": "#position",
+    "domain_event": "SettlementExitRequested",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "partial-receiver",
+    "label": "Back",
+    "href": "#receiver-inbox",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "partial-receiver",
@@ -333,7 +1361,35 @@
     "href": "#partial-received",
     "domain_event": "ReceiverConfirmationRequested",
     "authority": "receiver",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "partial-receiver",
+    "label": "Not yet",
+    "href": "#partial-waiting",
+    "domain_event": "ReceiverNotYetReported",
+    "authority": "receiver",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "partial-received",
+    "label": "Back",
+    "href": "#partial-receiver",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "partial-received",
@@ -341,7 +1397,23 @@
     "href": "#partial-complete",
     "domain_event": "SettlementResultViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "partial-complete",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "partial-complete",
@@ -349,7 +1421,35 @@
     "href": "#position-partial",
     "domain_event": "SettlementResultViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "partial-complete",
+    "label": "View payment record",
+    "href": "#saved-record-partial",
+    "domain_event": "SavedRecordViewed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "saved-record-partial",
+    "label": "Back",
+    "href": "#partial-complete",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "saved-record-partial",
@@ -357,7 +1457,23 @@
     "href": "#partial-complete",
     "domain_event": "SavedRecordViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "payment-failed",
+    "label": "Back",
+    "href": "#j11-handoff",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "payment-failed",
@@ -365,7 +1481,35 @@
     "href": "#retrying",
     "domain_event": "PaymentRetryRequested",
     "authority": "payer",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": "verified-not-executed"
+  },
+  {
+    "screen": "payment-failed",
+    "label": "Choose another method",
+    "href": "#j11-handoff",
+    "domain_event": "PaymentMethodSelectionOpened",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": "verified-not-executed"
+  },
+  {
+    "screen": "retrying",
+    "label": "Back",
+    "href": "#payment-failed",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "retrying",
@@ -373,7 +1517,23 @@
     "href": "#twint-return",
     "domain_event": "PaymentStatusViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "payment-expired",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "payment-expired",
@@ -381,7 +1541,35 @@
     "href": "#j11-handoff",
     "domain_event": "PaymentRetryRequested",
     "authority": "payer",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": "verified-not-executed"
+  },
+  {
+    "screen": "payment-expired",
+    "label": "Back to balances",
+    "href": "#position",
+    "domain_event": "SettlementExitRequested",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "payment-cancelled",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "payment-cancelled",
@@ -389,7 +1577,23 @@
     "href": "#position",
     "domain_event": "SettlementExitRequested",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "offline",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "offline",
@@ -397,7 +1601,35 @@
     "href": "#syncing",
     "domain_event": "PaymentRecoveryRequested",
     "authority": "payer",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "offline",
+    "label": "Back to balances",
+    "href": "#position",
+    "domain_event": "SettlementExitRequested",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "syncing",
+    "label": "Back",
+    "href": "#offline",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "syncing",
@@ -405,7 +1637,23 @@
     "href": "#twint-waiting",
     "domain_event": "PaymentStatusViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "already-processing",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "already-processing",
@@ -413,7 +1661,23 @@
     "href": "#twint-waiting",
     "domain_event": "PaymentStatusViewed",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "recipient-says-no",
+    "label": "Back",
+    "href": "#twint-waiting",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "recipient-says-no",
@@ -421,7 +1685,35 @@
     "href": "#payment-details",
     "domain_event": "PaymentStatusViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "recipient-says-no",
+    "label": "Back to balances",
+    "href": "#position",
+    "domain_event": "SettlementExitRequested",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "issue-after-send",
+    "label": "Back",
+    "href": "#twint-waiting",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "issue-after-send",
@@ -429,7 +1721,35 @@
     "href": "#issue-handoff",
     "domain_event": "SettlementIssueOpened",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "issue-after-send",
+    "label": "Back to payment",
+    "href": "#twint-waiting",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "record-unavailable",
+    "label": "Back",
+    "href": "#payment-complete",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "record-unavailable",
@@ -437,7 +1757,35 @@
     "href": "#saved-record",
     "domain_event": "SavedRecordRefreshRequested",
     "authority": "payer",
-    "idempotency": "reuse"
+    "idempotency": "reuse",
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "record-unavailable",
+    "label": "Back to payment",
+    "href": "#payment-complete",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "payment-details",
+    "label": "Back",
+    "href": "#recipient-says-no",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "payment-details",
@@ -445,7 +1793,95 @@
     "href": "#recipient-says-no",
     "domain_event": "PaymentStatusViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-inbox",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-inbox",
+    "label": "CHF 54.30 from Devinson TWINT \u00b7 Apartment and Ski Trip",
+    "href": "#receiver-review",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-inbox",
+    "label": "CHF 30.00 from Devinson Cash or paid elsewhere",
+    "href": "#cash-receiver",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "receiver-inbox",
+    "label": "Back",
+    "href": "#position",
+    "domain_event": "SettlementExitRequested",
+    "authority": "receiver",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "position",
+    "label": "Back",
+    "href": "#twint-waiting",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "position",
+    "label": "Waiting for Jeanine CHF 54.30 \u00b7 TWINT Open",
+    "href": "#twint-waiting",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "position",
+    "label": "Payments to confirm Receiver view Preview",
+    "href": "#receiver-inbox",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "position",
@@ -453,7 +1889,23 @@
     "href": "#twint-waiting",
     "domain_event": "PaymentStatusViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "position-partial",
+    "label": "Back",
+    "href": "#partial-complete",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "position-partial",
@@ -461,7 +1913,35 @@
     "href": "#position",
     "domain_event": "SettlementResultViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "position-partial",
+    "label": "View payment record",
+    "href": "#saved-record-partial",
+    "domain_event": "SavedRecordViewed",
+    "authority": "payer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "position-partial-different",
+    "label": "Back",
+    "href": "#partial-different-complete",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "position-partial-different",
@@ -469,7 +1949,23 @@
     "href": "#position",
     "domain_event": "SettlementResultViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "position-reopened",
+    "label": "Back",
+    "href": "#wallet-reversed",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "position-reopened",
@@ -477,7 +1973,23 @@
     "href": "#position",
     "domain_event": "SettlementResultViewed",
     "authority": "payer",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "j11-handoff",
+    "label": "Back",
+    "href": "#twint-return",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "j11-handoff",
@@ -485,7 +1997,23 @@
     "href": "#twint-return",
     "domain_event": "JourneyHandoffReturned",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "history-handoff",
+    "label": "Back",
+    "href": "#saved-record",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "history-handoff",
@@ -493,7 +2021,23 @@
     "href": "#saved-record",
     "domain_event": "JourneyHandoffReturned",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "issue-handoff",
+    "label": "Back",
+    "href": "#issue-after-send",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "issue-handoff",
@@ -501,7 +2045,23 @@
     "href": "#issue-after-send",
     "domain_event": "JourneyHandoffReturned",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "support-handoff",
+    "label": "Back",
+    "href": "#receiver-problem",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "support-handoff",
@@ -509,7 +2069,23 @@
     "href": "#receiver-problem",
     "domain_event": "JourneyHandoffReturned",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
+  },
+  {
+    "screen": "group-home",
+    "label": "Back",
+    "href": "#payment-complete",
+    "domain_event": "PaymentStatusViewed",
+    "authority": "viewer",
+    "idempotency": null,
+    "primary": false,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   },
   {
     "screen": "group-home",
@@ -517,6 +2093,10 @@
     "href": "#payment-complete",
     "domain_event": "JourneyHandoffReturned",
     "authority": "system",
-    "idempotency": null
+    "idempotency": null,
+    "primary": true,
+    "context_policy": "preserve-payment-method-currency-source-result-viewer",
+    "result_resolver": null,
+    "required_outcome": null
   }
 ]

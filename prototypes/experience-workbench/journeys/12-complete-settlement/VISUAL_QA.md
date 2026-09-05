@@ -1,70 +1,33 @@
-# Journey 12 — Visual and Journey QA
+# Journey 12 V1.1 — Continuity QA
 
-## Inherited Golden references
+**Candidate:** `v1.1-continuity-candidate.html`  
+**SHA-256:** `2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d`  
+**Status:** Review pending, not Golden.
 
-Journey 12 inherits the Journey 11 V1.1 frame, typography, cards, payment status rail, icon language, semantic colors, focused footer, and short human copy. Journeys 1–11 remain unchanged.
+## Executed checks
 
-## Rendered viewports
+- 20 click-through scenarios: 10 each at 393×852 and 430×890.
+- 174 real primary/secondary app clicks; workshop role/result fixtures are separate.
+- 30 reducer assertions for read-only refresh, authority separation, partial arithmetic, exact fixture matching and recovery-gated idempotent retry.
+- 134 screenshot/layout checks covering all 67 existing screens at both sizes.
+- No page errors, blank states, horizontal overflow, overlapping frame regions, clipped primary cards or oversized icons.
 
-- 393 × 852
-- 430 × 890
+## Paths clicked
 
-## Structural checks
+TWINT / bank / cash: sent → waiting → repeated payer refresh → balances → recipient Not yet → recipient confirmation → payer result → correct balances → record/Done/history/Back.
 
-- 67 explicit states
-- 194/194 internal links resolve
-- no duplicate IDs
-- 65/65 primary actions carry internal event and authority mappings
-- no visible banned architecture terms
-- no placeholder glyph icons
+Partial CHF 20 and unexpected CHF 40: correct remaining CHF 34.30 or CHF 14.30 survives every return.
 
-## Browser QA
+Wallet: repeated read before receipt stays pending; explicit exact-receipt test fixture → result → balance → record → Done, preserving Connected wallet and 7.812500 DOT. Reversal preserves reopened CHF 54.30.
 
-- 88 representative state/viewport renders in the main pass
-- zero horizontal overflow
-- zero header/content/footer overlap
-- zero clipped cards or rows
-- fixed action footer remains visible
-- center content scrolls independently when needed
+Bank/wallet unknown timeout: recover → repeated refresh (still recovery) → explicit verified-not-sent test fixture → one eligible retry, keeping payment identity and method.
 
-## Visually reviewed sequences
+## Visual review
 
-- TWINT return → Sent → Waiting → Receiver confirms → Received → Complete → Updated balance
-- Bank transfer waiting and confirmation
-- Cash/manual confirmation
-- Wallet approval → Submitted → Checking → Received → Complete
-- Wallet result unknown → Recovering
-- Partial payment → Remaining balance
-- Receiver reports a different amount
-- Failure → replay-safe retry
-- Offline saved status
-- Existing payment already open
-- Recipient says not received
-- Issue opened after send
-- Payment reversal
-- Saved record still materializing
+Inspected the earlier Golden comparison alongside the rendered result, partial-balance, wallet-record, waiting and recovery screenshots. The original stylesheet is byte-identical. The header, footer, surfaces, amount hierarchy, spacing and icon language are retained. Two previously unstyled returning-balance rows now reuse the existing compact row/icon classes instead of showing oversized SVGs. No new screen or design system was added.
 
-## Defect found and fixed
+## Test environment and boundaries
 
-Receiver issue rows initially collapsed title and supporting text into one line. The shared method-row text and icon sizing rules were corrected in Journey 12 only, then both target sizes were rerendered.
+Browser plugin unavailable. Playwright Chromium rendered the exact standalone HTML via set_content; local URL navigation is blocked in this environment. App controls were clicked, and browser Back was exercised. Native file reload, real bank/wallet callbacks, multi-device authentication and backend persistence were not tested. The local scenario model is not a payment backend.
 
-## Golden consistency comparison
-
-Passed:
-
-- same cool-gray background and white surfaces;
-- same card radii, borders, shadows, and fixed frame;
-- same compact header and footer hierarchy;
-- same Lucide-style stroke icons;
-- blue for started/sent, amber for waiting, green for received/complete, red/pink for failure or required recovery;
-- same amount and personal-impact hierarchy;
-- no provider-specific redesigns;
-- no technical architecture copy in normal UI.
-
-## Intentional distinction
-
-Journey 12 is status-led rather than selection-led. It therefore uses Journey 11’s payment-status card and rail as its dominant pattern while preserving the same visual system.
-
-## Verdict
-
-**V1 Golden Candidate — ready for user review.**
+Raw evidence: `CONTINUITY_QA.json`; full PNG set is retained with the downloadable review checkpoint.

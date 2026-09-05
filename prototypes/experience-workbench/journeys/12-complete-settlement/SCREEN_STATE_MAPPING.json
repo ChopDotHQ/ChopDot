@@ -3,922 +3,469 @@
     "screen": "twint-return",
     "payment_state": "payment-started",
     "transition_authority": "payer",
-    "primary_actions": [
-      {
-        "label": "Yes, I sent it",
-        "href": "#twint-sent",
-        "domain_event": "PayerMarkedSent",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "twint-sent",
     "payment_state": "payer-marked-sent",
     "transition_authority": "payer",
-    "primary_actions": [
-      {
-        "label": "View confirmation status",
-        "href": "#twint-waiting",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "twint-waiting",
     "payment_state": "awaiting-confirmation",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "Refresh status",
-        "href": "#payment-received",
-        "domain_event": "PaymentStatusRefreshRequested",
-        "authority": "system",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "receiver-review",
     "payment_state": "awaiting-confirmation",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "Yes, it arrived",
-        "href": "#receiver-confirming",
-        "domain_event": "ReceiverConfirmationRequested",
-        "authority": "receiver",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "receiver-not-yet",
     "payment_state": "awaiting-confirmation",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "Back to payment",
-        "href": "#receiver-review",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "receiver",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "receiver-confirming",
     "payment_state": "receiver-confirmation-pending",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Continue",
-        "href": "#payment-received",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "payment-received",
     "payment_state": "receiver-confirmed",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "View updated balance",
-        "href": "#payment-complete",
-        "domain_event": "SettlementResultViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "payment-complete",
     "payment_state": "closed",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Back to balances",
-        "href": "#position-updated",
-        "domain_event": "SettlementResultViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "position-updated",
     "payment_state": "closed",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Back to Overall Position",
-        "href": "#position",
-        "domain_event": "SettlementResultViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "saved-record",
     "payment_state": "closed",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Done",
-        "href": "#payment-complete",
-        "domain_event": "SavedRecordViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "receiver-breakdown",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Done",
-        "href": "#receiver-review",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "receiver",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "receiver-problem",
     "payment_state": "disputed",
     "transition_authority": "receiver",
-    "primary_actions": []
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "amount-different",
     "payment_state": "partial",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "Confirm CHF 40.00",
-        "href": "#partial-received-different",
-        "domain_event": "ReceiverConfirmedPartial",
-        "authority": "receiver",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "partial-received-different",
     "payment_state": "partial",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "View remaining balance",
-        "href": "#partial-different-complete",
-        "domain_event": "SettlementResultViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "partial-different-complete",
     "payment_state": "partial",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Back to balances",
-        "href": "#position-partial-different",
-        "domain_event": "SettlementResultViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "bank-return",
     "payment_state": "payment-started",
     "transition_authority": "payer",
-    "primary_actions": [
-      {
-        "label": "Yes, I sent it",
-        "href": "#bank-sent",
-        "domain_event": "PayerMarkedSent",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "bank-sent",
     "payment_state": "payer-marked-sent",
     "transition_authority": "payer",
-    "primary_actions": [
-      {
-        "label": "View confirmation status",
-        "href": "#bank-waiting",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "bank-waiting",
     "payment_state": "awaiting-confirmation",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "Refresh status",
-        "href": "#bank-receiver",
-        "domain_event": "PaymentStatusRefreshRequested",
-        "authority": "system",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "bank-receiver",
     "payment_state": "awaiting-confirmation",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "Yes, it arrived",
-        "href": "#bank-received",
-        "domain_event": "ReceiverConfirmationRequested",
-        "authority": "receiver",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "bank-received",
     "payment_state": "receiver-confirmed",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "View updated balance",
-        "href": "#bank-complete",
-        "domain_event": "SettlementResultViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "bank-complete",
     "payment_state": "closed",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Back to balances",
-        "href": "#position-updated",
-        "domain_event": "SettlementResultViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "saved-record-bank",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Done",
-        "href": "#bank-complete",
-        "domain_event": "SavedRecordViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "cash-sent",
     "payment_state": "payer-marked-sent",
     "transition_authority": "payer",
-    "primary_actions": [
-      {
-        "label": "View confirmation status",
-        "href": "#cash-waiting",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "cash-waiting",
     "payment_state": "awaiting-confirmation",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "Refresh status",
-        "href": "#cash-receiver",
-        "domain_event": "PaymentStatusRefreshRequested",
-        "authority": "system",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "cash-receiver",
     "payment_state": "awaiting-confirmation",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "Yes, I received it",
-        "href": "#cash-received",
-        "domain_event": "ReceiverConfirmationRequested",
-        "authority": "receiver",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "cash-received",
     "payment_state": "receiver-confirmed",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "View updated balance",
-        "href": "#cash-complete",
-        "domain_event": "SettlementResultViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "cash-complete",
     "payment_state": "closed",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Back to balances",
-        "href": "#position",
-        "domain_event": "SettlementResultViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-approval-waiting",
     "payment_state": "approval-waiting",
     "transition_authority": "provider-or-system",
-    "primary_actions": [
-      {
-        "label": "Refresh status",
-        "href": "#wallet-submitted",
-        "domain_event": "PaymentStatusRefreshRequested",
-        "authority": "system",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-submitted",
     "payment_state": "provider-submitted",
     "transition_authority": "provider-or-system",
-    "primary_actions": [
-      {
-        "label": "Check payment",
-        "href": "#wallet-checking",
-        "domain_event": "PaymentStatusRefreshRequested",
-        "authority": "system",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-checking",
     "payment_state": "awaiting-finality",
     "transition_authority": "provider-or-system",
-    "primary_actions": [
-      {
-        "label": "Refresh status",
-        "href": "#wallet-received",
-        "domain_event": "PaymentStatusRefreshRequested",
-        "authority": "system",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-received",
     "payment_state": "received-cleared",
     "transition_authority": "provider-or-system",
-    "primary_actions": [
-      {
-        "label": "View updated balance",
-        "href": "#wallet-complete",
-        "domain_event": "SettlementResultViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-complete",
     "payment_state": "closed",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Back to balances",
-        "href": "#position-updated",
-        "domain_event": "SettlementResultViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "saved-record-wallet",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Done",
-        "href": "#wallet-complete",
-        "domain_event": "SavedRecordViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-result-unknown",
     "payment_state": "result-unknown",
     "transition_authority": "provider-or-system",
-    "primary_actions": [
-      {
-        "label": "Recover status",
-        "href": "#wallet-recovering",
-        "domain_event": "PaymentRecoveryRequested",
-        "authority": "payer",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-recovering",
     "payment_state": "recovering",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Refresh status",
-        "href": "#wallet-received",
-        "domain_event": "PaymentStatusRefreshRequested",
-        "authority": "system",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-rejected",
     "payment_state": "approval-rejected",
     "transition_authority": "provider-or-system",
-    "primary_actions": [
-      {
-        "label": "Try again",
-        "href": "#j11-handoff",
-        "domain_event": "PaymentRetryRequested",
-        "authority": "payer",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-expired",
     "payment_state": "approval-expired",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Review payment again",
-        "href": "#j11-handoff",
-        "domain_event": "PaymentRetryRequested",
-        "authority": "payer",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-disconnected",
     "payment_state": "approval-disconnected",
     "transition_authority": "provider-or-system",
-    "primary_actions": [
-      {
-        "label": "Reconnect",
-        "href": "#wallet-recovering",
-        "domain_event": "PaymentRecoveryRequested",
-        "authority": "payer",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-cancelled",
     "payment_state": "cancelled",
     "transition_authority": "payer",
-    "primary_actions": [
-      {
-        "label": "Back to balances",
-        "href": "#position",
-        "domain_event": "SettlementExitRequested",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "wallet-reversed",
     "payment_state": "reversed",
     "transition_authority": "provider-or-system",
-    "primary_actions": [
-      {
-        "label": "View reopened balance",
-        "href": "#position-reopened",
-        "domain_event": "SettlementResultViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "partial-sent",
     "payment_state": "payer-marked-sent",
     "transition_authority": "payer",
-    "primary_actions": [
-      {
-        "label": "View confirmation status",
-        "href": "#partial-waiting",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "partial-waiting",
     "payment_state": "awaiting-confirmation",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "Refresh status",
-        "href": "#partial-receiver",
-        "domain_event": "PaymentStatusRefreshRequested",
-        "authority": "system",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "partial-receiver",
     "payment_state": "awaiting-confirmation",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "Yes, it arrived",
-        "href": "#partial-received",
-        "domain_event": "ReceiverConfirmationRequested",
-        "authority": "receiver",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "partial-received",
     "payment_state": "receiver-confirmed",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "View remaining balance",
-        "href": "#partial-complete",
-        "domain_event": "SettlementResultViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "partial-complete",
     "payment_state": "partial",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "View remaining balance",
-        "href": "#position-partial",
-        "domain_event": "SettlementResultViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "saved-record-partial",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Done",
-        "href": "#partial-complete",
-        "domain_event": "SavedRecordViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "payment-failed",
     "payment_state": "failed",
     "transition_authority": "provider-or-system",
-    "primary_actions": [
-      {
-        "label": "Try again",
-        "href": "#retrying",
-        "domain_event": "PaymentRetryRequested",
-        "authority": "payer",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "retrying",
     "payment_state": "retrying",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Continue",
-        "href": "#twint-return",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "payment-expired",
     "payment_state": "expired",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Review balance again",
-        "href": "#j11-handoff",
-        "domain_event": "PaymentRetryRequested",
-        "authority": "payer",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "payment-cancelled",
     "payment_state": "cancelled",
     "transition_authority": "payer",
-    "primary_actions": [
-      {
-        "label": "Back to balances",
-        "href": "#position",
-        "domain_event": "SettlementExitRequested",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "offline",
     "payment_state": "status-stale",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Try again online",
-        "href": "#syncing",
-        "domain_event": "PaymentRecoveryRequested",
-        "authority": "payer",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "syncing",
     "payment_state": "recovering",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Continue",
-        "href": "#twint-waiting",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "already-processing",
     "payment_state": "awaiting-confirmation",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Open current status",
-        "href": "#twint-waiting",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "recipient-says-no",
     "payment_state": "awaiting-confirmation",
     "transition_authority": "receiver",
-    "primary_actions": [
-      {
-        "label": "Review payment details",
-        "href": "#payment-details",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "issue-after-send",
     "payment_state": "disputed",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Review the issue",
-        "href": "#issue-handoff",
-        "domain_event": "SettlementIssueOpened",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "record-unavailable",
     "payment_state": "record-pending",
     "transition_authority": "system",
-    "primary_actions": [
-      {
-        "label": "Refresh record",
-        "href": "#saved-record",
-        "domain_event": "SavedRecordRefreshRequested",
-        "authority": "payer",
-        "idempotency": "reuse"
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "payment-details",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Done",
-        "href": "#recipient-says-no",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "receiver-inbox",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": []
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "position",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Open payment",
-        "href": "#twint-waiting",
-        "domain_event": "PaymentStatusViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "position-partial",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Settle remaining later",
-        "href": "#position",
-        "domain_event": "SettlementResultViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "position-partial-different",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Back to balances",
-        "href": "#position",
-        "domain_event": "SettlementResultViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "position-reopened",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Back to balances",
-        "href": "#position",
-        "domain_event": "SettlementResultViewed",
-        "authority": "payer",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "j11-handoff",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Back",
-        "href": "#twint-return",
-        "domain_event": "JourneyHandoffReturned",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "history-handoff",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Back",
-        "href": "#saved-record",
-        "domain_event": "JourneyHandoffReturned",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "issue-handoff",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Back",
-        "href": "#issue-after-send",
-        "domain_event": "JourneyHandoffReturned",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "support-handoff",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Back",
-        "href": "#receiver-problem",
-        "domain_event": "JourneyHandoffReturned",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   },
   {
     "screen": "group-home",
     "payment_state": null,
     "transition_authority": null,
-    "primary_actions": [
-      {
-        "label": "Back",
-        "href": "#payment-complete",
-        "domain_event": "JourneyHandoffReturned",
-        "authority": "system",
-        "idempotency": null
-      }
-    ]
+    "context_policy": "selected-payment-and-viewer",
+    "renderer": "source/continuity-ui.js"
   }
 ]

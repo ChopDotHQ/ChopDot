@@ -1,6 +1,6 @@
 {
   "journey": "12",
-  "version": "v1",
+  "version": "v1.1",
   "status": "golden-candidate",
   "decisions": [
     "Sent, waiting, received and complete remain separate visible states.",
@@ -12,6 +12,9 @@
     "Overall Position and group balances are recomputed derived views.",
     "Saved payment records are human-readable and retrievable through an ordinary authenticated web path.",
     "Reversal reopens only the exact affected payment item.",
-    "Journeys 1–11 remain unchanged."
+    "Journeys 1\u201311 remain unchanged.",
+    "Shared return routes preserve the selected method and latest accepted result.",
+    "Payer refresh reads status and cannot open recipient confirmation controls.",
+    "Unknown timeouts require recovery; execution retry requires proof of non-execution."
   ]
 }

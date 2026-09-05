@@ -5,12 +5,12 @@
 - 28 registered journeys
 - 9 Golden journeys
 - Journey 11 — Settle Up V1.1 remains frozen as Golden #9
-- Journey 12 — Complete Settlement V1 is the current Golden Candidate
+- Journey 12 — Complete Settlement V1.1 is the current Golden Candidate
 - Running the gate preserves Journey 12 progress
 
 ## Open first
 
-`journeys/12-complete-settlement/v1-golden-candidate.html`
+`journeys/12-complete-settlement/v1.1-continuity-candidate.html`
 
 Then read:
 

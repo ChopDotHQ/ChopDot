@@ -22,13 +22,13 @@
 
 ## Failure and safe retry
 
-**GIVEN** a payment attempt failed or timed out.  
+**GIVEN** a trusted result proves that the prior attempt did not execute.  
 **WHEN** the payer chooses `Try again`.  
-**THEN** ChopDot reuses the existing payment and idempotency identity rather than creating a duplicate.
+**THEN** ChopDot reuses the existing payment and idempotency identity for one eligible retry. An unknown timeout is not this scenario and requires recovery first.
 
 ## Unknown result
 
-**GIVEN** ChopDot cannot prove whether a wallet payment completed.  
+**GIVEN** a timeout or missing result means ChopDot cannot prove whether the selected payment completed.  
 **WHEN** the user opens recovery.  
 **THEN** the UI says not to start another payment and reconciles the existing payment identity.
 
@@ -69,3 +69,35 @@
 **GIVEN** realtime delivery was lost or duplicated.  
 **WHEN** the app reconnects.  
 **THEN** status is rebuilt from accepted durable history and duplicate events do not repeat side effects.
+
+## Continuity regression scenarios (V1.1)
+
+### C01 — full payment return
+GIVEN the exact TWINT or bank CHF 54.30 payment is closed, WHEN the payer opens balances, Overall Position, the payment record, history, Done or browser Back, THEN CHF 0.00 and the original payment method remain, with no new confirmation or payment.
+
+### C02 — cash recipient continuity
+GIVEN Nina has confirmed the CHF 30.00 cash payment, WHEN the payer returns to balances and reopens it, THEN Nina, Cash and CHF 0.00 remain; the flow never becomes Jeanine/TWINT.
+
+### C03 — partial result
+GIVEN CHF 20.00 was confirmed against CHF 54.30, WHEN the payer leaves the partial result and later reopens it, THEN CHF 34.30 remains. GIVEN CHF 40.00 arrived instead, THEN CHF 14.30 remains. Source items and the accepted payment identity persist.
+
+### C04 — waiting payer
+GIVEN no recipient confirmation has been accepted, WHEN the payer refreshes repeatedly, THEN the payer remains waiting and cannot see or invoke recipient confirmation controls; the amount remains open.
+
+### C05 — separate recipient confirmation
+GIVEN that waiting payment, WHEN the canonical recipient separately confirms the correct scope, THEN the backend may accept receipt and close the exact amount. The next payer read displays that accepted result; the read did not create it.
+
+### C06 — unknown timeout
+GIVEN an execution result is unknown, WHEN the payer refreshes, reconnects or requests retry, THEN only reconciliation of the same payment occurs. No execution retry is created, even after multiple clicks.
+
+### C07 — known non-execution after recovery
+GIVEN recovery is running for an unknown attempt, WHEN a trusted result proves that exact attempt was not executed, THEN retry may become available. WHEN tapped twice, THEN only the first eligible request starts a retry with the original person, amount, method and payment identity.
+
+### C08 — recovered receipt instead of retry
+GIVEN an unknown wallet payment, WHEN exact receipt is verified during recovery, THEN the existing item closes and its result is read. No retry becomes available.
+
+### C09 — reversed return
+GIVEN the wallet payment was reversed, WHEN balances, Saved record, Done or browser Back are opened, THEN only CHF 54.30 is reopened and the original wallet method remains; history does not display the item as currently complete.
+
+### C10 — review handoff
+GIVEN a bank payment selected in Journey 11, WHEN Not yet opens the payment-review handoff and Back returns, THEN it remains a bank payment in the same scope.

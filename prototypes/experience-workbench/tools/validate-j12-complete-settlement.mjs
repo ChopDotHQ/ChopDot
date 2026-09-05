@@ -7,9 +7,9 @@ const j12 = "journeys/12-complete-settlement";
 const read = (relative) => fs.readFileSync(path.join(root, relative), "utf8");
 const load = (relative) => JSON.parse(read(relative));
 const errors = [];
-const htmlPath = `${j12}/v1-golden-candidate.html`;
+const htmlPath = `${j12}/v1.1-continuity-candidate.html`;
 const html = read(htmlPath);
-const expectedSha = "b6cc690e6993f3d8e611a0b793d0bf8fd17953af176f3bebdeca668235272dec";
+const expectedSha = "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d";
 const actualSha = createHash("sha256").update(html).digest("hex");
 if (actualSha !== expectedSha) errors.push(`Journey 12 HTML checksum mismatch: ${actualSha}`);
 
@@ -45,6 +45,7 @@ if (!html.includes('data-idempotency="reuse"')) errors.push("Replay-safe retry/r
 if (!html.includes("Payment record stays available") && !html.includes("This record stays available")) errors.push("Saved record availability copy is missing.");
 
 const visible = html
+  .replace(/<script[\s\S]*?<\/script>/gi, " ")
   .replace(/<style[\s\S]*?<\/style>/gi, " ")
   .replace(/<svg[\s\S]*?<\/svg>/gi, " ")
   .replace(/<[^>]+>/g, " ")
@@ -66,31 +67,6 @@ if (journey12?.status !== "current" || journey12?.approval !== "review-pending")
 const progress = load("registry/progress.json");
 if (progress.current_journey !== "12" || progress.paused_after_freeze === true) errors.push("Journey 12 progress was not preserved.");
 
-
-const screenMapping = screenTags.map((match, index) => {
-  const start = match.index;
-  const end = index + 1 < screenTags.length ? screenTags[index + 1].index : html.indexOf('<aside class="labpanel"', start);
-  const fragment = html.slice(start, end > start ? end : html.length);
-  const tag = match[0];
-  const attr = (name) => tag.match(new RegExp(`${name}="([^"]+)"`))?.[1] ?? null;
-  return {
-    screen: match[1],
-    payment_state: attr("data-payment-state"),
-    transition_authority: attr("data-transition-authority"),
-    primary_actions: [...fragment.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)]
-      .filter(action => /class="[^"]*\bprimary\b/.test(action[1]))
-      .map(action => ({
-        label: action[2].replace(/<svg[\s\S]*?<\/svg>/g, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim(),
-        href: action[1].match(/href="([^"]+)"/)?.[1] ?? null,
-        domain_event: action[1].match(/data-domain-event="([^"]+)"/)?.[1] ?? null,
-        authority: action[1].match(/data-authority="([^"]+)"/)?.[1] ?? null,
-        idempotency: action[1].match(/data-idempotency="([^"]+)"/)?.[1] ?? null,
-      })),
-  };
-});
-fs.writeFileSync(path.join(root, j12, "SCREEN_STATE_MAPPING.json"), `${JSON.stringify(screenMapping, null, 2)}\n`);
-fs.writeFileSync(path.join(root, j12, "UI_EVENT_MAPPING.json"), `${JSON.stringify(screenMapping.flatMap(screen => screen.primary_actions.map(action => ({ screen: screen.screen, ...action }))), null, 2)}\n`);
-
 const result = {
   ok: errors.length === 0,
   exact_candidate_sha256: actualSha,
@@ -108,3 +84,5 @@ if (errors.length) {
   process.exit(1);
 }
 console.log(`JOURNEY 12 GATE PASSED: ${ids.size} screens, ${hrefs.length} links, ${actualSha}.`);
+
+await import("./validate-j12-continuity.mjs");

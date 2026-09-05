@@ -1,0 +1,3011 @@
+{
+  "ok": true,
+  "artifact_sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d",
+  "baseline_sha256": "b6cc690e6993f3d8e611a0b793d0bf8fd17953af176f3bebdeca668235272dec",
+  "css_sha256": "7fdf48665ca5e823ac98752df0cf7fe5a106484f9738113d9c730018d3d6f2d2",
+  "screens": 67,
+  "screens_added": 0,
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "model_checks": 30,
+  "clicked_paths": 20,
+  "clicked_actions": 174,
+  "layout_checks": 134,
+  "page_identity": "pass",
+  "blank_page": "pass",
+  "console_errors": [],
+  "checks": [
+    {
+      "ok": true,
+      "viewport": "393x852",
+      "artifact_sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d",
+      "cases": [
+        {
+          "case": "twint receipt, refresh, result and return loop",
+          "passed": true
+        },
+        {
+          "case": "bank receipt, refresh, result and return loop",
+          "passed": true
+        },
+        {
+          "case": "cash receipt, refresh, result and return loop",
+          "passed": true
+        },
+        {
+          "case": "CHF 20 partial: CHF 34.30 survives every exit",
+          "passed": true
+        },
+        {
+          "case": "CHF 40 received: CHF 14.30 survives return",
+          "passed": true
+        },
+        {
+          "case": "wallet verification and method-preserving record loop",
+          "passed": true
+        },
+        {
+          "case": "reversal remains reopened and wallet-specific",
+          "passed": true
+        },
+        {
+          "case": "bank timeout: recover -> verified not-sent -> same-payment retry",
+          "passed": true
+        },
+        {
+          "case": "wallet timeout: recover -> verified not-sent -> same-payment retry",
+          "passed": true
+        },
+        {
+          "case": "bank review handoff does not return to TWINT",
+          "passed": true
+        }
+      ],
+      "steps": [
+        {
+          "label": "Yes, I sent it",
+          "result": "twint-sent",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View confirmation status",
+          "result": "twint-waiting",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "twint-waiting",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "twint-waiting",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "twint-waiting",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Open payment",
+          "result": "twint-waiting",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Not yet",
+          "result": "receiver-not-yet",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to payment",
+          "result": "receiver-review",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Yes, it arrived",
+          "result": "payment-received",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position-updated",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to Overall Position",
+          "result": "position",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "position",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "payment-complete",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment record",
+          "result": "saved-record",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Open payment history",
+          "result": "history-handoff",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back",
+          "result": "saved-record",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "payment-complete",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Yes, I sent it",
+          "result": "bank-sent",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View confirmation status",
+          "result": "bank-waiting",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "bank-waiting",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "bank-waiting",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "bank-waiting",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Open payment",
+          "result": "bank-waiting",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Not yet",
+          "result": "receiver-not-yet",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to payment",
+          "result": "bank-receiver",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Yes, it arrived",
+          "result": "bank-received",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position-updated",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to Overall Position",
+          "result": "position",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "position",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "bank-complete",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment record",
+          "result": "saved-record-bank",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "bank-complete",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View confirmation status",
+          "result": "cash-waiting",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "cash-waiting",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "cash-waiting",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "cash-waiting",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Open payment",
+          "result": "cash-waiting",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Not yet",
+          "result": "receiver-not-yet",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to payment",
+          "result": "cash-receiver",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Yes, I received it",
+          "result": "cash-received",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position-updated",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to Overall Position",
+          "result": "position",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "position",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "cash-complete",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "View confirmation status",
+          "result": "partial-waiting",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "partial-waiting",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Yes, it arrived",
+          "result": "partial-received",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "receiver"
+        },
+        {
+          "label": "View remaining balance",
+          "result": "position-partial",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Settle remaining later",
+          "result": "position",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "partial-complete",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment record",
+          "result": "saved-record-partial",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "partial-complete",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Something\u2019s wrong",
+          "result": "receiver-problem",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "The amount is different Record what arrived",
+          "result": "amount-different",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Confirm CHF 40.00",
+          "result": "partial-received-different",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position-partial-different",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "partial-different-complete",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-checking",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View updated balance",
+          "result": "wallet-complete",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position-updated",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to Overall Position",
+          "result": "position",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "wallet-complete",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment record",
+          "result": "saved-record-wallet",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "wallet-complete",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment record",
+          "result": "saved-record-wallet",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "wallet-reversed",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View reopened balance",
+          "result": "position-reopened",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Open payment",
+          "result": "wallet-reversed",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Recover status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Try again",
+          "result": "retrying",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Continue",
+          "result": "bank-return",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Recover status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Try again",
+          "result": "retrying",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Continue",
+          "result": "wallet-approval-waiting",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Not yet",
+          "result": "j11-handoff",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back",
+          "result": "bank-return",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        }
+      ],
+      "console_errors": [],
+      "screenshots": [
+        "twint-waiting-393x852.png",
+        "twint-result-393x852.png",
+        "twint-record-393x852.png",
+        "bank-waiting-393x852.png",
+        "bank-result-393x852.png",
+        "bank-record-393x852.png",
+        "cash-waiting-393x852.png",
+        "cash-result-393x852.png",
+        "partial-result-393x852.png",
+        "different-result-393x852.png",
+        "wallet-result-393x852.png",
+        "reversal-result-393x852.png",
+        "bank-recovering-393x852.png",
+        "bank-safe-retry-393x852.png",
+        "wallet-recovering-393x852.png",
+        "wallet-safe-retry-393x852.png"
+      ],
+      "mode": "Playwright Chromium set_content; Browser plugin absent; local URL navigation blocked by environment"
+    },
+    {
+      "ok": true,
+      "viewport": "430x890",
+      "artifact_sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d",
+      "cases": [
+        {
+          "case": "twint receipt, refresh, result and return loop",
+          "passed": true
+        },
+        {
+          "case": "bank receipt, refresh, result and return loop",
+          "passed": true
+        },
+        {
+          "case": "cash receipt, refresh, result and return loop",
+          "passed": true
+        },
+        {
+          "case": "CHF 20 partial: CHF 34.30 survives every exit",
+          "passed": true
+        },
+        {
+          "case": "CHF 40 received: CHF 14.30 survives return",
+          "passed": true
+        },
+        {
+          "case": "wallet verification and method-preserving record loop",
+          "passed": true
+        },
+        {
+          "case": "reversal remains reopened and wallet-specific",
+          "passed": true
+        },
+        {
+          "case": "bank timeout: recover -> verified not-sent -> same-payment retry",
+          "passed": true
+        },
+        {
+          "case": "wallet timeout: recover -> verified not-sent -> same-payment retry",
+          "passed": true
+        },
+        {
+          "case": "bank review handoff does not return to TWINT",
+          "passed": true
+        }
+      ],
+      "steps": [
+        {
+          "label": "Yes, I sent it",
+          "result": "twint-sent",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View confirmation status",
+          "result": "twint-waiting",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "twint-waiting",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "twint-waiting",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "twint-waiting",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Open payment",
+          "result": "twint-waiting",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Not yet",
+          "result": "receiver-not-yet",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to payment",
+          "result": "receiver-review",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Yes, it arrived",
+          "result": "payment-received",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position-updated",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to Overall Position",
+          "result": "position",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "position",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "payment-complete",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment record",
+          "result": "saved-record",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Open payment history",
+          "result": "history-handoff",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back",
+          "result": "saved-record",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "payment-complete",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Yes, I sent it",
+          "result": "bank-sent",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View confirmation status",
+          "result": "bank-waiting",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "bank-waiting",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "bank-waiting",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "bank-waiting",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Open payment",
+          "result": "bank-waiting",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Not yet",
+          "result": "receiver-not-yet",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to payment",
+          "result": "bank-receiver",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Yes, it arrived",
+          "result": "bank-received",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position-updated",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to Overall Position",
+          "result": "position",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "position",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "bank-complete",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment record",
+          "result": "saved-record-bank",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "bank-complete",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View confirmation status",
+          "result": "cash-waiting",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "cash-waiting",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "cash-waiting",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "cash-waiting",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Open payment",
+          "result": "cash-waiting",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Not yet",
+          "result": "receiver-not-yet",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to payment",
+          "result": "cash-receiver",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Yes, I received it",
+          "result": "cash-received",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position-updated",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to Overall Position",
+          "result": "position",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "position",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "cash-complete",
+          "payment": "demo-nina-cash-3000",
+          "viewer": "payer"
+        },
+        {
+          "label": "View confirmation status",
+          "result": "partial-waiting",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "partial-waiting",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Yes, it arrived",
+          "result": "partial-received",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "receiver"
+        },
+        {
+          "label": "View remaining balance",
+          "result": "position-partial",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Settle remaining later",
+          "result": "position",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "partial-complete",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment record",
+          "result": "saved-record-partial",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "partial-complete",
+          "payment": "demo-ja-twint-2000",
+          "viewer": "payer"
+        },
+        {
+          "label": "Something\u2019s wrong",
+          "result": "receiver-problem",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "The amount is different Record what arrived",
+          "result": "amount-different",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Confirm CHF 40.00",
+          "result": "partial-received-different",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "receiver"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position-partial-different",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "partial-different-complete",
+          "payment": "demo-ja-twint-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-checking",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View updated balance",
+          "result": "wallet-complete",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position-updated",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to Overall Position",
+          "result": "position",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment",
+          "result": "wallet-complete",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment record",
+          "result": "saved-record-wallet",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "wallet-complete",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View payment record",
+          "result": "saved-record-wallet",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Done",
+          "result": "wallet-reversed",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "View reopened balance",
+          "result": "position-reopened",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back to balances",
+          "result": "position",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Open payment",
+          "result": "wallet-reversed",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Recover status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Try again",
+          "result": "retrying",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Continue",
+          "result": "bank-return",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Recover status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Refresh status",
+          "result": "wallet-recovering",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Try again",
+          "result": "retrying",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Continue",
+          "result": "wallet-approval-waiting",
+          "payment": "demo-ja-wallet-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Not yet",
+          "result": "j11-handoff",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        },
+        {
+          "label": "Back",
+          "result": "bank-return",
+          "payment": "demo-ja-bank-5430",
+          "viewer": "payer"
+        }
+      ],
+      "console_errors": [],
+      "screenshots": [
+        "twint-waiting-430x890.png",
+        "twint-result-430x890.png",
+        "twint-record-430x890.png",
+        "bank-waiting-430x890.png",
+        "bank-result-430x890.png",
+        "bank-record-430x890.png",
+        "cash-waiting-430x890.png",
+        "cash-result-430x890.png",
+        "partial-result-430x890.png",
+        "different-result-430x890.png",
+        "wallet-result-430x890.png",
+        "reversal-result-430x890.png",
+        "bank-recovering-430x890.png",
+        "bank-safe-retry-430x890.png",
+        "wallet-recovering-430x890.png",
+        "wallet-safe-retry-430x890.png"
+      ],
+      "mode": "Playwright Chromium set_content; Browser plugin absent; local URL navigation blocked by environment"
+    }
+  ],
+  "layout": [
+    {
+      "ok": true,
+      "sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d",
+      "viewport": "393x852",
+      "checks": [
+        {
+          "screen": "twint-return",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "twint-return",
+          "passed": true
+        },
+        {
+          "screen": "twint-sent",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "twint-sent",
+          "passed": true
+        },
+        {
+          "screen": "twint-waiting",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "twint-waiting",
+          "passed": true
+        },
+        {
+          "screen": "receiver-review",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "receiver-review",
+          "passed": true
+        },
+        {
+          "screen": "receiver-not-yet",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "receiver-not-yet",
+          "passed": true
+        },
+        {
+          "screen": "receiver-confirming",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "receiver-confirming",
+          "passed": true
+        },
+        {
+          "screen": "payment-received",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-received",
+          "passed": true
+        },
+        {
+          "screen": "payment-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-complete",
+          "passed": true
+        },
+        {
+          "screen": "position-updated",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "position-updated",
+          "passed": true
+        },
+        {
+          "screen": "saved-record",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "saved-record",
+          "passed": true
+        },
+        {
+          "screen": "receiver-breakdown",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "receiver-breakdown",
+          "passed": true
+        },
+        {
+          "screen": "receiver-problem",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 7,
+          "requested": "receiver-problem",
+          "passed": true
+        },
+        {
+          "screen": "amount-different",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "amount-different",
+          "passed": true
+        },
+        {
+          "screen": "partial-received-different",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-received-different",
+          "passed": true
+        },
+        {
+          "screen": "partial-different-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-different-complete",
+          "passed": true
+        },
+        {
+          "screen": "bank-return",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-return",
+          "passed": true
+        },
+        {
+          "screen": "bank-sent",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-sent",
+          "passed": true
+        },
+        {
+          "screen": "bank-waiting",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-waiting",
+          "passed": true
+        },
+        {
+          "screen": "bank-receiver",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-receiver",
+          "passed": true
+        },
+        {
+          "screen": "bank-received",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-received",
+          "passed": true
+        },
+        {
+          "screen": "bank-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-complete",
+          "passed": true
+        },
+        {
+          "screen": "saved-record-bank",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "saved-record-bank",
+          "passed": true
+        },
+        {
+          "screen": "cash-sent",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "cash-sent",
+          "passed": true
+        },
+        {
+          "screen": "cash-waiting",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "cash-waiting",
+          "passed": true
+        },
+        {
+          "screen": "cash-receiver",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "cash-receiver",
+          "passed": true
+        },
+        {
+          "screen": "cash-received",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "cash-received",
+          "passed": true
+        },
+        {
+          "screen": "cash-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "cash-complete",
+          "passed": true
+        },
+        {
+          "screen": "wallet-approval-waiting",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-approval-waiting",
+          "passed": true
+        },
+        {
+          "screen": "wallet-submitted",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-submitted",
+          "passed": true
+        },
+        {
+          "screen": "wallet-checking",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-checking",
+          "passed": true
+        },
+        {
+          "screen": "wallet-received",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-received",
+          "passed": true
+        },
+        {
+          "screen": "wallet-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-complete",
+          "passed": true
+        },
+        {
+          "screen": "saved-record-wallet",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "saved-record-wallet",
+          "passed": true
+        },
+        {
+          "screen": "wallet-result-unknown",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-result-unknown",
+          "passed": true
+        },
+        {
+          "screen": "wallet-recovering",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-recovering",
+          "passed": true
+        },
+        {
+          "screen": "wallet-rejected",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-rejected",
+          "passed": true
+        },
+        {
+          "screen": "wallet-expired",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-expired",
+          "passed": true
+        },
+        {
+          "screen": "wallet-disconnected",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-disconnected",
+          "passed": true
+        },
+        {
+          "screen": "wallet-cancelled",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-cancelled",
+          "passed": true
+        },
+        {
+          "screen": "wallet-reversed",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-reversed",
+          "passed": true
+        },
+        {
+          "screen": "partial-sent",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-sent",
+          "passed": true
+        },
+        {
+          "screen": "partial-waiting",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-waiting",
+          "passed": true
+        },
+        {
+          "screen": "partial-receiver",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-receiver",
+          "passed": true
+        },
+        {
+          "screen": "partial-received",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-received",
+          "passed": true
+        },
+        {
+          "screen": "partial-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-complete",
+          "passed": true
+        },
+        {
+          "screen": "saved-record-partial",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "saved-record-partial",
+          "passed": true
+        },
+        {
+          "screen": "payment-failed",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-failed",
+          "passed": true
+        },
+        {
+          "screen": "retrying",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "retrying",
+          "passed": true
+        },
+        {
+          "screen": "payment-expired",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-expired",
+          "passed": true
+        },
+        {
+          "screen": "payment-cancelled",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-cancelled",
+          "passed": true
+        },
+        {
+          "screen": "offline",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "offline",
+          "passed": true
+        },
+        {
+          "screen": "syncing",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "syncing",
+          "passed": true
+        },
+        {
+          "screen": "already-processing",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "already-processing",
+          "passed": true
+        },
+        {
+          "screen": "recipient-says-no",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "recipient-says-no",
+          "passed": true
+        },
+        {
+          "screen": "issue-after-send",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "issue-after-send",
+          "passed": true
+        },
+        {
+          "screen": "record-unavailable",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "record-unavailable",
+          "passed": true
+        },
+        {
+          "screen": "payment-details",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-details",
+          "passed": true
+        },
+        {
+          "screen": "receiver-inbox",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "receiver-inbox",
+          "passed": true
+        },
+        {
+          "screen": "position",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "position",
+          "passed": true
+        },
+        {
+          "screen": "position-partial",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "position-partial",
+          "passed": true
+        },
+        {
+          "screen": "position-partial-different",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 1,
+          "requested": "position-partial-different",
+          "passed": true
+        },
+        {
+          "screen": "position-reopened",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "position-reopened",
+          "passed": true
+        },
+        {
+          "screen": "j11-handoff",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "j11-handoff",
+          "passed": true
+        },
+        {
+          "screen": "history-handoff",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "history-handoff",
+          "passed": true
+        },
+        {
+          "screen": "issue-handoff",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "issue-handoff",
+          "passed": true
+        },
+        {
+          "screen": "support-handoff",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "support-handoff",
+          "passed": true
+        },
+        {
+          "screen": "group-home",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "group-home",
+          "passed": true
+        }
+      ],
+      "consoleErrors": []
+    },
+    {
+      "ok": true,
+      "sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d",
+      "viewport": "430x890",
+      "checks": [
+        {
+          "screen": "twint-return",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "twint-return",
+          "passed": true
+        },
+        {
+          "screen": "twint-sent",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "twint-sent",
+          "passed": true
+        },
+        {
+          "screen": "twint-waiting",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "twint-waiting",
+          "passed": true
+        },
+        {
+          "screen": "receiver-review",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "receiver-review",
+          "passed": true
+        },
+        {
+          "screen": "receiver-not-yet",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "receiver-not-yet",
+          "passed": true
+        },
+        {
+          "screen": "receiver-confirming",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "receiver-confirming",
+          "passed": true
+        },
+        {
+          "screen": "payment-received",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-received",
+          "passed": true
+        },
+        {
+          "screen": "payment-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-complete",
+          "passed": true
+        },
+        {
+          "screen": "position-updated",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "position-updated",
+          "passed": true
+        },
+        {
+          "screen": "saved-record",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "saved-record",
+          "passed": true
+        },
+        {
+          "screen": "receiver-breakdown",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "receiver-breakdown",
+          "passed": true
+        },
+        {
+          "screen": "receiver-problem",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 7,
+          "requested": "receiver-problem",
+          "passed": true
+        },
+        {
+          "screen": "amount-different",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "amount-different",
+          "passed": true
+        },
+        {
+          "screen": "partial-received-different",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-received-different",
+          "passed": true
+        },
+        {
+          "screen": "partial-different-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-different-complete",
+          "passed": true
+        },
+        {
+          "screen": "bank-return",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-return",
+          "passed": true
+        },
+        {
+          "screen": "bank-sent",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-sent",
+          "passed": true
+        },
+        {
+          "screen": "bank-waiting",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-waiting",
+          "passed": true
+        },
+        {
+          "screen": "bank-receiver",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-receiver",
+          "passed": true
+        },
+        {
+          "screen": "bank-received",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-received",
+          "passed": true
+        },
+        {
+          "screen": "bank-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "bank-complete",
+          "passed": true
+        },
+        {
+          "screen": "saved-record-bank",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "saved-record-bank",
+          "passed": true
+        },
+        {
+          "screen": "cash-sent",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "cash-sent",
+          "passed": true
+        },
+        {
+          "screen": "cash-waiting",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "cash-waiting",
+          "passed": true
+        },
+        {
+          "screen": "cash-receiver",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "cash-receiver",
+          "passed": true
+        },
+        {
+          "screen": "cash-received",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "cash-received",
+          "passed": true
+        },
+        {
+          "screen": "cash-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "cash-complete",
+          "passed": true
+        },
+        {
+          "screen": "wallet-approval-waiting",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-approval-waiting",
+          "passed": true
+        },
+        {
+          "screen": "wallet-submitted",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-submitted",
+          "passed": true
+        },
+        {
+          "screen": "wallet-checking",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-checking",
+          "passed": true
+        },
+        {
+          "screen": "wallet-received",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-received",
+          "passed": true
+        },
+        {
+          "screen": "wallet-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-complete",
+          "passed": true
+        },
+        {
+          "screen": "saved-record-wallet",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "saved-record-wallet",
+          "passed": true
+        },
+        {
+          "screen": "wallet-result-unknown",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-result-unknown",
+          "passed": true
+        },
+        {
+          "screen": "wallet-recovering",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-recovering",
+          "passed": true
+        },
+        {
+          "screen": "wallet-rejected",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-rejected",
+          "passed": true
+        },
+        {
+          "screen": "wallet-expired",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-expired",
+          "passed": true
+        },
+        {
+          "screen": "wallet-disconnected",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-disconnected",
+          "passed": true
+        },
+        {
+          "screen": "wallet-cancelled",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-cancelled",
+          "passed": true
+        },
+        {
+          "screen": "wallet-reversed",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "wallet-reversed",
+          "passed": true
+        },
+        {
+          "screen": "partial-sent",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-sent",
+          "passed": true
+        },
+        {
+          "screen": "partial-waiting",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-waiting",
+          "passed": true
+        },
+        {
+          "screen": "partial-receiver",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-receiver",
+          "passed": true
+        },
+        {
+          "screen": "partial-received",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-received",
+          "passed": true
+        },
+        {
+          "screen": "partial-complete",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "partial-complete",
+          "passed": true
+        },
+        {
+          "screen": "saved-record-partial",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "saved-record-partial",
+          "passed": true
+        },
+        {
+          "screen": "payment-failed",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-failed",
+          "passed": true
+        },
+        {
+          "screen": "retrying",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "retrying",
+          "passed": true
+        },
+        {
+          "screen": "payment-expired",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-expired",
+          "passed": true
+        },
+        {
+          "screen": "payment-cancelled",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-cancelled",
+          "passed": true
+        },
+        {
+          "screen": "offline",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "offline",
+          "passed": true
+        },
+        {
+          "screen": "syncing",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "syncing",
+          "passed": true
+        },
+        {
+          "screen": "already-processing",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "already-processing",
+          "passed": true
+        },
+        {
+          "screen": "recipient-says-no",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "recipient-says-no",
+          "passed": true
+        },
+        {
+          "screen": "issue-after-send",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "issue-after-send",
+          "passed": true
+        },
+        {
+          "screen": "record-unavailable",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "record-unavailable",
+          "passed": true
+        },
+        {
+          "screen": "payment-details",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "payment-details",
+          "passed": true
+        },
+        {
+          "screen": "receiver-inbox",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "receiver-inbox",
+          "passed": true
+        },
+        {
+          "screen": "position",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "position",
+          "passed": true
+        },
+        {
+          "screen": "position-partial",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 3,
+          "requested": "position-partial",
+          "passed": true
+        },
+        {
+          "screen": "position-partial-different",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 1,
+          "requested": "position-partial-different",
+          "passed": true
+        },
+        {
+          "screen": "position-reopened",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "position-reopened",
+          "passed": true
+        },
+        {
+          "screen": "j11-handoff",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "j11-handoff",
+          "passed": true
+        },
+        {
+          "screen": "history-handoff",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "history-handoff",
+          "passed": true
+        },
+        {
+          "screen": "issue-handoff",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "issue-handoff",
+          "passed": true
+        },
+        {
+          "screen": "support-handoff",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "support-handoff",
+          "passed": true
+        },
+        {
+          "screen": "group-home",
+          "blank": false,
+          "horizontalOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "clippedCards": 0,
+          "oversizedIcons": 0,
+          "svgs": 2,
+          "requested": "group-home",
+          "passed": true
+        }
+      ],
+      "consoleErrors": []
+    }
+  ],
+  "snapshot_sha256": {
+    "wallet-safe-retry-430x890.png": "a47bcf1d984427568ece6fe6e44089582c57dee33e0290e5647793b771a72c4a",
+    "reversal-result-430x890.png": "efa948cc39d9b7a4511581ab0bf78b25324257d100c1c16d9f88eb1cd56bbf22",
+    "bank-result-393x852.png": "c1b8650db2f5483b3d947c3bb751008eb98a5acd13e42a00e67da0fe2ebc30c4",
+    "wallet-recovering-393x852.png": "7e6f496b69f83e23001c9cb681d1bf6b7e20f5d1a2b3fb56745769fca8540f75",
+    "twint-waiting-393x852.png": "343e6e3b4c19bbba7d0bf25d2b6e089d5e3dfc73b8e0c7920980846bf78a8622",
+    "twint-record-393x852.png": "b842136a13045e9b9ba2e5387956aaa838fef8a68c75414bca7a46b623041749",
+    "bank-recovering-430x890.png": "181a62bf729bf910f3ef045675ac1cf70418f5d4e09225a68e704554e88bd6da",
+    "twint-result-393x852.png": "fd3081e6b022a4839823300a008518b794645f04dd1df2885de699e5f01ab4ba",
+    "wallet-result-430x890.png": "76e819193345e0f4aab665f7d14f526235c5ff00e427062baacd4185d8ac11af",
+    "bank-waiting-430x890.png": "66c9183eb39eb3203d23d763e58c6311f92afcd0795508cc278d8305ca8d1130",
+    "bank-safe-retry-430x890.png": "fae0b8f4b48270eb5151b947df39d67cef78205bdb951b989e4ec3e06ceff9d2",
+    "twint-record-430x890.png": "bddf09c131c54c07e35b854724b62f63d9a3b2b79d8c6e013731bdc09d8a2902",
+    "bank-result-430x890.png": "92344cdc71de20ba6fbcc236ad9a4ae4212e46dd44e07288cc86fa4b8720444f",
+    "bank-safe-retry-393x852.png": "a425616caf2925891736de6673c4249d8837335366127812b05257a44bce9bd2",
+    "reversal-result-393x852.png": "3a7f9683b4b527bd514f90cce199f2c0b9e98c9b066d5eda8e3205b26f0a4194",
+    "twint-waiting-430x890.png": "5a68ad57e783048df242d335ebff6ad990cc2829440cfb7fa597ee2210e66741",
+    "cash-result-393x852.png": "ae28d7e1721889a56dd98c40cc310f08b1190d8f23862c825592ebb4cf62c88d",
+    "wallet-safe-retry-393x852.png": "570be90a5b057f62438ffc66353ced86e06e973893e801ffc4467169eec31599",
+    "bank-waiting-393x852.png": "c23072de836d774453b341874efdfc1771c2d85825e12f29da82615f3c3b6044",
+    "cash-waiting-393x852.png": "e0db40d3bd2f10693438d20b6f39160887d2c57a9bb56d2cfb3248bfc0377ece",
+    "different-result-430x890.png": "5884b0052c3e91c4a7343822f7f2b43ea099dc5c0c8426e5a352ba3a675a3d5f",
+    "wallet-result-393x852.png": "9fa5d20da0674c538616c76d9f250fbe90bd76e5dca2a653392903d3a11b209b",
+    "twint-result-430x890.png": "98559cc9b21240b7c2b5752b54f7571c04c6e6486cd4f18f9d9e5529338aed65",
+    "different-result-393x852.png": "e51f01bfe5019b8c07ed8fcd40f4813e4c30ded047ab1691930e63bda25db0a8",
+    "partial-result-430x890.png": "439b1fe5f35b2698ed9f513ec1a9f10f67ff573a7a2cc2645857d7c18cd95107",
+    "bank-record-393x852.png": "0c31ada9f0c96da30bfc71c7727adafa103cd04cda26e249c20106eab4041806",
+    "partial-result-393x852.png": "f88b6f211518c4b624f40f8fde97f20dc776fef44db756e46c9b1eef26f46d5c",
+    "cash-waiting-430x890.png": "2313378220ad788847c0a57f79eca145950f8fb21b780d30f6a9577ab4f748fa",
+    "cash-result-430x890.png": "e5ca4fe0f90bbb432f55ed75b90c5ca3dc2cb86115a61964f11eff8b900234c1",
+    "continuity-review.png": "9a4d2fd0f2432cb861a605364c8d542b48d824e32014a353e98d728e8924fec6",
+    "bank-record-430x890.png": "609c3434fe10fdad716c46322752f25826314e5852c65db619486b3451c88790",
+    "bank-recovering-393x852.png": "5f14106a2be8d502b9b907a8d1fc41c4af62eb50688005686d0ae92eb39ddded",
+    "wallet-recovering-430x890.png": "4357230ad57bf49a982c91689d4d60dc5d539958a4f707d3474abfa1a5a87549"
+  },
+  "environment": "Playwright Chromium; Browser plugin absent; HTML loaded with set_content because local URL navigation is blocked",
+  "limitations": [
+    "No real wallet, bank, network, backend authority or durability integration.",
+    "Browser file reload not tested in this environment; live click and history paths were tested."
+  ],
+  "fidelity": [
+    "CSS byte-identical to V1",
+    "Same 67 screen IDs",
+    "Same card and amount hierarchy",
+    "Same fixed header/content/footer geometry",
+    "Same icons; return rows inherit existing compact row/icon classes",
+    "Same restrained color palette"
+  ]
+}

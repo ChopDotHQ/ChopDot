@@ -16,7 +16,7 @@
   "generated_map": "journey-map.html",
   "validation_command": "npm run gate",
   "payment_contract_version": "1.2",
-  "next_action": "Review Journey 12 V1 Complete Settlement candidate. Do not freeze without explicit approval.",
+  "next_action": "Review Journey 12 V1.1 continuity candidate. Do not freeze without explicit approval.",
   "storage_contract_version": "1.0",
   "paused_after_freeze": false,
   "last_approved_journey": "11",

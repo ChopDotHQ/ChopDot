@@ -12,9 +12,9 @@
 8. Overall Position — V1
 9. Settle Up — V1.1
 
-## Golden Candidate #10 — Complete Settlement V1
+## Golden Candidate #10 — Complete Settlement V1.1
 
 Journey 12 is in review. It preserves the Journey 11 payment scope and distinguishes Sent, Waiting, Received, Failed, Partial, Reversed and Complete.
 
-Prototype: `journeys/12-complete-settlement/v1-golden-candidate.html`
-SHA-256: `b6cc690e6993f3d8e611a0b793d0bf8fd17953af176f3bebdeca668235272dec`
+Prototype: `journeys/12-complete-settlement/v1.1-continuity-candidate.html`
+SHA-256: `2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d`

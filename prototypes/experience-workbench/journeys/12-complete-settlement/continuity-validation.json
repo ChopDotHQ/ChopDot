@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "artifact_sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d",
+  "screens": 67,
+  "screens_added": 0,
+  "inherited_css_unchanged": true,
+  "payment_context_preserved": true,
+  "payer_refresh_read_only": true,
+  "unknown_timeout_requires_recovery": true,
+  "model_checks": 30,
+  "clicked_paths": 20,
+  "clicked_actions": 174,
+  "layout_checks": 134,
+  "journey_11_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d",
+  "review_status": "review-pending"
+}

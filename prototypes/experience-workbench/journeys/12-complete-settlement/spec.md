@@ -1,8 +1,8 @@
 # Journey 12 — Complete Settlement
 
 **Priority:** P0  
-**Status:** V1 Golden Candidate / review pending  
-**Prototype:** `v1-golden-candidate.html`
+**Status:** V1.1 Golden Candidate / review pending  
+**Prototype:** `v1.1-continuity-candidate.html`
 
 ## User goal
 
@@ -36,7 +36,7 @@ A method may skip stages that do not apply, but the product may never present an
 
 `Return from payment app → Did you send it? → Marked sent → Waiting for recipient → Recipient confirms → Balance updates → Settlement complete → Saved payment record`
 
-A payer marking a payment sent does not close it. TWINT, bank transfer, PayPal, cash, and other external/manual methods require the canonical recipient to confirm receipt unless a trusted provider result supplies an equivalent exact received/cleared result.
+A payer marking a payment sent does not close it. TWINT, bank transfer, PayPal, cash, and other external/manual methods require the canonical recipient to confirm receipt ; the wallet exact-match exception does not let a payer self-confirm an external/manual payment.
 
 ## Core wallet path
 
@@ -79,7 +79,7 @@ The Saved record is distinct from internal durable event acceptance. It must rem
 
 ## Failure and recovery
 
-- Failure leaves the balance unchanged and offers a replay-safe retry.
+- A verified non-executed failure leaves the balance unchanged and may enable a safe retry. An unknown timeout requires recovery first.
 - Unknown result tells the user not to start another payment.
 - Recovery checks the existing payment identity rather than creating a replacement.
 - Offline views show the last saved status and remain non-authoritative until reconciled.
@@ -134,3 +134,27 @@ If approved:
 2. promote Payment Status, Recipient Confirmation, Settlement Result, Partial Remainder, and Saved Payment Record patterns;
 3. mark the in-app money loop complete;
 4. continue only after a separate instruction.
+
+## V1.1 continuity pass — review pending
+
+This is a focused correction of the existing 67-screen candidate. No screen was added and no approved Golden was edited. The inherited stylesheet is byte-identical; previously unstyled balance-return rows now reuse the existing compact method-row and icon classes.
+
+### One payment context through every exit
+
+All status, balance, record, history, review-handoff and browser-Back paths carry the same payment ID, payer, recipient, original currency, selected method, source items and current accepted result. Navigation cannot reset the outcome or select a default TWINT fixture.
+
+Result fixtures: full TWINT/bank/wallet payment of CHF 54.30 leaves CHF 0.00; cash payment of CHF 30.00 to Nina leaves CHF 0.00; confirmed CHF 20.00 leaves CHF 34.30; confirmed CHF 40.00 leaves CHF 14.30; the reversed wallet payment reopens CHF 54.30. These are isolated review examples, not the user's account data.
+
+### Refresh is a read, not a receipt
+
+A payer refresh reads accepted payment history. With no accepted result, it stays on the payer's waiting screen with the original balance open. It never opens the recipient's controls and never manufactures confirmation. The recipient acts separately as the canonical recipient. After receipt is accepted and the backend closes the correct amount, a subsequent read may show the resulting balance. View/Back/Done/Refresh do not cause closure.
+
+### Unknown timeout is not failure
+
+An execution timeout, disconnect, missing callback or unknown outcome requires reconciliation against the existing payment ID before any execution retry or method change. A transport error alone cannot enable Try again. Repeated refresh, timeout, retry request or reconnect must not emit another execution command. A retry becomes eligible only after a trusted, scope-matched result proves the prior attempt did not execute. Receipt/partial receipt/closure instead routes to its existing result. The eligible retry consumes eligibility once and reuses the payment and idempotency identity.
+
+### Prototype boundary
+
+The small local continuity model demonstrates these rules; it is not a payment backend and performs no network calls or transfers. The separate workshop panel can switch the test viewpoint or supply an explicitly labelled test result. Those controls are not normal app permissions. Backend authorization, receipts, verification, event acceptance and durable history remain requirements of the approved Journey 11 contract, not security guarantees supplied by this HTML.
+
+Optional session storage remembers the demo only. It is not an implementation of durable payment storage. The ordinary web Saved-record retrieval contract remains unchanged.

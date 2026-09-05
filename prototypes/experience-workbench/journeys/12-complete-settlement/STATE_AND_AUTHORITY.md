@@ -10,7 +10,7 @@
 | `receiver_confirmed` | The canonical recipient confirms an external/manual payment arrived. | Canonical recipient. | Eligible to close the exact item |
 | `closed` | The exact payment item is complete and balances were recomputed. | Deterministic backend after a valid closing condition. | Yes |
 | `partial` | Only part of the amount was validly received/confirmed. | Recipient or provider result plus deterministic backend. | Only the confirmed amount |
-| `failed` | The attempt did not complete. | Provider/integration or deterministic backend. | No |
+| `failed` | A trusted result proves the attempt did not execute; a timeout alone is not this state. | Provider/integration or deterministic backend. | No |
 | `expired` | The valid time window ended. | Deterministic backend. | No |
 | `cancelled` | The payer cancelled before completion. | Canonical payer or provider result. | No |
 | `result_unknown` | The outcome cannot yet be proven. | Provider/integration or deterministic backend. | No |
@@ -27,3 +27,16 @@
 - A UI tap never substitutes for provider receipt/finality.
 - A future agent cannot approve itself, confirm receipt, or broaden delegated scope.
 - Replaying accepted history rebuilds status and Saved records but never repeats payment side effects.
+
+## V1.1: viewer and transition authority are separate
+
+| Operation | Viewer/requester | Result authority | Allowed result |
+|---|---|---|---|
+| Refresh status / Check payment | Payer or current reader | None supplied by the tap | Read current accepted result; remain waiting if unchanged |
+| Confirm external receipt | Canonical recipient | Backend accepts that recipient's exact receipt request | Received, then independently closed/recomputed |
+| Timeout / disconnect | Either viewer | Outcome still unknown | Recovery only; do not retry execution |
+| Recover status | Payer requests reconciliation | Verified result accepted by deterministic backend | Still unknown, existing receipt/result, or proven not-executed |
+| Try again | Payer | Backend verifies prior attempt is terminal and not executed | One scoped retry, consuming retry eligibility |
+| Back / Done / history / balances | Current viewer | None supplied by navigation | Same payment, method, source lineage and resulting balance |
+
+Receiver and payer identities must not be switched by app navigation. The preview's role buttons are explicitly workshop-only. The local reducer uses named demo-backend and demo-provider fixture actors; no production authority is derived from browser state.
