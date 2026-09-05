@@ -1,0 +1,31 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import zlib from 'node:zlib';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+const root=path.resolve(import.meta.dirname,'..');
+const dir=path.join(root,'registry/j09-candidate.json.br.b64.parts');
+const names=fs.readdirSync(dir).filter(n=>/^\d{3}\.part$/.test(n)).sort();
+assert.equal(names.length,9,'Incomplete Journey 09 source bundle');
+const encoded=names.map(n=>fs.readFileSync(path.join(dir,n),'utf8').trim()).join('');
+const bundle=JSON.parse(zlib.brotliDecompressSync(Buffer.from(encoded,'base64')).toString('utf8'));
+assert.equal(bundle.name,'2026-09-05-j09-v1-candidate');
+for(const [relative,content] of Object.entries(bundle.files)){
+ const allowed=relative.startsWith('journeys/09-manage-people/')||relative==='registry/support-candidate.json'||relative==='registry/checkpoints/2026-09-05-j09-v1-candidate.json';
+ const target=path.resolve(root,relative);
+ assert(allowed&&!relative.split('/').includes('..')&&target.startsWith(root+path.sep),'Unsafe bundle path');
+ assert.equal(typeof content,'string');fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,content);
+}
+const reference=fs.readFileSync(path.join(root,'journeys/01-enter-chopdot/v1-candidate.html'),'utf8');
+const css=reference.match(/<style\b[^>]*>([\s\S]*?)<\/style>/i)?.[1];assert(css,'Golden stylesheet missing');
+assert.equal(createHash('sha256').update(css).digest('hex'),'7fdf48665ca5e823ac98752df0cf7fe5a106484f9738113d9c730018d3d6f2d2');
+fs.writeFileSync(path.join(root,'journeys/09-manage-people/source/inherited.css'),css);
+execFileSync(process.execPath,[path.join(root,'journeys/09-manage-people/source/build.mjs')],{stdio:'inherit'});
+const file=path.join(root,'registry/edge-cases.json'),edges=JSON.parse(fs.readFileSync(file,'utf8'));
+const e09=edges.find(e=>e.id==='E09');assert(e09);e09.status='current';e09.qa_path='journeys/09-manage-people/QA_SUMMARY.json';e09.coverage_note='Candidate covers revoked access during member removal and safe return to remaining authorized groups; backend enforcement is specified, not implemented.';
+const e32=edges.find(e=>e.id==='E32');assert(e32);e32.status='partial';e32.journeys=[...new Set([...e32.journeys,'09'])];e32.people_qa_path='journeys/09-manage-people/QA_SUMMARY.json';
+const e41={id:'E41',area:'People',case:'Member removal save result unknown; recover same command before retry, preserving ledger and other memberships',journeys:['09','28'],status:'current',qa_path:'journeys/09-manage-people/QA_SUMMARY.json'};
+const index=edges.findIndex(e=>e.id==='E41');if(index<0)edges.push(e41);else Object.assign(edges[index],e41);
+fs.writeFileSync(file,JSON.stringify(edges)+'\n');
+console.log(`Prepared Journey 09 candidate from ${Object.keys(bundle.files).length} source and QA records. No approved HTML written.`);
