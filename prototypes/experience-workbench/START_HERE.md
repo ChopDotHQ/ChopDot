@@ -4,9 +4,11 @@
 
 Journey 13 V1 is Golden #13. All approved HTML is checksum-locked.
 
-## Next
+## Review now
 
-Journey 14 — Receive / Share Payment Details. This freeze does not start it.
+Journey 14 — Receive / Share Payment Details V1. Not Golden.
+
+Open `journeys/14-receive-money/v1-candidate.html`; read `journeys/14-receive-money/spec.md` and `journeys/14-receive-money/VISUAL_QA.md`.
 
 ## Preserve
 

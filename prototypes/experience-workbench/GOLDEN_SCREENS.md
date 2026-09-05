@@ -18,6 +18,6 @@ Journey 13 V1 is Golden #13. Private requests, overlapping-source protection and
 
 Journey 01 remains email-code first; Journey 09 removal policy is unchanged.
 
-Next: Journey 14 — Receive / Share Payment Details. Not started in this freeze.
+Current candidate: Journey 14 — Receive / Share Payment Details V1. Not Golden.
 
 TYPO-01: shared typography/readability remains deferred.

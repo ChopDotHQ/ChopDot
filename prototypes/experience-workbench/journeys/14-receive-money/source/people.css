@@ -1,0 +1,38 @@
+/* Scoped Journey 09 components. The inherited Golden stylesheet is untouched. */
+.mp-screen{display:grid!important}
+.mp-screen button,.mp-lab button{font-family:var(--font);cursor:pointer}
+.mp-screen button{color:inherit;border:0;padding:0;background:none;text-align:inherit}
+.mp-screen .primary{color:white;background:var(--ink);text-align:center;width:100%;border:0;padding:0 14px}
+.mp-screen .secondary{background:var(--surface2);width:100%;justify-content:center;padding:0 14px}
+.mp-screen .primary.danger{background:#b73445}
+.mp-screen button:disabled{opacity:.45;cursor:default}
+.mp-screen button:focus-visible,.mp-lab button:focus-visible,.mp-screen input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.mp-demo{font-size:9px!important;text-align:center!important;color:var(--secondary)!important;border:1px solid var(--border)!important;border-radius:8px;padding:7px 3px!important;background:var(--surface)!important}
+.mp-screen .detail-header{grid-template-columns:38px minmax(0,1fr) 42px}
+.mp-top{display:flex;align-items:center;gap:13px;padding:5px 0 6px}
+.mp-top .person-avatar{width:50px;height:50px;font-size:14px}
+.mp-top h1{font-size:26px;letter-spacing:-.045em;line-height:1.08;margin:0 0 4px;font-weight:780}
+.mp-meta{font-size:11px;color:var(--secondary);line-height:1.5;margin:5px 0 0}
+.mp-screen .mp-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 15px;width:100%;border-top:1px solid var(--border)}
+.mp-screen .mp-row:first-child{border-top:0}
+.mp-row b{display:block;font-size:13px;font-weight:700;line-height:1.3}.mp-row span.sub{display:block;font-size:10px;color:var(--secondary);margin-top:3px;line-height:1.4}
+.mp-row svg{width:18px;height:18px}
+.mp-row .chevron{color:var(--muted);width:16px;height:16px}
+.mp-badge{font-size:9px;background:var(--surface2);color:var(--secondary);border-radius:6px;padding:4px 6px;white-space:nowrap}
+.mp-card{overflow:hidden}
+.mp-card-copy{padding:14px 15px}.mp-card-copy h2{font-size:13px;margin:0 0 5px}.mp-card-copy p{font-size:11px;line-height:1.5;color:var(--secondary);margin:0}
+.mp-search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:0 12px;height:44px;color:var(--secondary)}
+.mp-search svg{width:17px;height:17px}.mp-search input{font-family:var(--font);font-size:12px;color:var(--ink);width:100%;border:0;background:none;outline:none;height:40px}
+.mp-money{padding:15px}.mp-money .value{font-size:28px;font-weight:780;letter-spacing:-.04em;margin-top:4px;font-variant-numeric:tabular-nums}.mp-money .label{font-size:10px;color:var(--secondary)}
+.mp-balance-action{padding:10px 15px!important;width:100%;border-top:1px solid var(--border)!important;font-size:11px;font-weight:700;color:var(--accent)!important;display:flex;align-items:center;justify-content:space-between}
+.mp-balance-action svg{width:16px;height:16px}
+.mp-row-money{text-align:right;white-space:nowrap}.mp-row-money b{font-size:12px}.mp-row-money span{font-size:9px;color:var(--secondary)}
+.mp-pill{background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:4px 6px;font-size:9px}
+.mp-rule{font-size:10px;color:var(--secondary);line-height:1.5;padding:0 2px;margin:0}
+.mp-section{display:flex;justify-content:space-between;align-items:center;margin:3px 2px 0}.mp-section h2{font-size:14px;margin:0}.mp-section span{font-size:10px;color:var(--secondary)}
+.mp-empty{padding:22px 16px;text-align:center}.mp-empty p{font-size:11px;color:var(--secondary);line-height:1.5;margin:6px auto 0;max-width:270px}.mp-empty h2{font-size:18px;letter-spacing:-.025em;margin:0}
+.mp-status{padding:18px 0 4px}.mp-status .state-icon{margin:0 0 15px}.mp-status h1{font-size:26px;line-height:1.08;letter-spacing:-.045em;margin:0;font-weight:780}.mp-status p{font-size:11px;line-height:1.5;color:var(--secondary);max-width:285px;margin:7px 0 0}
+.mp-inline{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface2);padding:11px 12px;border-radius:12px;font-size:10px;line-height:1.45;color:var(--secondary)}.mp-inline svg{width:16px;height:16px;flex:none}
+.mp-lab .compare{width:100%;text-align:left;font-family:var(--font);cursor:pointer}.mp-lab .labsec:first-child{border:0;margin-top:0;padding-top:0}
+.mp-dialog{max-height:82dvh;width:min(380px,94vw);border:1px solid #343438;border-radius:22px;background:#151516;color:white;padding:20px;font-family:var(--font)}
+.mp-dialog::backdrop{background:rgba(0,0,0,.35)}.mp-dialog .close-demo{font-size:12px;padding:9px 0;color:white;background:none;border:0;cursor:pointer}

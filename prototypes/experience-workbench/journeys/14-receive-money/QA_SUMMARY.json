@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "journey": "14",
+  "version": "v1",
+  "artifact_sha256": "5ce877d89157a4203a2e4a2c5fad795a4ecfabf5388dbaecb00bbf28f2f31e1d",
+  "states": 22,
+  "model_assertions": 151,
+  "model_scenarios": 44,
+  "browser_scenarios": 36,
+  "product_clicks": 156,
+  "layout_checks": 44,
+  "inherited_css_sha256": "7fdf48665ca5e823ac98752df0cf7fe5a106484f9738113d9c730018d3d6f2d2",
+  "inherited_people_css_sha256": "670a70382097f7456e4b8202fbeddc29b0d42b8ab5f7a40f0b7a2bb0d9207df4",
+  "qr_decoded": true,
+  "prototype_only": true,
+  "typography": "TYPO-01 deferred",
+  "browser_method": "inline HTML; native file navigation returned net::ERR_BLOCKED_BY_ADMINISTRATOR",
+  "browser_plugin": "not available",
+  "mapped_actions": 86
+}

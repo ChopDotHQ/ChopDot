@@ -1,0 +1,690 @@
+[
+  {
+    "route": "methods",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "methods",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "methods",
+    "action": "method:dev-twint",
+    "label": "TWINTCHF \u00b7 Saved receiving detailsPreferred",
+    "disabled": false,
+    "domain_event": "ReceivingMethodSelected",
+    "guard": "Readable method; required currency/network unchanged"
+  },
+  {
+    "route": "methods",
+    "action": "method:dev-bank",
+    "label": "Bank transferCHF \u00b7 Saved receiving details",
+    "disabled": false,
+    "domain_event": "ReceivingMethodSelected",
+    "guard": "Readable method; required currency/network unchanged"
+  },
+  {
+    "route": "methods",
+    "action": "method:dev-wallet",
+    "label": "WalletDOT \u00b7 Demo network A",
+    "disabled": false,
+    "domain_event": "ReceivingMethodSelected",
+    "guard": "Readable method; required currency/network unchanged"
+  },
+  {
+    "route": "methods",
+    "action": "manage",
+    "label": "Manage payment methods",
+    "disabled": false,
+    "domain_event": "PaymentMethodsHandoffPreviewOpened",
+    "guard": "Journey 20 boundary only; no editing in this journey"
+  },
+  {
+    "route": "details",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "details",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "details",
+    "action": "copy-review",
+    "label": "Copy detailsReview exactly what you copy",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "details",
+    "action": "methods",
+    "label": "Use another methodYour saved receiving options",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "details",
+    "action": "start-share",
+    "label": "Share details",
+    "disabled": false,
+    "domain_event": "ReceivingShareAudienceSelectionOpened",
+    "guard": "Destination owner only; preserves locked request recipient when present"
+  },
+  {
+    "route": "audience",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "audience",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "audience",
+    "action": "audience:marc",
+    "label": "MarcShare this method only",
+    "disabled": false,
+    "domain_event": "ReceivingShareAudienceReviewed",
+    "guard": "Owner and intended recipient; exact details reviewed"
+  },
+  {
+    "route": "audience",
+    "action": "audience:sam",
+    "label": "SamShare this method only",
+    "disabled": false,
+    "domain_event": "ReceivingShareAudienceReviewed",
+    "guard": "Owner and intended recipient; exact details reviewed"
+  },
+  {
+    "route": "audience",
+    "action": "audience:jeanine",
+    "label": "JeanineShare this method only",
+    "disabled": false,
+    "domain_event": "ReceivingShareAudienceReviewed",
+    "guard": "Owner and intended recipient; exact details reviewed"
+  },
+  {
+    "route": "audience",
+    "action": "details",
+    "label": "Back to details",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "review",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "review",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "review",
+    "action": "prepare",
+    "label": "Share with Marc",
+    "disabled": false,
+    "domain_event": "ReceivingShareCreateRequested",
+    "guard": "Owner; exact reviewed destination/version, audience and context; online; no unresolved command"
+  },
+  {
+    "route": "review",
+    "action": "details",
+    "label": "Back to details",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "preparing",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "preparing",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "preparing",
+    "action": "noop",
+    "label": "Please wait\u2026",
+    "disabled": true,
+    "domain_event": "None",
+    "guard": "Disabled while pending"
+  },
+  {
+    "route": "recovery",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "recovery",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "recovery",
+    "action": "recover",
+    "label": "Check status",
+    "disabled": false,
+    "domain_event": "ReceivingShareOutcomeQueryRequested",
+    "guard": "Existing unresolved command only; no execution retry"
+  },
+  {
+    "route": "failed",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "failed",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "failed",
+    "action": "retry",
+    "label": "Try again",
+    "disabled": false,
+    "domain_event": "ReceivingShareCommandRetried",
+    "guard": "Verified not-saved result; same identity and scope; current version and unexpired authorization"
+  },
+  {
+    "route": "ready",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "ready",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "ready",
+    "action": "recipient",
+    "label": "Preview what they seeThis method only",
+    "disabled": false,
+    "domain_event": "ReceivingDetailsRecipientPreviewOpened",
+    "guard": "Labelled owner-side preview; actual read requires matching authenticated audience"
+  },
+  {
+    "route": "ready",
+    "action": "copy-link",
+    "label": "Copy linkSign-in is still required",
+    "disabled": false,
+    "domain_event": "ReceivingLinkClipboardWriteRequested",
+    "guard": "Current, active, unexpired audience-bound record; no raw detail leakage"
+  },
+  {
+    "route": "ready",
+    "action": "exit",
+    "label": "Back to youKeep this link available",
+    "disabled": false,
+    "domain_event": "ReceivingDetailsOriginResumed",
+    "guard": "Preserve person, method, amount/currency, source context and unresolved outcome"
+  },
+  {
+    "route": "ready",
+    "action": "code",
+    "label": "Show code",
+    "disabled": false,
+    "domain_event": "ReceivingLinkCodeViewed",
+    "guard": "Current record; exact opaque reference; no transfer or receipt"
+  },
+  {
+    "route": "ready",
+    "action": "share-preview",
+    "label": "Share link",
+    "disabled": false,
+    "domain_event": "ReceivingLinkExternalHandoffPreviewOpened",
+    "guard": "Existing private link only; simulated external action, never a payment event"
+  },
+  {
+    "route": "ready",
+    "action": "stop-confirm",
+    "label": "Stop this link",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "code",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "code",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "code",
+    "action": "ready",
+    "label": "Back to sharing",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "code",
+    "action": "stop-confirm",
+    "label": "Stop this link",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "expired",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "expired",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "expired",
+    "action": "refresh",
+    "label": "Review details again",
+    "disabled": false,
+    "domain_event": "ReceivingDetailsReloadRequested",
+    "guard": "No unresolved command discarded; clear stale review and revalidate"
+  },
+  {
+    "route": "stop-confirm",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "stop-confirm",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "stop-confirm",
+    "action": "stop",
+    "label": "Stop link",
+    "disabled": false,
+    "domain_event": "ReceivingShareStopRequested",
+    "guard": "Owner; explicit confirmation; exact active sharing record; online"
+  },
+  {
+    "route": "stop-confirm",
+    "action": "ready",
+    "label": "Keep link",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "stopping",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "stopping",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "stopping",
+    "action": "noop",
+    "label": "Please wait\u2026",
+    "disabled": true,
+    "domain_event": "None",
+    "guard": "Disabled while pending"
+  },
+  {
+    "route": "stopped",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "stopped",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "stopped",
+    "action": "refresh",
+    "label": "Back to payment details",
+    "disabled": false,
+    "domain_event": "ReceivingDetailsReloadRequested",
+    "guard": "No unresolved command discarded; clear stale review and revalidate"
+  },
+  {
+    "route": "changed",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "changed",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "changed",
+    "action": "refresh",
+    "label": "Review current details",
+    "disabled": false,
+    "domain_event": "ReceivingDetailsReloadRequested",
+    "guard": "No unresolved command discarded; clear stale review and revalidate"
+  },
+  {
+    "route": "unavailable",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "unavailable",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "unavailable",
+    "action": "safe-exit",
+    "label": "Back",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "empty",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "empty",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "empty",
+    "action": "manage",
+    "label": "Manage payment methods",
+    "disabled": false,
+    "domain_event": "PaymentMethodsHandoffPreviewOpened",
+    "guard": "Journey 20 boundary only; no editing in this journey"
+  },
+  {
+    "route": "offline",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "offline",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "offline",
+    "action": "safe-exit",
+    "label": "Back",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "copy-review",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "copy-review",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "copy-review",
+    "action": "copy-raw",
+    "label": "Copy details",
+    "disabled": false,
+    "domain_event": "ReceivingDetailsClipboardWriteRequested",
+    "guard": "Exact preview; allowed receiving fields; current access; copy success requires browser callback"
+  },
+  {
+    "route": "copy-review",
+    "action": "details",
+    "label": "Back to details",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "share-preview",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "share-preview",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "share-preview",
+    "action": "share-done",
+    "label": "Preview returning to ChopDotDelivery cannot be confirmed",
+    "disabled": false,
+    "domain_event": "ReceivingLinkExternalHandoffReturned",
+    "guard": "Observation only; cannot confirm delivery or payment"
+  },
+  {
+    "route": "share-preview",
+    "action": "share-cancel",
+    "label": "Preview cancellingNo new action in ChopDot",
+    "disabled": false,
+    "domain_event": "ReceivingLinkExternalHandoffCancelled",
+    "guard": "Same record; no financial effect"
+  },
+  {
+    "route": "share-preview",
+    "action": "share-fail",
+    "label": "Preview sharing unavailableKeep the same link",
+    "disabled": false,
+    "domain_event": "ReceivingLinkExternalHandoffFailed",
+    "guard": "Same record; fallback to code or copy"
+  },
+  {
+    "route": "share-preview",
+    "action": "ready",
+    "label": "Back to sharing",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "share-return",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "share-return",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "share-return",
+    "action": "ready",
+    "label": "Back to sharing",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "recipient",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "recipient",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "recipient",
+    "action": "ready",
+    "label": "Back to sharing",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "boundary",
+    "action": "back",
+    "label": "",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  },
+  {
+    "route": "boundary",
+    "action": "demo",
+    "label": "Demo",
+    "disabled": false,
+    "domain_event": "PrototypeScenarioControlsOpened",
+    "guard": "Workshop only; not a product/domain event"
+  },
+  {
+    "route": "boundary",
+    "action": "resume",
+    "label": "Return to this example",
+    "disabled": false,
+    "domain_event": "NavigationOnly",
+    "guard": "No financial/domain mutation; preserve context; revalidate access and link liveness"
+  }
+]

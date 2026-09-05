@@ -1,0 +1,1729 @@
+{
+  "ok": true,
+  "artifact_sha256": "5ce877d89157a4203a2e4a2c5fad795a4ecfabf5388dbaecb00bbf28f2f31e1d",
+  "browser": "Installed Chromium via Playwright",
+  "method": "inline HTML; native file navigation returned net::ERR_BLOCKED_BY_ADMINISTRATOR",
+  "browser_plugin": "not available",
+  "viewports": [
+    [
+      393,
+      852
+    ],
+    [
+      430,
+      890
+    ],
+    [
+      1440,
+      1000
+    ]
+  ],
+  "scenarios": 36,
+  "product_clicks": 156,
+  "layout_checks": 44,
+  "checks": [
+    {
+      "name": "Choose, review, create, show code, recipient preview, return",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Header Back returns without an oscillating route loop",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Request returns preserve Marc, CHF 30.00 and source items",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Currency filtering and exact wallet network retained",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Other-owner details do not grant sharing authority; return to payment",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Unknown outcome needs recovery, not a second creation",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Verified failure reuses exact command and scope",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Stop requires confirmation; records, requests and balances survive",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Unknown stop does not claim access stopped; safe retry",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Expired QR cannot be resurrected by Back",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Changed receiving details invalidate previous code",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Access loss scrubs details and blocks Back",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Copy writes precisely the reviewed demo receiving details",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Clipboard denial gives honest selectable-text fallback",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "External handoff, cancellation and failure never assert delivery or payment",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Reconnect does not automatically share stale details",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "External destination text is escaped, not executable HTML",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Browser Back preserves the selected bank destination",
+      "viewport": "393",
+      "passed": true
+    },
+    {
+      "name": "Choose, review, create, show code, recipient preview, return",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Header Back returns without an oscillating route loop",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Request returns preserve Marc, CHF 30.00 and source items",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Currency filtering and exact wallet network retained",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Other-owner details do not grant sharing authority; return to payment",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Unknown outcome needs recovery, not a second creation",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Verified failure reuses exact command and scope",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Stop requires confirmation; records, requests and balances survive",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Unknown stop does not claim access stopped; safe retry",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Expired QR cannot be resurrected by Back",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Changed receiving details invalidate previous code",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Access loss scrubs details and blocks Back",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Copy writes precisely the reviewed demo receiving details",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Clipboard denial gives honest selectable-text fallback",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "External handoff, cancellation and failure never assert delivery or payment",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Reconnect does not automatically share stale details",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "External destination text is escaped, not executable HTML",
+      "viewport": "430",
+      "passed": true
+    },
+    {
+      "name": "Browser Back preserves the selected bank destination",
+      "viewport": "430",
+      "passed": true
+    }
+  ],
+  "layouts": [
+    {
+      "route": "methods",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "method:dev-twint",
+          "label": "TWINTCHF \u00b7 Saved receiving detailsPreferred",
+          "disabled": false
+        },
+        {
+          "action": "method:dev-bank",
+          "label": "Bank transferCHF \u00b7 Saved receiving details",
+          "disabled": false
+        },
+        {
+          "action": "method:dev-wallet",
+          "label": "WalletDOT \u00b7 Demo network A",
+          "disabled": false
+        },
+        {
+          "action": "manage",
+          "label": "Manage payment methods",
+          "disabled": false
+        }
+      ],
+      "copy": "You\nReceive money.\n\nChoose how someone can pay you.\n\nTWINT\nCHF \u00b7 Saved receiving details\nPreferred\nBank transfer\nCHF \u00b7 Saved receiving details\nWallet\nDOT \u00b7 Demo network A\n\nSharing details does not request money or change a balance.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "details",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "copy-review",
+          "label": "Copy detailsReview exactly what you copy",
+          "disabled": false
+        },
+        {
+          "action": "methods",
+          "label": "Use another methodYour saved receiving options",
+          "disabled": false
+        },
+        {
+          "action": "start-share",
+          "label": "Share details",
+          "disabled": false
+        }
+      ],
+      "copy": "DP\nDev\nYour receiving details\nReceive with\nBank transfer\nCurrency\nCHF\nAccount holder\nDev \u00b7 demo\nIBAN\nDEMO CH00 0000 0000 0000 0000 0\nBank\nExample Bank \u00b7 demo\n\nDemo details only. Do not use them for a real payment.\n\nCopy details\nReview exactly what you copy\nUse another method\nYour saved receiving options",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "audience",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "audience:marc",
+          "label": "MarcShare this method only",
+          "disabled": false
+        },
+        {
+          "action": "audience:sam",
+          "label": "SamShare this method only",
+          "disabled": false
+        },
+        {
+          "action": "audience:jeanine",
+          "label": "JeanineShare this method only",
+          "disabled": false
+        },
+        {
+          "action": "details",
+          "label": "Back to details",
+          "disabled": false
+        }
+      ],
+      "copy": "Who is this for?\n\nOnly this person can open the link in ChopDot.\n\nMarc\nShare this method only\nSam\nShare this method only\nJeanine\nShare this method only\n\nNo group-wide sharing. No contacts are uploaded.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "review",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "prepare",
+          "label": "Share with Marc",
+          "disabled": false
+        },
+        {
+          "action": "details",
+          "label": "Back to details",
+          "disabled": false
+        }
+      ],
+      "copy": "Just the details.\n\nCheck what Marc will be able to open.\n\nM\nMarc\nOnly this person \u00b7 sign-in required\nReceive with\nBank transfer\nCurrency\nCHF\nAccount holder\nDev \u00b7 demo\nIBAN\nDEMO CH00 0000 0000 0000 0000 0\nBank\nExample Bank \u00b7 demo\nLink access\n24 hours\nShared\nThis payment method only\n\nGroups, expenses and other payment methods stay private.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "preparing",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "noop",
+          "label": "Please wait\u2026",
+          "disabled": true
+        }
+      ],
+      "copy": "Preparing your link.\n\nYour details stay private while we prepare this link.\n\nM\nMarc\nBank transfer \u00b7 CHF",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "recovery",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "recover",
+          "label": "Check status",
+          "disabled": false
+        }
+      ],
+      "copy": "Still checking.\n\nWe have not confirmed whether the link was created. Recover this result before trying again.\n\nM\nMarc\nTWINT \u00b7 CHF\n\nChecking does not create another link or change a payment.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "failed",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "retry",
+          "label": "Try again",
+          "disabled": false
+        }
+      ],
+      "copy": "No link was created.\n\nThe service confirmed nothing was saved. You can safely try the same action again.\n\nM\nMarc\nTWINT \u00b7 CHF",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "ready",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "recipient",
+          "label": "Preview what they seeThis method only",
+          "disabled": false
+        },
+        {
+          "action": "copy-link",
+          "label": "Copy linkSign-in is still required",
+          "disabled": false
+        },
+        {
+          "action": "exit",
+          "label": "Back to youKeep this link available",
+          "disabled": false
+        },
+        {
+          "action": "code",
+          "label": "Show code",
+          "disabled": false
+        },
+        {
+          "action": "share-preview",
+          "label": "Share link",
+          "disabled": false
+        },
+        {
+          "action": "stop-confirm",
+          "label": "Stop this link",
+          "disabled": false
+        }
+      ],
+      "copy": "Ready for Marc.\n\nShow the code or share this private link.\n\nM\nMarc\nTWINT \u00b7 CHF\nOnly for\nMarc\nLink access\n24 hours left\nPayment\nNot confirmed\nPreview what they see\nThis method only\nCopy link\nSign-in is still required\nBack to you\nKeep this link available\n\nA link being ready does not mean it was delivered, opened or paid.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "code",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "ready",
+          "label": "Back to sharing",
+          "disabled": false
+        },
+        {
+          "action": "stop-confirm",
+          "label": "Stop this link",
+          "disabled": false
+        }
+      ],
+      "copy": "M\nMarc\nOnly Marc can open this\nTWINT \u00b7 CHF\n\nDemo code \u00b7 not a payment code\n\nFor\nMarc\nLink access\n24 hours left\n\nThey sign in to see your details. Scanning does not send money.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "expired",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "refresh",
+          "label": "Review details again",
+          "disabled": false
+        }
+      ],
+      "copy": "This link has expired.\n\nReview the details again before creating another link.\n\nOld links cannot show the current details. Copies already taken cannot be recalled.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "stop-confirm",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "stop",
+          "label": "Stop link",
+          "disabled": false
+        },
+        {
+          "action": "ready",
+          "label": "Keep link",
+          "disabled": false
+        }
+      ],
+      "copy": "Stop this link?\n\nThis stops future access through this link.\n\nM\nMarc\nTWINT \u00b7 CHF\n\nAnything already copied cannot be recalled. This does not cancel a request or a payment.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "stopping",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "noop",
+          "label": "Please wait\u2026",
+          "disabled": true
+        }
+      ],
+      "copy": "Stopping access.\n\nPlease wait while this link is stopped.\n\nM\nMarc\nTWINT \u00b7 CHF",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "stopped",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "refresh",
+          "label": "Back to payment details",
+          "disabled": false
+        }
+      ],
+      "copy": "Link stopped.\n\nIt can no longer be used to open your details.\n\nCopied details stay outside ChopDot. Your requests, payments and balances are unchanged.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "changed",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "refresh",
+          "label": "Review current details",
+          "disabled": false
+        }
+      ],
+      "copy": "Review the latest details.\n\nThe destination or payment context changed. We will not share the old version.\n\nNothing is silently switched. Check the method, currency and destination again.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "unavailable",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "safe-exit",
+          "label": "Back",
+          "disabled": false
+        }
+      ],
+      "copy": "Not available to share.\n\nThese details are no longer available, or your access changed.\n\nPrivate receiving details are not shown here.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "empty",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "manage",
+          "label": "Manage payment methods",
+          "disabled": false
+        }
+      ],
+      "copy": "Add a way to get paid.\n\nSave your receiving details before sharing them.\n\nNo bank or wallet connection is required just to use ChopDot.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "offline",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "safe-exit",
+          "label": "Back",
+          "disabled": false
+        }
+      ],
+      "copy": "Reconnect to continue.\n\nWe cannot check whether these details or links are still current.\n\nNothing will be shared automatically when you reconnect.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "copy-review",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "copy-raw",
+          "label": "Copy details",
+          "disabled": false
+        },
+        {
+          "action": "details",
+          "label": "Back to details",
+          "disabled": false
+        }
+      ],
+      "copy": "Copy only what you need.\n\nCopied details can be pasted outside ChopDot. They cannot be recalled.\n\nOnly the selected receiving method is included. No group history or account secrets.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "share-preview",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "share-done",
+          "label": "Preview returning to ChopDotDelivery cannot be confirmed",
+          "disabled": false
+        },
+        {
+          "action": "share-cancel",
+          "label": "Preview cancellingNo new action in ChopDot",
+          "disabled": false
+        },
+        {
+          "action": "share-fail",
+          "label": "Preview sharing unavailableKeep the same link",
+          "disabled": false
+        },
+        {
+          "action": "ready",
+          "label": "Back to sharing",
+          "disabled": false
+        }
+      ],
+      "copy": "Choose where to share.\n\nThis is a preview of the device sharing step. Nothing leaves this demo.\n\nM\nMarc\nOnly Marc can open the link\n\nSharing link \u00b7 demonstration\n\nhttps://example.invalid/chopdot/receive/demo-share-1\nPreview returning to ChopDot\nDelivery cannot be confirmed\nPreview cancelling\nNo new action in ChopDot\nPreview sharing unavailable\nKeep the same link",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "share-return",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "ready",
+          "label": "Back to sharing",
+          "disabled": false
+        }
+      ],
+      "copy": "Back in ChopDot.\n\nCheck your conversation. ChopDot cannot confirm delivery or payment.\n\nFor\nMarc\nPayment\nNot confirmed",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "recipient",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "ready",
+          "label": "Back to sharing",
+          "disabled": false
+        }
+      ],
+      "copy": "Viewing as Marc \u00b7 demonstration\nDev shared payment details.\n\nUse the matching method and currency when you review a payment.\n\nReceive with\nTWINT\nCurrency\nCHF\nName\nDev \u00b7 demo\nMobile number\nDEMO +41 00 000 00 00\n\nDemo details only. Do not use them for a real payment.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "boundary",
+      "viewport": "393",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "resume",
+          "label": "Return to this example",
+          "disabled": false
+        }
+      ],
+      "copy": "Back to your request.\n\nThis is the next journey\u2019s handoff, not a new screen in that approved journey.\n\nFor\nMarc\nAmount\nCHF 30.00\nFrom\nYour existing request\nMethod\nTWINT\nCurrency\nCHF\nPayment\nUnchanged\n\nThe same person, scope and resulting balance return with you.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "methods",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "method:dev-twint",
+          "label": "TWINTCHF \u00b7 Saved receiving detailsPreferred",
+          "disabled": false
+        },
+        {
+          "action": "method:dev-bank",
+          "label": "Bank transferCHF \u00b7 Saved receiving details",
+          "disabled": false
+        },
+        {
+          "action": "method:dev-wallet",
+          "label": "WalletDOT \u00b7 Demo network A",
+          "disabled": false
+        },
+        {
+          "action": "manage",
+          "label": "Manage payment methods",
+          "disabled": false
+        }
+      ],
+      "copy": "You\nReceive money.\n\nChoose how someone can pay you.\n\nTWINT\nCHF \u00b7 Saved receiving details\nPreferred\nBank transfer\nCHF \u00b7 Saved receiving details\nWallet\nDOT \u00b7 Demo network A\n\nSharing details does not request money or change a balance.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "details",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "copy-review",
+          "label": "Copy detailsReview exactly what you copy",
+          "disabled": false
+        },
+        {
+          "action": "methods",
+          "label": "Use another methodYour saved receiving options",
+          "disabled": false
+        },
+        {
+          "action": "start-share",
+          "label": "Share details",
+          "disabled": false
+        }
+      ],
+      "copy": "DP\nDev\nYour receiving details\nReceive with\nBank transfer\nCurrency\nCHF\nAccount holder\nDev \u00b7 demo\nIBAN\nDEMO CH00 0000 0000 0000 0000 0\nBank\nExample Bank \u00b7 demo\n\nDemo details only. Do not use them for a real payment.\n\nCopy details\nReview exactly what you copy\nUse another method\nYour saved receiving options",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "audience",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "audience:marc",
+          "label": "MarcShare this method only",
+          "disabled": false
+        },
+        {
+          "action": "audience:sam",
+          "label": "SamShare this method only",
+          "disabled": false
+        },
+        {
+          "action": "audience:jeanine",
+          "label": "JeanineShare this method only",
+          "disabled": false
+        },
+        {
+          "action": "details",
+          "label": "Back to details",
+          "disabled": false
+        }
+      ],
+      "copy": "Who is this for?\n\nOnly this person can open the link in ChopDot.\n\nMarc\nShare this method only\nSam\nShare this method only\nJeanine\nShare this method only\n\nNo group-wide sharing. No contacts are uploaded.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "review",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "prepare",
+          "label": "Share with Marc",
+          "disabled": false
+        },
+        {
+          "action": "details",
+          "label": "Back to details",
+          "disabled": false
+        }
+      ],
+      "copy": "Just the details.\n\nCheck what Marc will be able to open.\n\nM\nMarc\nOnly this person \u00b7 sign-in required\nReceive with\nBank transfer\nCurrency\nCHF\nAccount holder\nDev \u00b7 demo\nIBAN\nDEMO CH00 0000 0000 0000 0000 0\nBank\nExample Bank \u00b7 demo\nLink access\n24 hours\nShared\nThis payment method only\n\nGroups, expenses and other payment methods stay private.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "preparing",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "noop",
+          "label": "Please wait\u2026",
+          "disabled": true
+        }
+      ],
+      "copy": "Preparing your link.\n\nYour details stay private while we prepare this link.\n\nM\nMarc\nBank transfer \u00b7 CHF",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "recovery",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "recover",
+          "label": "Check status",
+          "disabled": false
+        }
+      ],
+      "copy": "Still checking.\n\nWe have not confirmed whether the link was created. Recover this result before trying again.\n\nM\nMarc\nTWINT \u00b7 CHF\n\nChecking does not create another link or change a payment.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "failed",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "retry",
+          "label": "Try again",
+          "disabled": false
+        }
+      ],
+      "copy": "No link was created.\n\nThe service confirmed nothing was saved. You can safely try the same action again.\n\nM\nMarc\nTWINT \u00b7 CHF",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "ready",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "recipient",
+          "label": "Preview what they seeThis method only",
+          "disabled": false
+        },
+        {
+          "action": "copy-link",
+          "label": "Copy linkSign-in is still required",
+          "disabled": false
+        },
+        {
+          "action": "exit",
+          "label": "Back to youKeep this link available",
+          "disabled": false
+        },
+        {
+          "action": "code",
+          "label": "Show code",
+          "disabled": false
+        },
+        {
+          "action": "share-preview",
+          "label": "Share link",
+          "disabled": false
+        },
+        {
+          "action": "stop-confirm",
+          "label": "Stop this link",
+          "disabled": false
+        }
+      ],
+      "copy": "Ready for Marc.\n\nShow the code or share this private link.\n\nM\nMarc\nTWINT \u00b7 CHF\nOnly for\nMarc\nLink access\n24 hours left\nPayment\nNot confirmed\nPreview what they see\nThis method only\nCopy link\nSign-in is still required\nBack to you\nKeep this link available\n\nA link being ready does not mean it was delivered, opened or paid.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "code",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "ready",
+          "label": "Back to sharing",
+          "disabled": false
+        },
+        {
+          "action": "stop-confirm",
+          "label": "Stop this link",
+          "disabled": false
+        }
+      ],
+      "copy": "M\nMarc\nOnly Marc can open this\nTWINT \u00b7 CHF\n\nDemo code \u00b7 not a payment code\n\nFor\nMarc\nLink access\n24 hours left\n\nThey sign in to see your details. Scanning does not send money.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "expired",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "refresh",
+          "label": "Review details again",
+          "disabled": false
+        }
+      ],
+      "copy": "This link has expired.\n\nReview the details again before creating another link.\n\nOld links cannot show the current details. Copies already taken cannot be recalled.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "stop-confirm",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "stop",
+          "label": "Stop link",
+          "disabled": false
+        },
+        {
+          "action": "ready",
+          "label": "Keep link",
+          "disabled": false
+        }
+      ],
+      "copy": "Stop this link?\n\nThis stops future access through this link.\n\nM\nMarc\nTWINT \u00b7 CHF\n\nAnything already copied cannot be recalled. This does not cancel a request or a payment.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "stopping",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "noop",
+          "label": "Please wait\u2026",
+          "disabled": true
+        }
+      ],
+      "copy": "Stopping access.\n\nPlease wait while this link is stopped.\n\nM\nMarc\nTWINT \u00b7 CHF",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "stopped",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "refresh",
+          "label": "Back to payment details",
+          "disabled": false
+        }
+      ],
+      "copy": "Link stopped.\n\nIt can no longer be used to open your details.\n\nCopied details stay outside ChopDot. Your requests, payments and balances are unchanged.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "changed",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "refresh",
+          "label": "Review current details",
+          "disabled": false
+        }
+      ],
+      "copy": "Review the latest details.\n\nThe destination or payment context changed. We will not share the old version.\n\nNothing is silently switched. Check the method, currency and destination again.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "unavailable",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "safe-exit",
+          "label": "Back",
+          "disabled": false
+        }
+      ],
+      "copy": "Not available to share.\n\nThese details are no longer available, or your access changed.\n\nPrivate receiving details are not shown here.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "empty",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "manage",
+          "label": "Manage payment methods",
+          "disabled": false
+        }
+      ],
+      "copy": "Add a way to get paid.\n\nSave your receiving details before sharing them.\n\nNo bank or wallet connection is required just to use ChopDot.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "offline",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "safe-exit",
+          "label": "Back",
+          "disabled": false
+        }
+      ],
+      "copy": "Reconnect to continue.\n\nWe cannot check whether these details or links are still current.\n\nNothing will be shared automatically when you reconnect.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "copy-review",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "copy-raw",
+          "label": "Copy details",
+          "disabled": false
+        },
+        {
+          "action": "details",
+          "label": "Back to details",
+          "disabled": false
+        }
+      ],
+      "copy": "Copy only what you need.\n\nCopied details can be pasted outside ChopDot. They cannot be recalled.\n\nOnly the selected receiving method is included. No group history or account secrets.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "share-preview",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "share-done",
+          "label": "Preview returning to ChopDotDelivery cannot be confirmed",
+          "disabled": false
+        },
+        {
+          "action": "share-cancel",
+          "label": "Preview cancellingNo new action in ChopDot",
+          "disabled": false
+        },
+        {
+          "action": "share-fail",
+          "label": "Preview sharing unavailableKeep the same link",
+          "disabled": false
+        },
+        {
+          "action": "ready",
+          "label": "Back to sharing",
+          "disabled": false
+        }
+      ],
+      "copy": "Choose where to share.\n\nThis is a preview of the device sharing step. Nothing leaves this demo.\n\nM\nMarc\nOnly Marc can open the link\n\nSharing link \u00b7 demonstration\n\nhttps://example.invalid/chopdot/receive/demo-share-1\nPreview returning to ChopDot\nDelivery cannot be confirmed\nPreview cancelling\nNo new action in ChopDot\nPreview sharing unavailable\nKeep the same link",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "share-return",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "ready",
+          "label": "Back to sharing",
+          "disabled": false
+        }
+      ],
+      "copy": "Back in ChopDot.\n\nCheck your conversation. ChopDot cannot confirm delivery or payment.\n\nFor\nMarc\nPayment\nNot confirmed",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "recipient",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "ready",
+          "label": "Back to sharing",
+          "disabled": false
+        }
+      ],
+      "copy": "Viewing as Marc \u00b7 demonstration\nDev shared payment details.\n\nUse the matching method and currency when you review a payment.\n\nReceive with\nTWINT\nCurrency\nCHF\nName\nDev \u00b7 demo\nMobile number\nDEMO +41 00 000 00 00\n\nDemo details only. Do not use them for a real payment.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    },
+    {
+      "route": "boundary",
+      "viewport": "430",
+      "passed": true,
+      "actions": [
+        {
+          "action": "back",
+          "label": "",
+          "disabled": false
+        },
+        {
+          "action": "demo",
+          "label": "Demo",
+          "disabled": false
+        },
+        {
+          "action": "resume",
+          "label": "Return to this example",
+          "disabled": false
+        }
+      ],
+      "copy": "Back to your request.\n\nThis is the next journey\u2019s handoff, not a new screen in that approved journey.\n\nFor\nMarc\nAmount\nCHF 30.00\nFrom\nYour existing request\nMethod\nTWINT\nCurrency\nCHF\nPayment\nUnchanged\n\nThe same person, scope and resulting balance return with you.",
+      "nonblank": true,
+      "overflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "missingIcons": 0
+    }
+  ],
+  "page_errors": []
+}

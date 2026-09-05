@@ -1,0 +1,183 @@
+{
+  "ok": true,
+  "assertions": 151,
+  "scenarios": 44,
+  "cases": [
+    {
+      "name": "Saved methods: private, owner-scoped receiving metadata",
+      "passed": true
+    },
+    {
+      "name": "No payment or source-ledger action in sharing lifecycle",
+      "passed": true
+    },
+    {
+      "name": "Prepare only after exact human review",
+      "passed": true
+    },
+    {
+      "name": "Private audience cannot be empty, self or unknown",
+      "passed": true
+    },
+    {
+      "name": "Known request retains person, exact amount, currency and source items",
+      "passed": true
+    },
+    {
+      "name": "No silent conversion to wallet from CHF scope",
+      "passed": true
+    },
+    {
+      "name": "Wallet binds asset AND network",
+      "passed": true
+    },
+    {
+      "name": "Receiving on another network is not accepted by matching symbol alone",
+      "passed": true
+    },
+    {
+      "name": "Other-owner details are readable only if shared with viewer",
+      "passed": true
+    },
+    {
+      "name": "Viewer may not republish another person’s details by private-link UI",
+      "passed": true
+    },
+    {
+      "name": "Unshared destination cannot be chosen",
+      "passed": true
+    },
+    {
+      "name": "A click never marks a link saved",
+      "passed": true
+    },
+    {
+      "name": "Duplicate clicks during submission keep the same command",
+      "passed": true
+    },
+    {
+      "name": "Unknown result requires recovery, not execution retry",
+      "passed": true
+    },
+    {
+      "name": "Navigation back cannot discard unresolved command",
+      "passed": true
+    },
+    {
+      "name": "Verified non-acceptance permits same-command retry only",
+      "passed": true
+    },
+    {
+      "name": "Unknown can resolve accepted without another create",
+      "passed": true
+    },
+    {
+      "name": "Duplicate result and wrong command cannot add records",
+      "passed": true
+    },
+    {
+      "name": "Saved live share reused for same exact audience and destination",
+      "passed": true
+    },
+    {
+      "name": "Different audience creates a different scoped share",
+      "passed": true
+    },
+    {
+      "name": "Expired authorization cannot create link",
+      "passed": true
+    },
+    {
+      "name": "Time alone cannot resolve unknown outcome as failure",
+      "passed": true
+    },
+    {
+      "name": "Changed destination version forces new review",
+      "passed": true
+    },
+    {
+      "name": "Changed destination fields without version bump also rejected",
+      "passed": true
+    },
+    {
+      "name": "Changed request amount, items or version invalidates review",
+      "passed": true
+    },
+    {
+      "name": "Actor changed while submitting cannot authorize sharing",
+      "passed": true
+    },
+    {
+      "name": "Access revoked hides old routes, codes and clipboard output",
+      "passed": true
+    },
+    {
+      "name": "Expired link reveals nothing, including on Back",
+      "passed": true
+    },
+    {
+      "name": "Destination removed or changed invalidates active codes",
+      "passed": true
+    },
+    {
+      "name": "Stopping link needs authoritative acknowledgement",
+      "passed": true
+    },
+    {
+      "name": "Confirmed stop retains immutable payload and prior request",
+      "passed": true
+    },
+    {
+      "name": "Stopping one link leaves unrelated link active",
+      "passed": true
+    },
+    {
+      "name": "Offline prevents new sharing, copying or revealing",
+      "passed": true
+    },
+    {
+      "name": "Acceptance received while client offline survives reconnect",
+      "passed": true
+    },
+    {
+      "name": "Raw export includes one method, not source or payment state",
+      "passed": true
+    },
+    {
+      "name": "Recipient read is minimal and does not leak source group IDs",
+      "passed": true
+    },
+    {
+      "name": "QR/link contains opaque reference only, never raw receiving data",
+      "passed": true
+    },
+    {
+      "name": "Stop does not erase raw copies; owner still controls saved method",
+      "passed": true
+    },
+    {
+      "name": "Unsupported currency does not invent receiving method",
+      "passed": true
+    },
+    {
+      "name": "Private sharing link has a 24-hour lifetime",
+      "passed": true
+    },
+    {
+      "name": "Secret or unexpected destination fields cannot be exported",
+      "passed": true
+    },
+    {
+      "name": "Wallet display network must match typed destination network",
+      "passed": true
+    },
+    {
+      "name": "Changing audience cannot relabel an existing QR",
+      "passed": true
+    },
+    {
+      "name": "Unprepared code routes fall back safely without a blank view",
+      "passed": true
+    }
+  ]
+}

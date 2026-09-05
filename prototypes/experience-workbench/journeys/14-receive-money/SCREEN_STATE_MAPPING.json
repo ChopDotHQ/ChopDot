@@ -1,0 +1,200 @@
+[
+  {
+    "screen": "methods",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/methods-393.png",
+      "visual-qa/methods-430.png"
+    ]
+  },
+  {
+    "screen": "details",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/details-393.png",
+      "visual-qa/details-430.png"
+    ]
+  },
+  {
+    "screen": "audience",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/audience-393.png",
+      "visual-qa/audience-430.png"
+    ]
+  },
+  {
+    "screen": "review",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/review-393.png",
+      "visual-qa/review-430.png"
+    ]
+  },
+  {
+    "screen": "preparing",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/preparing-393.png",
+      "visual-qa/preparing-430.png"
+    ]
+  },
+  {
+    "screen": "recovery",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/recovery-393.png",
+      "visual-qa/recovery-430.png"
+    ]
+  },
+  {
+    "screen": "failed",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/failed-393.png",
+      "visual-qa/failed-430.png"
+    ]
+  },
+  {
+    "screen": "ready",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/ready-393.png",
+      "visual-qa/ready-430.png"
+    ]
+  },
+  {
+    "screen": "code",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/code-393.png",
+      "visual-qa/code-430.png"
+    ]
+  },
+  {
+    "screen": "expired",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/expired-393.png",
+      "visual-qa/expired-430.png"
+    ]
+  },
+  {
+    "screen": "stop-confirm",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/stop-confirm-393.png",
+      "visual-qa/stop-confirm-430.png"
+    ]
+  },
+  {
+    "screen": "stopping",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/stopping-393.png",
+      "visual-qa/stopping-430.png"
+    ]
+  },
+  {
+    "screen": "stopped",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/stopped-393.png",
+      "visual-qa/stopped-430.png"
+    ]
+  },
+  {
+    "screen": "changed",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/changed-393.png",
+      "visual-qa/changed-430.png"
+    ]
+  },
+  {
+    "screen": "unavailable",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/unavailable-393.png",
+      "visual-qa/unavailable-430.png"
+    ]
+  },
+  {
+    "screen": "empty",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/empty-393.png",
+      "visual-qa/empty-430.png"
+    ]
+  },
+  {
+    "screen": "offline",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/offline-393.png",
+      "visual-qa/offline-430.png"
+    ]
+  },
+  {
+    "screen": "copy-review",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/copy-review-393.png",
+      "visual-qa/copy-review-430.png"
+    ]
+  },
+  {
+    "screen": "share-preview",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/share-preview-393.png",
+      "visual-qa/share-preview-430.png"
+    ]
+  },
+  {
+    "screen": "share-return",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/share-return-393.png",
+      "visual-qa/share-return-430.png"
+    ]
+  },
+  {
+    "screen": "recipient",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/recipient-393.png",
+      "visual-qa/recipient-430.png"
+    ]
+  },
+  {
+    "screen": "boundary",
+    "entry": "Existing UI action or explicit Demo fixture",
+    "financial_effect": "none",
+    "qa": [
+      "visual-qa/boundary-393.png",
+      "visual-qa/boundary-430.png"
+    ]
+  }
+]

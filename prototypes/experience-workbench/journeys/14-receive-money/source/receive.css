@@ -1,0 +1,9 @@
+/* J14 additions only. Both approved foundational stylesheets remain byte-identical. */
+.rc-id{display:flex;align-items:center;gap:12px;padding:14px 15px}.rc-id b{font-size:13px}.rc-id .sub{display:block;font-size:10px;color:var(--secondary);margin-top:3px}
+.rc-facts{padding:2px 15px}.rc-facts>div{padding:12px 0;border-top:1px solid var(--border);display:grid;grid-template-columns:90px minmax(0,1fr);gap:12px;font-size:10px;line-height:1.5}.rc-facts>div:first-child{border-top:0}.rc-facts span{color:var(--secondary)}.rc-facts b{text-align:right;font-size:11px;overflow-wrap:anywhere;font-weight:700}
+.rc-rule{display:flex;gap:8px;align-items:flex-start;margin:0 2px;color:var(--secondary);font-size:10px;line-height:1.5}.rc-rule svg{width:16px;height:16px;flex:none}
+.rc-code{text-align:center;padding:18px}.rc-code svg{display:block;width:min(214px,100%);height:auto;margin:0 auto;background:white;shape-rendering:crispEdges}.rc-code p{font-size:10px;color:var(--secondary);margin:8px 0 0}.rc-code h2{font-size:14px;margin:0 0 12px}
+.rc-link{font-size:11px;line-height:1.5;overflow-wrap:anywhere;padding:14px 15px}.rc-link p{margin:0 0 6px;font-size:10px;color:var(--secondary)}
+.rc-copy{padding:14px 15px}.rc-copy textarea{display:block;width:100%;min-height:150px;background:none;border:0;resize:none;font-family:var(--font);font-size:11px;line-height:1.65;color:var(--ink)}
+.rc-toast{margin:0;padding:10px 12px;border-radius:12px;font-size:11px;line-height:1.5;background:var(--accent-soft);color:var(--ink)}.rc-screen h1:focus{outline:none}.rc-screen .text-link.danger{color:#b73445}
+.rc-chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border-radius:6px;padding:5px 7px;font-size:9px;color:var(--secondary)}
