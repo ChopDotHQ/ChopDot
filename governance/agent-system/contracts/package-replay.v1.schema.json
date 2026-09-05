@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/governance/agent-system/contracts/package-replay.v1.schema.json",
+  "title": "Retrospective Package Replay V1",
+  "type": "object",
+  "required": ["replay_version", "measurement_kind", "observed_at", "run_store_inventory", "packages"],
+  "properties": {
+    "replay_version": { "const": "1.0.0" },
+    "measurement_kind": { "const": "retrospective_not_native_run_telemetry" },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "run_store_inventory": {
+      "type": "object",
+      "required": ["source_root", "measurement_method", "storage_directories", "run_named_directories", "contract_run_ids", "complete_top_level_ledgers"],
+      "properties": {
+        "source_root": { "type": "string", "pattern": "^/" },
+        "measurement_method": { "type": "string", "minLength": 12 },
+        "storage_directories": { "type": "integer", "minimum": 0 },
+        "run_named_directories": { "type": "integer", "minimum": 0 },
+        "contract_run_ids": { "type": "integer", "minimum": 0 },
+        "complete_top_level_ledgers": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "packages": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["id", "classification", "git", "pull_request", "time", "tools", "artifacts", "interruptions", "defects", "source_paths"],
+        "properties": {
+          "id": { "enum": ["contextual-home", "authority-key-repair", "hosted-assurance"] },
+          "classification": {
+            "type": "object",
+            "required": ["task_domain", "risk_tier", "run_type", "execution_mode", "profile_id", "evidence_level", "reviewer_independence"],
+            "properties": {
+              "task_domain": { "enum": ["ux", "security-authority", "incident"] },
+              "risk_tier": { "enum": ["moderate", "critical"] },
+              "run_type": { "const": "bounded_goal" },
+              "execution_mode": { "const": "single-agent" },
+              "profile_id": { "enum": ["ux-creation", "security-authority", "incident-repair"] },
+              "evidence_level": { "enum": ["simulated-integration", "exact-candidate"] },
+              "reviewer_independence": { "const": "different_actor" }
+            },
+            "additionalProperties": false
+          },
+          "git": { "$ref": "#/$defs/git" },
+          "pull_request": { "$ref": "#/$defs/pull_request" },
+          "time": { "$ref": "#/$defs/time" },
+          "tools": { "$ref": "#/$defs/unavailable_count" },
+          "artifacts": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/artifact_measurement" } },
+          "interruptions": { "$ref": "#/$defs/unavailable_count" },
+          "defects": { "type": "array", "items": { "type": "string", "minLength": 8 } },
+          "source_paths": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "git": {
+      "type": "object",
+      "required": ["base", "tip", "merge", "commit_count", "files_changed", "insertions", "deletions"],
+      "properties": {
+        "base": { "$ref": "#/$defs/sha" }, "tip": { "$ref": "#/$defs/sha" }, "merge": { "$ref": "#/$defs/sha" },
+        "commit_count": { "type": "integer", "minimum": 1 }, "files_changed": { "type": "integer", "minimum": 1 },
+        "insertions": { "type": "integer", "minimum": 0 }, "deletions": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "pull_request": {
+      "type": "object", "required": ["number", "url", "created_at", "merged_at"],
+      "properties": { "number": { "type": "integer", "minimum": 1 }, "url": { "type": "string", "pattern": "^https://github.com/" }, "created_at": { "type": "string", "format": "date-time" }, "merged_at": { "type": "string", "format": "date-time" } },
+      "additionalProperties": false
+    },
+    "time": {
+      "type": "object", "required": ["first_commit_at", "merge_at", "first_commit_to_merge_seconds", "pr_open_to_merge_seconds"],
+      "properties": { "first_commit_at": { "type": "string", "format": "date-time" }, "merge_at": { "type": "string", "format": "date-time" }, "first_commit_to_merge_seconds": { "type": "integer", "minimum": 0 }, "pr_open_to_merge_seconds": { "type": "integer", "minimum": 0 } },
+      "additionalProperties": false
+    },
+    "unavailable_count": {
+      "type": "object", "required": ["count", "status", "reason"],
+      "properties": { "count": { "type": ["integer", "null"], "minimum": 0 }, "status": { "enum": ["recorded", "unavailable"] }, "reason": { "type": "string", "minLength": 8 } },
+      "additionalProperties": false
+    },
+    "artifact_measurement": {
+      "type": "object", "required": ["id", "passed", "failed"],
+      "properties": { "id": { "type": "string", "minLength": 3 }, "passed": { "type": "integer", "minimum": 0 }, "failed": { "type": "integer", "minimum": 0 } },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

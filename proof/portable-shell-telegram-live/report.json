@@ -1,0 +1,296 @@
+{
+  "baseUrl": "https://portable-shell-trial.vercel.app/?tgWebAppStartParam=%5Bredacted%5D",
+  "hostProfile": "telegram",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "capabilityMatrix": {
+    "hostProfile": "telegram",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "screen": {
+      "width": 390,
+      "height": 844
+    },
+    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 TelegramBot (like TwitterBot)",
+    "canUseLocalStorage": true,
+    "canUseClipboard": true,
+    "canUseShareSheet": true,
+    "browserHistoryLength": 4,
+    "displayModeStandalone": false,
+    "safeAreaInsets": {
+      "top": "0px",
+      "right": "0px",
+      "bottom": "0px",
+      "left": "0px"
+    },
+    "hostBackButton": true,
+    "hostMainButton": true,
+    "hasTelegramWebApp": true,
+    "canUseTelegramCloudStorage": true,
+    "launchStartParam": "portable-proof",
+    "telegramPlatform": "ios",
+    "telegramViewportStableHeight": 2121,
+    "insideDotHostWrapper": false,
+    "appUrl": "https://portable-shell-trial.vercel.app/?tgWebAppStartParam=portable-proof&payGroupId=g-938b742a-51eb-49cd-bbf0-3efbcad6a597&payMemberId=u-dffa1b59-7253-4f23-8722-2ecef4532f5d&payRequest=eyJyZXF1ZXN0SWQiOiJyZXEtZy05MzhiNzQyYS01MWViLTQ5Y2QtYmJmMC0zZWZiY2FkNmE1OTctdS1kZmZhMWI1OS03MjUzLTRmMjMtODcyMi0yZWNlZjQ1MzJmNWQtcHJvb2YiLCJncm91cE5hbWUiOiJXZWVrZW5kIFRyaXAiLCJyZXF1ZXN0ZXJOYW1lIjoiTWluYSIsInBheWVyTmFtZSI6Ik5pbmEiLCJhbW91bnQiOjQwLCJjdXJyZW5jeSI6IlVTRCIsInBheW1lbnRNZXRob2RMYWJlbCI6IkNhc2giLCJjcmVhdGVkQXQiOiIyMDI2LTA3LTE1VDE2OjUwOjEzLjQ1OFoiLCJleHBpcmVzQXQiOiIyMDI2LTA3LTE2VDE2OjUwOjEzLjQ1OFoifQ"
+  },
+  "hostCallLog": {
+    "beforeReload": [
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 1668
+        }
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 1667
+        }
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 1665
+        }
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.show",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.onClick",
+        "payload": {}
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 2486
+        }
+      },
+      {
+        "name": "BackButton.offClick",
+        "payload": {}
+      },
+      {
+        "name": "BackButton.hide",
+        "payload": {}
+      }
+    ],
+    "afterReload": [
+      {
+        "name": "BackButton.hide",
+        "payload": {}
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      },
+      {
+        "name": "CloudStorage.setItem",
+        "payload": {
+          "key": "chopdot-portable-shell-state-v1",
+          "bytes": 2486
+        }
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      },
+      {
+        "name": "ready",
+        "payload": {}
+      },
+      {
+        "name": "expand",
+        "payload": {}
+      },
+      {
+        "name": "setHeaderColor",
+        "payload": {
+          "color": "#ffffff"
+        }
+      },
+      {
+        "name": "setBackgroundColor",
+        "payload": {
+          "color": "#f9fafb"
+        }
+      }
+    ]
+  },
+  "screenshots": [
+    "01-first-run.png",
+    "02-guest-setup.png",
+    "03-empty-home.png",
+    "04-create-group-empty.png",
+    "05-create-group-filled.png",
+    "06-group-before-spend.png",
+    "07-add-spend-empty.png",
+    "08-add-spend-filled.png",
+    "09-review-split.png",
+    "10-add-spend-after-back.png",
+    "11-open-balances.png",
+    "12-settle-up.png",
+    "13-settle-up-request-sent.png",
+    "14-standalone-payer-request.png",
+    "15-standalone-marked-paid.png",
+    "16-payment-request.png",
+    "17-needs-confirm.png",
+    "18-after-confirm-leo.png",
+    "19-payment-request-nina.png",
+    "20-after-confirm-nina.png",
+    "21-finish-group.png",
+    "22-group-summary.png",
+    "23-history-home.png",
+    "24-after-refresh-persisted.png"
+  ],
+  "payerEntryMode": "direct_payer_url",
+  "directPayerUrl": "/?tgWebAppStartParam=%5Bredacted%5D&payGroupId=%5Bredacted%5D&payMemberId=%5Bredacted%5D&payRequest=%5Bredacted%5D",
+  "standalonePacketUrl": "/?tgWebAppStartParam=%5Bredacted%5D&payGroupId=%5Bredacted%5D&payMemberId=%5Bredacted%5D&payRequest=%5Bredacted%5D",
+  "standalonePacketProof": true,
+  "storageSnapshot": {
+    "hasPersistedState": true,
+    "keys": [
+      "chopdot-portable-shell-state-v1"
+    ]
+  },
+  "finalText": "ChopDot\n\nHey, Mina\n\nM\n\nNet position\n\n$0.00\nYour Groups\nNew\nWT\nWeekend Trip\n\n3 members\n\nSettled\nHome\nFriends\nPay\nHistory\nSettings",
+  "consoleEvents": [],
+  "passed": true
+}

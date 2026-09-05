@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/governance/agent-system/contracts/approval-record.v1.schema.json",
+  "title": "Approval Record V1",
+  "type": "object",
+  "required": ["approval_version", "approval_id", "run_id", "effect_id", "requested_at", "requested_by", "scope_digest", "target", "risk", "decision", "decided_by", "decided_at", "expires_at", "single_use", "consumed_at"],
+  "properties": {
+    "approval_version": { "const": "1.0.0" },
+    "approval_id": { "type": "string", "pattern": "^approval_[a-z0-9][a-z0-9_-]{5,95}$" },
+    "run_id": { "type": "string", "pattern": "^run_[a-z0-9][a-z0-9_-]{7,95}$" },
+    "effect_id": { "type": "string", "pattern": "^effect_" },
+    "requested_at": { "type": "string", "format": "date-time" },
+    "requested_by": { "type": "string", "minLength": 1 },
+    "scope_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "target": { "type": "string", "minLength": 1 },
+    "risk": { "enum": ["low", "medium", "high", "critical"] },
+    "decision": { "enum": ["pending", "approved", "rejected", "expired", "revoked"] },
+    "decided_by": { "type": ["string", "null"], "minLength": 1 },
+    "decided_at": { "type": ["string", "null"], "format": "date-time" },
+    "expires_at": { "type": ["string", "null"], "format": "date-time" },
+    "single_use": { "type": "boolean" },
+    "consumed_at": { "type": ["string", "null"], "format": "date-time" },
+    "conditions": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,79 @@
+# One Chop Core
+
+**Kind:** reference
+**Status:** active
+**Owner:** core authority
+**Last reviewed:** 2026-08-27
+**Applies to:** `chopdot-v1-launch`
+**Authority:** scoped state-model reference derived from Product Truth, current Cockpit decisions and contracts, ADRs, and exact replay evidence; it cannot replace those authorities
+**Sources:** P-034, DEC-002, ADR 0001, exact-money/event tests
+
+`MoneyV1` stores bounded integer minor units and an explicit currency.
+`ChopEventV1` has canonical domain-separated signing bytes, actor, stream,
+sequence, expected frontier, payload, and version. Replay validates identifiers,
+actor authority, signatures, currency, version, frontier, and idempotency before
+changing state. The same accepted event set yields the same state and frontier
+hash regardless of delivery order.
+
+`ModePolicyV1` configures normal pot, trip, couple, Spend Card, savings circle,
+emergency pot, and community fund over that core. A mode never creates a second
+money, membership, confirmation, or recovery authority.
+
+`CanonicalModeStateV1` is not another store or reducer. Namespaced Spend Card,
+circle, emergency, and community events are validated inside the
+`ChopEventV1` reducer, advance the same group version/current-event frontier,
+use the same participant signature and compare-and-swap journal, and travel in
+the same encrypted event envelope. `ProductionAuthority.appendMode` is the
+typed production command boundary; `readCanonicalGroup` returns only a replayed
+and hash-checked projection.
+
+Mode policy never follows removed membership automatically. Savings
+replacement and emergency/community role reconciliation are explicit signed
+successor events on the same frontier. Spend Card corrections also stay on
+that frontier: open obligations use a recoverable adjustment-plus-expense-
+correction sequence, while a post-settlement adjustment preserves the old
+share evidence and records separately confirmed exact successor allocations.
+Outstanding correction or successor confirmation state blocks close rather
+than allowing history to claim completion early.
+
+Normal-pot share adjustments use the same production authority boundary as
+every other shared-money transition. Refund, fee, partial-payment, waiver,
+dispute, and exact reversal commands become signed `SHARE_ADJUSTED` events,
+are replayed on the current frontier, and are compare-and-swap persisted before
+the UI projection changes. An exact reversal identifies one prior adjustment,
+negates it exactly, and cannot reverse it twice.
+
+For each expense, replay enforces this equation after every accepted event:
+
+```text
+reviewed receipt total + signed share adjustments = current share total
+```
+
+The close record deliberately names reviewed receipt totals. Refund, fee,
+partial, waiver, dispute, and reversal facts remain separately attributable in
+the immutable share history; they are not silently folded into the receipt.
+Settled or waived shares cannot gain a new unresolved amount while retaining a
+resolved status. Historical V1 `correction` adjustment facts remain replayable,
+but the production command boundary requires the explicit reviewed expense-
+correction path for new corrections.
+
+Closed records are also immutable. A late expense or correction cannot rewrite
+the original close or saved totals; the current organizer must append a signed
+`SUCCESSOR_RECORD_CREATED` event that identifies the exact predecessor record
+and explains why a successor exists. The event advances the same canonical
+frontier. An exact retry after delivery failure returns the original durable
+event without a second signature, event, or frontier change, while conflicting
+reuse of the successor identifier fails closed.
+
+Pre-authority local caches never become an implicit origin for this core.
+Startup first creates an encrypted immutable assessment of an exact redacted
+source packet. Explicit supported currency, exact representability, opaque
+identifiers, references, roster, payer allocation, status, conservation, saved
+record, and authority-journal collisions are checked for the whole group. Any
+failure produces a review-only quarantine with no partial observations. A
+ready assessment still proves no membership, payer, organizer, payment, or
+closeout authority and creates no event or journal. Before readback is
+accepted, the preserved packet is reconstructed and reassessed; all findings,
+claims, exact-money observations, verdicts, evidence, and digests must match.
+Normal authority hydration may replace a superseded cache row only after that
+redacted source evidence has been durably preserved.

@@ -1,0 +1,29 @@
+{
+  "contract_version": "1.0.0",
+  "run_id": "run_incident_repair_example",
+  "created_at": "2026-08-26T12:00:00Z",
+  "created_by": { "id": "example-incident-agent", "kind": "agent", "provider": "replaceable", "model": "unspecified" },
+  "loop_profile": { "id": "incident-repair", "version": "1.0.0", "path": "governance/agent-system/loops/incident-repair.v1.json" },
+  "task": { "title": "Repair one reported live failure", "objective": "Bound or reproduce the report, repair its source, add a regression, and verify the affected path when authorized.", "deliverable": "IncidentPacketV1" },
+  "intent_type": "incident_repair",
+  "requirement_ids": ["INC-BOUNDARY", "INC-IDENTITY", "INC-REPAIR", "INC-LIVE", "INC-HYPOTHESIS"],
+  "artifact_contract": { "artifact_types": ["IncidentPacketV1", "RegressionCaseV1", "RepairEvidencePacketV1"], "required_paths": ["artifacts/agentops/outcomes/example/incident.json"], "format": "mixed", "version": "1.0.0", "hash_algorithm": "sha256" },
+  "expected_outcome": { "statement": "The incident is honestly bounded, its source defect is repaired, and the exact path has regression and authorized live readback evidence.", "assertions": [
+    { "id": "INC-BOUNDARY", "description": "Reproduction status is explicitly bounded.", "subject": "reproduction_status", "operator": "one_of", "expected": ["reproduced", "observation_only"], "minimum_evidence_level": "source-only", "hard_fail": true },
+    { "id": "INC-IDENTITY", "description": "Missing candidate identity count is zero.", "subject": "missing_candidate_identity_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+    { "id": "INC-REPAIR", "description": "Focused regression failure count is zero.", "subject": "focused_regression_failure_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "unit", "hard_fail": true },
+    { "id": "INC-LIVE", "description": "Live verification status is honest and accepted.", "subject": "live_verification_status", "operator": "one_of", "expected": ["passed", "not_authorized_and_reported_false"], "minimum_evidence_level": "simulated-integration", "hard_fail": true },
+    { "id": "INC-HYPOTHESIS", "description": "Unchanged hypothesis retry count is zero.", "subject": "unchanged_hypothesis_retry_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true }
+  ] },
+  "scope": { "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "branch": "codex/chopdot-v1-launch", "starting_head": "74d81cba8edd7200246b837c5a31ec4f00456409", "starting_tree": "fc000c64fe3eeb0362ac11905d0d6afaadfb74c9", "in_paths": ["src", "tests"], "out_paths": ["PRODUCT_TRUTH.md"], "dirty_paths": ["docs/superpowers/plans/2026-08-26-portable-agent-outcome-system.md"] },
+  "authority": { "policy_ref": "governance/agent-system/policies/authority-boundaries.json", "allowed_reads": ["repo", "reporter evidence", "public live surface"], "allowed_writes": ["src", "tests"], "allowed_tools": ["apply_patch", "test_runner", "browser_readback"], "external_effects": ["deploy"], "required_approvals": ["credential use deploy publish rollback or live write"] },
+  "context": { "governing_sources": [{ "path": "docs/CHOPDOT_OPERATING_LOOPS.md", "sha256": "766bce5ebb4c9ab6a80914be21795d93a06c1dc32c3ba4c9219eba23a76b56e9", "authority_level": "guardrail", "observed_at": "2026-08-26T12:00:00Z" }], "max_age_seconds": 3600, "conflict_policy": "block_same_level_conflict", "wrong_root_policy": "fail_closed" },
+  "architecture": { "mode": "evaluator_optimizer", "justification": "One repair owner and a separate affected-path verifier are adequate for the bounded incident." },
+  "budgets": { "max_iterations": 3, "max_retries": 2, "max_wall_seconds": 10800, "max_tool_calls": 180, "max_model_cost_usd": 30, "max_external_cost_usd": 0 },
+  "evaluator": { "rubric_refs": ["governance/agent-system/evals/rubrics/incident-repair.v1.json"], "deterministic_commands": [{ "id": "INC-REGRESSION", "command": "node --test tests", "cwd": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "expected_exit_code": 0, "timeout_seconds": 1200 }], "reviewer_independence": "different_actor", "pass_threshold": 0.9, "hard_fail_assertion_ids": ["INC-BOUNDARY", "INC-IDENTITY", "INC-REPAIR", "INC-LIVE", "INC-HYPOTHESIS"] },
+  "environment_observations": [{ "id": "INC-AFFECTED-PATH", "surface": "reported and affected path with live readback only when authorized", "required_readback": ["reported identity", "source identity", "repaired identity", "live status"], "minimum_evidence_level": "simulated-integration" }],
+  "failure_outcome": { "required_fields": ["disproved_hypotheses", "unreconciled_environment_state", "current_user_impact", "workaround_boundary", "next_authority_needed"], "same_blocker_limit": 3, "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_policy": { "port_version": "1.0.0", "preflight_required": true, "record_outcome": true, "verify_recall": true, "degraded_context_allowed": true, "disallowed_fallbacks": ["cross_root"] },
+  "privacy_policy": { "prohibited_content": ["credentials", "private reporter data", "unredacted receipts"], "redaction_required": true, "retention": "promote_redacted_outcome", "export_policy": "operator_approved" }
+}

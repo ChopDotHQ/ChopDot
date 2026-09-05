@@ -1,0 +1,344 @@
+{
+  "schema_version": 1,
+  "kind": "chopdot_wave_0_provenance_verification",
+  "started_at": "2026-08-23T12:20:25.418Z",
+  "completed_at": "2026-08-23T12:20:28.217Z",
+  "status": "blocked",
+  "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+  "branch": "codex/chopdot-v1-launch",
+  "head": "db705b495199650afc9e61712d1dcb5a0e908612",
+  "git_status": {
+    "path_count": 69,
+    "porcelain_v1_sha256": "a1fc990148c2c56c7d3a9a1f00c8303612b3b678579ab78eb14626621b585fe3"
+  },
+  "checks": {
+    "exact_root": true,
+    "exact_branch": true,
+    "contact_files_exist": true,
+    "contact_aggregate_matches": true,
+    "verified_contact_resolvers_absent": true,
+    "semantic_policies_present": true,
+    "integration_preflight_passed": true,
+    "corrected_contact_suite_passed": true,
+    "full_product_plan_validator_passed": true,
+    "repo_graph_packets_current": false
+  },
+  "blockers": [
+    "repo_graph_packets_current"
+  ],
+  "complete_git_status": [
+    "?? artifacts/agentops/catalog-contact-suite.json",
+    "?? artifacts/agentops/catalog-integration-preflight.json",
+    "?? artifacts/agentops/catalog-kgv2-recall.json",
+    "?? artifacts/agentops/catalog-machine-verification.json",
+    "?? artifacts/agentops/catalog-repo-graph-packet.json",
+    "?? artifacts/agentops/catalog-verification-report.md",
+    "?? artifacts/agentops/feature-inheritance-agentops-verification.json",
+    "?? artifacts/agentops/feature-inheritance-kgv2-recall.json",
+    "?? artifacts/agentops/feature-inheritance-matrix-verification.json",
+    "?? artifacts/agentops/feature-inheritance-matrix-verification.md",
+    "?? artifacts/agentops/feature-inheritance-repo-graph-packet.json",
+    "?? artifacts/agentops/full-product-deployment-plan-verification.json",
+    "?? artifacts/agentops/full-product-plan-agentops-verification.json",
+    "?? artifacts/agentops/full-product-plan-kgv2-recall.json",
+    "?? artifacts/release/wave-0-provenance.json",
+    "?? docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+    "?? docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+    "?? docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.json",
+    "?? docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.md",
+    "?? docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+    "?? docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+    "?? docs/research/CHOPDOT_PLATFORM_OPPORTUNITY_MATRIX.md",
+    "?? docs/research/LIVE_DEVNET_REGISTRY_REFRESH.md",
+    "?? docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json",
+    "?? docs/research/README.md",
+    "?? docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+    "?? docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json",
+    "?? docs/research/evidence/chopdot-catalog-decisions.json",
+    "?? docs/research/evidence/chopdot-feature-family-mapping-input.json",
+    "?? docs/research/evidence/chopdot-product-cockpit-source-snapshot.json",
+    "?? docs/research/evidence/npm-package-version-observation.json",
+    "?? docs/research/evidence/primary-source-ledger.json",
+    "?? docs/research/evidence/source-deep-audit.json",
+    "?? docs/research/parity-repository-snapshots/2026-08-22T20-22-00Z.json",
+    "?? docs/superpowers/plans/2026-08-20-one-chopdot-v1-launch.md",
+    "?? docs/superpowers/plans/2026-08-22-chopdot-feature-inheritance-external-analog-matrix.md",
+    "?? docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.json",
+    "?? docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
+    "?? docs/superpowers/plans/2026-08-22-products-devnet-catalog-kgv2.md",
+    "?? output/working_memory/findings.md",
+    "?? output/working_memory/progress.md",
+    "?? output/working_memory/task_plan.md",
+    "?? product/cards.md",
+    "?? product/decision-contracts.md",
+    "?? product/decisions.md",
+    "?? product/generated/product-resume.md",
+    "?? product/roadmap.md",
+    "?? product/story-map.md",
+    "?? scripts/research/agentops-catalog-kgv2.py",
+    "?? scripts/research/agentops-feature-inheritance-kgv2.py",
+    "?? scripts/research/agentops-full-product-plan-kgv2.py",
+    "?? scripts/research/audit-products-devnet-sources.mjs",
+    "?? scripts/research/build-chopdot-feature-inheritance-matrix.mjs",
+    "?? scripts/research/build-products-devnet-catalog.mjs",
+    "?? scripts/research/refresh-products-devnet-catalog.mjs",
+    "?? scripts/research/verify-chopdot-feature-inheritance-matrix.mjs",
+    "?? scripts/research/verify-chopdot-full-product-deployment-plan.mjs",
+    "?? scripts/research/verify-products-devnet-catalog.mjs",
+    "?? scripts/research/verify-wave-0-provenance.mjs",
+    "?? src/contacts/verifiedContact.test.ts",
+    "?? src/contacts/verifiedContact.ts",
+    "?? src/contacts/verifiedContactCeremonyService.test.ts",
+    "?? src/contacts/verifiedContactCeremonyService.ts",
+    "?? src/contacts/verifiedContactLink.test.ts",
+    "?? src/contacts/verifiedContactLink.ts",
+    "?? src/contacts/verifiedContactRepository.test.ts",
+    "?? src/contacts/verifiedContactRepository.ts",
+    "?? src/recovery/recoveryHeadIndex.test.ts",
+    "?? tests/fixtures/verifiedContactFixture.ts"
+  ],
+  "commands": {
+    "contact_suite": {
+      "command": "/opt/homebrew/Cellar/node/24.1.0/bin/node --experimental-transform-types --test src/contacts/verifiedContact.test.ts src/contacts/verifiedContactLink.test.ts src/contacts/verifiedContactRepository.test.ts src/contacts/verifiedContactCeremonyService.test.ts",
+      "exit_code": 0
+    },
+    "integration_preflight": {
+      "command": "python3 /Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/runners/repo_graph_integration_preflight.py --repo-id chopdot --source-root /Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch --target-root /Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch --include src/contacts/verifiedContact.ts --include src/contacts/verifiedContact.test.ts --include src/contacts/verifiedContactLink.ts --include src/contacts/verifiedContactLink.test.ts --include src/contacts/verifiedContactRepository.ts --include src/contacts/verifiedContactRepository.test.ts --include src/contacts/verifiedContactCeremonyService.ts --include src/contacts/verifiedContactCeremonyService.test.ts --include tests/fixtures/verifiedContactFixture.ts",
+      "exit_code": 0
+    },
+    "plan_validator": {
+      "command": "/opt/homebrew/Cellar/node/24.1.0/bin/node scripts/research/verify-chopdot-full-product-deployment-plan.mjs",
+      "exit_code": 0
+    },
+    "catalog_validator": {
+      "command": "/opt/homebrew/Cellar/node/24.1.0/bin/node scripts/research/verify-products-devnet-catalog.mjs",
+      "exit_code": 2,
+      "failures": [
+        "exact_head"
+      ]
+    }
+  },
+  "verified_contact": {
+    "manifest": [
+      {
+        "path": "src/contacts/verifiedContact.ts",
+        "exists": true,
+        "tracked": false,
+        "sha256": "766877514be25fb7db4d1ee00d346f91c3c6bfa63c40ad4497cfc35857d6f993"
+      },
+      {
+        "path": "src/contacts/verifiedContact.test.ts",
+        "exists": true,
+        "tracked": false,
+        "sha256": "d9ad18714d60e2846b6a197ed8d05a11486abc8c3d10de2d3e47f7d3e7ea161d"
+      },
+      {
+        "path": "src/contacts/verifiedContactLink.ts",
+        "exists": true,
+        "tracked": false,
+        "sha256": "04991bac4a065a3660eb01889f6988bdbb58cc3ef942450423a38a8507cb689a"
+      },
+      {
+        "path": "src/contacts/verifiedContactLink.test.ts",
+        "exists": true,
+        "tracked": false,
+        "sha256": "8e0ec87ca457df3193109ea488069957c8aad00133b8092bb54a745c627fca13"
+      },
+      {
+        "path": "src/contacts/verifiedContactRepository.ts",
+        "exists": true,
+        "tracked": false,
+        "sha256": "10d0d31691206e10615e2724f527b5ce6e67916017094bc1b3c9fcb83bd4adf0"
+      },
+      {
+        "path": "src/contacts/verifiedContactRepository.test.ts",
+        "exists": true,
+        "tracked": false,
+        "sha256": "0355a97de138ee6b9e73f042c766a129675a273b6d89be8363072f7591517b0d"
+      },
+      {
+        "path": "src/contacts/verifiedContactCeremonyService.ts",
+        "exists": true,
+        "tracked": false,
+        "sha256": "d7da62a4b4fa7c4fefad52f914e191e4a26c8f6b45a6351b1f93310d3aec8174"
+      },
+      {
+        "path": "src/contacts/verifiedContactCeremonyService.test.ts",
+        "exists": true,
+        "tracked": false,
+        "sha256": "2f637963d45bcea493aaac816cbec8b97e9dd680c54c1c8561bbabe02f5b3151"
+      },
+      {
+        "path": "tests/fixtures/verifiedContactFixture.ts",
+        "exists": true,
+        "tracked": false,
+        "sha256": "726942f85c565f9cd531cd04c0ab49acc0a3b7db25c54512f1b30307deade17f"
+      }
+    ],
+    "ordered_manifest_sha256": "c434a9f5f405f942db0f6d96cc67013094e48514cdba15d6096ef21f9d34e345",
+    "expected_ordered_manifest_sha256": "c434a9f5f405f942db0f6d96cc67013094e48514cdba15d6096ef21f9d34e345",
+    "resolvers_absent": true
+  },
+  "contact_suite": {
+    "schema_version": 1,
+    "kind": "corrected_four_file_contact_suite",
+    "executed_at": "2026-08-23T12:20:27.382Z",
+    "cwd": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+    "command": "/opt/homebrew/Cellar/node/24.1.0/bin/node --experimental-transform-types --test src/contacts/verifiedContact.test.ts src/contacts/verifiedContactLink.test.ts src/contacts/verifiedContactRepository.test.ts src/contacts/verifiedContactCeremonyService.test.ts",
+    "node_version": "v24.1.0",
+    "test_files": 4,
+    "tests": 8,
+    "passed": 8,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "exit_code": 0,
+    "status": "pass",
+    "runner_correction": "The four files use node:test. Node's --experimental-transform-types mode handles their TypeScript parameter properties without resolving tsx from another checkout."
+  },
+  "integration_preflight": {
+    "schema_version": 1,
+    "kind": "bounded_agentops_integration_preflight",
+    "executed_at": "2026-08-23T12:20:27.895Z",
+    "command": "python3 /Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/runners/repo_graph_integration_preflight.py --repo-id chopdot --source-root /Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch --target-root /Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch --include src/contacts/verifiedContact.ts --include src/contacts/verifiedContact.test.ts --include src/contacts/verifiedContactLink.ts --include src/contacts/verifiedContactLink.test.ts --include src/contacts/verifiedContactRepository.ts --include src/contacts/verifiedContactRepository.test.ts --include src/contacts/verifiedContactCeremonyService.ts --include src/contacts/verifiedContactCeremonyService.test.ts --include tests/fixtures/verifiedContactFixture.ts",
+    "exit_code": 0,
+    "checks": {
+      "dependency_closure_complete": true,
+      "included_sources_exist": true,
+      "semantic_authority_preserved": true
+    },
+    "findings": [],
+    "included_paths": [
+      "src/contacts/verifiedContact.test.ts",
+      "src/contacts/verifiedContact.ts",
+      "src/contacts/verifiedContactCeremonyService.test.ts",
+      "src/contacts/verifiedContactCeremonyService.ts",
+      "src/contacts/verifiedContactLink.test.ts",
+      "src/contacts/verifiedContactLink.ts",
+      "src/contacts/verifiedContactRepository.test.ts",
+      "src/contacts/verifiedContactRepository.ts",
+      "tests/fixtures/verifiedContactFixture.ts"
+    ],
+    "repo_id": "chopdot",
+    "source_root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+    "status": "pass",
+    "target_root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch"
+  },
+  "semantic_policies": {
+    "registry_path": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/registry/repo_graph_integration_policies.json",
+    "registry_sha256": "0c6e6b82a3d539d696a20133e3a4b053183b59ac58f5c6034b6aa597b7d7f87d",
+    "required_ids": [
+      "chopdot-verified-contact-is-not-membership-authority",
+      "chopdot-contact-proof-is-not-organizer-proof"
+    ],
+    "found": [
+      {
+        "rule_id": "chopdot-verified-contact-is-not-membership-authority",
+        "repo_ids": [
+          "chopdot"
+        ],
+        "path_patterns": [
+          "src/contacts/**"
+        ],
+        "observation_kind": "contact_creates_organizer_membership_authority",
+        "severity": "high",
+        "summary": "Verified contact identity cannot create organizer, membership, invitation, or group-key authority."
+      },
+      {
+        "rule_id": "chopdot-contact-proof-is-not-organizer-proof",
+        "repo_ids": [
+          "chopdot"
+        ],
+        "path_patterns": [
+          "src/membership/**"
+        ],
+        "observation_kind": "contact_proof_accepted_as_organizer_authority",
+        "severity": "high",
+        "summary": "Mutual Product Account verification cannot be accepted as organizer authority."
+      }
+    ]
+  },
+  "full_product_plan_validator": {
+    "status": "pass",
+    "counts": {
+      "checks": 33,
+      "passed": 33,
+      "failed": 0,
+      "feature_families": 15,
+      "cards": 35,
+      "current_paths": 42,
+      "future_journeys": 4,
+      "required_future_paths": 40,
+      "waves": 11,
+      "release_dimensions": 8
+    },
+    "hashes": {
+      "plan_markdown_sha256": "ab85711737d5b9324381bfbdcdcfbd191d4693f33ea1d2484f3532a46f6d19ab",
+      "plan_manifest_sha256": "6c08d1919b30cd10b775ab360a20a042e2ab16dd9ce8de279eb1bd809177b563",
+      "source_matrix_sha256": "f0f37486f7887d7b16bf3dd95921797fb6b1358b4cc0c8a15fb44f6fe4c13298",
+      "ordered_plan_bundle_sha256": "ec1fb5186882873d70e4f0370d186edc46c389302457c237cb9148ee0d680e17"
+    }
+  },
+  "catalog_validator": {
+    "status": "fail",
+    "failures": [
+      "exact_head"
+    ],
+    "note": "The established catalog validator pins the original review HEAD; a false exact_head result is expected after accepted implementation commits and is recorded as staleness, not rewritten."
+  },
+  "repo_graph_packets": [
+    {
+      "path": "artifacts/agentops/catalog-repo-graph-packet.json",
+      "generated_at": "2026-08-22T20:49:19.902943+00:00",
+      "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+      "branch": "codex/chopdot-v1-launch",
+      "commit": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f",
+      "dirty_status_digest": "7d780e1f2777344908b7effceb7f9f1f455796458aec085d8dce82e6c5c74159",
+      "graph_digest": "8d479070cef801e26779c79c65cf0dfe1b861fe1af295daddd90e581f86fe454",
+      "packet_digest": "fa64ca6d6c81490c96f0f8bb91103fa388f03fd9ddf2f8362750b1c458ce0782",
+      "exact_root": true,
+      "exact_branch": true,
+      "current_commit": false
+    },
+    {
+      "path": "artifacts/agentops/feature-inheritance-repo-graph-packet.json",
+      "generated_at": "2026-08-22T21:41:40.429827+00:00",
+      "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+      "branch": "codex/chopdot-v1-launch",
+      "commit": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f",
+      "dirty_status_digest": "2d440886e03ec1b9b7535c627ad1157a05b525298f09e139f5971355e7ef35a6",
+      "graph_digest": "6e01545b1bf5f763368543fe4f0f0f9197f6a785c4c6a899361920d68afd1ff6",
+      "packet_digest": "2c28f865e7247dd202c6b63c58aaa60939e8c900021a86c5886eaafb301bf821",
+      "exact_root": true,
+      "exact_branch": true,
+      "current_commit": false
+    }
+  ],
+  "kg_artifacts": [
+    {
+      "path": "artifacts/agentops/catalog-kgv2-recall.json",
+      "generated_at": null,
+      "requested_path": "v2",
+      "active_path": "context_graph_v2",
+      "fallback_used": false,
+      "repo_graph_commit": null,
+      "repo_graph_current_commit": null
+    },
+    {
+      "path": "artifacts/agentops/full-product-plan-agentops-verification.json",
+      "generated_at": "2026-08-22T21:41:48.521556+00:00",
+      "requested_path": null,
+      "active_path": null,
+      "fallback_used": null,
+      "repo_graph_commit": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f",
+      "repo_graph_current_commit": false
+    }
+  ],
+  "stale_reasons": [
+    "artifacts/agentops/catalog-repo-graph-packet.json records 3519a894efbcee5144ecb0bcb9ebc44b888a0e7f, not current HEAD db705b495199650afc9e61712d1dcb5a0e908612",
+    "artifacts/agentops/feature-inheritance-repo-graph-packet.json records 3519a894efbcee5144ecb0bcb9ebc44b888a0e7f, not current HEAD db705b495199650afc9e61712d1dcb5a0e908612",
+    "artifacts/agentops/full-product-plan-agentops-verification.json is backed by Repo Graph commit 3519a894efbcee5144ecb0bcb9ebc44b888a0e7f, not current HEAD db705b495199650afc9e61712d1dcb5a0e908612",
+    "catalog-kgv2-recall.json has exact-root cited recall but no citation-level commit field; it cannot prove knowledge of the current committed outcome until Repo Graph and KGv2 are refreshed."
+  ]
+}

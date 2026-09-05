@@ -1,0 +1,63 @@
+name: ChopDot Steering Surface Monitor
+
+on:
+  schedule:
+    - cron: '17 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-steering-monitor-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXPECTED_SHA: ${{ github.sha }}
+  EXPECTED_BRANCH: ${{ github.ref_name }}
+  STEERING_REPORT_ROOT: artifacts/agent-steering-monitor
+
+jobs:
+  steering-surface-monitor:
+    name: Scheduled steering drift monitor
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind monitor to the selected branch and commit
+        run: |
+          git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"
+          test "$(git branch --show-current)" = "$EXPECTED_BRANCH"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Check steering registry without rewriting it
+        run: >-
+          npm run agent:steering:check --
+          --json-out="$STEERING_REPORT_ROOT/steering-surfaces.json"
+      - name: Publish monitor summary
+        if: always()
+        run: |
+          echo "## Steering surface monitor" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -f "$STEERING_REPORT_ROOT/steering-surfaces.json" ]]; then
+            jq -r '"Verdict: **\(.verdict)**  \nCommit: `\(.candidate.commit)`  \nCatalog digest: `\(.catalog.digest)`  \nRepository manifest: `\(.catalog.repository_manifest_sha256)`  \nDrifts: \(.drifts | length)"' "$STEERING_REPORT_ROOT/steering-surfaces.json" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No monitor evidence was produced; no green verdict exists." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "This inventory verdict is not product authority, implementation proof, or release approval." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload immutable monitor evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agent-steering-monitor-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.STEERING_REPORT_ROOT }}/steering-surfaces.json
+          if-no-files-found: error
+          retention-days: 90

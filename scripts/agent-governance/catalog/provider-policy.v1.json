@@ -1,0 +1,46 @@
+{
+  "policy_version": "1.0.0",
+  "policy_id": "chopdot-provider-independence-v1",
+  "authority": "Repository evaluation only. Provider presence does not create product or participant authority.",
+  "blocked_packages": [
+    "@supabase/supabase-js",
+    "@supabase/ssr"
+  ],
+  "blocked_runtime_patterns": [
+    "@supabase/",
+    "VITE_SUPABASE_",
+    "SUPABASE_URL",
+    "SUPABASE_ANON_KEY",
+    "supabase.auth",
+    "supabase.functions"
+  ],
+  "runtime_scan_roots": [
+    "src",
+    "server",
+    "contracts",
+    "deployment",
+    ".github/workflows",
+    "package.json",
+    "package-lock.json",
+    ".env.example",
+    "vite.config.ts"
+  ],
+  "core_semantics_roots": [
+    "governance/agent-system/contracts",
+    "governance/agent-system/policies",
+    "governance/agent-system/loops",
+    "scripts/agent-system"
+  ],
+  "core_provider_patterns": [
+    "openai",
+    "anthropic",
+    "langgraph",
+    "temporal"
+  ],
+  "excluded_path_prefixes": [
+    "scripts/agent-system/adapters/",
+    "scripts/agent-system/tests/",
+    "scripts/agent-governance/tests/",
+    "scripts/agent-governance/fixtures/"
+  ]
+}

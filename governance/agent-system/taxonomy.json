@@ -1,0 +1,334 @@
+{
+  "schema": "chopdot.agent-system.taxonomy.v1",
+  "schemaVersion": 1,
+  "status": "accepted",
+  "lastReviewed": "2026-08-26",
+  "authority": "Process classification and operational provenance only; never product law, product priority, participant authority, or release proof.",
+  "exactTarget": {
+    "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+    "branchAtDecision": "codex/chopdot-v1-launch",
+    "headAtDecision": "74d81cba8edd7200246b837c5a31ec4f00456409"
+  },
+  "sources": {
+    "decision": "docs/adr/0005-portable-agent-outcome-system.md",
+    "implementationPlan": "docs/superpowers/plans/2026-08-26-portable-agent-outcome-system.md",
+    "implementationPlanSha256": "ed057ac526bfef7baef716ec00b8178640862e761bc0b9c1a427ee3ec77c9791",
+    "productLaw": "PRODUCT_TRUTH.md",
+    "productPriority": "product/cards.md"
+  },
+  "systemTypes": [
+    {
+      "id": "agent-loop",
+      "label": "Agent Loop",
+      "purpose": "Create or change a bounded artifact through create, observe, evaluate, and repair.",
+      "ownsArtifact": true,
+      "requiredControls": [
+        "AgentLoopContractV1",
+        "objective expected outcome",
+        "finite repair budget",
+        "environmental observation",
+        "evaluator",
+        "terminal state",
+        "OutcomePacketV1 or ContinuationPacketV1"
+      ],
+      "successRule": "Every required assertion is accepted at its declared evidence level and all effects are reconciled.",
+      "mayNotClaim": [
+        "success because the agent stopped",
+        "success from source existence alone",
+        "success with an unreconciled effect",
+        "success with an unrecognized terminal state"
+      ]
+    },
+    {
+      "id": "gate",
+      "label": "Gate",
+      "purpose": "Allow or stop entry to a later activity by evaluating declared assertions.",
+      "ownsArtifact": false,
+      "requiredControls": [
+        "named assertions",
+        "pass or fail result",
+        "evidence",
+        "safe blocker output"
+      ],
+      "successRule": "Every declared assertion passes; any ambiguity blocks entry.",
+      "mayNotClaim": [
+        "that downstream work was completed",
+        "that passing the gate created the downstream artifact"
+      ]
+    },
+    {
+      "id": "pipeline",
+      "label": "Pipeline",
+      "purpose": "Advance exact immutable identity through ordered stages.",
+      "ownsArtifact": false,
+      "requiredControls": [
+        "ordered stages",
+        "exact input identity",
+        "exact output identity",
+        "stage readback",
+        "rollback or forward-repair rule"
+      ],
+      "successRule": "Every stage preserves the required identity and its environmental readback passes.",
+      "mayNotClaim": [
+        "release success from build success",
+        "promotion of bytes different from the reviewed candidate"
+      ]
+    },
+    {
+      "id": "adapter",
+      "label": "Adapter",
+      "purpose": "Implement a provider behind a stable port without changing core semantics.",
+      "ownsArtifact": false,
+      "requiredControls": [
+        "stable interface",
+        "provider metadata",
+        "conformance suite",
+        "fallback and freshness reporting"
+      ],
+      "successRule": "The shared conformance suite passes and provider identity does not leak into core branching semantics.",
+      "mayNotClaim": [
+        "authority from provider recall",
+        "core completion because one provider is reachable"
+      ]
+    },
+    {
+      "id": "evaluation-flywheel",
+      "label": "Evaluation Flywheel",
+      "purpose": "Convert accepted failures and successes into versioned regression cases and measured comparisons.",
+      "ownsArtifact": true,
+      "requiredControls": [
+        "reproducible case",
+        "suite and version",
+        "expected result",
+        "candidate identity",
+        "raw result and metrics"
+      ],
+      "successRule": "The case reproduces, is versioned, and is included in the named suite without weakening its expected outcome.",
+      "mayNotClaim": [
+        "application correctness from evaluator correctness",
+        "best-in-class performance without a measured comparison"
+      ]
+    }
+  ],
+  "currentMigration": [
+    {
+      "currentName": "Context loop",
+      "targetType": "gate",
+      "targetName": "Context Preflight Gate"
+    },
+    {
+      "currentName": "Agent execution contract",
+      "targetType": "agent-loop",
+      "targetName": "AgentLoopContractV1"
+    },
+    {
+      "currentName": "Product package loop",
+      "targetType": "agent-loop",
+      "targetName": "Product Portfolio Judgment and Product Definition plus Implementation and UX composition"
+    },
+    {
+      "currentName": "Live failure loop",
+      "targetType": "agent-loop",
+      "targetName": "Incident Repair Agent Loop"
+    },
+    {
+      "currentName": "Release loop",
+      "targetType": "pipeline",
+      "targetName": "Release Outcome Pipeline"
+    },
+    {
+      "currentName": "KGv2/Repo Graph loop",
+      "targetType": "adapter",
+      "targetName": "Knowledge Context Port adapters"
+    },
+    {
+      "currentName": "Review loop",
+      "targetType": "gate",
+      "targetName": "Independent Evaluator and Repair Gate"
+    },
+    {
+      "currentName": "Agent regression evidence",
+      "targetType": "evaluation-flywheel",
+      "targetName": "Agent Evaluation Flywheel"
+    }
+  ],
+  "loopProfiles": [
+    {
+      "id": "research",
+      "profilePath": "governance/agent-system/loops/research.v1.json"
+    },
+    {
+      "id": "product-definition",
+      "profilePath": "governance/agent-system/loops/product-definition.v1.json"
+    },
+    {
+      "id": "implementation",
+      "profilePath": "governance/agent-system/loops/implementation.v1.json"
+    },
+    {
+      "id": "ux-creation",
+      "profilePath": "governance/agent-system/loops/ux-creation.v1.json"
+    },
+    {
+      "id": "security-authority",
+      "profilePath": "governance/agent-system/loops/security-authority.v1.json"
+    },
+    {
+      "id": "incident-repair",
+      "profilePath": "governance/agent-system/loops/incident-repair.v1.json"
+    },
+    {
+      "id": "release-outcome",
+      "profilePath": "governance/agent-system/loops/release-outcome.v1.json"
+    }
+  ],
+  "terminalStates": [
+    {
+      "id": "succeeded",
+      "success": true,
+      "requiredEvidence": [
+        "accepted evaluation",
+        "artifact hashes",
+        "required environment readback",
+        "reconciled effects",
+        "final source status"
+      ]
+    },
+    {
+      "id": "failed_verification",
+      "success": false,
+      "requiredEvidence": [
+        "failed assertions",
+        "commands and counts",
+        "repair history"
+      ]
+    },
+    {
+      "id": "blocked",
+      "success": false,
+      "requiredEvidence": [
+        "blocker identity",
+        "checks exhausted",
+        "safe next action"
+      ]
+    },
+    {
+      "id": "approval_required",
+      "success": false,
+      "requiredEvidence": [
+        "proposed effect",
+        "target and impact",
+        "required approver",
+        "rollback and readback plan"
+      ]
+    },
+    {
+      "id": "budget_exhausted",
+      "success": false,
+      "requiredEvidence": [
+        "budget consumption",
+        "best known state",
+        "remaining gap"
+      ]
+    },
+    {
+      "id": "cancelled",
+      "success": false,
+      "requiredEvidence": [
+        "actor",
+        "reason",
+        "effect reconciliation status"
+      ]
+    }
+  ],
+  "evidenceLevels": [
+    {
+      "id": "source-only",
+      "rank": 0,
+      "promotable": true,
+      "meaning": "Implementation or documentation exists; no execution proof."
+    },
+    {
+      "id": "unit",
+      "rank": 1,
+      "promotable": true,
+      "meaning": "Focused deterministic or automated test executed."
+    },
+    {
+      "id": "simulated-integration",
+      "rank": 2,
+      "promotable": true,
+      "meaning": "Integrated flow executed against local or simulated dependencies."
+    },
+    {
+      "id": "simulated-host",
+      "rank": 3,
+      "promotable": true,
+      "meaning": "Flow executed inside a host simulator; not real-host proof."
+    },
+    {
+      "id": "exact-candidate",
+      "rank": 4,
+      "promotable": true,
+      "meaning": "Checks executed against the exact clean candidate commit, tree, and dependency locks."
+    },
+    {
+      "id": "real-host-chain",
+      "rank": 5,
+      "promotable": true,
+      "meaning": "Flow executed on the named real host, network, or chain with exact provenance and required finality."
+    },
+    {
+      "id": "live-user",
+      "rank": 6,
+      "promotable": true,
+      "meaning": "Observed participant journey with consent and redacted evidence."
+    },
+    {
+      "id": "release",
+      "rank": 7,
+      "promotable": true,
+      "meaning": "Published artifact is cryptographically tied to the exact candidate and deployment record."
+    },
+    {
+      "id": "local-blocked",
+      "rank": null,
+      "promotable": false,
+      "meaning": "Useful local evidence of an unresolved blocker; it cannot promote state."
+    }
+  ],
+  "packetFamilies": {
+    "acceptedOrFinal": "OutcomePacketV1",
+    "incompleteOrInterrupted": "ContinuationPacketV1",
+    "pr14EvidencePacketDisposition": "Merge its fields into OutcomePacketV1 evidence assertions; do not retain a second packet family."
+  },
+  "knowledgePort": {
+    "name": "KnowledgeContextPortV1",
+    "operations": [
+      "read_context",
+      "record_outcome",
+      "verify_recall"
+    ],
+    "adapters": [
+      "exact-source",
+      "repo-graph",
+      "kgv2",
+      "mock-kgv3"
+    ],
+    "rule": "Backend identity is evidence metadata and may not change core loop semantics."
+  },
+  "hardStops": [
+    "product-law conflict",
+    "same-level process authority conflict",
+    "wrong root, branch, or source identity",
+    "unattributed dirty path",
+    "subjective expected outcome without objective assertions",
+    "missing evaluator",
+    "unbounded repair",
+    "unknown or unreconciled external effect",
+    "expired or missing approval",
+    "self-review of a critical package",
+    "stale or cross-root knowledge presented as current fact",
+    "claim stronger than evidence"
+  ]
+}

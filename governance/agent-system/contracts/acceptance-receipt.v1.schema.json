@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/governance/agent-system/contracts/acceptance-receipt.v1.schema.json",
+  "title": "Acceptance Receipt V1",
+  "type": "object",
+  "required": ["receipt_version", "receipt_id", "surface", "candidate", "changed_paths", "changed_path_manifest_digest", "changed_path_manifest_sources", "governed_rules", "profiles", "evidence_level", "contracts", "outcomes", "runner_provenance", "execution_attestations", "knowledge_receipts", "context_receipt", "checks", "verdict", "failures", "created_at", "receipt_digest"],
+  "properties": {
+    "receipt_version": { "const": "1.0.0" },
+    "receipt_id": { "type": "string", "pattern": "^acceptance_receipt_[a-z0-9]{12}$" },
+    "surface": { "enum": ["product_finish", "pr_merge", "release"] },
+    "candidate": { "type": "object" },
+    "changed_paths": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "changed_path_manifest_digest": { "$ref": "#/$defs/digest" },
+    "changed_path_manifest_sources": { "type": "array", "items": { "type": "object" } },
+    "governed_rules": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "profiles": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "evidence_level": { "enum": ["source-only", "unit", "simulated-integration", "simulated-host", "exact-candidate", "real-host-chain", "live-user", "release", "local-blocked"] },
+    "contracts": { "type": "array", "items": { "type": "object" } },
+    "outcomes": { "type": "array", "items": { "type": "object" } },
+    "runner_provenance": { "type": "array", "items": { "type": "object" } },
+    "execution_attestations": { "type": "array", "items": { "type": "object" } },
+    "knowledge_receipts": { "type": "array", "items": { "type": "object" } },
+    "context_receipt": { "type": "object" },
+    "checks": { "type": "integer", "minimum": 0 },
+    "verdict": { "enum": ["governed", "ungoverned", "unverified"] },
+    "failures": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "created_at": { "type": "string", "format": "date-time" },
+    "receipt_digest": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": { "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" } },
+  "additionalProperties": false
+}

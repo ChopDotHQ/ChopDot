@@ -1,0 +1,15 @@
+{
+  "rubric_version": "1.0.0",
+  "rubric_id": "rubric-security-authority-v1",
+  "profile_id": "security-authority",
+  "score_range": { "minimum": 0, "maximum": 100 },
+  "pass_threshold": 100,
+  "hard_fail_rules": ["SEC-CRITICAL", "SEC-HIGH", "SEC-AUTHORITY", "SEC-INDEPENDENCE", "SEC-EVIDENCE"],
+  "dimensions": [
+    { "id": "SEC-CRITICAL", "weight": 25, "measurement": "Count unresolved findings classified critical in the affected scope.", "full_credit": "Unresolved critical finding count equals zero.", "zero_credit": "At least one critical finding is unresolved, disputed without evidence, or omitted.", "evidence_required": ["finding index", "verification evidence"] },
+    { "id": "SEC-HIGH", "weight": 20, "measurement": "Count unresolved findings classified high in the affected scope.", "full_credit": "Unresolved high finding count equals zero.", "zero_credit": "At least one high finding is unresolved, disputed without evidence, or omitted.", "evidence_required": ["finding index", "verification evidence"] },
+    { "id": "SEC-AUTHORITY", "weight": 20, "measurement": "Join every added, removed, or widened authority edge to code, actor, asset, and governing source.", "full_credit": "Unmapped authority delta count equals zero.", "zero_credit": "Any authority change is implicit or provider state is treated as product authority.", "evidence_required": ["authority delta map", "source identities"] },
+    { "id": "SEC-INDEPENDENCE", "weight": 20, "measurement": "Compare author identity with the accepting evaluator identity.", "full_credit": "The critical package is accepted by a different actor.", "zero_credit": "The author closes their own critical package or reviewer identity is absent.", "evidence_required": ["author identity", "reviewer identity", "review verdict"] },
+    { "id": "SEC-EVIDENCE", "weight": 15, "measurement": "Inspect every finding and acceptance statement for candidate identity and evidence boundary.", "full_credit": "Unbounded security claim count equals zero.", "zero_credit": "Any security claim exceeds its inspected candidate or evidence.", "evidence_required": ["candidate digest", "evidence boundary report"] }
+  ]
+}

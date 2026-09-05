@@ -1,0 +1,35 @@
+{
+  "profile_version": "1.0.0",
+  "profile_id": "implementation",
+  "profile_digest": "1ebd052945f32958e01cd5b76f0f0116ba029877670e036f499ae3f49fbc37bd",
+  "kind": "agent_loop_profile",
+  "description": "Produces a bounded, reviewable code patch whose declared requirements pass focused and applicable production-entrypoint proof.",
+  "contract_schema_ref": "../contracts/agent-loop-contract.v1.schema.json",
+  "artifact_contract": {
+    "artifact_types": ["ImplementationPatchV1", "TestEvidencePacketV1"],
+    "required_fields": ["requirement_mapping", "changed_paths", "patch_digest", "focused_tests", "regression_tests", "production_entrypoint_result", "documentation_impact", "dirty_path_attribution"],
+    "required_evidence_level": "simulated-integration"
+  },
+  "expected_outcome": {
+    "statement": "Every declared requirement passes its focused checks and applicable production entrypoint without unrelated path, authority, privacy, or release regressions.",
+    "assertions": [
+      { "id": "IMPL-REQUIREMENTS", "description": "Every declared implementation requirement has an accepted evaluation.", "measurement": "unaccepted_requirement_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "unit", "hard_fail": true },
+      { "id": "IMPL-FOCUSED", "description": "All focused checks complete with zero failing cases.", "measurement": "focused_test_failure_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "unit", "hard_fail": true },
+      { "id": "IMPL-PRODUCTION", "description": "The applicable production entrypoint completes the declared journey or is explicitly non-applicable by deterministic classification.", "measurement": "production_entrypoint_status", "operator": "one_of", "expected": ["passed", "not_applicable_by_rule"], "minimum_evidence_level": "simulated-integration", "hard_fail": true },
+      { "id": "IMPL-SCOPE", "description": "No unattributed path lies outside the declared write scope.", "measurement": "unattributed_out_of_scope_path_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+      { "id": "IMPL-CRITICAL", "description": "Critical authority, privacy, and release regressions remain zero.", "measurement": "critical_regression_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true }
+    ]
+  },
+  "context_gate": { "exact_root": true, "freshness_required": true, "same_level_conflict": "blocked", "wrong_root": "blocked" },
+  "policy_refs": { "authority": "agent-authority-boundaries-v1", "evidence": "agent-evidence-levels-v1", "terminal_states": "agent-terminal-states-v1", "retry_budgets": "agent-retry-budgets-v1" },
+  "authority": { "default_class": "repo_local_write", "allowed_effects": ["write_in_scope_file", "run_formatter", "run_local_test", "create_redacted_evidence"], "approval_required_effects": ["commit", "push", "pr_create", "dependency_install", "external_write"], "critical_independent_review": true },
+  "budgets": { "retry_budget_id": "budget-implementation-v1", "max_iterations": 3, "max_retries": 2, "same_blocker_limit": 3 },
+  "evaluator": { "rubric_path": "governance/agent-system/evals/rubrics/implementation.v1.json", "deterministic_checks": ["schema_and_static_checks", "focused_test_suite", "wave_regression_suite", "diff_scope_check", "production_entrypoint_check"], "independence": "different_actor", "pass_threshold": 0.9, "hard_failures": ["IMPL-REQUIREMENTS", "IMPL-FOCUSED", "IMPL-PRODUCTION", "IMPL-SCOPE", "IMPL-CRITICAL"] },
+  "evidence": { "minimum_level": "simulated-integration", "required_artifacts": ["patch_digest", "test_evidence_packet", "diff_review", "documentation_impact"], "exact_counts_required": true, "candidate_identity_required": true },
+  "environment_observations": ["exact Git status and candidate identity", "focused test runtime", "production entrypoint when applicable"],
+  "failure_packet": { "artifact_type": "ContinuationPacketV1", "required_fields": ["failed_assertions", "exact_test_counts", "partial_artifact_hashes", "dirty_path_attribution", "single_next_bounded_task"], "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_preflight": { "port": "KnowledgeContextPortV1", "preflight_required": true, "record_outcome": true, "verify_recall": true, "provider_neutral": true },
+  "repair_policy": { "changed_hypothesis_required": true, "scope_expansion": "new_contract", "same_blocker_limit": 3, "regression_required": true },
+  "example_contract_ref": "examples/implementation.contract.v1.json"
+}

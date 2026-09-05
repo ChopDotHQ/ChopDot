@@ -1,0 +1,16 @@
+✔ one signed limited action yields one explicit scoped response and no membership authority (57.4105ms)
+✔ recipient, account, action, expense, amount, currency, expiry, and signature are bound (18.963084ms)
+✔ group history, secret, membership role, organizer and receiver grants are forbidden fields (2.082791ms)
+✔ conflicting request or response replay preserves first content (11.947959ms)
+✔ limited action URL carries one exact signed action and no membership or secret fields (41.810916ms)
+✔ limited action survives restart, retries exact signed response, and exposes no membership state (64.256292ms)
+✔ wrong recipient, expired request, and absent organizer authority fail closed without persistence (2.150917ms)
+✔ conflicting retry and dropped outbox persistence fail visibly without changing first response (21.157917ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 543.50325

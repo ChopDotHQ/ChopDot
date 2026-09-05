@@ -1,0 +1,18 @@
+{
+  "schema": "chopdot.product.checkpoint.v1",
+  "sequence": 1,
+  "state": "checkpoint",
+  "cards": [
+    "P-034",
+    "P-032",
+    "P-035",
+    "P-012",
+    "P-022",
+    "P-030"
+  ],
+  "summary": "Wave 0 product law, catalog, isolation, native boundaries, and build gates committed",
+  "evidence": "artifacts/release/wave-0-provenance.json",
+  "evidenceQuality": "partial",
+  "source": "product/cards.md",
+  "sourceSha256": "2f12c19a65341b9a17a81b05504692ab7691d122efb75270ce835d93d617b59c"
+}

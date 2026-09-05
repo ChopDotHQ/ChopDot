@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-07-30T10:43:59.740Z",
+  "network": {
+    "rpcUrl": "https://services.polkadothub-rpc.com/testnet",
+    "chainId": 420420417
+  },
+  "participants": {
+    "mina": "0x7f7Ce4722c61C6616f5C47E905f42A1D02f18b3A",
+    "leo": "0x6a6F9609C3798AaD382276cB7804e5E778996C6C"
+  },
+  "amounts": {
+    "total": "1.845",
+    "leoShare": "0.615"
+  },
+  "inviteLength": 1505,
+  "minaBalance": {
+    "before": "5001.033816864",
+    "after": "5001.648816864"
+  },
+  "leoSplit": {
+    "id": "s-1785408221508rndrifnwg",
+    "expenseId": "e-1785408221504rndzgv15",
+    "userId": "u-d301e794-28d8-40e6-821a-62b865a99572",
+    "amount": 0.615,
+    "status": "confirmed",
+    "walletPayment": {
+      "txHash": "0x9f49491c0113cf9158c2ad8e6a7e21cb03cc6a1d6814a5dd4cced0fac79bf779",
+      "chainId": "0x190f1b41",
+      "from": "0x6a6f9609c3798aad382276cb7804e5e778996c6c",
+      "to": "0x7f7ce4722c61c6616f5c47e905f42a1d02f18b3a",
+      "amountBaseUnits": "615000000000000000",
+      "blockNumber": "0xb0fb98",
+      "confirmedAt": "2026-07-30T10:43:59.429Z"
+    }
+  },
+  "confirmedByChain": true,
+  "errors": [],
+  "transcript": [
+    "\n1. Mina sets up and connects a wallet",
+    "   Mina pay tab: Receive Money | Choose a default way to receive money. | Cash | Hand it over in person | Bank Details | Share sort code & account | Payment Link | Monzo, Revolut, etc. | WALLET | PAS wallet connected | 0x7f7c...8b3a | Home | Friends | Pay | History | Settings",
+    "   currency=PAS  wallet=0x7f7ce4722c61c6616f5c47e905f42a1d02f18b3a",
+    "\n2. Mina creates the group and adds a spend",
+    "   Friday Crew | M | L | N | Total spend | PAS 1.84 | Members (3) | M | Mina (You) | Gets PAS 1.23 | L | Leo | Owes PAS 0.61 | N | Nina | Owes PAS 0.61 | Settle up | Add expense",
+    "\n3. Mina sends Leo a payment request",
+    "   Settle up | Who pays who | The simplest way to clear this group. | L | Leo | Pays | PAS 0.61 | To Mina | Link ready | View request | N | Nina | Pays | PAS 0.61 | To Mina | Send link",
+    "\n4. Mina shares the invite",
+    "   invite 1505 chars",
+    "\n5. Leo joins from the invite on a clean device",
+    "   Friday Crew | M | L | N | Total spend | PAS 1.84 | Members (3) | M | Mina | Gets PAS 1.23 | L | Leo (You) | Ready to pay | N | Nina | Owes PAS 0.61 | Payment requested | Add expense",
+    "\n6. Leo connects his own wallet",
+    "   Leo pay tab: Receive Money | Choose a default way to receive money. | Cash | Hand it over in person | Bank Details | Share sort code & account | Payment Link | Monzo, Revolut, etc. | WALLET | PAS wallet connected | 0x6a6f...6c6c | Home | Friends | Pay | History | Settings",
+    "\n7. Leo opens the request and pays on chain",
+    "   Pay Mina | L | Friday Crew | Your share | PAS 0.61 | Pay Mina",
+    "   Leo broadcast 0x9f49491c0113cf9158c2ad8e6a7e21cb03cc6a1d6814a5dd4cced0fac79bf779",
+    "   Payment received | Payment received | Your share is settled. | PAS 0.61 | To Mina | View payment | Back to group",
+    "\n   Mina balance 5001.033816864 -> 5001.648816864",
+    "   Leo's split status: confirmed",
+    "   walletPayment tx: 0x9f49491c0113cf9158c2ad8e6a7e21cb03cc6a1d6814a5dd4cced0fac79bf779",
+    "\nRESULT: PASS — an on-chain payment confirmed the split, no receiver action"
+  ]
+}

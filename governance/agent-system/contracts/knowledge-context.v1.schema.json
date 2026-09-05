@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/governance/agent-system/contracts/knowledge-context.v1.schema.json",
+  "title": "Knowledge Context V1",
+  "description": "Provider-neutral result of read_context(scope, question, authority_policy).",
+  "type": "object",
+  "required": ["context_version", "request_id", "scope", "question", "authority_policy", "backend", "backend_version", "runtime", "capabilities", "requested_read_path", "active_read_path", "fallback_status", "facts", "citations", "source_identities", "freshness", "confidence", "stale_reasons", "current_outcome_digest", "observed_at"],
+  "properties": {
+    "context_version": { "const": "1.0.0" },
+    "request_id": { "type": "string", "pattern": "^knowledge_request_" },
+    "scope": {
+      "type": "object",
+      "required": ["root", "branch", "commit"],
+      "properties": {
+        "root": { "type": "string", "pattern": "^/" },
+        "branch": { "type": "string", "minLength": 1 },
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      },
+      "additionalProperties": false
+    },
+    "question": { "type": "string", "minLength": 3 },
+    "authority_policy": { "type": "string", "minLength": 1 },
+    "backend": { "type": "string", "minLength": 1 },
+    "backend_version": { "type": "string", "minLength": 1 },
+    "runtime": { "type": "string", "minLength": 1 },
+    "capabilities": { "type": "array", "uniqueItems": true, "items": { "enum": ["health", "read_context", "record_outcome", "verify_recall", "citations", "durable_record", "freshness", "fallback_report"] } },
+    "requested_read_path": { "type": "string", "minLength": 1 },
+    "active_read_path": { "type": "string", "minLength": 1 },
+    "fallback_status": { "enum": ["none", "allowed", "disallowed", "active", "unavailable", "unknown"] },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fact_id", "statement", "citation_ids", "confidence"],
+        "properties": {
+          "fact_id": { "type": "string", "pattern": "^fact_" },
+          "statement": { "type": "string", "minLength": 3 },
+          "citation_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^citation_" } },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "citations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["citation_id", "source_identity_id", "path", "sha256"],
+        "properties": {
+          "citation_id": { "type": "string", "pattern": "^citation_" },
+          "source_identity_id": { "type": "string", "pattern": "^source_" },
+          "path": { "type": "string", "minLength": 1 },
+          "line": { "type": "integer", "minimum": 1 },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "source_identities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_identity_id", "root", "branch", "commit", "path", "sha256"],
+        "properties": {
+          "source_identity_id": { "type": "string", "pattern": "^source_" },
+          "root": { "type": "string", "pattern": "^/" },
+          "branch": { "type": "string", "minLength": 1 },
+          "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "freshness": {
+      "type": "object",
+      "required": ["observed_at", "max_age_seconds", "age_seconds", "status"],
+      "properties": {
+        "observed_at": { "type": "string", "format": "date-time" },
+        "max_age_seconds": { "type": "integer", "minimum": 0 },
+        "age_seconds": { "type": "integer", "minimum": 0 },
+        "status": { "enum": ["fresh", "stale", "unknown"] }
+      },
+      "additionalProperties": false
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "stale_reasons": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "current_outcome_digest": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "observed_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

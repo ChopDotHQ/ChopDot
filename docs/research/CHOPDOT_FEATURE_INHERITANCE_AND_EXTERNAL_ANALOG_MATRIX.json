@@ -1,0 +1,4345 @@
+{
+  "schema_version": 1,
+  "kind": "chopdot_feature_inheritance_and_external_analog_matrix",
+  "generated_at": "2026-08-22T21:10:21.313Z",
+  "programme": "Programme B - product/platform research",
+  "authority_boundary": "External projects can supply adapters and patterns. One Chop Core remains the sole authority for membership, organizer powers, canonical money events, confirmation, closeout, and recovery.",
+  "source_identities": {
+    "canonical_product_cockpit": {
+      "root": "/Users/devinsonpena/ChopDot",
+      "branch": "codex/chopdot-agentops-bridge-docs",
+      "head": "2f28c1e425a8fc2b8e01dd37a3032746b92d80cb",
+      "dirty": true,
+      "status_byte_count": 23794,
+      "status_sha256": "f76633314e73ab2e5414508b7f288cdd9690e7034f89c5a607cc55094224413a",
+      "status_records": [
+        " M .gitignore",
+        " M backend/README.md",
+        " M backend/package-lock.json",
+        " M backend/package.json",
+        " M backend/prisma/schema.prisma",
+        " M backend/src/__tests__/settlements.routes.test.ts",
+        " M backend/src/__tests__/users.routes.test.ts",
+        " M backend/src/index.ts",
+        " M backend/src/lib/prisma.ts",
+        " M backend/src/routes/settlements.ts",
+        " M backend/src/routes/users.ts",
+        " M dist-dot-host.car",
+        " D dist-dot-host/assets/Logos/Subwallet Logo.png",
+        " D dist-dot-host/assets/Logos/choptdot_whitebackground.png",
+        " D dist-dot-host/assets/Logos/polkadotjs.png",
+        " D dist-dot-host/assets/Logos/walletconnect.png",
+        " D dist-dot-host/assets/background-polka-a.png",
+        " D dist-dot-host/assets/background-polka-a_inverted.png",
+        " D dist-dot-host/assets/background-polka-b.png",
+        " D dist-dot-host/assets/background-polka-c.png",
+        " D dist-dot-host/assets/background-polka-d.png",
+        " D dist-dot-host/assets/index-C0N5ARpD.css",
+        " D dist-dot-host/assets/index-nOD8bJ4i.js",
+        " D dist-dot-host/index.html",
+        " M docs/AGENTOPS_TASK_QUEUE.md",
+        " M docs/AGENT_DOCTRINE_FEEDBACK.md",
+        " M docs/CHOPDOT_STACK_AND_DELIVERY_UNRAVELLING_2026-07-28.md",
+        " M docs/superpowers/plans/2026-06-17-chopdot-dot-master-execution.md",
+        " M package-lock.json",
+        " M product/board.html",
+        " M product/cards.md",
+        " M product/decision-contracts.md",
+        " M product/decisions.md",
+        " M product/evidence/current-app-inventory-latest.json",
+        " M product/evidence/product-cockpit-screenshot-latest.json",
+        " M product/evidence/product-cockpit-visual-review-latest.json",
+        " M product/evidence/product-history-latest.json",
+        " M product/evidence/product-integrity-latest.json",
+        " M product/evidence/product-readiness-latest.json",
+        " M product/evidence/product-status-latest.json",
+        " M product/evidence/product-traceability-latest.json",
+        " M product/evidence/screenshots/product-cockpit-drawer-latest.png",
+        " M product/evidence/screenshots/product-cockpit-latest.png",
+        " M product/generated/agent-routing-board.md",
+        " M product/generated/current-app-map.md",
+        " M product/generated/current-product-map.md",
+        " M product/generated/feature-to-test-coverage.md",
+        " M product/generated/friction-register.md",
+        " M product/generated/journey-to-component-map.md",
+        " M product/generated/product-cockpit.html",
+        " M product/generated/product-resume.md",
+        " M product/generated/readiness-scorecard.md",
+        " M product/product-principles.md",
+        " M product/roadmap.md",
+        " M scripts/chopdot-product-cockpit.mjs",
+        " M src/App.tsx",
+        " M src/bot/telegramBot.ts",
+        " M src/chapter/types.ts",
+        " M src/components/AppRouter.tsx",
+        " M src/components/BottomSheet.tsx",
+        " M src/components/BottomTabBar.tsx",
+        " M src/components/QuickKeypadSheet.tsx",
+        " M src/components/SettleSheet.tsx",
+        " M src/components/auth/panels/WalletLoginPanel.tsx",
+        " M src/components/capture/CaptureChapterPanel.tsx",
+        " M src/components/capture/CapturePotHomeSection.tsx",
+        " M src/components/capture/CaptureShareActions.tsx",
+        " M src/components/capture/SettlementHandoffPanel.tsx",
+        " M src/components/commit/ChapterPanel.tsx",
+        " M src/components/expenses/HeroDashboard.tsx",
+        " M src/components/screens/CaptureConfirmScreen.tsx",
+        " M src/components/screens/CaptureHandoffScreen.tsx",
+        " M src/components/screens/CreatePot.tsx",
+        " M src/components/screens/ExpensesTab.tsx",
+        " M src/components/screens/MembersTab.tsx",
+        " M src/components/screens/PotHome.tsx",
+        " M src/components/screens/PotsHome.tsx",
+        " D src/components/screens/SavingsRecordScreens.test.tsx",
+        " D src/components/screens/SettleHome.test.ts",
+        " M src/components/screens/SettleHome.tsx",
+        " M src/components/screens/SettleSelection.tsx",
+        " M src/components/screens/SettlementConfirmation.tsx",
+        " M src/components/screens/SpendCardScreen.tsx",
+        " M src/components/settle/payment-method-selector.tsx",
+        " M src/components/settle/settle-footer.tsx",
+        " M src/components/settle/settlement-summary-card.tsx",
+        " M src/components/ui/button.tsx",
+        " M src/hooks/useBusinessActions.ts",
+        " M src/hooks/useCaptureLinkFlow.test.tsx",
+        " M src/hooks/useChapterState.ts",
+        " M src/hooks/useFabState.ts",
+        " M src/hooks/usePendingActions.ts",
+        " M src/hooks/usePotBalances.ts",
+        " M src/hooks/usePotDataMerge.ts",
+        " M src/hooks/useScreenValidation.ts",
+        " M src/hooks/useSettlementActions.ts",
+        " M src/hooks/useSpendSession.ts",
+        " M src/hooks/useTabNavigation.ts",
+        " M src/hooks/useUrlSync.ts",
+        " M src/index.css",
+        " M src/nav.ts",
+        " D src/routing/screen-props/misc-screens.test.ts",
+        " M src/routing/screen-props/pot-screens.tsx",
+        " M src/routing/screen-props/settle-screens.tsx",
+        " M src/schema/pot.ts",
+        " M src/services/capture/SettlementAdapterRegistry.ts",
+        " M src/services/capture/adapters/ReferenceHandoffAdapter.ts",
+        " M src/services/capture/chapterSync.ts",
+        " M src/services/capture/types.ts",
+        " M src/services/capture/types/settlementAdapter.ts",
+        " D src/services/closeout/pvmCloseout.test.ts",
+        " D src/services/closeout/trackedRecovery.test.ts",
+        " M src/services/data/repositories/SettlementRepository.ts",
+        " M src/services/data/seeds/defaultPots.ts",
+        " M src/styles/globals.css",
+        " M src/types/app.ts",
+        " M src/utils/currencyFormat.ts",
+        " M src/utils/migratePot.ts",
+        " M tests/e2e/agent-wallet-pas-scenarios.spec.ts",
+        " M tests/e2e/capture-firma-webhook.spec.ts",
+        " M tests/e2e/capture-image-receipt-flow.spec.ts",
+        " M tests/e2e/capture-pay-confirm-link.spec.ts",
+        " M tests/e2e/capture-spend-loop.spec.ts",
+        " M tests/e2e/capture-wallet-pass-spend.spec.ts",
+        " M tests/e2e/chopdot-dot-native-session.spec.ts",
+        " M vite.config.ts",
+        "?? .env.example",
+        "?? backend/.env.example",
+        "?? backend/src/__tests__/actor-boundary.routes.test.ts",
+        "?? backend/src/__tests__/auth.middleware.test.ts",
+        "?? backend/src/auth/",
+        "?? backend/src/integration/",
+        "?? backend/src/routes/ai.ts",
+        "?? backend/test-prisma.ts",
+        "?? dist-dot-host/.bulletin-deploy/",
+        "?? dist-dot-host/assets/index-CaI9p1ek.js",
+        "?? dist-dot-host/assets/index-CodVpF86.css",
+        "?? dist-dot-host/dev/",
+        "?? dist-dot-host/dot-lab.html",
+        "?? dist.car",
+        "?? docs/AGENTOPS_OPERATOR_BRIEF.md",
+        "?? docs/AI_Product_Manager/",
+        "?? docs/CHOPDOT_BUZZ_OPERATING_PROFILE.md",
+        "?? docs/CHOPDOT_MAIN_APP_SHELL_HOLY_GRAIL_ANALYSIS_2026-08-03.md",
+        "?? docs/adr/",
+        "?? docs/chopdot-dot/deployment-reconciliation-2026-08-03.md",
+        "?? docs/chopdot-dot/devnet-product-code-and-journey-review-2026-08-09.md",
+        "?? docs/chopdot-dot/holy-grail-capability-inheritance-register-2026-08-12.md",
+        "?? docs/chopdot-dot/polkadot-dot-showcase-benchmark-2026-08-12.md",
+        "?? docs/security/",
+        "?? docs/superpowers/plans/2026-07-07-chopdot-dot-smoke-lane.md",
+        "?? docs/superpowers/plans/2026-08-01-chopdot-buzz-delivery-system.md",
+        "?? docs/superpowers/plans/2026-08-03-buzz-durability-and-product-reviewer.md",
+        "?? docs/superpowers/plans/2026-08-03-chopdot-comparative-adversarial-campaign.md",
+        "?? docs/superpowers/plans/2026-08-03-chopdot-model-league.md",
+        "?? docs/superpowers/plans/2026-08-03-main-app-shell-holy-grail-documentation.md",
+        "?? docs/superpowers/plans/2026-08-08-chopdot-midnight-public-release.md",
+        "?? docs/superpowers/plans/2026-08-08-public-adversarial-agent-group-playtest.md",
+        "?? docs/superpowers/plans/2026-08-09-one-chopdot-recovery-and-convergence.md",
+        "?? docs/superpowers/plans/2026-08-09-two-way-native-payment-convergence.md",
+        "?? docs/superpowers/plans/2026-08-10-native-host-readiness-and-truth-reset.md",
+        "?? docs/superpowers/plans/2026-08-11-durable-general-shared-action-delivery.md",
+        "?? docs/superpowers/plans/2026-08-11-product-account-identity-migration.md",
+        "?? docs/superpowers/plans/2026-08-12-chopdot-all-hands-functional-candidate.md",
+        "?? docs/superpowers/plans/2026-08-12-chopdot-showcase-release-train.md",
+        "?? docs/superpowers/plans/2026-08-12-holy-grail-capability-and-participation-reconciliation.md",
+        "?? docs/superpowers/plans/2026-08-12-identity-access-credential-closure.md",
+        "?? docs/superpowers/plans/2026-08-12-persisted-deferred-inbound-actions.md",
+        "?? docs/superpowers/plans/2026-08-12-showcase-quality-chopdot-entrance.md",
+        "?? docs/superpowers/plans/2026-08-13-batch-2-actual-participation.md",
+        "?? docs/superpowers/plans/2026-08-13-batch-3-exact-money-recovery.md",
+        "?? docs/superpowers/plans/2026-08-13-batch-4-full-dinner-journey.md",
+        "?? docs/superpowers/plans/2026-08-13-batch-5-spending-group-cards.md",
+        "?? docs/superpowers/plans/2026-08-13-batch-6-freeze-and-prove.md",
+        "?? docs/superpowers/plans/2026-08-13-buzz-batch-1-2-qualification.md",
+        "?? docs/superpowers/plans/2026-08-13-core-money-event-foundation-integration.md",
+        "?? docs/superpowers/specs/",
+        "?? docs/telegram-chat-agent.md",
+        "?? docs/wiki/",
+        "?? ops/",
+        "?? playwright.config.ts",
+        "?? product/agent-reviews/",
+        "?? product/ai-manager/",
+        "?? product/design-references/",
+        "?? product/evidence/product-behavior-map-latest.json",
+        "?? product/evidence/screenshots/07-capture-handoff.png",
+        "?? product/evidence/screenshots/09-capture-confirm.png",
+        "?? product/evidence/screenshots/normal-pot-j001-desktop-compare/",
+        "?? product/evidence/screenshots/normal-pot-j001-pass/",
+        "?? product/evidence/screenshots/normal-pot-j003-close-record/",
+        "?? product/evidence/screenshots/normal-pot-j008-layout-quality/",
+        "?? product/evidence/screenshots/normal-pot-lifecycle/",
+        "?? product/evidence/screenshots/normal-pot-reset/",
+        "?? product/evidence/screenshots/post-settlement-pot-state/",
+        "?? product/evidence/screenshots/settle-flow-review/",
+        "?? product/evidence/user-path-coverage-latest.json",
+        "?? product/generated/product-behavior-dashboard.html",
+        "?? product/generated/product-behavior-map.json",
+        "?? product/generated/product-behavior-map.md",
+        "?? product/generated/product-journey-map.html",
+        "?? product/generated/product-service-blueprint.html",
+        "?? product/generated/product-state-transition-map.mmd",
+        "?? product/generated/product-traceability-matrix.md",
+        "?? product/generated/user-path-coverage.html",
+        "?? product/generated/user-path-coverage.json",
+        "?? product/generated/user-path-coverage.md",
+        "?? product/generated/user-path-coverage.mmd",
+        "?? product/history/events/H-2026-06-27T10-30-21-reset-normal-pots-as-the-canonical-first-flow-hid-experi.json",
+        "?? product/history/events/H-2026-06-27T10-33-48-restored-normal-pot-add-expense-to-quick-add-by-default-.json",
+        "?? product/history/events/H-2026-06-27T13-11-39-applied-normal-pot-lifecycle-timing-expenses-view-focuse.json",
+        "?? product/history/events/H-2026-06-27T13-35-58-tightened-settle-up-lifecycle-selection-now-shows-one-op.json",
+        "?? product/history/events/H-2026-06-28T19-15-38-closed-the-post-settlement-loop-back-to-pot-returns-to-t.json",
+        "?? product/history/events/H-2026-06-28T19-27-48-added-the-journey-by-journey-review-plan-each-chopdot-fl.json",
+        "?? product/history/events/H-2026-06-28T19-35-06-added-executable-journey-review-gate-and-visual-quality-.json",
+        "?? product/history/events/H-2026-06-28T19-48-52-ran-j-001-normal-pot-expense-cycle-through-product-and-v.json",
+        "?? product/history/events/H-2026-06-28T20-02-21-improved-j-001-normal-pot-expense-tracking-focused-add-e.json",
+        "?? product/history/events/H-2026-06-28T20-08-21-completed-j-001-normal-pot-add-and-track-with-mobile-des.json",
+        "?? product/history/events/H-2026-06-28T20-33-28-completed-j-003-normal-pot-close-record-with-annotated-o.json",
+        "?? product/history/events/H-2026-06-28T20-33-59-completed-j-003-normal-pot-close-record-mobile-bottom-na.json",
+        "?? product/history/events/H-2026-06-28T20-53-36-completed-j-008-mobile-and-desktop-layout-quality-pass-f.json",
+        "?? product/history/events/H-2026-06-28T20-54-17-completed-j-008-mobile-and-desktop-polish-for-the-normal.json",
+        "?? product/history/events/H-2026-06-28T20-54-29-completed-j-008-mobile-and-desktop-layout-quality-pass-f.json",
+        "?? product/history/events/H-2026-06-28T20-54-45-started-telegram-first-chat-capture-agent-staged-chat-me.json",
+        "?? product/history/events/H-2026-06-28T20-59-18-ported-yourturn-telegram-openclaw-guardrails-to-p-020-al.json",
+        "?? product/history/events/H-2026-06-28T21-07-22-completed-p-009-agent-ui-audit-mina-organizer-flow-passe.json",
+        "?? product/history/events/H-2026-06-28T21-07-52-completed-p-009-normal-pot-agent-audit-and-created-p-021.json",
+        "?? product/history/events/H-2026-06-29T07-40-49-started-j-004-no-app-friend-payment-link-repair.json",
+        "?? product/history/events/H-2026-06-29T08-08-41-completed-j-004-no-app-friend-payment-link-with-screensh.json",
+        "?? product/history/events/H-2026-06-29T08-08-58-completed-p-021-j-004-no-app-friend-payment-link-with-fo.json",
+        "?? product/history/events/H-2026-06-29T08-32-08-started-p-001-dinner-split-pay-moment-capture-pass.json",
+        "?? product/history/events/H-2026-06-29T08-53-31-completed-p-001-dinner-split-pay-moment-capture-from-nor.json",
+        "?? product/history/events/H-2026-06-29T08-53-47-completed-p-001-dinner-split-pay-moment-capture-with-nor.json",
+        "?? product/history/events/H-2026-06-29T09-56-55-started-regular-pot-end-to-end-coherence-pass-from-the-s.json",
+        "?? product/history/events/H-2026-06-29T10-15-40-completed-regular-pot-end-to-end-coherence-normal-expens.json",
+        "?? product/history/events/H-2026-06-29T10-15-57-closed-p-022-regular-pot-end-to-end-coherence-s1-6-done-.json",
+        "?? product/history/events/H-2026-06-30T08-55-10-added-premium-money-app-design-reference-packet-for-slee.json",
+        "?? product/history/events/H-2026-06-30T09-00-03-clean-normal-pot-visible-copy-against-premium-money-app-.json",
+        "?? product/history/events/H-2026-06-30T09-13-51-finished-normal-pot-visible-language-cleanup-against-pre.json",
+        "?? product/history/events/H-2026-06-30T10-00-01-reaccepted-s1-normal-pot-journey-after-fresh-screenshot-.json",
+        "?? product/history/events/H-2026-06-30T11-34-16-applied-s1-screenshot-review-fixes-solid-add-expense-she.json",
+        "?? product/history/events/H-2026-06-30T12-05-31-completed-s1-final-sheet-boundary-cleanup-add-expense-no.json",
+        "?? product/history/events/H-2026-06-30T13-21-09-p-023-pas-test-wallet-payment-completed-with-screenshots.json",
+        "?? product/history/events/H-2026-06-30T14-42-27-p-024-dot-and-usdc-wallet-payment-checks-completed-with-.json",
+        "?? product/history/events/H-2026-06-30T17-49-14-executed-public-testnet-pas-and-test-usdc-agent-wallet-p.json",
+        "?? product/history/events/H-2026-06-30T18-04-35-receipt-capture-without-manual-first-entry-implementatio.json",
+        "?? product/history/events/H-2026-06-30T18-27-52-receipt-capture-now-starts-from-add-receipt-paste-link-o.json",
+        "?? product/history/events/H-2026-07-01T06-41-14-savings-circle-one-round-product-pass.json",
+        "?? product/history/events/H-2026-07-01T07-11-14-savings-circle-round-now-runs-through-mark-paid-confirm-.json",
+        "?? product/history/events/H-2026-07-01T07-46-53-emergency-pot-privacy-flow-using-batch-1-one-screen-one-.json",
+        "?? product/history/events/H-2026-07-01T08-05-06-emergency-pot-privacy-flow-now-runs-through-private-cont.json",
+        "?? product/history/events/H-2026-07-01T08-22-42-applied-batch-2-settlement-visual-reference-to-p-007-eme.json",
+        "?? product/history/events/H-2026-07-01T08-46-22-documented-batch-1-and-batch-2-consolidated-design-princ.json",
+        "?? product/history/events/H-2026-07-01T08-57-24-fixed-p-007-emergency-pot-screenshot-issue-removed-the-m.json",
+        "?? product/history/events/H-2026-07-01T12-29-48-expanded-ai-studio-universal-mini-app-shell-plan-with-cu.json",
+        "?? product/history/events/H-2026-07-01T12-39-14-added-first-class-spend-card-and-group-card-simulator-re.json",
+        "?? product/history/events/H-2026-07-03T10-19-09-p-022-first-screen-chf-currency-coherence-verified.json",
+        "?? product/history/events/H-2026-07-05T09-46-16-p-022-split-rows-now-show-currency-on-remaining-open-sha.json",
+        "?? product/history/events/H-2026-07-05T10-34-47-added-the-effortless-app-gate-to-chopdot-standards-locke.json",
+        "?? product/history/events/H-2026-07-05T11-12-21-added-repo-native-chopdot-wiki-with-adrs-generated-index.json",
+        "?? product/history/events/H-2026-07-06T18-52-50-added-context-intake-lane-so-codex-threads-and-agent-run.json",
+        "?? product/history/events/H-2026-07-14T14-09-41-implemented-the-server-derived-authenticated-actor-bound.json",
+        "?? product/history/events/H-2026-07-14T14-29-10-ran-p-025-database-actor-proof-real-postgres-projection-.json",
+        "?? product/history/events/H-2026-07-14T14-41-41-static-dot-baseline-proven-begin-host-identity-encrypted.json",
+        "?? product/history/events/H-2026-07-14T14-47-45-p-010-static-dot-blocker-removed-portable-host-bridge-en.json",
+        "?? product/history/events/H-2026-07-14T15-15-02-p-010-bridge-enabled-shell-deployed-at-cid-bafybeid27jig.json",
+        "?? product/history/events/H-2026-07-14T15-23-35-p-010-live-product-account-qr-ceremony-proven-completion.json",
+        "?? product/history/events/H-2026-07-14T15-39-48-p-010-official-host-simulation-passed-distinct-product-a.json",
+        "?? product/history/events/H-2026-07-14T16-13-17-corrected-p-010-routing-full-xcode-and-a-source-built-io.json",
+        "?? product/history/events/H-2026-07-14T16-31-11-five-person-official-polkadot-host-stress-passed-after-r.json",
+        "?? product/history/events/H-2026-07-14T17-37-37-p-010-five-person-normal-ui-polkadot-host-proof-passed-m.json",
+        "?? product/history/events/H-2026-07-15T09-55-01-started-connected-wallet-pas-five-person-settlement-proo.json",
+        "?? product/history/events/H-2026-07-15T10-35-07-completed-connected-wallet-pas-five-person-settlement-pr.json",
+        "?? product/history/events/H-2026-07-15T12-43-34-p-022-portable-shell-keeps-groups-editable-after-a-payme.json",
+        "?? product/history/events/H-2026-07-15T13-33-15-p-022-live-dot-shell-now-supports-forgotten-expenses-aft.json",
+        "?? product/history/events/H-2026-07-15T14-45-08-live-dot-guest-payment-link-now-opens-on-a-fresh-device-.json",
+        "?? product/history/events/H-2026-07-15T14-47-30-receipt-ocr-review-and-correction-passed-web-and-mobile-.json",
+        "?? product/history/events/H-2026-07-15T14-50-40-visual-review-found-d-019-stale-capture-errors-and-toast.json",
+        "?? product/history/events/H-2026-08-01T12-24-53-p-028-buzz-team-imported-and-private-four-role-startup-p.json",
+        "?? product/history/events/H-2026-08-02T19-16-16-p-028-safe-runtime-flags-passed-message-only-canary-fail.json",
+        "?? product/history/events/H-2026-08-02T20-05-36-promote-bounded-buzz-message-only-steward-and-reviewer-l.json",
+        "?? product/history/events/H-2026-08-03T10-06-52-audit-and-preserve-buzz-then-qualify-product-journey-rev.json",
+        "?? product/history/events/H-2026-08-03T11-51-07-qualified-product-journey-reviewer-on-three-independentl.json",
+        "?? product/history/events/H-2026-08-03T11-51-16-p-029-buzz-durability-and-product-journey-reviewer-quali.json",
+        "?? product/history/events/H-2026-08-08T19-19-18-midnight-programme-a-portable-shell-release-to-chopdotpr.json",
+        "?? product/history/events/H-2026-08-08T19-42-06-published-and-publicly-proved-the-portable-shell-at-chop.json",
+        "?? product/history/events/H-2026-08-08T19-42-29-p-030-shipped-portable-shell-live-at-chopdotproof01-dot-.json",
+        "?? product/history/events/H-2026-08-08T19-49-42-buzz-coordinated-public-adversarial-mina-leo-nina-playte.json",
+        "?? product/history/events/H-2026-08-08T21-53-52-p-031-public-adversarial-mina-leo-nina-playtest-blocked-.json",
+        "?? product/history/events/H-2026-08-08T22-15-36-reconciled-the-july-architecture-gap-analysis-august-mai.json",
+        "?? product/history/events/H-2026-08-08T22-27-55-made-live-multi-device-synchronization-a-baseline-one-ch.json",
+        "?? product/history/events/H-2026-08-08T22-40-12-started-minimum-one-chop-core-live-shared-group-contract.json",
+        "?? product/history/events/H-2026-08-08T23-10-09-minimum-one-chop-core-local-live-sync-and-immutable-clos.json",
+        "?? product/history/events/H-2026-08-09T16-32-16-corrected-p-032-boundary-payer-delivery-is-partial-gener.json",
+        "?? product/history/events/H-2026-08-09T20-50-06-v0-4-4-two-profile-native-proof-passed-payer-to-organize.json",
+        "?? product/history/events/H-2026-08-09T22-07-41-p-032-local-two-way-payment-convergence-passes-the-corre.json",
+        "?? product/history/events/H-2026-08-10T12-44-16-private-v0-5-2-isolated-the-organizer-return-failure-to-.json",
+        "?? product/history/events/H-2026-08-11T07-38-18-private-v0-5-6-readiness-deployed-real-desktop-stopped-s.json",
+        "?? product/history/events/H-2026-08-11T13-57-48-submitted-scoped-desktop-allowance-blocker-to-issue-29-a.json",
+        "?? product/history/events/H-2026-08-11T16-53-24-p-032-local-durable-general-shared-action-delivery-persi.json",
+        "?? product/history/events/H-2026-08-11T17-54-54-p-032-direct-entry-product-account-identity-migration-pa.json",
+        "?? product/history/events/H-2026-08-12T07-17-58-p-032-causally-early-shared-actions-now-persist-before-d.json",
+        "?? product/history/events/H-2026-08-12T08-39-50-documented-the-live-polkadot-dot-showcase-benchmark-and-.json",
+        "?? product/history/events/H-2026-08-12T09-23-27-corrected-the-holy-grail-roadmap-to-inherit-the-year-lon.json",
+        "?? product/history/events/H-2026-08-12T10-20-28-packaged-chopdot-showcase-readiness-into-five-outcome-ba.json",
+        "?? product/history/events/H-2026-08-12T10-51-12-integrated-identity-access-and-credential-recovery-as-ga.json",
+        "?? product/history/events/H-2026-08-12T13-02-57-implemented-and-locally-proved-the-first-all-hands-candi.json",
+        "?? product/history/events/H-2026-08-12T13-43-14-added-signed-membership-authority-restart-safe-journal-e.json",
+        "?? product/history/events/H-2026-08-12T15-22-59-batch-1-passed-locally-batch-2-foundations-and-safe-rout.json",
+        "?? product/history/events/H-2026-08-12T15-34-46-batch-1-remains-locally-passed-batch-2-now-has-a-fail-cl.json",
+        "?? product/history/events/H-2026-08-12T15-41-56-batch-2-recipient-entry-now-has-verified-neutral-languag.json",
+        "?? product/history/events/H-2026-08-13T07-55-02-batch-2-local-actual-app-participation-gate-passed-14-14.json",
+        "?? product/history/events/H-2026-08-13T09-21-58-buzz-batch-1-2-qualification-completed-no-autonomous-bat.json",
+        "?? product/history/events/H-2026-08-13T10-10-49-integrated-foundation-gate-m0-across-money-event-archite.json",
+        "?? product/history/events/H-2026-08-13T10-38-38-execute-batch-3-foundation-m0-exact-money-event-contract.json",
+        "?? product/history/events/H-2026-08-13T11-03-59-core-money-and-event-contract-v1-and-batch-3-local-recov.json",
+        "?? product/history/events/H-2026-08-13T11-06-31-batch-3-local-candidate-passed-exact-money-canonical-eve.json",
+        "?? product/history/events/H-2026-08-13T11-26-10-batch-4-local-actual-app-full-dinner-journey-passed-11-1.json",
+        "?? product/history/events/H-2026-08-13T11-59-07-batch-5-local-ux-cards-gate-passed-10-10-b1-b4-regressio.json",
+        "?? product/history/events/H-2026-08-13T13-12-15-batch-6-froze-candidate-3519a89-and-reran-b1-b6-84-84-lo.json",
+        "?? product/history/events/H-2026-08-20T13-25-27-verified-person-account-contact-ceremony-passed-locally-.json",
+        "?? product/history/events/H-2026-08-20T14-45-04-clarified-one-chopdot-as-a-simple-contextual-ui-over-exp.json",
+        "?? product/journey-review-plan.md",
+        "?? product/journey-reviews/",
+        "?? product/path-model.yaml",
+        "?? product/story-map.md",
+        "?? product/user-path-map.md",
+        "?? product/user-path-map.mmd",
+        "?? run_test.cjs",
+        "?? scripts/E2-CATCH-LLM-001-spike.ts",
+        "?? scripts/build-chopdot-dot-smoke.mjs",
+        "?? scripts/check-chopdot-dot-smoke.mjs",
+        "?? scripts/generate-chopdot-buzz-team-snapshot.mjs",
+        "?? scripts/generate-chopdot-wiki.mjs",
+        "?? scripts/generate-product-behavior-map.mjs",
+        "?? scripts/generate-user-path-coverage.mjs",
+        "?? scripts/ingest-chopdot-thread.mjs",
+        "?? scripts/repair-chopdot-buzz-runtime-config.mjs",
+        "?? scripts/run-agent-wallet-token-scenarios.mjs",
+        "?? scripts/run-normal-pot-agent-ui-audit.mjs",
+        "?? scripts/run-p001-capture-audit.mjs",
+        "?? scripts/run-p021-friend-link-audit.mjs",
+        "?? scripts/run-p022-regular-pot-coherence-audit.mjs",
+        "?? scripts/take-auth-screenshot.mjs",
+        "?? scripts/test-smart-scan.ts",
+        "?? scripts/validate-ai-pm-process.mjs",
+        "?? scripts/validate-chopdot-buzz-delivery-system.mjs",
+        "?? scripts/validate-chopdot-buzz-installed-state.mjs",
+        "?? scripts/validate-chopdot-buzz-installed-state.test.mjs",
+        "?? scripts/validate-chopdot-wiki.mjs",
+        "?? scripts/validate-journey-reviews.mjs",
+        "?? src/__tests__/AgentWalletPasSettlement.test.ts",
+        "?? src/__tests__/chatCaptureDraft.test.ts",
+        "?? src/__tests__/telegramSafety.test.ts",
+        "?? src/bot/chatCaptureDraft.ts",
+        "?? src/bot/telegramSafety.ts",
+        "?? src/components/closeout/",
+        "?? src/components/expenses/BlockerBanner.tsx",
+        "?? src/components/expenses/CaptureDrawer.tsx",
+        "?? src/components/expenses/SmartScanModal.tsx",
+        "?? src/components/modes/",
+        "?? src/components/screens/CloseoutReview.tsx",
+        "?? src/components/ui/AmbientBackground.tsx",
+        "?? src/hooks/useCaptureChapterState.ts",
+        "?? src/services/capture/AgentWalletPaymentSettlement.ts",
+        "?? src/utils/apiAuthHeaders.ts",
+        "?? src/utils/confirmedLegAdjustments.ts",
+        "?? src/utils/experimentalSurfaces.ts",
+        "?? test-mock-pots.ts",
+        "?? test-usePotDataMerge.ts",
+        "?? tests/e2e/capture-pas-payment-link.spec.ts",
+        "?? tests/e2e/capture_ui.spec.ts",
+        "?? tests/e2e/take-screenshots.spec.ts",
+        "?? vite.config.ts.backup"
+      ]
+    },
+    "launch_output_target": {
+      "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+      "branch": "codex/chopdot-v1-launch",
+      "head": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f",
+      "dirty": true,
+      "status_byte_count": 216,
+      "status_sha256": "7d780e1f2777344908b7effceb7f9f1f455796458aec085d8dce82e6c5c74159",
+      "status_records": [
+        "?? artifacts/",
+        "?? docs/CHOPDOT_V1_EXECUTION_BOARD.md",
+        "?? docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+        "?? docs/research/",
+        "?? docs/superpowers/",
+        "?? scripts/research/",
+        "?? src/contacts/",
+        "?? tests/fixtures/verifiedContactFixture.ts"
+      ]
+    }
+  },
+  "source_hashes": {
+    "/Users/devinsonpena/ChopDot/product/cards.md": "3d3cb09191bf18850bf6f53f650e2ecfd8c338554e4b47dc7d49a338a8017930",
+    "/Users/devinsonpena/ChopDot/product/story-map.md": "549e60ba10c225c7eef55c423558bc11e403cfd08f2d5dfc9accfdf558387365",
+    "/Users/devinsonpena/ChopDot/product/path-model.yaml": "1ff6bd2e871ef97899080ea8a61d82ac9735059d45330f07b7f2e639456bef29",
+    "/Users/devinsonpena/ChopDot/product/generated/product-behavior-map.json": "2327481bb23f464559cb59f98aebfa90b05d5d62c1f7b123a8f3ebfd1afe5b7b",
+    "/Users/devinsonpena/ChopDot/docs/chopdot-dot/holy-grail-capability-inheritance-register-2026-08-12.md": "ec5f27d1d2c707a94bd884aa83d7c9837bedb48c83bb5470d95091695a85d02c",
+    "/Users/devinsonpena/ChopDot/docs/CHOPDOT_MAIN_APP_SHELL_HOLY_GRAIL_ANALYSIS_2026-08-03.md": "e6ca05f315cca811fad952ee37b0a507ec8ab8a0403c12da4b066de6a2fefd48",
+    "/Users/devinsonpena/ChopDot/docs/superpowers/plans/2026-08-13-batch-5-spending-group-cards.md": "b44fdbc9bb30a7b01e3a5784b69fb9ed7c2dd2676b05dd9651da0b0e57880cdd",
+    "/Users/devinsonpena/ChopDot/docs/chopdot-dot/savings-circle-spec.md": "0ca459146c9fa69dd107fc90920b4b6a950e1da16262c6054d58d9190a24f7e8",
+    "/Users/devinsonpena/ChopDot/docs/chopdot-dot/emergency-pot-spec.md": "a5b906f80c6cab7b00f2de92c8eaa5ea43b07b5e4e5926ffdd961c0608c6ba00",
+    "/Users/devinsonpena/ChopDot/docs/chopdot-dot/community-fund-spec.md": "633e6baa7e1ba9f59e5e83304d20c75d3d73b9a4954e06b916bd439e4aec5b52",
+    "/Users/devinsonpena/ChopDot/docs/superpowers/plans/2026-06-17-chopdot-dot-master-execution.md": "73dcecc7258647d8e64d018e45e082fca6edb8a79aaa5857f183a2d2533c574e",
+    "/Users/devinsonpena/ChopDot/docs/chopdot-dot/path-to-fully-native.md": "b13c2cab4bfa3eddd0c9266a887dadca045ffeaf548919388009919c31a6ccff",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/evidence/chopdot-feature-family-mapping-input.json": "a76482b9a1682b734547827976123623150c608b41df6b3c580bb7d41f12a79a",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/evidence/chopdot-catalog-decisions.json": "84e4056796b7f4a495ed73d4d1268cc8de3c25adbe73a5077b197fd0845069bd",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/evidence/source-deep-audit.json": "9446a2c05488d9aa101b73419ac02cfa5afe115925435a058677cd24acdeb950",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/PARITY_PRODUCTS_DEVNET_CATALOG.json": "f6b2c232cbfa23acc143fb47afb8ffc07c998413be0d4112d9b1abbece39dabf"
+  },
+  "source_snapshot": "docs/research/evidence/chopdot-product-cockpit-source-snapshot.json",
+  "evidence_grades": {
+    "verified_source": "A commit-pinned repository record was inspected. This verifies only the cited pattern, not ChopDot implementation or fitness.",
+    "registry_discovery": "A content-addressed Devnet directory row was verified. Source, runtime behavior, security, and license remain unverified.",
+    "indirect_pattern": "Verified source demonstrates a useful infrastructure or lifecycle pattern, but not the ChopDot feature itself.",
+    "chopdot_original": "The behavior is a ChopDot product requirement or hypothesis; no direct external implementation was verified.",
+    "no_analog_found": "No direct analog was found in the frozen repository and Devnet universes."
+  },
+  "summary": {
+    "feature_families": 15,
+    "cards_source": 35,
+    "cards_mapped": 35,
+    "paths_source": 42,
+    "paths_mapped": 42,
+    "journeys_source": 6,
+    "future_journeys_without_paths": 4,
+    "feature_families_by_evidence_grade": {
+      "verified_source": 1,
+      "registry_discovery": 2,
+      "indirect_pattern": 5,
+      "chopdot_original": 6,
+      "no_analog_found": 1
+    },
+    "card_statuses": {
+      "blocked": 1,
+      "building": 6,
+      "discovery": 4,
+      "done": 18,
+      "ready": 5,
+      "validation": 1
+    },
+    "path_proof": {
+      "missing": 36,
+      "partial": 3,
+      "web_e2e_passed": 3
+    },
+    "path_risk": {
+      "critical": 15,
+      "high": 10,
+      "unreviewed": 17
+    }
+  },
+  "feature_families": [
+    {
+      "id": "identity_people_membership_recovery",
+      "name": "Entry, account, people, membership, and recovery",
+      "product_outcome": "The same person can enter, join the correct group with explicit authority, manage payment instruments, and recover on a fresh device without identity drift.",
+      "primary_card_ids": [
+        "P-025",
+        "P-032",
+        "P-035"
+      ],
+      "related_card_ids": [
+        "P-002",
+        "P-021",
+        "P-022"
+      ],
+      "generated_journey_ids": [
+        "normal-pot"
+      ],
+      "evidence_grade": "chopdot_original",
+      "external_evidence_ids": [
+        "product-sdk",
+        "identity-backend",
+        "peoplebook",
+        "statement-store",
+        "host-local-storage"
+      ],
+      "what_is_reusable": "Host/account identity adapters, per-account caches, scoped storage, signed delivery envelopes, and identity-directory discovery patterns.",
+      "what_is_not_proven": "No inspected donor establishes ChopDot membership, organizer authority, actor-bound recovery, or same-person convergence.",
+      "one_chop_core_requirement": "Signed membership events, explicit role grants, actor-bound payment-instrument ownership, idempotent projection rebuild, revocation, and fresh-device recovery.",
+      "missing_experiment": "Two-person fresh-device recovery with invite replay, wrong-actor rejection, payment-instrument isolation, revocation, and identical final projections.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/product/cards.md",
+        "/Users/devinsonpena/ChopDot/docs/chopdot-dot/holy-grail-capability-inheritance-register-2026-08-12.md"
+      ]
+    },
+    {
+      "id": "group_cards_home_language",
+      "name": "Group cards, home, and normal-language shell",
+      "product_outcome": "Each group appears as a living money commitment with one obvious next actor and action, never as a ledger or protocol console.",
+      "primary_card_ids": [
+        "P-011",
+        "P-019",
+        "P-033"
+      ],
+      "related_card_ids": [
+        "P-005",
+        "P-006",
+        "P-007",
+        "P-008",
+        "P-018",
+        "P-022"
+      ],
+      "generated_journey_ids": [
+        "normal-pot",
+        "spend-card",
+        "savings-circle",
+        "emergency-pot",
+        "community-fund"
+      ],
+      "evidence_grade": "chopdot_original",
+      "external_evidence_ids": [
+        "simple-shared-state",
+        "localdot"
+      ],
+      "what_is_reusable": "Small shared-state summaries and role-aware status projections can inform the data behind a card.",
+      "what_is_not_proven": "No inspected project implements the living ChopDot group-card model or proves first-screen comprehension.",
+      "one_chop_core_requirement": "Derive card state and next action from canonical group events without adding a second authority model.",
+      "missing_experiment": "Five first-time-user comprehension tests across requested, marked-paid, received, ready-to-close, closed, saved, offline, empty, loading, and unavailable states.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/docs/CHOPDOT_MAIN_APP_SHELL_HOLY_GRAIL_ANALYSIS_2026-08-03.md",
+        "/Users/devinsonpena/ChopDot/docs/superpowers/plans/2026-08-13-batch-5-spending-group-cards.md"
+      ]
+    },
+    {
+      "id": "normal_pots_trips_couples",
+      "name": "Normal pots, dinners, trips, and couple expenses",
+      "product_outcome": "A group can capture shared spending, keep changing the record, settle what is open, and preserve a readable history.",
+      "primary_card_ids": [
+        "P-018",
+        "P-022"
+      ],
+      "related_card_ids": [
+        "P-001",
+        "P-002",
+        "P-003",
+        "P-004",
+        "P-019"
+      ],
+      "generated_journey_ids": [
+        "normal-pot"
+      ],
+      "evidence_grade": "chopdot_original",
+      "external_evidence_ids": [
+        "localdot",
+        "mercado",
+        "pay-server",
+        "simple-shared-state"
+      ],
+      "what_is_reusable": "Role separation, lifecycle decomposition, dispute evidence, persistent coordination, and contract-to-content reference patterns.",
+      "what_is_not_proven": "The donors are marketplaces, merchant payments, surveys, or event apps; none proves ChopDot's editable group-expense journey.",
+      "one_chop_core_requirement": "One group/event model from first expense through corrections, settlement, confirmation, and immutable closeout.",
+      "missing_experiment": "Three-person dinner on two devices covering forgotten expense, member change, partial payment, delay, dispute, confirmation, close, and return to history.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/product/story-map.md",
+        "/Users/devinsonpena/ChopDot/product/generated/product-behavior-map.json"
+      ]
+    },
+    {
+      "id": "capture_spend_receipts",
+      "name": "Paid-moment, receipt, link, chat, and spend capture",
+      "product_outcome": "Capture starts from a photo, link, import, text, or observed spend; manual item entry is only correction.",
+      "primary_card_ids": [
+        "P-001",
+        "P-005",
+        "P-012",
+        "P-027"
+      ],
+      "related_card_ids": [
+        "P-020",
+        "P-022",
+        "P-025"
+      ],
+      "generated_journey_ids": [
+        "receipt-capture",
+        "spend-card"
+      ],
+      "evidence_grade": "chopdot_original",
+      "external_evidence_ids": [
+        "bulletin",
+        "dot-drive",
+        "product-sdk",
+        "host-local-storage"
+      ],
+      "what_is_reusable": "Encrypted/content-addressed blob transport, scoped local drafts, and host storage adapters.",
+      "what_is_not_proven": "No inspected source proves ChopDot OCR, spend-to-receipt matching, correction UX, dedupe, itemized split, or privacy redaction.",
+      "one_chop_core_requirement": "A capture draft cannot alter canonical money state until a person reviews and commits normalized exact-money events.",
+      "missing_experiment": "Photo/link/chat/spend capture on web and host with OCR failure, correction, duplicate, conflict, sensitive-item redaction, offline sync, and refund.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/product/story-map.md",
+        "/Users/devinsonpena/ChopDot/product/generated/product-behavior-map.json"
+      ]
+    },
+    {
+      "id": "exact_money_splits_corrections",
+      "name": "Exact money, splits, currencies, and corrections",
+      "product_outcome": "Every amount, currency, split, correction, refund, and payment leg stays exact and auditable.",
+      "primary_card_ids": [
+        "P-034"
+      ],
+      "related_card_ids": [
+        "P-001",
+        "P-003",
+        "P-005",
+        "P-022",
+        "P-024",
+        "P-025",
+        "P-027"
+      ],
+      "generated_journey_ids": [
+        "normal-pot",
+        "receipt-capture"
+      ],
+      "evidence_grade": "chopdot_original",
+      "external_evidence_ids": [
+        "asset-hub-contracts",
+        "pay-server",
+        "mercado",
+        "truapi"
+      ],
+      "what_is_reusable": "Typed balances, asynchronous payment state, contract dependency boundaries, dispute-state decomposition, and lifecycle tests.",
+      "what_is_not_proven": "No donor supplies ChopDot's exact-money event contract, mixed-currency correction semantics, or split reconciliation.",
+      "one_chop_core_requirement": "Integer minor units, explicit currency, immutable event IDs, reversals instead of mutation, and deterministic projection rules.",
+      "missing_experiment": "Property and scenario tests for rounding, multi-currency legs, partials, over/underpayment, duplicate events, refund, reversal, and replay order.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/product/cards.md",
+        "/Users/devinsonpena/ChopDot/product/generated/product-behavior-map.json"
+      ]
+    },
+    {
+      "id": "payment_requests_guest_invites",
+      "name": "Invitations, links, QR, and no-app payment requests",
+      "product_outcome": "A friend sees only who requests what, for which group, and the one safe action available without unnecessary setup.",
+      "primary_card_ids": [
+        "P-002",
+        "P-021"
+      ],
+      "related_card_ids": [
+        "P-022",
+        "P-025",
+        "P-032",
+        "P-035"
+      ],
+      "generated_journey_ids": [
+        "normal-pot",
+        "receipt-capture"
+      ],
+      "evidence_grade": "indirect_pattern",
+      "external_evidence_ids": [
+        "pay-server",
+        "localdot",
+        "product-sdk",
+        "statement-store"
+      ],
+      "what_is_reusable": "Payment-request identifiers, QR/link handoff, asynchronous status subscription, host signing, and replay-safe delivery.",
+      "what_is_not_proven": "A link or verified contact does not prove membership, organizer authority, recipient consent, or payment acceptance.",
+      "one_chop_core_requirement": "Purpose-bound expiring capability links with explicit group/action scope, replay protection, and separate membership acceptance.",
+      "missing_experiment": "Fresh-browser invite/payment-link matrix for valid, expired, replayed, forwarded, wrong-actor, revoked, and already-completed links.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/product/story-map.md",
+        "/Users/devinsonpena/ChopDot/docs/chopdot-dot/holy-grail-capability-inheritance-register-2026-08-12.md"
+      ]
+    },
+    {
+      "id": "payment_rails_wallets",
+      "name": "Wallets, PAS, DOT, USDC, CASH, and external payment rails",
+      "product_outcome": "ChopDot proposes the minimum transfer plan, lets users choose a rail, observes exact evidence when possible, and never becomes custodian.",
+      "primary_card_ids": [
+        "P-023",
+        "P-024"
+      ],
+      "related_card_ids": [
+        "P-002",
+        "P-003",
+        "P-009",
+        "P-025",
+        "P-034",
+        "P-035"
+      ],
+      "generated_journey_ids": [
+        "normal-pot"
+      ],
+      "evidence_grade": "indirect_pattern",
+      "external_evidence_ids": [
+        "product-sdk",
+        "truapi",
+        "pay-server",
+        "asset-hub-contracts",
+        "dripstream"
+      ],
+      "what_is_reusable": "Host-mediated signer/permission APIs, typed payment lifecycle, chain observation, request/subscribe patterns, and payment-schedule discovery.",
+      "what_is_not_proven": "Registry payment claims and merchant server flows do not prove ChopDot settlement, availability, finality, or user consent.",
+      "one_chop_core_requirement": "Payment instrument ownership, proposed-versus-observed-versus-confirmed states, rail-neutral legs, and no custody.",
+      "missing_experiment": "Two-party PAS/DOT/USDC/external flow covering rejection, cancellation, fee, wrong currency, partial, delayed observation, and receiver confirmation.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/product/story-map.md",
+        "/Users/devinsonpena/ChopDot/product/cards.md"
+      ]
+    },
+    {
+      "id": "confirmation_resolution_closeout",
+      "name": "Receiver confirmation, delay, waiver, dispute, and closeout",
+      "product_outcome": "The group distinguishes claimed, observed, received, disputed, waived, delayed, and closed states before saving the record.",
+      "primary_card_ids": [
+        "P-003"
+      ],
+      "related_card_ids": [
+        "P-004",
+        "P-022",
+        "P-025",
+        "P-034"
+      ],
+      "generated_journey_ids": [
+        "normal-pot",
+        "receipt-capture"
+      ],
+      "evidence_grade": "chopdot_original",
+      "external_evidence_ids": [
+        "mercado",
+        "pay-server",
+        "localdot",
+        "simple-shared-state"
+      ],
+      "what_is_reusable": "Explicit disputes, asynchronous statuses, evidence references, and role-gated transitions.",
+      "what_is_not_proven": "No donor implements ChopDot's receiver-confirmed truth or its closeout rule across external and on-chain rails.",
+      "one_chop_core_requirement": "Only authorized actors can transition named states; close is allowed only after every item is resolved and remains append-only.",
+      "missing_experiment": "Full resolution table across paid claim, chain observation, received, not received, partial, delayed, waived, disputed, reopened, and closed.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/product/generated/product-behavior-map.json",
+        "/Users/devinsonpena/ChopDot/docs/chopdot-dot/holy-grail-capability-inheritance-register-2026-08-12.md"
+      ]
+    },
+    {
+      "id": "history_privacy_export",
+      "name": "Saved history, privacy, redaction, export, and deletion",
+      "product_outcome": "Closed records remain readable and recoverable while private details, retention, export, and deletion are explicit.",
+      "primary_card_ids": [
+        "P-004"
+      ],
+      "related_card_ids": [
+        "P-007",
+        "P-008",
+        "P-012",
+        "P-022",
+        "P-032"
+      ],
+      "generated_journey_ids": [
+        "normal-pot",
+        "receipt-capture",
+        "emergency-pot",
+        "community-fund"
+      ],
+      "evidence_grade": "indirect_pattern",
+      "external_evidence_ids": [
+        "bulletin",
+        "statement-store",
+        "open-docs",
+        "polkanote",
+        "dot-drive"
+      ],
+      "what_is_reusable": "Content-addressed encrypted bytes, short-message carriers, and discovery-level collaborative save-point concepts.",
+      "what_is_not_proven": "OpenDocs, PolkaNote, and dot-drive are registry-only; Bulletin retention does not itself provide durable ChopDot history or deletion guarantees.",
+      "one_chop_core_requirement": "Canonical signed event history, encrypted projections/blobs, selective redaction, export manifest, retention policy, and recoverable keys.",
+      "missing_experiment": "Export/import and fresh-device recovery with missing blob, expired retention, key loss, redacted view, deletion request, and immutable financial event preservation.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/product/story-map.md",
+        "/Users/devinsonpena/ChopDot/docs/chopdot-dot/holy-grail-capability-inheritance-register-2026-08-12.md"
+      ]
+    },
+    {
+      "id": "live_sync_offline_chat_notifications",
+      "name": "Live sync, offline work, chat capture, and notifications",
+      "product_outcome": "Participants can act across devices and surfaces, recover from offline work, and receive useful prompts without duplicate or unauthorized state.",
+      "primary_card_ids": [
+        "P-020"
+      ],
+      "related_card_ids": [
+        "P-002",
+        "P-025",
+        "P-028",
+        "P-029",
+        "P-032"
+      ],
+      "generated_journey_ids": [
+        "normal-pot",
+        "receipt-capture"
+      ],
+      "evidence_grade": "indirect_pattern",
+      "external_evidence_ids": [
+        "statement-store",
+        "host-local-storage",
+        "product-sdk",
+        "dot-hosts"
+      ],
+      "what_is_reusable": "Publish/subscribe, topic filtering, local drafts, host isolation, and bounded signed-envelope transport.",
+      "what_is_not_proven": "Statement Store is non-durable delivery and no inspected app proves ChopDot Telegram/chat capture or conflict convergence.",
+      "one_chop_core_requirement": "Idempotent signed envelopes, causal ordering, actor checks, acknowledgement separate from acceptance, replay, conflict policy, and projection rebuild.",
+      "missing_experiment": "Two-device offline/online conflict run with reordered, duplicated, expired, rejected, and replayed messages plus chat-derived draft confirmation.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/product/path-model.yaml",
+        "/Users/devinsonpena/ChopDot/product/cards.md"
+      ]
+    },
+    {
+      "id": "savings_circles",
+      "name": "Savings circles",
+      "product_outcome": "Members contribute in recurring rounds, see who is due, confirm payout, and preserve a fair record without ChopDot holding funds.",
+      "primary_card_ids": [
+        "P-006"
+      ],
+      "related_card_ids": [
+        "P-003",
+        "P-004",
+        "P-022",
+        "P-025",
+        "P-034"
+      ],
+      "generated_journey_ids": [
+        "savings-circle"
+      ],
+      "evidence_grade": "registry_discovery",
+      "external_evidence_ids": [
+        "circlecredit",
+        "pay-server",
+        "dripstream",
+        "simple-shared-state"
+      ],
+      "what_is_reusable": "CircleCredit proves only that a lending-circle app is listed; payment lifecycle and role/state patterns can be studied indirectly.",
+      "what_is_not_proven": "CircleCredit source, license, security, rules, recovery, and runtime behavior were not inspected; lending credit is not automatically a rotating savings circle.",
+      "one_chop_core_requirement": "Round schedule, membership/roles, expected contributions, delays, payout order, receiver confirmation, exceptions, and immutable round closeout without custody or automatic payout.",
+      "missing_experiment": "Obtain and audit CircleCredit source or runtime protocol, then run a five-member round with late/missed contribution, changed order, disputed payout, member exit, recovery, and closeout.",
+      "disposition": "next",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/docs/chopdot-dot/savings-circle-spec.md",
+        "/Users/devinsonpena/ChopDot/product/story-map.md"
+      ]
+    },
+    {
+      "id": "emergency_pots",
+      "name": "Emergency and private-help pots",
+      "product_outcome": "A group can coordinate urgent help with dignity, minimal disclosure, explicit approvals, and a redacted closeout.",
+      "primary_card_ids": [
+        "P-007"
+      ],
+      "related_card_ids": [
+        "P-003",
+        "P-004",
+        "P-025",
+        "P-034"
+      ],
+      "generated_journey_ids": [
+        "emergency-pot"
+      ],
+      "evidence_grade": "no_analog_found",
+      "external_evidence_ids": [
+        "bulletin",
+        "simple-shared-state",
+        "mercado"
+      ],
+      "what_is_reusable": "Encrypted blob storage, role-gated shared state, and explicit dispute/evidence states are indirect ingredients.",
+      "what_is_not_proven": "No direct emergency-help analog, dignity model, selective disclosure flow, or safe redacted closeout was verified.",
+      "one_chop_core_requirement": "Private pledges, approver scope, recipient consent, minimum disclosure, release record, safe notifications, and redacted history without custody.",
+      "missing_experiment": "Threat-model and five-role scenario for private pledge, approval refusal, partial release, compromised link, sensitive note, recipient revocation, and redacted export.",
+      "disposition": "later",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/docs/chopdot-dot/emergency-pot-spec.md",
+        "/Users/devinsonpena/ChopDot/product/story-map.md"
+      ]
+    },
+    {
+      "id": "community_funds",
+      "name": "Community funds",
+      "product_outcome": "A community records contributions, requests, approvals, payment, receiver confirmation, and transparent handoff without turning ChopDot into a DAO or custodian.",
+      "primary_card_ids": [
+        "P-008"
+      ],
+      "related_card_ids": [
+        "P-003",
+        "P-004",
+        "P-022",
+        "P-025",
+        "P-034"
+      ],
+      "generated_journey_ids": [
+        "community-fund"
+      ],
+      "evidence_grade": "registry_discovery",
+      "external_evidence_ids": [
+        "public-research",
+        "simple-shared-state",
+        "mercado",
+        "asset-hub-contracts"
+      ],
+      "what_is_reusable": "PublicResearch is a directory-level funding lead; verified donors show roles, approvals, evidence CIDs, disputes, and small contract indexes.",
+      "what_is_not_proven": "No inspected donor proves ChopDot's community-fund governance, non-custodial handoff, privacy, recovery, or closeout.",
+      "one_chop_core_requirement": "Explicit admin/approver/contributor/payer/receiver/viewer roles, approval thresholds, payment evidence, receiver confirmation, export, and authority handoff.",
+      "missing_experiment": "Audit PublicResearch source/protocol and run a six-role fund from contribution through rejected/approved request, payment, confirmation, admin handoff, export, and recovery.",
+      "disposition": "later",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/docs/chopdot-dot/community-fund-spec.md",
+        "/Users/devinsonpena/ChopDot/product/story-map.md"
+      ]
+    },
+    {
+      "id": "native_delivery_hosting",
+      "name": "Polkadot host, DotNS delivery, and invisible native adapters",
+      "product_outcome": "The same ChopDot product runs in web and host surfaces with content-addressed delivery, explicit permissions, signing, storage, and rollback while native terms remain invisible.",
+      "primary_card_ids": [
+        "P-010",
+        "P-030"
+      ],
+      "related_card_ids": [
+        "P-023",
+        "P-024",
+        "P-025",
+        "P-032",
+        "P-033"
+      ],
+      "generated_journey_ids": [],
+      "evidence_grade": "verified_source",
+      "external_evidence_ids": [
+        "dot-hosts",
+        "dotns",
+        "product-sdk",
+        "host-test",
+        "truapi"
+      ],
+      "what_is_reusable": "Content-addressed host loading, DotNS resolution, permission-mediated APIs, signer/storage adapters, and host simulation.",
+      "what_is_not_proven": "Infrastructure source does not prove ChopDot product completeness, live account identity, bundle compatibility, deployment ownership, rollback, or first-time usability.",
+      "one_chop_core_requirement": "Provider-neutral adapters around canonical domain services; identical authority and event semantics across web, simulator, dot.li, and Desktop.",
+      "missing_experiment": "Aligned SDK/TrUAPI/host build through simulator, content-addressed publish candidate, DotNS resolve, real-host two-person walkthrough, offline return, and rollback rehearsal.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/docs/superpowers/plans/2026-06-17-chopdot-dot-master-execution.md",
+        "/Users/devinsonpena/ChopDot/docs/chopdot-dot/path-to-fully-native.md"
+      ]
+    },
+    {
+      "id": "assurance_research_operations",
+      "name": "Product assurance, cockpit, agents, pilots, and adversarial review",
+      "product_outcome": "Claims about the product stay tied to scenario, screenshot, source, test, deployment, and user-reachability evidence.",
+      "primary_card_ids": [
+        "P-009",
+        "P-013",
+        "P-014",
+        "P-015",
+        "P-016",
+        "P-017",
+        "P-026",
+        "P-028",
+        "P-029",
+        "P-031"
+      ],
+      "related_card_ids": [
+        "P-001",
+        "P-002",
+        "P-003",
+        "P-004",
+        "P-010",
+        "P-025",
+        "P-032",
+        "P-033"
+      ],
+      "generated_journey_ids": [
+        "normal-pot",
+        "receipt-capture",
+        "spend-card",
+        "savings-circle",
+        "emergency-pot",
+        "community-fund"
+      ],
+      "evidence_grade": "indirect_pattern",
+      "external_evidence_ids": [
+        "host-test",
+        "product-sdk",
+        "dot-hosts"
+      ],
+      "what_is_reusable": "Host simulation and adapter tests can shorten the native feedback loop.",
+      "what_is_not_proven": "No external app can prove ChopDot's cockpit freshness, product judgment, multi-person recovery, accessibility, or public usability.",
+      "one_chop_core_requirement": "Trace requirements to deterministic scenarios and distinguish implemented, tested, committed, deployed, reachable, and human-walked states.",
+      "missing_experiment": "Refresh the cockpit in a clean candidate, eliminate stale source warnings, cover all mapped paths, then run a real multi-person adversarial walkthrough on the deploy candidate.",
+      "disposition": "now",
+      "chopdot_source_paths": [
+        "/Users/devinsonpena/ChopDot/product/cards.md",
+        "/Users/devinsonpena/ChopDot/product/generated/product-behavior-map.json"
+      ]
+    }
+  ],
+  "external_evidence": [
+    {
+      "id": "product-sdk",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-product-sdk",
+      "name": "Parity Product SDK",
+      "capability": "High-level typed access to host signing, chains, contracts, cloud storage, Statement Store, local storage, and DotNS.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "verified_source_and_local_version_observation",
+      "confidence": "high",
+      "license_reuse": "Apache-2.0 metadata; adapter use is preferred over copying implementation.",
+      "evidence": [
+        {
+          "repo": "product-sdk",
+          "path": "README.md",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "repo": "product-sdk",
+          "path": "SECURITY.md",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "local_path": "docs/research/evidence/npm-package-version-observation.json"
+        }
+      ]
+    },
+    {
+      "id": "truapi",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-truapi",
+      "name": "TrUAPI host protocol",
+      "capability": "Typed low-level protocol between product webviews and Desktop, Mobile, and dot.li hosts.",
+      "decision": "DEFER",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "high",
+      "license_reuse": "MIT metadata for host-rust-core and host-api-test-sdk.",
+      "evidence": [
+        {
+          "repo": "host-rust-core",
+          "path": "README.md",
+          "commit": "229bb230375dc6afb67a766e00524fd037b0a26d",
+          "source_audit_id": "github:paritytech/host-rust-core"
+        },
+        {
+          "repo": "host-api-test-sdk",
+          "path": "README.md",
+          "commit": "17a28f96458c5991f69dc0b0e07464d7fe0bd3ce",
+          "source_audit_id": "github:paritytech/host-api-test-sdk"
+        }
+      ]
+    },
+    {
+      "id": "host-test",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-host-test",
+      "name": "Host API test SDK",
+      "capability": "Runs a thin simulated host around a product iframe and exercises signing, storage, chain connections, and Statement Store.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "verified_source_and_local_version_observation",
+      "confidence": "high",
+      "license_reuse": "MIT.",
+      "evidence": [
+        {
+          "repo": "host-api-test-sdk",
+          "path": "README.md",
+          "commit": "17a28f96458c5991f69dc0b0e07464d7fe0bd3ce",
+          "source_audit_id": "github:paritytech/host-api-test-sdk"
+        },
+        {
+          "local_path": "docs/research/evidence/npm-package-version-observation.json"
+        }
+      ]
+    },
+    {
+      "id": "dot-hosts",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-dot-hosts",
+      "name": "dot.li and Polkadot Desktop host model",
+      "capability": "Content-addressed .dot resolution, sandboxed app execution, host-mediated signing, scoped storage, and system-chain access without an app-owned web server for the static product shell.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "verified_source_plus_content_addressed_live_registry",
+      "confidence": "high",
+      "license_reuse": "dotli-community AGPL-3.0; Polkadot Desktop GPL-3.0. Use as hosts and pattern references, not copy sources into ChopDot without license review.",
+      "evidence": [
+        {
+          "repo": "dotli-community",
+          "path": "README.md",
+          "commit": "ce17195d59d2b5e2155a67bbc40f353cec3a6b5f",
+          "source_audit_id": "github:paritytech/dotli-community"
+        },
+        {
+          "repo": "polkadot-desktop-community",
+          "path": "README.md",
+          "commit": "a3bb5685258b0414d7e1d62441c6c1e1c1306f92",
+          "source_audit_id": "github:paritytech/polkadot-desktop-community"
+        },
+        {
+          "local_path": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+        }
+      ]
+    },
+    {
+      "id": "dotns",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-dotns",
+      "name": "DotNS naming and content resolution",
+      "capability": "Maps .dot names to content hashes and enables content-addressed product delivery.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "verified_source_and_deployed_network_bundle",
+      "confidence": "high",
+      "license_reuse": "DotNS and DotNS SDK metadata are MIT.",
+      "evidence": [
+        {
+          "repo": "dotns",
+          "path": "README.md",
+          "commit": "bfe879310ec6a7b655a08d94838b516cb4c2a844",
+          "source_audit_id": "github:paritytech/dotns"
+        },
+        {
+          "repo": "product-sdk",
+          "path": "product-sdk/packages/sdk/src/identity/dotns-addresses.ts",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "local_path": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+        }
+      ]
+    },
+    {
+      "id": "bulletin",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-bulletin",
+      "name": "Bulletin-backed content storage",
+      "capability": "Content-addressed blob publication and retrieval, including SDK cloud-storage adapters and transaction-storage renewal paths.",
+      "decision": "INVESTIGATE",
+      "verification_status": "commit_pinned_source_and_network_identity_verified",
+      "confidence": "medium_high",
+      "license_reuse": "Bulletin chain GPL-3.0; Product SDK adapter Apache-2.0. Prefer the SDK boundary.",
+      "evidence": [
+        {
+          "repo": "polkadot-bulletin-chain",
+          "path": "docs/book/src/concepts/storage.md",
+          "commit": "8e2f26c9d58950f991780e1a399cd1825770d78a",
+          "source_audit_id": "github:paritytech/polkadot-bulletin-chain"
+        },
+        {
+          "repo": "polkadot-bulletin-chain",
+          "path": "zombienet-sdk-tests/tests/auto_renew_storage.rs",
+          "commit": "8e2f26c9d58950f991780e1a399cd1825770d78a",
+          "source_audit_id": "github:paritytech/polkadot-bulletin-chain"
+        },
+        {
+          "repo": "product-sdk",
+          "path": "README.md",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "local_path": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+        }
+      ]
+    },
+    {
+      "id": "statement-store",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-statement-store",
+      "name": "Statement Store messaging",
+      "capability": "Publish/subscribe transport for small signed statements and host-mediated messaging.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "commit_pinned_source_and_local_version_observation",
+      "confidence": "high",
+      "license_reuse": "SDK Apache-2.0; statement-store-tools GPL-3.0; Polkadot SDK licensing is multi-file and must be reviewed at copied-path level.",
+      "evidence": [
+        {
+          "repo": "polkadot-sdk",
+          "path": "substrate/client/statement-store/docs/overview.md",
+          "commit": "f3b49ccb1f0ddcca2f24acd23091a03db9d8f104",
+          "source_audit_id": "github:paritytech/polkadot-sdk"
+        },
+        {
+          "repo": "host-rust-core",
+          "path": "docs/rfcs/0008-statement-store.md",
+          "commit": "229bb230375dc6afb67a766e00524fd037b0a26d",
+          "source_audit_id": "github:paritytech/host-rust-core"
+        },
+        {
+          "repo": "product-sdk",
+          "path": "README.md",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "local_path": "docs/research/evidence/npm-package-version-observation.json"
+        }
+      ]
+    },
+    {
+      "id": "asset-hub-contracts",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-asset-hub-contracts",
+      "name": "Asset Hub contracts and CDM",
+      "capability": "Shared deterministic state, contract calls, and content-addressed contract build/deployment metadata.",
+      "decision": "INVESTIGATE",
+      "verification_status": "verified_source_and_local_target_mismatch",
+      "confidence": "high",
+      "license_reuse": "CDM Apache-2.0. Donor contracts have mixed GPL/NOASSERTION licenses and need path-specific review.",
+      "evidence": [
+        {
+          "repo": "contract-dependency-manager",
+          "path": "README.md",
+          "commit": "5ecde0047f86e898c9744c83221aabdb02b21cdd",
+          "source_audit_id": "github:paritytech/contract-dependency-manager"
+        },
+        {
+          "repo": "contract-dependency-manager",
+          "path": "src/lib/contracts/src/publisher.ts",
+          "commit": "5ecde0047f86e898c9744c83221aabdb02b21cdd",
+          "source_audit_id": "github:paritytech/contract-dependency-manager"
+        },
+        {
+          "local_path": "src/payments/pasWallet.ts"
+        },
+        {
+          "local_path": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+        }
+      ]
+    },
+    {
+      "id": "host-local-storage",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-host-local-storage",
+      "name": "Host-scoped local storage",
+      "capability": "Per-product local key-value storage across browser and supported hosts.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "high",
+      "license_reuse": "Product SDK Apache-2.0; dotli host AGPL-3.0 implementation is reference-only.",
+      "evidence": [
+        {
+          "repo": "product-sdk",
+          "path": "product-sdk/examples/host-demo/e2e/storage-ops.spec.ts",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "repo": "dotli-community",
+          "path": "packages/ui/src/host-callbacks/LocalStorage.ts",
+          "commit": "ce17195d59d2b5e2155a67bbc40f353cec3a6b5f",
+          "source_audit_id": "github:paritytech/dotli-community"
+        }
+      ]
+    },
+    {
+      "id": "identity-backend",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-identity-backend",
+      "name": "Parity identity backend",
+      "capability": "Operated identity/notification services with chain supervision, PostgreSQL coordination, and Statement Store processing.",
+      "decision": "REJECT_FOR_V1",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "high",
+      "license_reuse": "GPL-3.0; pattern study only unless legal and architecture review approve reuse.",
+      "evidence": [
+        {
+          "repo": "identity-backend-community",
+          "path": "README.md",
+          "commit": "28e8bdc0e6f2b2da01e5f82198329560c6366729",
+          "source_audit_id": "github:paritytech/identity-backend-community"
+        },
+        {
+          "repo": "identity-backend-community",
+          "path": "apps/identity-backend/src/leader-election/postgres-advisory-lock.service.ts",
+          "commit": "28e8bdc0e6f2b2da01e5f82198329560c6366729",
+          "source_audit_id": "github:paritytech/identity-backend-community"
+        },
+        {
+          "repo": "identity-backend-community",
+          "path": "apps/identity-backend/src/supervision/notifications-processor/workers/statement-processor.worker.ts",
+          "commit": "28e8bdc0e6f2b2da01e5f82198329560c6366729",
+          "source_audit_id": "github:paritytech/identity-backend-community"
+        }
+      ]
+    },
+    {
+      "id": "pay-server",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-pay-server",
+      "name": "Polkadot Pay server",
+      "capability": "Payment API, QR page, settlement observation, PostgreSQL state, and Redis-backed work.",
+      "decision": "REJECT_FOR_V1",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "high",
+      "license_reuse": "GPL-3.0; upstream explicitly calls it an experimental proof of concept, not an operated Parity service.",
+      "evidence": [
+        {
+          "repo": "polkadot-pay-server-community",
+          "path": "README.md",
+          "commit": "dd842f7811b99aa8375ddd0256ce901c3d7960ef",
+          "source_audit_id": "github:paritytech/polkadot-pay-server-community"
+        },
+        {
+          "repo": "polkadot-pay-server-community",
+          "path": "SECURITY.md",
+          "commit": "dd842f7811b99aa8375ddd0256ce901c3d7960ef",
+          "source_audit_id": "github:paritytech/polkadot-pay-server-community"
+        },
+        {
+          "repo": "polkadot-pay-server-community",
+          "path": "modules/backend/src/db/migrations/0002_flatten_payment_status.sql",
+          "commit": "dd842f7811b99aa8375ddd0256ce901c3d7960ef",
+          "source_audit_id": "github:paritytech/polkadot-pay-server-community"
+        }
+      ]
+    },
+    {
+      "id": "localdot",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-localdot-pattern",
+      "name": "LocalDOT coordination pattern",
+      "capability": "Static host-run SPA combining Asset Hub escrow, Bulletin blobs, Statement Store coordination, and host signer injection without its own server.",
+      "decision": "INVESTIGATE",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "high",
+      "license_reuse": "GPL-3.0; pattern reference only for the private no-license ChopDot repository.",
+      "evidence": [
+        {
+          "repo": "localdot-community",
+          "path": "README.md",
+          "commit": "79b7d9bc2aaf9e7ecbd60c7f6ddd31b76e8c0978",
+          "source_audit_id": "github:paritytech/localdot-community"
+        },
+        {
+          "repo": "localdot-community",
+          "path": "apps/web/src/lib/host/signer.ts",
+          "commit": "79b7d9bc2aaf9e7ecbd60c7f6ddd31b76e8c0978",
+          "source_audit_id": "github:paritytech/localdot-community"
+        },
+        {
+          "repo": "localdot-community",
+          "path": "packages/contracts/contracts/P2PMarket.sol",
+          "commit": "79b7d9bc2aaf9e7ecbd60c7f6ddd31b76e8c0978",
+          "source_audit_id": "github:paritytech/localdot-community"
+        }
+      ]
+    },
+    {
+      "id": "mercado",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-mercado-pattern",
+      "name": "Mercado escrow and dispute pattern",
+      "capability": "Escrow-protected ordering, dispute state, Bulletin evidence, and stablecoin-oriented contract flows.",
+      "decision": "REJECT_FOR_V1",
+      "verification_status": "commit_pinned_source_with_license_conflict",
+      "confidence": "medium",
+      "license_reuse": "GitHub reports NOASSERTION while repository text says GPL-3.0; unresolved metadata conflict means no code reuse.",
+      "evidence": [
+        {
+          "repo": "mercado-community",
+          "path": "README.md",
+          "commit": "5635ae82d83a39c62cfcc604b7489b8461fcd521",
+          "source_audit_id": "github:paritytech/mercado-community"
+        },
+        {
+          "repo": "mercado-community",
+          "path": "packages/contracts/contracts/MercadoDisputes.sol",
+          "commit": "5635ae82d83a39c62cfcc604b7489b8461fcd521",
+          "source_audit_id": "github:paritytech/mercado-community"
+        }
+      ]
+    },
+    {
+      "id": "simple-shared-state",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-simple-shared-state-patterns",
+      "name": "Survey, feedback, and festival shared-state patterns",
+      "capability": "Contracts index CIDs while Bulletin stores larger content; host supplies signing.",
+      "decision": "INVESTIGATE",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "medium_high",
+      "license_reuse": "GPL-family donor code; use as pattern evidence only.",
+      "evidence": [
+        {
+          "repo": "simple-survey",
+          "path": "README.md",
+          "commit": "8ad956541d875394487172469bb7e8ac51ad5278",
+          "source_audit_id": "github:paritytech/simple-survey"
+        },
+        {
+          "repo": "feedback-board",
+          "path": "README.md",
+          "commit": "b73d04ebbb2fa71002f710bf4881975673e4aae1",
+          "source_audit_id": "github:paritytech/feedback-board"
+        },
+        {
+          "repo": "festival",
+          "path": "README.md",
+          "commit": "d25de0aa75fca5a6807e4a705fba971c4cca921c",
+          "source_audit_id": "github:paritytech/festival"
+        }
+      ]
+    },
+    {
+      "id": "circlecredit",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:circlecredit",
+      "label": "circlecredit",
+      "domain": "circlecredit.dot",
+      "url": "https://circlecredit.dev-dot.li",
+      "contenthash": "bafybeih54lr3cgyw2ri3fiygduy27qc5fkn5v7bqjctq23mbfz3d22g5aa",
+      "alive": true,
+      "description": "Lending circles — uncollateralised credit between verified humans.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    {
+      "id": "dot-drive",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:dot-drive",
+      "label": "dot-drive",
+      "domain": "dot-drive.dot",
+      "url": "https://dot-drive.dev-dot.li",
+      "contenthash": "bafybeibcqzhi6mciexjd4q3rlmgspkx4lfrarznmvcbbfxvy56vl7i77dy",
+      "alive": true,
+      "description": "Big files, encrypted on your device and stored on Bulletin, with the key handed over in a sealed letter. The bytes are unreadable and nothing points at them. Fourteen days, then gone, and the app says so on every row.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    {
+      "id": "open-docs",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:open-docs",
+      "label": "open-docs",
+      "domain": "open-docs.dot",
+      "url": "https://open-docs.dev-dot.li",
+      "contenthash": "bafybeih5zklf4jw7btzjwv4h4h25nodc6iyqbo6rcz7cu25b66r7b25uby",
+      "alive": true,
+      "description": "Collaborative documents with verifiable save points.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    {
+      "id": "polkanote",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:polkanote",
+      "label": "polkanote",
+      "domain": "polkanote.dot",
+      "url": "https://polkanote.dev-dot.li",
+      "contenthash": "bafybeihxqu3e34jnj4xpxmuxiiwvvy2hqrsooe4pc4hdnmhqzwd45iugky",
+      "alive": true,
+      "description": "Collaborative documents with verifiable save points.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    {
+      "id": "public-research",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:public-research",
+      "label": "public-research",
+      "domain": "public-research.dot",
+      "url": "https://public-research.dev-dot.li",
+      "contenthash": "bafybeidgfketqgbgwmlm4k2cxchjoiwknisc7regxqw7aaedlsftch5vhi",
+      "alive": true,
+      "description": "Fund the research you want to exist, and browse every app published to the devnet. Proposals live on the Bulletin Chain, the index and its votes and comments on the Statement Store, and funding settles in CASH.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    {
+      "id": "peoplebook",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:peoplebook",
+      "label": "peoplebook",
+      "domain": "peoplebook.dot",
+      "url": "https://peoplebook.dev-dot.li",
+      "contenthash": "bafybeierjabxtfird6jupqdz4ge3ccid4rwc6zkrsd4lttad22eotsjt3m",
+      "alive": true,
+      "description": "The devnet identity directory, where every handle has a claimable on-chain avatar NFT. Read live from the People chain: every person who registered a .dot-style handle gets a generated mask. Claim yours for 1 PAS and the PeoplebookAvatars contract (deployed on the devnet Asset Hub) mints an ERC-721 to you and rolls its rarity on chain, gacha-style: Legendary 3%, Epic 10%, Rare 20%, Uncommon 30%, Common 37%. The image is generated inside the contract, so the NFT shows in any wallet with nothing hosted anywhere. Own a .dot? Add it at claim and the contract verifies it against the registry for better odds. Searchable, self-updating as people claim.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    {
+      "id": "dripstream",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:dripstream",
+      "label": "dripstream",
+      "domain": "dripstream.dot",
+      "url": "https://dripstream.dev-dot.li",
+      "contenthash": "bafybeic4ncy7xpabgitsv5u65p7hoqkydjbhaovwrxzfsu464hqwotapqa",
+      "alive": true,
+      "description": "Payment streams in native PAS. Lock funds once and they unlock to the recipient every second. They pull whatever the clock has released; you cancel and reclaim only what has not vested yet.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    }
+  ],
+  "external_evidence_by_id": {
+    "product-sdk": {
+      "id": "product-sdk",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-product-sdk",
+      "name": "Parity Product SDK",
+      "capability": "High-level typed access to host signing, chains, contracts, cloud storage, Statement Store, local storage, and DotNS.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "verified_source_and_local_version_observation",
+      "confidence": "high",
+      "license_reuse": "Apache-2.0 metadata; adapter use is preferred over copying implementation.",
+      "evidence": [
+        {
+          "repo": "product-sdk",
+          "path": "README.md",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "repo": "product-sdk",
+          "path": "SECURITY.md",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "local_path": "docs/research/evidence/npm-package-version-observation.json"
+        }
+      ]
+    },
+    "truapi": {
+      "id": "truapi",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-truapi",
+      "name": "TrUAPI host protocol",
+      "capability": "Typed low-level protocol between product webviews and Desktop, Mobile, and dot.li hosts.",
+      "decision": "DEFER",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "high",
+      "license_reuse": "MIT metadata for host-rust-core and host-api-test-sdk.",
+      "evidence": [
+        {
+          "repo": "host-rust-core",
+          "path": "README.md",
+          "commit": "229bb230375dc6afb67a766e00524fd037b0a26d",
+          "source_audit_id": "github:paritytech/host-rust-core"
+        },
+        {
+          "repo": "host-api-test-sdk",
+          "path": "README.md",
+          "commit": "17a28f96458c5991f69dc0b0e07464d7fe0bd3ce",
+          "source_audit_id": "github:paritytech/host-api-test-sdk"
+        }
+      ]
+    },
+    "host-test": {
+      "id": "host-test",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-host-test",
+      "name": "Host API test SDK",
+      "capability": "Runs a thin simulated host around a product iframe and exercises signing, storage, chain connections, and Statement Store.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "verified_source_and_local_version_observation",
+      "confidence": "high",
+      "license_reuse": "MIT.",
+      "evidence": [
+        {
+          "repo": "host-api-test-sdk",
+          "path": "README.md",
+          "commit": "17a28f96458c5991f69dc0b0e07464d7fe0bd3ce",
+          "source_audit_id": "github:paritytech/host-api-test-sdk"
+        },
+        {
+          "local_path": "docs/research/evidence/npm-package-version-observation.json"
+        }
+      ]
+    },
+    "dot-hosts": {
+      "id": "dot-hosts",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-dot-hosts",
+      "name": "dot.li and Polkadot Desktop host model",
+      "capability": "Content-addressed .dot resolution, sandboxed app execution, host-mediated signing, scoped storage, and system-chain access without an app-owned web server for the static product shell.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "verified_source_plus_content_addressed_live_registry",
+      "confidence": "high",
+      "license_reuse": "dotli-community AGPL-3.0; Polkadot Desktop GPL-3.0. Use as hosts and pattern references, not copy sources into ChopDot without license review.",
+      "evidence": [
+        {
+          "repo": "dotli-community",
+          "path": "README.md",
+          "commit": "ce17195d59d2b5e2155a67bbc40f353cec3a6b5f",
+          "source_audit_id": "github:paritytech/dotli-community"
+        },
+        {
+          "repo": "polkadot-desktop-community",
+          "path": "README.md",
+          "commit": "a3bb5685258b0414d7e1d62441c6c1e1c1306f92",
+          "source_audit_id": "github:paritytech/polkadot-desktop-community"
+        },
+        {
+          "local_path": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+        }
+      ]
+    },
+    "dotns": {
+      "id": "dotns",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-dotns",
+      "name": "DotNS naming and content resolution",
+      "capability": "Maps .dot names to content hashes and enables content-addressed product delivery.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "verified_source_and_deployed_network_bundle",
+      "confidence": "high",
+      "license_reuse": "DotNS and DotNS SDK metadata are MIT.",
+      "evidence": [
+        {
+          "repo": "dotns",
+          "path": "README.md",
+          "commit": "bfe879310ec6a7b655a08d94838b516cb4c2a844",
+          "source_audit_id": "github:paritytech/dotns"
+        },
+        {
+          "repo": "product-sdk",
+          "path": "product-sdk/packages/sdk/src/identity/dotns-addresses.ts",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "local_path": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+        }
+      ]
+    },
+    "bulletin": {
+      "id": "bulletin",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-bulletin",
+      "name": "Bulletin-backed content storage",
+      "capability": "Content-addressed blob publication and retrieval, including SDK cloud-storage adapters and transaction-storage renewal paths.",
+      "decision": "INVESTIGATE",
+      "verification_status": "commit_pinned_source_and_network_identity_verified",
+      "confidence": "medium_high",
+      "license_reuse": "Bulletin chain GPL-3.0; Product SDK adapter Apache-2.0. Prefer the SDK boundary.",
+      "evidence": [
+        {
+          "repo": "polkadot-bulletin-chain",
+          "path": "docs/book/src/concepts/storage.md",
+          "commit": "8e2f26c9d58950f991780e1a399cd1825770d78a",
+          "source_audit_id": "github:paritytech/polkadot-bulletin-chain"
+        },
+        {
+          "repo": "polkadot-bulletin-chain",
+          "path": "zombienet-sdk-tests/tests/auto_renew_storage.rs",
+          "commit": "8e2f26c9d58950f991780e1a399cd1825770d78a",
+          "source_audit_id": "github:paritytech/polkadot-bulletin-chain"
+        },
+        {
+          "repo": "product-sdk",
+          "path": "README.md",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "local_path": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+        }
+      ]
+    },
+    "statement-store": {
+      "id": "statement-store",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-statement-store",
+      "name": "Statement Store messaging",
+      "capability": "Publish/subscribe transport for small signed statements and host-mediated messaging.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "commit_pinned_source_and_local_version_observation",
+      "confidence": "high",
+      "license_reuse": "SDK Apache-2.0; statement-store-tools GPL-3.0; Polkadot SDK licensing is multi-file and must be reviewed at copied-path level.",
+      "evidence": [
+        {
+          "repo": "polkadot-sdk",
+          "path": "substrate/client/statement-store/docs/overview.md",
+          "commit": "f3b49ccb1f0ddcca2f24acd23091a03db9d8f104",
+          "source_audit_id": "github:paritytech/polkadot-sdk"
+        },
+        {
+          "repo": "host-rust-core",
+          "path": "docs/rfcs/0008-statement-store.md",
+          "commit": "229bb230375dc6afb67a766e00524fd037b0a26d",
+          "source_audit_id": "github:paritytech/host-rust-core"
+        },
+        {
+          "repo": "product-sdk",
+          "path": "README.md",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "local_path": "docs/research/evidence/npm-package-version-observation.json"
+        }
+      ]
+    },
+    "asset-hub-contracts": {
+      "id": "asset-hub-contracts",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-asset-hub-contracts",
+      "name": "Asset Hub contracts and CDM",
+      "capability": "Shared deterministic state, contract calls, and content-addressed contract build/deployment metadata.",
+      "decision": "INVESTIGATE",
+      "verification_status": "verified_source_and_local_target_mismatch",
+      "confidence": "high",
+      "license_reuse": "CDM Apache-2.0. Donor contracts have mixed GPL/NOASSERTION licenses and need path-specific review.",
+      "evidence": [
+        {
+          "repo": "contract-dependency-manager",
+          "path": "README.md",
+          "commit": "5ecde0047f86e898c9744c83221aabdb02b21cdd",
+          "source_audit_id": "github:paritytech/contract-dependency-manager"
+        },
+        {
+          "repo": "contract-dependency-manager",
+          "path": "src/lib/contracts/src/publisher.ts",
+          "commit": "5ecde0047f86e898c9744c83221aabdb02b21cdd",
+          "source_audit_id": "github:paritytech/contract-dependency-manager"
+        },
+        {
+          "local_path": "src/payments/pasWallet.ts"
+        },
+        {
+          "local_path": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+        }
+      ]
+    },
+    "host-local-storage": {
+      "id": "host-local-storage",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-host-local-storage",
+      "name": "Host-scoped local storage",
+      "capability": "Per-product local key-value storage across browser and supported hosts.",
+      "decision": "ADOPT_AS_ADAPTER",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "high",
+      "license_reuse": "Product SDK Apache-2.0; dotli host AGPL-3.0 implementation is reference-only.",
+      "evidence": [
+        {
+          "repo": "product-sdk",
+          "path": "product-sdk/examples/host-demo/e2e/storage-ops.spec.ts",
+          "commit": "6c269d7962eecb7b941664e22ffb278c7a7427d7",
+          "source_audit_id": "github:paritytech/product-sdk"
+        },
+        {
+          "repo": "dotli-community",
+          "path": "packages/ui/src/host-callbacks/LocalStorage.ts",
+          "commit": "ce17195d59d2b5e2155a67bbc40f353cec3a6b5f",
+          "source_audit_id": "github:paritytech/dotli-community"
+        }
+      ]
+    },
+    "identity-backend": {
+      "id": "identity-backend",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-identity-backend",
+      "name": "Parity identity backend",
+      "capability": "Operated identity/notification services with chain supervision, PostgreSQL coordination, and Statement Store processing.",
+      "decision": "REJECT_FOR_V1",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "high",
+      "license_reuse": "GPL-3.0; pattern study only unless legal and architecture review approve reuse.",
+      "evidence": [
+        {
+          "repo": "identity-backend-community",
+          "path": "README.md",
+          "commit": "28e8bdc0e6f2b2da01e5f82198329560c6366729",
+          "source_audit_id": "github:paritytech/identity-backend-community"
+        },
+        {
+          "repo": "identity-backend-community",
+          "path": "apps/identity-backend/src/leader-election/postgres-advisory-lock.service.ts",
+          "commit": "28e8bdc0e6f2b2da01e5f82198329560c6366729",
+          "source_audit_id": "github:paritytech/identity-backend-community"
+        },
+        {
+          "repo": "identity-backend-community",
+          "path": "apps/identity-backend/src/supervision/notifications-processor/workers/statement-processor.worker.ts",
+          "commit": "28e8bdc0e6f2b2da01e5f82198329560c6366729",
+          "source_audit_id": "github:paritytech/identity-backend-community"
+        }
+      ]
+    },
+    "pay-server": {
+      "id": "pay-server",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-pay-server",
+      "name": "Polkadot Pay server",
+      "capability": "Payment API, QR page, settlement observation, PostgreSQL state, and Redis-backed work.",
+      "decision": "REJECT_FOR_V1",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "high",
+      "license_reuse": "GPL-3.0; upstream explicitly calls it an experimental proof of concept, not an operated Parity service.",
+      "evidence": [
+        {
+          "repo": "polkadot-pay-server-community",
+          "path": "README.md",
+          "commit": "dd842f7811b99aa8375ddd0256ce901c3d7960ef",
+          "source_audit_id": "github:paritytech/polkadot-pay-server-community"
+        },
+        {
+          "repo": "polkadot-pay-server-community",
+          "path": "SECURITY.md",
+          "commit": "dd842f7811b99aa8375ddd0256ce901c3d7960ef",
+          "source_audit_id": "github:paritytech/polkadot-pay-server-community"
+        },
+        {
+          "repo": "polkadot-pay-server-community",
+          "path": "modules/backend/src/db/migrations/0002_flatten_payment_status.sql",
+          "commit": "dd842f7811b99aa8375ddd0256ce901c3d7960ef",
+          "source_audit_id": "github:paritytech/polkadot-pay-server-community"
+        }
+      ]
+    },
+    "localdot": {
+      "id": "localdot",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-localdot-pattern",
+      "name": "LocalDOT coordination pattern",
+      "capability": "Static host-run SPA combining Asset Hub escrow, Bulletin blobs, Statement Store coordination, and host signer injection without its own server.",
+      "decision": "INVESTIGATE",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "high",
+      "license_reuse": "GPL-3.0; pattern reference only for the private no-license ChopDot repository.",
+      "evidence": [
+        {
+          "repo": "localdot-community",
+          "path": "README.md",
+          "commit": "79b7d9bc2aaf9e7ecbd60c7f6ddd31b76e8c0978",
+          "source_audit_id": "github:paritytech/localdot-community"
+        },
+        {
+          "repo": "localdot-community",
+          "path": "apps/web/src/lib/host/signer.ts",
+          "commit": "79b7d9bc2aaf9e7ecbd60c7f6ddd31b76e8c0978",
+          "source_audit_id": "github:paritytech/localdot-community"
+        },
+        {
+          "repo": "localdot-community",
+          "path": "packages/contracts/contracts/P2PMarket.sol",
+          "commit": "79b7d9bc2aaf9e7ecbd60c7f6ddd31b76e8c0978",
+          "source_audit_id": "github:paritytech/localdot-community"
+        }
+      ]
+    },
+    "mercado": {
+      "id": "mercado",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-mercado-pattern",
+      "name": "Mercado escrow and dispute pattern",
+      "capability": "Escrow-protected ordering, dispute state, Bulletin evidence, and stablecoin-oriented contract flows.",
+      "decision": "REJECT_FOR_V1",
+      "verification_status": "commit_pinned_source_with_license_conflict",
+      "confidence": "medium",
+      "license_reuse": "GitHub reports NOASSERTION while repository text says GPL-3.0; unresolved metadata conflict means no code reuse.",
+      "evidence": [
+        {
+          "repo": "mercado-community",
+          "path": "README.md",
+          "commit": "5635ae82d83a39c62cfcc604b7489b8461fcd521",
+          "source_audit_id": "github:paritytech/mercado-community"
+        },
+        {
+          "repo": "mercado-community",
+          "path": "packages/contracts/contracts/MercadoDisputes.sol",
+          "commit": "5635ae82d83a39c62cfcc604b7489b8461fcd521",
+          "source_audit_id": "github:paritytech/mercado-community"
+        }
+      ]
+    },
+    "simple-shared-state": {
+      "id": "simple-shared-state",
+      "source_kind": "catalog_decision",
+      "source_id": "cap-simple-shared-state-patterns",
+      "name": "Survey, feedback, and festival shared-state patterns",
+      "capability": "Contracts index CIDs while Bulletin stores larger content; host supplies signing.",
+      "decision": "INVESTIGATE",
+      "verification_status": "commit_pinned_source_inspected",
+      "confidence": "medium_high",
+      "license_reuse": "GPL-family donor code; use as pattern evidence only.",
+      "evidence": [
+        {
+          "repo": "simple-survey",
+          "path": "README.md",
+          "commit": "8ad956541d875394487172469bb7e8ac51ad5278",
+          "source_audit_id": "github:paritytech/simple-survey"
+        },
+        {
+          "repo": "feedback-board",
+          "path": "README.md",
+          "commit": "b73d04ebbb2fa71002f710bf4881975673e4aae1",
+          "source_audit_id": "github:paritytech/feedback-board"
+        },
+        {
+          "repo": "festival",
+          "path": "README.md",
+          "commit": "d25de0aa75fca5a6807e4a705fba971c4cca921c",
+          "source_audit_id": "github:paritytech/festival"
+        }
+      ]
+    },
+    "circlecredit": {
+      "id": "circlecredit",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:circlecredit",
+      "label": "circlecredit",
+      "domain": "circlecredit.dot",
+      "url": "https://circlecredit.dev-dot.li",
+      "contenthash": "bafybeih54lr3cgyw2ri3fiygduy27qc5fkn5v7bqjctq23mbfz3d22g5aa",
+      "alive": true,
+      "description": "Lending circles — uncollateralised credit between verified humans.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    "dot-drive": {
+      "id": "dot-drive",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:dot-drive",
+      "label": "dot-drive",
+      "domain": "dot-drive.dot",
+      "url": "https://dot-drive.dev-dot.li",
+      "contenthash": "bafybeibcqzhi6mciexjd4q3rlmgspkx4lfrarznmvcbbfxvy56vl7i77dy",
+      "alive": true,
+      "description": "Big files, encrypted on your device and stored on Bulletin, with the key handed over in a sealed letter. The bytes are unreadable and nothing points at them. Fourteen days, then gone, and the app says so on every row.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    "open-docs": {
+      "id": "open-docs",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:open-docs",
+      "label": "open-docs",
+      "domain": "open-docs.dot",
+      "url": "https://open-docs.dev-dot.li",
+      "contenthash": "bafybeih5zklf4jw7btzjwv4h4h25nodc6iyqbo6rcz7cu25b66r7b25uby",
+      "alive": true,
+      "description": "Collaborative documents with verifiable save points.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    "polkanote": {
+      "id": "polkanote",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:polkanote",
+      "label": "polkanote",
+      "domain": "polkanote.dot",
+      "url": "https://polkanote.dev-dot.li",
+      "contenthash": "bafybeihxqu3e34jnj4xpxmuxiiwvvy2hqrsooe4pc4hdnmhqzwd45iugky",
+      "alive": true,
+      "description": "Collaborative documents with verifiable save points.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    "public-research": {
+      "id": "public-research",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:public-research",
+      "label": "public-research",
+      "domain": "public-research.dot",
+      "url": "https://public-research.dev-dot.li",
+      "contenthash": "bafybeidgfketqgbgwmlm4k2cxchjoiwknisc7regxqw7aaedlsftch5vhi",
+      "alive": true,
+      "description": "Fund the research you want to exist, and browse every app published to the devnet. Proposals live on the Bulletin Chain, the index and its votes and comments on the Statement Store, and funding settles in CASH.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    "peoplebook": {
+      "id": "peoplebook",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:peoplebook",
+      "label": "peoplebook",
+      "domain": "peoplebook.dot",
+      "url": "https://peoplebook.dev-dot.li",
+      "contenthash": "bafybeierjabxtfird6jupqdz4ge3ccid4rwc6zkrsd4lttad22eotsjt3m",
+      "alive": true,
+      "description": "The devnet identity directory, where every handle has a claimable on-chain avatar NFT. Read live from the People chain: every person who registered a .dot-style handle gets a generated mask. Claim yours for 1 PAS and the PeoplebookAvatars contract (deployed on the devnet Asset Hub) mints an ERC-721 to you and rolls its rarity on chain, gacha-style: Legendary 3%, Epic 10%, Rare 20%, Uncommon 30%, Common 37%. The image is generated inside the contract, so the NFT shows in any wallet with nothing hosted anywhere. Own a .dot? Add it at claim and the contract verifies it against the registry for better odds. Searchable, self-updating as people claim.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    },
+    "dripstream": {
+      "id": "dripstream",
+      "source_kind": "devnet_registry",
+      "source_id": "dotns:devnet:dripstream",
+      "label": "dripstream",
+      "domain": "dripstream.dot",
+      "url": "https://dripstream.dev-dot.li",
+      "contenthash": "bafybeic4ncy7xpabgitsv5u65p7hoqkydjbhaovwrxzfsu464hqwotapqa",
+      "alive": true,
+      "description": "Payment streams in native PAS. Lock funds once and they unlock to the recipient every second. They pull whatever the clock has released; you cancel and reclaim only what has not vested yet.",
+      "verification": {
+        "status": "verified_directory_record",
+        "method": "content_addressed_dotmetrics_directory",
+        "limitation": "A directory record proves what DotMetrics indexed, not that application source or runtime claims are correct"
+      },
+      "source_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json"
+    }
+  },
+  "cards": [
+    {
+      "id": "P-001",
+      "title": "Dinner split pay-moment capture",
+      "type": "journey",
+      "status": "done",
+      "scope": "Catch",
+      "module": "group-expense",
+      "journey": "Mina paid CHF 120 for dinner in Zurich",
+      "pillar": "Catch",
+      "priority": "high",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Split this payment",
+      "next_action": "Open the capture flow and split the payment without starting from a blank accounting form.",
+      "total_score": 9,
+      "last_touched": "2026-06-29",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:26",
+      "primary_family_id": "capture_spend_receipts",
+      "secondary_family_ids": [
+        "normal_pots_trips_couples",
+        "exact_money_splits_corrections",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "P-002",
+      "title": "No-app friend payment link",
+      "type": "feature",
+      "status": "done",
+      "scope": "Payout",
+      "module": "friend-action",
+      "journey": "Leo receives a link and pays Mina back",
+      "pillar": "Payout",
+      "priority": "high",
+      "evidence_quality": "partial",
+      "blocker": "none",
+      "one_next_action": "Pay Mina",
+      "next_action": "Open the friend link and show only Leo's amount, receiver, and pay action.",
+      "total_score": 10,
+      "last_touched": "2026-06-24",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:72",
+      "primary_family_id": "payment_requests_guest_invites",
+      "secondary_family_ids": [
+        "identity_people_membership_recovery",
+        "normal_pots_trips_couples",
+        "payment_rails_wallets",
+        "live_sync_offline_chat_notifications",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "P-003",
+      "title": "Confirm received",
+      "type": "feature",
+      "status": "done",
+      "scope": "Management",
+      "module": "confirmation",
+      "journey": "Mina confirms money arrived",
+      "pillar": "Management",
+      "priority": "high",
+      "evidence_quality": "partial",
+      "blocker": "none",
+      "one_next_action": "Confirm received",
+      "next_action": "Show Mina the exact payment to confirm received.",
+      "total_score": 10,
+      "last_touched": "2026-06-24",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:112",
+      "primary_family_id": "confirmation_resolution_closeout",
+      "secondary_family_ids": [
+        "normal_pots_trips_couples",
+        "exact_money_splits_corrections",
+        "payment_rails_wallets",
+        "savings_circles",
+        "emergency_pots",
+        "community_funds",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "P-004",
+      "title": "Close with readable saved record",
+      "type": "feature",
+      "status": "done",
+      "scope": "History",
+      "module": "closeout",
+      "journey": "The dinner group closes the record",
+      "pillar": "History",
+      "priority": "high",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Close record",
+      "next_action": "Show what is confirmed, delayed, waived, or still open before closing.",
+      "total_score": 9,
+      "last_touched": "2026-06-28",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:152",
+      "primary_family_id": "history_privacy_export",
+      "secondary_family_ids": [
+        "normal_pots_trips_couples",
+        "confirmation_resolution_closeout",
+        "savings_circles",
+        "emergency_pots",
+        "community_funds",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "P-005",
+      "title": "Spend Card capture path",
+      "type": "feature",
+      "status": "discovery",
+      "scope": "Catch",
+      "module": "spend-card",
+      "journey": "Mina pays with a card and captures the split",
+      "pillar": "Catch",
+      "priority": "high",
+      "evidence_quality": "partial",
+      "blocker": "needs current UI walkthrough",
+      "one_next_action": "Split this spend",
+      "next_action": "Review the current Spend Card flow and identify the first dead end.",
+      "total_score": 8,
+      "last_touched": "2026-06-24",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:192",
+      "primary_family_id": "capture_spend_receipts",
+      "secondary_family_ids": [
+        "group_cards_home_language",
+        "exact_money_splits_corrections"
+      ]
+    },
+    {
+      "id": "P-006",
+      "title": "Savings circle round",
+      "type": "journey",
+      "status": "done",
+      "scope": "Management",
+      "module": "savings-circle",
+      "journey": "Mina runs a Friday savings circle",
+      "pillar": "Management",
+      "priority": "medium",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Confirm received",
+      "next_action": "Move to the next user journey: emergency pot privacy flow.",
+      "total_score": 10,
+      "last_touched": "2026-07-01",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:233",
+      "primary_family_id": "savings_circles",
+      "secondary_family_ids": [
+        "group_cards_home_language"
+      ]
+    },
+    {
+      "id": "P-007",
+      "title": "Emergency pot privacy flow",
+      "type": "journey",
+      "status": "done",
+      "scope": "Management",
+      "module": "emergency-pot",
+      "journey": "A group coordinates private emergency help",
+      "pillar": "Management",
+      "priority": "medium",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Contribute",
+      "next_action": "Move to the next user journey: community fund role flow.",
+      "total_score": 10,
+      "last_touched": "2026-07-01",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:280",
+      "primary_family_id": "emergency_pots",
+      "secondary_family_ids": [
+        "group_cards_home_language",
+        "history_privacy_export"
+      ]
+    },
+    {
+      "id": "P-008",
+      "title": "Community fund role flow",
+      "type": "journey",
+      "status": "discovery",
+      "scope": "Management",
+      "module": "community-fund",
+      "journey": "A small group manages shared fund decisions",
+      "pillar": "Management",
+      "priority": "medium",
+      "evidence_quality": "thin",
+      "blocker": "needs role-based first viewport",
+      "one_next_action": "Review request",
+      "next_action": "Show each role exactly what they can do next.",
+      "total_score": 8,
+      "last_touched": "2026-06-24",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:332",
+      "primary_family_id": "community_funds",
+      "secondary_family_ids": [
+        "group_cards_home_language",
+        "history_privacy_export"
+      ]
+    },
+    {
+      "id": "P-009",
+      "title": "Agent wallet journey testing",
+      "type": "experiment",
+      "status": "done",
+      "scope": "Quality",
+      "module": "agent-testing",
+      "journey": "Mina, Leo, Nina, and Omar act from separate devices",
+      "pillar": "Management",
+      "priority": "high",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Run agent journey",
+      "next_action": "Run agents through the app UI and record confusion, dead ends, and unsafe assumptions.",
+      "total_score": 10,
+      "last_touched": "2026-06-28",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:372",
+      "primary_family_id": "assurance_research_operations",
+      "secondary_family_ids": [
+        "payment_rails_wallets"
+      ]
+    },
+    {
+      "id": "P-021",
+      "title": "J-004 no-app friend payment link",
+      "type": "journey",
+      "status": "done",
+      "scope": "Payout",
+      "module": "friend-action",
+      "journey": "Leo receives a link and pays without joining",
+      "pillar": "Payout",
+      "priority": "high",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Pay Mina",
+      "next_action": "Move to the next cockpit card after P-021 validation.",
+      "total_score": 10,
+      "last_touched": "2026-06-29",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:417",
+      "primary_family_id": "payment_requests_guest_invites",
+      "secondary_family_ids": [
+        "identity_people_membership_recovery"
+      ]
+    },
+    {
+      "id": "P-022",
+      "title": "Regular pot end-to-end coherence",
+      "type": "journey",
+      "status": "building",
+      "scope": "Quality",
+      "module": "group-expense",
+      "journey": "Mina starts from a group, person, amount, or receipt; manages an ongoing regular pot; settles exact balances; and keeps an immutable readable record",
+      "pillar": "Management",
+      "priority": "high",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Review journey",
+      "next_action": "Reprove the normal pot against the product/story-map.md permutation table, beginning with group-first, expense-first, and photo/quick/manual capture without creating separate money paths.",
+      "total_score": 10,
+      "last_touched": "2026-07-01",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:462",
+      "primary_family_id": "normal_pots_trips_couples",
+      "secondary_family_ids": [
+        "identity_people_membership_recovery",
+        "group_cards_home_language",
+        "capture_spend_receipts",
+        "exact_money_splits_corrections",
+        "payment_requests_guest_invites",
+        "confirmation_resolution_closeout",
+        "history_privacy_export",
+        "savings_circles",
+        "community_funds"
+      ]
+    },
+    {
+      "id": "P-023",
+      "title": "PAS test wallet payment",
+      "type": "feature",
+      "status": "done",
+      "scope": "Payout",
+      "module": "friend-action",
+      "journey": "Leo pays Mina from a funded test wallet",
+      "pillar": "Payout",
+      "priority": "high",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Pay Mina",
+      "next_action": "Keep PAS on the direct wallet and public-chain path; do not restore artifact-backed payment checks.",
+      "total_score": 10,
+      "last_touched": "2026-07-15",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:527",
+      "primary_family_id": "payment_rails_wallets",
+      "secondary_family_ids": [
+        "native_delivery_hosting"
+      ]
+    },
+    {
+      "id": "P-024",
+      "title": "DOT and USDC wallet payment checks",
+      "type": "feature",
+      "status": "discovery",
+      "scope": "Payout",
+      "module": "friend-action",
+      "journey": "Leo checks whether his wallet payment clears the right share",
+      "pillar": "Payout",
+      "priority": "high",
+      "evidence_quality": "partial",
+      "blocker": "DOT remains fixture-shaped and TEST_USDC used a mock token contract. Neither currency has completed the connected-wallet, direct-chain-observation, five-person run required for promotion.",
+      "one_next_action": "Check payment",
+      "next_action": "After the PAS wallet path passes, run separate real DOT and real testnet USDC connected-wallet checks without reusing PAS, fixtures, or prior reports.",
+      "total_score": 10,
+      "last_touched": "2026-07-15",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:577",
+      "primary_family_id": "payment_rails_wallets",
+      "secondary_family_ids": [
+        "exact_money_splits_corrections",
+        "native_delivery_hosting"
+      ]
+    },
+    {
+      "id": "P-025",
+      "title": "Universal Chop Core security architecture",
+      "type": "architecture",
+      "status": "ready",
+      "scope": "Quality",
+      "module": "mini-app-security",
+      "journey": "Future mini-app surfaces act on one trusted Chop record",
+      "pillar": "Management",
+      "priority": "critical",
+      "evidence_quality": "partial",
+      "blocker": "none",
+      "one_next_action": "Define core contract",
+      "next_action": "Add a forward-only migration aligning payment states with paid and confirmed.",
+      "total_score": 10,
+      "last_touched": "2026-07-14",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:623",
+      "primary_family_id": "identity_people_membership_recovery",
+      "secondary_family_ids": [
+        "capture_spend_receipts",
+        "exact_money_splits_corrections",
+        "payment_requests_guest_invites",
+        "payment_rails_wallets",
+        "confirmation_resolution_closeout",
+        "live_sync_offline_chat_notifications",
+        "savings_circles",
+        "emergency_pots",
+        "community_funds",
+        "native_delivery_hosting",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "P-010",
+      "title": "Polkadot-native session boundary",
+      "type": "research",
+      "status": "building",
+      "scope": "Native Stack",
+      "module": "polkadot-native",
+      "journey": "The group shares one trusted state without a central app database",
+      "pillar": "History",
+      "priority": "medium",
+      "evidence_quality": "partial",
+      "blocker": "The five-person normal-UI host proof is complete locally. Live promotion still requires a runnable Polkadot Mobile client, live multi-device Statement Store convergence, and live payment/receipt proof.",
+      "one_next_action": "Prove the live connection",
+      "next_action": "Repeat the proven five-person normal-UI journey against live Product Accounts and live Statement Store when a runnable Polkadot Mobile client is available; test real payment execution as a separate evidence lane.",
+      "total_score": 10,
+      "last_touched": "2026-07-14",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:673",
+      "primary_family_id": "native_delivery_hosting",
+      "secondary_family_ids": [
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "P-011",
+      "title": "Product language cleanup",
+      "type": "cleanup",
+      "status": "done",
+      "scope": "Quality",
+      "module": "language",
+      "journey": "Normal users understand the app without internal terms",
+      "pillar": "Management",
+      "priority": "high",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Clean visible copy",
+      "next_action": "Scan normal UI for internal terms and replace them with user language.",
+      "total_score": 10,
+      "last_touched": "2026-08-20",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:736",
+      "primary_family_id": "group_cards_home_language",
+      "secondary_family_ids": []
+    },
+    {
+      "id": "P-012",
+      "title": "Receipt capture without manual-first entry",
+      "type": "feature",
+      "status": "validation",
+      "scope": "Catch",
+      "module": "receipt-capture",
+      "journey": "Mina adds an expense using the capture method that matches what she has, then reviews and edits the open draft",
+      "pillar": "Catch",
+      "priority": "high",
+      "evidence_quality": "partial",
+      "blocker": "The year-long app has strong photo/import and correction evidence, but the expanded photo/import/link/quick/manual capture plus open-edit/immutable-history contract has not been migrated and re-proved on the exact One ChopDot candidate.",
+      "one_next_action": "Add expense",
+      "next_action": "Migrate and reprove photo, import/share, link/text, quick amount, and manual entry as one Add expense sheet in the exact candidate.",
+      "total_score": 10,
+      "last_touched": "2026-08-20",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:780",
+      "primary_family_id": "capture_spend_receipts",
+      "secondary_family_ids": [
+        "history_privacy_export"
+      ]
+    },
+    {
+      "id": "P-013",
+      "title": "Competitor and 10x benchmark",
+      "type": "research",
+      "status": "discovery",
+      "scope": "Quality",
+      "module": "research",
+      "journey": "ChopDot beats the strongest normal splitting app on the chosen wedge",
+      "pillar": "Management",
+      "priority": "high",
+      "evidence_quality": "partial",
+      "blocker": "The live `.dot` showcase benchmark is complete, but the same-journey comparison against the strongest conventional splitting products remains open. Do not conflate showcase presentation quality with full competitor superiority.",
+      "one_next_action": "Compare one journey",
+      "next_action": "Use the completed `.dot` showcase benchmark to guide P-033, then compare the same dinner split, no-app pay, confirm, and close-record journey against the strongest conventional splitting alternatives.",
+      "total_score": 8,
+      "last_touched": "2026-08-12",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:824",
+      "primary_family_id": "assurance_research_operations",
+      "secondary_family_ids": []
+    },
+    {
+      "id": "P-014",
+      "title": "Product cockpit upgrade",
+      "type": "feature",
+      "status": "done",
+      "scope": "Quality",
+      "module": "product-cockpit",
+      "journey": "The team knows what to build next and why",
+      "pillar": "Management",
+      "priority": "high",
+      "evidence_quality": "partial",
+      "blocker": "none",
+      "one_next_action": "Open product cockpit",
+      "next_action": "Generate a readable cockpit with roadmap, kanban, decisions, history, and resume.",
+      "total_score": 10,
+      "last_touched": "2026-06-24",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:864",
+      "primary_family_id": "assurance_research_operations",
+      "secondary_family_ids": []
+    },
+    {
+      "id": "P-015",
+      "title": "Friend-pilot readiness scorecard",
+      "type": "quality",
+      "status": "ready",
+      "scope": "Quality",
+      "module": "readiness",
+      "journey": "The next pilot knows which use cases are actually ready",
+      "pillar": "History",
+      "priority": "high",
+      "evidence_quality": "partial",
+      "blocker": "none",
+      "one_next_action": "Review readiness",
+      "next_action": "Mark each journey ready, needs work, or blocked using current proof.",
+      "total_score": 9,
+      "last_touched": "2026-06-24",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:906",
+      "primary_family_id": "assurance_research_operations",
+      "secondary_family_ids": []
+    },
+    {
+      "id": "P-016",
+      "title": "Product resume for future agents",
+      "type": "quality",
+      "status": "ready",
+      "scope": "Quality",
+      "module": "agent-handoff",
+      "journey": "A future agent resumes without losing the product point",
+      "pillar": "History",
+      "priority": "medium",
+      "evidence_quality": "partial",
+      "blocker": "none",
+      "one_next_action": "Read product resume",
+      "next_action": "Generate a short handoff with thesis, active work, blockers, and next actions.",
+      "total_score": 10,
+      "last_touched": "2026-06-24",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:945",
+      "primary_family_id": "assurance_research_operations",
+      "secondary_family_ids": []
+    },
+    {
+      "id": "P-017",
+      "title": "AI PM process guardrails",
+      "type": "quality",
+      "status": "done",
+      "scope": "Quality",
+      "module": "ai-product-management",
+      "journey": "Future agents apply AI PM lessons without making ChopDot more complex",
+      "pillar": "Management",
+      "priority": "high",
+      "evidence_quality": "partial",
+      "blocker": "none",
+      "one_next_action": "Run AI PM check",
+      "next_action": "Run the AI PM validator before shipping AI-assisted capture work.",
+      "total_score": 10,
+      "last_touched": "2026-06-27",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:984",
+      "primary_family_id": "assurance_research_operations",
+      "secondary_family_ids": []
+    },
+    {
+      "id": "P-018",
+      "title": "Normal pot expense tracking",
+      "type": "journey",
+      "status": "done",
+      "scope": "Catch",
+      "module": "group-expense",
+      "journey": "Mina adds shared costs during an evening or trip",
+      "pillar": "Catch",
+      "priority": "high",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Add Expense",
+      "next_action": "Open the normal pot and add one shared expense without entering a dense form.",
+      "total_score": 10,
+      "last_touched": "2026-06-28",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1025",
+      "primary_family_id": "normal_pots_trips_couples",
+      "secondary_family_ids": [
+        "group_cards_home_language"
+      ]
+    },
+    {
+      "id": "P-019",
+      "title": "Normal pot mobile and desktop polish",
+      "type": "quality",
+      "status": "done",
+      "scope": "Quality",
+      "module": "group-expense",
+      "journey": "J-008 Mobile/Desktop Layout Quality for J-001 through J-003",
+      "pillar": "Management",
+      "priority": "high",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Keep the current money action obvious",
+      "next_action": "Run the normal pot loop on mobile and desktop, then fix only the visual and flow mismatches.",
+      "total_score": 10,
+      "last_touched": "2026-06-28",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1065",
+      "primary_family_id": "group_cards_home_language",
+      "secondary_family_ids": [
+        "normal_pots_trips_couples"
+      ]
+    },
+    {
+      "id": "P-020",
+      "title": "Chat capture agent",
+      "type": "feature",
+      "status": "building",
+      "scope": "Catch",
+      "module": "chat-capture",
+      "journey": "Mina adds ChopDot to a Telegram dinner chat",
+      "pillar": "Catch",
+      "priority": "high",
+      "evidence_quality": "partial",
+      "blocker": "none",
+      "one_next_action": "/addlast",
+      "next_action": "Write a paid message in the chat, then review the draft before adding it.",
+      "total_score": 9,
+      "last_touched": "2026-06-28",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1116",
+      "primary_family_id": "live_sync_offline_chat_notifications",
+      "secondary_family_ids": [
+        "capture_spend_receipts"
+      ]
+    },
+    {
+      "id": "P-026",
+      "title": "Product behavior map and coverage system",
+      "type": "product-system",
+      "status": "building",
+      "scope": "Management",
+      "module": "product-cockpit",
+      "journey": "Product and engineering roll up and drill down ChopDot behavior before adding new mini-app surfaces",
+      "pillar": "Management",
+      "priority": "high",
+      "evidence_quality": "thin",
+      "blocker": "none",
+      "one_next_action": "Review behavior map",
+      "next_action": "Review the behavior dashboard and identify the next missing, broken, or unproven path.",
+      "total_score": 10,
+      "last_touched": "2026-07-15",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1157",
+      "primary_family_id": "assurance_research_operations",
+      "secondary_family_ids": []
+    },
+    {
+      "id": "P-027",
+      "title": "Receipt and spend capture behavior map",
+      "type": "product-system",
+      "status": "building",
+      "scope": "Catch",
+      "module": "product-cockpit",
+      "journey": "Mina captures a receipt or spend signal and turns it into a reviewed split without creating wrong payment truth",
+      "pillar": "Catch",
+      "priority": "high",
+      "evidence_quality": "thin",
+      "blocker": "none",
+      "one_next_action": "Review capture map",
+      "next_action": "Fix D-019 by clearing stale capture errors and keeping receipt recovery actions unobscured on mobile and desktop.",
+      "total_score": 10,
+      "last_touched": "2026-07-15",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1219",
+      "primary_family_id": "capture_spend_receipts",
+      "secondary_family_ids": [
+        "exact_money_splits_corrections"
+      ]
+    },
+    {
+      "id": "P-028",
+      "title": "ChopDot Buzz delivery system",
+      "type": "product-system",
+      "status": "done",
+      "scope": "Quality",
+      "module": "agent-operations",
+      "journey": "Dev routes one ChopDot card through bounded implementation and independent verification without losing product or release authority",
+      "pillar": "Management",
+      "priority": "medium",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Route one bounded packet",
+      "next_action": "Use the promoted message-only steward-to-reviewer lane for bounded packets; keep every other role and the writer behind separate qualification gates.",
+      "total_score": 9,
+      "last_touched": "2026-08-02",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1278",
+      "primary_family_id": "assurance_research_operations",
+      "secondary_family_ids": [
+        "live_sync_offline_chat_notifications"
+      ]
+    },
+    {
+      "id": "P-029",
+      "title": "Buzz durability and Product Journey Reviewer qualification",
+      "type": "product-system",
+      "status": "done",
+      "scope": "Quality",
+      "module": "agent-operations",
+      "journey": "Dev audits the installed Buzz system, preserves it independently, and routes one real product finding through a qualified reviewer",
+      "pillar": "Management",
+      "priority": "high",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Implement D-019 recovery-state cleanup",
+      "next_action": "Implement D-019 under P-027, then capture device-verified mobile and desktop proof; keep P-022 open until that gate passes.",
+      "total_score": 9,
+      "last_touched": "2026-08-03",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1336",
+      "primary_family_id": "assurance_research_operations",
+      "secondary_family_ids": [
+        "live_sync_offline_chat_notifications"
+      ]
+    },
+    {
+      "id": "P-030",
+      "title": "Midnight portable shell public release",
+      "type": "release",
+      "status": "done",
+      "scope": "Native Stack",
+      "module": "polkadot-dot",
+      "journey": "Mina completes the normal ChopDot guest journey from the published .dot app",
+      "pillar": "History",
+      "priority": "critical",
+      "evidence_quality": "strong",
+      "blocker": "none",
+      "one_next_action": "Continue as guest",
+      "next_action": "Keep this as the bounded Programme A release record; do not start a real-person pilot until One ChopDot recovery passes the public adversarial gate.",
+      "total_score": 10,
+      "last_touched": "2026-08-08",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1391",
+      "primary_family_id": "native_delivery_hosting",
+      "secondary_family_ids": []
+    },
+    {
+      "id": "P-031",
+      "title": "Public adversarial agent group playtest",
+      "type": "quality",
+      "status": "blocked",
+      "scope": "Quality",
+      "module": "public-dot",
+      "journey": "Mina, Leo, and Nina use the published app as a real group and challenge hard paths",
+      "pillar": "History",
+      "priority": "critical",
+      "evidence_quality": "strong",
+      "blocker": "Public request/update links use an unsupported sandbox origin; payer/organizer isolation, repeat-action idempotency, closeout immutability, CHF, and request recovery failed.",
+      "one_next_action": "Open the request for your assigned role",
+      "next_action": "Execute One ChopDot recovery: specify the minimum core contract, make links initial entry only, add automatic live updates and offline catch-up, repair role isolation/idempotency/closeout, then rerun the exact public scenario.",
+      "total_score": 5,
+      "last_touched": "2026-08-09",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1450",
+      "primary_family_id": "assurance_research_operations",
+      "secondary_family_ids": []
+    },
+    {
+      "id": "P-032",
+      "title": "One ChopDot recovery and convergence",
+      "type": "quality",
+      "status": "building",
+      "scope": "Quality",
+      "module": "one-chop-core",
+      "journey": "Mina captures CHF 120 once, Leo and Nina enter through an accepted relationship or scoped invitation, their actions appear automatically for Mina, and one immutable record is saved",
+      "pillar": "Management",
+      "priority": "critical",
+      "evidence_quality": "partial",
+      "blocker": "Private v0.5.6 is deployed to `chopdotproof02.dot` with the developer-only Native Host Readiness Check. The exact production asset passed 40/40 adapter tests, TypeScript, build, and the official simulated-host journey. In the real Desktop host, the probe confirmed container, identity, and Statement Store service, opened `Post statements on your behalf`, then stopped at allowance with the visible host error `Submit failed, no allowance set for account`; the product promise separately reported `Unknown enum discriminant: 92`. No canary or money action was published. The scoped Desktop reproduction is now open at `paritytech/polkadot-desktop-community#29` and cross-linked to the existing allowance-integration tracker `paritytech/triangle-js-sdks#167`; both are subscribed. Promotion remains blocked on a supported base-allowance recovery path and a six-stage live `ready` result, then distinct Product Accounts, disconnect/reconnect after both actions, catch-up beyond ChopDot's configured 300-second TTL, general group-action outboxes/publishing, payload/quota compliance, and persisted global event deduplication.",
+      "one_next_action": "Review this spend",
+      "next_action": "Run the verified-person ceremony with two real Polkadot App accounts only after the supported signing and storage path is available; keep membership delivery, posting allowance, three-account convergence, artifact freeze, public verification, and deployment separately blocked and action-time gated.",
+      "total_score": 10,
+      "last_touched": "2026-08-20",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1505",
+      "primary_family_id": "identity_people_membership_recovery",
+      "secondary_family_ids": [
+        "payment_requests_guest_invites",
+        "history_privacy_export",
+        "live_sync_offline_chat_notifications",
+        "native_delivery_hosting",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "P-033",
+      "title": "Showcase-quality ChopDot entrance",
+      "type": "feature",
+      "status": "ready",
+      "scope": "Quality",
+      "module": "portable-shell",
+      "journey": "Mina's CHF 120 dinner split is understandable and actionable from the first hosted screen",
+      "pillar": "Catch",
+      "priority": "high",
+      "evidence_quality": "strong",
+      "blocker": "Local design and implementation may proceed, but public promotion or deployment remains gated by the applicable P-032 recovery/convergence requirements and action-time approval.",
+      "one_next_action": "Review this spend",
+      "next_action": "Preserve the locally passed card experience while Batch 6 freezes and reproves one exact candidate; do not promote or deploy until P-032 live Desktop recovery/convergence and action-time approval pass.",
+      "total_score": 10,
+      "last_touched": "2026-08-13",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1688",
+      "primary_family_id": "group_cards_home_language",
+      "secondary_family_ids": [
+        "native_delivery_hosting",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "P-034",
+      "title": "Core Money and Event Contract v1",
+      "type": "quality",
+      "status": "done",
+      "scope": "Quality",
+      "module": "one-chop-core",
+      "journey": "Mina records and corrects one shared expense while Leo and Nina act from different devices, and every device reaches the same exact CHF result",
+      "pillar": "Management",
+      "priority": "critical",
+      "evidence_quality": "partial",
+      "blocker": "none",
+      "one_next_action": "Review this spend",
+      "next_action": "Preserve the passed exact-money/event contract while Batch 4 routes the ordinary dinner journey through it; re-run P-034 on the exact clean Batch 6 fingerprint and keep the live recovery-provider lane blocked until real Desktop proof.",
+      "total_score": 10,
+      "last_touched": "2026-08-13",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1764",
+      "primary_family_id": "exact_money_splits_corrections",
+      "secondary_family_ids": [
+        "payment_rails_wallets",
+        "confirmation_resolution_closeout",
+        "savings_circles",
+        "emergency_pots",
+        "community_funds"
+      ]
+    },
+    {
+      "id": "P-035",
+      "title": "Account, profile, and payment instrument lifecycle",
+      "type": "feature",
+      "status": "ready",
+      "scope": "Management",
+      "module": "one-chop-access",
+      "journey": "Mina starts safely, becomes the same protected person, maintains her ChopDot/.dot profile, connects a payment method without changing identity, and returns to the same groups after sign-out or device change",
+      "pillar": "Management",
+      "priority": "critical",
+      "evidence_quality": "partial",
+      "blocker": "The B6 entrance is still guest-first, Profile says Local profile, provider paths are not wired end to end, and wallet code is primarily a payment-path seam. Product Account identity, verified contacts, guest migration, and recovery foundations exist locally but the complete account/profile/wallet lifecycle has not been assembled and re-proved in one candidate.",
+      "one_next_action": "Get started",
+      "next_action": "Replace the guest-only entrance with an environment-aware Get started flow and prove that Product Account binding, ChopDot profile, guest migration, sign-out/return, recovery, and payment-wallet connection remain one person with separate authorities.",
+      "total_score": 10,
+      "last_touched": "2026-08-20",
+      "source_ref": "/Users/devinsonpena/ChopDot/product/cards.md:1830",
+      "primary_family_id": "identity_people_membership_recovery",
+      "secondary_family_ids": [
+        "payment_requests_guest_invites",
+        "payment_rails_wallets"
+      ]
+    }
+  ],
+  "paths": [
+    {
+      "id": "N-001",
+      "title": "Start normal pot",
+      "actor": "mina",
+      "pillar": "catch",
+      "entryState": "no_group",
+      "action": "start_group",
+      "resultState": "group_open_empty",
+      "terminal": false,
+      "ownerCards": [
+        "P-022",
+        "P-001"
+      ],
+      "implementationStatus": "unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "normal_pots_trips_couples"
+    },
+    {
+      "id": "N-002",
+      "title": "Add first expense",
+      "actor": "mina",
+      "pillar": "catch",
+      "entryState": "group_open_empty",
+      "action": "add_first_expense",
+      "resultState": "group_open_expense_captured",
+      "terminal": false,
+      "ownerCards": [
+        "P-022",
+        "P-001"
+      ],
+      "implementationStatus": "unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "N-003",
+      "title": "Add another expense before request",
+      "actor": "mina",
+      "pillar": "catch",
+      "entryState": "group_open_expense_captured",
+      "action": "add_another_expense_before_request",
+      "resultState": "group_open_expense_captured",
+      "terminal": false,
+      "ownerCards": [
+        "P-022",
+        "P-001"
+      ],
+      "implementationStatus": "unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "N-004",
+      "title": "Review or edit split",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "group_open_expense_captured",
+      "action": "review_or_edit_split",
+      "resultState": "split_review",
+      "terminal": false,
+      "ownerCards": [
+        "P-022"
+      ],
+      "implementationStatus": "unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "exact_money_splits_corrections"
+    },
+    {
+      "id": "N-005",
+      "title": "Send payment request",
+      "actor": "mina",
+      "pillar": "payout",
+      "entryState": "split_review",
+      "action": "send_payment_request",
+      "resultState": "payment_request_sent",
+      "terminal": false,
+      "ownerCards": [
+        "P-022",
+        "P-002"
+      ],
+      "implementationStatus": "known_gap",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "known_gap",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "active_elsewhere",
+      "activeOwner": {
+        "card": "P-022",
+        "lane": "dot-portable-shell-p022",
+        "threads": [
+          "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e"
+        ],
+        "note": "Other thread is handling .dot add-expense-after-request and premature close behavior."
+      },
+      "recommendedForThisThread": false,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-002",
+        "D-009"
+      ],
+      "risk": "high",
+      "feature_family_id": "payment_requests_guest_invites"
+    },
+    {
+      "id": "N-006",
+      "title": "Payer opens request",
+      "actor": "leo",
+      "pillar": "payout",
+      "entryState": "payment_request_sent",
+      "action": "open_payment_request",
+      "resultState": "payer_viewing_amount_due",
+      "terminal": false,
+      "ownerCards": [
+        "P-002",
+        "P-022"
+      ],
+      "implementationStatus": "unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "payment_requests_guest_invites"
+    },
+    {
+      "id": "N-007",
+      "title": "Payer cannot pay now",
+      "actor": "leo",
+      "pillar": "management",
+      "entryState": "payer_viewing_amount_due",
+      "action": "cannot_pay_now",
+      "resultState": "delayed",
+      "terminal": false,
+      "ownerCards": [
+        "P-002",
+        "P-004",
+        "P-022"
+      ],
+      "implementationStatus": "not_built",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-006"
+      ],
+      "risk": "critical",
+      "feature_family_id": "confirmation_resolution_closeout"
+    },
+    {
+      "id": "N-008",
+      "title": "Payer starts native/app payment",
+      "actor": "leo",
+      "pillar": "payout",
+      "entryState": "payer_viewing_amount_due",
+      "action": "start_payment",
+      "resultState": "payment_started",
+      "terminal": false,
+      "ownerCards": [
+        "P-002",
+        "P-023",
+        "P-024",
+        "P-025"
+      ],
+      "implementationStatus": "unproven",
+      "proofStatus": "partial",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "partial",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-009"
+      ],
+      "risk": "high",
+      "feature_family_id": "payment_rails_wallets"
+    },
+    {
+      "id": "N-009",
+      "title": "Payer marks paid or evidence observed",
+      "actor": "leo",
+      "pillar": "payout",
+      "entryState": "payer_viewing_amount_due",
+      "action": "pay_or_mark_paid",
+      "resultState": "payment_pending_receiver_confirmation",
+      "terminal": false,
+      "ownerCards": [
+        "P-002",
+        "P-003",
+        "P-025"
+      ],
+      "implementationStatus": "built_ambiguous",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-009"
+      ],
+      "risk": "high",
+      "feature_family_id": "confirmation_resolution_closeout"
+    },
+    {
+      "id": "N-010",
+      "title": "Partial payment",
+      "actor": "leo",
+      "pillar": "management",
+      "entryState": "payer_viewing_amount_due",
+      "action": "pay_partial_amount",
+      "resultState": "partial",
+      "terminal": false,
+      "ownerCards": [
+        "P-002",
+        "P-003",
+        "P-025"
+      ],
+      "implementationStatus": "not_built",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-010"
+      ],
+      "risk": "high",
+      "feature_family_id": "confirmation_resolution_closeout"
+    },
+    {
+      "id": "N-011",
+      "title": "Wrong amount, receiver, or currency",
+      "actor": "leo",
+      "pillar": "management",
+      "entryState": "payment_started",
+      "action": "submit_mismatched_payment",
+      "resultState": "disputed",
+      "terminal": false,
+      "ownerCards": [
+        "P-003",
+        "P-023",
+        "P-024",
+        "P-025"
+      ],
+      "implementationStatus": "lane_mismatch",
+      "proofStatus": "partial",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "active_elsewhere",
+      "activeOwner": {
+        "card": "P-025",
+        "lane": "p025-core-security-reconciliation",
+        "threads": [
+          "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+        ],
+        "note": "Other thread is handling Universal Chop Core/security reconciliation and actor authority."
+      },
+      "recommendedForThisThread": false,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-006",
+        "D-012"
+      ],
+      "risk": "critical",
+      "feature_family_id": "confirmation_resolution_closeout"
+    },
+    {
+      "id": "N-012",
+      "title": "Receiver confirms payment",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "payment_pending_receiver_confirmation",
+      "action": "confirm_received",
+      "resultState": "payment_confirmed",
+      "terminal": false,
+      "ownerCards": [
+        "P-003",
+        "P-004",
+        "P-025"
+      ],
+      "implementationStatus": "built_wrong_order",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "active_elsewhere",
+      "activeOwner": {
+        "card": "P-004",
+        "lane": "closeout-lifecycle-order",
+        "threads": [
+          "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e",
+          "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+        ],
+        "note": "Closeout/order-of-operations overlaps active .dot and core-security lanes."
+      },
+      "recommendedForThisThread": false,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-007"
+      ],
+      "risk": "critical",
+      "feature_family_id": "confirmation_resolution_closeout"
+    },
+    {
+      "id": "N-013",
+      "title": "Receiver marks not received",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "payment_pending_receiver_confirmation",
+      "action": "mark_not_received",
+      "resultState": "disputed",
+      "terminal": false,
+      "ownerCards": [
+        "P-003",
+        "P-022",
+        "P-025"
+      ],
+      "implementationStatus": "not_built",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-006"
+      ],
+      "risk": "critical",
+      "feature_family_id": "confirmation_resolution_closeout"
+    },
+    {
+      "id": "N-014",
+      "title": "Add forgotten expense after request sent",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "payment_request_sent",
+      "action": "add_forgotten_expense",
+      "resultState": "group_open_new_balance",
+      "terminal": false,
+      "ownerCards": [
+        "P-022",
+        "P-003",
+        "P-004"
+      ],
+      "implementationStatus": "known_gap",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "known_gap",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "active_elsewhere",
+      "activeOwner": {
+        "card": "P-022",
+        "lane": "dot-portable-shell-p022",
+        "threads": [
+          "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e"
+        ],
+        "note": "Other thread is handling .dot add-expense-after-request and premature close behavior."
+      },
+      "recommendedForThisThread": false,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-001"
+      ],
+      "risk": "high",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "N-015",
+      "title": "Send follow-up request after balance changes",
+      "actor": "mina",
+      "pillar": "payout",
+      "entryState": "group_open_new_balance",
+      "action": "send_follow_up_request",
+      "resultState": "payment_request_sent",
+      "terminal": false,
+      "ownerCards": [
+        "P-022",
+        "P-002",
+        "P-025"
+      ],
+      "implementationStatus": "not_built_or_unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-011"
+      ],
+      "risk": "high",
+      "feature_family_id": "payment_requests_guest_invites"
+    },
+    {
+      "id": "N-016",
+      "title": "Add member before or around request",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "split_review",
+      "action": "add_member",
+      "resultState": "split_review",
+      "terminal": false,
+      "ownerCards": [
+        "P-022"
+      ],
+      "implementationStatus": "not_built_or_unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-011"
+      ],
+      "risk": "high",
+      "feature_family_id": "identity_people_membership_recovery"
+    },
+    {
+      "id": "N-017",
+      "title": "Remove member before or around request",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "split_review",
+      "action": "remove_member",
+      "resultState": "split_review",
+      "terminal": false,
+      "ownerCards": [
+        "P-022"
+      ],
+      "implementationStatus": "not_built_or_unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-011"
+      ],
+      "risk": "high",
+      "feature_family_id": "identity_people_membership_recovery"
+    },
+    {
+      "id": "N-018",
+      "title": "Waive amount",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "payment_request_sent",
+      "action": "waive_amount",
+      "resultState": "waived",
+      "terminal": false,
+      "ownerCards": [
+        "P-004",
+        "P-022"
+      ],
+      "implementationStatus": "not_built",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-006",
+        "D-008"
+      ],
+      "risk": "critical",
+      "feature_family_id": "confirmation_resolution_closeout"
+    },
+    {
+      "id": "N-019",
+      "title": "Mark delayed",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "payment_request_sent",
+      "action": "mark_delayed",
+      "resultState": "delayed",
+      "terminal": false,
+      "ownerCards": [
+        "P-004",
+        "P-022"
+      ],
+      "implementationStatus": "not_built",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-006",
+        "D-008"
+      ],
+      "risk": "critical",
+      "feature_family_id": "confirmation_resolution_closeout"
+    },
+    {
+      "id": "N-020",
+      "title": "Payer returns after delay",
+      "actor": "leo",
+      "pillar": "payout",
+      "entryState": "delayed",
+      "action": "return_and_pay",
+      "resultState": "payment_pending_receiver_confirmation",
+      "terminal": false,
+      "ownerCards": [
+        "P-002",
+        "P-003",
+        "P-022"
+      ],
+      "implementationStatus": "not_built",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-006"
+      ],
+      "risk": "critical",
+      "feature_family_id": "confirmation_resolution_closeout"
+    },
+    {
+      "id": "N-021",
+      "title": "Guest opens link",
+      "actor": "guest",
+      "pillar": "payout",
+      "entryState": "payment_request_sent",
+      "action": "open_guest_link",
+      "resultState": "payer_viewing_amount_due",
+      "terminal": false,
+      "ownerCards": [
+        "P-002",
+        "P-025"
+      ],
+      "implementationStatus": "partly_mitigated_backend_unproven_ui",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "not_applicable",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "active_elsewhere",
+      "activeOwner": {
+        "card": "P-025",
+        "lane": "p025-core-security-reconciliation",
+        "threads": [
+          "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+        ],
+        "note": "Other thread is handling Universal Chop Core/security reconciliation and actor authority."
+      },
+      "recommendedForThisThread": false,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "payment_requests_guest_invites"
+    },
+    {
+      "id": "N-022",
+      "title": "Wrong actor attempts restricted action",
+      "actor": "guest",
+      "pillar": "management",
+      "entryState": "payment_request_sent",
+      "action": "attempt_restricted_action",
+      "resultState": "payment_request_sent",
+      "terminal": false,
+      "ownerCards": [
+        "P-025"
+      ],
+      "implementationStatus": "partly_mitigated_backend_unproven_ui",
+      "proofStatus": "partial",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "active_elsewhere",
+      "activeOwner": {
+        "card": "P-025",
+        "lane": "p025-core-security-reconciliation",
+        "threads": [
+          "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+        ],
+        "note": "Other thread is handling Universal Chop Core/security reconciliation and actor authority."
+      },
+      "recommendedForThisThread": false,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "identity_people_membership_recovery"
+    },
+    {
+      "id": "N-023",
+      "title": "Close record",
+      "actor": "mina",
+      "pillar": "history",
+      "entryState": "all_items_resolved",
+      "action": "close_record",
+      "resultState": "record_saved",
+      "terminal": true,
+      "ownerCards": [
+        "P-004",
+        "P-022"
+      ],
+      "implementationStatus": "built_wrong_order",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "active_elsewhere",
+      "activeOwner": {
+        "card": "P-004",
+        "lane": "closeout-lifecycle-order",
+        "threads": [
+          "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e",
+          "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+        ],
+        "note": "Closeout/order-of-operations overlaps active .dot and core-security lanes."
+      },
+      "recommendedForThisThread": false,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-007",
+        "D-008"
+      ],
+      "risk": "critical",
+      "feature_family_id": "history_privacy_export"
+    },
+    {
+      "id": "N-024",
+      "title": "Return to saved record",
+      "actor": "mina",
+      "pillar": "history",
+      "entryState": "record_saved",
+      "action": "return_to_history",
+      "resultState": "record_saved",
+      "terminal": true,
+      "ownerCards": [
+        "P-004"
+      ],
+      "implementationStatus": "unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "active_elsewhere",
+      "activeOwner": {
+        "card": "P-004",
+        "lane": "closeout-lifecycle-order",
+        "threads": [
+          "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e",
+          "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+        ],
+        "note": "Closeout/order-of-operations overlaps active .dot and core-security lanes."
+      },
+      "recommendedForThisThread": false,
+      "journeyId": "normal-pot",
+      "journeyTitle": "Normal pot",
+      "deadEnds": [
+        "D-007",
+        "D-008"
+      ],
+      "risk": "critical",
+      "feature_family_id": "history_privacy_export"
+    },
+    {
+      "id": "C-001",
+      "title": "Start capture from paid moment",
+      "actor": "mina",
+      "pillar": "catch",
+      "entryState": "no_group",
+      "action": "start_capture_from_paid_moment",
+      "resultState": "group_open_empty",
+      "terminal": false,
+      "ownerCards": [
+        "P-001",
+        "P-012",
+        "P-027"
+      ],
+      "implementationStatus": "unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "C-002",
+      "title": "Capture receipt photo",
+      "actor": "mina",
+      "pillar": "catch",
+      "entryState": "group_open_empty",
+      "action": "capture_receipt_photo",
+      "resultState": "group_open_expense_captured",
+      "terminal": false,
+      "ownerCards": [
+        "P-001",
+        "P-012",
+        "P-027"
+      ],
+      "implementationStatus": "unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "C-003",
+      "title": "Receipt OCR fails",
+      "actor": "mina",
+      "pillar": "catch",
+      "entryState": "group_open_empty",
+      "action": "receipt_ocr_fails",
+      "resultState": "group_open_empty",
+      "terminal": false,
+      "ownerCards": [
+        "P-012",
+        "P-027"
+      ],
+      "implementationStatus": "partial",
+      "proofStatus": "web_e2e_passed",
+      "surfaces": {
+        "web": "verified",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [
+        "D-013",
+        "D-019"
+      ],
+      "risk": "critical",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "C-004",
+      "title": "Review extracted amount and merchant",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "group_open_expense_captured",
+      "action": "review_extracted_amount_and_merchant",
+      "resultState": "split_review",
+      "terminal": false,
+      "ownerCards": [
+        "P-001",
+        "P-012",
+        "P-027"
+      ],
+      "implementationStatus": "partial",
+      "proofStatus": "web_e2e_passed",
+      "surfaces": {
+        "web": "verified",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [
+        "D-013",
+        "D-019"
+      ],
+      "risk": "critical",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "C-005",
+      "title": "Correct wrong extraction before request",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "split_review",
+      "action": "correct_wrong_extraction_before_request",
+      "resultState": "split_review",
+      "terminal": false,
+      "ownerCards": [
+        "P-012",
+        "P-027"
+      ],
+      "implementationStatus": "partial",
+      "proofStatus": "web_e2e_passed",
+      "surfaces": {
+        "web": "verified",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [
+        "D-013",
+        "D-019"
+      ],
+      "risk": "critical",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "C-006",
+      "title": "Spend card transaction arrives first",
+      "actor": "mina",
+      "pillar": "catch",
+      "entryState": "no_group",
+      "action": "spend_card_transaction_arrives_first",
+      "resultState": "group_open_expense_captured",
+      "terminal": false,
+      "ownerCards": [
+        "P-005",
+        "P-027"
+      ],
+      "implementationStatus": "unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "C-007",
+      "title": "Receipt arrives after spend transaction",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "group_open_expense_captured",
+      "action": "attach_receipt_after_spend_transaction",
+      "resultState": "group_open_expense_captured",
+      "terminal": false,
+      "ownerCards": [
+        "P-005",
+        "P-012",
+        "P-027"
+      ],
+      "implementationStatus": "not_built_or_unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "C-008",
+      "title": "Receipt amount conflicts with spend amount",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "group_open_expense_captured",
+      "action": "resolve_receipt_spend_amount_conflict",
+      "resultState": "disputed",
+      "terminal": false,
+      "ownerCards": [
+        "P-005",
+        "P-012",
+        "P-025",
+        "P-027"
+      ],
+      "implementationStatus": "not_built",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [
+        "D-014"
+      ],
+      "risk": "critical",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "C-009",
+      "title": "Duplicate receipt detected",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "group_open_expense_captured",
+      "action": "detect_duplicate_receipt",
+      "resultState": "group_open_expense_captured",
+      "terminal": false,
+      "ownerCards": [
+        "P-012",
+        "P-025",
+        "P-027"
+      ],
+      "implementationStatus": "not_built_or_unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [
+        "D-015"
+      ],
+      "risk": "high",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "C-010",
+      "title": "Itemized split from receipt",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "split_review",
+      "action": "assign_receipt_items_to_members",
+      "resultState": "split_review",
+      "terminal": false,
+      "ownerCards": [
+        "P-001",
+        "P-012",
+        "P-027"
+      ],
+      "implementationStatus": "not_built_or_unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "exact_money_splits_corrections"
+    },
+    {
+      "id": "C-011",
+      "title": "Tip tax or service charge split",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "split_review",
+      "action": "split_tip_tax_service_charge",
+      "resultState": "split_review",
+      "terminal": false,
+      "ownerCards": [
+        "P-001",
+        "P-012",
+        "P-027"
+      ],
+      "implementationStatus": "not_built_or_unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "exact_money_splits_corrections"
+    },
+    {
+      "id": "C-012",
+      "title": "Send request from reviewed capture",
+      "actor": "mina",
+      "pillar": "payout",
+      "entryState": "split_review",
+      "action": "send_request_from_reviewed_capture",
+      "resultState": "payment_request_sent",
+      "terminal": false,
+      "ownerCards": [
+        "P-002",
+        "P-022",
+        "P-027"
+      ],
+      "implementationStatus": "unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "payment_requests_guest_invites"
+    },
+    {
+      "id": "C-013",
+      "title": "Add receipt after request sent",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "payment_request_sent",
+      "action": "add_receipt_after_request_sent",
+      "resultState": "group_open_new_balance",
+      "terminal": false,
+      "ownerCards": [
+        "P-012",
+        "P-022",
+        "P-027"
+      ],
+      "implementationStatus": "known_gap",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "known_gap",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "capture_spend_receipts"
+    },
+    {
+      "id": "C-014",
+      "title": "Payer disputes receipt item",
+      "actor": "leo",
+      "pillar": "management",
+      "entryState": "payer_viewing_amount_due",
+      "action": "dispute_receipt_item",
+      "resultState": "disputed",
+      "terminal": false,
+      "ownerCards": [
+        "P-002",
+        "P-012",
+        "P-025",
+        "P-027"
+      ],
+      "implementationStatus": "not_built",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "confirmation_resolution_closeout"
+    },
+    {
+      "id": "C-015",
+      "title": "Capture contains private or sensitive item",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "group_open_expense_captured",
+      "action": "redact_sensitive_capture_detail",
+      "resultState": "split_review",
+      "terminal": false,
+      "ownerCards": [
+        "P-012",
+        "P-025",
+        "P-027"
+      ],
+      "implementationStatus": "not_built_or_unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [
+        "D-016"
+      ],
+      "risk": "high",
+      "feature_family_id": "history_privacy_export"
+    },
+    {
+      "id": "C-016",
+      "title": "Offline capture later syncs",
+      "actor": "mina",
+      "pillar": "catch",
+      "entryState": "group_open_empty",
+      "action": "capture_offline_then_sync",
+      "resultState": "group_open_expense_captured",
+      "terminal": false,
+      "ownerCards": [
+        "P-001",
+        "P-012",
+        "P-027"
+      ],
+      "implementationStatus": "not_built_or_unproven",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [],
+      "risk": "unreviewed",
+      "feature_family_id": "live_sync_offline_chat_notifications"
+    },
+    {
+      "id": "C-017",
+      "title": "Spend reversal or refund after request",
+      "actor": "mina",
+      "pillar": "management",
+      "entryState": "payment_request_sent",
+      "action": "handle_spend_reversal_or_refund",
+      "resultState": "group_open_new_balance",
+      "terminal": false,
+      "ownerCards": [
+        "P-005",
+        "P-022",
+        "P-025",
+        "P-027"
+      ],
+      "implementationStatus": "not_built",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "unowned",
+      "recommendedForThisThread": true,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [
+        "D-017"
+      ],
+      "risk": "critical",
+      "feature_family_id": "confirmation_resolution_closeout"
+    },
+    {
+      "id": "C-018",
+      "title": "Capture closes through normal confirmation and history",
+      "actor": "mina",
+      "pillar": "history",
+      "entryState": "all_items_resolved",
+      "action": "close_capture_record",
+      "resultState": "record_saved",
+      "terminal": true,
+      "ownerCards": [
+        "P-004",
+        "P-022",
+        "P-027"
+      ],
+      "implementationStatus": "built_wrong_order",
+      "proofStatus": "missing",
+      "surfaces": {
+        "web": "unknown",
+        "telegram": "unknown",
+        "dot_paseo": "unknown",
+        "circles_gnosis": "not_started"
+      },
+      "laneStatus": "active_elsewhere",
+      "activeOwner": {
+        "card": "P-004",
+        "lane": "closeout-lifecycle-order",
+        "threads": [
+          "codex://threads/019eaa66-6265-7a92-9469-15f1f5aca52e",
+          "codex://threads/019f1ce5-733d-7ac3-b63d-290e5a0dd572"
+        ],
+        "note": "Closeout/order-of-operations overlaps active .dot and core-security lanes."
+      },
+      "recommendedForThisThread": false,
+      "journeyId": "receipt-capture",
+      "journeyTitle": "Receipt and spend capture",
+      "deadEnds": [
+        "D-018"
+      ],
+      "risk": "critical",
+      "feature_family_id": "history_privacy_export"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "normal-pot",
+      "title": "Normal pot",
+      "status": "building",
+      "owner_card": "P-026",
+      "path_count": 24,
+      "feature_family_ids": [
+        "identity_people_membership_recovery",
+        "group_cards_home_language",
+        "normal_pots_trips_couples",
+        "exact_money_splits_corrections",
+        "payment_requests_guest_invites",
+        "payment_rails_wallets",
+        "confirmation_resolution_closeout",
+        "history_privacy_export",
+        "live_sync_offline_chat_notifications",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "receipt-capture",
+      "title": "Receipt and spend capture",
+      "status": "mapping",
+      "owner_card": "P-027",
+      "path_count": 18,
+      "feature_family_ids": [
+        "capture_spend_receipts",
+        "exact_money_splits_corrections",
+        "payment_requests_guest_invites",
+        "confirmation_resolution_closeout",
+        "history_privacy_export",
+        "live_sync_offline_chat_notifications",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "spend-card",
+      "title": "Spend card capture",
+      "status": "future_map_needed",
+      "owner_card": "P-005",
+      "path_count": 0,
+      "feature_family_ids": [
+        "group_cards_home_language",
+        "capture_spend_receipts",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "savings-circle",
+      "title": "Savings circle",
+      "status": "future_map_needed",
+      "owner_card": "P-006",
+      "path_count": 0,
+      "feature_family_ids": [
+        "group_cards_home_language",
+        "savings_circles",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "community-fund",
+      "title": "Community fund",
+      "status": "future_map_needed",
+      "owner_card": "P-008",
+      "path_count": 0,
+      "feature_family_ids": [
+        "group_cards_home_language",
+        "history_privacy_export",
+        "community_funds",
+        "assurance_research_operations"
+      ]
+    },
+    {
+      "id": "emergency-pot",
+      "title": "Emergency/private help pot",
+      "status": "future_map_needed",
+      "owner_card": "P-007",
+      "path_count": 0,
+      "feature_family_ids": [
+        "group_cards_home_language",
+        "history_privacy_export",
+        "emergency_pots",
+        "assurance_research_operations"
+      ]
+    }
+  ],
+  "matrix_digest": "e430e973a2156396717ebeb7b9d724165b31b98ffd875b1208a43a88d1021409",
+  "limitations": [
+    "The canonical cockpit source is dirty and separate from the launch output worktree.",
+    "Commit-pinned source audit inspected selected paths; it was not a full security audit.",
+    "Devnet registry rows verify indexed content-addressed records, not source, runtime claims, security, or licenses.",
+    "An external analog does not prove the corresponding ChopDot feature is implemented, tested, integrated, deployed, or reachable.",
+    "Four product journey families currently have zero paths in the generated behavior map."
+  ]
+}

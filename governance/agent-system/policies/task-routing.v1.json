@@ -1,0 +1,34 @@
+{
+  "policy_version": "1.0.0",
+  "policy_id": "agent-task-routing-v1",
+  "kind": "task_routing_policy",
+  "authority": "Selects process, evidence, and approval gates only. It cannot choose product priority, design direction, membership, money, participant authority, or release truth.",
+  "domain_profiles": {
+    "research": "research",
+    "product-definition": "product-definition",
+    "implementation": "implementation",
+    "ux": "ux-creation",
+    "security-authority": "security-authority",
+    "incident": "incident-repair",
+    "release": "release-outcome"
+  },
+  "minimum_risk": {
+    "research": "low",
+    "product-definition": "moderate",
+    "implementation": "moderate",
+    "ux": "moderate",
+    "security-authority": "critical",
+    "incident": "moderate",
+    "release": "critical"
+  },
+  "critical_topics": ["money", "membership", "privacy", "recovery", "security", "release", "credentials", "external-write"],
+  "risk_rules": {
+    "low": { "minimum_evidence_level": "unit", "default_run_type": "turn", "default_execution_mode": "deterministic", "independent_evaluator": false },
+    "moderate": { "minimum_evidence_level": "simulated-integration", "default_run_type": "bounded_goal", "default_execution_mode": "single-agent", "independent_evaluator": false },
+    "critical": { "minimum_evidence_level": "exact-candidate", "default_run_type": "bounded_goal", "default_execution_mode": "single-agent", "independent_evaluator": true }
+  },
+  "time_and_proactive_default": "read_only",
+  "mutation_rule": "A time_based or proactive route that requests mutation terminates approval_required and requires a new approved effect route.",
+  "skill_rule": "Only active repository skill IDs may be selected. Disabled, quarantined, degraded, or platform-injected skills may be observed but cannot establish governed acceptance.",
+  "retry_rule": "Three identical external blockers terminate with a continuation packet; retries without a changed hypothesis are not progress."
+}

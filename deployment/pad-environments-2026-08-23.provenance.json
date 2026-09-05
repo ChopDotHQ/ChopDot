@@ -1,0 +1,11 @@
+{
+  "schema": "chopdot.polkadot-app-deploy-environment-provenance.v1",
+  "environmentFile": "deployment/pad-environments-2026-08-23.json",
+  "sha256": "18adfc1cf58e12ac51cf146ef0e7fe6998a188de4854e7eb8d563cecc49973ff",
+  "sourceRepository": "https://github.com/paritytech/polkadot-app-deploy",
+  "sourceCommit": "d1cc36998c7f25ea4a194176d98883655995c855",
+  "sourcePath": "assets/environments.json",
+  "sourceUrl": "https://raw.githubusercontent.com/paritytech/polkadot-app-deploy/d1cc36998c7f25ea4a194176d98883655995c855/assets/environments.json",
+  "fetchedAt": "2026-08-23T14:18:09Z",
+  "reason": "The worktree-pinned official polkadot-app-deploy 0.13.1 package contains older testnet contracts; release commands must use this reviewed official override."
+}

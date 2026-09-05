@@ -1,0 +1,30 @@
+{
+  "contract_version": "1.0.0",
+  "run_id": "run_release_outcome_example",
+  "created_at": "2026-08-26T12:00:00Z",
+  "created_by": { "id": "example-release-agent", "kind": "agent", "provider": "replaceable", "model": "unspecified" },
+  "loop_profile": { "id": "release-outcome", "version": "1.0.0", "path": "governance/agent-system/loops/release-outcome.v1.json" },
+  "task": { "title": "Promote one immutable testnet candidate", "objective": "Build once, stage and promote identical bytes, verify every required surface and owner, and preserve separate user proof.", "deliverable": "ReleaseEvidencePacketV1" },
+  "intent_type": "release_outcome",
+  "requirement_ids": ["REL-CLEAN", "REL-DETERMINISTIC", "REL-BYTES", "REL-SURFACES", "REL-EFFECTS", "REL-USER"],
+  "artifact_contract": { "artifact_types": ["ReleaseCandidateV1", "ReleaseEvidencePacketV1"], "required_paths": ["release.json", "artifacts/agentops/outcomes/example/release.json"], "format": "mixed", "version": "1.0.0", "hash_algorithm": "sha256" },
+  "expected_outcome": { "statement": "One clean deterministic candidate is staged and promoted unchanged with complete surface, ownership, rollback, and separate user-proof evidence.", "assertions": [
+    { "id": "REL-CLEAN", "description": "Candidate clean identity is true.", "subject": "candidate_clean_identity", "operator": "truthy", "expected": true, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+    { "id": "REL-DETERMINISTIC", "description": "Rebuild digest equals candidate digest.", "subject": "rebuild_digest", "operator": "sha256_equals", "expected": "candidate_digest", "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+    { "id": "REL-BYTES", "description": "Stage and promotion content identities are equal.", "subject": "stage_promotion_content_identity_equal", "operator": "truthy", "expected": true, "minimum_evidence_level": "real-host-chain", "hard_fail": true },
+    { "id": "REL-SURFACES", "description": "Failed required release surface count is zero.", "subject": "failed_required_surface_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "release", "hard_fail": true },
+    { "id": "REL-EFFECTS", "description": "Unknown effect count is zero.", "subject": "unknown_effect_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "real-host-chain", "hard_fail": true },
+    { "id": "REL-USER", "description": "User-proof verdict dimensions remain separate.", "subject": "user_proof_dimensions_separate", "operator": "truthy", "expected": true, "minimum_evidence_level": "live-user", "hard_fail": true }
+  ] },
+  "scope": { "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "branch": "codex/chopdot-v1-launch", "starting_head": "74d81cba8edd7200246b837c5a31ec4f00456409", "starting_tree": "fc000c64fe3eeb0362ac11905d0d6afaadfb74c9", "in_paths": ["dist-dot-host", "release.json", "deployment"], "out_paths": ["src"], "dirty_paths": [] },
+  "authority": { "policy_ref": "governance/agent-system/policies/authority-boundaries.json", "allowed_reads": ["repo", "candidate", "public host and chain readbacks"], "allowed_writes": ["dist-dot-host", "release.json", "deployment"], "allowed_tools": ["build_runner", "release_tool", "browser_readback", "chain_readback"], "external_effects": ["credential_use", "publish", "deploy", "chain_write"], "required_approvals": ["credential use staging promotion rollback and name transfer"] },
+  "context": { "governing_sources": [{ "path": "docs/CHOPDOT_OPERATING_LOOPS.md", "sha256": "766bce5ebb4c9ab6a80914be21795d93a06c1dc32c3ba4c9219eba23a76b56e9", "authority_level": "guardrail", "observed_at": "2026-08-26T12:00:00Z" }], "max_age_seconds": 3600, "conflict_policy": "block_same_level_conflict", "wrong_root_policy": "fail_closed" },
+  "architecture": { "mode": "evaluator_optimizer", "justification": "Release execution and independent byte and surface verification must be separate roles." },
+  "budgets": { "max_iterations": 1, "max_retries": 0, "max_wall_seconds": 14400, "max_tool_calls": 200, "max_model_cost_usd": 30, "max_external_cost_usd": 0 },
+  "evaluator": { "rubric_refs": ["governance/agent-system/evals/rubrics/release-outcome.v1.json"], "deterministic_commands": [{ "id": "REL-BUILD", "command": "npm run build:dot-host", "cwd": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "expected_exit_code": 0, "timeout_seconds": 1800 }], "reviewer_independence": "different_actor", "pass_threshold": 1, "hard_fail_assertion_ids": ["REL-CLEAN", "REL-DETERMINISTIC", "REL-BYTES", "REL-SURFACES", "REL-EFFECTS", "REL-USER"] },
+  "environment_observations": [{ "id": "REL-LIVE", "surface": "staged and promoted public-testnet surfaces", "required_readback": ["content identity", "build ID", "owner", "rollback identity", "user proof status"], "minimum_evidence_level": "release" }],
+  "failure_outcome": { "required_fields": ["last_known_safe_release", "failed_stage_or_surface", "candidate_identity", "rollback_or_forward_fix", "approval_requirement"], "same_blocker_limit": 1, "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_policy": { "port_version": "1.0.0", "preflight_required": true, "record_outcome": true, "verify_recall": true, "degraded_context_allowed": false, "disallowed_fallbacks": ["cross_root", "stale_release"] },
+  "privacy_policy": { "prohibited_content": ["credentials", "signing payload secrets", "private participant evidence"], "redaction_required": true, "retention": "promote_redacted_outcome", "export_policy": "operator_approved" }
+}

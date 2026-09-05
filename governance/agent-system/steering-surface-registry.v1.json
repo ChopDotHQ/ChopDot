@@ -1,0 +1,413 @@
+{
+  "schema": "chopdot.steering-surface-registry.v1",
+  "registry_id": "chopdot-steering-surfaces",
+  "version": "2.0.0",
+  "status": "active",
+  "authority": "Narrow inventory of agent instruction and control surfaces only. Protects the files an agent obeys; does not inventory ordinary documentation. This registry cannot create product law, choose product priority, approve work, or promote evidence.",
+  "accountable_owner": "agent-systems integrator",
+  "reviewed_on": "2026-09-02",
+  "review_interval_days": 30,
+  "discovery_roots": [
+    ".agents/",
+    ".claude/",
+    ".cursor/",
+    ".githooks/",
+    ".github/",
+    "governance/agent-system/instructions/",
+    "governance/agent-system/policies/"
+  ],
+  "surface_groups": [
+    {
+      "id": "repository-entrypoints",
+      "surface_kind": "instruction_loader",
+      "control_kind": "gate",
+      "domain": "generic",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "automatic",
+      "accountable_owner": "repository owner",
+      "patterns": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "PROJECT_DIRECTIVES.md"
+      ],
+      "allow_empty": false,
+      "authority": {
+        "may_influence": [
+          "read order",
+          "tool and process routing"
+        ],
+        "must_not_decide": [
+          "product law",
+          "product priority",
+          "success verdict"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Every automatic repository entrypoint routes to current tracked authority without adding an independent product doctrine.",
+        "evidence": [
+          "path inventory",
+          "content hash",
+          "instruction validation"
+        ],
+        "failure": "Block or degrade routing when an entrypoint is missing, conflicting, or untracked.",
+        "retry_exit": "Repair the source or routing declaration, regenerate the catalog, and re-run validation."
+      },
+      "trusted_manifest_sha256": "ef06c4b845b0ea2693cddf925743d54d54b6b15066f55b07ac8f57cb0d2706db"
+    },
+    {
+      "id": "product-law",
+      "surface_kind": "authority_source",
+      "control_kind": "none",
+      "domain": "product",
+      "influence_class": "product_law",
+      "lifecycle": "active",
+      "activation_mode": "routed",
+      "accountable_owner": "product owner",
+      "patterns": [
+        "PRODUCT_TRUTH.md"
+      ],
+      "allow_empty": false,
+      "authority": {
+        "may_influence": [
+          "durable product invariants"
+        ],
+        "must_not_decide": [
+          "current priority",
+          "implementation proof",
+          "release proof"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Durable product claims resolve to one explicit source and are never inferred from methods or generated context.",
+        "evidence": [
+          "single path",
+          "content hash",
+          "authority references"
+        ],
+        "failure": "Block a product-law claim when sources conflict or the law source is unavailable.",
+        "retry_exit": "Resolve the authority conflict through the product owner, then regenerate and recheck."
+      },
+      "trusted_manifest_sha256": "5451a6a0aa3d3d15327b8ecf5b5654e3539170fb09dc968bb6e9db5371c20211"
+    },
+    {
+      "id": "tracked-judgment-methods",
+      "surface_kind": "method",
+      "control_kind": "profile",
+      "domain": "product",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "routed",
+      "accountable_owner": "product assurance",
+      "patterns": [
+        "governance/agent-system/instructions/**"
+      ],
+      "allow_empty": false,
+      "authority": {
+        "may_influence": [
+          "questions asked",
+          "evidence required",
+          "verification method"
+        ],
+        "must_not_decide": [
+          "product hierarchy",
+          "universal action",
+          "taste as law"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Tracked judgment methods ask evidence-bound questions and defer every material product choice to current authority.",
+        "evidence": [
+          "semantic influence tests",
+          "content hashes"
+        ],
+        "failure": "Degrade the method and block it from acting as decision authority when it embeds an answer.",
+        "retry_exit": "Separate the method from the domain decision and re-run hostile cases."
+      },
+      "trusted_manifest_sha256": "b04fd513ec97c8545a0fe4799cc0db37a2a855fd81d357dd22575a41ef177964"
+    },
+    {
+      "id": "agent-policies-and-foundation",
+      "surface_kind": "policy",
+      "control_kind": "gate",
+      "domain": "agent_execution",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "dependency_only",
+      "accountable_owner": "agent-systems integrator",
+      "patterns": [
+        "governance/agent-system/README.md",
+        "governance/agent-system/policies/**",
+        "governance/agent-system/project-authority.v1.json",
+        "governance/agent-system/steering-surface-registry.v1.json",
+        "governance/agent-system/taxonomy.json"
+      ],
+      "allow_empty": false,
+      "authority": {
+        "may_influence": [
+          "authority boundaries",
+          "lifecycle",
+          "classification"
+        ],
+        "must_not_decide": [
+          "product law",
+          "participant authority",
+          "release proof"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Foundational policies define explicit, non-overlapping process authority and remain portable across agents and knowledge providers.",
+        "evidence": [
+          "schema validation",
+          "cross-reference checks",
+          "content hashes"
+        ],
+        "failure": "Fail closed on conflicting process authority, dangling references, or unsupported lifecycle state.",
+        "retry_exit": "Reconcile at the accountable policy owner and rerun all dependent validations."
+      },
+      "trusted_manifest_sha256": "825c476e26de0aafb6c3592d555bac6782a559aa3e3528f505965f5fdd48999f"
+    },
+    {
+      "id": "repository-enforcement",
+      "surface_kind": "workflow",
+      "control_kind": "pipeline",
+      "domain": "agent_governance",
+      "influence_class": "operating_method",
+      "lifecycle": "active",
+      "activation_mode": "automatic",
+      "accountable_owner": "repository owner",
+      "patterns": [
+        ".githooks/**",
+        ".github/CODEOWNERS",
+        ".github/pull_request_template.md",
+        ".github/workflows/agent-governance.yml",
+        ".github/workflows/agent-steering-monitor.yml",
+        "package.json",
+        "package-lock.json"
+      ],
+      "allow_empty": false,
+      "authority": {
+        "may_influence": [
+          "local push admission",
+          "PR checks",
+          "scheduled monitoring"
+        ],
+        "must_not_decide": [
+          "product law",
+          "human approval",
+          "release outcome"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Local pre-push gives bounded clean-candidate, exact-range, governed-path, and strict steering feedback; declared drift-free degradation remains explicitly local_preflight_degraded; hosted pr_merge alone authoritatively accepts repository code; scheduled monitoring detects drift without silently repairing sources.",
+        "evidence": [
+          "hostile pre-push stdin and range tests",
+          "exact explained and unexplained degraded IDs",
+          "workflow validation",
+          "hook health",
+          "monitor test suite"
+        ],
+        "failure": "Block local push on missing, malformed, deletion, multi-ref, rewritten-ref, default-branch, non-fast-forward, ambiguous, dirty, ungoverned, stale, drifted, unexplained-degraded, or blocked evidence; block hosted merge separately when authoritative acceptance fails.",
+        "retry_exit": "Repair the candidate, range, source, or enforcement wiring and re-run local preflight plus hosted workflow validation."
+      },
+      "trusted_manifest_sha256": "ea1588ceb4d8cdd4d8980443bd2a35304b5244cea055ecbb508516081511ddbd"
+    }
+  ],
+  "external_discovery": [],
+  "external_surfaces": [],
+  "runtime_classes": [
+    {
+      "id": "codex-platform-instructions",
+      "surface_kind": "external_constraint",
+      "influence_class": "external_constraint",
+      "lifecycle": "active",
+      "activation_mode": "automatic",
+      "accountable_owner": "runtime provider",
+      "authority": {
+        "may_influence": [
+          "tool use",
+          "safety",
+          "task execution"
+        ],
+        "must_not_decide": [
+          "durable ChopDot product law",
+          "participant authority"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Runtime constraints remain visible as external operating authority and never masquerade as repository product truth.",
+        "evidence": [
+          "runtime identity",
+          "task-visible instructions"
+        ],
+        "failure": "Stop on a same-level conflict or unavailable required capability.",
+        "retry_exit": "Resolve with the operator or provider; do not record runtime text as product law."
+      }
+    },
+    {
+      "id": "global-and-plugin-skills",
+      "surface_kind": "external_constraint",
+      "influence_class": "external_constraint",
+      "lifecycle": "active",
+      "activation_mode": "routed",
+      "accountable_owner": "runtime operator",
+      "authority": {
+        "may_influence": [
+          "optional techniques after disclosure"
+        ],
+        "must_not_decide": [
+          "ChopDot authority",
+          "priority",
+          "approval"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "External skills are announced, requirement-bound, and subordinate to exact repository authority.",
+        "evidence": [
+          "callable identity",
+          "activation disclosure",
+          "output review"
+        ],
+        "failure": "Do not use an unverified or authority-expanding skill for ChopDot decisions.",
+        "retry_exit": "Verify the exact capability or use a tracked repository method."
+      }
+    },
+    {
+      "id": "ephemeral-subagents",
+      "surface_kind": "external_constraint",
+      "influence_class": "external_constraint",
+      "lifecycle": "active",
+      "activation_mode": "explicit_only",
+      "accountable_owner": "delegating agent",
+      "authority": {
+        "may_influence": [
+          "bounded delegated evidence",
+          "independent agent perspective"
+        ],
+        "must_not_decide": [
+          "human approval",
+          "product law",
+          "proof beyond task evidence"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Each subagent has bounded ownership, preserves shared work, and returns evidence that the primary agent independently integrates.",
+        "evidence": [
+          "delegation prompt",
+          "agent result",
+          "primary verification"
+        ],
+        "failure": "Discard or bound results that exceed scope, conflict, or lack evidence.",
+        "retry_exit": "Clarify the task or verify locally; agent count never substitutes for proof."
+      }
+    },
+    {
+      "id": "github-repository-governance",
+      "surface_kind": "external_constraint",
+      "influence_class": "external_constraint",
+      "lifecycle": "active",
+      "activation_mode": "routed",
+      "accountable_owner": "repository owner",
+      "authority": {
+        "may_influence": [
+          "merge admission",
+          "required hosted checks",
+          "release environment controls"
+        ],
+        "must_not_decide": [
+          "product law",
+          "product priority",
+          "test success without check evidence"
+        ]
+      },
+      "expected_outcome": {
+        "statement": "Live branch rules, required checks, reviewer settings, bypass rights, and release environments match tracked governance intent and exact candidate evidence.",
+        "evidence": [
+          "authenticated settings readback",
+          "required-check conclusions",
+          "exact head identity"
+        ],
+        "failure": "Report live configuration as unknown or drifted; never infer enforcement from tracked YAML alone.",
+        "retry_exit": "Reconcile through authorized repository settings, then independently read back the live state."
+      }
+    }
+  ],
+  "lifecycle_reviews": [
+    {
+      "surface_id": "agent-policies-and-foundation",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "product-law",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "repository-enforcement",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "repository-entrypoints",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "tracked-judgment-methods",
+      "lifecycle": "active",
+      "reviewed_on": "2026-09-02",
+      "review_interval_days": 14,
+      "reason": "Both tracked methods declare Status: active and were reviewed 2026-08-27. The prior degraded state carried limitations from the 2026-08-28 steering audit whose findings (F-003 stale KG bridge and AutoBots agents, F-005 duplicated language across provider layers, F-007 Knowns skill lifecycle) concerned external and machine-local provider material now out of this registry scope. No finding recorded a defect in the tracked sources themselves. The structural constraint is unchanged: authority.must_not_decide still bars product hierarchy, universal action, and taste as law, and expected_outcome.failure still degrades the method if it embeds an answer.",
+      "replacement": null
+    },
+    {
+      "surface_id": "codex-platform-instructions",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "ephemeral-subagents",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "github-repository-governance",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    },
+    {
+      "surface_id": "global-and-plugin-skills",
+      "lifecycle": "active",
+      "reviewed_on": "2026-08-28",
+      "review_interval_days": 30,
+      "reason": "Reviewed for current bounded use under the declared authority and expected outcome.",
+      "replacement": null
+    }
+  ],
+  "generated_outputs": {
+    "catalog": ".governance-build/steering-surface-catalog.v1.json",
+    "health_report": ".governance-build/STEERING_SURFACE_HEALTH.md"
+  }
+}

@@ -1,0 +1,14 @@
+
+[WebServer] (node:19026) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+
+(node:19032) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/3] tests/candidate-batch2-actual-participation.spec.ts:15:1 › actual App keeps Nina waiting across restart and joins only after Mina delivers access
+[2/3] tests/candidate-batch2-actual-participation.spec.ts:40:1 › actual App QR decision remains explicit on mobile and signed decline never joins
+[3/3] tests/candidate-batch2-actual-participation.spec.ts:59:1 › actual App invitation surfaces contain no internal language
+  3 passed (5.4s)

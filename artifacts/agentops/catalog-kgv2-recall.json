@@ -1,0 +1,767 @@
+{
+  "active_capabilities": [
+    {
+      "authority": "Private `.local-private` current state governs private thesis routing; public README and release queue do not prove protocol, blockchain, payment, backend, or production readiness.",
+      "capability_id": "chopdot.private-kernel-adapter-research",
+      "evidence_artifacts": [
+        "private control-state gate",
+        "fixture hardening report",
+        "adapter/profile claim boundary",
+        "builder-agent observation-only instructions"
+      ],
+      "gates": [
+        "Do not route private kernel/adapters thesis work as public app release work.",
+        "Do not write real adapter/API integration code from fixture-prep evidence alone.",
+        "Treat blocked claims as blocked claims, not as a ban on private observation-only prep."
+      ],
+      "human_gate_required": true,
+      "job": "Test whether ChopDot needs a domain-general commitment lifecycle kernel and minimal adapter/profile layer without confusing private thesis work with public app release operations.",
+      "label": "Private kernel and adapter-profile research lane",
+      "match_reasons": [
+        "semantic_overlap:adapter,architecture,chopdot,decisions,product,research"
+      ],
+      "repo_id": "ChopDot",
+      "score": 12,
+      "source_refs": [
+        "/Users/devinsonpena/ChopDot/.local-private/chopdot-architecture-os/controls/current_state.json",
+        "/Users/devinsonpena/ChopDot/.local-private/chopdot-architecture-os/controls/CONTROL_DOCTOR_REPORT.md",
+        "/Users/devinsonpena/ChopDot/.local-private/chopdot-architecture-os/REAL_INTEGRATION_PREP_DECOMPOSITION_AGAINST_MINIMAL_PROFILE_GATE_2026-05-18.md",
+        "/Users/devinsonpena/ChopDot/.local-private/protocol-core-prototype/baseline-comparison/real-integration-prep-v0_1/reports/real_integration_prep_report_v0_1.json"
+      ],
+      "temporal_status": "candidate"
+    },
+    {
+      "authority": "Logos lab evidence governs experimental readiness only; production adoption still requires the owning product repo gate.",
+      "capability_id": "logos-lab.experimental-adapter-readiness",
+      "evidence_artifacts": [
+        "readiness evidence",
+        "adapter/fallback decision",
+        "product cockpit status",
+        "adoption or rejection note"
+      ],
+      "gates": [
+        "Do not treat a passing lab check as production adoption.",
+        "Surface missing local services and bridge gaps explicitly.",
+        "Record adopt, reject, fallback, or experiment decisions before reuse."
+      ],
+      "human_gate_required": true,
+      "job": "Evaluate whether Logos technologies are useful for ChopDot or Project 6 behind replaceable adapters, without treating local experiments as production truth.",
+      "label": "Experimental adapter readiness",
+      "match_reasons": [
+        "semantic_overlap:adapter,adopt,adoption,chopdot,decisions,product,research"
+      ],
+      "repo_id": "Logos Lab",
+      "score": 12,
+      "source_refs": [
+        "/Users/devinsonpena/Documents/Logos Projects/chopdot-logos-lab/AGENTS.md",
+        "/Users/devinsonpena/Documents/Logos Projects/chopdot-logos-lab/docs/agentops.md",
+        "/Users/devinsonpena/Documents/Logos Projects/chopdot-logos-lab/memory/current-state.md",
+        "/Users/devinsonpena/Documents/Logos Projects/chopdot-logos-lab/product/backlog.md",
+        "/Users/devinsonpena/Documents/Logos Projects/chopdot-logos-lab/evidence/logos-readiness-latest.json"
+      ],
+      "temporal_status": "candidate"
+    },
+    {
+      "authority": "Compliance source register and control matrix govern regulated claims.",
+      "capability_id": "sygnum.compliance-and-control-matrix",
+      "evidence_artifacts": [
+        "compliance reference pack",
+        "control-gated future feature decisions"
+      ],
+      "gates": [
+        "No unsupported legal or supervisory claim.",
+        "Future features must map to explicit compliance concerns before being called bank-grade."
+      ],
+      "human_gate_required": true,
+      "job": "Keep legal, supervisory, compliance, and control claims source-backed and explicitly scoped.",
+      "label": "Compliance and control matrix",
+      "match_reasons": [
+        "semantic_overlap:chopdot,decisions,product,research",
+        "temporal_status:current"
+      ],
+      "repo_id": "Sygnum",
+      "score": 9,
+      "source_refs": [
+        "/Users/devinsonpena/Sygnum/research/compliance-source-register.md",
+        "/Users/devinsonpena/Sygnum/research/compliance-control-matrix.md",
+        "/Users/devinsonpena/Sygnum/research/compliance-change-gate.md",
+        "/Users/devinsonpena/Sygnum/research/bank-grade-onboarding-privacy-gap.md"
+      ],
+      "temporal_status": "current"
+    },
+    {
+      "authority": "Repo-local product evidence is authoritative; shared AgentOps steward reports visibility.",
+      "capability_id": "sygnum.product-systems-stewardship",
+      "evidence_artifacts": [
+        "/Users/devinsonpena/Sygnum/agentops/reports/platform-roadmap-v1.md",
+        "/Users/devinsonpena/Documents/AutoBots/agentops/reports/agent_scorecards/sygnum-product-systems-steward.md"
+      ],
+      "gates": [
+        "Do not add bank-grade, custody, compliance, or chain-specific claims without repo evidence.",
+        "Keep implemented controls separate from simulated or planned controls."
+      ],
+      "human_gate_required": true,
+      "job": "Keep the tokenization platform narrative, roadmap, product grammar, and repo-local evidence aligned.",
+      "label": "Product systems stewardship",
+      "match_reasons": [
+        "semantic_overlap:chopdot,platform,product,research",
+        "temporal_status:current"
+      ],
+      "repo_id": "Sygnum",
+      "score": 9,
+      "source_refs": [
+        "/Users/devinsonpena/Sygnum/README.md",
+        "/Users/devinsonpena/Sygnum/research/platform-purpose-metrics-and-roadmap.md",
+        "/Users/devinsonpena/Sygnum/agentops/reports/platform-roadmap-v1.md",
+        "/Users/devinsonpena/Sygnum/docs/sygnum-product-evolution-operating-system.md"
+      ],
+      "temporal_status": "current"
+    },
+    {
+      "authority": "Live app behavior and smoke reports govern claims about settlement proof.",
+      "capability_id": "chopdot.closeout-proof-product",
+      "evidence_artifacts": [
+        "closeout smoke reports",
+        "settlement proof surfaces",
+        "confirmation-state checks"
+      ],
+      "gates": [
+        "Do not overstate production payment maturity.",
+        "Validate final confirmation state with payment and proof details."
+      ],
+      "human_gate_required": true,
+      "job": "Maintain the product path where shared expenses become explicit, reviewable, and provable at closeout.",
+      "label": "Closeout proof product lane",
+      "match_reasons": [
+        "semantic_overlap:architecture,chopdot,product",
+        "temporal_status:current"
+      ],
+      "repo_id": "ChopDot",
+      "score": 7,
+      "source_refs": [
+        "/Users/devinsonpena/ChopDot/README.md",
+        "/Users/devinsonpena/ChopDot/.memory/chopdot_migration_proof_architecture.md",
+        "/Users/devinsonpena/ChopDot/artifacts/REQUEST_PAYMENT_SMOKE_REPORT.md",
+        "/Users/devinsonpena/ChopDot/artifacts/SMOKE_PVM_CLOSEOUT.md"
+      ],
+      "temporal_status": "current"
+    }
+  ],
+  "approval_boundaries": [
+    {
+      "authority": "Private `.local-private` current state governs private thesis routing; public README and release queue do not prove protocol, blockchain, payment, backend, or production readiness.",
+      "capability_id": "chopdot.private-kernel-adapter-research",
+      "human_gate_required": true
+    },
+    {
+      "authority": "Logos lab evidence governs experimental readiness only; production adoption still requires the owning product repo gate.",
+      "capability_id": "logos-lab.experimental-adapter-readiness",
+      "human_gate_required": true
+    },
+    {
+      "authority": "Compliance source register and control matrix govern regulated claims.",
+      "capability_id": "sygnum.compliance-and-control-matrix",
+      "human_gate_required": true
+    },
+    {
+      "authority": "Repo-local product evidence is authoritative; shared AgentOps steward reports visibility.",
+      "capability_id": "sygnum.product-systems-stewardship",
+      "human_gate_required": true
+    },
+    {
+      "authority": "Live app behavior and smoke reports govern claims about settlement proof.",
+      "capability_id": "chopdot.closeout-proof-product",
+      "human_gate_required": true
+    }
+  ],
+  "context_graph_v2": {
+    "default_read_path_changed": true,
+    "mode": "default",
+    "packet": {
+      "authority_transaction": "76920",
+      "citations": [
+        {
+          "fact_version_id": "fact:repo-graph:6c62a07eb2b0570b0af3851e3b0ccb06",
+          "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+          "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+          "verification": {
+            "actual_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "checked_at": "2026-08-22T20:49:20+00:00",
+            "checks": {
+              "branch_matches": true,
+              "commit_matches": true,
+              "exists": true,
+              "hash_matches": true,
+              "registered_repo": true,
+              "within_registered_root": true
+            },
+            "reason": "all source checks passed",
+            "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "status": "verified"
+          }
+        },
+        {
+          "fact_version_id": "fact:repo-graph:dd98e2f9d5e9875721f5467b26af98ff",
+          "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+          "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+          "verification": {
+            "actual_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "checked_at": "2026-08-22T20:49:20+00:00",
+            "checks": {
+              "branch_matches": true,
+              "commit_matches": true,
+              "exists": true,
+              "hash_matches": true,
+              "registered_repo": true,
+              "within_registered_root": true
+            },
+            "reason": "all source checks passed",
+            "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "status": "verified"
+          }
+        },
+        {
+          "fact_version_id": "fact:repo-graph:e4192ad7d831fea94a80b80d2ff876cf",
+          "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+          "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+          "verification": {
+            "actual_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "checked_at": "2026-08-22T20:49:20+00:00",
+            "checks": {
+              "branch_matches": true,
+              "commit_matches": true,
+              "exists": true,
+              "hash_matches": true,
+              "registered_repo": true,
+              "within_registered_root": true
+            },
+            "reason": "all source checks passed",
+            "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "status": "verified"
+          }
+        },
+        {
+          "fact_version_id": "fact:repo-graph:45156488a0ae8804df207efec110b41e",
+          "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+          "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+          "verification": {
+            "actual_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "checked_at": "2026-08-22T20:49:20+00:00",
+            "checks": {
+              "branch_matches": true,
+              "commit_matches": true,
+              "exists": true,
+              "hash_matches": true,
+              "registered_repo": true,
+              "within_registered_root": true
+            },
+            "reason": "all source checks passed",
+            "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "status": "verified"
+          }
+        },
+        {
+          "fact_version_id": "fact:repo-graph:2ca154f122183b9eab32d74733f6612f",
+          "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+          "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+          "verification": {
+            "actual_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "checked_at": "2026-08-22T20:49:20+00:00",
+            "checks": {
+              "branch_matches": true,
+              "commit_matches": true,
+              "exists": true,
+              "hash_matches": true,
+              "registered_repo": true,
+              "within_registered_root": true
+            },
+            "reason": "all source checks passed",
+            "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "status": "verified"
+          }
+        },
+        {
+          "fact_version_id": "fact:repo-graph:79bfa20d9f2a9ec836a21e608a4a7467",
+          "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+          "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+          "verification": {
+            "actual_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "checked_at": "2026-08-22T20:49:20+00:00",
+            "checks": {
+              "branch_matches": true,
+              "commit_matches": true,
+              "exists": true,
+              "hash_matches": true,
+              "registered_repo": true,
+              "within_registered_root": true
+            },
+            "reason": "all source checks passed",
+            "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "status": "verified"
+          }
+        },
+        {
+          "fact_version_id": "fact:repo-graph:fccf1c098e5f7d610ca7104d8dc25a77",
+          "source_hash": "5c3bf2c12157fdbc76c866a78812eca9f55dec3de23bd90156afece2211f8b26",
+          "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+          "verification": {
+            "actual_hash": "5c3bf2c12157fdbc76c866a78812eca9f55dec3de23bd90156afece2211f8b26",
+            "checked_at": "2026-08-22T20:49:20+00:00",
+            "checks": {
+              "branch_matches": true,
+              "commit_matches": true,
+              "exists": true,
+              "hash_matches": true,
+              "registered_repo": true,
+              "within_registered_root": true
+            },
+            "reason": "all source checks passed",
+            "source_ref": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+            "status": "verified"
+          }
+        }
+      ],
+      "compiled_at": "2026-08-22T20:49:20+00:00",
+      "degradation": [],
+      "estimated_tokens": 1445,
+      "facts": [
+        {
+          "authority": "repo_source",
+          "confidence": 1.0,
+          "conflict_group": null,
+          "estimated_tokens": 208,
+          "fact_version_id": "fact:repo-graph:6c62a07eb2b0570b0af3851e3b0ccb06",
+          "memory_state": "current",
+          "object_value": {
+            "authority": "repo_source",
+            "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-Statement-Store-ADOPT_AS_ADAPTER-32",
+            "entity_type": "Decision",
+            "label": "Decision: Statement Store ADOPT_AS_ADAPTER",
+            "properties": {
+              "heading_level": 2,
+              "line": 32,
+              "role": "decision"
+            },
+            "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "verification_status": "verified"
+          },
+          "predicate": "repo_entity",
+          "score": 21.0,
+          "subject_urn": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-Statement-Store-ADOPT_AS_ADAPTER-32",
+          "valid_from": "2026-08-22T20:44:09+00:00",
+          "valid_to": null
+        },
+        {
+          "authority": "repo_source",
+          "confidence": 1.0,
+          "conflict_group": null,
+          "estimated_tokens": 204,
+          "fact_version_id": "fact:repo-graph:dd98e2f9d5e9875721f5467b26af98ff",
+          "memory_state": "current",
+          "object_value": {
+            "authority": "repo_source",
+            "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-Product-SDK-ADOPT_AS_ADAPTER-6",
+            "entity_type": "Decision",
+            "label": "Decision: Product SDK ADOPT_AS_ADAPTER",
+            "properties": {
+              "heading_level": 2,
+              "line": 6,
+              "role": "decision"
+            },
+            "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "verification_status": "verified"
+          },
+          "predicate": "repo_entity",
+          "score": 21.0,
+          "subject_urn": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-Product-SDK-ADOPT_AS_ADAPTER-6",
+          "valid_from": "2026-08-22T20:44:09+00:00",
+          "valid_to": null
+        },
+        {
+          "authority": "repo_source",
+          "confidence": 1.0,
+          "conflict_group": null,
+          "estimated_tokens": 202,
+          "fact_version_id": "fact:repo-graph:e4192ad7d831fea94a80b80d2ff876cf",
+          "memory_state": "current",
+          "object_value": {
+            "authority": "repo_source",
+            "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#ChopDot-Platform-Adoption-Decisions-1",
+            "entity_type": "Decision",
+            "label": "ChopDot Platform Adoption Decisions",
+            "properties": {
+              "heading_level": 1,
+              "line": 1,
+              "role": "decision"
+            },
+            "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "verification_status": "verified"
+          },
+          "predicate": "repo_entity",
+          "score": 21.0,
+          "subject_urn": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#ChopDot-Platform-Adoption-Decisions-1",
+          "valid_from": "2026-08-22T20:44:09+00:00",
+          "valid_to": null
+        },
+        {
+          "authority": "repo_source",
+          "confidence": 1.0,
+          "conflict_group": null,
+          "estimated_tokens": 206,
+          "fact_version_id": "fact:repo-graph:45156488a0ae8804df207efec110b41e",
+          "memory_state": "current",
+          "object_value": {
+            "authority": "repo_source",
+            "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-Host-test-SDK-ADOPT_AS_ADAPTER-17",
+            "entity_type": "Decision",
+            "label": "Decision: Host test SDK ADOPT_AS_ADAPTER",
+            "properties": {
+              "heading_level": 2,
+              "line": 17,
+              "role": "decision"
+            },
+            "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "verification_status": "verified"
+          },
+          "predicate": "repo_entity",
+          "score": 16.0,
+          "subject_urn": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-Host-test-SDK-ADOPT_AS_ADAPTER-17",
+          "valid_from": "2026-08-22T20:44:09+00:00",
+          "valid_to": null
+        },
+        {
+          "authority": "repo_source",
+          "confidence": 1.0,
+          "conflict_group": null,
+          "estimated_tokens": 200,
+          "fact_version_id": "fact:repo-graph:2ca154f122183b9eab32d74733f6612f",
+          "memory_state": "current",
+          "object_value": {
+            "authority": "repo_source",
+            "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-DotNS-ADOPT_AS_ADAPTER-22",
+            "entity_type": "Decision",
+            "label": "Decision: DotNS ADOPT_AS_ADAPTER",
+            "properties": {
+              "heading_level": 2,
+              "line": 22,
+              "role": "decision"
+            },
+            "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "verification_status": "verified"
+          },
+          "predicate": "repo_entity",
+          "score": 11.0,
+          "subject_urn": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-DotNS-ADOPT_AS_ADAPTER-22",
+          "valid_from": "2026-08-22T20:44:09+00:00",
+          "valid_to": null
+        },
+        {
+          "authority": "repo_source",
+          "confidence": 1.0,
+          "conflict_group": null,
+          "estimated_tokens": 210,
+          "fact_version_id": "fact:repo-graph:79bfa20d9f2a9ec836a21e608a4a7467",
+          "memory_state": "current",
+          "object_value": {
+            "authority": "repo_source",
+            "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-Host-local-storage-ADOPT_AS_ADAPTER-27",
+            "entity_type": "Decision",
+            "label": "Decision: Host local storage ADOPT_AS_ADAPTER",
+            "properties": {
+              "heading_level": 2,
+              "line": 27,
+              "role": "decision"
+            },
+            "source_hash": "4ebe18d174e6e241017cce55e83eb56cb4c159e98e3cd430f9259cc9d4a0d36c",
+            "source_path": "docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md",
+            "verification_status": "verified"
+          },
+          "predicate": "repo_entity",
+          "score": 11.0,
+          "subject_urn": "urn:repo:chopdot-v1-launch:decision:docs/research/CHOPDOT_PLATFORM_ADOPTION_DECISIONS.md#Decision:-Host-local-storage-ADOPT_AS_ADAPTER-27",
+          "valid_from": "2026-08-22T20:44:09+00:00",
+          "valid_to": null
+        },
+        {
+          "authority": "repo_source",
+          "confidence": 1.0,
+          "conflict_group": null,
+          "estimated_tokens": 215,
+          "fact_version_id": "fact:repo-graph:fccf1c098e5f7d610ca7104d8dc25a77",
+          "memory_state": "current",
+          "object_value": {
+            "authority": "repo_source",
+            "entity_id": "urn:repo:chopdot-v1-launch:decision:docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md#Bounded-ChopDot-decisions-107",
+            "entity_type": "Decision",
+            "label": "Bounded ChopDot decisions",
+            "properties": {
+              "heading_level": 2,
+              "line": 107,
+              "role": "decision"
+            },
+            "source_hash": "5c3bf2c12157fdbc76c866a78812eca9f55dec3de23bd90156afece2211f8b26",
+            "source_path": "docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+            "verification_status": "verified"
+          },
+          "predicate": "repo_entity",
+          "score": 11.0,
+          "subject_urn": "urn:repo:chopdot-v1-launch:decision:docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md#Bounded-ChopDot-decisions-107",
+          "valid_from": "2026-08-22T20:44:09+00:00",
+          "valid_to": null
+        }
+      ],
+      "graph_status": {
+        "status": "not_configured",
+        "watermark": 0
+      },
+      "missing_slots": [
+        "source_truth"
+      ],
+      "packet_digest": "6675f6f2437d8b176b7c3407c2da49d7e78f1ae90a580e530eb990ccf014f224",
+      "policy": {
+        "allowed": true,
+        "bundle_digest": "70052fd5769defe619f16a796f1164aeee9c0d396169c78042f123f126be09b5",
+        "decided_at": "2026-08-22T20:49:20+00:00",
+        "decision_id": "policy:7addab25d66a3fdf",
+        "input_digest": "7addab25d66a3fdf02907f1bf07e9dc65458ce987258ae4d52da4eb6686401f8",
+        "reason": "read permitted within registered scope"
+      },
+      "projection_watermarks": [
+        {
+          "authority_transaction": "284179",
+          "detail": "",
+          "outbox_id": 76920,
+          "projector_name": "age",
+          "status": "ok",
+          "updated_at": "2026-08-22T20:49:19.380510+00:00"
+        },
+        {
+          "authority_transaction": "284179",
+          "detail": "",
+          "outbox_id": 76920,
+          "projector_name": "jena",
+          "status": "ok",
+          "updated_at": "2026-08-22T20:49:19.135334+00:00"
+        },
+        {
+          "authority_transaction": "284179",
+          "detail": "",
+          "outbox_id": 76920,
+          "projector_name": "neo4j",
+          "status": "ok",
+          "updated_at": "2026-08-22T20:49:19.562287+00:00"
+        }
+      ],
+      "rejected_candidate_count": 0,
+      "request": {
+        "as_of_transaction_time": null,
+        "as_of_valid_time": null,
+        "branch": "codex/chopdot-v1-launch",
+        "consistency_class": "authoritative_current",
+        "intent": "ADOPT_AS_ADAPTER Statement Store Product SDK ChopDot platform adoption decisions",
+        "lane": "kg-preflight-default",
+        "repo": "chopdot-v1-launch",
+        "requested_action": "read",
+        "risk": "medium",
+        "task_family": "architecture_research",
+        "token_budget": 1800
+      },
+      "status": "ok",
+      "token_budget": 1800
+    },
+    "runtime": {
+      "kind": "current_interpreter",
+      "python": "/Users/devinsonpena/Documents/AutoBots/proofmap/.venv/bin/python"
+    },
+    "status": "ok"
+  },
+  "evidence_artifacts": [
+    {
+      "artifact": "private control-state gate",
+      "capability_id": "chopdot.private-kernel-adapter-research"
+    },
+    {
+      "artifact": "fixture hardening report",
+      "capability_id": "chopdot.private-kernel-adapter-research"
+    },
+    {
+      "artifact": "adapter/profile claim boundary",
+      "capability_id": "chopdot.private-kernel-adapter-research"
+    },
+    {
+      "artifact": "builder-agent observation-only instructions",
+      "capability_id": "chopdot.private-kernel-adapter-research"
+    },
+    {
+      "artifact": "readiness evidence",
+      "capability_id": "logos-lab.experimental-adapter-readiness"
+    },
+    {
+      "artifact": "adapter/fallback decision",
+      "capability_id": "logos-lab.experimental-adapter-readiness"
+    },
+    {
+      "artifact": "product cockpit status",
+      "capability_id": "logos-lab.experimental-adapter-readiness"
+    },
+    {
+      "artifact": "adoption or rejection note",
+      "capability_id": "logos-lab.experimental-adapter-readiness"
+    },
+    {
+      "artifact": "compliance reference pack",
+      "capability_id": "sygnum.compliance-and-control-matrix"
+    },
+    {
+      "artifact": "control-gated future feature decisions",
+      "capability_id": "sygnum.compliance-and-control-matrix"
+    },
+    {
+      "artifact": "/Users/devinsonpena/Sygnum/agentops/reports/platform-roadmap-v1.md",
+      "capability_id": "sygnum.product-systems-stewardship"
+    },
+    {
+      "artifact": "/Users/devinsonpena/Documents/AutoBots/agentops/reports/agent_scorecards/sygnum-product-systems-steward.md",
+      "capability_id": "sygnum.product-systems-stewardship"
+    },
+    {
+      "artifact": "closeout smoke reports",
+      "capability_id": "chopdot.closeout-proof-product"
+    },
+    {
+      "artifact": "settlement proof surfaces",
+      "capability_id": "chopdot.closeout-proof-product"
+    },
+    {
+      "artifact": "confirmation-state checks",
+      "capability_id": "chopdot.closeout-proof-product"
+    }
+  ],
+  "graph_consulted": true,
+  "graph_report_ref": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/reports/agentops_knowledge_graph.json",
+  "intent": "ADOPT_AS_ADAPTER Statement Store Product SDK ChopDot platform adoption decisions",
+  "next_actions": [
+    "Use KG capabilities, gates, evidence, and lessons before opening broad docs.",
+    "Carry required gates into the execution checklist before file edits or external actions."
+  ],
+  "read_path": {
+    "active_path": "context_graph_v2",
+    "context_graph_v2_attempted": true,
+    "context_graph_v2_consulted": true,
+    "fallback_path": "kg_v1",
+    "fallback_reason": "",
+    "fallback_used": false,
+    "kg_v1_consulted": true,
+    "operational_overlay": "kg_v1",
+    "requested_mode": "v2",
+    "runtime_config_ref": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/registry/context_graph_v2_runtime.json"
+  },
+  "related_local_repo_lessons": [
+    {
+      "lesson_id": "chopdot-multi-lane-private-research-vs-public-app-routing",
+      "match_reasons": [
+        "match_term:chopdot",
+        "match_term:adapter",
+        "token_overlap:adapter",
+        "token_overlap:research",
+        "semantic_overlap:adapter,chopdot,product,research",
+        "temporal_status:current"
+      ],
+      "score": 25,
+      "source_paths": [
+        "/Users/devinsonpena/ChopDot/.local-private/chopdot-architecture-os/controls/current_state.json",
+        "/Users/devinsonpena/ChopDot/.local-private/chopdot-architecture-os/controls/CONTROL_DOCTOR_REPORT.md",
+        "/Users/devinsonpena/ChopDot/.local-private/chopdot-architecture-os/REAL_INTEGRATION_PREP_DECOMPOSITION_AGAINST_MINIMAL_PROFILE_GATE_2026-05-18.md",
+        "/Users/devinsonpena/Documents/AutoBots/agentops/reports/chopdot_repo_checkin_2026-05-19.md"
+      ],
+      "source_repo_id": "chopdot",
+      "summary": "ChopDot currently has at least three active lanes: private kernel/adapters research, public app release operations, and AgentOps coordination. AgentOps must route kernel, adapter-profile, C0.190, fixture-hardening, and private protocol-OS work to the private research lane instead of using the public app README or daily operator queue as routing truth.",
+      "temporal_status": "current"
+    },
+    {
+      "lesson_id": "source-intelligence-polkadot-signal-to-chopdot-hydration",
+      "match_reasons": [
+        "match_term:chopdot",
+        "token_overlap:sdk",
+        "semantic_overlap:chopdot,product,sdk",
+        "temporal_status:current"
+      ],
+      "score": 14,
+      "source_paths": [
+        "/Users/devinsonpena/Documents/AutoBots/agentops/reports/source_intelligence_loop.json",
+        "/Users/devinsonpena/Documents/AutoBots/agentops/reports/source_intelligence_hydration_actions.json",
+        "https://x.com/sorpaas/status/2044042170122813585?s=20"
+      ],
+      "source_repo_id": "agentops",
+      "summary": "Polkadot, proof-verification, SDK, and protocol-security signals should flow into ChopDot and any related Polkadot project hydration after official repo, PR, protocol-doc, or maintainer-owned confirmation. Approved source items: telegram-self-2026-04-14t14-32-20-00-00-87bc73e5c3.",
+      "temporal_status": "current"
+    }
+  ],
+  "repo_target": "chopdot-v1-launch",
+  "required_gates": [
+    {
+      "capability_id": "chopdot.private-kernel-adapter-research",
+      "gate": "Do not route private kernel/adapters thesis work as public app release work."
+    },
+    {
+      "capability_id": "chopdot.private-kernel-adapter-research",
+      "gate": "Do not write real adapter/API integration code from fixture-prep evidence alone."
+    },
+    {
+      "capability_id": "chopdot.private-kernel-adapter-research",
+      "gate": "Treat blocked claims as blocked claims, not as a ban on private observation-only prep."
+    },
+    {
+      "capability_id": "logos-lab.experimental-adapter-readiness",
+      "gate": "Do not treat a passing lab check as production adoption."
+    },
+    {
+      "capability_id": "logos-lab.experimental-adapter-readiness",
+      "gate": "Surface missing local services and bridge gaps explicitly."
+    },
+    {
+      "capability_id": "logos-lab.experimental-adapter-readiness",
+      "gate": "Record adopt, reject, fallback, or experiment decisions before reuse."
+    },
+    {
+      "capability_id": "sygnum.compliance-and-control-matrix",
+      "gate": "No unsupported legal or supervisory claim."
+    },
+    {
+      "capability_id": "sygnum.compliance-and-control-matrix",
+      "gate": "Future features must map to explicit compliance concerns before being called bank-grade."
+    },
+    {
+      "capability_id": "sygnum.product-systems-stewardship",
+      "gate": "Do not add bank-grade, custody, compliance, or chain-specific claims without repo evidence."
+    },
+    {
+      "capability_id": "sygnum.product-systems-stewardship",
+      "gate": "Keep implemented controls separate from simulated or planned controls."
+    },
+    {
+      "capability_id": "chopdot.closeout-proof-product",
+      "gate": "Do not overstate production payment maturity."
+    },
+    {
+      "capability_id": "chopdot.closeout-proof-product",
+      "gate": "Validate final confirmation state with payment and proof details."
+    }
+  ],
+  "stale_conflicted_warnings": [],
+  "status": "pass",
+  "summary": {
+    "active_capability_count": 5,
+    "evidence_artifact_count": 15,
+    "related_lesson_count": 2,
+    "required_gate_count": 12,
+    "stale_conflicted_warning_count": 0
+  },
+  "task_family": "architecture_research",
+  "updated_at": "2026-08-22T20:49:19+00:00"
+}

@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-08-13T12:21:37.925Z",
+  "limits": {
+    "MAX_STATEMENT_SIZE": 512,
+    "MAX_USER_TOTAL": 1024
+  },
+  "notificationPayloadBytes": 78,
+  "encryptedDataPayloadBytes": 187,
+  "fitsSingleStatement": true,
+  "concurrentStatementsPerUser": 5,
+  "fiveStatementsCumulativeBytes": 935,
+  "exceedsUserTotalAtFive": false,
+  "encryptedOnWire": true,
+  "deliveredToSecondAccount": true,
+  "note": "Host simulation. Not a substitute for a real Polkadot host container, and the sim does not enforce MAX_USER_TOTAL — the per-user figure is derived from measured size, not observed rejection."
+}

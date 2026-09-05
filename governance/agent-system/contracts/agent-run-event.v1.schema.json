@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/governance/agent-system/contracts/agent-run-event.v1.schema.json",
+  "title": "Agent Run Event V1",
+  "type": "object",
+  "required": ["event_version", "run_id", "sequence", "event_id", "event_type", "timestamp", "actor", "previous_digest", "payload_digest", "event_digest"],
+  "properties": {
+    "event_version": { "const": "1.0.0" },
+    "run_id": { "type": "string", "pattern": "^run_[a-z0-9][a-z0-9_-]{7,95}$" },
+    "sequence": { "type": "integer", "minimum": 0 },
+    "event_id": { "type": "string", "pattern": "^event_[a-z0-9][a-z0-9_-]{7,95}$" },
+    "event_type": { "enum": ["declared", "preflight_passed", "preflight_failed", "work_started", "observation_recorded", "artifact_recorded", "evaluation_started", "evaluation_finished", "repair_directed", "approval_requested", "approval_recorded", "effect_planned", "effect_approved", "effect_dispatching", "effect_dispatched", "effect_read_back", "effect_failed", "effect_reconciliation_required", "budget_consumed", "checkpointed", "terminated"] },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "actor": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["human", "agent", "deterministic_runner", "external_system"] }
+      },
+      "additionalProperties": false
+    },
+    "previous_digest": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "payload_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "payload": { "type": "object" },
+    "payload_ref": { "type": "string", "minLength": 1 },
+    "event_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  },
+  "allOf": [
+    { "if": { "properties": { "sequence": { "const": 0 } } }, "then": { "properties": { "previous_digest": { "type": "null" } } }, "else": { "properties": { "previous_digest": { "type": "string" } } } }
+  ],
+  "additionalProperties": false
+}

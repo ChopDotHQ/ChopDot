@@ -1,0 +1,35 @@
+{
+  "profile_version": "1.0.0",
+  "profile_id": "security-authority",
+  "profile_digest": "18f241d9eb1339e17dc1f5b4ad77765068078788a60ce312fb80fc1e19c48057",
+  "kind": "agent_loop_profile",
+  "description": "Produces an independent threat-boundary and authority-delta verdict whose critical findings cannot be self-closed.",
+  "contract_schema_ref": "../contracts/agent-loop-contract.v1.schema.json",
+  "artifact_contract": {
+    "artifact_types": ["SecurityAuthorityReviewV1", "FindingPacketV1"],
+    "required_fields": ["assets", "actors", "trust_boundaries", "authority_delta", "findings", "reproduction", "verification", "verdict", "evidence_boundary"],
+    "required_evidence_level": "exact-candidate"
+  },
+  "expected_outcome": {
+    "statement": "The affected authority, money, membership, recovery, privacy, credential, release, and supply-chain boundaries have zero unresolved critical or high findings and an independent accept verdict.",
+    "assertions": [
+      { "id": "SEC-CRITICAL", "description": "There are zero unresolved critical findings in the reviewed scope.", "measurement": "unresolved_critical_finding_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+      { "id": "SEC-HIGH", "description": "There are zero unresolved high findings in the reviewed scope.", "measurement": "unresolved_high_finding_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+      { "id": "SEC-AUTHORITY", "description": "Every changed authority edge is enumerated and justified by its governing source.", "measurement": "unmapped_authority_delta_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "source-only", "hard_fail": true },
+      { "id": "SEC-INDEPENDENCE", "description": "The accepting evaluator is not the author of the critical package.", "measurement": "reviewer_is_author", "operator": "falsy", "expected": false, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+      { "id": "SEC-EVIDENCE", "description": "Every finding and acceptance claim identifies its evidence boundary and candidate.", "measurement": "unbounded_security_claim_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true }
+    ]
+  },
+  "context_gate": { "exact_root": true, "freshness_required": true, "same_level_conflict": "blocked", "wrong_root": "blocked" },
+  "policy_refs": { "authority": "agent-authority-boundaries-v1", "evidence": "agent-evidence-levels-v1", "terminal_states": "agent-terminal-states-v1", "retry_budgets": "agent-retry-budgets-v1" },
+  "authority": { "default_class": "read_only", "allowed_effects": ["read_in_scope_source", "run_non_mutating_security_check", "create_finding_packet"], "approval_required_effects": ["publish_vulnerability", "use_credential", "external_probe", "accept_risk"], "critical_independent_review": true },
+  "budgets": { "retry_budget_id": "budget-security-authority-v1", "max_iterations": 3, "max_retries": 2, "same_blocker_limit": 2 },
+  "evaluator": { "rubric_path": "governance/agent-system/evals/rubrics/security-authority.v1.json", "deterministic_checks": ["secret_scan", "authority_delta_check", "finding_schema_check", "reviewer_independence_check"], "independence": "different_actor", "pass_threshold": 1, "hard_failures": ["SEC-CRITICAL", "SEC-HIGH", "SEC-AUTHORITY", "SEC-INDEPENDENCE", "SEC-EVIDENCE"] },
+  "evidence": { "minimum_level": "exact-candidate", "required_artifacts": ["threat_boundary_review", "authority_delta_map", "finding_packets", "independent_verdict"], "exact_counts_required": true, "candidate_identity_required": true },
+  "environment_observations": ["exact affected candidate", "credential and effect boundaries", "reproduction environment for every exploitable finding"],
+  "failure_packet": { "artifact_type": "BlockerPacketV1", "required_fields": ["finding_ids", "affected_assets_actors_files", "reproduction", "impact", "required_remediation", "blocked_promotion_state"], "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_preflight": { "port": "KnowledgeContextPortV1", "preflight_required": true, "record_outcome": true, "verify_recall": true, "provider_neutral": true },
+  "repair_policy": { "changed_hypothesis_required": true, "scope_expansion": "new_contract", "same_blocker_limit": 2, "regression_required": true },
+  "example_contract_ref": "examples/security-authority.contract.v1.json"
+}

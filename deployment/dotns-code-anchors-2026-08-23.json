@@ -1,0 +1,43 @@
+{
+  "schema": "chopdot.dotns-code-anchors.v1",
+  "purpose": "Environment-specific immutable code anchors read through the exact Ethereum RPC endpoint used for all Revive calls. Chain id 420420417 is shared and is never accepted as environment identity on its own.",
+  "sourceEnvironmentFile": "deployment/pad-environments-2026-08-23.json",
+  "environments": {
+    "devnet": {
+      "ethRpc": "https://services.polkadothub-rpc.com/testnet",
+      "observedBlock": {
+        "number": 12570119,
+        "numberHex": "0xbfce07",
+        "hash": "0xa94e0d3ed9370cdf469dccaad7021d392641f7fcd16ed2aa4fc4fd2e86a4c130"
+      },
+      "contracts": {
+        "DOTNS_PROTOCOL_REGISTRY": {"address": "0xEdb3e17649ABccc69e6fab4cc640bc578C47AbeA", "bytes": 130, "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"},
+        "DOTNS_REGISTRAR": {"address": "0x7f0dF075cc8B7FE7218E90fFC5a553450dB120F3", "bytes": 130, "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"},
+        "DOTNS_REGISTRAR_CONTROLLER": {"address": "0x45fDEa4Ad7b8607Fc22DBC3DBE3cD8b350F8bede", "bytes": 130, "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"},
+        "DOTNS_REGISTRY": {"address": "0x527b08a640b527a3dae0C4BE04D7344E430B6E50", "bytes": 130, "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"},
+        "DOTNS_RESOLVER": {"address": "0xC28796526Bf3E9295f09655a1001F30f77AfCF0D", "bytes": 130, "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"},
+        "DOTNS_CONTENT_RESOLVER": {"address": "0x326bdE29315199c814B1c58b431D84D16EA5cE41", "bytes": 130, "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"},
+        "POP_RULES": {"address": "0x2181a14081fF2D4477BAA8FB1aEB4C9c44F5F2b0", "bytes": 130, "sha256": "caefb7c42f34e3d3a26d024f1c8004ce99cfef93df2f01877f4bac4ee3d2a979"},
+        "STORE_FACTORY": {"address": "0xD81DC23FAa69B311C1FC553Ea63798772e7D253D", "bytes": 4858, "sha256": "d14db10492be157a519672d35dfce68bfc21bb82744d79c487a014954de19f12"}
+      }
+    },
+    "paseo-next-v2": {
+      "ethRpc": "https://eth-rpc-paseo-next.polkadot.io",
+      "observedBlock": {
+        "number": 486662,
+        "numberHex": "0x76d06",
+        "hash": "0x9d652d9abc5e7b3704297d7d8fbd0d3df75edb2edf9d6df1c5772a815eff0d5d"
+      },
+      "contracts": {
+        "DOTNS_PROTOCOL_REGISTRY": {"address": "0xD19e3D0C97CF501125a04A97405e3e6592fa846E", "bytes": 130, "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"},
+        "DOTNS_REGISTRAR": {"address": "0x4f06E818Ba3d987704fd91cf3d868E4b019106Ab", "bytes": 130, "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"},
+        "DOTNS_REGISTRAR_CONTROLLER": {"address": "0xBdaA01bD1bA67d709F2b1fF286Da0d854977EA30", "bytes": 130, "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"},
+        "DOTNS_REGISTRY": {"address": "0xf34054fd76BbF85f216cf9908226D5f0A72E50CA", "bytes": 130, "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"},
+        "DOTNS_RESOLVER": {"address": "0xbd1165E549DF96F083c0A16f61590927bC187009", "bytes": 130, "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"},
+        "DOTNS_CONTENT_RESOLVER": {"address": "0x7F74D7CD50f5a834270E2ad395a01b01891AB37d", "bytes": 130, "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"},
+        "POP_RULES": {"address": "0x747B456bE03aec0b42bd85C51513730FBD45DA31", "bytes": 130, "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"},
+        "STORE_FACTORY": {"address": "0x709A027F446a9e2a4BB9cb9a9c754435b19e32B7", "bytes": 4858, "sha256": "ae006f01fa35e6c80f5022184009922163117b7fb6187be8850dac4e78404e9b"}
+      }
+    }
+  }
+}

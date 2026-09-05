@@ -1,0 +1,25 @@
+{
+  "proofUrl": "http://127.0.0.1:4175/?developerChecks=1",
+  "capturedAt": "2026-07-15T15:19:22.470Z",
+  "report": {
+    "checkedAt": "2026-07-15T15:19:22.082Z",
+    "productId": "chopdot-shell-proof.dot",
+    "insideContainer": false,
+    "identity": {
+      "state": "unavailable",
+      "detail": "Open inside a compatible Polkadot host."
+    },
+    "sharedSession": {
+      "state": "unavailable",
+      "detail": "Open inside a compatible Polkadot host."
+    },
+    "payments": {
+      "state": "unavailable",
+      "detail": "Open inside a compatible Polkadot host."
+    },
+    "receiptArchive": {
+      "state": "unavailable",
+      "detail": "Open inside a compatible Polkadot host."
+    }
+  }
+}

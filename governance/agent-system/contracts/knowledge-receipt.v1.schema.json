@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/governance/agent-system/contracts/knowledge-receipt.v1.schema.json",
+  "title": "Knowledge Receipt V1",
+  "description": "Provider-neutral evidence from health, record_outcome, or verify_recall.",
+  "type": "object",
+  "required": ["receipt_version", "receipt_id", "operation", "backend", "backend_version", "runtime", "capabilities", "requested_read_path", "active_read_path", "fallback_status", "accepted", "rejected_reasons", "durable_record_id", "stored_packet_digest", "stored_artifact_digests", "facts", "citations", "source_identities", "mismatches", "stale_reasons", "current_outcome_digest", "observed_at"],
+  "properties": {
+    "receipt_version": { "const": "1.0.0" },
+    "receipt_id": { "type": "string", "pattern": "^knowledge_receipt_" },
+    "operation": { "enum": ["health", "read_context", "record_outcome", "verify_recall"] },
+    "backend": { "type": "string", "minLength": 1 },
+    "backend_version": { "type": "string", "minLength": 1 },
+    "runtime": { "type": "string", "minLength": 1 },
+    "capabilities": { "type": "array", "uniqueItems": true, "items": { "enum": ["health", "read_context", "record_outcome", "verify_recall", "citations", "durable_record", "freshness", "fallback_report"] } },
+    "requested_read_path": { "type": "string", "minLength": 1 },
+    "active_read_path": { "type": "string", "minLength": 1 },
+    "fallback_status": { "enum": ["none", "allowed", "disallowed", "active", "unavailable", "unknown"] },
+    "accepted": { "type": "boolean" },
+    "rejected_reasons": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "durable_record_id": { "type": ["string", "null"], "minLength": 1 },
+    "stored_packet_digest": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "stored_artifact_digests": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[0-9a-f]{64}$" } },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fact_id", "statement", "citation_ids"],
+        "properties": {
+          "fact_id": { "type": "string", "pattern": "^fact_" },
+          "statement": { "type": "string", "minLength": 3 },
+          "citation_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^citation_" } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "citations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["citation_id", "source_identity_id", "path", "sha256"],
+        "properties": {
+          "citation_id": { "type": "string", "pattern": "^citation_" },
+          "source_identity_id": { "type": "string", "pattern": "^source_" },
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "source_identities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_identity_id", "root", "branch", "commit", "path", "sha256"],
+        "properties": {
+          "source_identity_id": { "type": "string", "pattern": "^source_" },
+          "root": { "type": "string", "pattern": "^/" },
+          "branch": { "type": "string", "minLength": 1 },
+          "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "mismatches": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "stale_reasons": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "current_outcome_digest": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "observed_at": { "type": "string", "format": "date-time" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "operation": { "const": "record_outcome" }, "accepted": { "const": true } } },
+      "then": { "properties": { "durable_record_id": { "type": "string" }, "stored_packet_digest": { "type": "string" } } }
+    },
+    {
+      "if": {
+        "properties": {
+          "operation": { "const": "verify_recall" },
+          "accepted": { "const": true }
+        },
+        "required": ["operation", "accepted"]
+      },
+      "then": {
+        "properties": {
+          "mismatches": { "maxItems": 0 },
+          "stale_reasons": { "maxItems": 0 },
+          "current_outcome_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

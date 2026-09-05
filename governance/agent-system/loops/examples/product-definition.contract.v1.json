@@ -1,0 +1,285 @@
+{
+  "contract_version": "1.0.0",
+  "run_id": "run_product_definition_example",
+  "created_at": "2026-08-27T12:00:00Z",
+  "created_by": {
+    "id": "example-product-agent",
+    "kind": "agent",
+    "provider": "replaceable",
+    "model": "unspecified"
+  },
+  "loop_profile": {
+    "id": "product-definition",
+    "version": "1.0.0",
+    "path": "governance/agent-system/loops/product-definition.v1.json"
+  },
+  "task": {
+    "title": "Prioritize and define one benchmark-grounded product journey",
+    "objective": "Resolve applicable category-baseline outcomes before defining a measurable ChopDot differentiator or bounded experiment, then create a comparative priority verdict and state-scoped outcome contract with honest E1, E2, and E3 evidence boundaries.",
+    "deliverable": "ProductDefinitionPacketV1"
+  },
+  "intent_type": "product_definition",
+  "requirement_ids": [
+    "PROD-BASELINE",
+    "PROD-EVIDENCE",
+    "PROD-LAYERING",
+    "PROD-SCORE",
+    "PROD-LAW",
+    "PROD-TRACE",
+    "PROD-FAILURE",
+    "PROD-INDEPENDENT",
+    "PROD-OUTCOME-CONTRACT",
+    "PROD-CONTEXT",
+    "PROD-COMPARE"
+  ],
+  "artifact_contract": {
+    "artifact_types": ["ProductDefinitionPacketV1"],
+    "required_paths": ["artifacts/agentops/outcomes/example/product-definition.json"],
+    "format": "json",
+    "version": "1.0.0",
+    "hash_algorithm": "sha256"
+  },
+  "expected_outcome": {
+    "statement": "The selected package resolves every applicable category-baseline ID before differentiation or experiments, preserves benchmark evidence grades, is independently assessed and comparatively justified, remains scoped to one observed state, satisfies the product gate and product law, and maps every requirement to a scenario and proof.",
+    "assertions": [
+      {
+        "id": "PROD-BASELINE",
+        "description": "Unresolved required category-baseline count is zero.",
+        "subject": "unresolved_required_baseline_count",
+        "operator": "count_equals",
+        "expected": 0,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-EVIDENCE",
+        "description": "Benchmark evidence overclaim count is zero.",
+        "subject": "benchmark_evidence_overclaim_count",
+        "operator": "count_equals",
+        "expected": 0,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-LAYERING",
+        "description": "Product layer violation count is zero.",
+        "subject": "product_layer_violation_count",
+        "operator": "count_equals",
+        "expected": 0,
+        "minimum_evidence_level": "unit",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-SCORE",
+        "description": "Product score is at least eight and is not baseline, evidence, implementation, or ranking proof.",
+        "subject": "product_score",
+        "operator": "count_gte",
+        "expected": 8,
+        "minimum_evidence_level": "unit",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-LAW",
+        "description": "Product law conflict count is zero.",
+        "subject": "product_law_conflict_count",
+        "operator": "count_equals",
+        "expected": 0,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-TRACE",
+        "description": "Unmapped requirement count is zero.",
+        "subject": "unmapped_requirement_count",
+        "operator": "count_equals",
+        "expected": 0,
+        "minimum_evidence_level": "unit",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-FAILURE",
+        "description": "User-visible failure, recovery, and baseline fallback are complete.",
+        "subject": "failure_path_complete",
+        "operator": "truthy",
+        "expected": true,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-INDEPENDENT",
+        "description": "Independent first view is complete before Cockpit comparison.",
+        "subject": "independent_first_view_complete",
+        "operator": "truthy",
+        "expected": true,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-OUTCOME-CONTRACT",
+        "description": "Priority outcome contract is complete.",
+        "subject": "priority_outcome_contract_complete",
+        "operator": "truthy",
+        "expected": true,
+        "minimum_evidence_level": "unit",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-CONTEXT",
+        "description": "Action scope is contextual rather than universal.",
+        "subject": "contextual_action_scope_valid",
+        "operator": "truthy",
+        "expected": true,
+        "minimum_evidence_level": "unit",
+        "hard_fail": true
+      },
+      {
+        "id": "PROD-COMPARE",
+        "description": "At least two eligible alternatives are explicitly compared.",
+        "subject": "compared_alternative_count",
+        "operator": "count_gte",
+        "expected": 2,
+        "minimum_evidence_level": "source-only",
+        "hard_fail": true
+      }
+    ]
+  },
+  "scope": {
+    "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+    "branch": "codex/chopdot-v1-launch",
+    "starting_head": "15fd49de78121a08e07e76c6fee91ef3850bb18d",
+    "starting_tree": "e286af77fe9970a2c020ca713e9c648172d1429b",
+    "in_paths": ["product"],
+    "out_paths": ["src"],
+    "dirty_paths": ["product/benchmark-baseline.md", "product/cards.md"]
+  },
+  "authority": {
+    "policy_ref": "governance/agent-system/policies/authority-boundaries.json",
+    "allowed_reads": ["product law", "category benchmark baseline", "Product Cockpit", "cited E1, E2, and E3 evidence"],
+    "allowed_writes": ["product"],
+    "allowed_tools": ["shell_read", "product_validator", "agent_validator"],
+    "external_effects": ["none"],
+    "required_approvals": ["founder approval for product-law, strategy, or intentional category-baseline exclusion changes"]
+  },
+  "context": {
+    "governing_sources": [
+      {
+        "path": "PRODUCT_TRUTH.md",
+        "sha256": "d5ea94b3b89f682d7b7ab76f580102316c25b0366c52b9b5a851a5ab7162bba6",
+        "authority_level": "product_law",
+        "observed_at": "2026-08-27T12:00:00Z"
+      },
+      {
+        "path": "product/benchmark-baseline.md",
+        "sha256": "eb0bad42e37a3d6b61ca98414dfc03ff123a0c67c016ee612aab7b6b54c76b50",
+        "authority_level": "guardrail",
+        "observed_at": "2026-08-27T12:00:00Z"
+      },
+      {
+        "path": "product/cards.md",
+        "sha256": "66a06e95c9af39c0e0517c3ddd36e738d86f81474c4afa7e360bd8bc8b7c9873",
+        "authority_level": "decision",
+        "observed_at": "2026-08-27T12:00:00Z"
+      }
+    ],
+    "max_age_seconds": 86400,
+    "conflict_policy": "block_same_level_conflict",
+    "wrong_root_policy": "fail_closed"
+  },
+  "architecture": {
+    "mode": "evaluator_optimizer",
+    "justification": "A product author and independent product evaluator are adequate for one bounded baseline-first journey definition."
+  },
+  "budgets": {
+    "max_iterations": 2,
+    "max_retries": 1,
+    "max_wall_seconds": 3600,
+    "max_tool_calls": 50,
+    "max_model_cost_usd": 10,
+    "max_external_cost_usd": 0
+  },
+  "evaluator": {
+    "rubric_refs": ["governance/agent-system/evals/rubrics/product-definition.v1.json"],
+    "deterministic_commands": [
+      {
+        "id": "PROD-BENCHMARK-SEMANTICS",
+        "command": "node scripts/agent-system/benchmark-semantics.mjs --packet artifacts/agentops/outcomes/example/product-definition.json --type product-definition",
+        "cwd": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+        "expected_exit_code": 0,
+        "timeout_seconds": 120
+      },
+      {
+        "id": "PROD-VALIDATE",
+        "command": "npm run product:validate",
+        "cwd": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+        "expected_exit_code": 0,
+        "timeout_seconds": 120
+      },
+      {
+        "id": "PROD-AGENT-VALIDATE",
+        "command": "npm run agent:validate",
+        "cwd": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+        "expected_exit_code": 0,
+        "timeout_seconds": 120
+      }
+    ],
+    "reviewer_independence": "different_actor",
+    "pass_threshold": 0.9,
+    "hard_fail_assertion_ids": [
+      "PROD-BASELINE",
+      "PROD-EVIDENCE",
+      "PROD-LAYERING",
+      "PROD-SCORE",
+      "PROD-LAW",
+      "PROD-TRACE",
+      "PROD-FAILURE",
+      "PROD-INDEPENDENT",
+      "PROD-OUTCOME-CONTRACT",
+      "PROD-CONTEXT",
+      "PROD-COMPARE"
+    ]
+  },
+  "environment_observations": [
+    {
+      "id": "PROD-BENCHMARK",
+      "surface": "Exact product benchmark baseline and cited source register",
+      "required_readback": ["baseline requirement IDs", "row treatments", "evidence grades", "E2 gaps", "freshness result"],
+      "minimum_evidence_level": "source-only"
+    },
+    {
+      "id": "PROD-COCKPIT",
+      "surface": "Product Cockpit source and generated read model",
+      "required_readback": ["independent first view", "active card", "audience and action scope", "benchmark requirement IDs", "benchmark evidence state", "differentiated outcome", "priority outcome contract", "alternatives not now", "validation result"],
+      "minimum_evidence_level": "exact-candidate"
+    }
+  ],
+  "failure_outcome": {
+    "required_fields": [
+      "rejected_assumptions",
+      "missing_baseline_requirement_ids",
+      "unresolved_baseline_dispositions",
+      "benchmark_evidence_overclaims",
+      "open_e2_evidence_gaps",
+      "unresolved_product_decision",
+      "missing_priority_evidence",
+      "missing_failure_path",
+      "founder_decision_required"
+    ],
+    "same_blocker_limit": 2,
+    "continuation_required": true
+  },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_policy": {
+    "port_version": "1.0.0",
+    "preflight_required": true,
+    "record_outcome": true,
+    "verify_recall": true,
+    "degraded_context_allowed": false,
+    "disallowed_fallbacks": ["cross_root", "stale_product_context", "missing_benchmark_baseline"]
+  },
+  "privacy_policy": {
+    "prohibited_content": ["credentials", "participant private data", "unredacted third-party account data"],
+    "redaction_required": true,
+    "retention": "promote_redacted_outcome",
+    "export_policy": "redacted_only"
+  }
+}

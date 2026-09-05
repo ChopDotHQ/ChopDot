@@ -1,0 +1,5 @@
+Command: node --import tsx --test tests/candidate-batch3-recovery.test.ts
+Captured: 2026-08-13T10:55:10Z
+Result: PASS
+Tests: 6 passed, 0 failed
+Coverage: encrypted signed-event checkpoint; same-account recreation beyond 300 seconds; full-versus-checkpoint replay hash equality; wrong account; tamper; stale key and locator rollback; compaction prefix; replay rejection; persistent archive/locator/outbox/inbox; key rotation; immutable close.

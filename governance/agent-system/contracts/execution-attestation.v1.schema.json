@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/governance/agent-system/contracts/execution-attestation.v1.schema.json",
+  "title": "Execution Attestation V1",
+  "type": "object",
+  "required": ["attestation_version", "attestation_id", "provider", "audience", "oidc_jwt", "candidate", "workflow_run", "evaluated_at"],
+  "properties": {
+    "attestation_version": { "const": "1.0.0" },
+    "attestation_id": { "type": "string", "pattern": "^execution_attestation_[a-z0-9]{12}$" },
+    "provider": { "const": "github-actions-oidc" },
+    "audience": { "const": "chopdot-agent-evaluation" },
+    "oidc_jwt": { "type": "string", "pattern": "^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$" },
+    "candidate": {
+      "type": "object",
+      "required": ["root", "branch", "commit", "tree", "git_status"],
+      "properties": {
+        "root": { "type": "string", "pattern": "^/" },
+        "branch": { "type": "string", "minLength": 1 },
+        "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "git_status": { "type": "array", "maxItems": 0 }
+      },
+      "additionalProperties": false
+    },
+    "workflow_run": {
+      "type": "object",
+      "required": ["repository", "run_id", "run_attempt", "check_run_id", "event_name", "workflow_ref", "actor", "ref", "sha", "environment", "subject"],
+      "properties": {
+        "repository": { "const": "ChopDotHQ/ChopDot" },
+        "run_id": { "type": "string", "pattern": "^[1-9][0-9]*$" },
+        "run_attempt": { "type": "string", "pattern": "^[1-9][0-9]*$" },
+        "check_run_id": { "type": "string", "pattern": "^[1-9][0-9]*$" },
+        "event_name": { "enum": ["pull_request", "workflow_dispatch"] },
+        "workflow_ref": { "type": "string", "pattern": "^ChopDotHQ/ChopDot/\\.github/workflows/agent-governance\\.yml@" },
+        "actor": { "type": "string", "minLength": 1 },
+        "ref": { "type": "string", "minLength": 1 },
+        "sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "environment": { "type": ["string", "null"] },
+        "subject": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "evaluated_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

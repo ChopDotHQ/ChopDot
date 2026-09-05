@@ -1,0 +1,36 @@
+{
+  "profile_version": "1.0.0",
+  "profile_id": "release-outcome",
+  "profile_digest": "5d11a1fb84c4d145de0025bf530521a0ed8c222915d9370815a960dc064f9f7e",
+  "kind": "agent_loop_profile",
+  "description": "Produces one immutable candidate and separately verified stage, promotion, reachability, ownership, rollback, and real-user verdicts.",
+  "contract_schema_ref": "../contracts/agent-loop-contract.v1.schema.json",
+  "artifact_contract": {
+    "artifact_types": ["ReleaseCandidateV1", "ReleaseEvidencePacketV1"],
+    "required_fields": ["commit", "tree", "lockfiles", "build_id", "manifest", "candidate_digest", "car_or_artifact_digest", "content_identity", "stage_readback", "promotion_readback", "ownership_readback", "rollback_identity", "user_proof_status"],
+    "required_evidence_level": "release"
+  },
+  "expected_outcome": {
+    "statement": "The exact same independently reviewed bytes are staged and promoted, every required surface reads back the expected candidate and owner, and live smoke and real-user proof remain separate verdicts.",
+    "assertions": [
+      { "id": "REL-CLEAN", "description": "The candidate is built from the declared clean commit and tree with pinned lockfiles.", "measurement": "candidate_clean_identity", "operator": "truthy", "expected": true, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+      { "id": "REL-DETERMINISTIC", "description": "A clean rebuild produces the identical release artifact digest.", "measurement": "rebuild_digest", "operator": "sha256_equals", "expected": "candidate_digest", "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+      { "id": "REL-BYTES", "description": "Stage and promotion read back the exact same candidate content identity.", "measurement": "stage_promotion_content_identity_equal", "operator": "truthy", "expected": true, "minimum_evidence_level": "real-host-chain", "hard_fail": true },
+      { "id": "REL-SURFACES", "description": "Every required public-testnet surface reads back the expected build and content identity.", "measurement": "failed_required_surface_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "release", "hard_fail": true },
+      { "id": "REL-EFFECTS", "description": "No candidate effect remains unknown or unreconciled.", "measurement": "unknown_effect_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "real-host-chain", "hard_fail": true },
+      { "id": "REL-USER", "description": "Reachability and real-participant user proof are stored as independent booleans.", "measurement": "user_proof_dimensions_separate", "operator": "truthy", "expected": true, "minimum_evidence_level": "live-user", "hard_fail": true }
+    ]
+  },
+  "context_gate": { "exact_root": true, "freshness_required": true, "same_level_conflict": "blocked", "wrong_root": "blocked" },
+  "policy_refs": { "authority": "agent-authority-boundaries-v1", "evidence": "agent-evidence-levels-v1", "terminal_states": "agent-terminal-states-v1", "retry_budgets": "agent-retry-budgets-v1" },
+  "authority": { "default_class": "critical_external_effect", "allowed_effects": ["build_candidate", "preview_candidate", "stage_candidate", "promote_candidate", "readback_release", "rollback_release", "transfer_name"], "approval_required_effects": ["credential_use", "stage_candidate", "promote_candidate", "rollback_release", "transfer_name"], "critical_independent_review": true },
+  "budgets": { "retry_budget_id": "budget-release-outcome-v1", "max_iterations": 1, "max_retries": 0, "same_blocker_limit": 1 },
+  "evaluator": { "rubric_path": "governance/agent-system/evals/rubrics/release-outcome.v1.json", "deterministic_checks": ["clean_candidate_check", "deterministic_rebuild", "artifact_identity_check", "effect_reconciliation_check", "live_surface_readback", "ownership_readback"], "independence": "different_actor", "pass_threshold": 1, "hard_failures": ["REL-CLEAN", "REL-DETERMINISTIC", "REL-BYTES", "REL-SURFACES", "REL-EFFECTS", "REL-USER"] },
+  "evidence": { "minimum_level": "release", "required_artifacts": ["release_manifest", "candidate_digest", "stage_readback", "promotion_readback", "ownership_readback", "rollback_identity", "user_proof_status"], "exact_counts_required": true, "candidate_identity_required": true },
+  "environment_observations": ["clean build environment", "local and real host preview", "stage readback", "promotion readback", "ownership readback", "real participant journey"],
+  "failure_packet": { "artifact_type": "BlockerPacketV1", "required_fields": ["last_known_safe_release", "failed_stage_or_surface", "candidate_identity", "rollback_or_forward_fix", "approval_requirement"], "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_preflight": { "port": "KnowledgeContextPortV1", "preflight_required": true, "record_outcome": true, "verify_recall": true, "provider_neutral": true },
+  "repair_policy": { "changed_hypothesis_required": true, "scope_expansion": "new_contract", "same_blocker_limit": 1, "regression_required": true },
+  "example_contract_ref": "examples/release-outcome.contract.v1.json"
+}

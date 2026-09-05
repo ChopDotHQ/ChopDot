@@ -1,0 +1,21 @@
+{
+  "policy_version": "1.0.0",
+  "policy_id": "agent-retry-budgets-v1",
+  "kind": "retry_budget_policy",
+  "budgets": [
+    { "id": "budget-research-v1", "profile_id": "research", "max_iterations": 2, "max_retries": 1, "same_blocker_limit": 2, "independent_rechecks": 1 },
+    { "id": "budget-product-definition-v1", "profile_id": "product-definition", "max_iterations": 2, "max_retries": 1, "same_blocker_limit": 2, "independent_rechecks": 1 },
+    { "id": "budget-implementation-v1", "profile_id": "implementation", "max_iterations": 3, "max_retries": 2, "same_blocker_limit": 3, "independent_rechecks": 1 },
+    { "id": "budget-ux-creation-v1", "profile_id": "ux-creation", "max_iterations": 3, "max_retries": 2, "same_blocker_limit": 2, "independent_rechecks": 1 },
+    { "id": "budget-security-authority-v1", "profile_id": "security-authority", "max_iterations": 3, "max_retries": 2, "same_blocker_limit": 2, "independent_rechecks": 1 },
+    { "id": "budget-incident-repair-v1", "profile_id": "incident-repair", "max_iterations": 3, "max_retries": 2, "same_blocker_limit": 3, "independent_rechecks": 1 },
+    { "id": "budget-release-outcome-v1", "profile_id": "release-outcome", "max_iterations": 1, "max_retries": 0, "same_blocker_limit": 1, "independent_rechecks": 1 }
+  ],
+  "consumption_rules": [
+    "Every repair consumes one iteration.",
+    "Repeating an action without a changed hypothesis consumes one retry and is not progress.",
+    "Scope expansion requires a new contract and does not reset the current run.",
+    "A source or byte change in a release requires a new candidate and run.",
+    "At the same-blocker limit, terminate blocked with a continuation packet."
+  ]
+}

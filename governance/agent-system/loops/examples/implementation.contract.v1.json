@@ -1,0 +1,29 @@
+{
+  "contract_version": "1.0.0",
+  "run_id": "run_implementation_example",
+  "created_at": "2026-08-26T12:00:00Z",
+  "created_by": { "id": "example-implementation-agent", "kind": "agent", "provider": "replaceable", "model": "unspecified" },
+  "loop_profile": { "id": "implementation", "version": "1.0.0", "path": "governance/agent-system/loops/implementation.v1.json" },
+  "task": { "title": "Implement one bounded contract", "objective": "Create one in-scope patch with focused tests, production proof, and clean evidence.", "deliverable": "ImplementationPatchV1" },
+  "intent_type": "implementation",
+  "requirement_ids": ["IMPL-REQUIREMENTS", "IMPL-FOCUSED", "IMPL-PRODUCTION", "IMPL-SCOPE", "IMPL-CRITICAL"],
+  "artifact_contract": { "artifact_types": ["ImplementationPatchV1", "TestEvidencePacketV1"], "required_paths": ["governance/agent-system", "artifacts/agentops/outcomes/example/implementation.json"], "format": "mixed", "version": "1.0.0", "hash_algorithm": "sha256" },
+  "expected_outcome": { "statement": "Every implementation requirement passes focused and applicable production checks with zero unattributed paths or critical regressions.", "assertions": [
+    { "id": "IMPL-REQUIREMENTS", "description": "Unaccepted requirement count is zero.", "subject": "unaccepted_requirement_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "unit", "hard_fail": true },
+    { "id": "IMPL-FOCUSED", "description": "Focused test failure count is zero.", "subject": "focused_test_failure_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "unit", "hard_fail": true },
+    { "id": "IMPL-PRODUCTION", "description": "Production entrypoint status is accepted.", "subject": "production_entrypoint_status", "operator": "one_of", "expected": ["passed", "not_applicable_by_rule"], "minimum_evidence_level": "simulated-integration", "hard_fail": true },
+    { "id": "IMPL-SCOPE", "description": "Unattributed out-of-scope path count is zero.", "subject": "unattributed_out_of_scope_path_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true },
+    { "id": "IMPL-CRITICAL", "description": "Critical regression count is zero.", "subject": "critical_regression_count", "operator": "count_equals", "expected": 0, "minimum_evidence_level": "exact-candidate", "hard_fail": true }
+  ] },
+  "scope": { "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "branch": "codex/chopdot-v1-launch", "starting_head": "74d81cba8edd7200246b837c5a31ec4f00456409", "starting_tree": "fc000c64fe3eeb0362ac11905d0d6afaadfb74c9", "in_paths": ["governance/agent-system"], "out_paths": ["PRODUCT_TRUTH.md", "src"], "dirty_paths": ["docs/superpowers/plans/2026-08-26-portable-agent-outcome-system.md"] },
+  "authority": { "policy_ref": "governance/agent-system/policies/authority-boundaries.json", "allowed_reads": ["repo", "tests"], "allowed_writes": ["governance/agent-system"], "allowed_tools": ["apply_patch", "shell", "test_runner"], "external_effects": ["none"], "required_approvals": ["commit push or external action not in active envelope"] },
+  "context": { "governing_sources": [{ "path": "docs/CHOPDOT_OPERATING_LOOPS.md", "sha256": "766bce5ebb4c9ab6a80914be21795d93a06c1dc32c3ba4c9219eba23a76b56e9", "authority_level": "guardrail", "observed_at": "2026-08-26T12:00:00Z" }], "max_age_seconds": 86400, "conflict_policy": "block_same_level_conflict", "wrong_root_policy": "fail_closed" },
+  "architecture": { "mode": "orchestrator_workers", "justification": "Independent file ownership plus one integrator matches the bounded parallel implementation package." },
+  "budgets": { "max_iterations": 3, "max_retries": 2, "max_wall_seconds": 10800, "max_tool_calls": 200, "max_model_cost_usd": 30, "max_external_cost_usd": 0 },
+  "evaluator": { "rubric_refs": ["governance/agent-system/evals/rubrics/implementation.v1.json"], "deterministic_commands": [{ "id": "IMPL-VALIDATE", "command": "node scripts/agent-system/cli.mjs validate --json", "cwd": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch", "expected_exit_code": 0, "timeout_seconds": 120 }], "reviewer_independence": "different_actor", "pass_threshold": 0.9, "hard_fail_assertion_ids": ["IMPL-REQUIREMENTS", "IMPL-FOCUSED", "IMPL-PRODUCTION", "IMPL-SCOPE", "IMPL-CRITICAL"] },
+  "environment_observations": [{ "id": "IMPL-WORKTREE", "surface": "exact worktree and applicable production entrypoint", "required_readback": ["root", "branch", "HEAD", "tree", "status", "test counts"], "minimum_evidence_level": "exact-candidate" }],
+  "failure_outcome": { "required_fields": ["failed_assertions", "exact_test_counts", "partial_artifact_hashes", "dirty_path_attribution", "single_next_bounded_task"], "same_blocker_limit": 3, "continuation_required": true },
+  "terminal_states": ["succeeded", "failed_verification", "blocked", "approval_required", "budget_exhausted", "cancelled"],
+  "knowledge_policy": { "port_version": "1.0.0", "preflight_required": true, "record_outcome": true, "verify_recall": true, "degraded_context_allowed": true, "disallowed_fallbacks": ["cross_root"] },
+  "privacy_policy": { "prohibited_content": ["credentials", "secrets", "private prompts", "unredacted personal data"], "redaction_required": true, "retention": "promote_redacted_outcome", "export_policy": "redacted_only" }
+}

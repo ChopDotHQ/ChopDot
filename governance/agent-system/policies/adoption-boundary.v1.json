@@ -1,0 +1,80 @@
+{
+  "policy_version": "1.0.0",
+  "default_disposition": "governed",
+  "authority": "This policy controls acceptance routing only. It cannot change product law, participant authority, release evidence, or approval requirements.",
+  "surfaces": {
+    "task_start": {
+      "promotion": "prohibited"
+    },
+    "product_finish": {
+      "promotion": "governed-acceptance-only"
+    },
+    "pr_merge": {
+      "promotion": "governed-acceptance-only"
+    },
+    "release": {
+      "promotion": "governed-acceptance-only"
+    }
+  },
+  "path_rules": [
+    {
+      "id": "product-law",
+      "paths": ["PRODUCT_TRUTH.md"],
+      "allowed_profiles": ["product-definition"],
+      "minimum_evidence_level": "exact-candidate",
+      "approval": "founder-product-authority"
+    },
+    {
+      "id": "product-cockpit",
+      "prefixes": ["product/"],
+      "allowed_profiles": ["product-definition", "ux-creation", "implementation", "incident-repair"],
+      "minimum_evidence_level": "exact-candidate"
+    },
+    {
+      "id": "user-experience",
+      "prefixes": ["src/components/", "src/pages/", "tests/"],
+      "allowed_profiles": ["ux-creation", "implementation", "security-authority", "incident-repair"],
+      "minimum_evidence_level": "simulated-integration"
+    },
+    {
+      "id": "authority-security",
+      "prefixes": ["src/membership/", "src/recovery/", "src/payments/", "src/state/", "contracts/", "server/"],
+      "allowed_profiles": ["implementation", "security-authority", "incident-repair"],
+      "minimum_evidence_level": "exact-candidate"
+    },
+    {
+      "id": "agent-governance",
+      "prefixes": ["governance/agent-system/", "scripts/agent-system/", "scripts/agent-governance/", ".github/", ".githooks/"],
+      "allowed_profiles": ["implementation", "security-authority", "incident-repair"],
+      "minimum_evidence_level": "exact-candidate"
+    },
+    {
+      "id": "release",
+      "prefixes": ["deployment/"],
+      "filename_prefixes": ["scripts/record-dot-host-", "scripts/readback-dot-host-", "scripts/prepare-dot-host-release", "scripts/verify-dot-host", "scripts/recovery-head-deployment"],
+      "allowed_profiles": ["release-outcome", "security-authority", "incident-repair"],
+      "minimum_evidence_level": "release"
+    },
+    {
+      "id": "documentation-research",
+      "prefixes": ["docs/", "README.md", "AGENTS.md", "PROJECT_DIRECTIVES.md"],
+      "allowed_profiles": ["research", "product-definition", "implementation", "security-authority", "incident-repair", "release-outcome"],
+      "minimum_evidence_level": "source-only"
+    },
+    {
+      "id": "repository-default",
+      "prefixes": [""],
+      "allowed_profiles": ["research", "product-definition", "implementation", "ux-creation", "security-authority", "incident-repair", "release-outcome"],
+      "minimum_evidence_level": "unit"
+    }
+  ],
+  "non_promotable_prefixes": [
+    "output/",
+    "artifacts/",
+    "dist/",
+    "dist-dot-host/",
+    "node_modules/"
+  ],
+  "required_knowledge_operations": ["record_outcome", "verify_recall"],
+  "verdicts": ["governed", "ungoverned", "unverified"]
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "kind": "corrected_four_file_contact_suite",
+  "executed_at": "2026-08-23T12:20:27.382Z",
+  "cwd": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+  "command": "/opt/homebrew/Cellar/node/24.1.0/bin/node --experimental-transform-types --test src/contacts/verifiedContact.test.ts src/contacts/verifiedContactLink.test.ts src/contacts/verifiedContactRepository.test.ts src/contacts/verifiedContactCeremonyService.test.ts",
+  "node_version": "v24.1.0",
+  "test_files": 4,
+  "tests": 8,
+  "passed": 8,
+  "failed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "todo": 0,
+  "exit_code": 0,
+  "status": "pass",
+  "runner_correction": "The four files use node:test. Node's --experimental-transform-types mode handles their TypeScript parameter properties without resolving tsx from another checkout."
+}

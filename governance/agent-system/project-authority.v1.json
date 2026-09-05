@@ -1,0 +1,59 @@
+{
+  "profile_version": "1.0.0",
+  "kind": "project_authority_profile",
+  "repository": "ChopDotHQ/ChopDot",
+  "identity_mode": "delegated-owner-principal",
+  "human_owner": {
+    "type": "User",
+    "login": "Devpen787",
+    "id": 23641846
+  },
+  "agent_principal": {
+    "acts_as": "human_owner"
+  },
+  "independent_human_review_required": false,
+  "surfaces": {
+    "branch_merge": {
+      "required_approving_review_count": 0,
+      "require_code_owner_review": false,
+      "require_last_push_approval": false,
+      "required_review_thread_resolution": true,
+      "required_status_checks": [
+        "Agent contract",
+        "Agent runner",
+        "Knowledge adapters",
+        "Repo governance",
+        "Application fast assurance",
+        "PR outcome"
+      ]
+    },
+    "pr_acceptance": {
+      "required_reviewers": [],
+      "independent_human_review_required": false,
+      "branch_patterns": [
+        "codex/*"
+      ]
+    },
+    "release": {
+      "environment": "public-testnet-release",
+      "required_reviewers": [],
+      "independent_human_review_required": false,
+      "branches": [
+        "codex/chopdot-v1-launch",
+        "main"
+      ]
+    }
+  },
+  "environments": {
+    "public-testnet-release": {
+      "purpose": "release",
+      "required_reviewers": [],
+      "prevent_self_review": false,
+      "can_admins_bypass": false,
+      "branches": [
+        "codex/chopdot-v1-launch",
+        "main"
+      ]
+    }
+  }
+}

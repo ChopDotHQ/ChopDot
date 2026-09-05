@@ -1,0 +1,71 @@
+{
+  "schema": "chopdot.recovery-head-index-deployment.v1",
+  "environment": "paseo-next-v2",
+  "label": "Paseo Next v2 Asset Hub",
+  "assetHubWss": "wss://paseo-asset-hub-next-rpc.polkadot.io",
+  "ethRpc": "https://eth-rpc-paseo-next.polkadot.io",
+  "environmentIdentity": "environment-specific DotNS code set read through the same ETH RPC endpoint",
+  "endpointCodeAnchorSha256": "88081a51748318a27932289130264663647e06dccac8626e76937652b4d4a7b1",
+  "endpointCodeAnchors": {
+    "DOTNS_CONTENT_RESOLVER": {
+      "address": "0x7F74D7CD50f5a834270E2ad395a01b01891AB37d",
+      "bytes": 130,
+      "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"
+    },
+    "DOTNS_PROTOCOL_REGISTRY": {
+      "address": "0xD19e3D0C97CF501125a04A97405e3e6592fa846E",
+      "bytes": 130,
+      "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"
+    },
+    "DOTNS_REGISTRAR": {
+      "address": "0x4f06E818Ba3d987704fd91cf3d868E4b019106Ab",
+      "bytes": 130,
+      "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"
+    },
+    "DOTNS_REGISTRAR_CONTROLLER": {
+      "address": "0xBdaA01bD1bA67d709F2b1fF286Da0d854977EA30",
+      "bytes": 130,
+      "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"
+    },
+    "DOTNS_REGISTRY": {
+      "address": "0xf34054fd76BbF85f216cf9908226D5f0A72E50CA",
+      "bytes": 130,
+      "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"
+    },
+    "DOTNS_RESOLVER": {
+      "address": "0xbd1165E549DF96F083c0A16f61590927bC187009",
+      "bytes": 130,
+      "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"
+    },
+    "POP_RULES": {
+      "address": "0x747B456bE03aec0b42bd85C51513730FBD45DA31",
+      "bytes": 130,
+      "sha256": "62a5886bbc976bdad8a7b95032fd6aa8c1988fc64034467641501637d5ea70ef"
+    },
+    "STORE_FACTORY": {
+      "address": "0x709A027F446a9e2a4BB9cb9a9c754435b19e32B7",
+      "bytes": 4858,
+      "sha256": "ae006f01fa35e6c80f5022184009922163117b7fb6187be8850dac4e78404e9b"
+    }
+  },
+  "assetHubGenesis": "0x23e730eb1c6fecae09c917439a5038cb6122d0d48980e8b9bbf0ff56f94a2ca6",
+  "chainName": "Paseo Asset Hub Next",
+  "chainId": 420420417,
+  "paraId": 1500,
+  "pvmBytecodeSha256": "f73520ea129a07dc5827ce3826fb730930ce4a2a2081bb7b5a3665c243b2b9b2",
+  "pvmBytecodeBytes": 5561,
+  "compilerManifestSha256": "2302b5050a52aef067ea6b63a6cb5067f475d7a7c0ef031e9c8ac9ff5b3205ff",
+  "sourceSha256": "2da5178aaa0066512f5e742b43d46597665d474f251e9b860b48a247322781cb",
+  "abiSha256": "fdd95bedb42457a020f387b430f0e1d861efaa5204119069b8b56d5ca9ec42b1",
+  "buildInputsSha256": "86d645e9f5247dcca97c7cb033cce9bf7a7035ba766be9432c9a1878158e4ae0",
+  "artifactSetSha256": "5be85f677aca6279f4a0f4e04e9b389855805a40141e75076eaabe95734f5af9",
+  "address": "0xaD2DaC1E4d41260677e565Fb8Eb1810e13ca5c69",
+  "signerAddress": "0x535C2C5E81b7e4a6eD4b7D062EBbC851553EE9C9",
+  "transactionHash": "0xaba6281c9220064fa0b01d9dd08231583efcf67cd100815e035b9d8d8546fb05",
+  "blockNumber": 518094,
+  "blockHash": "0xb90cea3e5d84a28e17c9011c8682b0bfc70a978b74bd289603caec47bc4a91ad",
+  "gasUsed": "823110",
+  "readbackBytecodeSha256": "f73520ea129a07dc5827ce3826fb730930ce4a2a2081bb7b5a3665c243b2b9b2",
+  "readbackBytes": 5561,
+  "recordedAt": "2026-08-24T09:53:00.273Z"
+}

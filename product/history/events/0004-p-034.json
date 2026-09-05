@@ -1,0 +1,27 @@
+{
+  "schema": "chopdot.product.checkpoint.v2",
+  "sequence": 4,
+  "state": "checkpoint",
+  "cards": [
+    "P-034"
+  ],
+  "summary": "P-034 immutable closeout successors passed independent review; Gate 9 remains building",
+  "evidence": "docs/release/2026-08-27-p034-closeout-successor-authority.md",
+  "evidenceQuality": "strong",
+  "evidenceSha256": "ea27d0d81e986d73b742892f0c706dcd9ea7c3fbb3451daf258ebcfb4b4894d1",
+  "source": "product/cards.md",
+  "sourceSha256": "4365a632f11c87bb004ec8426c819da9434d2b1dfa40b4dee7c85352a3f10621",
+  "git": {
+    "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
+    "branch": "codex/chopdot-v1-launch",
+    "head": "dbbede09c7f7d9ad4e082541ab754c87fdbe929f",
+    "tree": "ceafb4ffd9085fc61334a72d875b82d408e416be",
+    "dirtyPaths": [
+      "A  docs/release/2026-08-27-p034-closeout-successor-authority.md",
+      "M  docs/wiki/03-state-models/one-chop-core.md",
+      "M  docs/wiki/agent-context.generated.md",
+      "M  product/cards.md",
+      "M  product/context-authority.json"
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "chopdot.frozen-candidate-evidence.v1",
+  "kind": "measurement",
+  "status": "immutable-record",
+  "owner": "release-integrator",
+  "observed_at": "2026-09-04T08:33:18Z",
+  "applies_to": "chopdot-v1-launch",
+  "authority": "Immutable-byte reachability for the frozen candidate only; this is not promotion, ownership, user-journey, or usable-product proof.",
+  "supersedes": null,
+  "reobservation_of": {
+    "path": "docs/release/frozen-candidate-cd61093b-evidence.json",
+    "sha256": "6ecff7aed5f5b3e887fd3c1f6820a2e356c3da0fae2a08b7af310ede579ddb7e",
+    "original_observed_at": "2026-08-24T15:04:40Z"
+  },
+  "commit": "cd61093b2af158ca1ba08f26c84c732f30007d4d",
+  "tree": "3b4b2807ed02880fdc3fea060f576548fcdc1dcb",
+  "build_id": "chopdot-cd61093b2af1-68ce7c04192f",
+  "car_sha256": "b9fa8263b7f83c05a32547803078db1bbb47c232c5fc8d07b4f8f5657a34a6ae",
+  "outer_cid": "bafybeifuwlobydydh2ezprm57qix6s6xwnm47fy3u6zvsnghd27i6cdztq",
+  "inner_app_cid": "bafybeiejtx4iarex7lfsl6azal3dwx4xgrsxliwvxh7u4pgcdaz66wfrrq",
+  "readbacks": [
+    {
+      "surface": "paseo-pinned-direct-ipfs",
+      "url": "https://paseo-bulletin-next-ipfs.polkadot.io/ipfs/bafybeifuwlobydydh2ezprm57qix6s6xwnm47fy3u6zvsnghd27i6cdztq",
+      "observed_at": "2026-09-04T08:33:18Z",
+      "command": "curl --fail --location <url> --output <tmp>; wc -c <tmp>; shasum -a 256 <tmp>",
+      "fetch_count": 2,
+      "exit": 0,
+      "bytes": 2234529,
+      "sha256": "b9fa8263b7f83c05a32547803078db1bbb47c232c5fc8d07b4f8f5657a34a6ae",
+      "response": {
+        "status": "HTTP/2 200",
+        "content_length": 2234529,
+        "etag": "bafybeifuwlobydydh2ezprm57qix6s6xwnm47fy3u6zvsnghd27i6cdztq",
+        "x_ipfs_roots": "bafybeifuwlobydydh2ezprm57qix6s6xwnm47fy3u6zvsnghd27i6cdztq"
+      },
+      "matches_declared_bytes": true,
+      "matches_declared_sha256": true,
+      "matches_declared_cid": true,
+      "result": "pass"
+    }
+  ],
+  "observation_provenance": {
+    "observed_by": "operator-run readback from a session holding egress to the pinned gateway",
+    "not_observed_by": "the authoring session, whose egress policy refused CONNECT to paseo-bulletin-next-ipfs.polkadot.io:443",
+    "basis": "Two independent fetches returned identical byte counts and digests; etag and x-ipfs-roots both echo the declared outer CID, so the gateway served the addressed object rather than a redirect or error page."
+  },
+  "limits": [
+    "Byte reachability is not user-journey reachability; live first-use acceptance remains failed.",
+    "No DotNS promotion or ownership mutation is established by this record.",
+    "This record re-observes the frozen candidate only; it establishes nothing about any later commit.",
+    "The readback was not reproduced from the authoring session, which lacks egress to the pinned gateway."
+  ]
+}

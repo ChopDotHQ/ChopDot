@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-07-30T10:13:27.111Z",
+  "network": {
+    "rpcUrl": "https://services.polkadothub-rpc.com/testnet",
+    "chainId": 420420417
+  },
+  "payer": {
+    "id": "leo",
+    "name": "Leo",
+    "address": "0x6a6F9609C3798AaD382276cB7804e5E778996C6C"
+  },
+  "receiver": {
+    "id": "mina",
+    "name": "Mina",
+    "address": "0x7f7Ce4722c61C6616f5C47E905f42A1D02f18b3A"
+  },
+  "amountPas": "0.615",
+  "txHash": "0x47f289438ffaceaa1a59a93f34bbdf9ca3bc51a4fb2aac7f36df31f01fac3f7c",
+  "blockNumber": 11597974,
+  "balances": {
+    "before": {
+      "payer": "4999.422418127",
+      "receiver": "5000.418816864"
+    },
+    "after": {
+      "payer": "4998.806552288",
+      "receiver": "5001.033816864"
+    }
+  },
+  "verifier": {
+    "exactMatchConfirms": true,
+    "wrongAmountRejected": true,
+    "wrongReceiverRejected": true,
+    "wrongPayerRejected": true
+  },
+  "invariantHeld": true
+}

@@ -1,0 +1,22 @@
+{
+  "proofUrl": "https://chopdot-shell-proof.paseo.li/?chainBackend=rpc-gateway&developerChecks=1",
+  "capturedAt": "2026-07-15T15:19:25.966Z",
+  "report": {
+    "checkedAt": "2026-07-15T15:19:25.764Z",
+    "productId": "chopdot-shell-proof.dot",
+    "insideContainer": true,
+    "identity": {
+      "state": "needs_login",
+      "detail": "Host access has not been granted."
+    },
+    "sharedSession": {
+      "state": "available"
+    },
+    "payments": {
+      "state": "available"
+    },
+    "receiptArchive": {
+      "state": "available"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "observed_at": "2026-08-22T20:22:00Z",
+  "sources": [
+    {
+      "id": "paritytech_github_org_api",
+      "authority": "source_owner_metadata",
+      "url": "https://api.github.com/orgs/paritytech",
+      "digest": "cbc71dbf6e48b00a99f07c4740bf3dc33517a026ad7651bdd444b1d38cfceaa2",
+      "record_count": 775,
+      "verification_status": "verified"
+    },
+    {
+      "id": "dotmetrics_content_addressed_directory",
+      "authority": "application_owned_discovery_index",
+      "url": "https://devnet-ipfs.api.polkadotcommunity.foundation/ipfs/bafybeigpxrhnyqstly3r27do6kj2lnfmsuxjt72hbykpr2usbumysj6vde",
+      "digest": "d25adfd140a11959043215c96d5badc6381f44273262554b0c0787b79c17d30c",
+      "cid": "bafybeigpxrhnyqstly3r27do6kj2lnfmsuxjt72hbykpr2usbumysj6vde",
+      "record_count": 249,
+      "verification_status": "verified_discovery_only"
+    },
+    {
+      "id": "dotli_live_network_configuration",
+      "authority": "deployed_host_configuration",
+      "url": "https://dotmetrics.dev-dot.li/assets/network-ZU6sKueO.js",
+      "digest": "36c4ba37b7139c117efc28e31d00d8bf0d26db2169fc17852c7396c633576037",
+      "record_count": 1,
+      "verification_status": "verified_as_deployed"
+    }
+  ],
+  "outputs": {
+    "repository_snapshot": "docs/research/parity-repository-snapshots/2026-08-22T20-22-00Z.json",
+    "repository_snapshot_sha256": "a0a24125f8de78748e9f932298ac97229c09661dd49bf3cd385e58e3d114df27",
+    "registry_snapshot": "docs/research/devnet-registry-snapshots/2026-08-22T20-22-00Z.json",
+    "registry_snapshot_sha256": "7dd760070407595236b45e98c6fb2585211508968e3a8b1117282d4b89a9a98e"
+  },
+  "limitations": [
+    "GitHub metadata is exhaustive for the observed public organization universe but is not source-level verification.",
+    "DotMetrics records are a content-addressed discovery index; app descriptions are not implementation proof.",
+    "Default-branch commit pinning and source-level donor audits are recorded separately."
+  ]
+}

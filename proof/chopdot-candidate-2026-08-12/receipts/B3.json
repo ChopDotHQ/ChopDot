@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 2,
+  "batch": "B3",
+  "deliveryTrainId": "chopdot-functional-candidate-2026-08-12",
+  "runStartedAt": "2026-08-13T10:50:00Z",
+  "runCompletedAt": "2026-08-13T11:00:30Z",
+  "candidate": {
+    "id": "b3-2026-08-13T105000Z",
+    "head": "81e56801a059253ca3daf667251239d4776e96f4",
+    "tree": "0cafbb78653dd80263599cb8533e5f150fa35a23e808f6ac20ef8f813c7bdc55",
+    "packageLockSha256": "27dc2921197845c57dbba6556dde28892eef098acd591e3542b30315245a1c6c",
+    "snapshotAt": "2026-08-13T10:49:30Z",
+    "clean": false
+  },
+  "controls": [
+    {"id":"B3-M0-EXACT-MONEY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-M0-CONSERVATION","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-M0-CURRENCY-ISOLATION","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-M0-CANONICAL-EVENT","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-M0-CAUSAL-CONFLICT","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-M0-CORRECTION-REVERSAL","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-M0-MIGRATION-QUARANTINE","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-M0-PRIVACY-EXPORT","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-M0-CAPACITY-COST","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-M0-NON-CUSTODIAL","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-G0-ACCOUNT-BOUND-RECOVERY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-G0-KEY-ROTATION","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-CHECKPOINT-V1","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-CHECKPOINT-AUTHORITY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-VALIDATION","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-PERSISTENCE","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-REPLAY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-COMPACTION","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-ARCHIVE-SEAM","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-LOCATOR-DISCOVERY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-BEYOND-300S","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-OUTBOX-INBOX","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-IMMUTABLE-CLOSE","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-PLAIN-LANGUAGE","lane":"local","status":"PASS","evidence":[{"path":"test-results/b3-2026-08-13T105000Z/B3-EVIDENCE.md","sha256":"c80c28d25c3f536017d5b6c0f1e049ac742619b7301a9376e71f85d8c1c8f9eb","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"B3-LIVE-HOST-ENTROPY","lane":"live","status":"BLOCKED","evidence":[]},
+    {"id":"B3-LIVE-LOCATOR","lane":"live","status":"BLOCKED","evidence":[]},
+    {"id":"B3-LIVE-BEYOND-300S","lane":"live","status":"BLOCKED","evidence":[]}
+  ],
+  "commands": [
+    {"id":"b3-money-foundation","lane":"local","command":"node --import tsx --test tests/candidate-batch3-money-foundation.test.ts tests/candidate-batch3-money-migration.test.ts tests/candidate-batch3-money-convergence.test.ts","exitCode":0,"evidence":[{"path":"test-results/b3-2026-08-13T105000Z/commands/b3-money-foundation.txt","sha256":"15a41599720a6ab3df979bf6d6827d6fa104e92acadeaf708d0405c22f5fa982","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"b3-recovery","lane":"local","command":"node --import tsx --test tests/candidate-batch3-recovery.test.ts","exitCode":0,"evidence":[{"path":"test-results/b3-2026-08-13T105000Z/commands/b3-recovery.txt","sha256":"a76fa47f0fb9df46dd57dd4945d3cdff787ae4a3e8f07659d4a601c16e2f264f","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"b3-fresh-device-ui","lane":"local","command":"npx playwright test tests/candidate-batch3-fresh-device-recovery.spec.ts --config=playwright.host-sim.config.ts --workers=1","exitCode":0,"evidence":[{"path":"test-results/b3-2026-08-13T105000Z/commands/b3-fresh-device-ui.txt","sha256":"a6cc4fb37a18e464fc27e44d21ea405cb9c51be2804586db3685285372886238","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"b3-secret-boundary","lane":"local","command":"node --import tsx --test tests/candidate-batch3-secret-boundary.test.ts","exitCode":0,"evidence":[{"path":"test-results/b3-2026-08-13T105000Z/commands/b3-secret-boundary.txt","sha256":"d7a56b89e9f5354e6dbd91fdcb5b452234a0255622644989ff1fdc5f5351ea67","capturedAt":"2026-08-13T11:00:30Z"}]},
+    {"id":"b3-live-recovery","lane":"live","command":"npx playwright test tests/candidate-batch3-live-recovery.spec.ts --config=playwright.live-dot.config.ts --workers=1","exitCode":1,"evidence":[]}
+  ],
+  "liveEnvironmentVerified": false,
+  "actionTimeApproval": false
+}

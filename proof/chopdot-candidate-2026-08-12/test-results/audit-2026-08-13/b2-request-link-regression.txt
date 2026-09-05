@@ -1,0 +1,12 @@
+✔ dot-host request links use the public host instead of the sandbox origin (2.130625ms)
+✔ payer packets reject a missing or malformed requester product account (0.503917ms)
+✔ products devnet request links use the supported wrapper instead of the app sandbox (0.265875ms)
+✔ expired payer packets are rejected (0.182584ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 194.617625

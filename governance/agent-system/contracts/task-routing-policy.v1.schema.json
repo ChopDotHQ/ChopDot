@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chopdot.dev/governance/agent-system/contracts/task-routing-policy.v1.schema.json",
+  "title": "Task Routing Policy V1",
+  "type": "object",
+  "required": ["policy_version", "policy_id", "kind", "authority", "domain_profiles", "minimum_risk", "critical_topics", "risk_rules", "time_and_proactive_default", "mutation_rule", "skill_rule", "retry_rule"],
+  "properties": {
+    "policy_version": { "const": "1.0.0" },
+    "policy_id": { "const": "agent-task-routing-v1" },
+    "kind": { "const": "task_routing_policy" },
+    "authority": { "type": "string", "minLength": 20 },
+    "domain_profiles": {
+      "type": "object",
+      "required": ["research", "product-definition", "implementation", "ux", "security-authority", "incident", "release"],
+      "properties": {
+        "research": { "const": "research" }, "product-definition": { "const": "product-definition" },
+        "implementation": { "const": "implementation" }, "ux": { "const": "ux-creation" },
+        "security-authority": { "const": "security-authority" }, "incident": { "const": "incident-repair" },
+        "release": { "const": "release-outcome" }
+      },
+      "additionalProperties": false
+    },
+    "minimum_risk": {
+      "type": "object",
+      "required": ["research", "product-definition", "implementation", "ux", "security-authority", "incident", "release"],
+      "properties": {
+        "research": { "const": "low" }, "product-definition": { "const": "moderate" },
+        "implementation": { "const": "moderate" }, "ux": { "const": "moderate" },
+        "security-authority": { "const": "critical" }, "incident": { "const": "moderate" },
+        "release": { "const": "critical" }
+      },
+      "additionalProperties": false
+    },
+    "critical_topics": {
+      "type": "array", "minItems": 8, "uniqueItems": true,
+      "items": { "enum": ["money", "membership", "privacy", "recovery", "security", "release", "credentials", "external-write"] }
+    },
+    "risk_rules": {
+      "type": "object", "required": ["low", "moderate", "critical"],
+      "properties": {
+        "low": { "$ref": "#/$defs/risk_rule" }, "moderate": { "$ref": "#/$defs/risk_rule" }, "critical": { "$ref": "#/$defs/risk_rule" }
+      },
+      "additionalProperties": false
+    },
+    "time_and_proactive_default": { "const": "read_only" },
+    "mutation_rule": { "type": "string", "minLength": 20 },
+    "skill_rule": { "type": "string", "minLength": 20 },
+    "retry_rule": { "type": "string", "minLength": 20 }
+  },
+  "$defs": {
+    "risk_rule": {
+      "type": "object", "required": ["minimum_evidence_level", "default_run_type", "default_execution_mode", "independent_evaluator"],
+      "properties": {
+        "minimum_evidence_level": { "enum": ["unit", "simulated-integration", "exact-candidate"] },
+        "default_run_type": { "enum": ["turn", "bounded_goal"] },
+        "default_execution_mode": { "enum": ["deterministic", "single-agent"] },
+        "independent_evaluator": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

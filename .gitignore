@@ -1,78 +1,73 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-
-# Coverage
-coverage
-cypress/videos
-cypress/screenshots
-cypress/results
-
-# Build output
-dist
-build
-
-# Node
-node_modules
-
-# Vite
-.vite
-
-# Editor
-.DS_Store
-.idea
-.vscode
-.cursor
-.yarn/
-
-# Env
-.env
-.env.*
-
-# Supabase
-.temp/
-**/supabase/.branches
-**/supabase/.temp
-# Keep migrations in git
-# supabase/migrations/
-
-# Local private docs (never commit)
-private-docs/
-
-# Local investigation notes (can be unignored later)
-docs/DATA_SOURCE_CONTRACT.md
-docs/GROUP_CARD_HOLY_GRAIL_ANALYSIS.md
-docs/SMART_CONTRACT_TESTING_GUIDE.md
-docs/WISE_EXPENSE_SPLITTING_ANALYSIS.md
-
-# Local worktrees
-.worktrees/
-
-expo-app/.expo/
-expo-app
-expo-app/
-/expo-app
-.expo/
-
-# Generated test output
-output/
-playwright-report/
+node_modules/
+build/
+dist/
+dist-dot-host/
+coverage/
 test-results/
-test-results.xml
+playwright-report/
+.DS_Store
+*.log
+.env*
+!.env.example
+.vercel
 
-# Deployment
-.vercel/
+# Local agent scratch space is never release or product evidence.
+output/working_memory/
 
-# Agent / AI metadata
+# Portable Agent Outcome System run ledgers can contain prompts, intermediate
+# observations, and unreconciled effects. Only separately redacted and promoted
+# outcome packets under artifacts/agentops/outcomes may become repo evidence.
+output/agent-runs/
+output/agent-routes/
+output/agent-contracts/
+
+# Local screenshot review is summarized with hashes in committed acceptance
+# reports. The raw captures are regenerated per viewport and remain local.
+output/playwright/
+
+# Batch 6 evidence is generated against the frozen source commit and kept
+# outside that commit so the candidate fingerprint remains exact and clean.
+proof/chopdot-candidate-2026-08-12/test-results/chopdot-b6-*/
+proof/chopdot-candidate-2026-08-12/screenshots/chopdot-b6-*/
+proof/chopdot-candidate-2026-08-12/artifact/chopdot-b6-*/
+proof/chopdot-candidate-2026-08-12/receipts/final/chopdot-b6-*/
+proof/chopdot-candidate-2026-08-12/receipts/B6.json
+
+# Focused host proofs write these reports during exact-candidate reruns. The
+# final Batch 6 runner hashes and copies them into the candidate evidence pack.
+proof/guest-payment-offline/
+proof/live-payer-sync/
+
+# Immutable release evidence is generated only after the clean source commit is
+# frozen. The strict verifier reconstructs and hashes these exact paths; they
+# stay ignored during stage/promote so evidence creation cannot masquerade as a
+# source-tree change. Final handoff may force-add the verified records later.
+deployment/releases/*.car
+deployment/releases/*.promotion.json
+deployment/readbacks/*.json
+
+# Local visual-assurance captures are hashed into committed evidence reports.
+# Keeping the PNG corpus outside Git avoids rewriting historical proof packs on
+# every deterministic browser run.
+artifacts/release/
+
+# Exact-worktree KGv2 release packets are generated after a clean commit and
+# describe that commit. Keep the self-referential run outputs outside the
+# candidate tree so their creation cannot make the candidate dirty. The final
+# handoff may force-add the verified packets after release readback.
+artifacts/agentops/release-agentops-verification.json
+artifacts/agentops/release-kgv2-recall.json
+artifacts/agentops/release-repo-graph-packet.json
+
+# Derived agent-governance outputs: built on demand, uploaded as CI artifacts.
+.governance-build/
+
+# Machine-local private context. Never required for normal repository operation.
+.local-private/
+
+# Provider-local agent directories. Machine-local content is invisible to the
+# steering monitor; a deliberately tracked adapter (git add -f, or a negation
+# here) becomes visible and must then be declared in the steering registry.
+.agents/
 .claude/
-.knowns/
-antigravity-awesome-skills/
-
-# Generated reports (regenerate with scripts/)
-artifacts/
+.cursor/

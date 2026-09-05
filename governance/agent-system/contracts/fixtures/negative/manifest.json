@@ -1,0 +1,11 @@
+{
+  "fixture_version": "1.0.0",
+  "cases": [
+    { "id": "EVENT-EVIDENCE-AS-TYPE", "schema": "../../agent-run-event.v1.schema.json", "instance": "event-evidence-as-type.json", "expected_valid": false, "reason": "source-only is an evidence level, not a run event type" },
+    { "id": "OUTCOME-SELF-REVIEW", "schema": "../../outcome-packet.v1.schema.json", "instance": "outcome-self-review.json", "expected_valid": false, "reason": "succeeded requires independent_review_satisfied true" },
+    { "id": "OUTCOME-FAILED-REQUIREMENT", "schema": "../../outcome-packet.v1.schema.json", "instance": "outcome-failed-requirement.json", "expected_valid": false, "reason": "succeeded requires every requirement accepted" },
+    { "id": "OUTCOME-FAILED-EFFECT", "schema": "../../outcome-packet.v1.schema.json", "instance": "outcome-failed-effect.json", "expected_valid": false, "reason": "succeeded requires every effect verified with a readback digest" },
+    { "id": "OUTCOME-COUNT-SCORE", "schema": "../../outcome-packet.v1.schema.json", "instance": "outcome-count-score-semantic.json", "expected_valid": true, "expected_semantic_valid": false, "reason": "semantic validator must reject passed below total or score below threshold because JSON Schema cannot compare siblings" },
+    { "id": "KNOWLEDGE-STALE-ACCEPT", "schema": "../../knowledge-receipt.v1.schema.json", "instance": "knowledge-stale-accepted-recall.json", "expected_valid": false, "reason": "accepted verify_recall forbids mismatches and stale reasons" }
+  ]
+}

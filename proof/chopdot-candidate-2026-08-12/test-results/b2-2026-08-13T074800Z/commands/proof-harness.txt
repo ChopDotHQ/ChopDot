@@ -1,0 +1,21 @@
+✔ schema v2 preserves the operator-authorized Batch 1 through Batch 6 order (1.468833ms)
+✔ without a fresh Batch 1 receipt, Batch 1 is partial and Batch 2 is blocked (1.839292ms)
+✔ a complete Batch 1 local receipt passes locally while its live lane remains blocked (5.519167ms)
+✔ a local Batch 1 pass unlocks Batch 2 local execution despite Batch 1 live block (3.027458ms)
+✔ a partial Batch 1 local receipt blocks Batch 2 promotion (1.300625ms)
+✔ the legacy nine-control Batch 2 shape cannot certify the product-law gate (4.633583ms)
+✔ old, unhashed, or out-of-pack evidence cannot satisfy a local control (1.050125ms)
+✔ changed source snapshots can advance within one stable delivery train (4.750542ms)
+✔ a receipt from another delivery train cannot continue promotion (5.147083ms)
+✔ Batch 6 cannot pass without B1 through B6 rerun receipts on its final fingerprint (12.984125ms)
+✔ Batch 6 rejects a complete rerun set when one batch uses another final fingerprint (25.369833ms)
+✔ Batch 6 may pass locally while its live lane remains action-time gated (33.702916ms)
+✔ Batch 6 live passes only with real-host evidence and explicit action-time approval (24.691208ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 193.5605

@@ -1,0 +1,111 @@
+{
+  "checks": {
+    "all_citations_exact_root": true,
+    "citations_nonempty": true,
+    "deployment_not_blocked": true,
+    "exact_branch": true,
+    "exact_head": true,
+    "exact_root": true,
+    "fallback_unused": true,
+    "feature_decision_citation_present": true,
+    "group_cards_recalled": true,
+    "ingestion_passed": true,
+    "recalled_facts_nonempty": true,
+    "savings_or_circlecredit_recalled": true,
+    "v2_active": true
+  },
+  "citation_count": 11,
+  "citation_source_refs": [
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/RESEARCH-002_PARITY_PRODUCTS_DEVNET_CAPABILITY_CATALOG.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_PLATFORM_OPPORTUNITY_MATRIX.md"
+  ],
+  "fact_count": 11,
+  "fact_counts": {
+    "group_cards": 8,
+    "modes": 3
+  },
+  "feature_decision_citation_count": 6,
+  "graph_digest": "6e01545b1bf5f763368543fe4f0f0f9197f6a785c4c6a899361920d68afd1ff6",
+  "ingestion": {
+    "accepted": 2,
+    "duplicates": 0,
+    "ingested_content_digest": "a4664e202eea0f2e1ec4fbee61943c0c9da4267bd0453b84c5b00b5b0cb868cb",
+    "ingested_graph_digest": "cad321ff403b679a4571564eff97ccb79639ee8a2af1d892aa46efd1865ee1cd",
+    "journal_path": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/state/repo_graph_v1/journals/chopdot-v1-launch-18715c1a869d.sqlite3",
+    "journaled": 2,
+    "projection_failures": 0,
+    "projection_results": {
+      "age": {
+        "applied": 2,
+        "failed": 0,
+        "fetched": 2
+      },
+      "jena": {
+        "applied": 2,
+        "failed": 0,
+        "fetched": 2
+      },
+      "neo4j": {
+        "applied": 2,
+        "failed": 0,
+        "fetched": 2
+      }
+    },
+    "quarantined": 0,
+    "repo_id": "chopdot-v1-launch",
+    "retracted_entity_count": 0,
+    "retracted_relation_count": 0,
+    "selected_entity_count": 2,
+    "selected_relation_count": 0,
+    "status": "pass",
+    "writer_id": "repo-graph-v1:chopdot-v1-launch:c0eae133529e:18715c1a869d"
+  },
+  "packet_digest": "2c28f865e7247dd202c6b63c58aaa60939e8c900021a86c5886eaafb301bf821",
+  "read_paths": {
+    "group_cards": {
+      "active_path": "context_graph_v2",
+      "context_graph_v2_attempted": true,
+      "context_graph_v2_consulted": true,
+      "fallback_path": "kg_v1",
+      "fallback_reason": "",
+      "fallback_used": false,
+      "kg_v1_consulted": true,
+      "operational_overlay": "kg_v1",
+      "requested_mode": "v2",
+      "runtime_config_ref": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/registry/context_graph_v2_runtime.json"
+    },
+    "modes": {
+      "active_path": "context_graph_v2",
+      "context_graph_v2_attempted": true,
+      "context_graph_v2_consulted": true,
+      "fallback_path": "kg_v1",
+      "fallback_reason": "",
+      "fallback_used": false,
+      "kg_v1_consulted": true,
+      "operational_overlay": "kg_v1",
+      "requested_mode": "v2",
+      "runtime_config_ref": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/registry/context_graph_v2_runtime.json"
+    }
+  },
+  "repo_graph_status": "working",
+  "runtimes": {
+    "group_cards": {
+      "kind": "current_interpreter",
+      "python": "/Users/devinsonpena/Documents/AutoBots/proofmap/.venv/bin/python"
+    },
+    "modes": {
+      "kind": "current_interpreter",
+      "python": "/Users/devinsonpena/Documents/AutoBots/proofmap/.venv/bin/python"
+    }
+  },
+  "status": "pass"
+}

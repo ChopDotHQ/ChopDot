@@ -1,0 +1,234 @@
+{
+  "checks": {
+    "all_queries_pass": true,
+    "exact_repo_graph_branch": true,
+    "exact_repo_graph_root": true,
+    "plan_in_repo_graph": true
+  },
+  "citation_count": 27,
+  "fact_count": 27,
+  "generated_at": "2026-08-22T21:41:48.521556+00:00",
+  "kind": "chopdot_full_product_plan_kgv2_verification",
+  "queries": {
+    "architecture": {
+      "citation_count": 8,
+      "degradation": [],
+      "fact_count": 8,
+      "labels": [
+        "Coverage",
+        "Decision: emergency-pot behavior has no direct verified analog",
+        "Wave 0 \u2014 Reconcile product and release truth",
+        "Evidence grades",
+        "What the external projects actually contribute",
+        "Decision: group cards remain ChopDot-owned product synthesis",
+        "Decision: native rails cover adapters, not ChopDot product authority",
+        "Platform Catalog Addendum for the ChopDot v1 Plan"
+      ],
+      "packet_digest": "71f82960a87ea5507872ce083341bbb1a80d709bfaaeff35bb7b8aa3bc23f68f",
+      "read_path": {
+        "active_path": "context_graph_v2",
+        "context_graph_v2_attempted": true,
+        "context_graph_v2_consulted": true,
+        "fallback_path": "kg_v1",
+        "fallback_reason": "",
+        "fallback_used": false,
+        "kg_v1_consulted": true,
+        "operational_overlay": "kg_v1",
+        "requested_mode": "v2",
+        "runtime_config_ref": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/registry/context_graph_v2_runtime.json"
+      },
+      "rejected_candidate_count": 0,
+      "runtime": {
+        "kind": "current_interpreter",
+        "python": "/Users/devinsonpena/Documents/AutoBots/proofmap/.venv/bin/python"
+      },
+      "source_refs": [
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md"
+      ]
+    },
+    "mode_completion": {
+      "citation_count": 8,
+      "degradation": [],
+      "fact_count": 8,
+      "labels": [
+        "Decision: CircleCredit is discovery evidence, not savings-circle inheritance",
+        "Decision: emergency-pot behavior has no direct verified analog",
+        "Decision: community-fund analogs are discovery or indirect patterns",
+        "Every current product card",
+        "Wave 9 \u2014 Private acceptance and release freeze",
+        "Coverage",
+        "chopdot-product-cockpit-source-snapshot.json",
+        "verifiedContactCeremonyService.test.ts"
+      ],
+      "packet_digest": "cda21487a37368d299ac79bd7f3f08ecac4f207c25e28334ef0e12aad3a17711",
+      "read_path": {
+        "active_path": "context_graph_v2",
+        "context_graph_v2_attempted": true,
+        "context_graph_v2_consulted": true,
+        "fallback_path": "kg_v1",
+        "fallback_reason": "",
+        "fallback_used": false,
+        "kg_v1_consulted": true,
+        "operational_overlay": "kg_v1",
+        "requested_mode": "v2",
+        "runtime_config_ref": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/registry/context_graph_v2_runtime.json"
+      },
+      "rejected_candidate_count": 0,
+      "runtime": {
+        "kind": "current_interpreter",
+        "python": "/Users/devinsonpena/Documents/AutoBots/proofmap/.venv/bin/python"
+      },
+      "source_refs": [
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/evidence/chopdot-product-cockpit-source-snapshot.json",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/src/contacts/verifiedContactCeremonyService.test.ts"
+      ]
+    },
+    "next_move": {
+      "citation_count": 8,
+      "degradation": [],
+      "fact_count": 8,
+      "labels": [
+        "Wave 9 \u2014 Private acceptance and release freeze",
+        "Wave 0 \u2014 Reconcile product and release truth",
+        "host adapter uses only official async host storage methods and restart restores signed records",
+        "Coverage",
+        "chopdot-product-cockpit-source-snapshot.json",
+        "verifiedContactCeremonyService.test.ts",
+        "Decision: emergency-pot behavior has no direct verified analog",
+        "Evidence grades"
+      ],
+      "packet_digest": "b76ce2b2a35335efe2da9bb74ae4c6d3b837a618a200fd9d9b5216486224789d",
+      "read_path": {
+        "active_path": "context_graph_v2",
+        "context_graph_v2_attempted": true,
+        "context_graph_v2_consulted": true,
+        "fallback_path": "kg_v1",
+        "fallback_reason": "",
+        "fallback_used": false,
+        "kg_v1_consulted": true,
+        "operational_overlay": "kg_v1",
+        "requested_mode": "v2",
+        "runtime_config_ref": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/registry/context_graph_v2_runtime.json"
+      },
+      "rejected_candidate_count": 0,
+      "runtime": {
+        "kind": "current_interpreter",
+        "python": "/Users/devinsonpena/Documents/AutoBots/proofmap/.venv/bin/python"
+      },
+      "source_refs": [
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/src/contacts/verifiedContactRepository.test.ts",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/evidence/chopdot-product-cockpit-source-snapshot.json",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/src/contacts/verifiedContactCeremonyService.test.ts",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.md"
+      ]
+    },
+    "release_definition": {
+      "citation_count": 3,
+      "degradation": [],
+      "fact_count": 3,
+      "labels": [
+        "13. Definition of full-product release",
+        "Wave 9 \u2014 Private acceptance and release freeze",
+        "Wave 0 \u2014 Reconcile product and release truth"
+      ],
+      "packet_digest": "6f7a820aa673de1fc2deb073c3a27b5fe737d81d8b044303f69e86a1322824f4",
+      "read_path": {
+        "active_path": "context_graph_v2",
+        "context_graph_v2_attempted": true,
+        "context_graph_v2_consulted": true,
+        "fallback_path": "kg_v1",
+        "fallback_reason": "",
+        "fallback_used": false,
+        "kg_v1_consulted": true,
+        "operational_overlay": "kg_v1",
+        "requested_mode": "v2",
+        "runtime_config_ref": "/Users/devinsonpena/.codex/worktrees/24f9/AutoBots/agentops/registry/context_graph_v2_runtime.json"
+      },
+      "rejected_candidate_count": 0,
+      "runtime": {
+        "kind": "current_interpreter",
+        "python": "/Users/devinsonpena/Documents/AutoBots/proofmap/.venv/bin/python"
+      },
+      "source_refs": [
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
+        "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md"
+      ]
+    }
+  },
+  "query_checks": {
+    "architecture": {
+      "all_citations_exact_root": true,
+      "citations_nonempty": true,
+      "facts_nonempty": true,
+      "fallback_unused": true,
+      "plan_citation_present": true,
+      "v2_active": true
+    },
+    "mode_completion": {
+      "all_citations_exact_root": true,
+      "citations_nonempty": true,
+      "facts_nonempty": true,
+      "fallback_unused": true,
+      "plan_citation_present": true,
+      "v2_active": true
+    },
+    "next_move": {
+      "all_citations_exact_root": true,
+      "citations_nonempty": true,
+      "facts_nonempty": true,
+      "fallback_unused": true,
+      "plan_citation_present": true,
+      "v2_active": true
+    },
+    "release_definition": {
+      "all_citations_exact_root": true,
+      "citations_nonempty": true,
+      "facts_nonempty": true,
+      "fallback_unused": true,
+      "plan_citation_present": true,
+      "v2_active": true
+    }
+  },
+  "repo_graph": {
+    "branch": "codex/chopdot-v1-launch",
+    "commit": "3519a894efbcee5144ecb0bcb9ebc44b888a0e7f",
+    "dirty": true,
+    "dirty_status_digest": "2d440886e03ec1b9b7535c627ad1157a05b525298f09e139f5971355e7ef35a6",
+    "graph_digest": "6e01545b1bf5f763368543fe4f0f0f9197f6a785c4c6a899361920d68afd1ff6",
+    "packet_digest": "2c28f865e7247dd202c6b63c58aaa60939e8c900021a86c5886eaafb301bf821",
+    "plan_entity_count": 44,
+    "plan_source_hashes": [
+      "ab85711737d5b9324381bfbdcdcfbd191d4693f33ea1d2484f3532a46f6d19ab"
+    ],
+    "root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch"
+  },
+  "schema_version": 1,
+  "status": "pass",
+  "unique_citation_source_refs": [
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/CODEX_PLATFORM_CATALOG_ADDENDUM.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_AND_EXTERNAL_ANALOG_MATRIX.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/CHOPDOT_FEATURE_INHERITANCE_DECISIONS.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/research/evidence/chopdot-product-cockpit-source-snapshot.json",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/docs/superpowers/plans/2026-08-22-chopdot-full-product-dot-devnet-deployment-execution.md",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/src/contacts/verifiedContactCeremonyService.test.ts",
+    "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch/src/contacts/verifiedContactRepository.test.ts"
+  ]
+}

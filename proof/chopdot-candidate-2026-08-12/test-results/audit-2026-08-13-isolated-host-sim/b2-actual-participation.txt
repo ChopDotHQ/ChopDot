@@ -1,0 +1,78 @@
+
+[WebServer] (node:18339) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+
+(node:18351) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/3] tests/candidate-batch2-actual-participation.spec.ts:15:1 › actual App keeps Nina waiting across restart and joins only after Mina delivers access
+  1) tests/candidate-batch2-actual-participation.spec.ts:15:1 › actual App keeps Nina waiting across restart and joins only after Mina delivers access 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Waiting for the organizer' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByRole('heading', { name: 'Waiting for the organizer' })
+
+
+      120 |
+      121 | async function expectWaiting(page: Page) {
+    > 122 |   await expect(page.getByRole('heading', {name: 'Waiting for the organizer'})).toBeVisible();
+          |                                                                                ^
+      123 |   await expect(page.getByText('You are not in this group until the organizer finishes adding you.')).toBeVisible();
+      124 |   await expect(page.getByRole('heading', {name: /joined/iu})).toHaveCount(0);
+      125 | }
+        at expectWaiting (/Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/tests/candidate-batch2-actual-participation.spec.ts:122:80)
+        at /Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/tests/candidate-batch2-actual-participation.spec.ts:22:11
+
+    Error Context: test-results/candidate-batch2-actual-pa-40163--after-Mina-delivers-access/error-context.md
+
+
+
+(node:18396) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[2/3] tests/candidate-batch2-actual-participation.spec.ts:39:1 › actual App QR decision remains explicit on mobile and signed decline never joins
+  2) tests/candidate-batch2-actual-participation.spec.ts:39:1 › actual App QR decision remains explicit on mobile and signed decline never joins 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Invite declined' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByRole('heading', { name: 'Invite declined' })
+
+
+      46 |
+      47 |     await actors.nina.getByRole('button', {name: 'Decline'}).click();
+    > 48 |     await expect(actors.nina.getByRole('heading', {name: 'Invite declined'})).toBeVisible();
+         |                                                                               ^
+      49 |     await expect(actors.nina.getByText('You were not added to this group.')).toBeVisible();
+      50 |     await expect(actors.nina.getByRole('heading', {name: /joined/iu})).toHaveCount(0);
+      51 |     await expect.poll(() => actors.mina.evaluate(() => window.__B2_MINA__!.lastInboundType())).toBe('INVITATION_DECLINED');
+        at /Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/tests/candidate-batch2-actual-participation.spec.ts:48:79
+
+    Error Context: test-results/candidate-batch2-actual-pa-3feb5--signed-decline-never-joins/error-context.md
+
+
+
+(node:18446) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[3/3] tests/candidate-batch2-actual-participation.spec.ts:58:1 › actual App invitation surfaces contain no internal language
+  2 failed
+    tests/candidate-batch2-actual-participation.spec.ts:15:1 › actual App keeps Nina waiting across restart and joins only after Mina delivers access 
+    tests/candidate-batch2-actual-participation.spec.ts:39:1 › actual App QR decision remains explicit on mobile and signed decline never joins 
+  1 passed (15.5s)

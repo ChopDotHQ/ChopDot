@@ -1,0 +1,35 @@
+
+> chopdot@0.0.0 lint
+> tsc --noEmit
+
+
+> chopdot@0.0.0 security:baseline
+> node scripts/security-baseline.mjs
+
+Security baseline passed (113 files checked).
+
+> chopdot@0.0.0 build
+> vite build
+
+vite v6.4.3 building for production...
+transforming...
+node_modules/@polkadot/x-global/index.js (9:23): A comment
+
+"/*#__PURE__*/"
+
+in "node_modules/@polkadot/x-global/index.js" contains an annotation that Rollup cannot interpret due to the position of the comment. The comment will be removed to avoid issues.
+✓ 2906 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.45 kB │ gzip:   0.29 kB
+dist/assets/index-DB8IeO0o.css   48.86 kB │ gzip:   8.60 kB
+dist/assets/index-BROG6UhV.js     1.03 kB │ gzip:   0.55 kB
+dist/assets/index-BpuHiff3.js     9.47 kB │ gzip:   3.48 kB
+dist/assets/index-De1kVEwm.js    81.27 kB │ gzip:  24.36 kB
+dist/assets/index-Dce2tPCN.js   820.99 kB │ gzip: 350.40 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.64s

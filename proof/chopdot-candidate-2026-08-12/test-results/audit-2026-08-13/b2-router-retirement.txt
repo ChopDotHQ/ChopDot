@@ -1,0 +1,41 @@
+
+[WebServer] (node:10488) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+
+(node:10503) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/2] tests/candidate-batch2-router-retirement.spec.ts:10:1 › actual router retires legacy joinGroup snapshot auto-import
+[2/2] tests/candidate-batch2-router-retirement.spec.ts:31:1 › actual router recognizes only the bounded signed bootstrap and imports no group state
+  1) tests/candidate-batch2-router-retirement.spec.ts:31:1 › actual router recognizes only the bounded signed bootstrap and imports no group state 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('heading', { name: 'Open in the Polkadot App' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for getByRole('heading', { name: 'Open in the Polkadot App' })
+
+
+      53 |
+      54 |   await page.goto(url);
+    > 55 |   await expect(page.getByRole('heading', {name: 'Open in the Polkadot App'})).toBeVisible();
+         |                                                                               ^
+      56 |   await expect(page.getByText(/Nothing has been added\./u)).toBeVisible();
+      57 |   await expect(page.getByRole('button', {name: /accept/iu})).toHaveCount(0);
+      58 |   const persisted = await page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? '{}'), storageKey);
+        at /Users/devinsonpena/ChopDot/.worktrees/portable-shell-trial/tests/candidate-batch2-router-retirement.spec.ts:55:79
+
+    Error Context: test-results/candidate-batch2-router-re-dc802--and-imports-no-group-state/error-context.md
+
+
+  1 failed
+    tests/candidate-batch2-router-retirement.spec.ts:31:1 › actual router recognizes only the bounded signed bootstrap and imports no group state 
+  1 passed (8.6s)

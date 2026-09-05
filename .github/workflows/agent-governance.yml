@@ -1,0 +1,632 @@
+name: ChopDot Agent Governance
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      dispatch_mode:
+        description: Select exact-PR validation or separately gated release enforcement
+        required: true
+        default: pr_validation
+        type: choice
+        options:
+          - pr_validation
+          - release_enforcement
+      pull_request_number:
+        description: Required positive PR number for pr_validation; must be empty for release_enforcement
+        required: false
+        type: string
+      outcome_packet:
+        description: Repository-relative accepted OutcomePacketV1 path
+        required: false
+        type: string
+      approval_record:
+        description: Repository-relative exact-candidate approval record path
+        required: false
+        type: string
+      loop_contract:
+        description: Repository-relative release-outcome contract path
+        required: false
+        type: string
+      knowledge_receipt:
+        description: Repository-relative exact-digest verify-recall receipt path
+        required: false
+        type: string
+      runner_provenance:
+        description: Repository-relative RunnerProvenanceV1 path inside the downloaded immutable evidence bundle
+        required: false
+        type: string
+      run_directory:
+        description: Repository-relative digest-chained runner directory inside the downloaded immutable evidence bundle
+        required: false
+        type: string
+      release_evidence_run_id:
+        description: Prior same-repository run containing the release-evidence artifact bundle
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-governance-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  EXPECTED_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+  EXPECTED_BASE_BRANCH: ${{ github.event.pull_request.base.ref || '' }}
+  GOVERNANCE_REPORT_ROOT: artifacts/agent-governance
+
+jobs:
+  pr-context:
+    name: PR context
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="${{ runner.temp }}/pr-context/pr-context-exact-head.json"
+      - name: Resolve exact pull-request event
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_MODE: ${{ inputs.dispatch_mode }}
+          DISPATCH_PR_NUMBER: ${{ inputs.pull_request_number }}
+          SELECTED_REF_NAME: ${{ github.ref_name }}
+          SELECTED_REF_TYPE: ${{ github.ref_type }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          context_dir="${{ runner.temp }}/pr-context"
+          event_file="$context_dir/pr-event.json"
+          mkdir -p -- "$context_dir"
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            cp -- "$GITHUB_EVENT_PATH" "$event_file"
+          elif [[ "$DISPATCH_MODE" == "pr_validation" ]]; then
+            [[ "$DISPATCH_PR_NUMBER" =~ ^[1-9][0-9]*$ ]] || { echo "pr_validation requires a positive pull_request_number" >&2; exit 2; }
+            [[ "$SELECTED_REF_TYPE" == "branch" ]] || { echo "pr_validation must dispatch the exact PR head branch" >&2; exit 2; }
+            live_file="$context_dir/pr-live.json"
+            gh api --method GET "repos/$REPOSITORY/pulls/$DISPATCH_PR_NUMBER" > "$live_file"
+            jq -e \
+              --arg repo "$REPOSITORY" \
+              --arg head "$EXPECTED_SHA" \
+              --arg branch "$SELECTED_REF_NAME" \
+              --argjson number "$DISPATCH_PR_NUMBER" \
+              '.number == $number
+               and .state == "open"
+               and .base.repo.full_name == $repo
+               and .head.repo.full_name == $repo
+               and .head.sha == $head
+               and .head.ref == $branch
+               and (.base.sha | test("^[0-9a-f]{40}$"))
+               and (.head.sha | test("^[0-9a-f]{40}$"))' \
+              "$live_file" >/dev/null
+            jq '{pull_request: {
+                  number: .number,
+                  body: (.body // ""),
+                  user: {login: .user.login},
+                  base: {sha: .base.sha, ref: .base.ref, repo: {full_name: .base.repo.full_name}},
+                  head: {sha: .head.sha, ref: .head.ref, repo: {full_name: .head.repo.full_name}}
+                }}' "$live_file" > "$event_file"
+          elif [[ "$DISPATCH_MODE" == "release_enforcement" ]]; then
+            [[ -z "$DISPATCH_PR_NUMBER" ]] || { echo "release_enforcement cannot carry a pull_request_number" >&2; exit 2; }
+            cp -- "$GITHUB_EVENT_PATH" "$context_dir/release-dispatch-event.json"
+          else
+            echo "Unsupported workflow_dispatch mode: $DISPATCH_MODE" >&2
+            exit 2
+          fi
+      - name: Upload exact PR context
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr-context-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr-context/
+          if-no-files-found: error
+          retention-days: 30
+
+  agent-contract:
+    name: Agent contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="$GOVERNANCE_REPORT_ROOT/agent-contract-exact-head.json"
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Validate contracts, profiles, policies, and instructions
+        run: |
+          node scripts/agent-system/cli.mjs validate
+          node scripts/agent-system/cli.mjs instruction-validate
+          node --test scripts/agent-system/tests/core-contract.test.mjs
+      - name: Publish summary
+        if: always()
+        run: |
+          echo "## Agent contract" >> "$GITHUB_STEP_SUMMARY"
+          echo "Exact expected head: \`$EXPECTED_SHA\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "This job validates source contracts and unit behavior; it is not release proof." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agent-contract-${{ github.run_id }}
+          path: ${{ env.GOVERNANCE_REPORT_ROOT }}/
+          if-no-files-found: error
+          retention-days: 30
+
+  agent-runner:
+    name: Agent runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="$GOVERNANCE_REPORT_ROOT/agent-runner-exact-head.json"
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Test durable runner and effect controls
+        run: >-
+          node --test
+          scripts/agent-system/tests/ledger-runner.test.mjs
+          scripts/agent-system/tests/effects-approvals.test.mjs
+          scripts/agent-system/tests/evaluator-outcome.test.mjs
+          scripts/agent-system/tests/fail-closed.test.mjs
+      - name: Publish summary
+        if: always()
+        run: |
+          echo "## Agent runner" >> "$GITHUB_STEP_SUMMARY"
+          echo "Runs durable-ledger, resume, lease, budget, effect, approval, cancellation, and failure-path tests." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: agent-runner-${{ github.run_id }}
+          path: ${{ env.GOVERNANCE_REPORT_ROOT }}/
+          if-no-files-found: error
+          retention-days: 30
+
+  knowledge-adapters:
+    name: Knowledge adapters
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="$GOVERNANCE_REPORT_ROOT/knowledge-adapters-exact-head.json"
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Test provider-neutral knowledge port and adapters
+        run: >-
+          node --test
+          scripts/agent-system/tests/knowledge-adapters.test.mjs
+          scripts/agent-system/tests/adapters-compat-cli.test.mjs
+          scripts/agent-system/tests/kgv2-agentops-client.test.mjs
+      - name: Publish summary
+        if: always()
+        run: |
+          echo "## Knowledge adapters" >> "$GITHUB_STEP_SUMMARY"
+          echo "Conformance is scoped to exact-source, Repo Graph fixture, KGv2 fixture/runtime preflight, the pinned AgentOps KGv2 client, and mock KGv3." >> "$GITHUB_STEP_SUMMARY"
+          echo "Knowledge recall never promotes evidence or creates product authority." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: knowledge-adapters-${{ github.run_id }}
+          path: ${{ env.GOVERNANCE_REPORT_ROOT }}/
+          if-no-files-found: error
+          retention-days: 30
+
+  repo-governance:
+    name: Repo governance
+    needs:
+      - pr-context
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="$GOVERNANCE_REPORT_ROOT/repo-governance-exact-head.json"
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Check steering-surface registry and generated catalog
+        run: >-
+          node scripts/agent-governance/steering-surfaces.mjs check
+          --require-promoted
+          --json-out="$GOVERNANCE_REPORT_ROOT/steering-surfaces.json"
+      - name: Validate repository invariants and provider independence
+        run: >-
+          node scripts/agent-governance/validate-repository.mjs
+          --expected-sha="$EXPECTED_SHA"
+          --json-out="$GOVERNANCE_REPORT_ROOT/repository.json"
+          --md-out="$GOVERNANCE_REPORT_ROOT/repository.md"
+      - name: Download exact PR context
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: pr-context-${{ github.run_id }}
+          path: ${{ runner.temp }}/pr-context-input
+      - name: Validate pull-request claim-to-evidence traceability
+        if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'pr_validation')
+        run: >-
+          node scripts/agent-governance/validate-pr.mjs
+          --event-path="${{ runner.temp }}/pr-context-input/pr-event.json"
+          --json-out="$GOVERNANCE_REPORT_ROOT/pull-request.json"
+          --md-out="$GOVERNANCE_REPORT_ROOT/pull-request.md"
+      - name: Validate current context, Cockpit, and wiki
+        run: |
+          event_file="${{ runner.temp }}/pr-context-input/pr-event.json"
+          if [[ -f "$event_file" ]]; then
+            base_branch="$(jq -r '.pull_request.base.ref' "$event_file")"
+            export CONTEXT_PR_VALIDATION=true
+            export EXPECTED_BASE_BRANCH="$base_branch"
+          fi
+          npm run context:validate
+          npm run product:validate
+          npm run wiki:validate
+      - name: Install governed hook in clean checkout
+        run: node scripts/agent-governance/install-hooks.mjs
+      - name: Test repository-governance false-green controls
+        run: node --test scripts/agent-governance/tests/*.test.mjs
+      - name: Publish summary
+        if: always()
+        run: |
+          if [[ -f "$GOVERNANCE_REPORT_ROOT/repository.md" ]]; then cat "$GOVERNANCE_REPORT_ROOT/repository.md" >> "$GITHUB_STEP_SUMMARY"; fi
+          if [[ -f "$GOVERNANCE_REPORT_ROOT/pull-request.md" ]]; then cat "$GOVERNANCE_REPORT_ROOT/pull-request.md" >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: repo-governance-${{ github.run_id }}
+          path: ${{ env.GOVERNANCE_REPORT_ROOT }}/
+          if-no-files-found: error
+          retention-days: 30
+
+  application-fast-assurance:
+    name: Application fast assurance
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="$GOVERNANCE_REPORT_ROOT/application-exact-head.json"
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install exact lockfile dependencies
+        run: npm ci
+      - name: Typecheck, build, focused Node suite, and security baseline
+        run: |
+          npm run lint
+          npm run build
+          npm run test:node
+          npm run security:baseline
+      - name: Publish summary
+        if: always()
+        run: |
+          echo "## Application fast assurance" >> "$GITHUB_STEP_SUMMARY"
+          echo "Typecheck/build/test/security results apply only to the exact checked-out candidate." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload exact-head evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: application-fast-assurance-${{ github.run_id }}
+          path: ${{ env.GOVERNANCE_REPORT_ROOT }}/
+          if-no-files-found: error
+          retention-days: 30
+
+  application-browser-assurance:
+    name: Application browser assurance
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="${{ runner.temp }}/chopdot-release-evidence/application-browser-exact-head.json"
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install exact lockfile dependencies
+        run: npm ci
+      - name: Install exact Playwright Chromium
+        run: npx --no-install playwright install --with-deps chromium
+      - name: Run production-entrypoint browser assurance
+        env:
+          CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence
+        run: npm run test:release-browser
+      - name: Assert machine-readable browser result
+        env:
+          CHOPDOT_RELEASE_EVIDENCE_ROOT: ${{ runner.temp }}/chopdot-release-evidence
+        run: |
+          test -s "$CHOPDOT_RELEASE_EVIDENCE_ROOT/playwright/results.json"
+          node -e 'const fs=require("node:fs"); const report=JSON.parse(fs.readFileSync(process.env.CHOPDOT_RELEASE_EVIDENCE_ROOT + "/playwright/results.json", "utf8")); if (report.stats?.unexpected !== 0 || report.stats?.expected < 1) process.exit(1); console.log(`browser_expected=${report.stats.expected} browser_unexpected=${report.stats.unexpected}`);'
+      - name: Publish browser assurance summary
+        if: always()
+        run: |
+          echo "## Application browser assurance" >> "$GITHUB_STEP_SUMMARY"
+          echo "Production-entrypoint Playwright results apply only to the exact checked-out candidate." >> "$GITHUB_STEP_SUMMARY"
+          echo "This is application evidence, not deployment, reachability, ownership, or live-user proof." >> "$GITHUB_STEP_SUMMARY"
+      - name: Assert browser suite left repository clean
+        run: |
+          git status --short --untracked-files=all
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Upload browser assurance evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: application-browser-assurance-${{ github.run_id }}
+          path: ${{ runner.temp }}/chopdot-release-evidence/
+          if-no-files-found: error
+          retention-days: 30
+
+  secrets-scan:
+    name: Secrets scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact candidate with full history
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="$GOVERNANCE_REPORT_ROOT/secrets-scan-exact-head.json"
+      - name: Download and verify pinned Gitleaks CLI
+        run: |
+          curl --fail --show-error --silent --location --proto '=https' --tlsv1.2 "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz" --output "$RUNNER_TEMP/gitleaks_8.30.1_linux_x64.tar.gz"
+          sha256sum --check --strict <<< "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  $RUNNER_TEMP/gitleaks_8.30.1_linux_x64.tar.gz"
+          tar -xzf "$RUNNER_TEMP/gitleaks_8.30.1_linux_x64.tar.gz" -C "$RUNNER_TEMP" gitleaks
+          test -x "$RUNNER_TEMP/gitleaks"
+      - name: Scan exact repository history with redaction
+        run: $RUNNER_TEMP/gitleaks git . --redact --verbose --exit-code=1 --report-format=json --report-path="$GOVERNANCE_REPORT_ROOT/gitleaks.json"
+      - name: Publish secrets scan summary
+        if: always()
+        run: |
+          echo "## Secrets scan" >> "$GITHUB_STEP_SUMMARY"
+          echo "Gitleaks 8.30.1 scanned the exact candidate repository history with a verified CLI archive." >> "$GITHUB_STEP_SUMMARY"
+          echo "This is security evidence, not release or deployment proof." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload secrets scan evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: secrets-scan-${{ github.run_id }}
+          path: ${{ env.GOVERNANCE_REPORT_ROOT }}/
+          if-no-files-found: error
+          retention-days: 30
+
+  pr-outcome:
+    name: PR outcome
+    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'pr_validation')
+    needs:
+      - pr-context
+      - agent-contract
+      - agent-runner
+      - knowledge-adapters
+      - repo-governance
+      - application-fast-assurance
+      - application-browser-assurance
+      - secrets-scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="${{ runner.temp }}/pr-outcome/pr-outcome-exact-head.json"
+      - name: Attach authenticated candidate branch identity
+        run: |
+          git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"
+          test "$(git branch --show-current)" = "$EXPECTED_BRANCH"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Download same-run exact-head evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: '*-${{ github.run_id }}'
+          path: ${{ runner.temp }}/agent-governance-input
+          merge-multiple: false
+      - name: Generate external exact-candidate OutcomePacketV1
+        run: >-
+          node scripts/agent-governance/generate-pr-outcome.mjs
+          --event-path="${{ runner.temp }}/agent-governance-input/pr-context-${{ github.run_id }}/pr-event.json"
+          --evidence-root="${{ runner.temp }}/agent-governance-input"
+          --output-directory="output/agent-runs/ci-pr-outcome"
+          --workflow-run-id="${{ github.run_id }}"
+          --workflow-run-attempt="${{ github.run_attempt }}"
+          --evaluator-identity="github-actions:pr-outcome:${{ github.run_id }}:${{ github.run_attempt }}"
+          --job-results-json='{"agent-contract":"${{ needs.agent-contract.result }}","agent-runner":"${{ needs.agent-runner.result }}","knowledge-adapters":"${{ needs.knowledge-adapters.result }}","repo-governance":"${{ needs.repo-governance.result }}","application-fast-assurance":"${{ needs.application-fast-assurance.result }}","application-browser-assurance":"${{ needs.application-browser-assurance.result }}","secrets-scan":"${{ needs.secrets-scan.result }}"}'
+          --json-out="output/agent-runs/ci-pr-outcome/generation.json"
+      - name: Classify PR outcome mode
+        id: outcome-mode
+        run: >-
+          echo "deterministic_exemption=$(jq -r '.deterministic_exemption // false'
+          output/agent-runs/ci-pr-outcome/generation.json)" >> "$GITHUB_OUTPUT"
+      - name: Record and recall the exact PR outcome
+        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'
+        run: |
+          node scripts/agent-system/cli.mjs knowledge-record --adapter=exact-source --outcome="output/agent-runs/ci-pr-outcome/outcome.json" --json > "output/agent-runs/ci-pr-outcome/knowledge-record.json"
+          outcome_digest="$(node -e "const p=require('./output/agent-runs/ci-pr-outcome/outcome.json'); process.stdout.write(p.packet_digest)")"
+          node scripts/agent-system/cli.mjs knowledge-verify --adapter=exact-source --outcome-digest="$outcome_digest" --json > "output/agent-runs/ci-pr-outcome/knowledge-recall.json"
+      - name: Enforce governed PR acceptance
+        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          base_sha="$(jq -r '.pull_request.base.sha' "${{ runner.temp }}/agent-governance-input/pr-context-${{ github.run_id }}/pr-event.json")"
+          changed_paths="$(git diff --name-only "$base_sha..$EXPECTED_SHA" -- | paste -sd, -)"
+          profile="$(jq -r '.pull_request.body' "${{ runner.temp }}/agent-governance-input/pr-context-${{ github.run_id }}/pr-event.json" | sed -n 's/^- \*\*Agent loop profile:\*\*[[:space:]]*`\{0,1\}\([^`[:space:]]*\).*/\1/p' | head -n 1)"
+          run_directory="$(jq -r '.run_directory' output/agent-runs/ci-pr-outcome/generation.json)"
+          node scripts/agent-governance/adoption-guard.mjs context --surface=pr_merge --profile="$profile" --json-out="output/agent-runs/ci-pr-outcome/context-receipt.json"
+          node scripts/agent-governance/adoption-guard.mjs accept --surface=pr_merge --changed-paths="$changed_paths" --outcome="output/agent-runs/ci-pr-outcome/outcome.json" --contract="output/agent-runs/ci-pr-outcome/acceptance-contract.json" --knowledge-receipt="output/agent-runs/ci-pr-outcome/knowledge-recall.json" --execution-attestation="output/agent-runs/ci-pr-outcome/execution-attestation.json" --runner-provenance="output/agent-runs/ci-pr-outcome/runner-provenance.json" --run-directory="$run_directory" --context-receipt="output/agent-runs/ci-pr-outcome/context-receipt.json" --profile="$profile" --evidence-level=exact-candidate --expected-sha="$EXPECTED_SHA" --expected-tree="$(git rev-parse "$EXPECTED_SHA^{tree}")" --expected-branch="$EXPECTED_BRANCH" --json-out="output/agent-runs/ci-pr-outcome/acceptance-receipt.json"
+      - name: Validate PR claims against generated outcome
+        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'
+        run: >-
+          node scripts/agent-governance/validate-pr.mjs
+          --event-path="${{ runner.temp }}/agent-governance-input/pr-context-${{ github.run_id }}/pr-event.json"
+          --ci-outcome="output/agent-runs/ci-pr-outcome/outcome.json"
+          --json-out="output/agent-runs/ci-pr-outcome/validation.json"
+          --md-out="output/agent-runs/ci-pr-outcome/validation.md"
+      - name: Attest the exact external outcome packet
+        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'
+        id: attest-outcome
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: output/agent-runs/ci-pr-outcome/outcome.json
+      - name: Retain the offline attestation bundle
+        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'
+        run: >-
+          cp -- "${{ steps.attest-outcome.outputs.bundle-path }}"
+          "output/agent-runs/ci-pr-outcome/outcome-attestation.jsonl"
+      - name: Publish PR outcome decision
+        if: always()
+        run: |
+          if [[ -f "output/agent-runs/ci-pr-outcome/validation.md" ]]; then cat "output/agent-runs/ci-pr-outcome/validation.md" >> "$GITHUB_STEP_SUMMARY"; else echo "PR outcome evidence was absent or malformed; no green verdict exists." >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Upload PR outcome evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: pr-outcome-${{ github.run_id }}
+          path: output/agent-runs/ci-pr-outcome/
+          if-no-files-found: error
+          retention-days: 30
+
+  release-enforcement:
+    name: Release enforcement
+    if: github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'release_enforcement' && inputs.pull_request_number == ''
+    needs:
+      - pr-context
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: public-testnet-release
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: node scripts/agent-governance/assert-exact-head.mjs --json-out="${{ runner.temp }}/release-enforcement/release-exact-head.json"
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Require and download immutable release evidence bundle
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ inputs.release_evidence_run_id }}
+          pattern: release-evidence-*
+          path: output/release-evidence
+          merge-multiple: true
+      - name: Bind release enforcement to the named branch
+        run: git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"
+      - name: Generate current protected-environment execution attestation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          node scripts/agent-governance/execution-attestation.mjs create
+          --expected-sha="$EXPECTED_SHA"
+          --expected-branch="$EXPECTED_BRANCH"
+          --json-out="${{ runner.temp }}/release-enforcement/execution-attestation.json"
+      - name: Enforce approved immutable release evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          node scripts/agent-governance/enforce-release.mjs
+          --outcome="${{ inputs.outcome_packet }}"
+          --approval="${{ inputs.approval_record }}"
+          --contract="${{ inputs.loop_contract }}"
+          --knowledge-receipt="${{ inputs.knowledge_receipt }}"
+          --runner-provenance="${{ inputs.runner_provenance }}"
+          --run-directory="${{ inputs.run_directory }}"
+          --execution-attestation="${{ runner.temp }}/release-enforcement/execution-attestation.json"
+          --expected-sha="$EXPECTED_SHA"
+          --json-out="${{ runner.temp }}/release-enforcement/release.json"
+          --md-out="${{ runner.temp }}/release-enforcement/release.md"
+      - name: Publish release decision
+        if: always()
+        run: |
+          if [[ -f "${{ runner.temp }}/release-enforcement/release.md" ]]; then cat "${{ runner.temp }}/release-enforcement/release.md" >> "$GITHUB_STEP_SUMMARY"; else echo "Release evidence was absent or malformed; no green release verdict exists." >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Upload release decision evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-enforcement-${{ github.run_id }}
+          path: ${{ runner.temp }}/release-enforcement/
+          if-no-files-found: error
+          retention-days: 90

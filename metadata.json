@@ -1,0 +1,6 @@
+{
+  "name": "ChopDot",
+  "description": "A premium group-money and split payments app.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

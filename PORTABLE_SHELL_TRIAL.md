@@ -1,0 +1,351 @@
+# Portable Shell Trial Contract
+
+## Change Name
+
+`portable-shell-trial-v1`
+
+## Problem
+
+ChopDot has a strong product ambition, but previous production-facing UI work
+became heavy and drifted away from the user. The AI Studio shell proved that
+small jobs, simple state, and end-to-end checks can produce a clearer product
+surface quickly.
+
+This trial tests whether that clearer shell can become a portable mini-app
+foundation before adding backend, wallet, external OCR, or payment complexity.
+
+## Current Truth To Preserve
+
+- ChopDot is a group-money product, not a dashboard or protocol console.
+- Normal users should see one obvious next action per screen.
+- `request_sent`, `marked_paid`, and `confirmed` are separate states.
+- A payer saying they paid does not reduce the organizer's net position until
+  the organizer confirms received.
+- Finishing a group creates a readable group summary without changing open
+  money truth.
+- Internal/dev surfaces stay hidden from normal users.
+- Cross-device payment authority does not exist in this static shell; the
+  future boundary is defined in `PAYMENT_INTENT_CONTRACT.md`.
+
+## Scope In
+
+- Keep the current local group-money journey working.
+- Add environment capability seams only where they reduce host-specific code.
+- Test the same journey in multiple host environments.
+- Capture screenshots and capability notes for each host.
+
+## Scope Out
+
+- Real auth.
+- Real payment processing.
+- Wallet signing.
+- External receipt OCR or image recognition.
+- Backend persistence.
+- Cross-device sync.
+- New group-money modes.
+- Host-specific product forks.
+
+## Requirements
+
+1. The same source code SHALL run in standard web and mobile-browser contexts.
+2. The normal journey SHALL remain:
+   `guest -> group -> spend -> split -> settle -> payer paid -> confirm -> finish -> history`.
+3. Environment behavior SHALL be represented as capabilities, not product
+   forks.
+4. Clipboard/share behavior SHALL use a capability seam with an honest fallback.
+5. Normal UI SHALL NOT show adapter, protocol, host, native, proof, or state
+   machine language.
+6. Every normal screen SHALL keep one dominant next action.
+7. Refresh/persistence limitations SHALL be called out until a persistence seam
+   exists.
+8. No new product mode SHALL be added before the portability proof packet exists.
+9. Payment request links SHALL be real portable URLs that can open the payer
+   view directly when the shell has matching local state.
+10. Payment request links SHALL show a standalone payer request on fresh devices
+    without claiming cross-device sync.
+11. Security-sensitive host data SHALL stay outside product truth unless it
+    passes the foundation in `SECURITY_FOUNDATION.md`.
+12. Future cross-device payment commands SHALL use the scoped authority,
+    idempotency, evidence, and audit rules in `PAYMENT_INTENT_CONTRACT.md`.
+
+## Scenarios
+
+### Clipboard Capability
+
+GIVEN a friend row is visible
+WHEN the user taps Copy invite
+THEN ChopDot attempts the environment clipboard capability
+AND shows `Copied` if it succeeds
+AND shows `Invite ready` if the host blocks clipboard access.
+
+### Payment Truth
+
+GIVEN Leo is open
+WHEN Mina sends a link
+THEN Leo becomes request sent
+AND Mina's net position does not decrease.
+
+GIVEN Mina has sent Leo a link
+WHEN Leo opens that payer URL directly
+THEN ChopDot shows the correct group, requester, payer, amount, and payment
+method
+AND Leo can mark the payment as paid from that screen.
+
+GIVEN Leo opens Mina's payer URL in a fresh app context
+WHEN no matching local group state exists
+THEN ChopDot shows a standalone payment request
+AND the screen still shows group, requester, payer, amount, currency, and
+payment method
+AND it does not claim Mina has been notified.
+
+GIVEN Leo taps `I paid Mina` in standalone mode
+WHEN the action completes
+THEN ChopDot shows `Marked as paid`
+AND says Mina still needs to confirm.
+
+GIVEN Leo is request sent
+WHEN Leo marks paid
+THEN Leo becomes needs confirm
+AND Mina's net position does not decrease.
+
+GIVEN Leo is needs confirm
+WHEN Mina confirms received
+THEN Leo becomes confirmed
+AND Mina's net position decreases by Leo's amount.
+
+### Finish Group
+
+GIVEN Nina is still open
+WHEN Mina finishes the group
+THEN the group summary shows Nina as open
+AND the still-open amount remains visible.
+
+## Proof Packet
+
+For each target host, capture:
+
+- first-run / guest setup
+- empty home
+- create group
+- group detail before spend
+- add spend
+- review split
+- open balances
+- settle up
+- payer view
+- needs confirm
+- after confirm
+- finish group
+- history
+
+Record:
+
+- viewport size
+- safe-area behavior
+- clipboard/share behavior
+- storage behavior
+- back navigation behavior
+- any host-specific blockers
+
+## Falsifiers
+
+Pause or kill this trial if:
+
+- the shell requires separate product flows per environment;
+- adapter work becomes larger than the group-money journey;
+- the UI gets worse to satisfy a host;
+- normal users see host/protocol/internal language;
+- local-state limitations make the proof misleading;
+- a host, URL packet, or evidence source can bypass the payment-intent contract;
+- the same journey cannot be screenshot-proven in at least two environments.
+
+## Next Ordered Tasks
+
+1. Verify web/mobile-browser journey from a clean load. `Done for local web`
+2. Add a minimal environment capability seam. `Done`
+3. Route clipboard invite through the seam. `Done`
+4. Add a persistence seam, still local-only. `Done`
+5. Produce the first web/mobile proof packet. `Done for local web`
+6. Select one mini-app host candidate for the second proof packet. `Done with Telegram-style embedded simulation`
+7. Add Telegram Mini App readiness seam. `Done`
+8. Package or deploy into a real Telegram Mini App sandbox. `Done for HTTPS deploy; BotFather client setup remains manual`
+9. Validate inside the real Telegram mobile client. `Next`
+
+## Current Proof
+
+### Capture Truth Correction
+
+`portable-capture-truth-correction-v2` keeps manual amount and reason entry as
+the honest normal capture surface. The app does not show receipt import, file
+selection, filenames, OCR, or extraction language.
+
+The replaceable extraction module and its unit tests remain dormant source
+infrastructure for a future privacy-reviewed provider. It is not connected to
+normal routing and is not counted as product proof.
+
+Preserved authority boundary:
+
+- `CaptureSpend` holds draft values only;
+- `ReviewSplit` remains the only normal UI that dispatches `ADD_EXPENSE`;
+- payment, closeout, host-session, wallet, and payment-intent behavior is
+  unchanged.
+
+Host governance:
+
+- human registry: `HOSTS.md`
+- machine matrix: `proof/host-matrix.json`
+- rule: one portable ChopDot shell with host profiles, not separate host
+  products
+
+Local web proof packet:
+
+- path: `proof/portable-shell-web/`
+- host profile: `web`
+- viewport: `390 x 844`
+- screenshots: `24`
+- report: `proof/portable-shell-web/report.json`
+- storage: `localStorage` key `chopdot-portable-shell-state-v1`
+- result: full normal journey completed and state persisted after refresh
+- capture truth: amount and reason appear directly; no receipt promise is shown
+
+Live HTTPS web proof packet:
+
+- path: `proof/portable-shell-web-live/`
+- host profile: `web`
+- url: `https://portable-shell-trial.vercel.app`
+- viewport: `390 x 844`
+- screenshots: `20`
+- report: `proof/portable-shell-web-live/report.json`
+- result: full normal journey completed and state persisted after refresh
+
+Covered path:
+
+```text
+first run
+-> guest setup
+-> empty home
+-> create group
+-> group before spend
+-> add spend
+-> review split
+-> open balances
+-> settle up
+-> request sent
+-> standalone payer request remains display-only
+-> payment request
+-> needs confirm
+-> confirm received
+-> finish group
+-> group summary
+-> history/home
+-> reload with persisted state
+```
+
+Telegram-style embedded webview proof packet:
+
+- path: `proof/portable-shell-telegram/`
+- host profile: `telegram`
+- viewport: `390 x 844`
+- screenshots: `24`
+- report: `proof/portable-shell-telegram/report.json`
+- storage: `localStorage` key `chopdot-portable-shell-state-v1`
+- host simulation: mobile Telegram-like user agent plus `window.Telegram.WebApp`
+  object with `BackButton`, `MainButton`, and `CloudStorage`
+- result: full normal journey completed and state persisted after refresh
+- launch param: `tgWebAppStartParam=portable-proof`
+- adapter calls verified: `ready`, `expand`, `setHeaderColor`,
+  `setBackgroundColor`, `BackButton.show`, `BackButton.onClick`,
+  `BackButton.offClick`, and `CloudStorage.setItem`
+
+Capability matrix from the simulated embedded run:
+
+```json
+{
+  "canUseLocalStorage": true,
+  "canUseClipboard": true,
+  "canUseShareSheet": true,
+  "canUseTelegramCloudStorage": true,
+  "launchStartParam": "portable-proof",
+  "telegramPlatform": "ios",
+  "hostBackButton": true,
+  "hostMainButton": true,
+  "hasTelegramWebApp": true,
+  "safeAreaInsets": {
+    "top": "0px",
+    "right": "0px",
+    "bottom": "0px",
+    "left": "0px"
+  }
+}
+```
+
+Telegram readiness seam:
+
+- The Telegram script is conditionally loaded only for Telegram-like launches,
+  avoiding normal web pollution.
+- `src/environment/index.ts` detects `telegram-mini-app` when
+  `window.Telegram.WebApp` is present.
+- The app initializes Telegram with `ready()`, `expand()`, header color, and
+  background color while keeping those calls hidden from normal UI.
+- The app maps Telegram's host back button to the same view-level back behavior
+  used by existing visible back buttons.
+- The app reads Telegram launch parameters through the environment seam.
+- The app mirrors local state writes to Telegram `CloudStorage` when available,
+  while keeping `localStorage` as the current readable prototype persistence
+  source.
+
+Portable request-link seam:
+
+- `src/requestLinks.ts` creates and parses payer URLs with `payGroupId` and
+  `payMemberId` query parameters plus a compact `payRequest` summary for fresh
+  devices.
+- `src/environment/index.ts` exposes a shared host capability contract and a
+  share-or-copy fallback.
+- `Settle up` creates the payer link after moving open shares to
+  `request_sent`.
+- Opening a valid payer link routes directly to `PayerView` when the matching
+  local request state exists.
+- Opening a valid payer link without matching local state routes to
+  `StandalonePayerRequest`.
+- This is still local/offline prototype behavior, not cross-device backend sync.
+
+Live HTTPS Telegram-style proof packet:
+
+- path: `proof/portable-shell-telegram-live/`
+- host profile: `telegram`
+- url: `https://portable-shell-trial.vercel.app/?tgWebAppStartParam=portable-proof`
+- viewport: `390 x 844`
+- screenshots: `24`
+- report: `proof/portable-shell-telegram-live/report.json`
+- result: full normal journey completed, fresh-device payer action passed, and
+  state persisted after refresh
+
+Deployment:
+
+- alias: `https://portable-shell-trial.vercel.app`
+- deployment: `https://portable-shell-trial-d6vd4j1g8-devinsons-projects-b5ab981e.vercel.app`
+- sandbox setup notes: `TELEGRAM_SANDBOX.md`
+
+This does not prove a real Telegram deployment, real share-sheet behavior,
+host SDK payment behavior, BotFather setup, server-side `initData` validation,
+or production mini-app packaging. It proves the current shell can complete the
+same core journey in a Telegram-like embedded browser shape without forking
+product UI or breaking local persistence.
+
+Live `.dot` capture-truth proof packet:
+
+- path: `proof/portable-shell-dot-host/`
+- host profile: `dot-host`
+- url: `https://chopdot-shell-proof.paseo.li/?chainBackend=rpc-gateway`
+- source commit: `07936cde23a4de5aa1779c17616897021792a41c`
+- CID: `bafybeigpwh2lbozdsxp6hddiw7f562kylhsxo7s6pltrrqxf47jlcpwhty`
+- screenshots: `22`
+- report: `proof/portable-shell-dot-host/report.json`
+- result: manual capture, review, payer action, receiver confirmation, settled
+  summary, and persisted reload passed inside the live host
+- review: `proof/portable-capture-live-host-proof-2026-07-15.md`
+
+The focused amount/title frame can briefly show a black host-owned area above
+the app in automated `.dot` screenshots. The form and bottom action remain
+usable and normal host chrome returns on the review screen. This remains a
+host-viewport polish item.

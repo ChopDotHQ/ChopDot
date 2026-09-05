@@ -1,0 +1,12 @@
+✔ one signed limited action yields one explicit scoped response and no membership authority (64.211333ms)
+✔ recipient, account, action, expense, amount, currency, expiry, and signature are bound (23.713834ms)
+✔ group history, secret, membership role, organizer and receiver grants are forbidden fields (2.361583ms)
+✔ conflicting request or response replay preserves first content (13.06475ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 592.863791

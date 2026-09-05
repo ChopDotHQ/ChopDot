@@ -1,0 +1,5 @@
+Command: node --import tsx --test tests/candidate-batch3-money-foundation.test.ts tests/candidate-batch3-money-migration.test.ts tests/candidate-batch3-money-convergence.test.ts
+Captured: 2026-08-13T10:55:00Z
+Result: PASS
+Tests: 15 passed, 0 failed
+Coverage: exact CHF minor units; balanced postings and conservation; deterministic remainder; currency isolation; canonical signed metadata; lifecycle separation; wrong actor; immutable close and successor; correction/refund/partial/fee/dispute/waiver; portable-shell float migration/quarantine; year-long app normalized Supabase minor-unit adaptation/quarantine; duplicate/reordered/concurrent convergence.

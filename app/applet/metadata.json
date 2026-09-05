@@ -1,0 +1,8 @@
+{
+  "name": "launch-shell-truth-correction-v2",
+  "description": "Bill splitting app with modern UI, fixing shell-truth defects.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

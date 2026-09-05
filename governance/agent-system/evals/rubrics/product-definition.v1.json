@@ -1,0 +1,110 @@
+{
+  "rubric_version": "1.0.0",
+  "rubric_id": "rubric-product-definition-v1",
+  "profile_id": "product-definition",
+  "score_range": { "minimum": 0, "maximum": 100 },
+  "pass_threshold": 90,
+  "hard_fail_rules": [
+    "PROD-BASELINE",
+    "PROD-EVIDENCE",
+    "PROD-LAYERING",
+    "PROD-SCORE",
+    "PROD-LAW",
+    "PROD-TRACE",
+    "PROD-FAILURE",
+    "PROD-INDEPENDENT",
+    "PROD-OUTCOME-CONTRACT",
+    "PROD-CONTEXT",
+    "PROD-COMPARE"
+  ],
+  "dimensions": [
+    {
+      "id": "PROD-BASELINE",
+      "weight": 15,
+      "measurement": "Join the bounded journey to product/benchmark-baseline.md and count applicable baseline IDs without an accepted disposition, dated evidence state, and exact ChopDot proof plan.",
+      "full_credit": "Unresolved required baseline count equals zero; every applicable ID preserves its must-match, must-exceed, or mode-baseline treatment and is covered, intentionally-exclude with approval and user consequence, or not-applicable with rationale.",
+      "zero_credit": "Any applicable baseline ID is absent or unresolved, or the definition claims category completeness without requirement-level mapping.",
+      "evidence_required": ["benchmark source identity", "baseline coverage matrix", "intentional exclusion approvals", "exact ChopDot proof plan"]
+    },
+    {
+      "id": "PROD-EVIDENCE",
+      "weight": 10,
+      "measurement": "Compare every benchmark and parity statement with its preserved E1-public-source, E2-hands-on, or E3-chopdot-proof evidence state.",
+      "full_credit": "Evidence overclaim count equals zero, E2 gaps remain explicit, and every hands-on or ChopDot implementation claim cites the required evidence class.",
+      "zero_credit": "E1 is presented as hands-on proof, competitor evidence is presented as ChopDot proof, or missing E2 work is silently upgraded by synthesis or confidence.",
+      "evidence_required": ["evidence-grade register", "dated citations", "open E2 gaps", "overclaim check"]
+    },
+    {
+      "id": "PROD-LAYERING",
+      "weight": 10,
+      "measurement": "Inspect the definition order and count cases where differentiation or experiments precede, replace, or obscure an unresolved category basic.",
+      "full_credit": "Product-layer violation count equals zero; category baseline is complete first, differentiated outcomes are measurable, and experiments have falsifiers and baseline fallbacks.",
+      "zero_credit": "A score, fixture, scenario, differentiator, or experiment substitutes for a missing basic, or an experiment is presented as accepted product behavior.",
+      "evidence_required": ["layered definition", "differentiated outcomes", "experiment hypotheses and falsifiers", "baseline fallback"]
+    },
+    {
+      "id": "PROD-SCORE",
+      "weight": 5,
+      "measurement": "Read the recorded friction, trust, clarity, and language subscores and calculate the total after baseline validation without using it as benchmark, implementation, or ranking evidence.",
+      "full_credit": "The total is at least eight of ten, every subscore is evidenced, and separate evidence proves baseline, implementation, and priority claims.",
+      "zero_credit": "The total is below eight, asserted without component scores, or used as baseline, parity, implementation, or priority proof.",
+      "evidence_required": ["product gate", "score calculation", "separate baseline and priority rationale"]
+    },
+    {
+      "id": "PROD-LAW",
+      "weight": 15,
+      "measurement": "Compare each requirement, baseline disposition, priority claim, differentiator, experiment, and scenario with the exact PRODUCT_TRUTH.md identity.",
+      "full_credit": "Product-law conflict count equals zero and the inspected source digest is recorded.",
+      "zero_credit": "Any conflict remains or the source identity is missing.",
+      "evidence_required": ["product-law digest", "independent conflict review"]
+    },
+    {
+      "id": "PROD-TRACE",
+      "weight": 10,
+      "measurement": "Join requirement IDs to GIVEN WHEN THEN scenarios and proof methods.",
+      "full_credit": "Unmapped requirement count equals zero and every scenario has a measurable THEN.",
+      "zero_credit": "Any requirement lacks a scenario or proof method.",
+      "evidence_required": ["traceability matrix", "scenario validation"]
+    },
+    {
+      "id": "PROD-FAILURE",
+      "weight": 10,
+      "measurement": "Inspect the user-visible failure, recovery, authority, privacy, and accepted baseline fallback paths.",
+      "full_credit": "Failure and recovery are actionable, preserve authority and privacy, and retain a usable accepted baseline when an experiment fails.",
+      "zero_credit": "The failure path is missing, silent, requires infrastructure diagnosis, or abandons the category basic.",
+      "evidence_required": ["failure scenario", "baseline fallback", "product review"]
+    },
+    {
+      "id": "PROD-INDEPENDENT",
+      "weight": 5,
+      "measurement": "Verify that a first view of user state, job, action, outcome, authority, and risk was recorded before accepting the ranked Cockpit recommendation.",
+      "full_credit": "The independent view is timestamped, source-bounded, and explicitly compared with the Cockpit result.",
+      "zero_credit": "The assessment merely restates the current card or numeric priority.",
+      "evidence_required": ["independent first view", "Cockpit comparison"]
+    },
+    {
+      "id": "PROD-OUTCOME-CONTRACT",
+      "weight": 10,
+      "measurement": "Inspect the selected card for expected outcome, proof, failure, owner, and exit condition.",
+      "full_credit": "Every field is specific, testable, owned, and bounded.",
+      "zero_credit": "Any field is missing, circular, or only subjective wording.",
+      "evidence_required": ["priority outcome contract", "owner and exit"]
+    },
+    {
+      "id": "PROD-CONTEXT",
+      "weight": 5,
+      "measurement": "Verify audience and action scope against the observed user or operator state.",
+      "full_credit": "One obvious action is scoped to one bounded state and no generated surface, fixture, benchmark example, or roadmap phase universalizes it.",
+      "zero_credit": "A route or card action is presented as the default for every ChopDot state.",
+      "evidence_required": ["user or operator state", "action scope", "generated-view check"]
+    },
+    {
+      "id": "PROD-COMPARE",
+      "weight": 5,
+      "measurement": "Inspect why the selected card is now and why at least the next two eligible alternatives are not now.",
+      "full_credit": "The comparison uses baseline gaps, outcomes, trust and risk, dependency leverage, evidence confidence, effort, and opportunity cost.",
+      "zero_credit": "The verdict cites only numeric priority, status, source order, or product score.",
+      "evidence_required": ["eligible-card comparison", "alternatives not now"]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "chopdot.recovery-head-index-pvm.v1",
+  "source": {
+    "path": "contracts/recovery-head-index/src/RecoveryHeadIndex.sol",
+    "sha256": "2da5178aaa0066512f5e742b43d46597665d474f251e9b860b48a247322781cb"
+  },
+  "contract": "RecoveryHeadIndex",
+  "compiler": {
+    "package": "@parity/resolc",
+    "packageVersion": "1.4.0",
+    "resolcVersion": "1.4.0+commit.ca3c770.llvm-22.1.5",
+    "solcPackageVersion": "0.8.28",
+    "solcVersion": "0.8.28+commit.7893614a.Emscripten.clang"
+  },
+  "optimizer": {
+    "mode": "z",
+    "enabled": true,
+    "runs": 200
+  },
+  "buildInputsSha256": "86d645e9f5247dcca97c7cb033cce9bf7a7035ba766be9432c9a1878158e4ae0",
+  "bytecode": {
+    "path": "contracts/recovery-head-index/artifacts/RecoveryHeadIndex.polkavm",
+    "bytes": 5561,
+    "sha256": "f73520ea129a07dc5827ce3826fb730930ce4a2a2081bb7b5a3665c243b2b9b2"
+  },
+  "abi": {
+    "path": "contracts/recovery-head-index/artifacts/RecoveryHeadIndex.abi.json",
+    "bytes": 2270,
+    "sha256": "fdd95bedb42457a020f387b430f0e1d861efaa5204119069b8b56d5ca9ec42b1"
+  },
+  "artifactSetSha256": "5be85f677aca6279f4a0f4e04e9b389855805a40141e75076eaabe95734f5af9"
+}

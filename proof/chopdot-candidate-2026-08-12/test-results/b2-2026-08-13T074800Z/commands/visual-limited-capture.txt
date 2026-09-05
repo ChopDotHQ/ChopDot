@@ -1,0 +1,13 @@
+
+[WebServer] (node:29571) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+
+(node:29575) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/2] tests/candidate-batch2-limited-actual-route.spec.ts:14:1 › limited actual App route responds to one dinner without joining
+[2/2] tests/candidate-batch2-limited-actual-route.spec.ts:51:1 › limited actual App route explains wrong-account and expired requests without changing product state
+  2 passed (3.2s)

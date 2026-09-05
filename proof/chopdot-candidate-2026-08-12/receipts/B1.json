@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 2,
+  "batch": "B1",
+  "deliveryTrainId": "chopdot-functional-candidate-2026-08-12",
+  "runStartedAt": "2026-08-12T14:45:00Z",
+  "runCompletedAt": "2026-08-12T14:48:11Z",
+  "candidate": {
+    "id": "b1-2026-08-12",
+    "head": "81e56801a059253ca3daf667251239d4776e96f4",
+    "tree": "717ace4938361262aa9e083060327ec20bc47c1e9d446291c6d854bc44373c9d",
+    "packageLockSha256": "26146d0fe63cc93e75f2c9ecc41cfd702cde1a77441944812e92cff1768016b4",
+    "snapshotAt": "2026-08-12T14:44:00Z",
+    "clean": false
+  },
+  "controls": [
+    {"id":"B1-G0-STABLE-IDENTITY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-G0-HOST-HELD-SIGNING","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-CONTACT-ACCOUNT-BINDING","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-ORGANIZER-SIGNED-INVITE","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-SELECTED-ROOM-DELIVERY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-PENDING-NOT-MEMBER","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-EXPLICIT-ACCEPT-DECLINE-UI","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-INVITEE-SIGNED-DECISION","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-PROTECTED-GRANT","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-ADVERSARIAL-AUTHORITY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-DURABLE-DELIVERY","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-ISOLATED-HOST-SIM","lane":"local","status":"PASS","evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"B1-LIVE-CONTACT-LOOKUP","lane":"live","status":"BLOCKED","evidence":[]},
+    {"id":"B1-LIVE-CHAT-DELIVERY","lane":"live","status":"BLOCKED","evidence":[]},
+    {"id":"B1-LIVE-TWO-PRODUCT-ACCOUNTS","lane":"live","status":"BLOCKED","evidence":[]}
+  ],
+  "commands": [
+    {"id":"b1-membership-foundation","lane":"local","command":"node --import tsx --test src/membership/membershipLifecycle.test.ts src/membership/signedMembershipEvents.test.ts src/membership/signedMembershipJournal.test.ts src/membership/chatInvitationTransport.test.ts src/membership/membershipDeliveryOutbox.test.ts","exitCode":0,"evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"b1-coordinator","lane":"local","command":"node --import tsx --test src/membership/trustedContactInvitationCoordinator.test.ts","exitCode":0,"evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"b1-ui-sim","lane":"local","command":"npx playwright test tests/membership-invitation-ui.spec.ts --config=playwright.host-sim.config.ts --workers=1","exitCode":0,"evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"b1-secret-boundary","lane":"local","command":"node --import tsx --test src/membership/groupKeyHandoff.test.ts","exitCode":0,"evidence":[{"path":"test-results/b1-2026-08-12/B1-EVIDENCE.md","sha256":"42eade1de2dfcfc7ccb9e358aac6cbb3e05e038253168cc1db2777a075a8b4b9","capturedAt":"2026-08-12T14:48:11Z"}]},
+    {"id":"b1-live-contact","lane":"live","command":"npx playwright test tests/candidate-batch1-live-existing-contact.spec.ts --config=playwright.live-dot.config.ts --workers=1","exitCode":1,"evidence":[]}
+  ],
+  "liveEnvironmentVerified": false,
+  "actionTimeApproval": false
+}

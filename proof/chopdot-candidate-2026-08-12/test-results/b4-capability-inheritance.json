@@ -1,0 +1,76 @@
+{
+  "v": 1,
+  "generatedAt": "2026-08-13T11:55:23.127Z",
+  "scope": "Batch 4 delta only",
+  "disposition": "adapt and migrate behind One Chop Core; no wholesale merge",
+  "results": [
+    {
+      "id": "receipt-file-first",
+      "file": "src/components/journey/DinnerJourneyEntry.tsx",
+      "status": "PASS",
+      "missing": []
+    },
+    {
+      "id": "receipt-link-first",
+      "file": "src/components/journey/DinnerJourneyEntry.tsx",
+      "status": "PASS",
+      "missing": []
+    },
+    {
+      "id": "manual-correction-fallback",
+      "file": "src/components/journey/DinnerJourneyEntry.tsx",
+      "status": "PASS",
+      "missing": []
+    },
+    {
+      "id": "exact-three-person-split",
+      "file": "src/journey/dinnerJourney.ts",
+      "status": "PASS",
+      "missing": []
+    },
+    {
+      "id": "one-signed-event-authority",
+      "file": "src/journey/dinnerJourney.ts",
+      "status": "PASS",
+      "missing": []
+    },
+    {
+      "id": "payment-state-separation",
+      "file": "src/components/journey/DinnerJourneyEntry.tsx",
+      "status": "PASS",
+      "missing": []
+    },
+    {
+      "id": "offline-durable-retry",
+      "file": "src/journey/dinnerJourney.ts",
+      "status": "PASS",
+      "missing": []
+    },
+    {
+      "id": "immutable-saved-record",
+      "file": "src/core/moneyEventKernel.ts",
+      "status": "PASS",
+      "missing": []
+    },
+    {
+      "id": "actual-app-route",
+      "file": "src/App.tsx",
+      "status": "PASS",
+      "missing": []
+    },
+    {
+      "id": "main-app-money-migration",
+      "file": "tests/candidate-batch3-money-migration.test.ts",
+      "status": "PASS",
+      "missing": []
+    }
+  ],
+  "deferred": [
+    "savings circles",
+    "emergency pots",
+    "community funds",
+    "live Desktop archive/locator composition",
+    "exact observed payment adapter"
+  ],
+  "verdict": "PASS"
+}
