@@ -40,6 +40,24 @@ const expectedFingerprints = [
   'a0e85fbc8eab57f55af0ed25e24720cac5da7295:prototypes/experience-workbench/journeys/11-settle-up/v1.1-golden-candidate.html:generic-api-key:308',
   'a0e85fbc8eab57f55af0ed25e24720cac5da7295:prototypes/experience-workbench/journeys/11-settle-up/v1.1-golden-candidate.html:generic-api-key:316',
   'a0e85fbc8eab57f55af0ed25e24720cac5da7295:prototypes/experience-workbench/journeys/11-settle-up/v1.1-golden-candidate.html:generic-api-key:337',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json:generic-api-key:956',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/v1.1-golden-candidate.html:generic-api-key:308',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/v1.1-golden-candidate.html:generic-api-key:316',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json:generic-api-key:1429',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_EVENT_MAPPING.json:generic-api-key:1473',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_COMPATIBILITY_MAPPING.json:generic-api-key:53',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_COMPATIBILITY_MAPPING.json:generic-api-key:108',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_COMPATIBILITY_MAPPING.json:generic-api-key:152',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_COMPATIBILITY_MAPPING.json:generic-api-key:284',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_COMPATIBILITY_MAPPING.json:generic-api-key:295',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_COMPATIBILITY_MAPPING.json:generic-api-key:339',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_COMPATIBILITY_MAPPING.json:generic-api-key:955',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_COMPATIBILITY_MAPPING.json:generic-api-key:1428',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/UI_COMPATIBILITY_MAPPING.json:generic-api-key:1472',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/v1.1-golden-candidate.html:generic-api-key:606',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/v1.1-golden-candidate.html:generic-api-key:754',
+  'facafaef6f2bbc1d15f7e189d9f293ea14cb1402:prototypes/experience-workbench/journeys/11-settle-up/v1.1-golden-candidate.html:generic-api-key:766',
+  '69177e1df70fc62753d15baf86e0fb9c284a6a60:prototypes/experience-workbench/tools/apply-j11-compatibility-closeout.mjs:generic-api-key:90',
 ];
 
 const releaseSpecs = [
@@ -140,9 +158,9 @@ function browserEvidenceFailures(source) {
   return failures;
 }
 
-test('Gitleaks baseline is exactly the 26 reviewed fingerprints', () => {
+test('Gitleaks baseline is exactly the 44 reviewed fingerprints', () => {
   assert.deepEqual(baseline, expectedFingerprints);
-  assert.equal(new Set(baseline).size, 26);
+  assert.equal(new Set(baseline).size, 44);
   assert(baseline.every(value => /^[0-9a-f]{40}:.+:(?:generic-api-key|jwt):[1-9][0-9]*$/u.test(value)));
   for (const fingerprint of expectedFingerprints) assert.match(classification, new RegExp(fingerprint.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'));
   assert.match(classification, /no human rotation blocker/u);
