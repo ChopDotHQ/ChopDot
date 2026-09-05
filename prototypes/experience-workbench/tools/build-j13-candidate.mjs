@@ -1,0 +1,33 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import zlib from 'node:zlib';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+const root=path.resolve(import.meta.dirname,'..');
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const dir=path.join(root,'registry/j13-candidate.json.br.b64.parts');
+const names=fs.readdirSync(dir).filter(n=>/^\d{3}\.part$/.test(n)).sort();
+assert.deepEqual(names,['000.part','001.part','002.part','003.part','004.part'],'Incomplete J13 bundle');
+const bytes=Buffer.from(names.map(n=>fs.readFileSync(path.join(dir,n),'utf8').trim()).join(''),'base64');
+assert.equal(hash(bytes),'42bc3365de39b75726665354c52800e197ed16af28ac1890b51c543e57491b27','J13 bundle checksum');
+const bundle=JSON.parse(zlib.brotliDecompressSync(bytes).toString('utf8'));
+assert.equal(bundle.name,'2026-09-06-j13-v1-candidate');
+for(const [relative,content] of Object.entries(bundle.files)){
+ const allowed=relative.startsWith('journeys/13-request-money/')||relative==='registry/next-support-candidate.json'||relative==='registry/checkpoints/2026-09-06-j13-v1-candidate.json';
+ const target=path.resolve(root,relative);
+ assert(allowed&&!relative.split('/').includes('..')&&target.startsWith(root+path.sep),'Unsafe J13 path');
+ assert.equal(typeof content,'string');fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,content);
+}
+const reference=fs.readFileSync(path.join(root,'journeys/09-manage-people/v1-candidate.html'),'utf8');
+assert.equal(hash(reference),'715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d','Approved J09 changed');
+const styles=[...reference.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)].map(m=>m[1]);
+assert.equal(hash(styles[0]),'7fdf48665ca5e823ac98752df0cf7fe5a106484f9738113d9c730018d3d6f2d2');
+assert.equal(hash(styles[1]),'670a70382097f7456e4b8202fbeddc29b0d42b8ab5f7a40f0b7a2bb0d9207df4');
+const j=path.join(root,'journeys/13-request-money');
+fs.writeFileSync(path.join(j,'source/inherited.css'),styles[0]);
+fs.writeFileSync(path.join(j,'source/people.css'),styles[1]);
+fs.copyFileSync(path.join(root,'journeys/09-manage-people/source/model.cjs'),path.join(j,'source/people-fixtures.cjs'));
+execFileSync(process.execPath,[path.join(j,'source/build.mjs')],{stdio:'inherit'});
+assert.equal(hash(fs.readFileSync(path.join(j,'v1-candidate.html'))),'a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707','Built J13 differs from reviewed QA artifact');
+console.log('Prepared Request Money V1 and exact-artifact QA evidence. Approved HTML was not written.');
