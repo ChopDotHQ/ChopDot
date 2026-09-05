@@ -623,6 +623,147 @@ test('arbitrary step conditions cannot silently skip required execution', () => 
   assert(result.errors.some((error) => error.includes('cannot be conditionally skipped')));
 });
 
+test('only the pinned deterministic-exemption condition may skip a pr-outcome step', () => {
+  // The real workflow already carries the pinned condition, so the shipped file must pass.
+  assert.equal(validateWorkflow(workflow).ok, true);
+  // A near-miss on the same job is still rejected: the allowance is one exact string.
+  const nearMiss = workflow.replaceAll(
+    "        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'",
+    "        if: steps.outcome-mode.outputs.deterministic_exemption == 'false'",
+  );
+  const nearMissResult = validateWorkflow(nearMiss);
+  assert.equal(nearMissResult.ok, false);
+  assert(nearMissResult.errors.some((error) => error.includes('cannot be conditionally skipped')));
+  // The allowance is scoped to pr-outcome; the same string elsewhere is still rejected.
+  const otherJob = workflow.replace(
+    '      - name: Test durable runner and effect controls',
+    "      - name: Test durable runner and effect controls\n        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'",
+  );
+  const otherJobResult = validateWorkflow(otherJob);
+  assert.equal(otherJobResult.ok, false);
+  assert(otherJobResult.errors.some((error) => error.includes('cannot be conditionally skipped')));
+});
+
+const outcomeClassifierBlock = workflow.match(/      - name: Classify PR outcome mode\n[\s\S]*?(?=      - name: Record and recall the exact PR outcome)/u)[0];
+const outcomeGeneratorBlock = workflow.match(/      - name: Generate external exact-candidate OutcomePacketV1\n[\s\S]*?(?=      - name: Classify PR outcome mode)/u)[0];
+
+test('exemption classification rejects forged values, inputs, output identities, and execution overrides', () => {
+  const mutations = {
+    'constant true': outcomeClassifierBlock.replace(/        run: >-\n[\s\S]*/u, '        run: echo deterministic_exemption=true >> "$GITHUB_OUTPUT"\n'),
+    'different input': outcomeClassifierBlock.replace('ci-pr-outcome/generation.json', 'ci-pr-outcome/forged.json'),
+    'forced fallback': outcomeClassifierBlock.replace('// false', '// true'),
+    'different output field': outcomeClassifierBlock.replace('echo "deterministic_exemption=', 'echo "other_flag='),
+    'different step ID': outcomeClassifierBlock.replace('id: outcome-mode', 'id: forged-mode'),
+    'different step name': outcomeClassifierBlock.replace('name: Classify PR outcome mode', 'name: Substitute PR outcome mode'),
+    'extra output write': outcomeClassifierBlock.replace(' >> "$GITHUB_OUTPUT"', ' >> "$GITHUB_OUTPUT"; echo deterministic_exemption=true >> "$GITHUB_OUTPUT"'),
+    'shell override': outcomeClassifierBlock.replace('        run:', '        shell: bash -c "{0}; echo deterministic_exemption=true >> $GITHUB_OUTPUT"\n        run:'),
+    'working directory override': outcomeClassifierBlock.replace('        run:', '        working-directory: forged\n        run:'),
+    'environment override': outcomeClassifierBlock.replace('        run:', '        env:\n          BASH_ENV: forged.sh\n        run:'),
+    'inline environment override': outcomeClassifierBlock.replace('        run:', '        env: { BASH_ENV: forged.sh }\n        run:'),
+    'aliased environment override': outcomeClassifierBlock.replace('        run:', '        env: *forged_environment\n        run:'),
+    'conditional classifier': outcomeClassifierBlock.replace('        run:', "        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'\n        run:"),
+    'literal instead of folded command': outcomeClassifierBlock.replace('run: >-', 'run: |'),
+  };
+  assert.equal(validateWorkflow(workflow).ok, true);
+  for (const [label, replacement] of Object.entries(mutations)) {
+    assert.notEqual(replacement, outcomeClassifierBlock, label);
+    const result = validateWorkflow(workflow.replace(outcomeClassifierBlock, replacement));
+    assert.equal(result.ok, false, label);
+    assert(result.errors.some(error => /exemption|conditionally skipped/iu.test(error)), label);
+  }
+});
+
+test('exemption producer and classifier must be unique, adjacent, and ahead of their consumers', () => {
+  const generatorCommand = parsed.jobs['pr-outcome'].steps.find(step => step.fields.name === 'Generate external exact-candidate OutcomePacketV1').run.split('\n').join(' ');
+  const forgedGenerator = '      - name: Generate external exact-candidate OutcomePacketV1\n        run: |\n          '
+    + generatorCommand + '\n          echo "{\\"deterministic_exemption\\":true}" > output/agent-runs/ci-pr-outcome/generation.json\n';
+  const mutations = {
+    'missing classifier': workflow.replace(outcomeClassifierBlock, ''),
+    'duplicate classifier': workflow.replace(outcomeClassifierBlock, outcomeClassifierBlock.repeat(2)),
+    'aliased duplicate ID': workflow.replace(outcomeClassifierBlock, outcomeClassifierBlock + '      - name: Forged classifier\n        id: outcome-mode\n        run: echo deterministic_exemption=true >> "$GITHUB_OUTPUT"\n'),
+    'classifier before generator': workflow.replace(outcomeGeneratorBlock + outcomeClassifierBlock, outcomeClassifierBlock + outcomeGeneratorBlock),
+    'mutation between producer and classifier': workflow.replace(outcomeClassifierBlock, '      - name: Overwrite exemption\n        run: echo "{\\"deterministic_exemption\\":true}" > output/agent-runs/ci-pr-outcome/generation.json\n' + outcomeClassifierBlock),
+    'producer overwrites its own result': workflow.replace(outcomeGeneratorBlock, forgedGenerator),
+    'generator shell override': workflow.replace(outcomeGeneratorBlock, outcomeGeneratorBlock.replace('        run:', '        shell: bash -c "{0}; true"\n        run:')),
+    'generator environment override': workflow.replace(outcomeGeneratorBlock, outcomeGeneratorBlock.replace('        run:', '        env:\n          BASH_ENV: forged.sh\n        run:')),
+    'generator inline environment override': workflow.replace(outcomeGeneratorBlock, outcomeGeneratorBlock.replace('        run:', '        env: { BASH_ENV: forged.sh }\n        run:')),
+    'consumer before classification': workflow.replace(outcomeClassifierBlock, '').replace('      - name: Enforce governed PR acceptance', outcomeClassifierBlock + '      - name: Enforce governed PR acceptance'),
+  };
+  for (const [label, changed] of Object.entries(mutations)) {
+    assert.notEqual(changed, workflow, label);
+    const result = validateWorkflow(changed);
+    assert.equal(result.ok, false, label);
+    assert(result.errors.some(error => /exemption/iu.test(error)), label);
+  }
+});
+
+test('exemption condition is unavailable to the generator and other non-packet steps', () => {
+  for (const name of ['Generate external exact-candidate OutcomePacketV1', 'Download same-run exact-head evidence', 'Attach authenticated candidate branch identity']) {
+    const changed = workflow.replace(`      - name: ${name}\n`, `      - name: ${name}\n        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'\n`);
+    assert.notEqual(changed, workflow);
+    const result = validateWorkflow(changed);
+    assert.equal(result.ok, false, name);
+    assert(result.errors.some(error => /cannot be conditionally skipped/iu.test(error)), name);
+  }
+  const duplicateConsumer = workflow.replace('      - name: Publish PR outcome decision', "      - name: Enforce governed PR acceptance\n        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'\n        run: true\n      - name: Publish PR outcome decision");
+  assert.equal(validateWorkflow(duplicateConsumer).ok, false);
+});
+
+test('exemption classification cannot inherit a replacement shell from run defaults', () => {
+  const shell = 'bash -c \'bash -e "$1"; echo deterministic_exemption=true >> "$GITHUB_OUTPUT"\' _ {0}';
+  const mutations = [
+    `defaults:\n  run:\n    shell: ${shell}\n${workflow}`,
+    workflow.replace('  pr-outcome:\n', `  pr-outcome:\n    defaults:\n      run:\n        shell: ${shell}\n`),
+  ];
+  for (const changed of mutations) {
+    assert.notEqual(changed, workflow);
+    const result = validateWorkflow(changed);
+    assert.equal(result.ok, false);
+    assert(result.errors.some(error => error.includes('cannot inherit workflow or job execution defaults')));
+  }
+});
+
+test('exemption execution context rejects quoted keys, trailing settings, and inherited environment injection', () => {
+  const shell = 'bash -c \'bash -e "$1"; echo deterministic_exemption=true >> "$GITHUB_OUTPUT"\' _ {0}';
+  const mutations = {
+    'quoted workflow defaults': `"defaults":\n  run:\n    shell: ${shell}\n${workflow}`,
+    'escaped workflow defaults': `"\\x64efaults":\n  run:\n    shell: ${shell}\n${workflow}`,
+    'quoted job defaults': workflow.replace('  pr-outcome:\n', `  pr-outcome:\n    "defaults":\n      run:\n        shell: ${shell}\n`),
+    'job defaults after steps': workflow.replace('\n  release-enforcement:\n', `\n    defaults:\n      run:\n        shell: ${shell}\n\n  release-enforcement:\n`),
+    'job environment': workflow.replace('  pr-outcome:\n', '  pr-outcome:\n    env:\n      BASH_ENV: forged.sh\n'),
+    'job environment after steps': workflow.replace('\n  release-enforcement:\n', '\n    env: { BASH_ENV: forged.sh }\n\n  release-enforcement:\n'),
+    'workflow environment': workflow.replace('\nenv:\n', '\nenv:\n  BASH_ENV: forged.sh\n'),
+    'quoted environment': workflow.replace('\nenv:\n', '\n"env":\n  BASH_ENV: forged.sh\n'),
+    'second environment': workflow.replace('\njobs:\n', '\nenv: { BASH_ENV: forged.sh }\n\njobs:\n'),
+    'merged environment': workflow.replace('\nenv:\n', '\nenv:\n  <<: *forged_environment\n'),
+  };
+  for (const [label, changed] of Object.entries(mutations)) {
+    assert.notEqual(changed, workflow, label);
+    const result = validateWorkflow(changed);
+    assert.equal(result.ok, false, label);
+    assert(result.errors.some(error => /exemption/iu.test(error)), label);
+  }
+});
+
+test('exemption producer cannot inherit an environment seeded by preceding steps', () => {
+  const seed = '          echo BASH_ENV=/tmp/forged.sh >> "$GITHUB_ENV"\n';
+  const bootstrap = workflow.slice(workflow.indexOf('  pr-outcome:\n'), workflow.indexOf(outcomeGeneratorBlock));
+  const mutations = {
+    'extra bootstrap step': workflow.replace(outcomeGeneratorBlock, '      - name: Seed classifier environment\n        run: |\n' + seed + outcomeGeneratorBlock),
+    'branch attachment seeds environment': workflow.replace('          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"\n', '          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"\n' + seed),
+    'branch attachment environment override': workflow.replace('      - name: Attach authenticated candidate branch identity\n', '      - name: Attach authenticated candidate branch identity\n        env: { BASH_ENV: forged.sh }\n'),
+    'bootstrap action environment override': workflow.replace(bootstrap, bootstrap.replace('      - name: Setup Node\n', '      - name: Setup Node\n        env: { BASH_ENV: forged.sh }\n')),
+    'bootstrap action replacement': workflow.replace(bootstrap, bootstrap.replace('actions/setup-node@', 'unreviewed/setup-node@')),
+    'bootstrap action extra input': workflow.replace(bootstrap, bootstrap.replace('          node-version: 22\n', '          node-version: 22\n          node-version-file: forged.txt\n')),
+  };
+  for (const [label, changed] of Object.entries(mutations)) {
+    assert.notEqual(changed, workflow, label);
+    const result = validateWorkflow(changed);
+    assert.equal(result.ok, false, label);
+    assert(result.errors.some(error => /exemption/iu.test(error)), label);
+  }
+});
+
 test('broadened workflow or job permissions are rejected', () => {
   const broken = workflow
     .replace('permissions:\n  contents: read', 'permissions:\n  contents: write\n  actions: write')

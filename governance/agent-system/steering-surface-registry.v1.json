@@ -210,7 +210,7 @@
         "failure": "Block local push on missing, malformed, deletion, multi-ref, rewritten-ref, default-branch, non-fast-forward, ambiguous, dirty, ungoverned, stale, drifted, unexplained-degraded, or blocked evidence; block hosted merge separately when authoritative acceptance fails.",
         "retry_exit": "Repair the candidate, range, source, or enforcement wiring and re-run local preflight plus hosted workflow validation."
       },
-      "trusted_manifest_sha256": "10d4d358525d45f0d51734f9799b7d3852b037e98c8289fa3df2b2668ae33eb5"
+      "trusted_manifest_sha256": "ea1588ceb4d8cdd4d8980443bd2a35304b5244cea055ecbb508516081511ddbd"
     }
   ],
   "external_discovery": [],

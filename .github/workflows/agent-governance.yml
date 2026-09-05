@@ -504,12 +504,19 @@ jobs:
           --evaluator-identity="github-actions:pr-outcome:${{ github.run_id }}:${{ github.run_attempt }}"
           --job-results-json='{"agent-contract":"${{ needs.agent-contract.result }}","agent-runner":"${{ needs.agent-runner.result }}","knowledge-adapters":"${{ needs.knowledge-adapters.result }}","repo-governance":"${{ needs.repo-governance.result }}","application-fast-assurance":"${{ needs.application-fast-assurance.result }}","application-browser-assurance":"${{ needs.application-browser-assurance.result }}","secrets-scan":"${{ needs.secrets-scan.result }}"}'
           --json-out="output/agent-runs/ci-pr-outcome/generation.json"
+      - name: Classify PR outcome mode
+        id: outcome-mode
+        run: >-
+          echo "deterministic_exemption=$(jq -r '.deterministic_exemption // false'
+          output/agent-runs/ci-pr-outcome/generation.json)" >> "$GITHUB_OUTPUT"
       - name: Record and recall the exact PR outcome
+        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'
         run: |
           node scripts/agent-system/cli.mjs knowledge-record --adapter=exact-source --outcome="output/agent-runs/ci-pr-outcome/outcome.json" --json > "output/agent-runs/ci-pr-outcome/knowledge-record.json"
           outcome_digest="$(node -e "const p=require('./output/agent-runs/ci-pr-outcome/outcome.json'); process.stdout.write(p.packet_digest)")"
           node scripts/agent-system/cli.mjs knowledge-verify --adapter=exact-source --outcome-digest="$outcome_digest" --json > "output/agent-runs/ci-pr-outcome/knowledge-recall.json"
       - name: Enforce governed PR acceptance
+        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -520,6 +527,7 @@ jobs:
           node scripts/agent-governance/adoption-guard.mjs context --surface=pr_merge --profile="$profile" --json-out="output/agent-runs/ci-pr-outcome/context-receipt.json"
           node scripts/agent-governance/adoption-guard.mjs accept --surface=pr_merge --changed-paths="$changed_paths" --outcome="output/agent-runs/ci-pr-outcome/outcome.json" --contract="output/agent-runs/ci-pr-outcome/acceptance-contract.json" --knowledge-receipt="output/agent-runs/ci-pr-outcome/knowledge-recall.json" --execution-attestation="output/agent-runs/ci-pr-outcome/execution-attestation.json" --runner-provenance="output/agent-runs/ci-pr-outcome/runner-provenance.json" --run-directory="$run_directory" --context-receipt="output/agent-runs/ci-pr-outcome/context-receipt.json" --profile="$profile" --evidence-level=exact-candidate --expected-sha="$EXPECTED_SHA" --expected-tree="$(git rev-parse "$EXPECTED_SHA^{tree}")" --expected-branch="$EXPECTED_BRANCH" --json-out="output/agent-runs/ci-pr-outcome/acceptance-receipt.json"
       - name: Validate PR claims against generated outcome
+        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'
         run: >-
           node scripts/agent-governance/validate-pr.mjs
           --event-path="${{ runner.temp }}/agent-governance-input/pr-context-${{ github.run_id }}/pr-event.json"
@@ -527,11 +535,13 @@ jobs:
           --json-out="output/agent-runs/ci-pr-outcome/validation.json"
           --md-out="output/agent-runs/ci-pr-outcome/validation.md"
       - name: Attest the exact external outcome packet
+        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'
         id: attest-outcome
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: output/agent-runs/ci-pr-outcome/outcome.json
       - name: Retain the offline attestation bundle
+        if: steps.outcome-mode.outputs.deterministic_exemption != 'true'
         run: >-
           cp -- "${{ steps.attest-outcome.outputs.bundle-path }}"
           "output/agent-runs/ci-pr-outcome/outcome-attestation.jsonl"
