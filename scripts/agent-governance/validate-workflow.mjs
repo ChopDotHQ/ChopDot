@@ -265,13 +265,147 @@ function executableStepCommands(step) {
   return commands;
 }
 
-// The deterministic-exemption short-circuit is the single condition the pr-outcome
-// job may use. It is pinned to one exact string in one job so that no other step can
-// become conditional, and so a reviewer can grep for every skippable step.
+// Only these packet consumers may skip, and only after the canonical producer and
+// classifier below. Pinning a condition without its producer lets a workflow forge
+// the flag and skip implementation acceptance.
 const PR_OUTCOME_EXEMPTION_CONDITION = "steps.outcome-mode.outputs.deterministic_exemption != 'true'";
+const PR_OUTCOME_PACKET_STEPS = new Set([
+  'Record and recall the exact PR outcome',
+  'Enforce governed PR acceptance',
+  'Validate PR claims against generated outcome',
+  'Attest the exact external outcome packet',
+  'Retain the offline attestation bundle',
+]);
+const PR_OUTCOME_CLASSIFIER_COMMAND = 'echo "deterministic_exemption=$(jq -r \'.deterministic_exemption // false\' output/agent-runs/ci-pr-outcome/generation.json)" >> "$GITHUB_OUTPUT"';
+const PR_OUTCOME_BOOTSTRAP = [
+  {
+    name: 'Checkout exact candidate',
+    uses: 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262',
+    with: {ref: '${{ env.EXPECTED_SHA }}', 'fetch-depth': '0', 'persist-credentials': 'false'},
+  },
+  {
+    name: 'Assert exact candidate checkout',
+    commands: ['node scripts/agent-governance/assert-exact-head.mjs --json-out="${{ runner.temp }}/pr-outcome/pr-outcome-exact-head.json"'],
+  },
+  {
+    name: 'Attach authenticated candidate branch identity',
+    commands: [
+      'git checkout -B "$EXPECTED_BRANCH" "$EXPECTED_SHA"',
+      'test "$(git branch --show-current)" = "$EXPECTED_BRANCH"',
+      'test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"',
+    ],
+  },
+  {
+    name: 'Setup Node',
+    uses: 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020',
+    with: {'node-version': '22', cache: 'npm'},
+  },
+  {
+    name: 'Download same-run exact-head evidence',
+    uses: 'actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093',
+    with: {pattern: '*-${{ github.run_id }}', path: '${{ runner.temp }}/agent-governance-input', 'merge-multiple': 'false'},
+  },
+];
 
-function isPrOutcomeExemptionCondition(job, condition) {
-  return job === 'pr-outcome' && condition === PR_OUTCOME_EXEMPTION_CONDITION;
+function isCanonicalPrOutcomeBootstrap(step, specification) {
+  if (!step || step.fields.name !== specification.name) return false;
+  const allowedKeys = specification.uses ? ['name', 'uses', 'with'] : ['name', 'run'];
+  if (step.declaredKeys.some(key => !allowedKeys.includes(key)) || Object.keys(step.env).length) return false;
+  if (specification.commands) {
+    return !Object.keys(step.with).length
+      && JSON.stringify(executableStepCommands(step)) === JSON.stringify(specification.commands);
+  }
+  return step.fields.uses === specification.uses && !step.run
+    && Object.keys(step.with).length === Object.keys(specification.with).length
+    && Object.entries(specification.with).every(([key, value]) => step.with[key] === value);
+}
+
+function isPrOutcomeExemptionCondition(job, step) {
+  return job === 'pr-outcome'
+    && PR_OUTCOME_PACKET_STEPS.has(step.fields.name)
+    && step.fields.if === PR_OUTCOME_EXEMPTION_CONDITION;
+}
+
+function validatePrOutcomeExemptionWiring(job, errors) {
+  const steps = job?.steps ?? [];
+  const producers = steps.filter(step => step.fields.name === 'Generate external exact-candidate OutcomePacketV1');
+  const classifiers = steps.filter(step => step.fields.name === 'Classify PR outcome mode');
+  const classifierIds = steps.filter(step => step.fields.id === 'outcome-mode');
+  const producer = producers[0];
+  const classifier = classifiers[0];
+  if (producers.length !== 1 || classifiers.length !== 1 || classifierIds.length !== 1 || classifierIds[0] !== classifier) {
+    errors.push('PR outcome exemption requires one producer and one canonical outcome-mode classifier');
+    return;
+  }
+  const producerSpec = REQUIRED_DIRECT_INVOCATIONS.find(specification => specification.step === producer.fields.name);
+  const producerCommand = [producerSpec.command, ...producerSpec.args].join(' ');
+  for (const [step, command, allowedFields] of [
+    [producer, producerCommand, ['name', 'run']],
+    [classifier, PR_OUTCOME_CLASSIFIER_COMMAND, ['name', 'id', 'run']],
+  ]) {
+    // Whole-command equality also rejects extra writes after the legitimate command.
+    // Execution overrides must not replace the shell, working directory, or environment.
+    if (JSON.stringify(executableStepCommands(step)) !== JSON.stringify([command])
+      || step.declaredKeys.some(key => !allowedFields.includes(key))
+      || Object.keys(step.env).length || Object.keys(step.with).length) {
+      errors.push(`PR outcome exemption ${step.fields.name} must execute only its canonical command without execution overrides`);
+    }
+  }
+  const producerIndex = steps.indexOf(producer);
+  const classifierIndex = steps.indexOf(classifier);
+  // Earlier commands can seed BASH_ENV (or other interpreter state) through
+  // GITHUB_ENV without declaring env/defaults. Bind the entire reviewed prefix,
+  // not a blacklist of one environment-write spelling.
+  if (producerIndex !== PR_OUTCOME_BOOTSTRAP.length
+    || PR_OUTCOME_BOOTSTRAP.some((specification, index) => !isCanonicalPrOutcomeBootstrap(steps[index], specification))) {
+    errors.push('PR outcome exemption producer requires only the canonical bootstrap steps without execution overrides');
+  }
+  if (classifierIndex !== producerIndex + 1) errors.push('PR outcome exemption classifier must immediately follow its producer');
+  for (const name of PR_OUTCOME_PACKET_STEPS) {
+    const consumers = steps.filter(step => step.fields.name === name);
+    if (consumers.length !== 1 || steps.indexOf(consumers[0]) <= classifierIndex
+      || consumers[0].fields.if !== PR_OUTCOME_EXEMPTION_CONDITION) {
+      errors.push(`PR outcome exemption requires exactly one conditioned ${name} after classification`);
+    }
+  }
+}
+
+function validatePrOutcomeExecutionContext(source, job, errors) {
+  // This structural parser intentionally supports the reviewed workflow shape,
+  // not arbitrary YAML. Unknown/quoted/escaped keys and mapping aliases must not
+  // hide inherited execution settings from the producer/classifier checks.
+  const sourceEntries = entries(source);
+  const rootEntries = sourceEntries.filter(entry => entry.indent === 0);
+  const rootKeys = new Set(['name', 'run-name', 'on', 'permissions', 'concurrency', 'env', 'jobs']);
+  if (rootEntries.some(entry => !rootKeys.has(keyValue(entry.text)?.key))) {
+    errors.push('PR outcome exemption requires reviewed plain workflow keys without hidden execution settings');
+  }
+  const jobKeys = new Set(['name', 'if', 'needs', 'runs-on', 'timeout-minutes', 'permissions', 'steps']);
+  if (entries(job?.block ?? '').some(entry => entry.indent === 4 && !jobKeys.has(keyValue(entry.text)?.key))) {
+    errors.push('PR outcome exemption cannot inherit unreviewed job execution settings or environment');
+  }
+  const environmentDeclarations = rootEntries.filter(entry => keyValue(entry.text)?.key === 'env');
+  const expectedEnvironment = new Map([
+    ['EXPECTED_SHA', '${{ github.event.pull_request.head.sha || github.sha }}'],
+    ['EXPECTED_BRANCH', '${{ github.event.pull_request.head.ref || github.ref_name }}'],
+    ['EXPECTED_BASE_BRANCH', "${{ github.event.pull_request.base.ref || '' }}"],
+    ['GOVERNANCE_REPORT_ROOT', 'artifacts/agent-governance'],
+  ]);
+  const envStart = sourceEntries.indexOf(environmentDeclarations[0]);
+  const envEnd = sourceEntries.findIndex((entry, index) => index > envStart && entry.indent === 0);
+  const environmentEntries = envStart < 0 ? [] : sourceEntries.slice(envStart + 1, envEnd < 0 ? undefined : envEnd);
+  const seen = new Set();
+  const validEnvironment = environmentDeclarations.length === 1
+    && keyValue(environmentDeclarations[0].text)?.value === ''
+    && environmentEntries.length === expectedEnvironment.size
+    && environmentEntries.every(entry => {
+      const pair = keyValue(entry.text);
+      if (entry.indent !== 2 || !pair || seen.has(pair.key) || !expectedEnvironment.has(pair.key)
+        || expectedEnvironment.get(pair.key) !== pair.value) return false;
+      seen.add(pair.key);
+      return true;
+    });
+  if (!validEnvironment) errors.push('PR outcome exemption requires only the four canonical inherited workflow environment values');
 }
 
 function shellWeakeningReason(step, invocation) {
@@ -290,7 +424,7 @@ function requireDirectInvocation(job, specification, errors) {
     return;
   }
   const step = steps[0];
-  if (step.fields.if && !isPrOutcomeExemptionCondition(specification.job, step.fields.if)) errors.push(`${specification.job} required command ${specification.command} cannot be conditionally skipped`);
+  if (step.fields.if && !isPrOutcomeExemptionCondition(specification.job, step)) errors.push(`${specification.job} required command ${specification.command} cannot be conditionally skipped`);
   for (const [key, value] of Object.entries(specification.env ?? {})) {
     if (step.env?.[key] !== value) errors.push(`${specification.job} required command ${specification.command} requires ${key}: ${value}`);
   }
@@ -345,15 +479,20 @@ function requireDirectGuardInvocation(job, subcommand, requiredArgs, errors) {
 }
 
 function parseStep(block, start, end) {
-  const step = { fields: {}, with: {}, env: {}, run: '', line: block[start].line };
+  const step = { fields: {}, declaredKeys: [], with: {}, env: {}, run: '', line: block[start].line };
   let inWith = false;
   let inEnv = false;
   for (let index = start; index < end; index += 1) {
     const entry = block[index];
     const pair = keyValue(entry.text);
     if (!pair) continue;
-    if (entry.indent === 6 && index === start) step.fields[pair.key] = pair.value;
+    if (entry.indent === 6 && index === start) {
+      step.declaredKeys.push(pair.key);
+      step.fields[pair.key] = pair.value;
+    }
     else if (entry.indent === 8) {
+      // Retain declarations even when an inline/aliased mapping is not parsed.
+      step.declaredKeys.push(pair.key);
       inWith = pair.key === 'with';
       inEnv = pair.key === 'env';
       if (!inWith && !inEnv) step.fields[pair.key] = pair.value;
@@ -535,7 +674,7 @@ export function validateWorkflow(source) {
           "github.event_name == 'pull_request'",
           "github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.dispatch_mode == 'pr_validation')",
         ].includes(step.fields.if) && /pull-request/i.test(step.fields.name ?? '');
-        const allowedExemption = isPrOutcomeExemptionCondition(id, step.fields.if);
+        const allowedExemption = isPrOutcomeExemptionCondition(id, step);
         if (!allowedAlways && !allowedPullRequest && !allowedExemption) errors.push(`${id} step ${index + 1} cannot be conditionally skipped`);
       }
     }
@@ -561,6 +700,13 @@ export function validateWorkflow(source) {
   }
   const release = parsed.jobs['release-enforcement'];
   const prOutcome = parsed.jobs['pr-outcome'];
+  checks += 1;
+  validatePrOutcomeExemptionWiring(prOutcome, errors);
+  validatePrOutcomeExecutionContext(source, prOutcome, errors);
+  if (entries(source).some(entry => entry.indent === 0 && keyValue(entry.text)?.key === 'defaults')
+    || Object.hasOwn(prOutcome?.fields ?? {}, 'defaults')) {
+    errors.push('PR outcome exemption producer and classifier cannot inherit workflow or job execution defaults');
+  }
   const prContext = parsed.jobs['pr-context'];
   const repoGovernance = parsed.jobs['repo-governance'];
   const browserAssurance = parsed.jobs['application-browser-assurance'];

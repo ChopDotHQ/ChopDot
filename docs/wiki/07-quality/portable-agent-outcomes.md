@@ -3,7 +3,7 @@
 **Kind:** guardrail
 **Status:** active
 **Owner:** agent-systems integrator
-**Last reviewed:** 2026-08-27
+**Last reviewed:** 2026-09-05
 **Applies to:** `chopdot-v1-launch`
 **Authority:** scoped agent-process guardrail subordinate to Product Truth, current Cockpit decisions and contracts, ADRs, and exact outcome evidence; it grants no product, participant, or release authority
 **Sources:** ADR 0005, agent-system taxonomy, portable execution plan
@@ -97,6 +97,38 @@ branch with its positive PR number. The workflow accepts only a live open PR in
 the same repository whose head SHA and branch match that dispatch, then gives
 the same context artifact to repo governance and PR outcome. This mode cannot
 activate the separate environment-gated `release_enforcement` path.
+
+The PR outcome check also supports an explicitly declared `deterministic
+exemption` for plan-document-only changes. Eligibility is derived from the
+authenticated base-to-head Git range, not from the PR description: only direct
+Markdown files in `plans/` and `docs/superpowers/plans/` qualify. An empty range,
+missing base, or any other changed path fails closed. Application code,
+governance tests, workflows, policies, and authority-record changes cannot use
+this route. The prerequisite context and digest checks still apply, including
+to governing plans inside those directories.
+
+All seven prerequisite jobs must succeed and the exemption description must
+validate. The check then writes `pr-outcome-exemption.json` and `validation.md`,
+without inventing a run ID, outcome packet, or governed acceptance receipt.
+Only the exact condition
+`steps.outcome-mode.outputs.deterministic_exemption != 'true'` on the five
+named packet-dependent steps in `pr-outcome` may skip those steps. The validator
+requires one canonical generator command immediately followed by one canonical
+classifier command and output ID, before every consumer. Extra commands,
+step execution overrides, and inherited workflow/job execution defaults are
+rejected at that boundary. Inherited environment values stay bound to the four
+reviewed workflow fields. The five pre-generator bootstrap steps also stay bound
+to their exact commands or pinned actions and inputs, preventing an earlier step
+from seeding a replacement interpreter environment through `GITHUB_ENV`.
+No job-level environment override is allowed; unsupported or quoted
+settings fail closed rather than being silently ignored by the structural
+parser. These checks reject hardcoded classifier values and additional writes
+around the generated result. They do not sandbox arbitrary workflow code.
+Implementation-profile
+work keeps its existing acceptance path; other profiles are not repaired by
+this exception. The exemption record proves neither human review nor release
+or user readiness. Batch A's governance-test example edit makes that PR
+ineligible for this exemption, despite its documentation-cleanup purpose.
 
 Local run ledgers and unredacted traces are ignored and excluded from product
 release bytes. Built text assets also undergo secret, absolute-path,
