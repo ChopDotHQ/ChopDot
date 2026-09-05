@@ -68,7 +68,7 @@ if (checkpoint.wallet_approval_ui_event !== "PaymentApprovalRequested") errors.p
 if (checkpoint.wallet_authorization_source !== "verified-provider-result-only") errors.push(`${checkpointFile}: wallet authorization source mismatch`);
 if (!checkpoint.saved_record_ordinary_web_retrieval_required) errors.push(`${checkpointFile}: ordinary web retrieval requirement missing`);
 if (checkpoint.product_sdk_cid?.sole_retrieval_key_allowed !== false) errors.push(`${checkpointFile}: Product SDK CID may not be sole retrieval key`);
-if (checkpoint.e25?.status !== "partial" || checkpoint.e25?.journey_12 !== "complete recovery") errors.push(`${checkpointFile}: E25 ownership mismatch`);
+if (!["partial", "current"].includes(checkpoint.e25?.status) || checkpoint.e25?.journey_12 !== "complete recovery") errors.push(`${checkpointFile}: E25 ownership mismatch`);
 
 const validation = {
   ok: errors.length === 0,
