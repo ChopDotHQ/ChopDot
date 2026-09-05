@@ -10,17 +10,10 @@
 8. Overall Position — v1 · Design Approved
 9. Settle Up — v1.1 · Design Approved
 10. Complete Settlement — v1.1 · Design Approved
+11. Enter ChopDot — v1 · Design Approved
 
-## Golden #10
+Journey 01 V1 is Golden #11: email-code default, wallet alternative. Reviewed HTML is unchanged.
 
-Journey 12 V1.1 approved 2026-09-05. Original reviewed HTML path retained, unchanged.
+Next: Journey 09 — Manage People. Not started in this freeze.
 
-SHA-256: `2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d`
-
-## Current candidate
-
-Journey 01 — Enter ChopDot v1. Review pending; not Golden.
-
-## Deferred
-
-TYPO-01: Small progress-label readability, later shared typography pass. No changes now.
+TYPO-01: shared typography/readability remains deferred.

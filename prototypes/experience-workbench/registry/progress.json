@@ -1,22 +1,20 @@
 {
-  "schema_version": 7,
+  "schema_version": 8,
   "updated_on": "2026-09-05",
   "registered_journeys": 28,
-  "golden_count": 10,
-  "current_journey": "01",
-  "remaining_overall": 18,
-  "remaining_core_including_entry": [
-    "01"
-  ],
+  "golden_count": 11,
+  "current_journey": null,
+  "remaining_overall": 17,
+  "remaining_core_including_entry": [],
   "remaining_in_app_money_loop": [],
   "map_source": "registry/journeys.json",
   "generated_map": "journey-map.html",
   "validation_command": "npm run gate",
   "payment_contract_version": "1.2",
-  "next_action": "Review Journey 01 v1; explicit approval required before freeze.",
+  "next_action": "Journey 01 frozen. Next unfinished supporting journey: 09 Manage People.",
   "storage_contract_version": "1.0",
-  "paused_after_freeze": false,
-  "last_approved_journey": "12",
-  "last_approved_version": "v1.1",
-  "last_approved_sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d"
+  "paused_after_freeze": true,
+  "last_approved_journey": "01",
+  "last_approved_version": "v1",
+  "last_approved_sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46"
 }

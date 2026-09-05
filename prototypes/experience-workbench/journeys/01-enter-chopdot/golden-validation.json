@@ -1,0 +1,11 @@
+{
+  "ok": true,
+  "prototype_sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46",
+  "html_unchanged": true,
+  "status": "golden",
+  "golden_number": 11,
+  "default_sign_in": "email-code",
+  "alternative_sign_in": "wallet",
+  "all_golden_locks_pass": true,
+  "typography": "TYPO-01 deferred"
+}

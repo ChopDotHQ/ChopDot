@@ -1,21 +1,17 @@
 # ChopDot Experience Workbench — Start Here
 
-28 journeys; 10 Golden; 18 remaining.
+28 registered journeys; 11 Golden; 17 remaining. The core entry and in-app money loop are design-approved.
 
-Journey 12 V1.1 is Golden #10. The complete in-app money loop is design-approved.
+Journey 01 V1 is Golden #11. Email-code is the default; wallet sign-in is an alternative.
 
-## Current review
+## Next
 
-Journey 01 — Enter ChopDot v1.
-
-Open `journeys/01-enter-chopdot/v1-candidate.html`. Read `journeys/01-enter-chopdot/spec.md`, then `journeys/01-enter-chopdot/VISUAL_QA.md`.
+Journey 09 — Manage People. This freeze does not start it.
 
 ## Preserve
 
-Approved HTML is checksum-locked in registry/golden-artifact-locks.json. Never edit approved screens as part of later journeys.
-
-TYPO-01: Small progress-label readability is deferred to a shared typography pass. No font changes now.
+All approved HTML is checksum-locked. TYPO-01 shared typography/readability is deferred; do not change it during individual journeys.
 
 ## Gate
 
-`npm run gate` replays historical bundles, restores explicit approvals/current candidate, regenerates maps, and validates the final state. A later candidate is declared in registry/active-candidate.json; old freeze tasks must not erase it.
+Run `npm run gate`. Historical bundles replay before approval overlays restore final Golden statuses and the explicit support candidate in registry/support-candidate.json. Final gate checks must pass on the exact branch head.

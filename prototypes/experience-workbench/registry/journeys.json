@@ -12,14 +12,16 @@
       "02",
       "04"
     ],
-    "status": "current",
-    "approval": "review-pending",
+    "status": "golden",
+    "approval": "design-approved",
     "entry_mode": "root",
     "version": "v1",
     "prototype_path": "journeys/01-enter-chopdot/v1-candidate.html",
     "prototype_sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46",
     "spec_path": "journeys/01-enter-chopdot/spec.md",
-    "qa_path": "journeys/01-enter-chopdot/VISUAL_QA.md"
+    "qa_path": "journeys/01-enter-chopdot/VISUAL_QA.md",
+    "golden_number": 11,
+    "approved_on": "2026-09-05"
   },
   {
     "id": "02",
