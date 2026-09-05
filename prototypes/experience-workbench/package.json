@@ -12,6 +12,9 @@
     "contract:check": "node tools/validate-payment-contract.mjs",
     "compat:check": "node tools/validate-j11-compatibility-closeout.mjs",
     "golden-consistency:check": "node tools/validate-j11-final-golden-consistency.mjs",
-    "gate": "npm run bundle:apply && npm run prototypes:materialize && npm run compat:apply && npm run golden-consistency:apply && npm run map:build && npm run map:check && npm run contract:check && npm run compat:check && npm run golden-consistency:check"
+    "j12:check": "node tools/validate-j12-complete-settlement.mjs",
+    "gate": "npm run bundle:apply && npm run prototypes:materialize && npm run compat:apply && npm run j12:apply && npm run golden-consistency:apply && npm run j12:materialize && npm run map:build && npm run map:check && npm run contract:check && npm run compat:check && npm run golden-consistency:check && npm run j12:check",
+    "j12:materialize": "node tools/materialize-j12.mjs",
+    "j12:apply": "node tools/apply-j12-candidate-bundle.mjs"
   }
 }
