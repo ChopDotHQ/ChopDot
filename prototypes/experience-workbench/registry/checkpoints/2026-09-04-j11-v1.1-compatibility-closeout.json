@@ -1,8 +1,8 @@
 {
   "checkpoint": "2026-09-04-j11-v1.1-compatibility-closeout",
   "branch": "ux/experience-workbench",
-  "golden_count": 8,
-  "current_journey": "11",
+  "golden_count": 9,
+  "current_journey": null,
   "candidate_version": "v1.1",
   "payment_contract_version": "1.2",
   "storage_contract_version": "1.0",
@@ -23,8 +23,13 @@
   "replay_safe_history_required": true,
   "edge_case_registry_entries": 40,
   "branch_gate": "must-pass-on-exact-head",
-  "approval": "pending",
-  "next_on_approval": "Freeze Journey 11 as Golden #9 and build Journey 12.",
+  "approval": "design-approved",
+  "next_on_approval": null,
+  "exact_candidate_sha256": "d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d",
+  "html_preserved": true,
+  "approved_on": "2026-09-05",
+  "golden_number": 9,
+  "status": "golden",
   "final_golden_consistency_pass": "complete",
   "wallet_approval_ui_event": "PaymentApprovalRequested",
   "wallet_authorization_source": "verified-provider-result-only",
@@ -39,5 +44,6 @@
     "status": "partial",
     "journey_11": "failure preview",
     "journey_12": "complete recovery"
-  }
+  },
+  "freeze_boundary": "Stop after Journey 11. Journey 12 remains not started."
 }

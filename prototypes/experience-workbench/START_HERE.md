@@ -3,22 +3,23 @@
 ## Current truth
 
 - 28 registered journeys
-- 8 Golden journeys
-- Journey 11 — Settle Up V1.1 is the current contract-strengthened candidate
-- Journey 12 owns progress, confirmation, failure, proof and balance updates
+- 9 Golden journeys
+- Journey 11 — Settle Up V1.1 is Golden #9
+- Journey 12 — Complete Settlement remains not started
+- Work is intentionally paused after the Journey 11 freeze
 
-## Open first
+## Frozen artifact
 
 `journeys/11-settle-up/v1.1-golden-candidate.html`
 
-Then read:
+SHA-256:
 
-1. `journeys/11-settle-up/spec.md`
-2. `journeys/11-settle-up/STATE_AND_AUTHORITY.md`
-3. `journeys/11-settle-up/GIVEN_WHEN_THEN.md`
-4. `journeys/11-settle-up/UI_TO_DOMAIN_EVENTS.md`
-5. `journeys/11-settle-up/VISUAL_QA.md`
+`d02c550f73d2f3844dd117ebd3062a19808e8100fdf8ebb0a98c3d353f84147d`
 
-## Freeze gate
+## Resume boundary
 
-Run `npm run gate`. Journey 11 cannot become Golden unless the actual HTML/spec/QA files exist and both the workbench and payment-contract checks pass.
+Do not alter Journey 11 or begin Journey 12 without a new explicit instruction.
+
+## Gate
+
+Run `npm run gate` against the exact branch head. The candidate checksum, registry, checkpoint and generated views must remain consistent.
