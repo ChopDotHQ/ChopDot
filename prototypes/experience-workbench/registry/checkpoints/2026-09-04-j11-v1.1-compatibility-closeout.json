@@ -21,7 +21,7 @@
   "realtime_authoritative": false,
   "durable_outbox_required": true,
   "replay_safe_history_required": true,
-  "edge_case_registry_entries": 40,
+  "edge_case_registry_entries": 41,
   "branch_gate": "must-pass-on-exact-head",
   "approval": "design-approved",
   "next_on_approval": null,
