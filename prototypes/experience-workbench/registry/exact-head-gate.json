@@ -1,14 +1,17 @@
 {
-  "checkpoint": "2026-09-05-j01-v1-golden",
-  "purpose": "Verify the exact Golden #11 freeze before beginning the next supporting journey.",
+  "checkpoint": "2026-09-05-j09-v1-candidate",
+  "purpose": "Verify the exact materialized Manage People review candidate and preservation of all approved Golden HTML.",
+  "freeze_commit": "bf8c42103f898ddf020610967d90e881af367014",
+  "freeze_gate_run": 33992126435,
+  "freeze_gate_number": 49,
   "journey_01_golden_sha256": "383170c06d4e6bc4d6b658664fff6ae0f2eb003cf202ca5e8f8617fb06ae8f46",
-  "journey_12_golden_sha256": "2198cde482ec1ab1d2285cdea218492b410bb071bb8916e470f40d4e629d3e4d",
+  "journey_09_candidate_sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d",
   "golden_count": 11,
-  "current_journey": null,
-  "journey_01_approval": "design-approved",
+  "current_journey": "09",
+  "journey_09_approval": "review-pending",
   "default_sign_in": "email-code",
   "alternative_sign_in": "wallet",
   "existing_goldens_changed": false,
-  "html_changed": false,
-  "typography_note": "TYPO-01 deferred"
+  "typography_note": "TYPO-01 deferred",
+  "prototype_only": true
 }
