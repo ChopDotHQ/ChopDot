@@ -1,14 +1,17 @@
 {
-  "checkpoint": "2026-09-06-j09-v1-golden",
-  "purpose": "Verify the exact materialized Golden #12 freeze before starting Journey 13.",
-  "materialized_head": "ed43e29a7cf291f6bb433458737b0977945801c8",
+  "checkpoint": "2026-09-06-j13-v1-candidate",
+  "purpose": "Verify the exact materialized Request Money V1 candidate and every approved Golden checksum.",
+  "materialized_head": "3e541affb1aef19bd515ba7ce14c949130ba5a67",
+  "freeze_commit": "db9f34b8ad8fc21bb2dbf3d7c914df5c94935a16",
+  "freeze_gate_run": 33995995523,
+  "freeze_gate_number": 54,
   "journey_09_golden_sha256": "715077633a17cf37ef587988c0aee7f4906403a030d8e0d17d1b0c46aa6cb37d",
+  "journey_13_candidate_sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707",
   "golden_count": 12,
-  "current_journey": null,
+  "current_journey": "13",
   "journey_09_approval": "design-approved",
-  "removal_policy": "Owner only; no open items in selected group; past records and other memberships preserved",
+  "journey_13_approval": "review-pending",
   "existing_goldens_changed": false,
-  "html_changed": false,
   "typography_note": "TYPO-01 deferred",
   "prototype_only": true
 }
