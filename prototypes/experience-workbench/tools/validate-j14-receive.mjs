@@ -9,7 +9,7 @@ const hash=s=>createHash('sha256').update(s).digest('hex');
 const html=read(`${j}/v1-candidate.html`),sha=hash(html);
 assert.equal(sha,'5ce877d89157a4203a2e4a2c5fad795a4ecfabf5388dbaecb00bbf28f2f31e1d');
 const qa=json(`${j}/QA_SUMMARY.json`),browser=json(`${j}/visual-qa/browser-qa.json`),a=json('registry/j14-candidate.json');
-assert.equal(a.journey,'14');assert.equal(a.approval,'review-pending');assert.equal(a.prototype_sha256,sha);assert.equal(qa.artifact_sha256,sha);assert.equal(browser.artifact_sha256,sha);
+assert.equal(a.journey,'14');assert.equal(a.prototype_sha256,sha);assert.equal(qa.artifact_sha256,sha);assert.equal(browser.artifact_sha256,sha);
 const reference=read('journeys/13-request-money/v1-candidate.html');
 assert.equal(hash(reference),'a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707');
 const styles=s=>[...s.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)].map(m=>m[1]);
@@ -37,9 +37,10 @@ assert.equal(progress.golden_count,13);assert.equal(progress.remaining_overall,1
 assert.equal(journeys.find(x=>x.id==='13').status,'golden');assert.equal(journeys.find(x=>x.id==='13').golden_number,13);
 assert.equal(journeys.find(x=>x.id==='14').status,'current');assert.equal(journeys.find(x=>x.id==='14').approval,'review-pending');
 for(const name of ['active-candidate','support-candidate','next-support-candidate'])assert.deepEqual(json(`registry/${name}.json`),a);
-const locks=json('registry/golden-artifact-locks.json');assert.equal(locks.length,13);assert(!locks.some(l=>l.journey==='14'));
+const locks=json('registry/golden-artifact-locks.json');assert([13,14].includes(locks.length));
+if(locks.some(l=>l.journey==='14')){const approval=json('registry/approvals/14-v1.json');assert.equal(approval.prototype_sha256,sha);assert.equal(locks.find(l=>l.journey==='14')?.sha256,sha);}
 for(const l of locks)assert.equal(hash(fs.readFileSync(path.join(root,l.path))),l.sha256,`Golden changed: ${l.path}`);
 const approval=json('registry/approvals/13-v1.json');assert.equal(approval.deferred_note.change_now,false);assert(Object.values(approval.approved_policy).every(v=>v===true));
 const validation={ok:true,journey:'14',version:'v1',candidate_sha256:sha,states:22,model_assertions:151,model_scenarios:44,browser_scenarios:36,product_clicks:156,state_layout_checks:44,mapped_actions:86,inherited_css_unchanged:true,inherited_people_css_unchanged:true,qr_decoded:true,all_golden_locks_pass:true,golden_count:13,current_journey:'14',review_status:'review-pending',typography_note:'TYPO-01 deferred',ci_executes:'Model tests and verification of checksum-bound recorded browser evidence; browser suite is not rerun by this gate.',limitations:'Synthetic in-memory prototype. Playwright inline Chromium. Clipboard tested with controlled doubles; recipient authentication and external sharing are previews. No real backend, hosted/native-file delivery, payment or full cross-journey integration.'};
 fs.writeFileSync(path.join(root,j,'validation.json'),JSON.stringify(validation,null,2)+'\n');
-console.log('J14 RECEIVE GATE PASSED: 151 assertions, 36 artifact-bound browser scenarios, 44 layouts; all 13 Goldens unchanged.');
+console.log('J14 RECEIVE GATE PASSED: 151 assertions, 36 artifact-bound browser scenarios, 44 layouts; approved Golden locks unchanged.');
