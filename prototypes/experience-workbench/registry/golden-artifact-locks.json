@@ -63,5 +63,10 @@
     "journey": "13",
     "path": "journeys/13-request-money/v1-candidate.html",
     "sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707"
+  },
+  {
+    "journey": "14",
+    "path": "journeys/14-receive-money/v1-candidate.html",
+    "sha256": "5ce877d89157a4203a2e4a2c5fad795a4ecfabf5388dbaecb00bbf28f2f31e1d"
   }
 ]

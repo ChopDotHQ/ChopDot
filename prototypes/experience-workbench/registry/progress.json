@@ -1,20 +1,20 @@
 {
-  "schema_version": 10,
+  "schema_version": 11,
   "updated_on": "2026-09-06",
   "registered_journeys": 28,
-  "golden_count": 13,
-  "current_journey": "14",
-  "remaining_overall": 15,
+  "golden_count": 14,
+  "current_journey": null,
+  "remaining_overall": 14,
   "remaining_core_including_entry": [],
   "remaining_in_app_money_loop": [],
   "map_source": "registry/journeys.json",
   "generated_map": "journey-map.html",
   "validation_command": "npm run gate",
   "payment_contract_version": "1.2",
-  "next_action": "Review Journey 14 V1; explicit approval required before freeze.",
+  "next_action": "Journey 14 frozen. Next: Journey 15 Settlement History.",
   "storage_contract_version": "1.0",
-  "paused_after_freeze": false,
-  "last_approved_journey": "13",
+  "paused_after_freeze": true,
+  "last_approved_journey": "14",
   "last_approved_version": "v1",
-  "last_approved_sha256": "a22664499c4056d95a6cdeb45df85d43fd2055713e80ae8f69020469aa9bb707"
+  "last_approved_sha256": "5ce877d89157a4203a2e4a2c5fad795a4ecfabf5388dbaecb00bbf28f2f31e1d"
 }

@@ -151,8 +151,8 @@
     {
       "journey": "14",
       "version": "v1",
-      "approval": "review-pending",
-      "status": "current",
+      "approval": "design-approved",
+      "status": "golden",
       "decisions": 2,
       "source_path": "journeys/14-receive-money/source/decision-history.md",
       "source_sha256": "fa3c641f037a16e4004e8d90d0d996c84cdfa5e89cbe9f38c9bb8b8bfb269f29",

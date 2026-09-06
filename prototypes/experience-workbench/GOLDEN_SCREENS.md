@@ -13,11 +13,12 @@
 11. Enter ChopDot — v1 · Design Approved
 12. Manage People — v1 · Design Approved
 13. Request Money — v1 · Design Approved
+14. Receive / Share Payment Details — v1 · Design Approved
 
-Journey 13 V1 is Golden #13. Private requests, overlapping-source protection and withdrawal policies are approved. Reviewed HTML is unchanged.
+Journey 14 V1 is Golden #14. Private one-recipient sharing, owner-only link control, deliberate external copy, exact destination context and recovery-before-retry are approved. Reviewed HTML is unchanged.
 
-Journey 01 remains email-code first; Journey 09 removal policy is unchanged.
+All earlier journey policies remain unchanged.
 
-Current candidate: Journey 14 — Receive / Share Payment Details V1. Not Golden.
+Next: Journey 15 — Settlement History. Not started in this freeze.
 
 TYPO-01: shared typography/readability remains deferred.
