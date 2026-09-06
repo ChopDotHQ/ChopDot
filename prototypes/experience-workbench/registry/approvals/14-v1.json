@@ -1,0 +1,26 @@
+{
+  "journey": "14",
+  "version": "v1",
+  "golden_number": 14,
+  "approval": "design-approved",
+  "approved_on": "2026-09-06",
+  "reviewed_at_commit": "f403b02d05a50d13f556b3edfb949f92b24488a9",
+  "prototype_path": "journeys/14-receive-money/v1-candidate.html",
+  "prototype_sha256": "5ce877d89157a4203a2e4a2c5fad795a4ecfabf5388dbaecb00bbf28f2f31e1d",
+  "html_change_authorized": false,
+  "approved_policy": {
+    "private_link_one_selected_authenticated_recipient_24h": true,
+    "owner_only_link_creation_and_stopping": true,
+    "explicit_receiving_details_export_for_people_outside_chopdot": true,
+    "stopping_or_expiry_does_not_cancel_request_confirm_payment_or_change_balance": true,
+    "method_currency_asset_and_network_context_remain_exact": true,
+    "unknown_result_requires_recovery_before_retry": true
+  },
+  "next_journey": "15",
+  "deferred_note": {
+    "id": "TYPO-01",
+    "status": "deferred",
+    "change_now": false,
+    "note": "Shared typography and readability remain deferred."
+  }
+}
