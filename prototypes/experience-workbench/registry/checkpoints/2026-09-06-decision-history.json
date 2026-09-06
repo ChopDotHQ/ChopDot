@@ -1,0 +1,18 @@
+{
+  "scope": "documentation-only",
+  "recorded_on": "2026-09-06",
+  "inspected_base_commit": "f403b02d05a50d13f556b3edfb949f92b24488a9",
+  "journeys": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14"],
+  "coverage": "Selected source-supported decisions, not exhaustive transcript or alternatives reconstruction.",
+  "authoring_path": "journeys/<id>-<slug>/source/decision-history.md",
+  "reading_path": "journeys/<id>-<slug>/spec.md#decision-history",
+  "unrecorded_rationale": "Explicitly marked; never invented.",
+  "revisit_triggers": "New maintenance notes, not historical decisions or redesign authorization.",
+  "golden_count": 13,
+  "current_journey": "14",
+  "journey_14_approval": "review-pending",
+  "html_changed": false,
+  "approvals_changed": false,
+  "typography": "TYPO-01 deferred",
+  "verification_requirement": "Pass the full gate on the exact resulting branch head after generated sections are materialized."
+}

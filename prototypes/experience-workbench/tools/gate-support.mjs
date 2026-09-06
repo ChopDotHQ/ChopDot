@@ -12,3 +12,9 @@ run('validate-j13-request.mjs');
 if(fs.existsSync(path.join(root,'tools/build-j14-candidate.mjs')))run('build-j14-candidate.mjs');
 run('apply-j13-golden-freeze.mjs');run('build-journey-map.mjs');run('validate-workbench.mjs');run('apply-j13-golden-freeze.mjs',['--check']);
 if(fs.existsSync(path.join(root,'tools/validate-j14-receive.mjs')))run('validate-j14-receive.mjs');
+
+// Append sourced decision histories after historical generators; never touch HTML.
+run('test-decision-history.mjs');
+run('decision-history.mjs');
+run('decision-history.mjs',['--check']);
+run('apply-j13-golden-freeze.mjs',['--check']);
