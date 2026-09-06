@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "journey": "17",
+  "version": "v1",
+  "candidate_sha256": "637c1078c26edeaff25ab2bcb7a9c8f5b60fc89188171e77a5fdf3411bf7d0c2",
+  "states": 19,
+  "model_assertions": 86,
+  "browser_layouts": 38,
+  "product_clicks": 144,
+  "page_errors": [],
+  "all_layouts_pass": true,
+  "viewport_sizes": ["393x852","430x890"],
+  "review_status": "review-pending",
+  "typography_note": "TYPO-01 deferred",
+  "limitations": "Synthetic in-memory prototype; no real money movement, custody, provider, wallet, notifications or backend."
+}

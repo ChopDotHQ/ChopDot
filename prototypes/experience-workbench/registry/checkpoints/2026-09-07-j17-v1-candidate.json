@@ -1,0 +1,16 @@
+{
+  "journey": "17",
+  "name": "Contribute / Withdraw Savings",
+  "version": "v1",
+  "approval": "review-pending",
+  "prototype_path": "journeys/17-savings-contribute-withdraw/v1-candidate.html",
+  "prototype_sha256": "637c1078c26edeaff25ab2bcb7a9c8f5b60fc89188171e77a5fdf3411bf7d0c2",
+  "spec_path": "journeys/17-savings-contribute-withdraw/spec.md",
+  "qa_path": "journeys/17-savings-contribute-withdraw/VISUAL_QA.md",
+  "golden_count_before": 16,
+  "typography_note": "TYPO-01 deferred",
+  "prototype_only": true,
+  "status": "review-pending",
+  "qa": {"model_assertions":86,"browser_layouts":38,"product_clicks":144,"page_errors":0},
+  "existing_goldens_changed": false
+}
