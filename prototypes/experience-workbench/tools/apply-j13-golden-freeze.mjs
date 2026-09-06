@@ -14,15 +14,10 @@ assert(Object.values(a.approved_policy).every(v=>v===true),'Approved request pol
 const locks=load('registry/golden-artifact-locks.json');
 for(const l of locks)assert.equal(digest(l.path),l.sha256,`Golden changed: ${l.path}`);
 if(process.argv.includes('--preflight')){
- // Historical review-stage checks must allow a later, explicitly approved lock.
- // All byte-level checks remain in place. Final registry state is checked below.
- const edits=[
-  ['tools/validate-j09-people.mjs',"locks.length===11||locks.length===12","locks.length===11||locks.length===12||locks.length===13"],
-  ['tools/apply-j09-golden-freeze.mjs',"assert.equal(locks.length,12);","assert(locks.length===12||locks.length===13);"],
-  ['tools/validate-j13-request.mjs',"assert.equal(locks.length,12);assert(!locks.some(l=>l.journey==='13'));","assert(locks.length===12||locks.length===13);if(locks.length===13){assert.equal(json('registry/approvals/13-v1.json').prototype_sha256,sha);assert.equal(locks.find(l=>l.journey==='13')?.sha256,sha);}"]
- ];
- for(const [file,oldText,newText] of edits){const text=fs.readFileSync(path.join(root,file),'utf8');if(!text.includes(newText)){assert(text.includes(oldText),`Unexpected historical validator: ${file}`);write(file,text.replace(oldText,newText));}}
- console.log('J13 preflight: reviewed bytes and every Golden lock verified.');process.exit(0);
+ assert(fs.readFileSync(path.join(root,'tools/validate-j09-people.mjs'),'utf8').includes('[11,12,13,14].includes(locks.length)'));
+ assert(fs.readFileSync(path.join(root,'tools/apply-j09-golden-freeze.mjs'),'utf8').includes('[12,13,14].includes(locks.length)'));
+ assert(fs.readFileSync(path.join(root,'tools/validate-j13-request.mjs'),'utf8').includes('[12,13,14].includes(locks.length)'));
+ console.log('J13 preflight: reviewed bytes, every Golden lock and historical lock-count compatibility verified.');process.exit(0);
 }
 const manifest='registry/j14-candidate.json';
 const active=fs.existsSync(path.join(root,manifest))?load(manifest):null;
@@ -30,19 +25,19 @@ const js=load('registry/journeys.json'),p=load('registry/progress.json'),j=js.fi
 if(active){assert.equal(active.journey,'14');for(const key of ['prototype_path','spec_path','qa_path'])assert(fs.existsSync(path.join(root,active[key])),`Missing ${key}`);assert.equal(digest(active.prototype_path),active.prototype_sha256);}
 if(process.argv.includes('--check')){
  assert.equal(j.status,'golden');assert.equal(j.approval,'design-approved');assert.equal(j.golden_number,13);assert.equal(j.prototype_sha256,a.prototype_sha256);
- assert.equal(p.golden_count,13);assert.equal(js.filter(x=>x.status==='golden').length,13);assert.equal(locks.length,13);
+ assert.equal(p.golden_count,13);assert.equal(js.filter(x=>x.status==='golden').length,13);assert([13,14].includes(locks.length));
  assert.equal(locks.find(x=>x.journey==='13')?.sha256,a.prototype_sha256);
  assert.equal(p.current_journey,active?.journey??null);assert.equal(p.remaining_overall,15);assert.equal(p.paused_after_freeze,!active);assert.equal(p.last_approved_journey,'13');
  for(const name of ['active-candidate','support-candidate','next-support-candidate'])assert.deepEqual(load(`registry/${name}.json`),active);
  assert.equal(js.filter(x=>x.status==='current').length,active?1:0);
  if(active){assert.equal(js.find(x=>x.id==='14').status,'current');assert.equal(js.find(x=>x.id==='14').approval,'review-pending');}
- console.log('J13 GOLDEN FREEZE GATE PASSED: Golden #13; all 13 HTML files unchanged; TYPO-01 deferred.');process.exit(0);
+ console.log('J13 GOLDEN FREEZE GATE PASSED: Golden #13; approved HTML unchanged; TYPO-01 deferred.');process.exit(0);
 }
 Object.assign(j,{status:'golden',approval:a.approval,version:a.version,golden_number:13,approved_on:a.approved_on,prototype_path:a.prototype_path,prototype_sha256:a.prototype_sha256});
 for(const x of js)if(x.status==='current'){x.status='not-started';x.approval='not-reviewed';}
 if(active){const n=js.find(x=>x.id==='14');assert(n&&n.status!=='golden');Object.assign(n,{status:'current',approval:'review-pending',version:active.version,prototype_path:active.prototype_path,prototype_sha256:active.prototype_sha256,spec_path:active.spec_path,qa_path:active.qa_path});}
 if(!locks.some(x=>x.journey==='13'))locks.push({journey:'13',path:a.prototype_path,sha256:a.prototype_sha256});
-assert.equal(locks.length,13);
+assert([13,14].includes(locks.length));
 Object.assign(p,{schema_version:10,updated_on:a.approved_on,golden_count:13,remaining_overall:15,current_journey:active?.journey??null,paused_after_freeze:!active,last_approved_journey:'13',last_approved_version:'v1',last_approved_sha256:a.prototype_sha256,next_action:active?'Review Journey 14 V1; explicit approval required before freeze.':'Journey 13 frozen. Next: Journey 14 Receive / Share Payment Details.'});
 write('registry/journeys.json',js);write('registry/progress.json',p);write('registry/golden-artifact-locks.json',locks);
 for(const name of ['active-candidate','support-candidate','next-support-candidate'])write(`registry/${name}.json`,active);
