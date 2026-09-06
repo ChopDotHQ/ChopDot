@@ -14,11 +14,11 @@
 12. Manage People — v1 · Design Approved
 13. Request Money — v1 · Design Approved
 14. Receive / Share Payment Details — v1 · Design Approved
+15. Settlement History — v1 · Design Approved
+16. Savings Group — v1 · Design Approved
 
-Journey 14 V1 is Golden #14. Private one-recipient sharing, owner-only link control, deliberate external copy, exact destination context and recovery-before-retry are approved. Reviewed HTML is unchanged.
+Journeys 15 and 16 were recovered into durable GitHub artifacts from retained review evidence after their temporary review HTML was not committed. Their recovery checksums are now locked; no byte-identity claim is made about the missing temporary files.
 
-All earlier journey policies remain unchanged.
+Next: Journey 17 — Contribute / Withdraw Savings.
 
-Next: Journey 15 — Settlement History. Not started in this freeze.
-
-TYPO-01: shared typography/readability remains deferred.
+TYPO-01 remains deferred.

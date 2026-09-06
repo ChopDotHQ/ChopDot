@@ -1,20 +1,21 @@
 {
-  "schema_version": 11,
-  "updated_on": "2026-09-06",
+  "schema_version": 12,
+  "updated_on": "2026-09-07",
   "registered_journeys": 28,
-  "golden_count": 14,
+  "golden_count": 16,
   "current_journey": null,
-  "remaining_overall": 14,
+  "remaining_overall": 12,
   "remaining_core_including_entry": [],
   "remaining_in_app_money_loop": [],
   "map_source": "registry/journeys.json",
   "generated_map": "journey-map.html",
   "validation_command": "npm run gate",
   "payment_contract_version": "1.2",
-  "next_action": "Journey 14 frozen. Next: Journey 15 Settlement History.",
   "storage_contract_version": "1.0",
   "paused_after_freeze": true,
-  "last_approved_journey": "14",
+  "last_approved_journey": "16",
   "last_approved_version": "v1",
-  "last_approved_sha256": "5ce877d89157a4203a2e4a2c5fad795a4ecfabf5388dbaecb00bbf28f2f31e1d"
+  "last_approved_sha256": "5ec2ef4a051d3e830adda263b395a0def474ccd60ebbb8ad5a883af6d5505bea",
+  "next_action": "Journey 16 frozen. Next: Journey 17 Contribute / Withdraw Savings.",
+  "typography_note": "TYPO-01 deferred"
 }

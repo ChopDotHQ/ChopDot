@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "status": "golden",
+  "golden_number": 16,
+  "prototype_sha256": "5ec2ef4a051d3e830adda263b395a0def474ccd60ebbb8ad5a883af6d5505bea",
+  "recovered_from_review_evidence": true,
+  "html_locked": true,
+  "typography": "TYPO-01 deferred"
+}

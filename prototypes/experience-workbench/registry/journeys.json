@@ -343,8 +343,15 @@
       "09",
       "12"
     ],
-    "status": "not-started",
-    "approval": "not-reviewed"
+    "status": "golden",
+    "approval": "design-approved",
+    "version": "v1",
+    "golden_number": 15,
+    "approved_on": "2026-09-06",
+    "prototype_path": "journeys/15-settlement-history/v1-recovered.html",
+    "prototype_sha256": "0915e060314e06471d5039e735dca4f2e708940f3a33f2a5890b8758671584e0",
+    "spec_path": "journeys/15-settlement-history/spec.md",
+    "qa_path": "journeys/15-settlement-history/VISUAL_QA.md"
   },
   {
     "id": "16",
@@ -359,9 +366,16 @@
       "17",
       "18"
     ],
-    "status": "not-started",
-    "approval": "not-reviewed",
-    "entry_mode": "feature"
+    "status": "golden",
+    "approval": "design-approved",
+    "entry_mode": "feature",
+    "version": "v1",
+    "golden_number": 16,
+    "approved_on": "2026-09-07",
+    "prototype_path": "journeys/16-savings-group/v1-recovered.html",
+    "prototype_sha256": "5ec2ef4a051d3e830adda263b395a0def474ccd60ebbb8ad5a883af6d5505bea",
+    "spec_path": "journeys/16-savings-group/spec.md",
+    "qa_path": "journeys/16-savings-group/VISUAL_QA.md"
   },
   {
     "id": "17",

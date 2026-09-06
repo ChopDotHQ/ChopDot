@@ -1,0 +1,30 @@
+{
+  "journey": "15",
+  "version": "v1",
+  "golden_number": 15,
+  "approval": "design-approved",
+  "approved_on": "2026-09-06",
+  "prototype_path": "journeys/15-settlement-history/v1-recovered.html",
+  "prototype_sha256": "0915e060314e06471d5039e735dca4f2e708940f3a33f2a5890b8758671584e0",
+  "html_change_authorized": false,
+  "recovered_from_review_evidence": true,
+  "recovery_note": "Prior temporary review HTML was not durably committed. This artifact re-materializes the approved screen-level design from retained review evidence and accepted product decisions; it is not claimed byte-identical to the missing temporary file.",
+  "approved_policy": {
+    "one_record_per_payment": true,
+    "history_read_only": true,
+    "distinct_lifecycle_statuses": true,
+    "partial_amounts_explicit": true,
+    "reversal_appends_history": true,
+    "currencies_separate": true,
+    "minimal_record_after_access_loss": true,
+    "record_refresh_cannot_repeat_payment": true
+  },
+  "deferred_note": {
+    "id": "TYPO-01",
+    "status": "deferred",
+    "change_now": false
+  },
+  "status": "golden",
+  "golden_count": 15,
+  "existing_goldens_changed": false
+}
