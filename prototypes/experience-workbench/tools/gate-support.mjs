@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 const root=path.resolve(import.meta.dirname,'..');
 const run=(file,args=[])=>execFileSync(process.execPath,[path.join(root,'tools',file),...args],{cwd:root,stdio:'inherit'});
+run('apply-j14-golden-freeze.mjs',['--preflight']);
 run('apply-j13-golden-freeze.mjs',['--preflight']);
 run('apply-j09-golden-freeze.mjs',['--preflight']);
 execFileSync('npm',['run','gate:historical'],{cwd:root,stdio:'inherit'});
@@ -13,8 +14,13 @@ if(fs.existsSync(path.join(root,'tools/build-j14-candidate.mjs')))run('build-j14
 run('apply-j13-golden-freeze.mjs');run('build-journey-map.mjs');run('validate-workbench.mjs');run('apply-j13-golden-freeze.mjs',['--check']);
 if(fs.existsSync(path.join(root,'tools/validate-j14-receive.mjs')))run('validate-j14-receive.mjs');
 
-// Append sourced decision histories after historical generators; never touch HTML.
+// Restore sourced histories after historical generators, then freeze the reviewed J14 bytes.
 run('test-decision-history.mjs');
 run('decision-history.mjs');
 run('decision-history.mjs',['--check']);
 run('apply-j13-golden-freeze.mjs',['--check']);
+run('apply-j14-golden-freeze.mjs');
+run('build-journey-map.mjs');run('validate-workbench.mjs');
+run('decision-history.mjs');run('decision-history.mjs',['--check']);
+run('apply-j14-golden-freeze.mjs',['--check']);
+if(fs.existsSync(path.join(root,'tools/validate-j15-history.mjs')))run('validate-j15-history.mjs');
