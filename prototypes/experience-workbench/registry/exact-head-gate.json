@@ -1,7 +1,8 @@
 {
-  "checkpoint": "2026-09-06-j14-v1-candidate",
-  "purpose": "Verify the exact materialized Receive / Share Payment Details V1 candidate after resuming the interrupted verification; no prototype or Golden HTML changes.",
-  "materialized_head": "0f2671f0f666427496c3095453573e7bfb9aa32a",
+  "checkpoint": "2026-09-06-decision-history",
+  "purpose": "Verify sourced decision histories in all 14 built journey specifications after materialization; no prototype, policy or approval changes.",
+  "materialized_head": "34088bcb40ebd45074068d93c671c49349e7e45c",
+  "inspected_base_commit": "f403b02d05a50d13f556b3edfb949f92b24488a9",
   "freeze_commit": "8867905886e8f551d740849605e8b565682923b9",
   "freeze_gate_run": 33997899436,
   "freeze_gate_number": 58,
@@ -11,8 +12,10 @@
   "current_journey": "14",
   "journey_13_approval": "design-approved",
   "journey_14_approval": "review-pending",
+  "decision_history_coverage": "Selected source-supported decisions for Journeys 01–14; not an exhaustive transcript reconstruction.",
   "existing_goldens_changed": false,
   "html_changed": false,
+  "approvals_changed": false,
   "typography_note": "TYPO-01 deferred",
   "prototype_only": true
 }
