@@ -1,0 +1,165 @@
+{
+  "ok": true,
+  "scope": "documentation structure and artifact preservation",
+  "covered_journeys": 14,
+  "decision_entries": 14,
+  "all_golden_locks_pass": true,
+  "coverage": [
+    {
+      "journey": "01",
+      "version": "v1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/01-enter-chopdot/source/decision-history.md",
+      "source_sha256": "6a0241d947f170cd528dc7ff66a671b8a0a5ed018e6f015239f5b691caebfd89",
+      "spec_path": "journeys/01-enter-chopdot/spec.md",
+      "spec_sha256": "c142612c9f9357294c5aaf40796a8351399215fa8610a6a71d60e7dbc3698bbd"
+    },
+    {
+      "journey": "02",
+      "version": "v1.4",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/02-home-orientation/source/decision-history.md",
+      "source_sha256": "bd4fd8ec98ac3d0dc203b6d38e2e843582ede151dd0e2a989e005bf709437327",
+      "spec_path": "journeys/02-home-orientation/spec.md",
+      "spec_sha256": "b9891838c6bb74b2cb1430c7d15f6aad70c2248355a282ae0c18fb5e2b207e27"
+    },
+    {
+      "journey": "03",
+      "version": "v2",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/03-create-group/source/decision-history.md",
+      "source_sha256": "f7c588c408abdce1a6a80d2c3c510fe5ed3bae1709958ed8865f0d6cacaca10e",
+      "spec_path": "journeys/03-create-group/spec.md",
+      "spec_sha256": "f47d8f4fe105e684ebcc145aa3f9ad0bd8c219d236614eaaddabdfa90e977ec4"
+    },
+    {
+      "journey": "04",
+      "version": "v1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/04-invite-join/source/decision-history.md",
+      "source_sha256": "d6ce08d9dc8bb60129191d763f88a1b51a638fe5ea9a19e7858e1b2a50ff0d4e",
+      "spec_path": "journeys/04-invite-join/spec.md",
+      "spec_sha256": "0f64f5b60349d5bfa310fec05323b91b6aa1610eff59b6b05d66818f36314314"
+    },
+    {
+      "journey": "05",
+      "version": "v1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/05-add-expense/source/decision-history.md",
+      "source_sha256": "2cdabf727c1ed172b4472c9b62d7345588a3b71a006db2a84e49c1ba27766a99",
+      "spec_path": "journeys/05-add-expense/spec.md",
+      "spec_sha256": "0c42006aa62deb609dbf8708f53cd9ac5f62bdaade3cbdf0eaecfa1dbc961d12"
+    },
+    {
+      "journey": "06",
+      "version": "v1.1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/06-review-correct-expense/source/decision-history.md",
+      "source_sha256": "9e1de5262c86e47497e330a785f8e8aa357c44348c3b7174f8f2214f20b70f09",
+      "spec_path": "journeys/06-review-correct-expense/spec.md",
+      "spec_sha256": "4e49c9b9c9ef3733e4ebc145de834c68fa1837e8ee07326f8507a1f4e672e1fe"
+    },
+    {
+      "journey": "07",
+      "version": "v1.1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/07-review-agree/source/decision-history.md",
+      "source_sha256": "d4dac2fe0a8fcc1d48d5beac7f71faca4839959e66be1485fba38ec6a45d4270",
+      "spec_path": "journeys/07-review-agree/spec.md",
+      "spec_sha256": "39c093589161b69df1a6f5a06fa840a923ec1768d933b44b282143e12555e4e6"
+    },
+    {
+      "journey": "08",
+      "version": "v1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/08-group-home/source/decision-history.md",
+      "source_sha256": "29fe8515eb2dc4b6a586325066601530e55cfe65ee534d9cd399a9527f28074d",
+      "spec_path": "journeys/08-group-home/spec.md",
+      "spec_sha256": "739595d709546bca62b53efc43ecf2e1cf745ca5a2862cf15ed1ce82d5a434ea"
+    },
+    {
+      "journey": "09",
+      "version": "v1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/09-manage-people/source/decision-history.md",
+      "source_sha256": "8a8b4cd903d0cb1943cee36713440e5233f536c9e7cc11e3ab20673d0598a40d",
+      "spec_path": "journeys/09-manage-people/spec.md",
+      "spec_sha256": "5202ed6bcb19fdfba414854e5ae28d9fbfe0b5e39e676c20ca623c59d489267c"
+    },
+    {
+      "journey": "10",
+      "version": "v1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/10-overall-position/source/decision-history.md",
+      "source_sha256": "96b93fe74c638b271061ec3387d0141587948950b974265e713f19ce9fd5b38f",
+      "spec_path": "journeys/10-overall-position/spec.md",
+      "spec_sha256": "50955caa87372990775a18b3c2b4545dc8d726ebf92c98c4e6c642a84d2b2e01"
+    },
+    {
+      "journey": "11",
+      "version": "v1.1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/11-settle-up/source/decision-history.md",
+      "source_sha256": "9e2eabe1bdfcfd97403472b1155328645463a881643d4d27bf9502ad25cd0867",
+      "spec_path": "journeys/11-settle-up/spec.md",
+      "spec_sha256": "dd118844bf3a72c8229016df2b3b1c76c2601cbbf217470731588bf9513b8ffe"
+    },
+    {
+      "journey": "12",
+      "version": "v1.1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/12-complete-settlement/source/decision-history.md",
+      "source_sha256": "3328b3f310da5bb96c9d7027e2a189efc7e8efe43f82ac1aa1f1fc3e1f1ecb85",
+      "spec_path": "journeys/12-complete-settlement/spec.md",
+      "spec_sha256": "4e69b0c6d6f96fd16a168ac91b859eff9a028a0c37c14c3c93c79aa39de343c2"
+    },
+    {
+      "journey": "13",
+      "version": "v1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 1,
+      "source_path": "journeys/13-request-money/source/decision-history.md",
+      "source_sha256": "206f7c74633c9e0dfebf43325922f7288b1b328ff73ba36c3b6e9b92771c3c2b",
+      "spec_path": "journeys/13-request-money/spec.md",
+      "spec_sha256": "4c230953020a14a9228433161e7fd9b4a754e2c8d40f478d06a2d68848032761"
+    },
+    {
+      "journey": "14",
+      "version": "v1",
+      "approval": "review-pending",
+      "status": "current",
+      "decisions": 1,
+      "source_path": "journeys/14-receive-money/source/decision-history.md",
+      "source_sha256": "b75417b3d8f78562bb88b3792dfadeecf19df7d4be6e652484bd311beff1a63b",
+      "spec_path": "journeys/14-receive-money/spec.md",
+      "spec_sha256": "c18e47c747a4ba5c4fe75f708b53551a3e30f0b00f97208bf172acba30006dd7"
+    }
+  ],
+  "complete_conversation_audit": false,
+  "typography_note": "TYPO-01 deferred"
+}

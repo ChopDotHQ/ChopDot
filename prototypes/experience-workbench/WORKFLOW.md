@@ -51,3 +51,19 @@ Do not hand-edit:
 - `registry/map-fingerprint.json`
 
 Update the registries, then rerun the gate.
+
+<!-- JOURNEY_DECISION_HISTORY:START -->
+## Decision history and future revisits
+
+Before bringing a new or revised journey for review, record its consequential decisions in `journeys/<id>-<slug>/source/decision-history.md`. Use `templates/decision-history.md`. The gate renders that small source section into the existing `spec.md#decision-history` after historical bundles run; do not edit the managed spec copy directly.
+
+Each entry needs a stable ID, decision, why, alternatives considered, tradeoffs, revisit trigger, approval/version and source references. Distinguish the date a decision was made (only when known) from the date it was recorded or backfilled. Capture new choices and rejected options while discussing them, not after they are forgotten.
+
+Backfill only what inspected sources support. Write **Not recorded in inspected sources** for missing rationale or alternatives. Do not invent discussions, treat a plausible explanation as a past decision, or turn a candidate policy into approval. Revisit triggers added later are labelled maintenance notes, not historical reasoning or authority to redesign.
+
+Append later decisions with new IDs and link any superseded entry; never silently rewrite the historical reason. Use registry/approval records for current approval truth when old candidate-stage prose remains in a spec. Link the relevant scope, state/action mapping, test, QA or checkpoint rather than duplicating the complete specification.
+
+Before revisiting: read the decision history and its sources, check the current registry and Golden checksum, inspect dependent journeys, and state what new evidence warrants a change. Preserve the approved artifact; any behavioral or visual change needs a separately reviewed version. TYPO-01 remains deferred until an explicit shared typography/readability pass.
+
+The gate requires decision-history coverage for every Golden/current journey, checks the required fields and rendered/source consistency, and rechecks artifact locks. These are documentation-structure checks, not proof that every conversation or alternative was recovered. Future journeys cannot pass as current without a history source. Unstarted journeys are not filled with invented decisions.
+<!-- JOURNEY_DECISION_HISTORY:END -->

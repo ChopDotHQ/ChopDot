@@ -17,3 +17,11 @@ Email-code remains the default sign-in. Group removal and private-request polici
 ## Gate and continuity
 
 Run `npm run gate`. Preflight verifies locked bytes before replay. Historical QA records remain historical; final approval overlays restore current state. registry/j14-candidate.json declares the next candidate. Final freeze checks validate every Golden lock and current progress. Require a successful exact-head run with no generated changes left.
+
+<!-- JOURNEY_DECISION_HISTORY:START -->
+## Decision history
+
+Each built journey's `spec.md#decision-history` records selected decisions, rationale, alternatives, tradeoffs, revisit triggers and source/approval references. Read it before changing a journey. Historical candidate labels do not override the current registry or approval records.
+
+The 2026-09-06 backfill covers Journeys 01–14 from inspected records, not the complete conversation. Missing history is explicit. Author the section in the journey's `source/decision-history.md`; the gate preserves it through rebuilds. See `WORKFLOW.md#decision-history-and-future-revisits` and `registry/checkpoints/2026-09-06-decision-history.json`.
+<!-- JOURNEY_DECISION_HISTORY:END -->
