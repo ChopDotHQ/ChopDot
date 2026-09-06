@@ -391,8 +391,13 @@
       "18",
       "21"
     ],
-    "status": "not-started",
-    "approval": "not-reviewed"
+    "status": "current",
+    "approval": "review-pending",
+    "version": "v1",
+    "prototype_path": "journeys/17-savings-contribute-withdraw/v1-candidate.html",
+    "prototype_sha256": "637c1078c26edeaff25ab2bcb7a9c8f5b60fc89188171e77a5fdf3411bf7d0c2",
+    "spec_path": "journeys/17-savings-contribute-withdraw/spec.md",
+    "qa_path": "journeys/17-savings-contribute-withdraw/VISUAL_QA.md"
   },
   {
     "id": "18",

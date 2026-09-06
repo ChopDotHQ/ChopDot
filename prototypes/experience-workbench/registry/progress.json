@@ -3,7 +3,7 @@
   "updated_on": "2026-09-07",
   "registered_journeys": 28,
   "golden_count": 16,
-  "current_journey": null,
+  "current_journey": "17",
   "remaining_overall": 12,
   "remaining_core_including_entry": [],
   "remaining_in_app_money_loop": [],
@@ -12,10 +12,10 @@
   "validation_command": "npm run gate",
   "payment_contract_version": "1.2",
   "storage_contract_version": "1.0",
-  "paused_after_freeze": true,
+  "paused_after_freeze": false,
   "last_approved_journey": "16",
   "last_approved_version": "v1",
   "last_approved_sha256": "5ec2ef4a051d3e830adda263b395a0def474ccd60ebbb8ad5a883af6d5505bea",
-  "next_action": "Journey 16 frozen. Next: Journey 17 Contribute / Withdraw Savings.",
+  "next_action": "Review Journey 17 V1; explicit approval required before freeze.",
   "typography_note": "TYPO-01 deferred"
 }
