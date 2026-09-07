@@ -1,0 +1,31 @@
+{
+  "journey": "17",
+  "version": "v1.1",
+  "golden_number": 17,
+  "approval": "design-approved",
+  "approved_on": "2026-09-07",
+  "reviewed_at_commit": "d8a6c8c9d46a081315dae05a0e0a0e357df822dd",
+  "prototype_path": "journeys/17-savings-contribute-withdraw/v1.1-candidate.html",
+  "prototype_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
+  "html_change_authorized": false,
+  "approved_policy": {
+    "one_scoped_operation": true,
+    "no_optimistic_money": true,
+    "tracking_mode_requires_confirmation": true,
+    "shared_account_uses_real_authority": true,
+    "own_position_withdrawal_default": true,
+    "group_controlled_withdrawals_obey_group_rule": true,
+    "unknown_requires_recovery_before_retry": true,
+    "exact_currency_or_asset": true,
+    "return_appends_history": true,
+    "no_yield_implication": true,
+    "timeline_fix_is_journey_scoped": true
+  },
+  "next_journey": "18",
+  "deferred_note": {
+    "id": "TYPO-01",
+    "status": "deferred",
+    "change_now": false,
+    "note": "Shared typography and readability remain deferred."
+  }
+}
