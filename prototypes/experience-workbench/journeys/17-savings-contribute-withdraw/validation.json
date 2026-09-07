@@ -1,16 +1,19 @@
 {
   "ok": true,
   "journey": "17",
-  "version": "v1",
-  "candidate_sha256": "637c1078c26edeaff25ab2bcb7a9c8f5b60fc89188171e77a5fdf3411bf7d0c2",
+  "version": "v1.1",
+  "candidate_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
   "states": 19,
   "model_assertions": 86,
   "browser_layouts": 38,
-  "product_clicks": 144,
+  "product_clicks": 170,
   "page_errors": [],
   "all_layouts_pass": true,
-  "viewport_sizes": ["393x852","430x890"],
+  "timeline_overlap_checks_pass": true,
+  "external_network_requests": 0,
+  "self_contained": true,
+  "viewport_sizes": ["393x852", "430x890"],
   "review_status": "review-pending",
   "typography_note": "TYPO-01 deferred",
-  "limitations": "Synthetic in-memory prototype; no real money movement, custody, provider, wallet, notifications or backend."
+  "limitations": "Synthetic in-memory prototype; no real money movement, custody, provider, wallet, notifications or backend. Fresh browser QA uses the exact standalone HTML via Playwright set_content because file navigation is blocked by the test environment."
 }

@@ -23,13 +23,18 @@ if(progress.current_journey===null){if(current.length!==0||progress.paused_after
   if(current.length!==1||current[0].id!==progress.current_journey) errors.push('Current journey inconsistent');
   if(progress.current_journey==='17'){
     const c=load('registry/j17-candidate.json');
+    if(c.version!=='v1.1') errors.push('J17 current version must be v1.1');
     if(c.prototype_sha256!==digest(c.prototype_path)) errors.push('J17 candidate checksum mismatch');
     const v=load('journeys/17-savings-contribute-withdraw/validation.json');
     if(!v.ok||v.candidate_sha256!==c.prototype_sha256) errors.push('J17 validation mismatch');
-    if(v.model_assertions!==86||v.browser_layouts!==38||v.page_errors.length) errors.push('J17 QA evidence incomplete');
+    if(v.model_assertions!==86||v.browser_layouts!==38||v.product_clicks!==170||v.page_errors.length) errors.push('J17 QA evidence incomplete');
+    if(!v.all_layouts_pass||!v.timeline_overlap_checks_pass||!v.self_contained||v.external_network_requests!==0) errors.push('J17 standalone/layout safeguards incomplete');
+    const fresh=load('journeys/17-savings-contribute-withdraw/visual-qa/fresh-v1.1-browser-qa.json');
+    if(!fresh.ok||fresh.candidate_sha256!==c.prototype_sha256||fresh.total_fresh_product_clicks!==170||!fresh.timeline_overlap_checks_pass||fresh.external_network_requests.length) errors.push('J17 fresh browser evidence mismatch');
     for(const f of [c.spec_path,c.qa_path,'journeys/17-savings-contribute-withdraw/STATE_AND_AUTHORITY.md','journeys/17-savings-contribute-withdraw/GIVEN_WHEN_THEN.md','journeys/17-savings-contribute-withdraw/UI_TO_DOMAIN_EVENTS.md']) if(!fs.existsSync(path.join(root,f))) errors.push(`Missing J17 file ${f}`);
     const html=fs.readFileSync(path.join(root,c.prototype_path),'utf8');
     for(const banned of ['Polkadot wallet','% APY','guaranteed yield']) if(html.toLowerCase().includes(banned.toLowerCase())) errors.push(`Banned J17 visible claim: ${banned}`);
+    if(!html.includes('J17 V1.1 — isolate savings status timelines')) errors.push('J17 scoped timeline isolation marker missing');
   }
 }
 if(progress.remaining_overall!==12) errors.push('Remaining count must be 12');

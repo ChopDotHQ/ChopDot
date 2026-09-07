@@ -1,6 +1,6 @@
 # Journey 17 — Contribute / Withdraw Savings
 
-V1 · Candidate #17 · Review pending. Prototype only; not Golden.
+V1.1 · Candidate #17 · Review pending. Prototype only; not Golden.
 
 ## Position and handoff
 Journey 16 V1 is Golden #16. Journey 17 owns the money-changing workflow after a member chooses **Add money** or **Withdraw** from a savings group. It exits to the updated savings group, Activity & Notifications (18), or Wallet & Crypto (21) when an external wallet approval is required.
@@ -37,7 +37,7 @@ Add or remove savings safely, knowing exactly what will change and when it becom
 Offline; insufficient confirmed position; changed group version; confirmation delayed; user rejects approval; provider failure; result unknown; safe retry after recovered failure; returned contribution; access loss; mixed currency.
 
 ## Visual inheritance
-Uses the established fixed phone frame, neutral cards, green savings/action semantic, compact headers, inline line icons, and short copy. No shared typography changes. TYPO-01 remains deferred.
+Uses the established fixed phone frame, neutral cards, green savings/action semantic, compact headers, inline line icons, and short copy. V1.1 adds only a scoped timeline-layout reset to prevent an inherited settlement grid from affecting savings status timelines. No shared typography changes. TYPO-01 remains deferred.
 
 ## Decision history
 ### J17-D01 — Pending money never changes Available
@@ -58,3 +58,11 @@ Uses the established fixed phone frame, neutral cards, green savings/action sema
 **Why:** Prevent duplicate contributions/withdrawals.
 **Alternatives:** Immediate retry. Rejected because the first execution may have succeeded.
 **Tradeoffs:** Temporary waiting state, safer money movement.
+
+### J17-D04 — Isolate savings status timelines from inherited settlement layout
+**Decision:** V1.1 resets layout only for `.status-card .timeline-row`; the shared/inherited Golden stylesheet is not edited.
+**Why:** A fresh standalone browser rerun exposed text overlap caused by Journey 12's grid-based timeline rule leaking into Journey 17's vertical status timeline.
+**Alternatives:** Edit the inherited/shared timeline rule, which could change approved Goldens; rewrite the timeline markup, which was unnecessary. Both rejected.
+**Tradeoffs:** One small journey-scoped override remains until a future shared component cleanup.
+**Revisit when:** A deliberately approved shared typography/layout pass replaces the common timeline primitive.
+**Approval / version:** V1.1 review-pending. No Golden changed. TYPO-01 remains deferred.
