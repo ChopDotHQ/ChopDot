@@ -420,9 +420,14 @@
       "13",
       "15"
     ],
-    "status": "not-started",
-    "approval": "not-reviewed",
-    "entry_mode": "tab"
+    "status": "current",
+    "approval": "review-pending",
+    "entry_mode": "tab",
+    "version": "v1",
+    "prototype_path": "journeys/18-activity-notifications/v1-candidate.html",
+    "prototype_sha256": "fafb9cc74680b59f6589979115060895b6469e9ae760c59e35971be3e31f4a3a",
+    "spec_path": "journeys/18-activity-notifications/spec.md",
+    "qa_path": "journeys/18-activity-notifications/VISUAL_QA.md"
   },
   {
     "id": "19",

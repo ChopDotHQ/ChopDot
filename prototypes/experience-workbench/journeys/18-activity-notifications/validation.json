@@ -1,0 +1,32 @@
+{
+  "ok": true,
+  "journey": "18",
+  "version": "v1",
+  "candidate_sha256": "fafb9cc74680b59f6589979115060895b6469e9ae760c59e35971be3e31f4a3a",
+  "states": 36,
+  "model_assertions": 156,
+  "model_scenarios": 30,
+  "browser_layouts": 72,
+  "product_clicks": 384,
+  "mapped_actions": 192,
+  "page_errors": [],
+  "console_errors": [],
+  "all_layouts_pass": true,
+  "all_clicks_pass": true,
+  "self_contained": true,
+  "external_network_requests": 0,
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "golden_count_before": 17,
+  "existing_goldens_changed": false,
+  "review_status": "review-pending",
+  "typography_note": "TYPO-01 deferred",
+  "source_basis": [
+    "docs/USER_ONBOARDING_READINESS.md Activity/Notifications",
+    "docs/MVP_ACTION_INVENTORY.md Activity",
+    "src/components/screens/ActivityHome.tsx"
+  ],
+  "limitations": "Synthetic hash-navigation prototype. No real push delivery, permissions, persistence, backend, payments, wallet, custody, or cross-device sync."
+}

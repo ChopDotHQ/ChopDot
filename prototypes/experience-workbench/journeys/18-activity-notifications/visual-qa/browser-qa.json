@@ -1,0 +1,3721 @@
+{
+  "ok": true,
+  "candidate_sha256": "fafb9cc74680b59f6589979115060895b6469e9ae760c59e35971be3e31f4a3a",
+  "states": 36,
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "layouts": [
+    {
+      "route": "activity",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\n2\nDemo\nAll\nNeeds attention \u00b7 3\nPayments\nGroups\nNeeds your attention\nThese stay here until the underlying item is actually resolved.\nPayment still waiting\nJeanine \u00b7 CHF 54.30 \u00b7 recipient confirmation needed\nToday \u00b7 15:02\nCHF 54.30\nNeeds attention\nMarc requested money\nZurich Weekend \u00b7 private request\nToday \u00b7 13:28\nCHF 30.00\nReview\nExpense needs your review\nDinner \u00b7 Zurich Weekend\nToday \u00b7 10:11\nCHF 84.60\nReview\nRecent activity\nChopDot changes only\nToday\nSavings contribution confirmed\nAlps "
+    },
+    {
+      "route": "notifications",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Notifications\n2 unread\nDemo\nUnread is not unresolved. Reading a notification does not complete the underlying task.\nNew\nMark all read\nMarc requested CHF 30.00\nZurich Weekend \u00b7 private request\n13:28\nDinner needs your review\nZurich Weekend \u00b7 CHF 84.60\n10:11\nEarlier\nStill available in Activity\nContribution confirmed\nAlps House Fund \u00b7 CHF 180.00\n14:12\nJeanine received your payment\nCHF 54.30 \u00b7 TWINT\n11:06\nBack to Activity"
+    },
+    {
+      "route": "notifications-read",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Notifications\nAll read\nDemo\nAll notification delivery copies are marked read. The three underlying attention items are unchanged.\nMarc requested CHF 30.00\nStill needs your decision\n13:28\nDinner needs your review\nStill waiting for your review\n10:11\n3 still need attention\nRead state and task state are separate.\nReturn to Activity"
+    },
+    {
+      "route": "filter-attention",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\n2\nDemo\nAll\nNeeds attention \u00b7 3\nPayments\nGroups\nPayment still waiting\nJeanine \u00b7 CHF 54.30 \u00b7 recipient confirmation needed\nToday \u00b7 15:02\nCHF 54.30\nNeeds attention\nMarc requested money\nZurich Weekend \u00b7 private request\nToday \u00b7 13:28\nCHF 30.00\nReview\nExpense needs your review\nDinner \u00b7 Zurich Weekend\nToday \u00b7 10:11\nCHF 84.60\nReview\nFiltering changes only this view. It does not change read state or the underlying tasks.\nPots\nPeople\nActivity\nYou"
+    },
+    {
+      "route": "filter-payments",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\n2\nDemo\nAll\nNeeds attention \u00b7 3\nPayments\nGroups\nToday\nPayment waiting\nJeanine \u00b7 confirmation needed\n15:02\nCHF 54.30\nPayment completed\nJeanine \u00b7 TWINT\n11:06\nCHF 54.30\nRequest received\nMarc \u00b7 private request\n13:28\nCHF 30.00\nCHF and DOT stay separate. Payment filters never convert one asset into another.\nPots\nPeople\nActivity\nYou"
+    },
+    {
+      "route": "filter-groups",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\n2\nDemo\nAll\nNeeds attention \u00b7 3\nPayments\nGroups\nNina joined Zurich Weekend\nMember access is active\n09:18\nDinner expense updated\nZurich Weekend \u00b7 split changed\nYesterday \u00b7 17:02\nCHF 84.60\nSavings contribution confirmed\nAlps House Fund\n14:12\nCHF 180.00\nPots\nPeople\nActivity\nYou"
+    },
+    {
+      "route": "payment-waiting",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Payment\nJourney 12 preview\nDemo\nWaiting for Jeanine\n\nThe payment is still waiting for the required confirmation. Activity cannot confirm it.\n\nAmount\nCHF 54.30\nMethod\nTWINT\nCurrent status\nWaiting\nOpen payment status\nBack"
+    },
+    {
+      "route": "request-received",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Request\nRequest received\nDemo\nMarc requested CHF 30.00\n\nThis private request is unread or read independently from whether you decide to pay it.\n\nFrom\nMarc\nGroup\nZurich Weekend\nAmount\nCHF 30.00\nReview request\nBack"
+    },
+    {
+      "route": "expense-review",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Expense\nJourney 07 preview\nDemo\nDinner needs your review\n\nThe expense still needs your decision. Opening Activity never agrees to it.\n\nGroup\nZurich Weekend\nAmount\nCHF 84.60\nStatus\nNeeds review\nReview expense\nBack"
+    },
+    {
+      "route": "savings-confirmed",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Savings\nJourney 17 record\nDemo\nCHF 180.00 confirmed\n\nThis is an informational milestone. The contribution is already confirmed; opening the feed cannot change it.\n\nGroup\nAlps House Fund\nCurrency\nCHF\nAvailable\nCHF 1420.00\nOpen savings group\nBack"
+    },
+    {
+      "route": "payment-complete",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Payment\nJourney 15 record\nDemo\nPayment complete\n\nThe saved payment record is the official history. A notification cannot make it more or less complete.\n\nWith\nJeanine\nAmount\nCHF 54.30\nMethod\nTWINT\nOpen saved record\nBack"
+    },
+    {
+      "route": "member-joined",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Group update\nJourney 09 preview\nDemo\nNina joined Zurich Weekend\n\nMembership became active. The feed shows the change without exposing unrelated profile or payment details.\n\nGroup\nZurich Weekend\nMember\nNina\nAccess\nActive\nOpen People\nBack"
+    },
+    {
+      "route": "request-sent",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Request update\nJourney 13 record\nDemo\nRequest delivered to Marc\n\nDelivery is confirmed. Payment remains a separate state.\n\nTo\nMarc\nAmount\nCHF 30.00\nPayment\nNot paid\nOpen request\nBack"
+    },
+    {
+      "route": "expense-updated",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Expense update\nJourney 06 preview\nDemo\nDinner was updated\n\nThe change appears once as a meaningful update. Internal saves, retries and sync checks do not create feed spam.\n\nGroup\nZurich Weekend\nAmount\nCHF 84.60\nChange\nSplit updated\nOpen expense\nBack"
+    },
+    {
+      "route": "stale-notification",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Notification\nAlready handled\nDemo\nThis changed since the notification.\n\nThe notification said \u201cwaiting,\u201d but the payment is now Complete. ChopDot shows what is true now instead of replaying the old action.\n\nNotification said\nWaiting\nCurrent payment\nComplete\nOpen current payment"
+    },
+    {
+      "route": "access-changed",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\nAccess changed\nDemo\nSome details are no longer available.\n\nYou no longer have access to this group. Activity will not reveal current private group details. A personally relevant saved payment record may remain in your history.\n\nAccess checks happen when the item opens, not only when the notification was originally delivered.\nBack to Activity"
+    },
+    {
+      "route": "offline",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\nOffline\nDemo\nYou're offline. Showing saved activity from 18:42. New changes may be missing.\nContribution confirmed\nAlps House Fund \u00b7 saved locally\n14:12\nCHF 180.00\nPayment completed\nJeanine \u00b7 saved locally\n11:06\nCHF 54.30\nRefreshing while offline cannot invent new activity or change any underlying state.\nTry again"
+    },
+    {
+      "route": "loading",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\nLoading\nDemo"
+    },
+    {
+      "route": "error",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\nCould not load\nDemo\nActivity didn't load.\n\nNo underlying payment, request, expense or savings state was changed.\n\nTry again"
+    },
+    {
+      "route": "empty-activity",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\n0\nDemo\nNo activity yet\n\nMeaningful ChopDot changes will appear here. Background system activity stays out of the way.\n\nPots\nPeople\nActivity\nYou"
+    },
+    {
+      "route": "empty-notifications",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Notifications\nAll caught up\nDemo\nNo notifications\n\nYour Activity history still remains available. Empty notifications do not mean there has never been activity."
+    },
+    {
+      "route": "mixed-currency",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\nExact currencies\nDemo\nMarc requested payment\nZurich Weekend\n13:28\nCHF 30.00\nSam payment update\nCrypto group\n12:02\n2.400000 DOT\nCHF and DOT remain separate. Activity does not invent a converted total or payment instruction."
+    },
+    {
+      "route": "deduped-payment",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Payment activity\nOne meaningful update\nDemo\nWallet payment is checking.\n\nRepeated checks and reconnects do not create extra Activity rows. Only meaningful changes do.\n\nPayment\n2.400000 DOT\nFeed rows\n1 current attention item\nBackground checks\nHidden from feed\nBack to payments"
+    },
+    {
+      "route": "handoff-j12",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Payment status\nAdjacent journey preview\nDemo\nJourney 12 owns confirmation and recovery. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-request",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Request decision\nAdjacent journey preview\nDemo\nA payment/request decision belongs to the relevant money journey, not Activity. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j07",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Expense review\nAdjacent journey preview\nDemo\nJourney 07 owns agree, question and issue actions. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j16",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Savings group\nAdjacent journey preview\nDemo\nJourney 16 owns the savings overview. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j15",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Saved payment record\nAdjacent journey preview\nDemo\nJourney 15 owns settlement history. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j09",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "People\nAdjacent journey preview\nDemo\nJourney 09 owns member and relationship details. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j13",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Request\nAdjacent journey preview\nDemo\nJourney 13 owns request history and sender-side state. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j06",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Expense detail\nAdjacent journey preview\nDemo\nJourney 06 owns correction and expense details. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "pots",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Pots\nNavigation preview\nDemo\nAdjacent navigation preview only. Journey 18 does not redesign this destination.\nReturn to Activity"
+    },
+    {
+      "route": "people",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "People\nNavigation preview\nDemo\nAdjacent navigation preview only. Journey 18 does not redesign this destination.\nReturn to Activity"
+    },
+    {
+      "route": "you",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "You\nNavigation preview\nDemo\nAdjacent navigation preview only. Journey 18 does not redesign this destination.\nReturn to Activity"
+    },
+    {
+      "route": "add-preview",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Add\nNavigation preview\nDemo\nAdjacent navigation preview only. Journey 18 does not redesign this destination.\nReturn to Activity"
+    },
+    {
+      "route": "demo",
+      "viewport": "393",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Demo states\nActivity & Notifications\nDemo\nReview alternate states\nActivity\nNotifications\nAll read\nNeeds attention\nPayments\nGroups\nStale notification\nAccess changed\nOffline cache\nLoading\nLoad error\nEmpty activity\nEmpty notifications\nMixed currencies\nDeduped payment\nDemo navigation changes only this local prototype. It has no product permissions.\nBack to Activity"
+    },
+    {
+      "route": "activity",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\n2\nDemo\nAll\nNeeds attention \u00b7 3\nPayments\nGroups\nNeeds your attention\nThese stay here until the underlying item is actually resolved.\nPayment still waiting\nJeanine \u00b7 CHF 54.30 \u00b7 recipient confirmation needed\nToday \u00b7 15:02\nCHF 54.30\nNeeds attention\nMarc requested money\nZurich Weekend \u00b7 private request\nToday \u00b7 13:28\nCHF 30.00\nReview\nExpense needs your review\nDinner \u00b7 Zurich Weekend\nToday \u00b7 10:11\nCHF 84.60\nReview\nRecent activity\nChopDot changes only\nToday\nSavings contribution confirmed\nAlps "
+    },
+    {
+      "route": "notifications",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Notifications\n2 unread\nDemo\nUnread is not unresolved. Reading a notification does not complete the underlying task.\nNew\nMark all read\nMarc requested CHF 30.00\nZurich Weekend \u00b7 private request\n13:28\nDinner needs your review\nZurich Weekend \u00b7 CHF 84.60\n10:11\nEarlier\nStill available in Activity\nContribution confirmed\nAlps House Fund \u00b7 CHF 180.00\n14:12\nJeanine received your payment\nCHF 54.30 \u00b7 TWINT\n11:06\nBack to Activity"
+    },
+    {
+      "route": "notifications-read",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Notifications\nAll read\nDemo\nAll notification delivery copies are marked read. The three underlying attention items are unchanged.\nMarc requested CHF 30.00\nStill needs your decision\n13:28\nDinner needs your review\nStill waiting for your review\n10:11\n3 still need attention\nRead state and task state are separate.\nReturn to Activity"
+    },
+    {
+      "route": "filter-attention",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\n2\nDemo\nAll\nNeeds attention \u00b7 3\nPayments\nGroups\nPayment still waiting\nJeanine \u00b7 CHF 54.30 \u00b7 recipient confirmation needed\nToday \u00b7 15:02\nCHF 54.30\nNeeds attention\nMarc requested money\nZurich Weekend \u00b7 private request\nToday \u00b7 13:28\nCHF 30.00\nReview\nExpense needs your review\nDinner \u00b7 Zurich Weekend\nToday \u00b7 10:11\nCHF 84.60\nReview\nFiltering changes only this view. It does not change read state or the underlying tasks.\nPots\nPeople\nActivity\nYou"
+    },
+    {
+      "route": "filter-payments",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\n2\nDemo\nAll\nNeeds attention \u00b7 3\nPayments\nGroups\nToday\nPayment waiting\nJeanine \u00b7 confirmation needed\n15:02\nCHF 54.30\nPayment completed\nJeanine \u00b7 TWINT\n11:06\nCHF 54.30\nRequest received\nMarc \u00b7 private request\n13:28\nCHF 30.00\nCHF and DOT stay separate. Payment filters never convert one asset into another.\nPots\nPeople\nActivity\nYou"
+    },
+    {
+      "route": "filter-groups",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\n2\nDemo\nAll\nNeeds attention \u00b7 3\nPayments\nGroups\nNina joined Zurich Weekend\nMember access is active\n09:18\nDinner expense updated\nZurich Weekend \u00b7 split changed\nYesterday \u00b7 17:02\nCHF 84.60\nSavings contribution confirmed\nAlps House Fund\n14:12\nCHF 180.00\nPots\nPeople\nActivity\nYou"
+    },
+    {
+      "route": "payment-waiting",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Payment\nJourney 12 preview\nDemo\nWaiting for Jeanine\n\nThe payment is still waiting for the required confirmation. Activity cannot confirm it.\n\nAmount\nCHF 54.30\nMethod\nTWINT\nCurrent status\nWaiting\nOpen payment status\nBack"
+    },
+    {
+      "route": "request-received",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Request\nRequest received\nDemo\nMarc requested CHF 30.00\n\nThis private request is unread or read independently from whether you decide to pay it.\n\nFrom\nMarc\nGroup\nZurich Weekend\nAmount\nCHF 30.00\nReview request\nBack"
+    },
+    {
+      "route": "expense-review",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Expense\nJourney 07 preview\nDemo\nDinner needs your review\n\nThe expense still needs your decision. Opening Activity never agrees to it.\n\nGroup\nZurich Weekend\nAmount\nCHF 84.60\nStatus\nNeeds review\nReview expense\nBack"
+    },
+    {
+      "route": "savings-confirmed",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Savings\nJourney 17 record\nDemo\nCHF 180.00 confirmed\n\nThis is an informational milestone. The contribution is already confirmed; opening the feed cannot change it.\n\nGroup\nAlps House Fund\nCurrency\nCHF\nAvailable\nCHF 1420.00\nOpen savings group\nBack"
+    },
+    {
+      "route": "payment-complete",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Payment\nJourney 15 record\nDemo\nPayment complete\n\nThe saved payment record is the official history. A notification cannot make it more or less complete.\n\nWith\nJeanine\nAmount\nCHF 54.30\nMethod\nTWINT\nOpen saved record\nBack"
+    },
+    {
+      "route": "member-joined",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Group update\nJourney 09 preview\nDemo\nNina joined Zurich Weekend\n\nMembership became active. The feed shows the change without exposing unrelated profile or payment details.\n\nGroup\nZurich Weekend\nMember\nNina\nAccess\nActive\nOpen People\nBack"
+    },
+    {
+      "route": "request-sent",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Request update\nJourney 13 record\nDemo\nRequest delivered to Marc\n\nDelivery is confirmed. Payment remains a separate state.\n\nTo\nMarc\nAmount\nCHF 30.00\nPayment\nNot paid\nOpen request\nBack"
+    },
+    {
+      "route": "expense-updated",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Expense update\nJourney 06 preview\nDemo\nDinner was updated\n\nThe change appears once as a meaningful update. Internal saves, retries and sync checks do not create feed spam.\n\nGroup\nZurich Weekend\nAmount\nCHF 84.60\nChange\nSplit updated\nOpen expense\nBack"
+    },
+    {
+      "route": "stale-notification",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Notification\nAlready handled\nDemo\nThis changed since the notification.\n\nThe notification said \u201cwaiting,\u201d but the payment is now Complete. ChopDot shows what is true now instead of replaying the old action.\n\nNotification said\nWaiting\nCurrent payment\nComplete\nOpen current payment"
+    },
+    {
+      "route": "access-changed",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\nAccess changed\nDemo\nSome details are no longer available.\n\nYou no longer have access to this group. Activity will not reveal current private group details. A personally relevant saved payment record may remain in your history.\n\nAccess checks happen when the item opens, not only when the notification was originally delivered.\nBack to Activity"
+    },
+    {
+      "route": "offline",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\nOffline\nDemo\nYou're offline. Showing saved activity from 18:42. New changes may be missing.\nContribution confirmed\nAlps House Fund \u00b7 saved locally\n14:12\nCHF 180.00\nPayment completed\nJeanine \u00b7 saved locally\n11:06\nCHF 54.30\nRefreshing while offline cannot invent new activity or change any underlying state.\nTry again"
+    },
+    {
+      "route": "loading",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\nLoading\nDemo"
+    },
+    {
+      "route": "error",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\nCould not load\nDemo\nActivity didn't load.\n\nNo underlying payment, request, expense or savings state was changed.\n\nTry again"
+    },
+    {
+      "route": "empty-activity",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\n0\nDemo\nNo activity yet\n\nMeaningful ChopDot changes will appear here. Background system activity stays out of the way.\n\nPots\nPeople\nActivity\nYou"
+    },
+    {
+      "route": "empty-notifications",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Notifications\nAll caught up\nDemo\nNo notifications\n\nYour Activity history still remains available. Empty notifications do not mean there has never been activity."
+    },
+    {
+      "route": "mixed-currency",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Activity\nExact currencies\nDemo\nMarc requested payment\nZurich Weekend\n13:28\nCHF 30.00\nSam payment update\nCrypto group\n12:02\n2.400000 DOT\nCHF and DOT remain separate. Activity does not invent a converted total or payment instruction."
+    },
+    {
+      "route": "deduped-payment",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Payment activity\nOne meaningful update\nDemo\nWallet payment is checking.\n\nRepeated checks and reconnects do not create extra Activity rows. Only meaningful changes do.\n\nPayment\n2.400000 DOT\nFeed rows\n1 current attention item\nBackground checks\nHidden from feed\nBack to payments"
+    },
+    {
+      "route": "handoff-j12",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Payment status\nAdjacent journey preview\nDemo\nJourney 12 owns confirmation and recovery. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-request",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Request decision\nAdjacent journey preview\nDemo\nA payment/request decision belongs to the relevant money journey, not Activity. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j07",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Expense review\nAdjacent journey preview\nDemo\nJourney 07 owns agree, question and issue actions. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j16",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Savings group\nAdjacent journey preview\nDemo\nJourney 16 owns the savings overview. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j15",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Saved payment record\nAdjacent journey preview\nDemo\nJourney 15 owns settlement history. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j09",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "People\nAdjacent journey preview\nDemo\nJourney 09 owns member and relationship details. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j13",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Request\nAdjacent journey preview\nDemo\nJourney 13 owns request history and sender-side state. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "handoff-j06",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Expense detail\nAdjacent journey preview\nDemo\nJourney 06 owns correction and expense details. This preview cannot execute or confirm anything.\nReturn to Activity"
+    },
+    {
+      "route": "pots",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Pots\nNavigation preview\nDemo\nAdjacent navigation preview only. Journey 18 does not redesign this destination.\nReturn to Activity"
+    },
+    {
+      "route": "people",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "People\nNavigation preview\nDemo\nAdjacent navigation preview only. Journey 18 does not redesign this destination.\nReturn to Activity"
+    },
+    {
+      "route": "you",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "You\nNavigation preview\nDemo\nAdjacent navigation preview only. Journey 18 does not redesign this destination.\nReturn to Activity"
+    },
+    {
+      "route": "add-preview",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Add\nNavigation preview\nDemo\nAdjacent navigation preview only. Journey 18 does not redesign this destination.\nReturn to Activity"
+    },
+    {
+      "route": "demo",
+      "viewport": "430",
+      "passed": true,
+      "nonblank": true,
+      "docOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": [],
+      "overlaps": [],
+      "textOverflows": [],
+      "copy": "Demo states\nActivity & Notifications\nDemo\nReview alternate states\nActivity\nNotifications\nAll read\nNeeds attention\nPayments\nGroups\nStale notification\nAccess changed\nOffline cache\nLoading\nLoad error\nEmpty activity\nEmpty notifications\nMixed currencies\nDeduped payment\nDemo navigation changes only this local prototype. It has no product permissions.\nBack to Activity"
+    }
+  ],
+  "clicks": [
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#notifications",
+      "text": "2",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#activity",
+      "text": "All",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#filter-attention",
+      "text": "Needs attention \u00b7 3",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#filter-payments",
+      "text": "Payments",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#filter-groups",
+      "text": "Groups",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#payment-waiting",
+      "text": "Payment still waiting\nJeanine \u00b7 CHF 54.30 \u00b7 recipient confirmation needed\nToday ",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#request-received",
+      "text": "Marc requested money\nZurich Weekend \u00b7 private request\nToday \u00b7 13:28\nCHF 30.00\nRe",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#expense-review",
+      "text": "Expense needs your review\nDinner \u00b7 Zurich Weekend\nToday \u00b7 10:11\nCHF 84.60\nReview",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#savings-confirmed",
+      "text": "Savings contribution confirmed\nAlps House Fund \u00b7 Your contribution now counts\nTo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#payment-complete",
+      "text": "Payment completed with Jeanine\nTWINT \u00b7 Saved payment record available\nToday \u00b7 11",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#member-joined",
+      "text": "Nina joined Zurich Weekend\nMember access is now active\nToday \u00b7 09:18",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#request-sent",
+      "text": "Request sent to Marc\nPrivate request \u00b7 delivery confirmed\nYesterday \u00b7 18:44\nCHF ",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#expense-updated",
+      "text": "Dinner expense updated\nZurich Weekend \u00b7 split changed by Dev\nYesterday \u00b7 17:02\nC",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#pots",
+      "text": "Pots",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#people",
+      "text": "People",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#add-preview",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "activity",
+      "href": "#you",
+      "text": "You",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications",
+      "href": "#notifications-read",
+      "text": "Mark all read",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications",
+      "href": "#request-received",
+      "text": "Marc requested CHF 30.00\nZurich Weekend \u00b7 private request\n13:28",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications",
+      "href": "#expense-review",
+      "text": "Dinner needs your review\nZurich Weekend \u00b7 CHF 84.60\n10:11",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications",
+      "href": "#savings-confirmed",
+      "text": "Contribution confirmed\nAlps House Fund \u00b7 CHF 180.00\n14:12",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications",
+      "href": "#payment-complete",
+      "text": "Jeanine received your payment\nCHF 54.30 \u00b7 TWINT\n11:06",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications",
+      "href": "#activity",
+      "text": "Back to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications-read",
+      "href": "#notifications",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications-read",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications-read",
+      "href": "#request-received",
+      "text": "Marc requested CHF 30.00\nStill needs your decision\n13:28",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications-read",
+      "href": "#expense-review",
+      "text": "Dinner needs your review\nStill waiting for your review\n10:11",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "notifications-read",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#notifications",
+      "text": "2",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#activity",
+      "text": "All",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#filter-attention",
+      "text": "Needs attention \u00b7 3",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#filter-payments",
+      "text": "Payments",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#filter-groups",
+      "text": "Groups",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#payment-waiting",
+      "text": "Payment still waiting\nJeanine \u00b7 CHF 54.30 \u00b7 recipient confirmation needed\nToday ",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#request-received",
+      "text": "Marc requested money\nZurich Weekend \u00b7 private request\nToday \u00b7 13:28\nCHF 30.00\nRe",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#expense-review",
+      "text": "Expense needs your review\nDinner \u00b7 Zurich Weekend\nToday \u00b7 10:11\nCHF 84.60\nReview",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#pots",
+      "text": "Pots",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#people",
+      "text": "People",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#add-preview",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-attention",
+      "href": "#you",
+      "text": "You",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#notifications",
+      "text": "2",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#activity",
+      "text": "All",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#filter-attention",
+      "text": "Needs attention \u00b7 3",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#filter-payments",
+      "text": "Payments",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#filter-groups",
+      "text": "Groups",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#payment-waiting",
+      "text": "Payment waiting\nJeanine \u00b7 confirmation needed\n15:02\nCHF 54.30",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#payment-complete",
+      "text": "Payment completed\nJeanine \u00b7 TWINT\n11:06\nCHF 54.30",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#request-received",
+      "text": "Request received\nMarc \u00b7 private request\n13:28\nCHF 30.00",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#pots",
+      "text": "Pots",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#people",
+      "text": "People",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#add-preview",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-payments",
+      "href": "#you",
+      "text": "You",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#notifications",
+      "text": "2",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#activity",
+      "text": "All",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#filter-attention",
+      "text": "Needs attention \u00b7 3",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#filter-payments",
+      "text": "Payments",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#filter-groups",
+      "text": "Groups",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#member-joined",
+      "text": "Nina joined Zurich Weekend\nMember access is active\n09:18",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#expense-updated",
+      "text": "Dinner expense updated\nZurich Weekend \u00b7 split changed\nYesterday \u00b7 17:02\nCHF 84.6",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#savings-confirmed",
+      "text": "Savings contribution confirmed\nAlps House Fund\n14:12\nCHF 180.00",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#pots",
+      "text": "Pots",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#people",
+      "text": "People",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#add-preview",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "filter-groups",
+      "href": "#you",
+      "text": "You",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "payment-waiting",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "payment-waiting",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "payment-waiting",
+      "href": "#handoff-j12",
+      "text": "Open payment status",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "payment-waiting",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "request-received",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "request-received",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "request-received",
+      "href": "#handoff-request",
+      "text": "Review request",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "request-received",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "expense-review",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "expense-review",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "expense-review",
+      "href": "#handoff-j07",
+      "text": "Review expense",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "expense-review",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "savings-confirmed",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "savings-confirmed",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "savings-confirmed",
+      "href": "#handoff-j16",
+      "text": "Open savings group",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "savings-confirmed",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "payment-complete",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "payment-complete",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "payment-complete",
+      "href": "#handoff-j15",
+      "text": "Open saved record",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "payment-complete",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "member-joined",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "member-joined",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "member-joined",
+      "href": "#handoff-j09",
+      "text": "Open People",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "member-joined",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "request-sent",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "request-sent",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "request-sent",
+      "href": "#handoff-j13",
+      "text": "Open request",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "request-sent",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "expense-updated",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "expense-updated",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "expense-updated",
+      "href": "#handoff-j06",
+      "text": "Open expense",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "expense-updated",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "stale-notification",
+      "href": "#notifications",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "stale-notification",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "stale-notification",
+      "href": "#payment-complete",
+      "text": "Open current payment",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "access-changed",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "access-changed",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "access-changed",
+      "href": "#activity",
+      "text": "Back to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "offline",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "offline",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "offline",
+      "href": "#savings-confirmed",
+      "text": "Contribution confirmed\nAlps House Fund \u00b7 saved locally\n14:12\nCHF 180.00",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "offline",
+      "href": "#payment-complete",
+      "text": "Payment completed\nJeanine \u00b7 saved locally\n11:06\nCHF 54.30",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "offline",
+      "href": "#activity",
+      "text": "Try again",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "loading",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "loading",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "error",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "error",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "error",
+      "href": "#activity",
+      "text": "Try again",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "empty-activity",
+      "href": "#notifications",
+      "text": "0",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "empty-activity",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "empty-activity",
+      "href": "#pots",
+      "text": "Pots",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "empty-activity",
+      "href": "#people",
+      "text": "People",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "empty-activity",
+      "href": "#add-preview",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "empty-activity",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "empty-activity",
+      "href": "#you",
+      "text": "You",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "empty-notifications",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "empty-notifications",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "mixed-currency",
+      "href": "#filter-payments",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "mixed-currency",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "mixed-currency",
+      "href": "#request-received",
+      "text": "Marc requested payment\nZurich Weekend\n13:28\nCHF 30.00",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "mixed-currency",
+      "href": "#deduped-payment",
+      "text": "Sam payment update\nCrypto group\n12:02\n2.400000 DOT",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "deduped-payment",
+      "href": "#filter-payments",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "deduped-payment",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "deduped-payment",
+      "href": "#filter-payments",
+      "text": "Back to payments",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j12",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j12",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j12",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-request",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-request",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-request",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j07",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j07",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j07",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j16",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j16",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j16",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j15",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j15",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j15",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j09",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j09",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j09",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j13",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j13",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j13",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j06",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j06",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "handoff-j06",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "pots",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "pots",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "pots",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "people",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "people",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "people",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "you",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "you",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "you",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "add-preview",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "add-preview",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "add-preview",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#notifications",
+      "text": "Notifications",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#notifications-read",
+      "text": "All read",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#filter-attention",
+      "text": "Needs attention",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#filter-payments",
+      "text": "Payments",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#filter-groups",
+      "text": "Groups",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#stale-notification",
+      "text": "Stale notification",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#access-changed",
+      "text": "Access changed",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#offline",
+      "text": "Offline cache",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#loading",
+      "text": "Loading",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#error",
+      "text": "Load error",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#empty-activity",
+      "text": "Empty activity",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#empty-notifications",
+      "text": "Empty notifications",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#mixed-currency",
+      "text": "Mixed currencies",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#deduped-payment",
+      "text": "Deduped payment",
+      "passed": true
+    },
+    {
+      "viewport": "393",
+      "from": "demo",
+      "href": "#activity",
+      "text": "Back to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#notifications",
+      "text": "2",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#activity",
+      "text": "All",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#filter-attention",
+      "text": "Needs attention \u00b7 3",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#filter-payments",
+      "text": "Payments",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#filter-groups",
+      "text": "Groups",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#payment-waiting",
+      "text": "Payment still waiting\nJeanine \u00b7 CHF 54.30 \u00b7 recipient confirmation needed\nToday ",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#request-received",
+      "text": "Marc requested money\nZurich Weekend \u00b7 private request\nToday \u00b7 13:28\nCHF 30.00\nRe",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#expense-review",
+      "text": "Expense needs your review\nDinner \u00b7 Zurich Weekend\nToday \u00b7 10:11\nCHF 84.60\nReview",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#savings-confirmed",
+      "text": "Savings contribution confirmed\nAlps House Fund \u00b7 Your contribution now counts\nTo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#payment-complete",
+      "text": "Payment completed with Jeanine\nTWINT \u00b7 Saved payment record available\nToday \u00b7 11",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#member-joined",
+      "text": "Nina joined Zurich Weekend\nMember access is now active\nToday \u00b7 09:18",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#request-sent",
+      "text": "Request sent to Marc\nPrivate request \u00b7 delivery confirmed\nYesterday \u00b7 18:44\nCHF ",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#expense-updated",
+      "text": "Dinner expense updated\nZurich Weekend \u00b7 split changed by Dev\nYesterday \u00b7 17:02\nC",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#pots",
+      "text": "Pots",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#people",
+      "text": "People",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#add-preview",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "activity",
+      "href": "#you",
+      "text": "You",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications",
+      "href": "#notifications-read",
+      "text": "Mark all read",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications",
+      "href": "#request-received",
+      "text": "Marc requested CHF 30.00\nZurich Weekend \u00b7 private request\n13:28",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications",
+      "href": "#expense-review",
+      "text": "Dinner needs your review\nZurich Weekend \u00b7 CHF 84.60\n10:11",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications",
+      "href": "#savings-confirmed",
+      "text": "Contribution confirmed\nAlps House Fund \u00b7 CHF 180.00\n14:12",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications",
+      "href": "#payment-complete",
+      "text": "Jeanine received your payment\nCHF 54.30 \u00b7 TWINT\n11:06",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications",
+      "href": "#activity",
+      "text": "Back to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications-read",
+      "href": "#notifications",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications-read",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications-read",
+      "href": "#request-received",
+      "text": "Marc requested CHF 30.00\nStill needs your decision\n13:28",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications-read",
+      "href": "#expense-review",
+      "text": "Dinner needs your review\nStill waiting for your review\n10:11",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "notifications-read",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#notifications",
+      "text": "2",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#activity",
+      "text": "All",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#filter-attention",
+      "text": "Needs attention \u00b7 3",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#filter-payments",
+      "text": "Payments",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#filter-groups",
+      "text": "Groups",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#payment-waiting",
+      "text": "Payment still waiting\nJeanine \u00b7 CHF 54.30 \u00b7 recipient confirmation needed\nToday ",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#request-received",
+      "text": "Marc requested money\nZurich Weekend \u00b7 private request\nToday \u00b7 13:28\nCHF 30.00\nRe",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#expense-review",
+      "text": "Expense needs your review\nDinner \u00b7 Zurich Weekend\nToday \u00b7 10:11\nCHF 84.60\nReview",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#pots",
+      "text": "Pots",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#people",
+      "text": "People",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#add-preview",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-attention",
+      "href": "#you",
+      "text": "You",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#notifications",
+      "text": "2",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#activity",
+      "text": "All",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#filter-attention",
+      "text": "Needs attention \u00b7 3",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#filter-payments",
+      "text": "Payments",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#filter-groups",
+      "text": "Groups",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#payment-waiting",
+      "text": "Payment waiting\nJeanine \u00b7 confirmation needed\n15:02\nCHF 54.30",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#payment-complete",
+      "text": "Payment completed\nJeanine \u00b7 TWINT\n11:06\nCHF 54.30",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#request-received",
+      "text": "Request received\nMarc \u00b7 private request\n13:28\nCHF 30.00",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#pots",
+      "text": "Pots",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#people",
+      "text": "People",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#add-preview",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-payments",
+      "href": "#you",
+      "text": "You",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#notifications",
+      "text": "2",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#activity",
+      "text": "All",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#filter-attention",
+      "text": "Needs attention \u00b7 3",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#filter-payments",
+      "text": "Payments",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#filter-groups",
+      "text": "Groups",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#member-joined",
+      "text": "Nina joined Zurich Weekend\nMember access is active\n09:18",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#expense-updated",
+      "text": "Dinner expense updated\nZurich Weekend \u00b7 split changed\nYesterday \u00b7 17:02\nCHF 84.6",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#savings-confirmed",
+      "text": "Savings contribution confirmed\nAlps House Fund\n14:12\nCHF 180.00",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#pots",
+      "text": "Pots",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#people",
+      "text": "People",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#add-preview",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "filter-groups",
+      "href": "#you",
+      "text": "You",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "payment-waiting",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "payment-waiting",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "payment-waiting",
+      "href": "#handoff-j12",
+      "text": "Open payment status",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "payment-waiting",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "request-received",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "request-received",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "request-received",
+      "href": "#handoff-request",
+      "text": "Review request",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "request-received",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "expense-review",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "expense-review",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "expense-review",
+      "href": "#handoff-j07",
+      "text": "Review expense",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "expense-review",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "savings-confirmed",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "savings-confirmed",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "savings-confirmed",
+      "href": "#handoff-j16",
+      "text": "Open savings group",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "savings-confirmed",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "payment-complete",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "payment-complete",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "payment-complete",
+      "href": "#handoff-j15",
+      "text": "Open saved record",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "payment-complete",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "member-joined",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "member-joined",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "member-joined",
+      "href": "#handoff-j09",
+      "text": "Open People",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "member-joined",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "request-sent",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "request-sent",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "request-sent",
+      "href": "#handoff-j13",
+      "text": "Open request",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "request-sent",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "expense-updated",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "expense-updated",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "expense-updated",
+      "href": "#handoff-j06",
+      "text": "Open expense",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "expense-updated",
+      "href": "#activity",
+      "text": "Back",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "stale-notification",
+      "href": "#notifications",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "stale-notification",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "stale-notification",
+      "href": "#payment-complete",
+      "text": "Open current payment",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "access-changed",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "access-changed",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "access-changed",
+      "href": "#activity",
+      "text": "Back to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "offline",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "offline",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "offline",
+      "href": "#savings-confirmed",
+      "text": "Contribution confirmed\nAlps House Fund \u00b7 saved locally\n14:12\nCHF 180.00",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "offline",
+      "href": "#payment-complete",
+      "text": "Payment completed\nJeanine \u00b7 saved locally\n11:06\nCHF 54.30",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "offline",
+      "href": "#activity",
+      "text": "Try again",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "loading",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "loading",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "error",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "error",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "error",
+      "href": "#activity",
+      "text": "Try again",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "empty-activity",
+      "href": "#notifications",
+      "text": "0",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "empty-activity",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "empty-activity",
+      "href": "#pots",
+      "text": "Pots",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "empty-activity",
+      "href": "#people",
+      "text": "People",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "empty-activity",
+      "href": "#add-preview",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "empty-activity",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "empty-activity",
+      "href": "#you",
+      "text": "You",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "empty-notifications",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "empty-notifications",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "mixed-currency",
+      "href": "#filter-payments",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "mixed-currency",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "mixed-currency",
+      "href": "#request-received",
+      "text": "Marc requested payment\nZurich Weekend\n13:28\nCHF 30.00",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "mixed-currency",
+      "href": "#deduped-payment",
+      "text": "Sam payment update\nCrypto group\n12:02\n2.400000 DOT",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "deduped-payment",
+      "href": "#filter-payments",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "deduped-payment",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "deduped-payment",
+      "href": "#filter-payments",
+      "text": "Back to payments",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j12",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j12",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j12",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-request",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-request",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-request",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j07",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j07",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j07",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j16",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j16",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j16",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j15",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j15",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j15",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j09",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j09",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j09",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j13",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j13",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j13",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j06",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j06",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "handoff-j06",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "pots",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "pots",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "pots",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "people",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "people",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "people",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "you",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "you",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "you",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "add-preview",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "add-preview",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "add-preview",
+      "href": "#activity",
+      "text": "Return to Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#activity",
+      "text": "",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#demo",
+      "text": "Demo",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#activity",
+      "text": "Activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#notifications",
+      "text": "Notifications",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#notifications-read",
+      "text": "All read",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#filter-attention",
+      "text": "Needs attention",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#filter-payments",
+      "text": "Payments",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#filter-groups",
+      "text": "Groups",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#stale-notification",
+      "text": "Stale notification",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#access-changed",
+      "text": "Access changed",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#offline",
+      "text": "Offline cache",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#loading",
+      "text": "Loading",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#error",
+      "text": "Load error",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#empty-activity",
+      "text": "Empty activity",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#empty-notifications",
+      "text": "Empty notifications",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#mixed-currency",
+      "text": "Mixed currencies",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#deduped-payment",
+      "text": "Deduped payment",
+      "passed": true
+    },
+    {
+      "viewport": "430",
+      "from": "demo",
+      "href": "#activity",
+      "text": "Back to Activity",
+      "passed": true
+    }
+  ],
+  "page_errors": [],
+  "external_network_requests": [],
+  "console_errors": [],
+  "layout_checks": 72,
+  "product_clicks": 384,
+  "passed_layouts": 72,
+  "passed_clicks": 384,
+  "all_layouts_pass": true,
+  "all_clicks_pass": true,
+  "external_network_requests_count": 0,
+  "page_error_count": 0,
+  "console_error_count": 0
+}

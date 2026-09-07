@@ -1,0 +1,1730 @@
+[
+  {
+    "id": "J18-A001",
+    "route": "activity",
+    "label": "2",
+    "target": "notifications",
+    "domain_event": "NotificationCenterOpened",
+    "guard": "read-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A002",
+    "route": "activity",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A003",
+    "route": "activity",
+    "label": "All",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A004",
+    "route": "activity",
+    "label": "Needs attention \u00b7 3",
+    "target": "filter-attention",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A005",
+    "route": "activity",
+    "label": "Payments",
+    "target": "filter-payments",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A006",
+    "route": "activity",
+    "label": "Groups",
+    "target": "filter-groups",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A007",
+    "route": "activity",
+    "label": "Payment still waiting Jeanine \u00b7 CHF 54.30 \u00b7 recipient confirmation needed Today \u00b7 15:02 CHF 54.30 Needs attention",
+    "target": "payment-waiting",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A008",
+    "route": "activity",
+    "label": "Marc requested money Zurich Weekend \u00b7 private request Today \u00b7 13:28 CHF 30.00 Review",
+    "target": "request-received",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A009",
+    "route": "activity",
+    "label": "Expense needs your review Dinner \u00b7 Zurich Weekend Today \u00b7 10:11 CHF 84.60 Review",
+    "target": "expense-review",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A010",
+    "route": "activity",
+    "label": "Savings contribution confirmed Alps House Fund \u00b7 Your contribution now counts Today \u00b7 14:12 CHF 180.00",
+    "target": "savings-confirmed",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A011",
+    "route": "activity",
+    "label": "Payment completed with Jeanine TWINT \u00b7 Saved payment record available Today \u00b7 11:06 CHF 54.30",
+    "target": "payment-complete",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A012",
+    "route": "activity",
+    "label": "Nina joined Zurich Weekend Member access is now active Today \u00b7 09:18",
+    "target": "member-joined",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A013",
+    "route": "activity",
+    "label": "Request sent to Marc Private request \u00b7 delivery confirmed Yesterday \u00b7 18:44 CHF 30.00",
+    "target": "request-sent",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A014",
+    "route": "activity",
+    "label": "Dinner expense updated Zurich Weekend \u00b7 split changed by Dev Yesterday \u00b7 17:02 CHF 84.60",
+    "target": "expense-updated",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A015",
+    "route": "activity",
+    "label": "Pots",
+    "target": "pots",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A016",
+    "route": "activity",
+    "label": "People",
+    "target": "people",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A017",
+    "route": "activity",
+    "label": "Add",
+    "target": "add-preview",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A018",
+    "route": "activity",
+    "label": "Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A019",
+    "route": "activity",
+    "label": "You",
+    "target": "you",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A020",
+    "route": "notifications",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A021",
+    "route": "notifications",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A022",
+    "route": "notifications",
+    "label": "Mark all read",
+    "target": "notifications-read",
+    "domain_event": "NotificationReadAllRequested",
+    "guard": "read-state-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A023",
+    "route": "notifications",
+    "label": "Marc requested CHF 30.00 Zurich Weekend \u00b7 private request 13:28",
+    "target": "request-received",
+    "domain_event": "NotificationOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A024",
+    "route": "notifications",
+    "label": "Dinner needs your review Zurich Weekend \u00b7 CHF 84.60 10:11",
+    "target": "expense-review",
+    "domain_event": "NotificationOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A025",
+    "route": "notifications",
+    "label": "Contribution confirmed Alps House Fund \u00b7 CHF 180.00 14:12",
+    "target": "savings-confirmed",
+    "domain_event": "NotificationOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A026",
+    "route": "notifications",
+    "label": "Jeanine received your payment CHF 54.30 \u00b7 TWINT 11:06",
+    "target": "payment-complete",
+    "domain_event": "NotificationOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A027",
+    "route": "notifications",
+    "label": "Back to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A028",
+    "route": "notifications-read",
+    "label": "(icon control)",
+    "target": "notifications",
+    "domain_event": "NotificationCenterOpened",
+    "guard": "read-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A029",
+    "route": "notifications-read",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A030",
+    "route": "notifications-read",
+    "label": "Marc requested CHF 30.00 Still needs your decision 13:28",
+    "target": "request-received",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A031",
+    "route": "notifications-read",
+    "label": "Dinner needs your review Still waiting for your review 10:11",
+    "target": "expense-review",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A032",
+    "route": "notifications-read",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A033",
+    "route": "filter-attention",
+    "label": "2",
+    "target": "notifications",
+    "domain_event": "NotificationCenterOpened",
+    "guard": "read-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A034",
+    "route": "filter-attention",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A035",
+    "route": "filter-attention",
+    "label": "All",
+    "target": "activity",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A036",
+    "route": "filter-attention",
+    "label": "Needs attention \u00b7 3",
+    "target": "filter-attention",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A037",
+    "route": "filter-attention",
+    "label": "Payments",
+    "target": "filter-payments",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A038",
+    "route": "filter-attention",
+    "label": "Groups",
+    "target": "filter-groups",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A039",
+    "route": "filter-attention",
+    "label": "Payment still waiting Jeanine \u00b7 CHF 54.30 \u00b7 recipient confirmation needed Today \u00b7 15:02 CHF 54.30 Needs attention",
+    "target": "payment-waiting",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A040",
+    "route": "filter-attention",
+    "label": "Marc requested money Zurich Weekend \u00b7 private request Today \u00b7 13:28 CHF 30.00 Review",
+    "target": "request-received",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A041",
+    "route": "filter-attention",
+    "label": "Expense needs your review Dinner \u00b7 Zurich Weekend Today \u00b7 10:11 CHF 84.60 Review",
+    "target": "expense-review",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A042",
+    "route": "filter-attention",
+    "label": "Pots",
+    "target": "pots",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A043",
+    "route": "filter-attention",
+    "label": "People",
+    "target": "people",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A044",
+    "route": "filter-attention",
+    "label": "Add",
+    "target": "add-preview",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A045",
+    "route": "filter-attention",
+    "label": "Activity",
+    "target": "activity",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A046",
+    "route": "filter-attention",
+    "label": "You",
+    "target": "you",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A047",
+    "route": "filter-payments",
+    "label": "2",
+    "target": "notifications",
+    "domain_event": "NotificationCenterOpened",
+    "guard": "read-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A048",
+    "route": "filter-payments",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A049",
+    "route": "filter-payments",
+    "label": "All",
+    "target": "activity",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A050",
+    "route": "filter-payments",
+    "label": "Needs attention \u00b7 3",
+    "target": "filter-attention",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A051",
+    "route": "filter-payments",
+    "label": "Payments",
+    "target": "filter-payments",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A052",
+    "route": "filter-payments",
+    "label": "Groups",
+    "target": "filter-groups",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A053",
+    "route": "filter-payments",
+    "label": "Payment waiting Jeanine \u00b7 confirmation needed 15:02 CHF 54.30",
+    "target": "payment-waiting",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A054",
+    "route": "filter-payments",
+    "label": "Payment completed Jeanine \u00b7 TWINT 11:06 CHF 54.30",
+    "target": "payment-complete",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A055",
+    "route": "filter-payments",
+    "label": "Request received Marc \u00b7 private request 13:28 CHF 30.00",
+    "target": "request-received",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A056",
+    "route": "filter-payments",
+    "label": "Pots",
+    "target": "pots",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A057",
+    "route": "filter-payments",
+    "label": "People",
+    "target": "people",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A058",
+    "route": "filter-payments",
+    "label": "Add",
+    "target": "add-preview",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A059",
+    "route": "filter-payments",
+    "label": "Activity",
+    "target": "activity",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A060",
+    "route": "filter-payments",
+    "label": "You",
+    "target": "you",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A061",
+    "route": "filter-groups",
+    "label": "2",
+    "target": "notifications",
+    "domain_event": "NotificationCenterOpened",
+    "guard": "read-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A062",
+    "route": "filter-groups",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A063",
+    "route": "filter-groups",
+    "label": "All",
+    "target": "activity",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A064",
+    "route": "filter-groups",
+    "label": "Needs attention \u00b7 3",
+    "target": "filter-attention",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A065",
+    "route": "filter-groups",
+    "label": "Payments",
+    "target": "filter-payments",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A066",
+    "route": "filter-groups",
+    "label": "Groups",
+    "target": "filter-groups",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A067",
+    "route": "filter-groups",
+    "label": "Nina joined Zurich Weekend Member access is active 09:18",
+    "target": "member-joined",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A068",
+    "route": "filter-groups",
+    "label": "Dinner expense updated Zurich Weekend \u00b7 split changed Yesterday \u00b7 17:02 CHF 84.60",
+    "target": "expense-updated",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A069",
+    "route": "filter-groups",
+    "label": "Savings contribution confirmed Alps House Fund 14:12 CHF 180.00",
+    "target": "savings-confirmed",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A070",
+    "route": "filter-groups",
+    "label": "Pots",
+    "target": "pots",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A071",
+    "route": "filter-groups",
+    "label": "People",
+    "target": "people",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A072",
+    "route": "filter-groups",
+    "label": "Add",
+    "target": "add-preview",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A073",
+    "route": "filter-groups",
+    "label": "Activity",
+    "target": "activity",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A074",
+    "route": "filter-groups",
+    "label": "You",
+    "target": "you",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A075",
+    "route": "payment-waiting",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A076",
+    "route": "payment-waiting",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A077",
+    "route": "payment-waiting",
+    "label": "Open payment status",
+    "target": "handoff-j12",
+    "domain_event": "NavigationRequested",
+    "guard": "canonical-owner-handoff",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A078",
+    "route": "payment-waiting",
+    "label": "Back",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A079",
+    "route": "request-received",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A080",
+    "route": "request-received",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A081",
+    "route": "request-received",
+    "label": "Review request",
+    "target": "handoff-request",
+    "domain_event": "NavigationRequested",
+    "guard": "canonical-owner-handoff",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A082",
+    "route": "request-received",
+    "label": "Back",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A083",
+    "route": "expense-review",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A084",
+    "route": "expense-review",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A085",
+    "route": "expense-review",
+    "label": "Review expense",
+    "target": "handoff-j07",
+    "domain_event": "NavigationRequested",
+    "guard": "canonical-owner-handoff",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A086",
+    "route": "expense-review",
+    "label": "Back",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A087",
+    "route": "savings-confirmed",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A088",
+    "route": "savings-confirmed",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A089",
+    "route": "savings-confirmed",
+    "label": "Open savings group",
+    "target": "handoff-j16",
+    "domain_event": "NavigationRequested",
+    "guard": "canonical-owner-handoff",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A090",
+    "route": "savings-confirmed",
+    "label": "Back",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A091",
+    "route": "payment-complete",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A092",
+    "route": "payment-complete",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A093",
+    "route": "payment-complete",
+    "label": "Open saved record",
+    "target": "handoff-j15",
+    "domain_event": "NavigationRequested",
+    "guard": "canonical-owner-handoff",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A094",
+    "route": "payment-complete",
+    "label": "Back",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A095",
+    "route": "member-joined",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A096",
+    "route": "member-joined",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A097",
+    "route": "member-joined",
+    "label": "Open People",
+    "target": "handoff-j09",
+    "domain_event": "NavigationRequested",
+    "guard": "canonical-owner-handoff",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A098",
+    "route": "member-joined",
+    "label": "Back",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A099",
+    "route": "request-sent",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A100",
+    "route": "request-sent",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A101",
+    "route": "request-sent",
+    "label": "Open request",
+    "target": "handoff-j13",
+    "domain_event": "NavigationRequested",
+    "guard": "canonical-owner-handoff",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A102",
+    "route": "request-sent",
+    "label": "Back",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A103",
+    "route": "expense-updated",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A104",
+    "route": "expense-updated",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A105",
+    "route": "expense-updated",
+    "label": "Open expense",
+    "target": "handoff-j06",
+    "domain_event": "NavigationRequested",
+    "guard": "canonical-owner-handoff",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A106",
+    "route": "expense-updated",
+    "label": "Back",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A107",
+    "route": "stale-notification",
+    "label": "(icon control)",
+    "target": "notifications",
+    "domain_event": "NotificationCenterOpened",
+    "guard": "read-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A108",
+    "route": "stale-notification",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A109",
+    "route": "stale-notification",
+    "label": "Open current payment",
+    "target": "payment-complete",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A110",
+    "route": "access-changed",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A111",
+    "route": "access-changed",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A112",
+    "route": "access-changed",
+    "label": "Back to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A113",
+    "route": "offline",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A114",
+    "route": "offline",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A115",
+    "route": "offline",
+    "label": "Contribution confirmed Alps House Fund \u00b7 saved locally 14:12 CHF 180.00",
+    "target": "savings-confirmed",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A116",
+    "route": "offline",
+    "label": "Payment completed Jeanine \u00b7 saved locally 11:06 CHF 54.30",
+    "target": "payment-complete",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A117",
+    "route": "offline",
+    "label": "Try again",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A118",
+    "route": "loading",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A119",
+    "route": "loading",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A120",
+    "route": "error",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A121",
+    "route": "error",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A122",
+    "route": "error",
+    "label": "Try again",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A123",
+    "route": "empty-activity",
+    "label": "0",
+    "target": "notifications",
+    "domain_event": "NotificationCenterOpened",
+    "guard": "read-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A124",
+    "route": "empty-activity",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A125",
+    "route": "empty-activity",
+    "label": "Pots",
+    "target": "pots",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A126",
+    "route": "empty-activity",
+    "label": "People",
+    "target": "people",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A127",
+    "route": "empty-activity",
+    "label": "Add",
+    "target": "add-preview",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A128",
+    "route": "empty-activity",
+    "label": "Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A129",
+    "route": "empty-activity",
+    "label": "You",
+    "target": "you",
+    "domain_event": "NavigationRequested",
+    "guard": "adjacent-navigation-preview",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A130",
+    "route": "empty-notifications",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A131",
+    "route": "empty-notifications",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A132",
+    "route": "mixed-currency",
+    "label": "(icon control)",
+    "target": "filter-payments",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A133",
+    "route": "mixed-currency",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A134",
+    "route": "mixed-currency",
+    "label": "Marc requested payment Zurich Weekend 13:28 CHF 30.00",
+    "target": "request-received",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A135",
+    "route": "mixed-currency",
+    "label": "Sam payment update Crypto group 12:02 2.400000 DOT",
+    "target": "deduped-payment",
+    "domain_event": "ActivityItemOpened",
+    "guard": "read-current-canonical-state",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A136",
+    "route": "deduped-payment",
+    "label": "(icon control)",
+    "target": "filter-payments",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A137",
+    "route": "deduped-payment",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A138",
+    "route": "deduped-payment",
+    "label": "Back to payments",
+    "target": "filter-payments",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A139",
+    "route": "handoff-j12",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A140",
+    "route": "handoff-j12",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A141",
+    "route": "handoff-j12",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A142",
+    "route": "handoff-request",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A143",
+    "route": "handoff-request",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A144",
+    "route": "handoff-request",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A145",
+    "route": "handoff-j07",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A146",
+    "route": "handoff-j07",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A147",
+    "route": "handoff-j07",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A148",
+    "route": "handoff-j16",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A149",
+    "route": "handoff-j16",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A150",
+    "route": "handoff-j16",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A151",
+    "route": "handoff-j15",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A152",
+    "route": "handoff-j15",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A153",
+    "route": "handoff-j15",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A154",
+    "route": "handoff-j09",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A155",
+    "route": "handoff-j09",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A156",
+    "route": "handoff-j09",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A157",
+    "route": "handoff-j13",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A158",
+    "route": "handoff-j13",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A159",
+    "route": "handoff-j13",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A160",
+    "route": "handoff-j06",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A161",
+    "route": "handoff-j06",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A162",
+    "route": "handoff-j06",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A163",
+    "route": "pots",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A164",
+    "route": "pots",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A165",
+    "route": "pots",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A166",
+    "route": "people",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A167",
+    "route": "people",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A168",
+    "route": "people",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A169",
+    "route": "you",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A170",
+    "route": "you",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A171",
+    "route": "you",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A172",
+    "route": "add-preview",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A173",
+    "route": "add-preview",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A174",
+    "route": "add-preview",
+    "label": "Return to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A175",
+    "route": "demo",
+    "label": "(icon control)",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A176",
+    "route": "demo",
+    "label": "Demo",
+    "target": "demo",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A177",
+    "route": "demo",
+    "label": "Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A178",
+    "route": "demo",
+    "label": "Notifications",
+    "target": "notifications",
+    "domain_event": "NotificationCenterOpened",
+    "guard": "read-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A179",
+    "route": "demo",
+    "label": "All read",
+    "target": "notifications-read",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A180",
+    "route": "demo",
+    "label": "Needs attention",
+    "target": "filter-attention",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A181",
+    "route": "demo",
+    "label": "Payments",
+    "target": "filter-payments",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A182",
+    "route": "demo",
+    "label": "Groups",
+    "target": "filter-groups",
+    "domain_event": "ActivityFilterChanged",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A183",
+    "route": "demo",
+    "label": "Stale notification",
+    "target": "stale-notification",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A184",
+    "route": "demo",
+    "label": "Access changed",
+    "target": "access-changed",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A185",
+    "route": "demo",
+    "label": "Offline cache",
+    "target": "offline",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A186",
+    "route": "demo",
+    "label": "Loading",
+    "target": "loading",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A187",
+    "route": "demo",
+    "label": "Load error",
+    "target": "error",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A188",
+    "route": "demo",
+    "label": "Empty activity",
+    "target": "empty-activity",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A189",
+    "route": "demo",
+    "label": "Empty notifications",
+    "target": "empty-notifications",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A190",
+    "route": "demo",
+    "label": "Mixed currencies",
+    "target": "mixed-currency",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A191",
+    "route": "demo",
+    "label": "Deduped payment",
+    "target": "deduped-payment",
+    "domain_event": "DemoStateRequested",
+    "guard": "prototype-only",
+    "mutates_canonical_domain": false
+  },
+  {
+    "id": "J18-A192",
+    "route": "demo",
+    "label": "Back to Activity",
+    "target": "activity",
+    "domain_event": "NavigationRequested",
+    "guard": "projection-only",
+    "mutates_canonical_domain": false
+  }
+]

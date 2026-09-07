@@ -1,0 +1,45 @@
+[
+  {
+    "entry": "activity",
+    "open": "payment-waiting",
+    "handoff": "handoff-j12",
+    "return": "activity",
+    "preserve": ["attention filter context", "payment identity", "exact CHF 54.30", "Jeanine", "Waiting status until canonical change"]
+  },
+  {
+    "entry": "notifications",
+    "open": "request-received",
+    "handoff": "handoff-request",
+    "return": "notifications",
+    "preserve": ["notification read metadata", "request identity", "Marc", "CHF 30.00"]
+  },
+  {
+    "entry": "notifications",
+    "open": "stale-notification",
+    "handoff": "handoff-j15",
+    "return": "activity",
+    "preserve": ["original notification snapshot", "current canonical payment state", "explanation that state changed"]
+  },
+  {
+    "entry": "filter-attention",
+    "open": "expense-review",
+    "handoff": "handoff-j07",
+    "return": "filter-attention",
+    "preserve": ["Needs attention filter", "expense identity", "CHF 84.60", "Zurich Weekend"]
+  },
+  {
+    "entry": "activity",
+    "open": "savings-confirmed",
+    "handoff": "handoff-j16",
+    "return": "activity",
+    "preserve": ["savings operation identity", "CHF 180.00", "confirmed state"]
+  },
+  {
+    "entry": "activity",
+    "open": "access-changed",
+    "handoff": null,
+    "return": "activity",
+    "preserve": ["notification identity", "current access denial"],
+    "must_not_restore": ["revoked group access", "current private group details"]
+  }
+]

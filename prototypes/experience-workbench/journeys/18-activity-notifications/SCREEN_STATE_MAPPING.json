@@ -1,0 +1,290 @@
+[
+  {
+    "screen": "activity",
+    "category": "root",
+    "title": "Activity",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "notifications",
+    "category": "notifications",
+    "title": "Notifications",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "notifications-read",
+    "category": "notifications",
+    "title": "Notifications",
+    "canonical_owner_journey": null,
+    "authority": "per-user notification read metadata only",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "filter-attention",
+    "category": "filter",
+    "title": "Activity",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "filter-payments",
+    "category": "filter",
+    "title": "Activity",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "filter-groups",
+    "category": "filter",
+    "title": "Activity",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "payment-waiting",
+    "category": "item-detail",
+    "title": "Payment",
+    "canonical_owner_journey": "12",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "request-received",
+    "category": "item-detail",
+    "title": "Request",
+    "canonical_owner_journey": "13",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "expense-review",
+    "category": "item-detail",
+    "title": "Expense",
+    "canonical_owner_journey": "07",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "savings-confirmed",
+    "category": "item-detail",
+    "title": "Savings",
+    "canonical_owner_journey": "16",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "payment-complete",
+    "category": "item-detail",
+    "title": "Payment",
+    "canonical_owner_journey": "15",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "member-joined",
+    "category": "item-detail",
+    "title": "Group update",
+    "canonical_owner_journey": "09",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "request-sent",
+    "category": "item-detail",
+    "title": "Request update",
+    "canonical_owner_journey": "13",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "expense-updated",
+    "category": "item-detail",
+    "title": "Expense update",
+    "canonical_owner_journey": "06",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "stale-notification",
+    "category": "recovery",
+    "title": "Notification",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "access-changed",
+    "category": "privacy",
+    "title": "Activity",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "offline",
+    "category": "recovery",
+    "title": "Activity",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "loading",
+    "category": "system",
+    "title": "Activity",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "error",
+    "category": "system",
+    "title": "Activity",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "empty-activity",
+    "category": "empty",
+    "title": "Activity",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "empty-notifications",
+    "category": "empty",
+    "title": "Notifications",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "mixed-currency",
+    "category": "money-safety",
+    "title": "Activity",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "deduped-payment",
+    "category": "dedupe",
+    "title": "Payment activity",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "handoff-j12",
+    "category": "adjacent-preview",
+    "title": "Payment status",
+    "canonical_owner_journey": "12",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "handoff-request",
+    "category": "adjacent-preview",
+    "title": "Request decision",
+    "canonical_owner_journey": "13",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "handoff-j07",
+    "category": "adjacent-preview",
+    "title": "Expense review",
+    "canonical_owner_journey": "07",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "handoff-j16",
+    "category": "adjacent-preview",
+    "title": "Savings group",
+    "canonical_owner_journey": "16",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "handoff-j15",
+    "category": "adjacent-preview",
+    "title": "Saved payment record",
+    "canonical_owner_journey": "15",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "handoff-j09",
+    "category": "adjacent-preview",
+    "title": "People",
+    "canonical_owner_journey": "09",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "handoff-j13",
+    "category": "adjacent-preview",
+    "title": "Request",
+    "canonical_owner_journey": "13",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "handoff-j06",
+    "category": "adjacent-preview",
+    "title": "Expense detail",
+    "canonical_owner_journey": "06",
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "pots",
+    "category": "nav-preview",
+    "title": "Pots",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "people",
+    "category": "nav-preview",
+    "title": "People",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "you",
+    "category": "nav-preview",
+    "title": "You",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "add-preview",
+    "category": "nav-preview",
+    "title": "Add",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  },
+  {
+    "screen": "demo",
+    "category": "workshop",
+    "title": "Demo states",
+    "canonical_owner_journey": null,
+    "authority": "read-only projection/navigation",
+    "review_status": "review-pending"
+  }
+]

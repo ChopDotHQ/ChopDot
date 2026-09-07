@@ -1,0 +1,158 @@
+{
+  "ok": true,
+  "assertions": 156,
+  "scenarios": 30,
+  "cases": [
+    {
+      "name": "meaningful domain events only",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "projection drops technical noise",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "attention is canonical task state",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "notification unread is independent",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "mark all read does not resolve attention",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "feed actions are navigation only",
+      "passed": true,
+      "assertions": 18
+    },
+    {
+      "name": "waiting payment routes to J12",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "completed payment routes to J15",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "expense review routes to J07",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "savings event routes to J16 and stays read-only",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "filters preserve canonical items",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "search is local projection only",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "currency buckets never merge assets",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "technical refreshes do not duplicate payment row",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "duplicate durable delivery by event id dedupes",
+      "passed": true,
+      "assertions": 3
+    },
+    {
+      "name": "stale notification opens canonical current state",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "current notification stays current",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "lost group access redacts ordinary group activity",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "personally relevant payment record survives reduced access minimally",
+      "passed": true,
+      "assertions": 7
+    },
+    {
+      "name": "opening inaccessible notification does not restore access",
+      "passed": true,
+      "assertions": 3
+    },
+    {
+      "name": "offline refresh never invents new activity",
+      "passed": true,
+      "assertions": 6
+    },
+    {
+      "name": "online refresh projects canonical changes",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "notification delivery is a snapshot not authority",
+      "passed": true,
+      "assertions": 5
+    },
+    {
+      "name": "missing canonical state fails safely",
+      "passed": true,
+      "assertions": 3
+    },
+    {
+      "name": "resolved attention item leaves attention after canonical update",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "read/unread does not affect chronological ordering",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "activity projection preserves exact amounts as strings",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "routes only point to canonical owner journeys",
+      "passed": true,
+      "assertions": 12
+    },
+    {
+      "name": "projection does not mutate canonical source events",
+      "passed": true,
+      "assertions": 3
+    },
+    {
+      "name": "notification read operations are immutable",
+      "passed": true,
+      "assertions": 4
+    }
+  ],
+  "candidate_sha256": "fafb9cc74680b59f6589979115060895b6469e9ae760c59e35971be3e31f4a3a"
+}
