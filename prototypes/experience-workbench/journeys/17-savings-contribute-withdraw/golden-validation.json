@@ -1,0 +1,22 @@
+{
+  "ok": true,
+  "status": "golden",
+  "golden_number": 17,
+  "prototype_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
+  "html_unchanged": true,
+  "approved_policy": {
+    "one_scoped_operation": true,
+    "no_optimistic_money": true,
+    "tracking_mode_requires_confirmation": true,
+    "shared_account_uses_real_authority": true,
+    "own_position_withdrawal_default": true,
+    "group_controlled_withdrawals_obey_group_rule": true,
+    "unknown_requires_recovery_before_retry": true,
+    "exact_currency_or_asset": true,
+    "return_appends_history": true,
+    "no_yield_implication": true,
+    "timeline_fix_is_journey_scoped": true
+  },
+  "all_golden_locks_pass": true,
+  "typography": "TYPO-01 deferred"
+}

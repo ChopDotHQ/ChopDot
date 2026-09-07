@@ -80,5 +80,10 @@
     "path": "journeys/16-savings-group/v1-recovered.html",
     "sha256": "5ec2ef4a051d3e830adda263b395a0def474ccd60ebbb8ad5a883af6d5505bea",
     "recovered_from_review_evidence": true
+  },
+  {
+    "journey": "17",
+    "path": "journeys/17-savings-contribute-withdraw/v1.1-candidate.html",
+    "sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054"
   }
 ]

@@ -391,13 +391,15 @@
       "18",
       "21"
     ],
-    "status": "current",
-    "approval": "review-pending",
+    "status": "golden",
+    "approval": "design-approved",
     "version": "v1.1",
     "prototype_path": "journeys/17-savings-contribute-withdraw/v1.1-candidate.html",
     "prototype_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
     "spec_path": "journeys/17-savings-contribute-withdraw/spec.md",
-    "qa_path": "journeys/17-savings-contribute-withdraw/VISUAL_QA.md"
+    "qa_path": "journeys/17-savings-contribute-withdraw/VISUAL_QA.md",
+    "golden_number": 17,
+    "approved_on": "2026-09-07"
   },
   {
     "id": "18",

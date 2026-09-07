@@ -16,9 +16,12 @@
 14. Receive / Share Payment Details — v1 · Design Approved
 15. Settlement History — v1 · Design Approved
 16. Savings Group — v1 · Design Approved
+17. Contribute / Withdraw Savings — v1.1 · Design Approved
 
-Journeys 15 and 16 were recovered into durable GitHub artifacts from retained review evidence after their temporary review HTML was not committed. Their recovery checksums are now locked; no byte-identity claim is made about the missing temporary files.
+Journey 17 V1.1 is Golden #17. The reviewed standalone HTML is byte-for-byte checksum locked. Pending savings never change Available, withdrawals default to the member's own position, unknown outcomes recover before retry, and the V1.1 timeline correction remains journey-scoped.
 
-Current candidate: Journey 17 — Contribute / Withdraw Savings V1.1. Not Golden.
+Journeys 15 and 16 remain durable recovery artifacts from retained review evidence; no byte-identity claim is made about their lost temporary files.
+
+Next: Journey 18 — Activity & Notifications.
 
 TYPO-01 remains deferred.
