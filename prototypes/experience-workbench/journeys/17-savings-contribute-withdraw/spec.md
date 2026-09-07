@@ -1,6 +1,6 @@
 # Journey 17 — Contribute / Withdraw Savings
 
-V1.1 · Candidate #17 · Review pending. Prototype only; not Golden.
+V1.1 · Golden #17 · Design Approved. Prototype only; reviewed HTML is checksum-locked.
 
 ## Position and handoff
 Journey 16 V1 is Golden #16. Journey 17 owns the money-changing workflow after a member chooses **Add money** or **Withdraw** from a savings group. It exits to the updated savings group, Activity & Notifications (18), or Wallet & Crypto (21) when an external wallet approval is required.
@@ -13,7 +13,7 @@ Add or remove savings safely, knowing exactly what will change and when it becom
 
 **Withdraw:** Savings group → amount from your confirmed position → review → authorization / group rule → waiting → confirmed → updated group.
 
-## Candidate product rules for approval
+## Approved product rules
 1. **One scoped operation.** A contribution or withdrawal binds member, savings group, exact amount, one currency/asset, control model, source position/version and a unique operation id.
 2. **No optimistic money.** Prepared, self-reported, submitted, waiting and unknown states do not change Available or goal progress.
 3. **Tracking mode needs confirmation.** “I added it” records the member's statement but cannot make the contribution final by itself. The configured confirmation authority must confirm it.
@@ -65,4 +65,12 @@ Uses the established fixed phone frame, neutral cards, green savings/action sema
 **Alternatives:** Edit the inherited/shared timeline rule, which could change approved Goldens; rewrite the timeline markup, which was unnecessary. Both rejected.
 **Tradeoffs:** One small journey-scoped override remains until a future shared component cleanup.
 **Revisit when:** A deliberately approved shared typography/layout pass replaces the common timeline primitive.
-**Approval / version:** V1.1 review-pending. No Golden changed. TYPO-01 remains deferred.
+
+### J17-D05 — Approve V1.1 as Golden #17 unchanged
+**Decision:** Freeze the reviewed V1.1 standalone HTML byte-for-byte as Golden #17, including the scoped timeline fix and all ten money/authority rules above.
+**Why:** The user explicitly approved the corrected standalone review after fresh two-size browser QA, zero network requests, timeline-overlap checks, and exact-head verification.
+**Alternatives:** Reopen the design or roll back to V1. Rejected because V1.1 fixes a real layout defect without changing product behavior.
+**Tradeoffs:** The journey keeps one scoped CSS override until a later shared component/typography pass.
+**Revisit when:** New user evidence changes the contribution/withdrawal authority model, or a separately approved shared component pass can replace the scoped override without altering the Golden behavior.
+**Approval / version:** V1.1 — Design Approved as Golden #17 on 2026-09-07. SHA-256 `d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054`. HTML changes not authorized. TYPO-01 remains deferred.
+**Sources:** `registry/approvals/17-v1.1.json`, `registry/exact-head-gate.json`, Journey 17 V1.1 validation and fresh review evidence.
