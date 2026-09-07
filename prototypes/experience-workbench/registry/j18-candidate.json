@@ -1,0 +1,14 @@
+{
+  "journey": "18",
+  "name": "Activity & Notifications",
+  "version": "v1",
+  "approval": "review-pending",
+  "prototype_path": "journeys/18-activity-notifications/v1-candidate.html",
+  "prototype_sha256": "fafb9cc74680b59f6589979115060895b6469e9ae760c59e35971be3e31f4a3a",
+  "spec_path": "journeys/18-activity-notifications/spec.md",
+  "qa_path": "journeys/18-activity-notifications/VISUAL_QA.md",
+  "checkpoint_path": "registry/checkpoints/2026-09-07-j18-v1-candidate.json",
+  "golden_count_before": 17,
+  "typography_note": "TYPO-01 deferred",
+  "prototype_only": true
+}
