@@ -1,0 +1,6 @@
+{
+  "purpose": "Consolidate exact split source artifacts and QA evidence for deterministic Journey 18 materialization.",
+  "candidate_sha256": "fafb9cc74680b59f6589979115060895b6469e9ae760c59e35971be3e31f4a3a",
+  "goldens_before": 17,
+  "typography_note": "TYPO-01 deferred"
+}
