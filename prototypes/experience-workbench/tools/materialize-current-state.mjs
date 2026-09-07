@@ -30,9 +30,11 @@ const applyBundleParts=sourceDir=>{
   const encoded=readParts(sourceDir); if(!encoded) return;
   const bundle=JSON.parse(zlib.brotliDecompressSync(Buffer.from(encoded,'base64')).toString('utf8'));
   if(bundle.name!=='2026-09-07-j18-v1-candidate') throw new Error('Unexpected J18 bundle');
+  const journeyRoot='journeys/18-activity-notifications/';
   for(const [relative,content] of Object.entries(bundle.files)){
-    if(!relative.startsWith('journeys/18-activity-notifications/')) throw new Error(`Unsafe J18 bundle path ${relative}`);
-    const target=path.resolve(root,relative);if(!target.startsWith(root+path.sep)) throw new Error(`Unsafe J18 target ${relative}`);
+    const normalized=relative.startsWith(journeyRoot)?relative:journeyRoot+relative;
+    if(normalized.includes('..')||!normalized.startsWith(journeyRoot)) throw new Error(`Unsafe J18 bundle path ${relative}`);
+    const target=path.resolve(root,normalized);if(!target.startsWith(path.resolve(root,journeyRoot)+path.sep)) throw new Error(`Unsafe J18 target ${relative}`);
     fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,content);
   }
 };
