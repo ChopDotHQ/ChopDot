@@ -1,12 +1,17 @@
 {
-  "checkpoint": "2026-09-07-j17-v1-candidate",
-  "purpose": "Verify the exact materialized Journey 17 V1 review candidate and preservation of all 16 approved Golden artifacts before user review.",
-  "materialized_candidate_head": "cb5bea17a293388c3656579feef345ff034169ce",
-  "journey_17_candidate_sha256": "637c1078c26edeaff25ab2bcb7a9c8f5b60fc89188171e77a5fdf3411bf7d0c2",
+  "checkpoint": "2026-09-07-j17-v1.1-candidate",
+  "purpose": "Journey 17 V1.1 source transition: scoped timeline-layout correction only. Final materialized exact-head verification is required after generated files settle.",
+  "source_commit": "da1cfe0f7fb4cbba96e44363d2d5f7fe90626908",
+  "journey_17_candidate_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
   "golden_count": 16,
   "current_journey": "17",
   "journey_17_approval": "review-pending",
+  "fresh_browser_layouts": 38,
+  "fresh_product_clicks": 170,
+  "external_network_requests": 0,
+  "timeline_overlap_checks_pass": true,
   "existing_goldens_changed": false,
   "typography_note": "TYPO-01 deferred",
+  "exact_head_status": "pending-materialization",
   "prototype_only": true
 }
