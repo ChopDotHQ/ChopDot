@@ -2,6 +2,7 @@
   "checkpoint": "2026-09-07-j17-v1.1-candidate",
   "purpose": "Journey 17 V1.1 source transition: scoped timeline-layout correction only. Final materialized exact-head verification is required after generated files settle.",
   "source_commit": "da1cfe0f7fb4cbba96e44363d2d5f7fe90626908",
+  "combined_candidate_commit": "58ec447d3c9b3ceceb0890d23c5cf4f9a97e8c9b",
   "journey_17_candidate_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
   "golden_count": 16,
   "current_journey": "17",
