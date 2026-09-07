@@ -39,7 +39,8 @@ if(progress.current_journey===null){
     for(const [key,value] of Object.entries({states:36,model_assertions:156,model_scenarios:30,browser_layouts:72,product_clicks:384,mapped_actions:192})) if(v[key]!==value) errors.push(`J18 ${key} expected ${value}, got ${v[key]}`);
     if(!v.all_layouts_pass||!v.all_clicks_pass||!v.self_contained||v.external_network_requests!==0||v.page_errors.length||v.console_errors.length) errors.push('J18 standalone/browser safeguards incomplete');
     const browser=load('journeys/18-activity-notifications/visual-qa/browser-qa.json');
-    if(browser.artifact_sha256!==c.prototype_sha256||browser.layout_checks!==72||browser.product_clicks!==384||browser.external_network_requests!==0||browser.page_errors.length||browser.console_errors.length) errors.push('J18 browser evidence mismatch');
+    const observed={artifact_sha256:browser.artifact_sha256,layout_checks:browser.layout_checks,product_clicks:browser.product_clicks,clicks:browser.clicks,external_network_requests:browser.external_network_requests,page_errors:browser.page_errors?.length,console_errors:browser.console_errors?.length,keys:Object.keys(browser).sort()};
+    if(browser.artifact_sha256!==c.prototype_sha256||browser.layout_checks!==72||browser.product_clicks!==384||browser.external_network_requests!==0||browser.page_errors.length||browser.console_errors.length) errors.push('J18 browser evidence mismatch: '+JSON.stringify(observed));
     const model=load('journeys/18-activity-notifications/visual-qa/model-qa.json');
     if(!model.ok||model.assertions!==156||model.scenarios!==30) errors.push('J18 model evidence mismatch');
     const screens=load('journeys/18-activity-notifications/SCREEN_STATE_MAPPING.json'),actions=load('journeys/18-activity-notifications/UI_EVENT_MAPPING.json');
