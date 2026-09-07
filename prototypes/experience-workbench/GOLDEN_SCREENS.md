@@ -19,6 +19,6 @@
 
 Journeys 15 and 16 were recovered into durable GitHub artifacts from retained review evidence after their temporary review HTML was not committed. Their recovery checksums are now locked; no byte-identity claim is made about the missing temporary files.
 
-Current candidate: Journey 17 — Contribute / Withdraw Savings V1. Not Golden.
+Current candidate: Journey 17 — Contribute / Withdraw Savings V1.1. Not Golden.
 
 TYPO-01 remains deferred.

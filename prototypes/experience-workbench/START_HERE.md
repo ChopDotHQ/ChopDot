@@ -6,7 +6,7 @@ Journey 16 — Savings Group V1 is Golden #16. The durable recovery artifact is 
 
 ## Review now
 
-Journey 17 — Contribute / Withdraw Savings V1. Open `journeys/17-savings-contribute-withdraw/v1-candidate.html` and read `journeys/17-savings-contribute-withdraw/spec.md` plus `journeys/17-savings-contribute-withdraw/VISUAL_QA.md`.
+Journey 17 — Contribute / Withdraw Savings V1.1. Open `journeys/17-savings-contribute-withdraw/v1.1-candidate.html` and read `journeys/17-savings-contribute-withdraw/spec.md` plus `journeys/17-savings-contribute-withdraw/VISUAL_QA.md`.
 
 ## Preserve
 
