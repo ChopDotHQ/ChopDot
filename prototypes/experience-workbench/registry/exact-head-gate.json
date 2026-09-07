@@ -1,16 +1,12 @@
 {
-  "checkpoint": "2026-09-07-j16-v1-golden-recovery",
-  "purpose": "Verify Journey 16 V1 as Golden #16 on the exact resulting branch head before Journey 17 begins; preserve all earlier Golden artifacts and the documented recovery provenance for Journeys 15 and 16.",
-  "materialized_freeze_head": "a5cd3261fb89c27915f72b51cb1ec6e2f69bdc57",
-  "journey_15_golden_sha256": "0915e060314e06471d5039e735dca4f2e708940f3a33f2a5890b8758671584e0",
-  "journey_16_golden_sha256": "5ec2ef4a051d3e830adda263b395a0def474ccd60ebbb8ad5a883af6d5505bea",
+  "checkpoint": "2026-09-07-j17-v1-candidate",
+  "purpose": "Verify the exact materialized Journey 17 V1 review candidate and preservation of all 16 approved Golden artifacts before user review.",
+  "materialized_candidate_head": "cb5bea17a293388c3656579feef345ff034169ce",
+  "journey_17_candidate_sha256": "637c1078c26edeaff25ab2bcb7a9c8f5b60fc89188171e77a5fdf3411bf7d0c2",
   "golden_count": 16,
-  "current_journey": null,
-  "journey_16_approval": "design-approved",
-  "next_journey": "17",
+  "current_journey": "17",
+  "journey_17_approval": "review-pending",
   "existing_goldens_changed": false,
-  "recovery_artifacts_byte_identical_to_lost_temporary_html": false,
-  "decision_history_preserved": true,
   "typography_note": "TYPO-01 deferred",
   "prototype_only": true
 }
