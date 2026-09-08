@@ -1,0 +1,42 @@
+{
+  "journey": "17",
+  "version": "v1.4",
+  "golden_number": 17,
+  "approval": "design-approved",
+  "approved_on": "2026-09-08",
+  "reviewed_at_commit": "47f578c5508eab1d6eae5317efcc51508dde2344",
+  "prototype_path": "journeys/17-savings-contribute-withdraw/v1.4-review-candidate.html",
+  "prototype_sha256": "a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915",
+  "html_change_authorized": false,
+  "supersedes_approval": "registry/approvals/17-v1.1.json",
+  "previous_golden_path": "journeys/17-savings-contribute-withdraw/v1.1-candidate.html",
+  "previous_golden_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
+  "previous_golden_preserved": true,
+  "codex_native_reload_verification": "journeys/17-savings-contribute-withdraw/review-v1.4/CODEX_NATIVE_RELOAD_VERIFICATION.json",
+  "approved_policy": {
+    "one_scoped_operation": true,
+    "no_optimistic_money": true,
+    "tracking_mode_requires_confirmation": true,
+    "shared_account_uses_real_authority": true,
+    "own_position_withdrawal_default": true,
+    "group_controlled_withdrawals_obey_group_rule": true,
+    "unknown_requires_recovery_before_retry": true,
+    "exact_currency_or_asset": true,
+    "return_appends_history": true,
+    "no_yield_implication": true,
+    "exact_amount_continuity": true,
+    "correct_projected_totals": true,
+    "same_operation_retry_through_final_submission": true,
+    "unresolved_operation_protection": true,
+    "native_reload_preserves_unresolved_operation": true,
+    "browser_storage_is_continuity_not_authority": true,
+    "v1_3_visuals_preserved": true
+  },
+  "next_journey": "18",
+  "deferred_note": {
+    "id": "TYPO-01",
+    "status": "deferred",
+    "change_now": false,
+    "note": "Shared typography and readability remain deferred."
+  }
+}
