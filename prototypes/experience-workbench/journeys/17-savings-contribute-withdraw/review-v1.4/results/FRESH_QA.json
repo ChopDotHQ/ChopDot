@@ -1,0 +1,84 @@
+{
+  "ok": true,
+  "journey": "17",
+  "version": "v1.4",
+  "candidate_sha256": "a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915",
+  "source_v1.3_sha256": "d2cf47381741d9825513ef805b3770c5c31d7436c171f6f5f3f0a92e7d031b97",
+  "bytes": 90102,
+  "visual_markup_unchanged": true,
+  "styles_unchanged": true,
+  "states": 21,
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "layout_checks": 42,
+  "layout_passed": 42,
+  "interaction_regressions": [
+    {
+      "case": "same-operation-retry-final-submit",
+      "viewport": "393x852",
+      "operation_id": "demo-savings-op-1",
+      "passed": true
+    },
+    {
+      "case": "reload-recovery-precondition-through-back",
+      "viewport": "393x852",
+      "operation_id": "demo-savings-op-1",
+      "passed": true,
+      "native_reload_after_this_point": "unverified"
+    },
+    {
+      "case": "unresolved-operation-protection",
+      "viewport": "393x852",
+      "operation_id": "demo-savings-op-1",
+      "passed": true
+    },
+    {
+      "case": "amount-and-limit-regression",
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "case": "same-operation-retry-final-submit",
+      "viewport": "430x890",
+      "operation_id": "demo-savings-op-1",
+      "passed": true
+    },
+    {
+      "case": "reload-recovery-precondition-through-back",
+      "viewport": "430x890",
+      "operation_id": "demo-savings-op-1",
+      "passed": true,
+      "native_reload_after_this_point": "unverified"
+    },
+    {
+      "case": "unresolved-operation-protection",
+      "viewport": "430x890",
+      "operation_id": "demo-savings-op-1",
+      "passed": true
+    },
+    {
+      "case": "amount-and-limit-regression",
+      "viewport": "430x890",
+      "passed": true
+    }
+  ],
+  "page_errors": [],
+  "console_messages": [],
+  "external_runtime_dependencies": 0,
+  "native_file_open_reload": {
+    "status": "unverified",
+    "reason": "This environment previously blocked native file/data/localhost navigation with ERR_BLOCKED_BY_ADMINISTRATOR. Per user instruction it was not retried, and inline/controlled-origin tests are not treated as equivalent."
+  },
+  "controlled_origin_reload": {
+    "status": "blocked",
+    "reason": "Navigation to a controlled test origin was also blocked by ERR_BLOCKED_BY_ADMINISTRATOR; not retried."
+  },
+  "prototype_storage_authority": "Browser storage persists only unresolved waiting/unknown/checking context. Hydration rejects not-executed/confirmed states; provider/service outcomes remain separate.",
+  "github_publication": "not performed",
+  "exact_head_gate": "not run",
+  "freeze": false,
+  "journey_19_started": false,
+  "typography_note": "TYPO-01 deferred"
+}

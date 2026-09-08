@@ -1,0 +1,259 @@
+{
+  "ok": true,
+  "comparisons": 42,
+  "all_pixel_identical": true,
+  "results": [
+    {
+      "screen": "start",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "add",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "add-review",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "add-sent",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "add-complete",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "add-failed",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "unknown",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "unknown-still",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "unknown-confirmed",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "unknown-not-executed",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "withdraw",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "withdraw-review",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "withdraw-pending",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "withdraw-complete",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "shared",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "wallet",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "mixed",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "offline",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "returned",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "activity",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "demo",
+      "viewport": "393x852",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "start",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "add",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "add-review",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "add-sent",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "add-complete",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "add-failed",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "unknown",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "unknown-still",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "unknown-confirmed",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "unknown-not-executed",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "withdraw",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "withdraw-review",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "withdraw-pending",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "withdraw-complete",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "shared",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "wallet",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "mixed",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "offline",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "returned",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "activity",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    },
+    {
+      "screen": "demo",
+      "viewport": "430x890",
+      "pixel_identical": true,
+      "changed_pixels": 0
+    }
+  ]
+}

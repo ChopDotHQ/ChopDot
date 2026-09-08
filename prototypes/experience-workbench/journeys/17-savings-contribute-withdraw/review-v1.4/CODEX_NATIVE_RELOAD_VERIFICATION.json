@@ -1,0 +1,21 @@
+{
+  "verifier": "Codex",
+  "evidence_source": "Independent verification reported by the user on 2026-09-08; not rerun by ChatGPT.",
+  "candidate_sha256": "a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915",
+  "focused_checks": 16,
+  "all_passed": true,
+  "load_modes": [
+    "native file",
+    "localhost"
+  ],
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "verified_sequences": [
+    "actual native reload recovery",
+    "same-operation retry through final submission",
+    "unresolved-operation protection"
+  ],
+  "authority_note": "Browser storage remains prototype continuity only and is not payment authority."
+}

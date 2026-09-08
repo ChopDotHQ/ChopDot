@@ -1,0 +1,2619 @@
+{
+  "browser_plugin": "not available",
+  "renderer": "Playwright Chromium via exact HTML page.set_content (regression/layout only; not standalone-open evidence)",
+  "standalone_open_reload": {
+    "status": "unverified",
+    "reason": "Native file/data/localhost navigation was previously blocked by the environment; per closeout instructions it was not retried and page.set_content is not treated as equivalent."
+  },
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "artifacts": {
+    "j16-before": {
+      "path": "/mnt/data/savings-publish/chopdot-savings-handoff-closeout/source/j16-v1.1-continuity-candidate.html",
+      "sha256": "b7bdec922e1175e5040f0ec5ba1a530a0dadd300d05981539dce11186174d2fb",
+      "bytes": 61460,
+      "states": [
+        "start",
+        "goal",
+        "people",
+        "holding",
+        "review",
+        "home",
+        "pending",
+        "failed",
+        "mixed",
+        "reached",
+        "j17add",
+        "j17withdraw",
+        "settings",
+        "demo"
+      ],
+      "layouts": [
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "start"
+          ],
+          "route": "start",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "goal"
+          ],
+          "route": "goal",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "people"
+          ],
+          "route": "people",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "holding"
+          ],
+          "route": "holding",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "review"
+          ],
+          "route": "review",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "home"
+          ],
+          "route": "home",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "pending"
+          ],
+          "route": "pending",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "failed"
+          ],
+          "route": "failed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "mixed"
+          ],
+          "route": "mixed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "reached"
+          ],
+          "route": "reached",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "j17add"
+          ],
+          "route": "j17add",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "j17withdraw"
+          ],
+          "route": "j17withdraw",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "settings"
+          ],
+          "route": "settings",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "demo"
+          ],
+          "route": "demo",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "start"
+          ],
+          "route": "start",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "goal"
+          ],
+          "route": "goal",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "people"
+          ],
+          "route": "people",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "holding"
+          ],
+          "route": "holding",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "review"
+          ],
+          "route": "review",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "home"
+          ],
+          "route": "home",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "pending"
+          ],
+          "route": "pending",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "failed"
+          ],
+          "route": "failed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "mixed"
+          ],
+          "route": "mixed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "reached"
+          ],
+          "route": "reached",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "j17add"
+          ],
+          "route": "j17add",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "j17withdraw"
+          ],
+          "route": "j17withdraw",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "settings"
+          ],
+          "route": "settings",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "demo"
+          ],
+          "route": "demo",
+          "viewport": "430x890"
+        }
+      ],
+      "bare": [
+        {
+          "viewport": "393x852",
+          "visible": [
+            "start"
+          ]
+        },
+        {
+          "viewport": "430x890",
+          "visible": [
+            "start"
+          ]
+        }
+      ],
+      "external_resources": []
+    },
+    "j17-before": {
+      "path": "/mnt/data/savings-publish/chopdot-savings-handoff-closeout/source/j17-v1.2-continuity-candidate.html",
+      "sha256": "c090b7e7df2f4b964862f5c8bd3cc37acbe7f1ff54b5e883d0adfd86d14661bc",
+      "bytes": 80409,
+      "states": [
+        "start",
+        "add",
+        "add-review",
+        "add-sent",
+        "add-complete",
+        "add-failed",
+        "unknown",
+        "unknown-still",
+        "unknown-confirmed",
+        "unknown-not-executed",
+        "withdraw",
+        "withdraw-review",
+        "withdraw-pending",
+        "withdraw-complete",
+        "shared",
+        "wallet",
+        "mixed",
+        "offline",
+        "returned",
+        "activity",
+        "demo"
+      ],
+      "layouts": [
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "start"
+          ],
+          "route": "start",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "add"
+          ],
+          "route": "add",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "add-review"
+          ],
+          "route": "add-review",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "add-sent"
+          ],
+          "route": "add-sent",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "add-complete"
+          ],
+          "route": "add-complete",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "add-failed"
+          ],
+          "route": "add-failed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "unknown"
+          ],
+          "route": "unknown",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "unknown-still"
+          ],
+          "route": "unknown-still",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "unknown-confirmed"
+          ],
+          "route": "unknown-confirmed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "unknown-not-executed"
+          ],
+          "route": "unknown-not-executed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "withdraw"
+          ],
+          "route": "withdraw",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "withdraw-review"
+          ],
+          "route": "withdraw-review",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "withdraw-pending"
+          ],
+          "route": "withdraw-pending",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "withdraw-complete"
+          ],
+          "route": "withdraw-complete",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "shared"
+          ],
+          "route": "shared",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "wallet"
+          ],
+          "route": "wallet",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "mixed"
+          ],
+          "route": "mixed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "offline"
+          ],
+          "route": "offline",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "returned"
+          ],
+          "route": "returned",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "activity"
+          ],
+          "route": "activity",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "demo"
+          ],
+          "route": "demo",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "start"
+          ],
+          "route": "start",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "add"
+          ],
+          "route": "add",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "add-review"
+          ],
+          "route": "add-review",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "add-sent"
+          ],
+          "route": "add-sent",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "add-complete"
+          ],
+          "route": "add-complete",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "add-failed"
+          ],
+          "route": "add-failed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "unknown"
+          ],
+          "route": "unknown",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "unknown-still"
+          ],
+          "route": "unknown-still",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "unknown-confirmed"
+          ],
+          "route": "unknown-confirmed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "unknown-not-executed"
+          ],
+          "route": "unknown-not-executed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "withdraw"
+          ],
+          "route": "withdraw",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "withdraw-review"
+          ],
+          "route": "withdraw-review",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "withdraw-pending"
+          ],
+          "route": "withdraw-pending",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "withdraw-complete"
+          ],
+          "route": "withdraw-complete",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "shared"
+          ],
+          "route": "shared",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "wallet"
+          ],
+          "route": "wallet",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "mixed"
+          ],
+          "route": "mixed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "offline"
+          ],
+          "route": "offline",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "returned"
+          ],
+          "route": "returned",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "activity"
+          ],
+          "route": "activity",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "demo"
+          ],
+          "route": "demo",
+          "viewport": "430x890"
+        }
+      ],
+      "bare": [
+        {
+          "viewport": "393x852",
+          "visible": [
+            "start"
+          ]
+        },
+        {
+          "viewport": "430x890",
+          "visible": [
+            "start"
+          ]
+        }
+      ],
+      "external_resources": []
+    },
+    "j16-v1.2": {
+      "path": "/mnt/data/savings-publish/chopdot-savings-handoff-closeout/candidates/chopdot-j16-v1.2-visual-candidate.html",
+      "sha256": "dc920000fc4120accab588413ee79095093f8e4223066d7d3a94fb524e5cd0de",
+      "bytes": 66359,
+      "states": [
+        "start",
+        "goal",
+        "people",
+        "holding",
+        "review",
+        "home",
+        "pending",
+        "failed",
+        "mixed",
+        "reached",
+        "j17add",
+        "j17withdraw",
+        "settings",
+        "demo"
+      ],
+      "layouts": [
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "start"
+          ],
+          "route": "start",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "goal"
+          ],
+          "route": "goal",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "people"
+          ],
+          "route": "people",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "holding"
+          ],
+          "route": "holding",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "review"
+          ],
+          "route": "review",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": true,
+          "scrollHeight": 753,
+          "clientHeight": 713,
+          "visibleScreens": [
+            "home"
+          ],
+          "route": "home",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "pending"
+          ],
+          "route": "pending",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "failed"
+          ],
+          "route": "failed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "mixed"
+          ],
+          "route": "mixed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "reached"
+          ],
+          "route": "reached",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "j17add"
+          ],
+          "route": "j17add",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "j17withdraw"
+          ],
+          "route": "j17withdraw",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "settings"
+          ],
+          "route": "settings",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "demo"
+          ],
+          "route": "demo",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "start"
+          ],
+          "route": "start",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "goal"
+          ],
+          "route": "goal",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "people"
+          ],
+          "route": "people",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "holding"
+          ],
+          "route": "holding",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "review"
+          ],
+          "route": "review",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": true,
+          "scrollHeight": 757,
+          "clientHeight": 751,
+          "visibleScreens": [
+            "home"
+          ],
+          "route": "home",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "pending"
+          ],
+          "route": "pending",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "failed"
+          ],
+          "route": "failed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "mixed"
+          ],
+          "route": "mixed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "reached"
+          ],
+          "route": "reached",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "j17add"
+          ],
+          "route": "j17add",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "j17withdraw"
+          ],
+          "route": "j17withdraw",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "settings"
+          ],
+          "route": "settings",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "demo"
+          ],
+          "route": "demo",
+          "viewport": "430x890"
+        }
+      ],
+      "bare": [
+        {
+          "viewport": "393x852",
+          "visible": [
+            "start"
+          ]
+        },
+        {
+          "viewport": "430x890",
+          "visible": [
+            "start"
+          ]
+        }
+      ],
+      "external_resources": []
+    },
+    "j17-v1.3": {
+      "path": "/mnt/data/savings-publish/chopdot-savings-handoff-closeout/candidates/chopdot-j17-v1.3-visual-candidate.html",
+      "sha256": "d2cf47381741d9825513ef805b3770c5c31d7436c171f6f5f3f0a92e7d031b97",
+      "bytes": 86676,
+      "states": [
+        "start",
+        "add",
+        "add-review",
+        "add-sent",
+        "add-complete",
+        "add-failed",
+        "unknown",
+        "unknown-still",
+        "unknown-confirmed",
+        "unknown-not-executed",
+        "withdraw",
+        "withdraw-review",
+        "withdraw-pending",
+        "withdraw-complete",
+        "shared",
+        "wallet",
+        "mixed",
+        "offline",
+        "returned",
+        "activity",
+        "demo"
+      ],
+      "layouts": [
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 713,
+          "clientHeight": 713,
+          "visibleScreens": [
+            "start"
+          ],
+          "route": "start",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "add"
+          ],
+          "route": "add",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "add-review"
+          ],
+          "route": "add-review",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "add-sent"
+          ],
+          "route": "add-sent",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "add-complete"
+          ],
+          "route": "add-complete",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "add-failed"
+          ],
+          "route": "add-failed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "unknown"
+          ],
+          "route": "unknown",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "unknown-still"
+          ],
+          "route": "unknown-still",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "unknown-confirmed"
+          ],
+          "route": "unknown-confirmed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "unknown-not-executed"
+          ],
+          "route": "unknown-not-executed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "withdraw"
+          ],
+          "route": "withdraw",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "withdraw-review"
+          ],
+          "route": "withdraw-review",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "withdraw-pending"
+          ],
+          "route": "withdraw-pending",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "withdraw-complete"
+          ],
+          "route": "withdraw-complete",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 682,
+          "clientHeight": 682,
+          "visibleScreens": [
+            "shared"
+          ],
+          "route": "shared",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "wallet"
+          ],
+          "route": "wallet",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "mixed"
+          ],
+          "route": "mixed",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "offline"
+          ],
+          "route": "offline",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "returned"
+          ],
+          "route": "returned",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "activity"
+          ],
+          "route": "activity",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 725,
+          "clientHeight": 725,
+          "visibleScreens": [
+            "demo"
+          ],
+          "route": "demo",
+          "viewport": "393x852"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 751,
+          "clientHeight": 751,
+          "visibleScreens": [
+            "start"
+          ],
+          "route": "start",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "add"
+          ],
+          "route": "add",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "add-review"
+          ],
+          "route": "add-review",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "add-sent"
+          ],
+          "route": "add-sent",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "add-complete"
+          ],
+          "route": "add-complete",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "add-failed"
+          ],
+          "route": "add-failed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "unknown"
+          ],
+          "route": "unknown",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "unknown-still"
+          ],
+          "route": "unknown-still",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "unknown-confirmed"
+          ],
+          "route": "unknown-confirmed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "unknown-not-executed"
+          ],
+          "route": "unknown-not-executed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "withdraw"
+          ],
+          "route": "withdraw",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "withdraw-review"
+          ],
+          "route": "withdraw-review",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "withdraw-pending"
+          ],
+          "route": "withdraw-pending",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "withdraw-complete"
+          ],
+          "route": "withdraw-complete",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 720,
+          "clientHeight": 720,
+          "visibleScreens": [
+            "shared"
+          ],
+          "route": "shared",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "wallet"
+          ],
+          "route": "wallet",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "mixed"
+          ],
+          "route": "mixed",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "offline"
+          ],
+          "route": "offline",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "returned"
+          ],
+          "route": "returned",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "activity"
+          ],
+          "route": "activity",
+          "viewport": "430x890"
+        },
+        {
+          "visible": true,
+          "docOverflow": false,
+          "screenOverflow": false,
+          "headerOverlap": false,
+          "footerOverlap": false,
+          "footerVisible": true,
+          "horizontalClipped": [],
+          "mainScrollable": false,
+          "scrollHeight": 763,
+          "clientHeight": 763,
+          "visibleScreens": [
+            "demo"
+          ],
+          "route": "demo",
+          "viewport": "430x890"
+        }
+      ],
+      "bare": [
+        {
+          "viewport": "393x852",
+          "visible": [
+            "start"
+          ]
+        },
+        {
+          "viewport": "430x890",
+          "visible": [
+            "start"
+          ]
+        }
+      ],
+      "external_resources": []
+    }
+  },
+  "sequences": [
+    {
+      "id": "J16-setup-overview-back-393",
+      "passed": true
+    },
+    {
+      "id": "J16-setup-overview-back-430",
+      "passed": true
+    },
+    {
+      "id": "J17-add-50-unknown-confirmed-return-393",
+      "operation_id": "demo-savings-op-1",
+      "passed": true
+    },
+    {
+      "id": "J17-withdraw-max-safe-retry-393",
+      "operation_id": "demo-savings-op-1",
+      "passed": true
+    },
+    {
+      "id": "J17-withdraw-max-confirmed-return-393",
+      "operation_id": "demo-savings-op-1",
+      "passed": true
+    },
+    {
+      "id": "J17-invalid-and-limit-393",
+      "passed": true
+    },
+    {
+      "id": "J17-add-50-unknown-confirmed-return-430",
+      "operation_id": "demo-savings-op-1",
+      "passed": true
+    },
+    {
+      "id": "J17-withdraw-max-safe-retry-430",
+      "operation_id": "demo-savings-op-1",
+      "passed": true
+    },
+    {
+      "id": "J17-withdraw-max-confirmed-return-430",
+      "operation_id": "demo-savings-op-1",
+      "passed": true
+    },
+    {
+      "id": "J17-invalid-and-limit-430",
+      "passed": true
+    }
+  ],
+  "ok": true,
+  "candidate_hashes": {
+    "j16-v1.2": "dc920000fc4120accab588413ee79095093f8e4223066d7d3a94fb524e5cd0de",
+    "j17-v1.3": "d2cf47381741d9825513ef805b3770c5c31d7436c171f6f5f3f0a92e7d031b97"
+  },
+  "baseline_hashes": {
+    "j16-v1.1": "b7bdec922e1175e5040f0ec5ba1a530a0dadd300d05981539dce11186174d2fb",
+    "j17-v1.2": "c090b7e7df2f4b964862f5c8bd3cc37acbe7f1ff54b5e883d0adfd86d14661bc"
+  }
+}

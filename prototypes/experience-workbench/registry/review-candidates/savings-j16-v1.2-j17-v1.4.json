@@ -2,7 +2,7 @@
   "name": "Savings review candidates — 2026-09-08",
   "status": "review-pending",
   "publication_scope": "review candidates only; no Golden mutation; Journey 18 remains current; Journey 19 not started",
-  "materialized": false,
+  "materialized": true,
   "j16": {
     "journey": "16",
     "version": "v1.2",
