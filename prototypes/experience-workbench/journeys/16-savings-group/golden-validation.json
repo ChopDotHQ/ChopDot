@@ -2,8 +2,25 @@
   "ok": true,
   "status": "golden",
   "golden_number": 16,
-  "prototype_sha256": "5ec2ef4a051d3e830adda263b395a0def474ccd60ebbb8ad5a883af6d5505bea",
-  "recovered_from_review_evidence": true,
-  "html_locked": true,
+  "version": "v1.2",
+  "prototype_sha256": "dc920000fc4120accab588413ee79095093f8e4223066d7d3a94fb524e5cd0de",
+  "html_unchanged": true,
+  "previous_golden_preserved": true,
+  "previous_golden_sha256": "5ec2ef4a051d3e830adda263b395a0def474ccd60ebbb8ad5a883af6d5505bea",
+  "approved_policy": {
+    "recorded_not_received": true,
+    "goal_progress_confirmed_only": true,
+    "one_currency_per_group": true,
+    "custody_explicit": true,
+    "chopdot_never_custodies": true,
+    "no_automatic_yield_claim": true,
+    "member_positions_member_owned": true,
+    "add_withdraw_are_j17_handoffs": true,
+    "unknown_requires_recovery_before_retry": true,
+    "single_correct_entry_screen": true,
+    "contribute_action_has_visual_priority": true,
+    "internal_architecture_copy_removed": true
+  },
+  "all_golden_locks_pass": true,
   "typography": "TYPO-01 deferred"
 }

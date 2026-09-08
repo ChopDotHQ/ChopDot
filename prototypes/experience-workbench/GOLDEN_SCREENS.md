@@ -15,13 +15,13 @@
 13. Request Money — v1 · Design Approved
 14. Receive / Share Payment Details — v1 · Design Approved
 15. Settlement History — v1 · Design Approved
-16. Savings Group — v1 · Design Approved
-17. Contribute / Withdraw Savings — v1.1 · Design Approved
+16. Savings Group — v1.2 · Design Approved
+17. Contribute / Withdraw Savings — v1.4 · Design Approved
 
-Journey 17 V1.1 is Golden #17. The reviewed standalone HTML is byte-for-byte checksum locked.
+Journey 16 V1.2 is the updated Golden #16 and Journey 17 V1.4 is the updated Golden #17. Their approved HTML bytes are checksum-locked exactly.
 
-Journeys 15 and 16 remain durable recovery artifacts from retained review evidence; no byte-identity claim is made about their lost temporary files.
+The previous J16 V1 and J17 V1.1 Golden artifacts and approval records remain preserved as history.
 
 Current candidate: Journey 18 — Activity & Notifications V1. Not Golden.
 
-TYPO-01 remains deferred.
+Journey 19 remains not started. TYPO-01 remains deferred.

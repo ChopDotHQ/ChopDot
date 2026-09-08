@@ -369,13 +369,13 @@
     "status": "golden",
     "approval": "design-approved",
     "entry_mode": "feature",
-    "version": "v1",
+    "version": "v1.2",
     "golden_number": 16,
-    "approved_on": "2026-09-07",
-    "prototype_path": "journeys/16-savings-group/v1-recovered.html",
-    "prototype_sha256": "5ec2ef4a051d3e830adda263b395a0def474ccd60ebbb8ad5a883af6d5505bea",
+    "approved_on": "2026-09-08",
+    "prototype_path": "journeys/16-savings-group/v1.2-review-candidate.html",
+    "prototype_sha256": "dc920000fc4120accab588413ee79095093f8e4223066d7d3a94fb524e5cd0de",
     "spec_path": "journeys/16-savings-group/spec.md",
-    "qa_path": "journeys/16-savings-group/VISUAL_QA.md"
+    "qa_path": "journeys/16-savings-group/review-v1.2/results/VISUAL_QA.md"
   },
   {
     "id": "17",
@@ -393,13 +393,13 @@
     ],
     "status": "golden",
     "approval": "design-approved",
-    "version": "v1.1",
-    "prototype_path": "journeys/17-savings-contribute-withdraw/v1.1-candidate.html",
-    "prototype_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
+    "version": "v1.4",
+    "prototype_path": "journeys/17-savings-contribute-withdraw/v1.4-review-candidate.html",
+    "prototype_sha256": "a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915",
     "spec_path": "journeys/17-savings-contribute-withdraw/spec.md",
-    "qa_path": "journeys/17-savings-contribute-withdraw/VISUAL_QA.md",
+    "qa_path": "journeys/17-savings-contribute-withdraw/review-v1.4/results/VISUAL_QA.md",
     "golden_number": 17,
-    "approved_on": "2026-09-07"
+    "approved_on": "2026-09-08"
   },
   {
     "id": "18",

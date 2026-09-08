@@ -1,0 +1,31 @@
+{
+  "checkpoint": "2026-09-08-j16-v1.2-j17-v1.4-golden",
+  "status": "golden-freeze",
+  "approved_on": "2026-09-08",
+  "j16": {
+    "version": "v1.2",
+    "golden_number": 16,
+    "prototype_path": "journeys/16-savings-group/v1.2-review-candidate.html",
+    "prototype_sha256": "dc920000fc4120accab588413ee79095093f8e4223066d7d3a94fb524e5cd0de",
+    "previous_approval": "registry/approvals/16-v1.json",
+    "previous_golden_path": "journeys/16-savings-group/v1-recovered.html",
+    "previous_golden_sha256": "5ec2ef4a051d3e830adda263b395a0def474ccd60ebbb8ad5a883af6d5505bea"
+  },
+  "j17": {
+    "version": "v1.4",
+    "golden_number": 17,
+    "prototype_path": "journeys/17-savings-contribute-withdraw/v1.4-review-candidate.html",
+    "prototype_sha256": "a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915",
+    "previous_approval": "registry/approvals/17-v1.1.json",
+    "previous_golden_path": "journeys/17-savings-contribute-withdraw/v1.1-candidate.html",
+    "previous_golden_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
+    "codex_native_reload_verification": "journeys/17-savings-contribute-withdraw/review-v1.4/CODEX_NATIVE_RELOAD_VERIFICATION.json"
+  },
+  "golden_count": 17,
+  "current_journey": "18",
+  "journey_19_status": "not-started",
+  "existing_goldens_changed": false,
+  "html_preserved": true,
+  "typography_note": "TYPO-01 deferred",
+  "gate_requirement": "exact-resulting-head"
+}

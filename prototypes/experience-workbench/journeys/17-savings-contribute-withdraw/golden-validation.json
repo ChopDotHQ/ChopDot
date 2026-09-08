@@ -2,8 +2,12 @@
   "ok": true,
   "status": "golden",
   "golden_number": 17,
-  "prototype_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
+  "version": "v1.4",
+  "prototype_sha256": "a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915",
   "html_unchanged": true,
+  "previous_golden_preserved": true,
+  "previous_golden_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
+  "codex_native_reload_verification": "journeys/17-savings-contribute-withdraw/review-v1.4/CODEX_NATIVE_RELOAD_VERIFICATION.json",
   "approved_policy": {
     "one_scoped_operation": true,
     "no_optimistic_money": true,
@@ -15,7 +19,13 @@
     "exact_currency_or_asset": true,
     "return_appends_history": true,
     "no_yield_implication": true,
-    "timeline_fix_is_journey_scoped": true
+    "exact_amount_continuity": true,
+    "correct_projected_totals": true,
+    "same_operation_retry_through_final_submission": true,
+    "unresolved_operation_protection": true,
+    "native_reload_preserves_unresolved_operation": true,
+    "browser_storage_is_continuity_not_authority": true,
+    "v1_3_visuals_preserved": true
   },
   "all_golden_locks_pass": true,
   "typography": "TYPO-01 deferred"

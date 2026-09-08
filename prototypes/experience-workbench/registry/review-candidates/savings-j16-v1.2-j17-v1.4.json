@@ -1,7 +1,7 @@
 {
   "name": "Savings review candidates — 2026-09-08",
-  "status": "review-pending",
-  "publication_scope": "review candidates only; no Golden mutation; Journey 18 remains current; Journey 19 not started",
+  "status": "design-approved",
+  "publication_scope": "updated Golden versions; previous Golden artifacts and approval history preserved; Journey 18 remains current; Journey 19 not started",
   "materialized": true,
   "j16": {
     "journey": "16",
@@ -10,7 +10,13 @@
     "sha256": "dc920000fc4120accab588413ee79095093f8e4223066d7d3a94fb524e5cd0de",
     "html_unchanged_from_review": true,
     "regeneration_source": "registry/source-artifacts/review-candidates/savings-j16-v1.2-j17-v1.4.bundle.br.b64.parts",
-    "support_root": "journeys/16-savings-group/review-v1.2/"
+    "support_root": "journeys/16-savings-group/review-v1.2/",
+    "approval": "design-approved",
+    "approval_path": "registry/approvals/16-v1.2.json",
+    "golden_number": 16,
+    "previous_approval": "registry/approvals/16-v1.json",
+    "previous_golden_path": "journeys/16-savings-group/v1-recovered.html",
+    "previous_golden_sha256": "5ec2ef4a051d3e830adda263b395a0def474ccd60ebbb8ad5a883af6d5505bea"
   },
   "j17": {
     "journey": "17",
@@ -20,12 +26,20 @@
     "html_unchanged_from_review": true,
     "regeneration_source": "registry/source-artifacts/review-candidates/savings-j16-v1.2-j17-v1.4.bundle.br.b64.parts",
     "support_root": "journeys/17-savings-contribute-withdraw/review-v1.4/",
-    "native_reload_verification": "Independent Codex verification; see CODEX_NATIVE_RELOAD_VERIFICATION.json"
+    "native_reload_verification": "Independent Codex verification; see CODEX_NATIVE_RELOAD_VERIFICATION.json",
+    "approval": "design-approved",
+    "approval_path": "registry/approvals/17-v1.4.json",
+    "golden_number": 17,
+    "previous_approval": "registry/approvals/17-v1.1.json",
+    "previous_golden_path": "journeys/17-savings-contribute-withdraw/v1.1-candidate.html",
+    "previous_golden_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054"
   },
-  "golden_policy": "All existing Golden artifact locks must pass. Review candidates must not be inserted into golden-artifact-locks.json or change journey status.",
+  "golden_policy": "J16 V1.2 and J17 V1.4 are the current Golden versions; all 17 current Golden locks must pass; previous J16/J17 Golden files and approval records remain preserved.",
   "typography": "TYPO-01 deferred",
   "unfinished_staging_preserved": "registry/source-artifacts/continuity-corrections-2026-09-08.parts/000.part is unrelated and intentionally untouched.",
   "regeneration_bundle": "registry/source-artifacts/review-candidates/savings-j16-v1.2-j17-v1.4.bundle.br.b64.parts",
   "regeneration_bundle_sha256": "906da6570193e482c6056a3ed450e9fead8c6740324021c9e8d01a74d3db5070",
-  "regeneration_bundle_files": 21
+  "regeneration_bundle_files": 21,
+  "approved_on": "2026-09-08",
+  "golden_freeze": true
 }

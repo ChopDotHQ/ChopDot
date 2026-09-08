@@ -1,6 +1,6 @@
 {
-  "schema_version": 13,
-  "updated_on": "2026-09-07",
+  "schema_version": 14,
+  "updated_on": "2026-09-08",
   "registered_journeys": 28,
   "golden_count": 17,
   "current_journey": "18",
@@ -14,8 +14,8 @@
   "storage_contract_version": "1.0",
   "paused_after_freeze": false,
   "last_approved_journey": "17",
-  "last_approved_version": "v1.1",
-  "last_approved_sha256": "d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054",
-  "next_action": "Review Journey 18 V1; explicit approval required before freeze.",
+  "last_approved_version": "v1.4",
+  "last_approved_sha256": "a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915",
+  "next_action": "Return to Journey 18 V1 review; explicit approval required before freeze.",
   "typography_note": "TYPO-01 deferred"
 }
