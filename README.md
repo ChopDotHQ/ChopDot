@@ -1,184 +1,82 @@
 # ChopDot
 
-ChopDot is a group expense app built around a simple idea:
+ChopDot is an open-source group expense app for tracking shared spending,
+working out each person's share, and keeping a clear record of payments.
+It is a work in progress, not a production-readiness or payment-safety guarantee.
 
-everyday coordination should stay easy and familiar, but the final moment of settlement can become verifiable, portable, and Polkadot-native.
+## Which version am I looking at?
 
-Instead of putting every group interaction onchain, ChopDot keeps the social and operational parts of shared spending offchain, then uses smart contracts only where they add real value:
+This guide describes **`main`**, the public default branch. The repository is
+in a transition between implementations:
 
-- anchoring a final closeout snapshot
-- recording settlement proof
-- creating a stronger shared source of truth around who paid what
+| Branch | Role |
+| --- | --- |
+| `main` | Existing React/Vite application with Supabase integration. Use the instructions below for this checkout. |
+| [`codex/chopdot-v1-launch`](https://github.com/ChopDotHQ/ChopDot/tree/codex/chopdot-v1-launch) | Participant-held public-beta candidate, proposed in [draft PR #13](https://github.com/ChopDotHQ/ChopDot/pull/13). It has a different storage model, setup and test suite; it is not merged into `main`. |
 
-That makes ChopDot less like "crypto expense tracking" and more like a practical bridge between normal group money behavior and Polkadot-native settlement rails.
+Branch status was checked on September 8, 2026. Check the linked PR before
+relying on that snapshot. A candidate branch or old release note does not prove
+what is currently deployed. Before contributing, agree on the target branch;
+do not mix setup instructions or copy whole implementations between branches.
 
-## Why This Matters
+## Run a local frontend preview
 
-Most group expense apps stop at calculation.
+Use **Node.js 22.x** and **npm 11.3.0** (the versions declared in
+[package.json](package.json)). From a fresh clone:
 
-They tell you who owes whom, but they do not help create a verifiable final state once money starts moving.
-
-ChopDot is exploring a different model:
-
-- lightweight offchain collaboration for day-to-day use
-- onchain proof only at the closeout layer
-- a product surface that can evolve toward more agent-ready, wallet-native, and verifiable coordination over time
-
-That is why this project fits the broader Polkadot direction:
-
-- use the chain where it improves trust and composability
-- avoid forcing everything onchain just because it can be
-- design for real users first, protocol leverage second
-
-## What Exists Today
-
-The current release already ships a real closeout-driven settlement path on Polkadot Hub testnet.
-
-Current highlights:
-
-- guided `Settle Up` flow with `Pay normally` and `Smart settle`
-- final closeout snapshots anchored onchain
-- settlement proof recorded onchain
-- DOT and USDC support in the closeout-driven flow
-- confirmation screens that expose payment and proof details
-- account-picker support for multi-account Polkadot wallet users
-
-Current live contract path:
-
-- EVM smart contract on Polkadot Hub testnet
-
-Background context:
-
-- earlier PVM / closeout exploration is still preserved in the repo as research and implementation history
-
-## What ChopDot Is Not Pretending To Be
-
-ChopDot is still a work in progress.
-
-This is not presented as a finished global payments product or a fully generalized production banking system.
-
-Right now, ChopDot is best understood as:
-
-- a serious product prototype
-- a live experiment in witnessed group closeout
-- a Polkadot-native expense coordination direction that is already testable, but not finished
-
-There are still rough edges around:
-
-- wallet complexity
-- release hardening
-- runtime stability
-- simplifying the path between "who owes whom" and "proof this was actually settled"
-
-Feedback is very welcome, especially from people thinking about:
-
-- Polkadot-native product design
-- wallet UX
-- EVM vs PVM product strategy
-- social-finance coordination tools
-- agent-ready interfaces for real apps
-
-## Product Thesis
-
-ChopDot is built around a simple product thesis:
-
-1. shared expenses are social first
-2. settlement is where trust breaks down
-3. closeout should become explicit, reviewable, and provable
-4. Polkadot is most useful here when it powers finality and evidence, not unnecessary complexity
-
-## Current Wallet Model
-
-This release currently uses a hybrid wallet model:
-
-- a Polkadot-compatible wallet for DOT or USDC asset settlement
-- an EVM-compatible wallet for Polkadot Hub contract writes
-
-That is useful for shipping the closeout path now, but it is also one of the biggest areas we want to improve over time.
-
-## Try ChopDot
-
-Website:
-
-- [chopdot.xyz](https://www.chopdot.xyz/)
-
-App:
-
-- [app.chopdot.xyz](https://app.chopdot.xyz/)
-
-### Run locally
-
-```bash
-npm install
-cp .env.example .env
-npm run dev
+```sh
+git clone https://github.com/ChopDotHQ/ChopDot.git
+cd ChopDot
+npm ci --ignore-scripts
+npm run dev:frontend
 ```
 
-Then open:
+Open [http://127.0.0.1:5173](http://127.0.0.1:5173).
 
-- [http://localhost:5173](http://localhost:5173)
+This command starts only Vite, bound to your computer's loopback address. It
+uses local data mode and placeholder loopback Supabase configuration, without
+starting Docker, linking a cloud project, or changing a database. No private
+maintainer files, agent tools, knowledge graph, or hosted credentials are needed.
 
-Minimum required environment values:
+**Preview limits:** authentication, shared synchronization, uploads and payment
+integrations are not configured by this command. It is a frontend starting
+point, not an offline/full-product test. Use synthetic data and do not attempt
+real payments. Existing browser storage is not cleared automatically.
 
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-- `VITE_WALLETCONNECT_PROJECT_ID`
+The install skips dependency lifecycle scripts, including the legacy Cypress
+binary download. Install the required browser separately when running browser
+tests; see [Contributing](CONTRIBUTING.md).
 
-For closeout-enabled releases:
+For database-backed development, use the separate
+[Supabase setup guide](docs/setup/SUPABASE_SETUP.md) and
+[environment template](.env.example). `npm run dev` starts Supabase first;
+it is not the same command as the frontend preview.
 
-- `VITE_ENABLE_PVM_CLOSEOUT=1`
-- `VITE_PVM_CLOSEOUT_CONTRACT_ADDRESS=<deployed contract>`
+## Find your way around
 
-## Current Release Notes
+| Path | Purpose on `main` |
+| --- | --- |
+| [`src/`](src/) | Application UI, state and services. |
+| [`public/`](public/) and [`assets/`](assets/) | Static assets and developer fixtures. |
+| [`supabase/`](supabase/) | Database configuration, migrations and edge functions. |
+| [`api/`](api/) and [`backend/`](backend/) | Server-side integrations; not started by the frontend preview. |
+| [`tests/`](tests/) and [`cypress/`](cypress/) | Browser/integration tests; unit tests also live alongside source. |
+| [`scripts/`](scripts/) | Development, verification and maintenance commands. |
+| [`docs/`](docs/README.md) | Documentation index, including historical and experimental material. |
 
-Important release context:
+## Contribute and verify
 
-- the previously deployed contract at `0xBD55c27D3f9c2c832B50e4bAD289f5e03F65a142` should now be treated as demo-only
-- the launch-intended contract address is `0xfC4D75c8a56Caa6aDc9dD28d5879D6C1fF9467f7`
-- frontend and wallet-auth rollout should happen in lockstep with the active contract address and auth message format
+Start with [Contributing](CONTRIBUTING.md). The small onboarding check runs
+without installing application dependencies:
 
-If you are validating the current smart-settlement flow, the minimum meaningful smoke path is:
-
-1. open a DOT or USDC pot with final balances
-2. start `Smart settle`
-3. approve package creation
-4. approve payment
-5. approve proof recording
-6. confirm the app lands on the final confirmation state with payment and proof details
-
-## For Builders And Reviewers
-
-Useful repo entry points:
-
-- orientation and operator rules: [`AGENTS.md`](AGENTS.md)
-- cross-IDE collaboration guide: [`docs/CROSS_IDE_COLLABORATION.md`](docs/CROSS_IDE_COLLABORATION.md)
-- long-horizon strategy and positioning: [`docs/CHOPDOT_2030_STRATEGIC_PLAN.md`](docs/CHOPDOT_2030_STRATEGIC_PLAN.md)
-- Polkadot Hub contract experiments: [`docs/POLKADOT_HUB_CONTRACT_EXPERIMENTS.md`](docs/POLKADOT_HUB_CONTRACT_EXPERIMENTS.md)
-- contract lab: [`scripts/polkadot-contract-lab/README.md`](scripts/polkadot-contract-lab/README.md)
-- hackathon closeout brief: [`docs/HACKATHON_PVM_CLOSEOUT_DEVELOPER_BRIEF.md`](docs/HACKATHON_PVM_CLOSEOUT_DEVELOPER_BRIEF.md)
-
-## Verification
-
-Core repo verification:
-
-```bash
-npx tsc --noEmit
-npm run build
-npx playwright test
+```sh
+npm run docs:check
+npm run test:docs
 ```
 
-Additional validation paths:
+Application checks and their prerequisites are listed in the contribution
+guide. Report exact commands and failures; do not substitute an old green run
+or a test on another branch for current evidence.
 
-- `node scripts/smoke-pvm-closeout.cjs`
-- `npm --prefix scripts/polkadot-contract-lab run test`
-
-## AgentOps
-
-This repo has an active AgentOps workflow.
-
-Start here:
-
-- [`AGENTS.md`](AGENTS.md)
-- `.knowns/tasks/`
-
-If you are continuing work in a new thread or IDE, prefer `.knowns/tasks` as the execution surface rather than treating any local generated summaries as the primary truth.
+Report vulnerabilities privately through [SECURITY.md](SECURITY.md), not a
+public issue. The project is licensed under the [MIT License](LICENSE).
