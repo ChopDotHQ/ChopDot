@@ -1,17 +1,17 @@
 # Journey 17 — Contribute / Withdraw Savings
 
-V1.1 · Golden #17 · Design Approved. Prototype only; reviewed HTML is checksum-locked.
+V1.4 · updated Golden #17 · Design Approved. Prototype only; the approved HTML is checksum-locked exactly. The prior V1.1 Golden artifact and approval remain preserved as history.
 
 ## Position and handoff
-Journey 16 V1 is Golden #16. Journey 17 owns the money-changing workflow after a member chooses **Add money** or **Withdraw** from a savings group. It exits to the updated savings group, Activity & Notifications (18), or Wallet & Crypto (21) when an external wallet approval is required.
+Journey 16 V1.2 is the updated Golden #16. Journey 17 owns the money-changing workflow after a member chooses **Add money** or **Withdraw** from a savings group. It exits to the updated savings group, Activity & Notifications (18), or Wallet & Crypto (21) when an external wallet approval is required.
 
 ## User goal
 Add or remove savings safely, knowing exactly what will change and when it becomes real.
 
 ## Main paths
-**Add:** Savings group → amount → review → contribution prepared / self-reported or provider-submitted → waiting → confirmed → updated group.
+**Add:** Savings group → amount → review → contribution prepared / self-reported or provider-submitted → waiting → recovery when needed → confirmed → updated group.
 
-**Withdraw:** Savings group → amount from your confirmed position → review → authorization / group rule → waiting → confirmed → updated group.
+**Withdraw:** Savings group → amount from your confirmed position → review → authorization / group rule → waiting → recovery when needed → confirmed → updated group.
 
 ## Approved product rules
 1. **One scoped operation.** A contribution or withdrawal binds member, savings group, exact amount, one currency/asset, control model, source position/version and a unique operation id.
@@ -21,23 +21,30 @@ Add or remove savings safely, knowing exactly what will change and when it becom
 5. **Own-position withdrawal by default.** A member can prepare a withdrawal only from their own confirmed position. Group owner/admin status does not grant authority over another member's position.
 6. **Group-controlled withdrawals obey the configured group rule.** The UI cannot bypass or self-approve that rule.
 7. **Unknown result before retry.** Timeout/result-unknown blocks another execution until the original operation is recovered. A verified failed/not-executed result can then be retried idempotently.
-8. **Exact currency.** CHF, EUR, DOT, etc. remain separate. No converted estimate becomes an instruction.
-9. **Reversal/return appends history.** A returned confirmed contribution reopens only that exact amount and keeps the earlier confirmation in history.
-10. **No yield implication.** Contributing to a savings group does not imply investment, return or earnings.
+8. **Exact amount and currency continuity.** The selected amount, actor, savings group, currency and operation identity survive review, waiting, recovery, retry and the final result; converted estimates never become instructions.
+9. **Same-operation retry.** A safe retry after verified non-execution preserves the original operation identity and scope through the final resubmission.
+10. **Unresolved-operation protection.** A new contribution/withdrawal cannot overwrite or bypass an existing unresolved operation; the user is routed back to recovery.
+11. **Reload continuity is non-authoritative.** Prototype browser storage may preserve unresolved operation context across reload, but it cannot confirm, fail, authorize or close the operation. Provider/service results remain separate authority.
+12. **Reversal/return appends history.** A returned confirmed contribution reopens only that exact amount and keeps the earlier confirmation in history.
+13. **No yield implication.** Contributing to a savings group does not imply investment, return or earnings.
 
 ## Authority
 - Member: chooses amount, authorizes their own contribution/withdrawal, may mark an external contribution as added.
 - Confirmation authority: confirms external/tracking-mode receipt/removal.
 - External provider or wallet: can report execution/finality for its own action.
 - Group rule: may authorize group-controlled withdrawals.
-- ChopDot UI: prepares, displays, retries only when safe, and derives balances. It cannot fabricate confirmation.
+- ChopDot UI: prepares, displays, preserves unresolved context, retries only when safe, and derives balances. It cannot fabricate confirmation.
+- Browser storage in this prototype: continuity cache only. It is not payment authority.
 - LLM/agent: may prepare/recommend only; no execution without valid delegated authority. Deterministic backend/provider verification governs amount, balance, replay and transitions.
 
 ## Recovery cases
-Offline; insufficient confirmed position; changed group version; confirmation delayed; user rejects approval; provider failure; result unknown; safe retry after recovered failure; returned contribution; access loss; mixed currency.
+Offline; insufficient confirmed position; changed group version; confirmation delayed; user rejects approval; provider failure; result unknown; still-unknown after checking; safe retry after verified non-execution; returned contribution; access loss; mixed currency; native reload with unresolved operation; attempted duplicate Add/Withdraw while unresolved.
 
 ## Visual inheritance
-Uses the established fixed phone frame, neutral cards, green savings/action semantic, compact headers, inline line icons, and short copy. V1.1 adds only a scoped timeline-layout reset to prevent an inherited settlement grid from affecting savings status timelines. No shared typography changes. TYPO-01 remains deferred.
+V1.4 preserves the reviewed V1.3 visuals and wording. The established fixed phone frame, neutral cards, compact headers, inline line icons, black primary actions and short human copy remain unchanged. The earlier scoped timeline-layout reset remains journey-local. No shared typography changes. TYPO-01 remains deferred.
+
+## Independent verification
+Codex independently verified V1.4 against the exact SHA-256 `a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915`: 16 focused checks passed at 393×852 and 430×890 using both native file and localhost loading, including actual reload recovery, same-operation retry through final submission, and unresolved-operation protection. This evidence remains separate from ChatGPT's local QA record.
 
 ## Decision history
 ### J17-D01 — Pending money never changes Available
@@ -66,11 +73,30 @@ Uses the established fixed phone frame, neutral cards, green savings/action sema
 **Tradeoffs:** One small journey-scoped override remains until a future shared component cleanup.
 **Revisit when:** A deliberately approved shared typography/layout pass replaces the common timeline primitive.
 
-### J17-D05 — Approve V1.1 as Golden #17 unchanged
-**Decision:** Freeze the reviewed V1.1 standalone HTML byte-for-byte as Golden #17, including the scoped timeline fix and all ten money/authority rules above.
+### J17-D05 — Approve V1.1 as Golden #17
+**Decision:** Freeze the reviewed V1.1 standalone HTML byte-for-byte as Golden #17, including the scoped timeline fix and the original money/authority rules.
 **Why:** The user explicitly approved the corrected standalone review after fresh two-size browser QA, zero network requests, timeline-overlap checks, and exact-head verification.
-**Alternatives:** Reopen the design or roll back to V1. Rejected because V1.1 fixes a real layout defect without changing product behavior.
-**Tradeoffs:** The journey keeps one scoped CSS override until a later shared component/typography pass.
-**Revisit when:** New user evidence changes the contribution/withdrawal authority model, or a separately approved shared component pass can replace the scoped override without altering the Golden behavior.
-**Approval / version:** V1.1 — Design Approved as Golden #17 on 2026-09-07. SHA-256 `d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054`. HTML changes not authorized. TYPO-01 remains deferred.
-**Sources:** `registry/approvals/17-v1.1.json`, `registry/exact-head-gate.json`, Journey 17 V1.1 validation and fresh review evidence.
+**Alternatives:** Reopen the design or roll back to V1. Rejected because V1.1 fixed a real layout defect without changing product behavior.
+**Tradeoffs:** The journey kept one scoped CSS override until a later shared component/typography pass.
+**Approval / version:** V1.1 — Design Approved as Golden #17 on 2026-09-07. SHA-256 `d4ac9fbc8b6c30a5d09f97b9d2dac3c9ff6f3ae9798a725fd8b8a757cf4c7054`. Preserved as predecessor history after V1.4 approval.
+
+### J17-D06 — Preserve exact amounts and separate recovery outcomes
+**Decision:** The chosen CHF amount and projected totals carry through every downstream state, and “Check original result” remains distinct from simulated service outcomes.
+**Why:** The prior candidate could fall back to hard-coded CHF 180/100 examples and could turn checking into a false “not executed” result.
+**Tradeoffs:** More explicit operation state in the prototype.
+**Approval / version:** V1.2 continuity correction; not itself frozen as Golden.
+
+### J17-D07 — Refine Savings visuals without weakening continuity
+**Decision:** Keep the corrected behavior while aligning contribution/withdrawal hierarchy with the approved ChopDot group/create experience; remove internal architecture wording from normal UI.
+**Why:** The continuity model was correct but the Savings surfaces still felt visually disconnected from the established app.
+**Tradeoffs:** Visual-only candidate layer before the final operation-continuity correction.
+**Approval / version:** V1.3 visual candidate; preserved as the visual predecessor of V1.4.
+
+### J17-D08 — Approve V1.4 as the updated Golden #17
+**Decision:** Freeze the published V1.4 candidate byte-for-byte as the current Golden #17 while preserving the V1.1 Golden file and approval history.
+**Why:** V1.4 preserves the approved V1.3 visuals and fixes the three independently reproduced operation-continuity defects: reload recovery, same-operation retry through final submission, and unresolved-operation protection. The user explicitly approved it after Codex independently passed all 16 focused checks at both phone sizes using native file and localhost loading.
+**Alternatives:** Keep V1.1 as current Golden; accept V1.3 without reload continuity; redesign the journey. Rejected because V1.4 is the reviewed continuity-corrected artifact and no redesign was requested.
+**Tradeoffs:** Browser storage exists only as prototype continuity cache; production persistence/authority remains intentionally out of scope.
+**Revisit when:** Production persistence is implemented, a new payment authority model changes the operation lifecycle, or a separately approved shared component/typography pass can replace visual primitives without altering these semantics.
+**Approval / version:** V1.4 — Design Approved as updated Golden #17 on 2026-09-08. SHA-256 `a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915`. HTML changes not authorized. TYPO-01 remains deferred.
+**Sources:** `registry/approvals/17-v1.4.json`, `registry/approvals/17-v1.1.json`, `registry/review-candidates/savings-j16-v1.2-j17-v1.4.json`, Journey 17 review-v1.4 QA and independent Codex verification records.
