@@ -1,10 +1,10 @@
 {
-  "schema_version": 14,
+  "schema_version": 15,
   "updated_on": "2026-09-08",
   "registered_journeys": 28,
-  "golden_count": 17,
-  "current_journey": "18",
-  "remaining_overall": 11,
+  "golden_count": 18,
+  "current_journey": "19",
+  "remaining_overall": 10,
   "remaining_core_including_entry": [],
   "remaining_in_app_money_loop": [],
   "map_source": "registry/journeys.json",
@@ -13,9 +13,9 @@
   "payment_contract_version": "1.2",
   "storage_contract_version": "1.0",
   "paused_after_freeze": false,
-  "last_approved_journey": "17",
-  "last_approved_version": "v1.4",
-  "last_approved_sha256": "a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915",
-  "next_action": "Return to Journey 18 V1 review; explicit approval required before freeze.",
+  "last_approved_journey": "18",
+  "last_approved_version": "v1.1",
+  "last_approved_sha256": "d42b518c14fe7c57b2df56c0e92f0ad63424b9971f294ac10df647a0e2cab08e",
+  "next_action": "Review Journey 19 V1 Insights candidate; explicit approval required before freeze.",
   "typography_note": "TYPO-01 deferred"
 }

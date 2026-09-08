@@ -1,0 +1,1090 @@
+[
+  {
+    "screen": "overview",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "30 days",
+    "href": "#range-30",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "90 days",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "12 months",
+    "href": "#range-365",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "All groups 4 CHF groups \u00b7 1 DOT group",
+    "href": "#scope-picker",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "Zurich Weekend was your biggest shared-spend group 42% of your CHF shared spending in this period. CHF 430.00 42% See the group pattern",
+    "href": "#biggest-group",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "3 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 3/4 settled Understand the pattern",
+    "href": "#settled-pattern",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "Hackathon has separate DOT activity Kept outside the CHF comparison so an estimate cannot look payable. DOT 2.400000 separate asset Why currencies stay separate",
+    "href": "#mixed-assets",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "Home",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "Groups",
+    "href": "#handoff-group",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "Add",
+    "href": "#add-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "Activity",
+    "href": "#activity-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "label": "You",
+    "href": "#you-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "30 days",
+    "href": "#range-30",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "90 days",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "12 months",
+    "href": "#range-365",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "All groups 3 CHF groups",
+    "href": "#scope-picker",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "Zurich Weekend was your biggest shared-spend group 50% of your CHF shared spending in this period. CHF 180.00 50% See the group pattern",
+    "href": "#biggest-group",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "2 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 2/3 settled Understand the pattern",
+    "href": "#settled-pattern",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "Home",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "Groups",
+    "href": "#handoff-group",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "Add",
+    "href": "#add-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "Activity",
+    "href": "#activity-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-30",
+    "label": "You",
+    "href": "#you-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "30 days",
+    "href": "#range-30",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "90 days",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "12 months",
+    "href": "#range-365",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "All groups 4 CHF groups \u00b7 1 DOT group",
+    "href": "#scope-picker",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "Apartment was your biggest shared-spend group 47% of your CHF shared spending in this period. CHF 1,800.00 47% See the group pattern",
+    "href": "#biggest-group",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "3 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 3/4 settled Understand the pattern",
+    "href": "#settled-pattern",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "Hackathon has separate DOT activity Kept outside the CHF comparison so an estimate cannot look payable. DOT 4.800000 separate asset Why currencies stay separate",
+    "href": "#mixed-assets",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "Home",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "Groups",
+    "href": "#handoff-group",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "Add",
+    "href": "#add-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "Activity",
+    "href": "#activity-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "range-365",
+    "label": "You",
+    "href": "#you-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "scope-picker",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "scope-picker",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "scope-picker",
+    "label": "All groups Combined CHF pattern; DOT remains separate",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "scope-picker",
+    "label": "Zurich Weekend 42% of CHF spending CHF 430.00",
+    "href": "#group-zurich",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "scope-picker",
+    "label": "Apartment 34% of CHF spending CHF 350.00",
+    "href": "#group-apartment",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "scope-picker",
+    "label": "Ski Trip 16% of CHF spending CHF 160.00",
+    "href": "#group-ski",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "scope-picker",
+    "label": "Geneva Day 8% of CHF spending CHF 80.00",
+    "href": "#group-geneva",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "scope-picker",
+    "label": "Cancel",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-zurich",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-zurich",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-zurich",
+    "label": "View Zurich Weekend",
+    "href": "#handoff-group",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-zurich",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-apartment",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-apartment",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-apartment",
+    "label": "View Apartment",
+    "href": "#handoff-group",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-apartment",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-ski",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-ski",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-ski",
+    "label": "View Ski Trip",
+    "href": "#handoff-group",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-ski",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-geneva",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-geneva",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-geneva",
+    "label": "View Geneva Day",
+    "href": "#handoff-group",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "group-geneva",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "biggest-group",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "biggest-group",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "biggest-group",
+    "label": "Zurich Weekend 42% of CHF spending CHF 430.00",
+    "href": "#group-zurich",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "biggest-group",
+    "label": "Apartment 34% of CHF spending CHF 350.00",
+    "href": "#group-apartment",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "biggest-group",
+    "label": "Ski Trip 16% of CHF spending CHF 160.00",
+    "href": "#group-ski",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "biggest-group",
+    "label": "Geneva Day 8% of CHF spending CHF 80.00",
+    "href": "#group-geneva",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "biggest-group",
+    "label": "View Zurich Weekend",
+    "href": "#handoff-group",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "settled-pattern",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "settled-pattern",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "settled-pattern",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "mixed-assets",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "mixed-assets",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "mixed-assets",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "insufficient",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "insufficient",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "insufficient",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "loading",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "loading",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "loading",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "error",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "error",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "error",
+    "label": "Try again",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "empty",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "empty",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "empty",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "access-changed",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "access-changed",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "access-changed",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "partial-data",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "partial-data",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "partial-data",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "privacy",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "privacy",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "privacy",
+    "label": "Review account preferences",
+    "href": "#handoff-settings",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-group",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-group",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-group",
+    "label": "Return to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-settings",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-settings",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-settings",
+    "label": "Return to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "home-preview",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "home-preview",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "home-preview",
+    "label": "Open Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "you-preview",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "you-preview",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "you-preview",
+    "label": "Open Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "activity-preview",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "activity-preview",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "activity-preview",
+    "label": "Return to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-preview",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-preview",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-preview",
+    "label": "Return to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "",
+    "href": "#home-preview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "Demo",
+    "href": "#demo",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "90 days",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "30 days",
+    "href": "#range-30",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "12 months",
+    "href": "#range-365",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "Choose scope",
+    "href": "#scope-picker",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "Mixed assets",
+    "href": "#mixed-assets",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "Not enough history",
+    "href": "#insufficient",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "Partial data",
+    "href": "#partial-data",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "Offline",
+    "href": "#offline",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "Loading",
+    "href": "#loading",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "Error",
+    "href": "#error",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "Empty",
+    "href": "#empty",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "Access changed",
+    "href": "#access-changed",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "How it works",
+    "href": "#privacy",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "label": "Back to Insights",
+    "href": "#overview",
+    "domain_event": "InsightsNavigationOnly",
+    "authority": "viewer/read",
+    "financial_effect": "none"
+  }
+]

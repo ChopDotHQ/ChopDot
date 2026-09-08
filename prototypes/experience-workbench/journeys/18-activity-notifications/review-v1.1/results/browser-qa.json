@@ -1,0 +1,1397 @@
+{
+  "ok": true,
+  "candidate_sha256": "d42b518c14fe7c57b2df56c0e92f0ad63424b9971f294ac10df647a0e2cab08e",
+  "candidate_bytes": 116571,
+  "version": "v1.1",
+  "browser_plugin": "not available",
+  "validation_method": "Playwright document injection for layout/interactions only; native file navigation separately attempted once and blocked by administrator policy",
+  "native_file_open_reload": "unverified-blocked",
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "states": 36,
+  "layout_checks": 72,
+  "passed_layouts": 72,
+  "focused_checks": 34,
+  "passed_focused_checks": 34,
+  "page_errors": [],
+  "console_errors": [],
+  "external_network_requests": [],
+  "all_layouts_pass": true,
+  "all_focused_checks_pass": true,
+  "checks": [
+    {
+      "name": "bare no-fragment document shows only Activity",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": [
+        "activity"
+      ]
+    },
+    {
+      "name": "invalid fragment normalizes to Activity",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": {
+        "hash": "#activity",
+        "visible": [
+          "activity"
+        ]
+      }
+    },
+    {
+      "name": "36 states present",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": 36
+    },
+    {
+      "name": "attention card uses visible overflow",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": "visible"
+    },
+    {
+      "name": "resolved payment is absent from attention rows",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": 2
+    },
+    {
+      "name": "every attention row is reachable by normal scrolling",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "notifications starts at 2 unread",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "mark all read reaches zero unread",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": {
+        "label": "All read",
+        "unread_rows": 0
+      }
+    },
+    {
+      "name": "attention remains two after reading",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Activity \u2192 Notifications preserves all-read",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "new notification increments unread to one",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "new notification does not change unresolved attention",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": 2
+    },
+    {
+      "name": "historical Waiting notification is retained",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "old Waiting opens changed-state explanation",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": "Notification\nAlready handled\nDemo\nThis changed since the notification.\n\nThis notification captured Waiting. A separate later event completed the same payment, so ChopDot routes to the current payment record without deleting the earlier history.\n\nNotification said\nWaiting\nCurrent payment\nComplete\nOpe"
+    },
+    {
+      "name": "changed state routes to current complete payment",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "browser model resolves old Waiting to latest Complete",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": {
+        "kind": "stale",
+        "status": "Complete",
+        "eventId": "p-complete",
+        "route": "handoff-j15",
+        "attention": 2
+      }
+    },
+    {
+      "name": "duplicate/out-of-order keeps both history events and Complete current",
+      "viewport": "393x852",
+      "passed": true,
+      "detail": {
+        "count": 2,
+        "oldHistorical": true,
+        "oldAttention": false,
+        "currentHistorical": false,
+        "currentStatus": "Complete",
+        "attention": 2,
+        "resolved": {
+          "kind": "stale",
+          "stale": true,
+          "current": {
+            "eventId": "p-complete",
+            "type": "payment.complete",
+            "entityType": "payment",
+            "entityId": "p1",
+            "version": 2,
+            "timestamp": "2026-09-07T15:06:00Z",
+            "status": "Complete",
+            "resolved": true,
+            "amount": "54.30",
+            "currency": "CHF"
+          },
+          "route": "handoff-j15"
+        }
+      }
+    },
+    {
+      "name": "bare no-fragment document shows only Activity",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": [
+        "activity"
+      ]
+    },
+    {
+      "name": "invalid fragment normalizes to Activity",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": {
+        "hash": "#activity",
+        "visible": [
+          "activity"
+        ]
+      }
+    },
+    {
+      "name": "36 states present",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": 36
+    },
+    {
+      "name": "attention card uses visible overflow",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": "visible"
+    },
+    {
+      "name": "resolved payment is absent from attention rows",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": 2
+    },
+    {
+      "name": "every attention row is reachable by normal scrolling",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "notifications starts at 2 unread",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "mark all read reaches zero unread",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": {
+        "label": "All read",
+        "unread_rows": 0
+      }
+    },
+    {
+      "name": "attention remains two after reading",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Activity \u2192 Notifications preserves all-read",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "new notification increments unread to one",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "new notification does not change unresolved attention",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": 2
+    },
+    {
+      "name": "historical Waiting notification is retained",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": 1
+    },
+    {
+      "name": "old Waiting opens changed-state explanation",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": "Notification\nAlready handled\nDemo\nThis changed since the notification.\n\nThis notification captured Waiting. A separate later event completed the same payment, so ChopDot routes to the current payment record without deleting the earlier history.\n\nNotification said\nWaiting\nCurrent payment\nComplete\nOpe"
+    },
+    {
+      "name": "changed state routes to current complete payment",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "browser model resolves old Waiting to latest Complete",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": {
+        "kind": "stale",
+        "status": "Complete",
+        "eventId": "p-complete",
+        "route": "handoff-j15",
+        "attention": 2
+      }
+    },
+    {
+      "name": "duplicate/out-of-order keeps both history events and Complete current",
+      "viewport": "430x890",
+      "passed": true,
+      "detail": {
+        "count": 2,
+        "oldHistorical": true,
+        "oldAttention": false,
+        "currentHistorical": false,
+        "currentStatus": "Complete",
+        "attention": 2,
+        "resolved": {
+          "kind": "stale",
+          "stale": true,
+          "current": {
+            "eventId": "p-complete",
+            "type": "payment.complete",
+            "entityType": "payment",
+            "entityId": "p1",
+            "version": 2,
+            "timestamp": "2026-09-07T15:06:00Z",
+            "status": "Complete",
+            "resolved": true,
+            "amount": "54.30",
+            "currency": "CHF"
+          },
+          "route": "handoff-j15"
+        }
+      }
+    }
+  ],
+  "layouts": [
+    {
+      "viewport": "393x852",
+      "route": "activity",
+      "passed": true,
+      "visible": [
+        "activity"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 834,
+      "mainClientHeight": 712
+    },
+    {
+      "viewport": "393x852",
+      "route": "notifications",
+      "passed": true,
+      "visible": [
+        "notifications"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 735,
+      "mainClientHeight": 735
+    },
+    {
+      "viewport": "393x852",
+      "route": "notifications-read",
+      "passed": true,
+      "visible": [
+        "notifications-read"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "filter-attention",
+      "passed": true,
+      "visible": [
+        "filter-attention"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 712,
+      "mainClientHeight": 712
+    },
+    {
+      "viewport": "393x852",
+      "route": "filter-payments",
+      "passed": true,
+      "visible": [
+        "filter-payments"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 712,
+      "mainClientHeight": 712
+    },
+    {
+      "viewport": "393x852",
+      "route": "filter-groups",
+      "passed": true,
+      "visible": [
+        "filter-groups"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 712,
+      "mainClientHeight": 712
+    },
+    {
+      "viewport": "393x852",
+      "route": "payment-waiting",
+      "passed": true,
+      "visible": [
+        "payment-waiting"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 683,
+      "mainClientHeight": 683
+    },
+    {
+      "viewport": "393x852",
+      "route": "request-received",
+      "passed": true,
+      "visible": [
+        "request-received"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 683,
+      "mainClientHeight": 683
+    },
+    {
+      "viewport": "393x852",
+      "route": "expense-review",
+      "passed": true,
+      "visible": [
+        "expense-review"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 683,
+      "mainClientHeight": 683
+    },
+    {
+      "viewport": "393x852",
+      "route": "savings-confirmed",
+      "passed": true,
+      "visible": [
+        "savings-confirmed"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 683,
+      "mainClientHeight": 683
+    },
+    {
+      "viewport": "393x852",
+      "route": "payment-complete",
+      "passed": true,
+      "visible": [
+        "payment-complete"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 683,
+      "mainClientHeight": 683
+    },
+    {
+      "viewport": "393x852",
+      "route": "member-joined",
+      "passed": true,
+      "visible": [
+        "member-joined"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 683,
+      "mainClientHeight": 683
+    },
+    {
+      "viewport": "393x852",
+      "route": "request-sent",
+      "passed": true,
+      "visible": [
+        "request-sent"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 683,
+      "mainClientHeight": 683
+    },
+    {
+      "viewport": "393x852",
+      "route": "expense-updated",
+      "passed": true,
+      "visible": [
+        "expense-updated"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 683,
+      "mainClientHeight": 683
+    },
+    {
+      "viewport": "393x852",
+      "route": "stale-notification",
+      "passed": true,
+      "visible": [
+        "stale-notification"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "access-changed",
+      "passed": true,
+      "visible": [
+        "access-changed"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "offline",
+      "passed": true,
+      "visible": [
+        "offline"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "loading",
+      "passed": true,
+      "visible": [
+        "loading"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 792,
+      "mainClientHeight": 792
+    },
+    {
+      "viewport": "393x852",
+      "route": "error",
+      "passed": true,
+      "visible": [
+        "error"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "empty-activity",
+      "passed": true,
+      "visible": [
+        "empty-activity"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 712,
+      "mainClientHeight": 712
+    },
+    {
+      "viewport": "393x852",
+      "route": "empty-notifications",
+      "passed": true,
+      "visible": [
+        "empty-notifications"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 792,
+      "mainClientHeight": 792
+    },
+    {
+      "viewport": "393x852",
+      "route": "mixed-currency",
+      "passed": true,
+      "visible": [
+        "mixed-currency"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 792,
+      "mainClientHeight": 792
+    },
+    {
+      "viewport": "393x852",
+      "route": "deduped-payment",
+      "passed": true,
+      "visible": [
+        "deduped-payment"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "handoff-j12",
+      "passed": true,
+      "visible": [
+        "handoff-j12"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "handoff-request",
+      "passed": true,
+      "visible": [
+        "handoff-request"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "handoff-j07",
+      "passed": true,
+      "visible": [
+        "handoff-j07"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "handoff-j16",
+      "passed": true,
+      "visible": [
+        "handoff-j16"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "handoff-j15",
+      "passed": true,
+      "visible": [
+        "handoff-j15"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "handoff-j09",
+      "passed": true,
+      "visible": [
+        "handoff-j09"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "handoff-j13",
+      "passed": true,
+      "visible": [
+        "handoff-j13"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "handoff-j06",
+      "passed": true,
+      "visible": [
+        "handoff-j06"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "pots",
+      "passed": true,
+      "visible": [
+        "pots"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "people",
+      "passed": true,
+      "visible": [
+        "people"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "you",
+      "passed": true,
+      "visible": [
+        "you"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "add-preview",
+      "passed": true,
+      "visible": [
+        "add-preview"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "393x852",
+      "route": "demo",
+      "passed": true,
+      "visible": [
+        "demo"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 852,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726
+    },
+    {
+      "viewport": "430x890",
+      "route": "activity",
+      "passed": true,
+      "visible": [
+        "activity"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 834,
+      "mainClientHeight": 750
+    },
+    {
+      "viewport": "430x890",
+      "route": "notifications",
+      "passed": true,
+      "visible": [
+        "notifications"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 773,
+      "mainClientHeight": 773
+    },
+    {
+      "viewport": "430x890",
+      "route": "notifications-read",
+      "passed": true,
+      "visible": [
+        "notifications-read"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "filter-attention",
+      "passed": true,
+      "visible": [
+        "filter-attention"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 750,
+      "mainClientHeight": 750
+    },
+    {
+      "viewport": "430x890",
+      "route": "filter-payments",
+      "passed": true,
+      "visible": [
+        "filter-payments"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 750,
+      "mainClientHeight": 750
+    },
+    {
+      "viewport": "430x890",
+      "route": "filter-groups",
+      "passed": true,
+      "visible": [
+        "filter-groups"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 750,
+      "mainClientHeight": 750
+    },
+    {
+      "viewport": "430x890",
+      "route": "payment-waiting",
+      "passed": true,
+      "visible": [
+        "payment-waiting"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 721,
+      "mainClientHeight": 721
+    },
+    {
+      "viewport": "430x890",
+      "route": "request-received",
+      "passed": true,
+      "visible": [
+        "request-received"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 721,
+      "mainClientHeight": 721
+    },
+    {
+      "viewport": "430x890",
+      "route": "expense-review",
+      "passed": true,
+      "visible": [
+        "expense-review"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 721,
+      "mainClientHeight": 721
+    },
+    {
+      "viewport": "430x890",
+      "route": "savings-confirmed",
+      "passed": true,
+      "visible": [
+        "savings-confirmed"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 721,
+      "mainClientHeight": 721
+    },
+    {
+      "viewport": "430x890",
+      "route": "payment-complete",
+      "passed": true,
+      "visible": [
+        "payment-complete"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 721,
+      "mainClientHeight": 721
+    },
+    {
+      "viewport": "430x890",
+      "route": "member-joined",
+      "passed": true,
+      "visible": [
+        "member-joined"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 721,
+      "mainClientHeight": 721
+    },
+    {
+      "viewport": "430x890",
+      "route": "request-sent",
+      "passed": true,
+      "visible": [
+        "request-sent"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 721,
+      "mainClientHeight": 721
+    },
+    {
+      "viewport": "430x890",
+      "route": "expense-updated",
+      "passed": true,
+      "visible": [
+        "expense-updated"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 721,
+      "mainClientHeight": 721
+    },
+    {
+      "viewport": "430x890",
+      "route": "stale-notification",
+      "passed": true,
+      "visible": [
+        "stale-notification"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "access-changed",
+      "passed": true,
+      "visible": [
+        "access-changed"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "offline",
+      "passed": true,
+      "visible": [
+        "offline"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "loading",
+      "passed": true,
+      "visible": [
+        "loading"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 830,
+      "mainClientHeight": 830
+    },
+    {
+      "viewport": "430x890",
+      "route": "error",
+      "passed": true,
+      "visible": [
+        "error"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "empty-activity",
+      "passed": true,
+      "visible": [
+        "empty-activity"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 750,
+      "mainClientHeight": 750
+    },
+    {
+      "viewport": "430x890",
+      "route": "empty-notifications",
+      "passed": true,
+      "visible": [
+        "empty-notifications"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 830,
+      "mainClientHeight": 830
+    },
+    {
+      "viewport": "430x890",
+      "route": "mixed-currency",
+      "passed": true,
+      "visible": [
+        "mixed-currency"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 830,
+      "mainClientHeight": 830
+    },
+    {
+      "viewport": "430x890",
+      "route": "deduped-payment",
+      "passed": true,
+      "visible": [
+        "deduped-payment"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "handoff-j12",
+      "passed": true,
+      "visible": [
+        "handoff-j12"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "handoff-request",
+      "passed": true,
+      "visible": [
+        "handoff-request"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "handoff-j07",
+      "passed": true,
+      "visible": [
+        "handoff-j07"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "handoff-j16",
+      "passed": true,
+      "visible": [
+        "handoff-j16"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "handoff-j15",
+      "passed": true,
+      "visible": [
+        "handoff-j15"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "handoff-j09",
+      "passed": true,
+      "visible": [
+        "handoff-j09"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "handoff-j13",
+      "passed": true,
+      "visible": [
+        "handoff-j13"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "handoff-j06",
+      "passed": true,
+      "visible": [
+        "handoff-j06"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "pots",
+      "passed": true,
+      "visible": [
+        "pots"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "people",
+      "passed": true,
+      "visible": [
+        "people"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "you",
+      "passed": true,
+      "visible": [
+        "you"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "add-preview",
+      "passed": true,
+      "visible": [
+        "add-preview"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    },
+    {
+      "viewport": "430x890",
+      "route": "demo",
+      "passed": true,
+      "visible": [
+        "demo"
+      ],
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "clippedControls": 0,
+      "screenTop": 0,
+      "screenBottom": 890,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764
+    }
+  ]
+}

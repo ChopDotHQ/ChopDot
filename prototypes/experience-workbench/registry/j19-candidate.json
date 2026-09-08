@@ -1,0 +1,13 @@
+{
+  "journey": "19",
+  "name": "Insights",
+  "version": "v1",
+  "approval": "review-pending",
+  "prototype_path": "journeys/19-insights/v1-candidate.html",
+  "prototype_sha256": "b539cdbea4c3ced0de2663e922b4ccbc6bcc30975e8211c24aaf02cf14357260",
+  "spec_path": "journeys/19-insights/spec.md",
+  "qa_path": "journeys/19-insights/VISUAL_QA.md",
+  "golden_count_before": 18,
+  "typography_note": "TYPO-01 deferred",
+  "prototype_only": true
+}

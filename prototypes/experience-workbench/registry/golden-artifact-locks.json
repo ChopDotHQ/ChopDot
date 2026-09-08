@@ -84,5 +84,10 @@
     "journey": "17",
     "path": "journeys/17-savings-contribute-withdraw/v1.4-review-candidate.html",
     "sha256": "a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915"
+  },
+  {
+    "journey": "18",
+    "path": "journeys/18-activity-notifications/v1.1-continuity-candidate.html",
+    "sha256": "d42b518c14fe7c57b2df56c0e92f0ad63424b9971f294ac10df647a0e2cab08e"
   }
 ]

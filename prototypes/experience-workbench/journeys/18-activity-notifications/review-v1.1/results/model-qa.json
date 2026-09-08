@@ -1,0 +1,107 @@
+{
+  "ok": true,
+  "assertions": 71,
+  "scenarios": 20,
+  "cases": [
+    {
+      "name": "waiting and complete remain separate historical events",
+      "passed": true,
+      "assertions": 6
+    },
+    {
+      "name": "older waiting notification resolves to current complete state",
+      "passed": true,
+      "assertions": 6
+    },
+    {
+      "name": "complete payment leaves unresolved attention without erasing history",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "duplicate waiting delivery does not duplicate history or restore attention",
+      "passed": true,
+      "assertions": 3
+    },
+    {
+      "name": "out of order complete then waiting still resolves complete",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "duplicate complete arriving later remains one canonical event",
+      "passed": true,
+      "assertions": 3
+    },
+    {
+      "name": "mark all read is independent from attention",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "new notification changes unread without changing attention",
+      "passed": true,
+      "assertions": 3
+    },
+    {
+      "name": "read operations are immutable",
+      "passed": true,
+      "assertions": 3
+    },
+    {
+      "name": "latest state uses version before delivery timestamp",
+      "passed": true,
+      "assertions": 1
+    },
+    {
+      "name": "technical noise cannot become canonical latest",
+      "passed": true,
+      "assertions": 2
+    },
+    {
+      "name": "current notification remains current",
+      "passed": true,
+      "assertions": 3
+    },
+    {
+      "name": "missing canonical state fails safely",
+      "passed": true,
+      "assertions": 2
+    },
+    {
+      "name": "access loss does not restore private expense details",
+      "passed": true,
+      "assertions": 2
+    },
+    {
+      "name": "personally relevant payment remains minimally readable",
+      "passed": true,
+      "assertions": 4
+    },
+    {
+      "name": "currency buckets remain separate",
+      "passed": true,
+      "assertions": 3
+    },
+    {
+      "name": "activity actions are navigation only",
+      "passed": true,
+      "assertions": 12
+    },
+    {
+      "name": "offline refresh keeps cached projection",
+      "passed": true,
+      "assertions": 2
+    },
+    {
+      "name": "online refresh can add a new meaningful event",
+      "passed": true,
+      "assertions": 3
+    },
+    {
+      "name": "projection does not mutate source events",
+      "passed": true,
+      "assertions": 1
+    }
+  ]
+}

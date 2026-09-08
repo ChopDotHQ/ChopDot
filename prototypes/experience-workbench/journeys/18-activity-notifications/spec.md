@@ -1,9 +1,9 @@
 # Journey 18 — Activity & Notifications
 
-V1 · Candidate #18 · Review pending. Prototype only; not Golden.
+V1.1 · Golden #18 · Design Approved. Prototype only.
 
 ## Position and handoff
-Journey 17 V1.1 is Golden #17. Journey 18 is the **readable projection and attention-routing layer** for meaningful ChopDot changes. It does not become a second place to approve expenses, execute payments, settle requests, confirm savings, or mutate balances.
+Journey 17 V1.4 is Golden #17. Journey 18 is the **readable projection and attention-routing layer** for meaningful ChopDot changes. It does not become a second place to approve expenses, execute payments, settle requests, confirm savings, or mutate balances.
 
 Registry goal: **Understand what changed and what needs attention.**
 
@@ -112,3 +112,7 @@ The candidate is a single self-contained HTML file. Hash navigation simulates st
 **Alternatives:** Decorative/inert search or a larger search implementation in this journey. Rejected for V1.
 **Tradeoffs:** Very large histories will eventually need stronger retrieval.
 **Revisit when:** Real feed volume makes filters insufficient.
+
+## V1.1 continuity approval
+
+Golden #18 preserves separate Waiting and Complete history for the same payment, resolves stale notifications against current authoritative state, keeps unread independent from unresolved attention, preserves read state across Activity/Notifications navigation, normalizes to one default entry screen, and keeps all attention rows reachable through normal scrolling. Duplicate and out-of-order delivery cannot regress current payment truth. Native standalone reload remained environment-blocked during this review and is recorded as a limitation rather than inferred from document injection.

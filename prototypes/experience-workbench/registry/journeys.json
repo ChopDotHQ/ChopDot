@@ -420,14 +420,16 @@
       "13",
       "15"
     ],
-    "status": "current",
-    "approval": "review-pending",
+    "status": "golden",
+    "approval": "design-approved",
     "entry_mode": "tab",
-    "version": "v1",
-    "prototype_path": "journeys/18-activity-notifications/v1-candidate.html",
-    "prototype_sha256": "fafb9cc74680b59f6589979115060895b6469e9ae760c59e35971be3e31f4a3a",
+    "version": "v1.1",
+    "prototype_path": "journeys/18-activity-notifications/v1.1-continuity-candidate.html",
+    "prototype_sha256": "d42b518c14fe7c57b2df56c0e92f0ad63424b9971f294ac10df647a0e2cab08e",
     "spec_path": "journeys/18-activity-notifications/spec.md",
-    "qa_path": "journeys/18-activity-notifications/VISUAL_QA.md"
+    "qa_path": "journeys/18-activity-notifications/review-v1.1/VISUAL_QA.md",
+    "golden_number": 18,
+    "approved_on": "2026-09-08"
   },
   {
     "id": "19",
@@ -442,9 +444,14 @@
       "08",
       "27"
     ],
-    "status": "not-started",
-    "approval": "not-reviewed",
-    "entry_mode": "feature"
+    "status": "current",
+    "approval": "review-pending",
+    "entry_mode": "feature",
+    "version": "v1",
+    "prototype_path": "journeys/19-insights/v1-candidate.html",
+    "prototype_sha256": "b539cdbea4c3ced0de2663e922b4ccbc6bcc30975e8211c24aaf02cf14357260",
+    "spec_path": "journeys/19-insights/spec.md",
+    "qa_path": "journeys/19-insights/VISUAL_QA.md"
   },
   {
     "id": "20",

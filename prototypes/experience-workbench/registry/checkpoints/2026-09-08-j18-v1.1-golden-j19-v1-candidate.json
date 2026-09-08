@@ -1,0 +1,25 @@
+{
+  "checkpoint": "2026-09-08-j18-v1.1-golden-j19-v1-candidate",
+  "j18": {
+    "status": "golden",
+    "version": "v1.1",
+    "golden_number": 18,
+    "prototype_path": "journeys/18-activity-notifications/v1.1-continuity-candidate.html",
+    "prototype_sha256": "d42b518c14fe7c57b2df56c0e92f0ad63424b9971f294ac10df647a0e2cab08e",
+    "previous_candidate_path": "journeys/18-activity-notifications/v1-candidate.html",
+    "previous_candidate_sha256": "fafb9cc74680b59f6589979115060895b6469e9ae760c59e35971be3e31f4a3a"
+  },
+  "j19": {
+    "status": "current",
+    "version": "v1",
+    "approval": "review-pending",
+    "prototype_path": "journeys/19-insights/v1-candidate.html",
+    "prototype_sha256": "b539cdbea4c3ced0de2663e922b4ccbc6bcc30975e8211c24aaf02cf14357260"
+  },
+  "golden_count": 18,
+  "remaining_overall": 10,
+  "journey_19_started": true,
+  "journey_20_status": "not-started",
+  "typography_note": "TYPO-01 deferred",
+  "unrelated_continuity_staging_untouched": true
+}

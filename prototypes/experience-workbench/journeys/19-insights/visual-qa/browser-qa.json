@@ -1,0 +1,3035 @@
+{
+  "ok": true,
+  "candidate_sha256": "b539cdbea4c3ced0de2663e922b4ccbc6bcc30975e8211c24aaf02cf14357260",
+  "screens": 26,
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "layout_checks": 52,
+  "passed_layouts": 52,
+  "internal_clicks": 272,
+  "passed_clicks": 272,
+  "page_errors": [],
+  "console_errors": [],
+  "external_network_requests": 0,
+  "native_standalone": {
+    "attempted": true,
+    "passed": false,
+    "error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///mnt/data/j19-build/v1-candidate.html"
+  },
+  "browser_plugin": "not available",
+  "method": "Playwright Chromium; native file attempted once, exact HTML otherwise loaded with set_content because environment may block file navigation",
+  "layouts": [
+    {
+      "screen": "overview",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 819,
+      "mainClient": 713,
+      "text": "Insights\nLast 90 days\nDemo\n30 days\n90 days\n12 months\nAll groups\n4 CHF groups \u00b7 1 DOT group\nSHARED SPENDING \u00b7 LAST 90 DAYS\nCHF 1,020.00\nCHF 110.00 less than the previous 90 days\nThis period\nPrevious period\nWhat stands out",
+      "svgMissing": 0
+    },
+    {
+      "screen": "range-30",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 713,
+      "mainClient": 713,
+      "text": "Insights\nLast 30 days\nDemo\n30 days\n90 days\n12 months\nAll groups\n3 CHF groups\nSHARED SPENDING \u00b7 LAST 30 DAYS\nCHF 360.00\nCHF 60.00 less than the previous 30 days\nThis period\nPrevious period\nWhat stands out\nPatterns, not tr",
+      "svgMissing": 0
+    },
+    {
+      "screen": "range-365",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 819,
+      "mainClient": 713,
+      "text": "Insights\nLast 12 months\nDemo\n30 days\n90 days\n12 months\nAll groups\n4 CHF groups \u00b7 1 DOT group\nSHARED SPENDING \u00b7 LAST 12 MONTHS\nCHF 3,820.00\nCHF 170.00 more than the previous 12 months\nThis period\nPrevious period\nWhat stan",
+      "svgMissing": 0
+    },
+    {
+      "screen": "scope-picker",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 737,
+      "mainClient": 737,
+      "text": "Choose scope\nInsights\nDemo\nAll groups\nCombined CHF pattern; DOT remains separate\nZurich Weekend\n42% of CHF spending\nCHF 430.00\nApartment\n34% of CHF spending\nCHF 350.00\nSki Trip\n16% of CHF spending\nCHF 160.00\nGeneva Day\n8",
+      "svgMissing": 0
+    },
+    {
+      "screen": "group-zurich",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 686,
+      "mainClient": 686,
+      "text": "Zurich Weekend\nLast 90 days\nDemo\nSHARED SPENDING\nCHF 430.00\nCHF 90.00 more than the previous 90 days\nWhat this means\n\nThis is the confirmed CHF shared spending currently visible to you in Zurich Weekend. Corrections use ",
+      "svgMissing": 0
+    },
+    {
+      "screen": "group-apartment",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 686,
+      "mainClient": 686,
+      "text": "Apartment\nLast 90 days\nDemo\nSHARED SPENDING\nCHF 350.00\nCHF 70.00 less than the previous 90 days\nWhat this means\n\nThis is the confirmed CHF shared spending currently visible to you in Apartment. Corrections use the latest",
+      "svgMissing": 0
+    },
+    {
+      "screen": "group-ski",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 686,
+      "mainClient": 686,
+      "text": "Ski Trip\nLast 90 days\nDemo\nSHARED SPENDING\nCHF 160.00\nCHF 60.00 less than the previous 90 days\nWhat this means\n\nThis is the confirmed CHF shared spending currently visible to you in Ski Trip. Corrections use the latest a",
+      "svgMissing": 0
+    },
+    {
+      "screen": "group-geneva",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 686,
+      "mainClient": 686,
+      "text": "Geneva Day\nLast 90 days\nDemo\nSHARED SPENDING\nCHF 80.00\nCHF 70.00 less than the previous 90 days\nWhat this means\n\nThis is the confirmed CHF shared spending currently visible to you in Geneva Day. Corrections use the lates",
+      "svgMissing": 0
+    },
+    {
+      "screen": "biggest-group",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Biggest group\nInsights\nDemo\nZurich Weekend\n42% of CHF spending\nCHF 430.00\nApartment\n34% of CHF spending\nCHF 350.00\nSki Trip\n16% of CHF spending\nCHF 160.00\nGeneva Day\n8% of CHF spending\nCHF 80.00\nGroup ranking is by your ",
+      "svgMissing": 0
+    },
+    {
+      "screen": "settled-pattern",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Settled groups\nInsights\nDemo\n3 of 4 CHF groups ended settled\n\nOne group still has an open balance. This is descriptive only; Insights cannot settle it.\n\n3/4\nsettled\nReading this card does not change the open balance or a",
+      "svgMissing": 0
+    },
+    {
+      "screen": "mixed-assets",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Separate assets\nInsights\nDemo\nCHF and DOT stay separate\n\nCHF shared spending is compared only with CHF. Hackathon activity is shown separately as DOT 2.400000.\n\nNo converted total is used as a payment instruction.\n\nCHF s",
+      "svgMissing": 0
+    },
+    {
+      "screen": "insufficient",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Not enough history\nInsights\nDemo\nNeed a little more history\n\nThis scope has fewer than three confirmed records, so ChopDot will not invent a trend.\n\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "offline",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Offline\nInsights\nDemo\nSaved insights may be out of date\n\nYou can read the last saved pattern, but comparisons are not refreshed until you reconnect.\n\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "loading",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Loading insights\nInsights\nDemo\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "error",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Insights unavailable\nInsights\nDemo\nCould not refresh insights\n\nNo new pattern is inferred. Try again when the current records are available.\n\nTry again",
+      "svgMissing": 0
+    },
+    {
+      "screen": "empty",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "No insights yet\nInsights\nDemo\nNothing to compare yet\n\nOnce you have enough confirmed shared history, useful patterns will appear here.\n\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "access-changed",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Access changed\nInsights\nDemo\nThis group is no longer included\n\nInsights recalculated from the groups you can currently access. Old private group detail is not restored.\n\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "partial-data",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Comparison unavailable\nInsights\nDemo\nSHARED SPENDING \u00b7 PARTIAL DATA\nCHF 640.00\nCurrent period is incomplete, so no comparison is shown.\nPartial sync must not look like a real increase or decrease.\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "privacy",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "How Insights works\nInsights\nDemo\nUseful patterns, not new money truth\n\nInsights reads accepted records that you are currently allowed to see. It dedupes corrected versions and compares only like-for-like currencies and p",
+      "svgMissing": 0
+    },
+    {
+      "screen": "handoff-group",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Group Home preview\nInsights\nDemo\nJourney 08 owns the group overview. This boundary preview preserves the selected group; it does not redesign Group Home.\nReturn to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "handoff-settings",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Account preferences preview\nInsights\nDemo\nJourney 27 owns account and preference controls. Insights does not create settings here.\nReturn to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "home-preview",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Home preview\nInsights\nDemo\nHome remains an approved adjacent surface. This preview only demonstrates the Insights entry/return boundary.\nOpen Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "you-preview",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "You preview\nInsights\nDemo\nYou remains an adjacent surface. This preview only demonstrates the Insights entry/return boundary.\nOpen Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "activity-preview",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Activity preview\nInsights\nDemo\nActivity remains Journey 18. Insights does not absorb its attention or notification behavior.\nReturn to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "add-preview",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Add preview\nInsights\nDemo\nAdd remains an adjacent action. Insights is read-only and cannot create an expense.\nReturn to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "demo",
+      "viewport": "393x852",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 727,
+      "mainClient": 727,
+      "text": "Demo states\nInsights V1\nDemo\nReview alternate states\n90 days\n30 days\n12 months\nChoose scope\nMixed assets\nNot enough history\nPartial data\nOffline\nLoading\nError\nEmpty\nAccess changed\nHow it works\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "overview",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 788,
+      "mainClient": 751,
+      "text": "Insights\nLast 90 days\nDemo\n30 days\n90 days\n12 months\nAll groups\n4 CHF groups \u00b7 1 DOT group\nSHARED SPENDING \u00b7 LAST 90 DAYS\nCHF 1,020.00\nCHF 110.00 less than the previous 90 days\nThis period\nPrevious period\nWhat stands out",
+      "svgMissing": 0
+    },
+    {
+      "screen": "range-30",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 751,
+      "mainClient": 751,
+      "text": "Insights\nLast 30 days\nDemo\n30 days\n90 days\n12 months\nAll groups\n3 CHF groups\nSHARED SPENDING \u00b7 LAST 30 DAYS\nCHF 360.00\nCHF 60.00 less than the previous 30 days\nThis period\nPrevious period\nWhat stands out\nPatterns, not tr",
+      "svgMissing": 0
+    },
+    {
+      "screen": "range-365",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 788,
+      "mainClient": 751,
+      "text": "Insights\nLast 12 months\nDemo\n30 days\n90 days\n12 months\nAll groups\n4 CHF groups \u00b7 1 DOT group\nSHARED SPENDING \u00b7 LAST 12 MONTHS\nCHF 3,820.00\nCHF 170.00 more than the previous 12 months\nThis period\nPrevious period\nWhat stan",
+      "svgMissing": 0
+    },
+    {
+      "screen": "scope-picker",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 775,
+      "mainClient": 775,
+      "text": "Choose scope\nInsights\nDemo\nAll groups\nCombined CHF pattern; DOT remains separate\nZurich Weekend\n42% of CHF spending\nCHF 430.00\nApartment\n34% of CHF spending\nCHF 350.00\nSki Trip\n16% of CHF spending\nCHF 160.00\nGeneva Day\n8",
+      "svgMissing": 0
+    },
+    {
+      "screen": "group-zurich",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 724,
+      "mainClient": 724,
+      "text": "Zurich Weekend\nLast 90 days\nDemo\nSHARED SPENDING\nCHF 430.00\nCHF 90.00 more than the previous 90 days\nWhat this means\n\nThis is the confirmed CHF shared spending currently visible to you in Zurich Weekend. Corrections use ",
+      "svgMissing": 0
+    },
+    {
+      "screen": "group-apartment",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 724,
+      "mainClient": 724,
+      "text": "Apartment\nLast 90 days\nDemo\nSHARED SPENDING\nCHF 350.00\nCHF 70.00 less than the previous 90 days\nWhat this means\n\nThis is the confirmed CHF shared spending currently visible to you in Apartment. Corrections use the latest",
+      "svgMissing": 0
+    },
+    {
+      "screen": "group-ski",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 724,
+      "mainClient": 724,
+      "text": "Ski Trip\nLast 90 days\nDemo\nSHARED SPENDING\nCHF 160.00\nCHF 60.00 less than the previous 90 days\nWhat this means\n\nThis is the confirmed CHF shared spending currently visible to you in Ski Trip. Corrections use the latest a",
+      "svgMissing": 0
+    },
+    {
+      "screen": "group-geneva",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 724,
+      "mainClient": 724,
+      "text": "Geneva Day\nLast 90 days\nDemo\nSHARED SPENDING\nCHF 80.00\nCHF 70.00 less than the previous 90 days\nWhat this means\n\nThis is the confirmed CHF shared spending currently visible to you in Geneva Day. Corrections use the lates",
+      "svgMissing": 0
+    },
+    {
+      "screen": "biggest-group",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Biggest group\nInsights\nDemo\nZurich Weekend\n42% of CHF spending\nCHF 430.00\nApartment\n34% of CHF spending\nCHF 350.00\nSki Trip\n16% of CHF spending\nCHF 160.00\nGeneva Day\n8% of CHF spending\nCHF 80.00\nGroup ranking is by your ",
+      "svgMissing": 0
+    },
+    {
+      "screen": "settled-pattern",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Settled groups\nInsights\nDemo\n3 of 4 CHF groups ended settled\n\nOne group still has an open balance. This is descriptive only; Insights cannot settle it.\n\n3/4\nsettled\nReading this card does not change the open balance or a",
+      "svgMissing": 0
+    },
+    {
+      "screen": "mixed-assets",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Separate assets\nInsights\nDemo\nCHF and DOT stay separate\n\nCHF shared spending is compared only with CHF. Hackathon activity is shown separately as DOT 2.400000.\n\nNo converted total is used as a payment instruction.\n\nCHF s",
+      "svgMissing": 0
+    },
+    {
+      "screen": "insufficient",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Not enough history\nInsights\nDemo\nNeed a little more history\n\nThis scope has fewer than three confirmed records, so ChopDot will not invent a trend.\n\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "offline",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Offline\nInsights\nDemo\nSaved insights may be out of date\n\nYou can read the last saved pattern, but comparisons are not refreshed until you reconnect.\n\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "loading",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Loading insights\nInsights\nDemo\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "error",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Insights unavailable\nInsights\nDemo\nCould not refresh insights\n\nNo new pattern is inferred. Try again when the current records are available.\n\nTry again",
+      "svgMissing": 0
+    },
+    {
+      "screen": "empty",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "No insights yet\nInsights\nDemo\nNothing to compare yet\n\nOnce you have enough confirmed shared history, useful patterns will appear here.\n\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "access-changed",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Access changed\nInsights\nDemo\nThis group is no longer included\n\nInsights recalculated from the groups you can currently access. Old private group detail is not restored.\n\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "partial-data",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Comparison unavailable\nInsights\nDemo\nSHARED SPENDING \u00b7 PARTIAL DATA\nCHF 640.00\nCurrent period is incomplete, so no comparison is shown.\nPartial sync must not look like a real increase or decrease.\nBack to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "privacy",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "How Insights works\nInsights\nDemo\nUseful patterns, not new money truth\n\nInsights reads accepted records that you are currently allowed to see. It dedupes corrected versions and compares only like-for-like currencies and p",
+      "svgMissing": 0
+    },
+    {
+      "screen": "handoff-group",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Group Home preview\nInsights\nDemo\nJourney 08 owns the group overview. This boundary preview preserves the selected group; it does not redesign Group Home.\nReturn to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "handoff-settings",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Account preferences preview\nInsights\nDemo\nJourney 27 owns account and preference controls. Insights does not create settings here.\nReturn to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "home-preview",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Home preview\nInsights\nDemo\nHome remains an approved adjacent surface. This preview only demonstrates the Insights entry/return boundary.\nOpen Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "you-preview",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "You preview\nInsights\nDemo\nYou remains an adjacent surface. This preview only demonstrates the Insights entry/return boundary.\nOpen Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "activity-preview",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Activity preview\nInsights\nDemo\nActivity remains Journey 18. Insights does not absorb its attention or notification behavior.\nReturn to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "add-preview",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Add preview\nInsights\nDemo\nAdd remains an adjacent action. Insights is read-only and cannot create an expense.\nReturn to Insights",
+      "svgMissing": 0
+    },
+    {
+      "screen": "demo",
+      "viewport": "430x890",
+      "passed": true,
+      "display": "grid",
+      "bodyOverflow": false,
+      "screenOverflow": false,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "clipped": 0,
+      "mainScroll": 765,
+      "mainClient": 765,
+      "text": "Demo states\nInsights V1\nDemo\nReview alternate states\n90 days\n30 days\n12 months\nChoose scope\nMixed assets\nNot enough history\nPartial data\nOffline\nLoading\nError\nEmpty\nAccess changed\nHow it works\nBack to Insights",
+      "svgMissing": 0
+    }
+  ],
+  "clicks": [
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "30 days",
+      "expected": "range-30",
+      "actual": "range-30",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "90 days",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "12 months",
+      "expected": "range-365",
+      "actual": "range-365",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "All groups 4 CHF groups \u00b7 1 DOT group",
+      "expected": "scope-picker",
+      "actual": "scope-picker",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "Zurich Weekend was your biggest shared-spend group 42% of your CHF shared spending in this period. CHF 430.00 42% See the group pattern",
+      "expected": "biggest-group",
+      "actual": "biggest-group",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "3 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 3/4 settled Understand the pattern",
+      "expected": "settled-pattern",
+      "actual": "settled-pattern",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "Hackathon has separate DOT activity Kept outside the CHF comparison so an estimate cannot look payable. DOT 2.400000 separate asset Why currencies stay separate",
+      "expected": "mixed-assets",
+      "actual": "mixed-assets",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "Home",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "Groups",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "Add",
+      "expected": "add-preview",
+      "actual": "add-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "Activity",
+      "expected": "activity-preview",
+      "actual": "activity-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "label": "You",
+      "expected": "you-preview",
+      "actual": "you-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "30 days",
+      "expected": "range-30",
+      "actual": "range-30",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "90 days",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "12 months",
+      "expected": "range-365",
+      "actual": "range-365",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "All groups 3 CHF groups",
+      "expected": "scope-picker",
+      "actual": "scope-picker",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "Zurich Weekend was your biggest shared-spend group 50% of your CHF shared spending in this period. CHF 180.00 50% See the group pattern",
+      "expected": "biggest-group",
+      "actual": "biggest-group",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "2 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 2/3 settled Understand the pattern",
+      "expected": "settled-pattern",
+      "actual": "settled-pattern",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "Home",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "Groups",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "Add",
+      "expected": "add-preview",
+      "actual": "add-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "Activity",
+      "expected": "activity-preview",
+      "actual": "activity-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "label": "You",
+      "expected": "you-preview",
+      "actual": "you-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "30 days",
+      "expected": "range-30",
+      "actual": "range-30",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "90 days",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "12 months",
+      "expected": "range-365",
+      "actual": "range-365",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "All groups 4 CHF groups \u00b7 1 DOT group",
+      "expected": "scope-picker",
+      "actual": "scope-picker",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "Apartment was your biggest shared-spend group 47% of your CHF shared spending in this period. CHF 1,800.00 47% See the group pattern",
+      "expected": "biggest-group",
+      "actual": "biggest-group",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "3 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 3/4 settled Understand the pattern",
+      "expected": "settled-pattern",
+      "actual": "settled-pattern",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "Hackathon has separate DOT activity Kept outside the CHF comparison so an estimate cannot look payable. DOT 4.800000 separate asset Why currencies stay separate",
+      "expected": "mixed-assets",
+      "actual": "mixed-assets",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "Home",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "Groups",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "Add",
+      "expected": "add-preview",
+      "actual": "add-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "Activity",
+      "expected": "activity-preview",
+      "actual": "activity-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "label": "You",
+      "expected": "you-preview",
+      "actual": "you-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "label": "All groups Combined CHF pattern; DOT remains separate",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "label": "Zurich Weekend 42% of CHF spending CHF 430.00",
+      "expected": "group-zurich",
+      "actual": "group-zurich",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "label": "Apartment 34% of CHF spending CHF 350.00",
+      "expected": "group-apartment",
+      "actual": "group-apartment",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "label": "Ski Trip 16% of CHF spending CHF 160.00",
+      "expected": "group-ski",
+      "actual": "group-ski",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "label": "Geneva Day 8% of CHF spending CHF 80.00",
+      "expected": "group-geneva",
+      "actual": "group-geneva",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "label": "Cancel",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-zurich",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-zurich",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-zurich",
+      "label": "View Zurich Weekend",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-zurich",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-apartment",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-apartment",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-apartment",
+      "label": "View Apartment",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-apartment",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-ski",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-ski",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-ski",
+      "label": "View Ski Trip",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-ski",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-geneva",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-geneva",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-geneva",
+      "label": "View Geneva Day",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-geneva",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "label": "Zurich Weekend 42% of CHF spending CHF 430.00",
+      "expected": "group-zurich",
+      "actual": "group-zurich",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "label": "Apartment 34% of CHF spending CHF 350.00",
+      "expected": "group-apartment",
+      "actual": "group-apartment",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "label": "Ski Trip 16% of CHF spending CHF 160.00",
+      "expected": "group-ski",
+      "actual": "group-ski",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "label": "Geneva Day 8% of CHF spending CHF 80.00",
+      "expected": "group-geneva",
+      "actual": "group-geneva",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "label": "View Zurich Weekend",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "settled-pattern",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "settled-pattern",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "settled-pattern",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "mixed-assets",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "mixed-assets",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "mixed-assets",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "insufficient",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "insufficient",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "insufficient",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "error",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "error",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "error",
+      "label": "Try again",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "access-changed",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "access-changed",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "access-changed",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "partial-data",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "partial-data",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "partial-data",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "privacy",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "privacy",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "privacy",
+      "label": "Review account preferences",
+      "expected": "handoff-settings",
+      "actual": "handoff-settings",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-group",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-group",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-group",
+      "label": "Return to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-settings",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-settings",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-settings",
+      "label": "Return to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "home-preview",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "home-preview",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "home-preview",
+      "label": "Open Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "you-preview",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "you-preview",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "you-preview",
+      "label": "Open Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "activity-preview",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "activity-preview",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "activity-preview",
+      "label": "Return to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-preview",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-preview",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-preview",
+      "label": "Return to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "90 days",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "30 days",
+      "expected": "range-30",
+      "actual": "range-30",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "12 months",
+      "expected": "range-365",
+      "actual": "range-365",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "Choose scope",
+      "expected": "scope-picker",
+      "actual": "scope-picker",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "Mixed assets",
+      "expected": "mixed-assets",
+      "actual": "mixed-assets",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "Not enough history",
+      "expected": "insufficient",
+      "actual": "insufficient",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "Partial data",
+      "expected": "partial-data",
+      "actual": "partial-data",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "Offline",
+      "expected": "offline",
+      "actual": "offline",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "Loading",
+      "expected": "loading",
+      "actual": "loading",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "Error",
+      "expected": "error",
+      "actual": "error",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "Empty",
+      "expected": "empty",
+      "actual": "empty",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "Access changed",
+      "expected": "access-changed",
+      "actual": "access-changed",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "How it works",
+      "expected": "privacy",
+      "actual": "privacy",
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "30 days",
+      "expected": "range-30",
+      "actual": "range-30",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "90 days",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "12 months",
+      "expected": "range-365",
+      "actual": "range-365",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "All groups 4 CHF groups \u00b7 1 DOT group",
+      "expected": "scope-picker",
+      "actual": "scope-picker",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "Zurich Weekend was your biggest shared-spend group 42% of your CHF shared spending in this period. CHF 430.00 42% See the group pattern",
+      "expected": "biggest-group",
+      "actual": "biggest-group",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "3 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 3/4 settled Understand the pattern",
+      "expected": "settled-pattern",
+      "actual": "settled-pattern",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "Hackathon has separate DOT activity Kept outside the CHF comparison so an estimate cannot look payable. DOT 2.400000 separate asset Why currencies stay separate",
+      "expected": "mixed-assets",
+      "actual": "mixed-assets",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "Home",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "Groups",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "Add",
+      "expected": "add-preview",
+      "actual": "add-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "Activity",
+      "expected": "activity-preview",
+      "actual": "activity-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "label": "You",
+      "expected": "you-preview",
+      "actual": "you-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "30 days",
+      "expected": "range-30",
+      "actual": "range-30",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "90 days",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "12 months",
+      "expected": "range-365",
+      "actual": "range-365",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "All groups 3 CHF groups",
+      "expected": "scope-picker",
+      "actual": "scope-picker",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "Zurich Weekend was your biggest shared-spend group 50% of your CHF shared spending in this period. CHF 180.00 50% See the group pattern",
+      "expected": "biggest-group",
+      "actual": "biggest-group",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "2 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 2/3 settled Understand the pattern",
+      "expected": "settled-pattern",
+      "actual": "settled-pattern",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "Home",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "Groups",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "Add",
+      "expected": "add-preview",
+      "actual": "add-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "Activity",
+      "expected": "activity-preview",
+      "actual": "activity-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "label": "You",
+      "expected": "you-preview",
+      "actual": "you-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "30 days",
+      "expected": "range-30",
+      "actual": "range-30",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "90 days",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "12 months",
+      "expected": "range-365",
+      "actual": "range-365",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "All groups 4 CHF groups \u00b7 1 DOT group",
+      "expected": "scope-picker",
+      "actual": "scope-picker",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "Apartment was your biggest shared-spend group 47% of your CHF shared spending in this period. CHF 1,800.00 47% See the group pattern",
+      "expected": "biggest-group",
+      "actual": "biggest-group",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "3 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 3/4 settled Understand the pattern",
+      "expected": "settled-pattern",
+      "actual": "settled-pattern",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "Hackathon has separate DOT activity Kept outside the CHF comparison so an estimate cannot look payable. DOT 4.800000 separate asset Why currencies stay separate",
+      "expected": "mixed-assets",
+      "actual": "mixed-assets",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "Home",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "Groups",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "Add",
+      "expected": "add-preview",
+      "actual": "add-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "Activity",
+      "expected": "activity-preview",
+      "actual": "activity-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "label": "You",
+      "expected": "you-preview",
+      "actual": "you-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "label": "All groups Combined CHF pattern; DOT remains separate",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "label": "Zurich Weekend 42% of CHF spending CHF 430.00",
+      "expected": "group-zurich",
+      "actual": "group-zurich",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "label": "Apartment 34% of CHF spending CHF 350.00",
+      "expected": "group-apartment",
+      "actual": "group-apartment",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "label": "Ski Trip 16% of CHF spending CHF 160.00",
+      "expected": "group-ski",
+      "actual": "group-ski",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "label": "Geneva Day 8% of CHF spending CHF 80.00",
+      "expected": "group-geneva",
+      "actual": "group-geneva",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "label": "Cancel",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-zurich",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-zurich",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-zurich",
+      "label": "View Zurich Weekend",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-zurich",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-apartment",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-apartment",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-apartment",
+      "label": "View Apartment",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-apartment",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-ski",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-ski",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-ski",
+      "label": "View Ski Trip",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-ski",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-geneva",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-geneva",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-geneva",
+      "label": "View Geneva Day",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-geneva",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "label": "Zurich Weekend 42% of CHF spending CHF 430.00",
+      "expected": "group-zurich",
+      "actual": "group-zurich",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "label": "Apartment 34% of CHF spending CHF 350.00",
+      "expected": "group-apartment",
+      "actual": "group-apartment",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "label": "Ski Trip 16% of CHF spending CHF 160.00",
+      "expected": "group-ski",
+      "actual": "group-ski",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "label": "Geneva Day 8% of CHF spending CHF 80.00",
+      "expected": "group-geneva",
+      "actual": "group-geneva",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "label": "View Zurich Weekend",
+      "expected": "handoff-group",
+      "actual": "handoff-group",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "settled-pattern",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "settled-pattern",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "settled-pattern",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "mixed-assets",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "mixed-assets",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "mixed-assets",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "insufficient",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "insufficient",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "insufficient",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "error",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "error",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "error",
+      "label": "Try again",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "access-changed",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "access-changed",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "access-changed",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "partial-data",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "partial-data",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "partial-data",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "privacy",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "privacy",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "privacy",
+      "label": "Review account preferences",
+      "expected": "handoff-settings",
+      "actual": "handoff-settings",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-group",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-group",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-group",
+      "label": "Return to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-settings",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-settings",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-settings",
+      "label": "Return to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "home-preview",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "home-preview",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "home-preview",
+      "label": "Open Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "you-preview",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "you-preview",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "you-preview",
+      "label": "Open Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "activity-preview",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "activity-preview",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "activity-preview",
+      "label": "Return to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-preview",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-preview",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-preview",
+      "label": "Return to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "",
+      "expected": "home-preview",
+      "actual": "home-preview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "Demo",
+      "expected": "demo",
+      "actual": "demo",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "90 days",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "30 days",
+      "expected": "range-30",
+      "actual": "range-30",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "12 months",
+      "expected": "range-365",
+      "actual": "range-365",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "Choose scope",
+      "expected": "scope-picker",
+      "actual": "scope-picker",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "Mixed assets",
+      "expected": "mixed-assets",
+      "actual": "mixed-assets",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "Not enough history",
+      "expected": "insufficient",
+      "actual": "insufficient",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "Partial data",
+      "expected": "partial-data",
+      "actual": "partial-data",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "Offline",
+      "expected": "offline",
+      "actual": "offline",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "Loading",
+      "expected": "loading",
+      "actual": "loading",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "Error",
+      "expected": "error",
+      "actual": "error",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "Empty",
+      "expected": "empty",
+      "actual": "empty",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "Access changed",
+      "expected": "access-changed",
+      "actual": "access-changed",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "How it works",
+      "expected": "privacy",
+      "actual": "privacy",
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "label": "Back to Insights",
+      "expected": "overview",
+      "actual": "overview",
+      "passed": true
+    }
+  ]
+}

@@ -1,13 +1,11 @@
 # ChopDot Experience Workbench — Start Here
 
-28 registered journeys; 17 current Goldens; 11 remaining.
+28 registered journeys; 18 Goldens; 10 remaining.
 
-Journey 16 — Savings Group V1.2 is the updated Golden #16. Journey 17 — Contribute / Withdraw Savings V1.4 is the updated Golden #17. Both approved standalone HTML files are checksum-locked exactly; their prior Golden artifacts and approvals remain preserved.
+Journey 18 — Activity & Notifications V1.1 is Golden #18.
 
 ## Review now
-
-Journey 18 — Activity & Notifications V1 remains current and review-pending. Journey 19 is not started.
+Journey 19 — Insights V1 is current and review-pending.
 
 ## Preserve
-
-All 17 current Golden artifact checksums must pass. TYPO-01 remains deferred.
+All 18 Golden artifact checksums must pass. Journey 20 remains not started. TYPO-01 remains deferred.

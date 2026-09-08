@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "journey": "19",
+  "version": "v1",
+  "review_status": "review-pending",
+  "candidate_sha256": "b539cdbea4c3ced0de2663e922b4ccbc6bcc30975e8211c24aaf02cf14357260",
+  "states": 26,
+  "mapped_actions": 136,
+  "model_assertions": 43,
+  "model_scenarios": 18,
+  "browser_layouts": 52,
+  "product_clicks": 272,
+  "page_errors": [],
+  "console_errors": [],
+  "external_network_requests": 0,
+  "native_standalone": {
+    "attempted": true,
+    "passed": false,
+    "error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///mnt/data/j19-build/v1-candidate.html"
+  },
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "typography": "TYPO-01 deferred"
+}

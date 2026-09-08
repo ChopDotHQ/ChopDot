@@ -1,0 +1,236 @@
+[
+  {
+    "screen": "overview",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/overview-393x852.png",
+      "visual-qa/overview-430x890.png"
+    ]
+  },
+  {
+    "screen": "range-30",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/range-30-393x852.png",
+      "visual-qa/range-30-430x890.png"
+    ]
+  },
+  {
+    "screen": "range-365",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/range-365-393x852.png",
+      "visual-qa/range-365-430x890.png"
+    ]
+  },
+  {
+    "screen": "scope-picker",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/scope-picker-393x852.png",
+      "visual-qa/scope-picker-430x890.png"
+    ]
+  },
+  {
+    "screen": "group-zurich",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/group-zurich-393x852.png",
+      "visual-qa/group-zurich-430x890.png"
+    ]
+  },
+  {
+    "screen": "group-apartment",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/group-apartment-393x852.png",
+      "visual-qa/group-apartment-430x890.png"
+    ]
+  },
+  {
+    "screen": "group-ski",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/group-ski-393x852.png",
+      "visual-qa/group-ski-430x890.png"
+    ]
+  },
+  {
+    "screen": "group-geneva",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/group-geneva-393x852.png",
+      "visual-qa/group-geneva-430x890.png"
+    ]
+  },
+  {
+    "screen": "biggest-group",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/biggest-group-393x852.png",
+      "visual-qa/biggest-group-430x890.png"
+    ]
+  },
+  {
+    "screen": "settled-pattern",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/settled-pattern-393x852.png",
+      "visual-qa/settled-pattern-430x890.png"
+    ]
+  },
+  {
+    "screen": "mixed-assets",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/mixed-assets-393x852.png",
+      "visual-qa/mixed-assets-430x890.png"
+    ]
+  },
+  {
+    "screen": "insufficient",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/insufficient-393x852.png",
+      "visual-qa/insufficient-430x890.png"
+    ]
+  },
+  {
+    "screen": "offline",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/offline-393x852.png",
+      "visual-qa/offline-430x890.png"
+    ]
+  },
+  {
+    "screen": "loading",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/loading-393x852.png",
+      "visual-qa/loading-430x890.png"
+    ]
+  },
+  {
+    "screen": "error",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/error-393x852.png",
+      "visual-qa/error-430x890.png"
+    ]
+  },
+  {
+    "screen": "empty",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/empty-393x852.png",
+      "visual-qa/empty-430x890.png"
+    ]
+  },
+  {
+    "screen": "access-changed",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/access-changed-393x852.png",
+      "visual-qa/access-changed-430x890.png"
+    ]
+  },
+  {
+    "screen": "partial-data",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/partial-data-393x852.png",
+      "visual-qa/partial-data-430x890.png"
+    ]
+  },
+  {
+    "screen": "privacy",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/privacy-393x852.png",
+      "visual-qa/privacy-430x890.png"
+    ]
+  },
+  {
+    "screen": "handoff-group",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/handoff-group-393x852.png",
+      "visual-qa/handoff-group-430x890.png"
+    ]
+  },
+  {
+    "screen": "handoff-settings",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/handoff-settings-393x852.png",
+      "visual-qa/handoff-settings-430x890.png"
+    ]
+  },
+  {
+    "screen": "home-preview",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/home-preview-393x852.png",
+      "visual-qa/home-preview-430x890.png"
+    ]
+  },
+  {
+    "screen": "you-preview",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/you-preview-393x852.png",
+      "visual-qa/you-preview-430x890.png"
+    ]
+  },
+  {
+    "screen": "activity-preview",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/activity-preview-393x852.png",
+      "visual-qa/activity-preview-430x890.png"
+    ]
+  },
+  {
+    "screen": "add-preview",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/add-preview-393x852.png",
+      "visual-qa/add-preview-430x890.png"
+    ]
+  },
+  {
+    "screen": "demo",
+    "financial_effect": "none",
+    "read_only": true,
+    "qa": [
+      "visual-qa/demo-393x852.png",
+      "visual-qa/demo-430x890.png"
+    ]
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "journey": "18",
+  "version": "v1.1",
+  "approval": "review-pending-local",
+  "candidate": "j18-v1.1-continuity-candidate.html",
+  "candidate_sha256": "d42b518c14fe7c57b2df56c0e92f0ad63424b9971f294ac10df647a0e2cab08e",
+  "candidate_bytes": 116571,
+  "starting_correction_sha256": "e5d1dd9aa0b5beee5428967a0d8698d880f8c1dfc49ce5f96d2c7c35e11b1256",
+  "published_v1_sha256": "fafb9cc74680b59f6589979115060895b6469e9ae760c59e35971be3e31f4a3a",
+  "model_scenarios": 20,
+  "model_assertions": 71,
+  "browser_layout_checks": 72,
+  "focused_checks": 34,
+  "native_standalone": "unverified-blocked",
+  "github_publication": false,
+  "github_current_candidate_version": "v1",
+  "typography": "TYPO-01 deferred"
+}
