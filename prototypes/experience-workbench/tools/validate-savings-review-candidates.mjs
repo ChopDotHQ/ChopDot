@@ -11,6 +11,7 @@ const digest=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 const fileDigest=p=>digest(fs.readFileSync(path.join(root,p)));
 const manifest=load('registry/review-candidates/savings-j16-v1.2-j17-v1.4.json');
 assert.equal(manifest.status,'review-pending');
+assert.equal(manifest.materialized,true,'Savings review files have not been durably materialized');
 const expected={
   j16:['journeys/16-savings-group/v1.2-review-candidate.html','dc920000fc4120accab588413ee79095093f8e4223066d7d3a94fb524e5cd0de'],
   j17:['journeys/17-savings-contribute-withdraw/v1.4-review-candidate.html','a5dad1dc659955d4b70acaa13eced199dd778ff628ab8998d4c7ae83055d4915']
