@@ -1,129 +1,47 @@
-# Cross-IDE Collaboration
+# Cross-IDE collaboration
 
-This document defines the repo-wide collaboration model for ChopDot.
+Use the [contribution guide](../CONTRIBUTING.md) for the shared workflow.
+This page adds optional Git worktree guidance; it does not introduce another
+task system or require a specific editor or AI tool.
 
-It is intentionally team-facing.
-It is not a personal guide for one developer's IDE setup.
+## Choose the correct base
 
-## Purpose
+Read the [branch/status notice](../README.md#which-version-am-i-looking-at)
+and agree on the PR target. `main` is the public default, not proof that every
+experiment or release candidate has been integrated or is ready to ship.
 
-Use this guide when:
+Before creating a task branch, inspect your checkout:
 
-- starting a new task
-- creating a branch or worktree
-- handing work to another developer
-- continuing work from another IDE or model
+```sh
+git status --short
+git branch --show-current
+git worktree list
+```
 
-The goal is simple:
+Do not reset, switch or clean a dirty checkout just to match a workflow rule.
+Preserve existing work and use a separate working directory when needed.
 
-- `main` stays clean and releasable
-- active work is isolated per task
-- `.knowns/tasks` is the shared execution surface
-- developer-specific memory stays local
+For a new task targeting `main`, an optional worktree workflow is:
 
-## Core Rules
+```sh
+git fetch origin main
+git worktree add -b docs/short-description .worktrees/short-description origin/main
+```
 
-1. Keep the root checkout on `main`.
-2. Do active work in a dedicated worktree under `.worktrees/<branch-slug>`.
-3. Use task-based branch names:
-   - `feature/<slug>`
-   - `fix/<slug>`
-   - `chore/<slug>`
-   - `docs/<slug>`
-4. One task = one branch = one worktree.
-5. Each developer pushes their own branch and lands via PR.
-6. Do not use tool-prefixed product branches like `claude/...`, `codex/...`, or `cursor/...` as the default collaboration model.
+Use a distinct branch and path for your task. Replace the base only after
+agreeing which branch the change belongs on. Worktrees share Git history and
+refs but have separate checked-out files; a worktree is not a backup.
 
-## Shared Execution Surface
+## Coordinate and hand off
 
-Start from:
+- Use an issue or PR to name scope, base branch and overlapping work.
+- Avoid two people editing the same active checkout.
+- Keep one coherent change per PR; split preparatory changes when needed.
+- Record branch/commit, files changed, commands, results and limitations.
+- Keep personal memory, credentials and generated tool output local.
+- Public instructions must work without private machine paths or maintainer-only
+  task files. Optional tool notes cannot override source or PR state.
 
-- `AGENTS.md`
-- `.knowns/tasks/`
-
-Treat any generated local summaries as optional aids, not as the primary execution surface.
-
-If repo state has materially changed, refresh the task surface instead of trusting stale generated output.
-
-## Starting Work
-
-Before creating a branch:
-
-1. `git fetch --prune`
-2. `git checkout main`
-3. `git pull --ff-only origin main`
-4. Review `.knowns/tasks`
-5. Pick one task
-6. Create one task branch and one matching worktree
-
-Examples:
-
-- `fix/auth-viewport`
-- `feature/polkadot-dev-runtime`
-- `docs/release-parity-checklist`
-
-## Working With Another Developer
-
-If Liam is working in the repo too:
-
-- do not share one active branch by default
-- do not both edit directly on `main`
-- split work by task or subtask
-- each person pushes their own branch
-- merge through PRs only
-
-If one developer needs another developer's unfinished foundation work:
-
-- push a small preparatory branch first, or
-- land the foundation in a small PR before starting dependent work
-
-## Working Across IDEs
-
-Cross-IDE continuity should come from repo state, not tool-specific branches.
-
-Use:
-
-- `.knowns/tasks` for active task state
-- committed code and PRs for implementation truth
-- `AGENTS.md` for operator rules
-
-Do not rely on long-lived personal branches as the main collaboration model.
-
-Personal memory or IDE-specific notes should remain local.
-
-## Local-Only Files
-
-Keep these local and untracked unless intentionally standardizing them:
-
-- `.agents/`
-- `.memory/`
-- `.cursorrules`
-- private notes
-- tool caches
-
-## Handoff Checklist
-
-Before handing work to another developer:
-
-1. push the branch
-2. make sure the task file reflects current status
-3. note any blockers or assumptions in the task
-4. verify the branch still builds and tests as expected
-5. open or update the PR
-
-## Verification
-
-Run these before handoff or merge:
-
-- `npx tsc --noEmit`
-- `npm run build`
-- `npx playwright test`
-
-## Default Interpretation
-
-If there is doubt:
-
-- `main` is the only baseline
-- task files are the shared truth for active work
-- personal IDE workflow stays personal
-- collaboration should optimize for clarity, not branch history
+After a task lands, retire its clean working copy when no longer needed. Check
+for uncommitted work and ignored local evidence first; never use force as a
+routine cleanup shortcut. Retain or back up unique work before removing it.
