@@ -3,6 +3,8 @@ import path from 'node:path';
 const root=path.resolve(import.meta.dirname,'..');
 const run=(file,args=[])=>execFileSync(process.execPath,[path.join(root,'tools',file),...args],{cwd:root,stdio:'inherit'});
 run('materialize-current-state.mjs');
+run('materialize-savings-review-candidates.mjs');
 run('build-journey-map.mjs');
 run('validate-workbench.mjs');
 run('validate-current.mjs');
+run('validate-savings-review-candidates.mjs');
