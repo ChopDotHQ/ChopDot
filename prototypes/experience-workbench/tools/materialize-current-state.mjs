@@ -66,6 +66,10 @@ if(candidate){
   const v=load('journeys/18-activity-notifications/validation.json');if(!v.ok||v.candidate_sha256!==candidate.prototype_sha256) throw new Error('J18 evidence checksum mismatch');
   const j=journeys.find(x=>x.id==='18');Object.assign(j,{status:'current',approval:'review-pending',version:candidate.version,prototype_path:candidate.prototype_path,prototype_sha256:candidate.prototype_sha256,spec_path:candidate.spec_path,qa_path:candidate.qa_path});
 }
+// This baseline stage deliberately reconstructs the pre-next-freeze state. If a later
+// journey has already been frozen on the branch, remove only its lock here after the
+// journey registry has been reset to non-Golden; later freeze stages reapply it exactly.
+for(let i=locks.length-1;i>=0;i--){const j=journeys.find(x=>x.id===locks[i].journey);if(!j||j.status!=='golden')locks.splice(i,1);}
 const goldenCount=journeys.filter(j=>j.status==='golden').length;
 if(goldenCount!==17) throw new Error(`Expected 17 Goldens, got ${goldenCount}`);if(locks.length!==17) throw new Error(`Expected 17 Golden locks, got ${locks.length}`);
 write('registry/journeys.json',journeys);write('registry/golden-artifact-locks.json',locks);
