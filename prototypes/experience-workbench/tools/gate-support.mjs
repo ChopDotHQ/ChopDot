@@ -5,7 +5,8 @@ const run=(file,args=[])=>execFileSync(process.execPath,[path.join(root,'tools',
 run('materialize-current-state.mjs');
 run('materialize-savings-review-candidates.mjs');
 run('apply-savings-golden-freeze.mjs');
+run('materialize-j18-j19.mjs');
+run('apply-j18-golden-j19-current.mjs');
 run('build-journey-map.mjs');
 run('validate-workbench.mjs');
-run('validate-current.mjs');
-run('validate-savings-golden-freeze.mjs');
+run('validate-j18-j19.mjs');
