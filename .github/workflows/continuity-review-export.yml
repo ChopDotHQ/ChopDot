@@ -1,15 +1,10 @@
-name: Continuity review export
+name: J19 review export
 on:
   push:
     branches:
-      - ux/experience-workbench
+      - ux/j19-review-export-20260909
     paths:
       - '.github/workflows/continuity-review-export.yml'
-      - 'prototypes/experience-workbench/journeys/15-settlement-history/**'
-      - 'prototypes/experience-workbench/journeys/16-savings-group/**'
-      - 'prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/**'
-      - 'prototypes/experience-workbench/journeys/18-activity-notifications/**'
-      - 'prototypes/experience-workbench/registry/continuity-review-candidates.json'
   workflow_dispatch:
 
 permissions:
@@ -22,11 +17,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/upload-artifact@v4
         with:
-          name: continuity-review-files
+          name: j19-review-files
           if-no-files-found: error
           path: |
-            prototypes/experience-workbench/journeys/15-settlement-history/**
-            prototypes/experience-workbench/journeys/16-savings-group/**
-            prototypes/experience-workbench/journeys/17-savings-contribute-withdraw/**
-            prototypes/experience-workbench/journeys/18-activity-notifications/**
-            prototypes/experience-workbench/registry/continuity-review-candidates.json
+            prototypes/experience-workbench/journeys/19-insights/**
+            prototypes/experience-workbench/registry/journeys.json
+            prototypes/experience-workbench/registry/exact-head-gate.json
