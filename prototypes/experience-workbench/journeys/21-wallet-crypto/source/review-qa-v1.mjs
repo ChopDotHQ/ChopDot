@@ -48,7 +48,7 @@ const viewports = [
 
 const expectedSemantics = {
   'handoff': ['Connect a wallet to continue', 'No payment has been sent', '12.50 DOT', 'Polkadot'],
-  'connected': ['Wallet connected', 'not added to Payment Methods', 'not authorize or sent'],
+  'connected': ['Wallet connected', 'not added to Payment Methods', 'not authorized or sent'],
   'action-review': ['Check exactly what you will sign', '12.50 DOT', 'Maya', '5F3sa2…Demo9', 'Polkadot', 'revalidated'],
   'stale-review': ['Review expired', 'will not request a signature', 'settlement itself is unchanged'],
   'signature-pending': ['Approve this exact action in your wallet', 'Nothing has been submitted'],
@@ -104,6 +104,7 @@ try {
           contentOverflow: content ? content.scrollWidth - content.clientWidth : null,
           contentScrollable: content ? content.scrollHeight > content.clientHeight : false,
           primaryCount: screen?.querySelectorAll('.btn.primary').length ?? 0,
+          chooserRowCount: screen?.querySelectorAll('a.row').length ?? 0,
           primaryHeight: primary?.getBoundingClientRect().height ?? null,
           minTarget,
           anchors,
@@ -115,7 +116,11 @@ try {
       if ((metrics.bodyOverflow ?? 0) > 1 || (metrics.screenOverflow ?? 0) > 1 || (metrics.contentOverflow ?? 0) > 1) {
         errors.push(`${viewport.name}/${state}: horizontal overflow body=${metrics.bodyOverflow}, screen=${metrics.screenOverflow}, content=${metrics.contentOverflow}`);
       }
-      if (metrics.primaryCount !== 1) errors.push(`${viewport.name}/${state}: expected one primary action, got ${metrics.primaryCount}`);
+      if (state === 'chooser') {
+        if (metrics.primaryCount !== 0 || metrics.chooserRowCount !== 2) errors.push(`${viewport.name}/${state}: expected two peer wallet choices and no artificial primary, got ${metrics.chooserRowCount} choices / ${metrics.primaryCount} primary`);
+      } else if (metrics.primaryCount !== 1) {
+        errors.push(`${viewport.name}/${state}: expected one primary action, got ${metrics.primaryCount}`);
+      }
       if (metrics.primaryHeight !== null && metrics.primaryHeight < 44) errors.push(`${viewport.name}/${state}: primary touch target ${metrics.primaryHeight}px < 44px`);
       if (metrics.minTarget !== null && metrics.minTarget < 40) errors.push(`${viewport.name}/${state}: actionable target ${metrics.minTarget}px < 40px`);
       if (metrics.secretInputs !== 0) errors.push(`${viewport.name}/${state}: found secret-like input field`);
