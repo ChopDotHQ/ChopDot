@@ -38,6 +38,8 @@ const states = [
   'signed',
   'submission-pending',
   'submission-unknown',
+  'submission-reconciling',
+  'settlement-unknown-handoff',
   'finalized',
   'result-handoff',
   'reverted',
@@ -57,7 +59,9 @@ const expectedSemantics = {
   'signature-unknown': ['Do not approve it again yet', 'Check the original wallet result first'],
   'signed': ['Signature received', 'not network confirmation', 'Signed ≠ submitted ≠ final'],
   'submission-pending': ['Submitted — waiting for the network', 'waiting for finality', 'Do not start another payment'],
-  'submission-unknown': ['network result is not known yet', 'same transaction', 'Retry is blocked'],
+  'submission-unknown': ['network result is not known yet', 'original transaction', 'same transaction', 'Retry stays blocked', '0xdemo…21'],
+  'submission-reconciling': ['Checking the original transaction', '0xdemo…21', 'cannot create, replace, or retry', 'trusted result'],
+  'settlement-unknown-handoff': ['Complete Settlement', 'Still checking the payment', '12.50 DOT', 'Maya', '0xdemo…21', 'Still checking', 'Starting another payment remains blocked'],
   'finalized': ['Network finality verified', 'hands this verified fact back', 'not a new ChopDot balance calculation', 'Hand result to Complete Settlement'],
   'result-handoff': ['Complete Settlement', 'Network result received', '12.50 DOT', 'Maya', '0xdemo…21', 'verified network fact only', 'does not itself recalculate'],
   'reverted': ['transaction did not complete', 'verified failure', 'settlement stays open'],
@@ -135,11 +139,29 @@ try {
         if (!states.includes(target)) errors.push(`${viewport.name}/${state}: broken in-candidate route ${href}`);
       }
 
+      if (state === 'submission-unknown') {
+        for (const required of ['#submission-reconciling', '#settlement-unknown-handoff']) {
+          if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: missing required recovery route ${required}`);
+        }
+        for (const forbidden of ['#submission-pending', '#reverted', '#cancelled']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: unresolved result must not route directly to ${forbidden}`);
+        }
+      }
+      if (state === 'submission-reconciling') {
+        for (const outcome of ['#submission-pending', '#finalized', '#reverted', '#submission-unknown']) {
+          if (!metrics.anchors.includes(outcome)) errors.push(`${viewport.name}/${state}: missing explicit same-transaction outcome ${outcome}`);
+        }
+      }
+      if (state === 'settlement-unknown-handoff') {
+        if (metrics.anchors.length !== 0) errors.push(`${viewport.name}/${state}: settlement handoff must not expose a new execution route`);
+        if (/Status\s+Not sent/iu.test(metrics.text)) errors.push(`${viewport.name}/${state}: unresolved settlement was incorrectly converted to Not sent`);
+      }
+
       await page.screenshot({path: path.join(screenshotRoot, `${state}-${viewport.name}.png`), fullPage: false});
       pages.push({state, viewport: viewport.name, ...metrics});
     }
 
-    // Click the two core paths so route validity is proven by interaction, not only direct hashes.
+    // Click the core paths so route validity is proven by interaction, not only direct hashes.
     const connectionPath = ['#handoff', '#chooser', '#connect-pending', '#connected', '#action-review'];
     await page.goto(`${pathToFileURL(candidatePath).href}${connectionPath[0]}`, {waitUntil: 'load'});
     for (const next of connectionPath.slice(1)) {
@@ -166,6 +188,19 @@ try {
     }
     interactionResults.push({viewport: viewport.name, path: 'review-to-result-handoff', finalHash: await page.evaluate(() => location.hash)});
 
+    const unknownRecoveryPath = ['#submission-unknown', '#submission-reconciling', '#submission-unknown', '#settlement-unknown-handoff'];
+    await page.goto(`${pathToFileURL(candidatePath).href}${unknownRecoveryPath[0]}`, {waitUntil: 'load'});
+    for (const next of unknownRecoveryPath.slice(1)) {
+      const link = page.locator(`.screen:visible a[href="${next}"]`).first();
+      if (!(await link.isVisible())) {
+        errors.push(`${viewport.name}: unknown recovery path cannot reach ${next}`);
+        break;
+      }
+      await link.click();
+      await page.waitForFunction(target => location.hash === target, next);
+    }
+    interactionResults.push({viewport: viewport.name, path: 'unknown-reconcile-still-unknown-to-settlement', finalHash: await page.evaluate(() => location.hash)});
+
     await context.close();
   }
 } finally {
@@ -186,7 +221,7 @@ const summary = {
     path: path.relative(repoRoot, candidatePath),
     sha256: candidateSha256,
   },
-  scope: 'J21 bounded reviewer-blocker repair: verified finality now hands its exact network fact to an explicit Journey 12 Complete Settlement boundary',
+  scope: 'J21 bounded reviewer-blocker repair: unknown submission stays unresolved through same-transaction reconciliation and settlement handoff',
   counts: {
     states: states.length,
     viewports: viewports.length,
@@ -204,8 +239,8 @@ const summary = {
   errors,
   review_status: errors.length ? 'MECHANICAL_QA_FAILED' : 'BOUNDED_SLICE_QA_PASSED',
   limitations: [
-    'This evidence verifies only the highest-priority result-handoff reviewer repair plus the previously built J21 states; it is not a complete Journey 21 review bundle.',
-    'The independent-review blockers for honest unknown-result reconciliation and the remaining required provider/account/network/balance/offline/error clusters are intentionally still open.',
+    'This evidence verifies only the highest-priority unknown-result reconciliation reviewer repair plus the previously built J21 states; it is not a complete Journey 21 review bundle.',
+    'The remaining required provider/connect-timeout/account-network-switch/balance/disconnect/offline/loading/provider-error clusters are intentionally still open.',
     'It does not provide independent UX judgment or human approval.',
     'No real wallet, signature, chain submission, funds, or network finality is exercised; all product states are synthetic prototype states.',
   ],
