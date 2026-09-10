@@ -727,11 +727,24 @@ async function websocketRequests(url, requests, timeoutMs = 25_000) {
 }
 
 export async function loadDeploymentContext(root, environment) {
-  const [targetsRecord, padRecord, anchorsRecord] = await Promise.all([
-    readJson(path.join(root, 'deployment/recovery-head-index-targets.json')),
-    readJson(path.join(root, 'deployment/pad-environments-2026-08-23.json')),
-    readJson(path.join(root, 'deployment/dotns-code-anchors-2026-08-23.json')),
-  ]);
+  const targetsRecord = await readJson(path.join(root, 'deployment/recovery-head-index-targets.json'));
+  const resolveEvidencePath = (candidate, fallback, label) => {
+    const relative = candidate ?? fallback;
+    if (typeof relative !== 'string' || path.isAbsolute(relative) || !relative.startsWith('deployment/') || relative.includes('..')) {
+      throw new Error(`${label} must be a repository-relative deployment JSON path.`);
+    }
+    return path.join(root, relative);
+  };
+  const anchorsRecord = await readJson(resolveEvidencePath(
+    targetsRecord.value.dotnsCodeAnchors,
+    'deployment/dotns-code-anchors-2026-08-23.json',
+    'DotNS code anchor path',
+  ));
+  const padRecord = await readJson(resolveEvidencePath(
+    anchorsRecord.value.sourceEnvironmentFile,
+    'deployment/pad-environments-2026-08-23.json',
+    'Environment snapshot path',
+  ));
   const target = targetsRecord.value.environments?.[environment];
   const pad = padRecord.value.environments?.find((entry) => entry.id === environment);
   const anchors = anchorsRecord.value.environments?.[environment];
