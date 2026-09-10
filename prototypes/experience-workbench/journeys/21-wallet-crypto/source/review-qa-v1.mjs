@@ -25,7 +25,10 @@ const branch = process.env.GITHUB_REF_NAME || git('rev-parse', '--abbrev-ref', '
 const states = [
   'handoff',
   'chooser',
+  'wallet-unavailable',
   'connect-pending',
+  'connect-timeout',
+  'connect-reconciling',
   'connected',
   'wrong-network',
   'connect-rejected',
@@ -51,6 +54,9 @@ const viewports = [
 
 const expectedSemantics = {
   'handoff': ['Connect a wallet to continue', 'No payment has been sent', '12.50 DOT', 'Polkadot'],
+  'wallet-unavailable': ['No supported wallet is available', 'settlement is still unchanged', 'No connection, signature, or payment was created'],
+  'connect-timeout': ['connection result is not known yet', 'Do not start a second connection prompt yet', 'Check the existing wallet/session result first'],
+  'connect-reconciling': ['Checking the existing wallet session', 'cannot sign, submit, or move money', 'trusted provider/session result'],
   'connected': ['Wallet connected', 'not added to Payment Methods', 'not authorized or sent'],
   'action-review': ['Check exactly what you will sign', '12.50 DOT', 'Maya', '5F3sa2…Demo9', 'Polkadot', 'revalidated'],
   'stale-review': ['Review expired', 'will not request a signature', 'settlement itself is unchanged'],
@@ -139,6 +145,21 @@ try {
         if (!states.includes(target)) errors.push(`${viewport.name}/${state}: broken in-candidate route ${href}`);
       }
 
+      if (state === 'wallet-unavailable') {
+        if (!metrics.anchors.includes('#chooser') || !metrics.anchors.includes('#cancelled')) errors.push(`${viewport.name}/${state}: unavailable provider must allow redetection or safe return`);
+        if (metrics.anchors.includes('#connect-pending') || metrics.anchors.includes('#connected')) errors.push(`${viewport.name}/${state}: unavailable provider must not fabricate a connection attempt/result`);
+      }
+      if (state === 'connect-timeout') {
+        if (!metrics.anchors.includes('#connect-reconciling')) errors.push(`${viewport.name}/${state}: unknown connection must route through reconciliation before retry`);
+        for (const forbidden of ['#chooser', '#connect-pending', '#connected']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: unknown connection must not route directly to ${forbidden}`);
+        }
+      }
+      if (state === 'connect-reconciling') {
+        for (const outcome of ['#connected', '#chooser', '#connect-timeout']) {
+          if (!metrics.anchors.includes(outcome)) errors.push(`${viewport.name}/${state}: missing explicit connection recovery outcome ${outcome}`);
+        }
+      }
       if (state === 'submission-unknown') {
         for (const required of ['#submission-reconciling', '#settlement-unknown-handoff']) {
           if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: missing required recovery route ${required}`);
@@ -174,6 +195,19 @@ try {
       await page.waitForFunction(target => location.hash === target, next);
     }
     interactionResults.push({viewport: viewport.name, path: 'connection-to-review', finalHash: await page.evaluate(() => location.hash)});
+
+    const connectionRecoveryPath = ['#connect-timeout', '#connect-reconciling', '#connect-timeout'];
+    await page.goto(`${pathToFileURL(candidatePath).href}${connectionRecoveryPath[0]}`, {waitUntil: 'load'});
+    for (const next of connectionRecoveryPath.slice(1)) {
+      const link = page.locator(`.screen:visible a[href="${next}"]`).first();
+      if (!(await link.isVisible())) {
+        errors.push(`${viewport.name}: connection recovery path cannot reach ${next}`);
+        break;
+      }
+      await link.click();
+      await page.waitForFunction(target => location.hash === target, next);
+    }
+    interactionResults.push({viewport: viewport.name, path: 'connect-unknown-reconcile-still-unknown', finalHash: await page.evaluate(() => location.hash)});
 
     const executionPath = ['#action-review', '#signature-pending', '#signed', '#submission-pending', '#finalized', '#result-handoff'];
     await page.goto(`${pathToFileURL(candidatePath).href}${executionPath[0]}`, {waitUntil: 'load'});
@@ -221,7 +255,7 @@ const summary = {
     path: path.relative(repoRoot, candidatePath),
     sha256: candidateSha256,
   },
-  scope: 'J21 bounded reviewer-blocker repair: unknown submission stays unresolved through same-transaction reconciliation and settlement handoff',
+  scope: 'J21 bounded provider-availability and connection-timeout recovery slice; unknown connection state is reconciled before a fresh attempt',
   counts: {
     states: states.length,
     viewports: viewports.length,
@@ -239,15 +273,15 @@ const summary = {
   errors,
   review_status: errors.length ? 'MECHANICAL_QA_FAILED' : 'BOUNDED_SLICE_QA_PASSED',
   limitations: [
-    'This evidence verifies only the highest-priority unknown-result reconciliation reviewer repair plus the previously built J21 states; it is not a complete Journey 21 review bundle.',
-    'The remaining required provider/connect-timeout/account-network-switch/balance/disconnect/offline/loading/provider-error clusters are intentionally still open.',
+    'This evidence verifies the provider-unavailable and unknown connection recovery increment plus the previously built J21 states; it is not yet a complete Journey 21 review bundle.',
+    'The remaining required account-network-switch/balance/disconnect/offline/loading/provider-error clusters are intentionally still open.',
     'It does not provide independent UX judgment or human approval.',
     'No real wallet, signature, chain submission, funds, or network finality is exercised; all product states are synthetic prototype states.',
   ],
 };
 
 await writeFile(path.join(evidenceRoot, 'QA_SUMMARY.json'), `${JSON.stringify(summary, null, 2)}\n`);
-await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 reviewer-blocker repair — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
+await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 provider/connection recovery slice — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
 
 console.log(JSON.stringify({head, candidateSha256, states: states.length, screenshots: pages.length, failures: errors.length}, null, 2));
 if (errors.length) {
