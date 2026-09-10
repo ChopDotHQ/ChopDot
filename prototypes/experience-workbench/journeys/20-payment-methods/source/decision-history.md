@@ -16,7 +16,7 @@
 
 **Approval / version:** V1 definition — current / not-reviewed. Recorded 2026-09-10 before candidate build. TYPO-01 remains deferred.
 
-**Sources:** [Journey 09 specification](../README.md); [Payment compatibility contract](https://github.com/ChopDotHQ/ChopDot/blob/ux/experience-workbench/prototypes/experience-workbench/journeys/11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md); [Journey 14 specification](https://github.com/ChopDotHQ/ChopDot/blob/ux/experience-workbench/prototypes/experience-workbench/journeys/14-receive-money/spec.md); [current production PaymentMethods screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/PaymentMethods.tsx).
+**Sources:** [Journey 09 specification](../../09-manage-people/spec.md); [Payment compatibility contract](../../11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md); [Journey 14 specification](../../14-receive-money/spec.md); [current production PaymentMethods screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/PaymentMethods.tsx).
 
 ### J20-D02 — Visibility means contextual availability, not directory-wide exposure
 
@@ -32,7 +32,7 @@
 
 **Approval / version:** V1 definition — current / not-reviewed. Recorded 2026-09-10 before candidate build.
 
-**Sources:** [Journey 09 specification](https://github.com/ChopDotHQ/ChopDot/blob/ux/experience-workbench/prototypes/experience-workbench/journeys/09-manage-people/spec.md); [Journey 14 specification](https://github.com/ChopDotHQ/ChopDot/blob/ux/experience-workbench/prototypes/experience-workbench/journeys/14-receive-money/spec.md); [current production PaymentMethods screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/PaymentMethods.tsx).
+**Sources:** [Journey 09 specification](../../09-manage-people/spec.md); [Journey 14 specification](../../14-receive-money/spec.md); [current production PaymentMethods screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/PaymentMethods.tsx).
 
 ### J20-D03 — Preferred methods are compatibility-scoped suggestions, never global payment authority
 
@@ -48,4 +48,4 @@
 
 **Approval / version:** V1 definition — current / not-reviewed. Recorded 2026-09-10 before candidate build.
 
-**Sources:** [Journey 09 specification](https://github.com/ChopDotHQ/ChopDot/blob/ux/experience-workbench/prototypes/experience-workbench/journeys/09-manage-people/spec.md); [payment compatibility contract](https://github.com/ChopDotHQ/ChopDot/blob/ux/experience-workbench/prototypes/experience-workbench/journeys/11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md); [current production PaymentMethods screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/PaymentMethods.tsx).
+**Sources:** [Journey 09 specification](../../09-manage-people/spec.md); [payment compatibility contract](../../11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md); [current production PaymentMethods screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/PaymentMethods.tsx).
