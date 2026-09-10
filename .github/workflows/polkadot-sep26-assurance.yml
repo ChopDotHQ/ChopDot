@@ -30,16 +30,21 @@ env:
 jobs:
   lockfile-candidate:
     name: SDK lockfile candidate
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: write
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ env.EXPECTED_SHA }}
-          persist-credentials: false
-      - name: Assert exact candidate checkout
-        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          persist-credentials: true
+      - name: Assert exact candidate checkout and bounded branch
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$GITHUB_HEAD_REF" = "agent/polkadot-sep26-compat"
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -47,6 +52,30 @@ jobs:
           cache: npm
       - name: Resolve package-lock from package.json without lifecycle scripts
         run: npm install --package-lock-only --ignore-scripts
+      - name: Verify exact dependency resolution and bounded diff
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+          const root = lock.packages?.[''];
+          if (root?.dependencies?.['@parity/product-sdk-host'] !== '0.16.0') throw new Error('host root pin mismatch');
+          if (root?.dependencies?.['@parity/product-sdk-statement-store'] !== '0.6.5') throw new Error('statement-store root pin mismatch');
+          if (root?.devDependencies?.['@parity/host-api-test-sdk'] !== '^0.12.1') throw new Error('host-test root pin mismatch');
+          if (root?.devDependencies?.['@polkadot-community-foundation/polkadot-app-deploy'] !== '0.13.1') throw new Error('deploy tool pin changed');
+          if (lock.packages?.['node_modules/@parity/product-sdk-host']?.version !== '0.16.0') throw new Error('host resolution mismatch');
+          if (lock.packages?.['node_modules/@parity/product-sdk-statement-store']?.version !== '0.6.5') throw new Error('statement-store resolution mismatch');
+          if (lock.packages?.['node_modules/@parity/host-api-test-sdk']?.version !== '0.12.1') throw new Error('host-test resolution mismatch');
+          NODE
+          test -z "$(git status --porcelain --untracked-files=all | grep -v '^ M package-lock.json$')"
+          test -n "$(git status --porcelain --untracked-files=all | grep '^ M package-lock.json$')"
+      - name: Commit generated lockfile only
+        run: |
+          git add -- package-lock.json
+          test "$(git diff --cached --name-only)" = "package-lock.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(polkadot): refresh SDK lockfile"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
       - name: Upload generated lockfile candidate
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
