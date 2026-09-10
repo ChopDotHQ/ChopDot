@@ -17,6 +17,8 @@ run('validate-j18-j19.mjs');
 run('apply-j19-golden-j20-current.mjs');
 run('decision-history.mjs');
 run('build-journey-map.mjs');
+run('build-golden-manifest.mjs');
 run('validate-workbench.mjs');
 run('validate-j19-j20.mjs');
 run('decision-history.mjs',['--check']);
+run('build-golden-manifest.mjs',['--check']);
