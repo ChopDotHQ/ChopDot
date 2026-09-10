@@ -1,8 +1,8 @@
 {
   "ok": true,
   "scope": "documentation structure and artifact preservation",
-  "covered_journeys": 14,
-  "decision_entries": 15,
+  "covered_journeys": 20,
+  "decision_entries": 42,
   "all_golden_locks_pass": true,
   "coverage": [
     {
@@ -158,6 +158,72 @@
       "source_sha256": "fa3c641f037a16e4004e8d90d0d996c84cdfa5e89cbe9f38c9bb8b8bfb269f29",
       "spec_path": "journeys/14-receive-money/spec.md",
       "spec_sha256": "ca4066768738b6ad7511e51468d2e10b837fe215bbf3e1a486da960a924d2d9a"
+    },
+    {
+      "journey": "15",
+      "version": "v1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 2,
+      "source_path": "journeys/15-settlement-history/source/decision-history.md",
+      "source_sha256": "991f7faf566d4f3fdbf981dd7e672111959851a6999ae8430d4978cba62bd6fc",
+      "spec_path": "journeys/15-settlement-history/spec.md",
+      "spec_sha256": "4a9871b3907f107904ca9e9f7f61aba692c35ae85edce8833d449090d7be9347"
+    },
+    {
+      "journey": "16",
+      "version": "v1.2",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 4,
+      "source_path": "journeys/16-savings-group/source/decision-history.md",
+      "source_sha256": "16bc9e0c393f0c11a013ba34a04fe81b41854d032b7920461a4202604d18de66",
+      "spec_path": "journeys/16-savings-group/spec.md",
+      "spec_sha256": "639a65d1a2d5ba84c4234bb5a83e5fdbd91259a19079bc506b646c64d4adf7d3"
+    },
+    {
+      "journey": "17",
+      "version": "v1.4",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 8,
+      "source_path": "journeys/17-savings-contribute-withdraw/source/decision-history.md",
+      "source_sha256": "559d9f9ded229d62b27c0cba56d34c79245ef9d232647688f7dbc09778b9e72e",
+      "spec_path": "journeys/17-savings-contribute-withdraw/spec.md",
+      "spec_sha256": "bb725849c7d4a997a993b11fe92cc33d996f0ed26ff33195a37b4c2dfc00c567"
+    },
+    {
+      "journey": "18",
+      "version": "v1.1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 6,
+      "source_path": "journeys/18-activity-notifications/source/decision-history.md",
+      "source_sha256": "d07d9ddbc073a6b901f7bcad1ba286113500669ad1292281c25563090798eaa0",
+      "spec_path": "journeys/18-activity-notifications/spec.md",
+      "spec_sha256": "3591bccf4f9c34ce8d9ee9941fc6bfe5b351cdbb03defcdd479ef934e76d8c3d"
+    },
+    {
+      "journey": "19",
+      "version": "v1.1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 4,
+      "source_path": "journeys/19-insights/source/decision-history.md",
+      "source_sha256": "786b91d09f5613356ccd63a94d65fea5e1426949282b2dbafbaee4abd4aa9255",
+      "spec_path": "journeys/19-insights/spec.md",
+      "spec_sha256": "fa9ed8ad99b39a3b2088e1b18c6b2582f8268c0ea78a770b2f8ce6fde699b0ee"
+    },
+    {
+      "journey": "20",
+      "version": "v1",
+      "approval": "not-reviewed",
+      "status": "current",
+      "decisions": 3,
+      "source_path": "journeys/20-payment-methods/source/decision-history.md",
+      "source_sha256": "6547ff654967245746a5d8d32c03cd80c5f91f664c87d4d06d8cb255f02148d6",
+      "spec_path": "journeys/20-payment-methods/spec.md",
+      "spec_sha256": "304919a503400e0f41fff8108916f5d6a8f94f44a97560e1c85d4a7b366b87db"
     }
   ],
   "complete_conversation_audit": false,

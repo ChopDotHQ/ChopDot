@@ -49,3 +49,19 @@
 **Approval / version:** V1 review candidate; not approved or Golden.
 
 **Sources:** [Journey 19 specification](../spec.md) [Browser QA](../visual-qa/browser-qa.json)
+
+### J19-D04 — Repair continuity drift and approve V1.1 as Golden #19
+
+**Decision:** Preserve the V1 candidate, correct only the fresh-review defects in a separately reviewed V1.1 candidate, restore the canonical Pots / People / raised Add / Activity / You shell, restore the missing scope-picker chevron, add the People boundary preview required by that shell, and approve the resulting exact artifact as Golden #19.
+
+**Why:** Fresh reproducibility review found that V1 had drifted from the frozen global navigation and had a collapsed scope-picker SVG at both target sizes. V1.1 then passed the complete fresh browser, interaction, model and shell-consistency checks and was explicitly approved for freeze.
+
+**Alternatives:** Freezing V1 despite the drift, silently mutating V1 in place, or expanding the review into a broader Insights redesign were rejected. The approved correction remained narrow and preserved the existing Insights information hierarchy.
+
+**Tradeoffs:** V1.1 adds one standalone People boundary preview and changes the global shell presentation to match existing Goldens, increasing the screen/action count while leaving Insights semantics unchanged. The original V1 artifact remains as provenance rather than being rewritten.
+
+**Revisit when:** A future global-navigation redesign is explicitly approved across the product, new research warrants a substantive Insights V2, or evidence shows the current boundary handoffs are materially confusing.
+
+**Approval / version:** v1.1 — design-approved as Golden #19 on 2026-09-10. HTML SHA-256 `c67973e0efc1068d006d57c4d5690b6c49218bd63f24cb62ab587fbf5b9862da`; HTML changes after approval are not authorized. TYPO-01 remains deferred.
+
+**Sources:** [V1.1 visual QA](../review-v1.1/VISUAL_QA.md); [V1.1 QA summary](../review-v1.1/QA_SUMMARY.json); [Journey 19 approval record](../../../registry/approvals/19-v1.1.json); [Golden approval note](../GOLDEN_APPROVAL.md).

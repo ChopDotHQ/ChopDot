@@ -1,0 +1,24 @@
+{
+  "journey": "20",
+  "name": "Payment Methods",
+  "status": "current",
+  "approval": "not-reviewed",
+  "version": "v1",
+  "stage": "definition",
+  "goal": "Manage bank and crypto payment methods and visibility.",
+  "entry": "You, settlement, receive, or person detail",
+  "exit": "Previous context or settlement",
+  "next": [
+    "11",
+    "14",
+    "21",
+    "27"
+  ],
+  "spec_path": "journeys/20-payment-methods/spec.md",
+  "decision_history_path": "journeys/20-payment-methods/source/decision-history.md",
+  "state_inventory_path": "journeys/20-payment-methods/STATE_INVENTORY.md",
+  "edge_cases_path": "journeys/20-payment-methods/EDGE_CASES.md",
+  "prototype_built": false,
+  "golden_count_before": 19,
+  "typography_note": "TYPO-01 deferred"
+}

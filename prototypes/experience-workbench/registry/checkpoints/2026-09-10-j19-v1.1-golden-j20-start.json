@@ -1,0 +1,24 @@
+{
+  "checkpoint": "2026-09-10-j19-v1.1-golden-j20-start",
+  "j19": {
+    "status": "golden",
+    "version": "v1.1",
+    "golden_number": 19,
+    "prototype_path": "journeys/19-insights/review-v1.1/v1.1-candidate.html",
+    "prototype_sha256": "c67973e0efc1068d006d57c4d5690b6c49218bd63f24cb62ab587fbf5b9862da",
+    "qa_summary_path": "journeys/19-insights/review-v1.1/QA_SUMMARY.json",
+    "previous_candidate_preserved": true
+  },
+  "j20": {
+    "status": "current",
+    "version": "v1",
+    "stage": "definition",
+    "prototype_built": false,
+    "spec_path": "journeys/20-payment-methods/spec.md",
+    "decision_history_path": "journeys/20-payment-methods/source/decision-history.md"
+  },
+  "golden_count": 19,
+  "remaining_overall": 9,
+  "typography_note": "TYPO-01 deferred",
+  "journey_21_status": "not-started"
+}

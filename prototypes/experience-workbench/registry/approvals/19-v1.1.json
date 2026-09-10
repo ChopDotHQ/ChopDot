@@ -1,0 +1,51 @@
+{
+  "journey": "19",
+  "name": "Insights",
+  "version": "v1.1",
+  "golden_number": 19,
+  "approval": "design-approved",
+  "approved_on": "2026-09-10",
+  "reviewed_source": "Journey 19 V1.1 fresh browser/render review candidate",
+  "prototype_path": "journeys/19-insights/review-v1.1/v1.1-candidate.html",
+  "prototype_sha256": "c67973e0efc1068d006d57c4d5690b6c49218bd63f24cb62ab587fbf5b9862da",
+  "qa_summary_path": "journeys/19-insights/review-v1.1/QA_SUMMARY.json",
+  "visual_qa_path": "journeys/19-insights/review-v1.1/VISUAL_QA.md",
+  "previous_candidate_path": "journeys/19-insights/v1-candidate.html",
+  "previous_candidate_sha256": "b539cdbea4c3ced0de2663e922b4ccbc6bcc30975e8211c24aaf02cf14357260",
+  "previous_candidate_preserved": true,
+  "html_change_authorized": false,
+  "approved_policy": {
+    "patterns_not_transactions": true,
+    "read_only": true,
+    "like_for_like_currency_and_complete_periods": true,
+    "exact_assets_separate": true,
+    "current_authorized_scope_only": true,
+    "latest_accepted_record_wins": true,
+    "corrections_replace_old_versions": true,
+    "duplicates_do_not_double_count": true,
+    "incomplete_windows_suppress_delta": true,
+    "minimum_evidence_required": true,
+    "no_people_scoring": true,
+    "settlement_descriptive_only": true,
+    "offline_cache_explicitly_stale": true,
+    "canonical_shell_preserved": true,
+    "adjacent_journey_ownership_preserved": true
+  },
+  "review_evidence": {
+    "states": 27,
+    "browser_layouts": "54/54",
+    "product_clicks": "278/278",
+    "model_assertions": "43/43",
+    "model_scenarios": 18,
+    "page_errors": 0,
+    "console_errors": 0,
+    "external_runtime_network_requests": 0
+  },
+  "next_journey": "20",
+  "deferred_note": {
+    "id": "TYPO-01",
+    "status": "deferred",
+    "change_now": false,
+    "note": "Shared typography/readability remains deferred."
+  }
+}
