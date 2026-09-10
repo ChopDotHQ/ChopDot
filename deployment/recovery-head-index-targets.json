@@ -5,7 +5,7 @@
     "devnet": {
       "label": "Products Devnet on the public Paseo Asset Hub",
       "assetHubWss": "wss://asset-hub-paseo-rpc.n.dwellir.com",
-      "ethRpc": "https://services.polkadothub-rpc.com/testnet",
+      "ethRpc": "https://eth-rpc-testnet.polkadot.io",
       "chainId": 420420417,
       "assetHubGenesis": "0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2",
       "paraId": 1000
@@ -20,9 +20,9 @@
     }
   },
   "sources": [
-    "https://raw.githubusercontent.com/paritytech/polkadot-app-deploy/d1cc36998c7f25ea4a194176d98883655995c855/assets/environments.json",
-    "https://docs.polkadot.com/smart-contracts/connect",
-    "https://github.com/paritytech/localdot-community/blob/main/docs/GUIDE.md"
+    "https://docs.polkadotcommunity.foundation/reference/networks/",
+    "https://docs.polkadotcommunity.foundation/reference/addresses/",
+    "https://docs.polkadot.com/smart-contracts/connect"
   ],
-  "note": "Both targets deliberately share EVM chain id 420420417, so chain id alone is not an environment identity. The write gate also attests the immutable Substrate Asset Hub genesis over WSS."
+  "note": "Both targets deliberately share EVM chain id 420420417, so chain id alone is not an environment identity. The write gate also attests the immutable Substrate Asset Hub genesis over WSS. Products Devnet endpoints are refreshed against the current September 2026 community documentation."
 }
