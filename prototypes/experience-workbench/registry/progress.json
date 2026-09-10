@@ -16,6 +16,6 @@
   "last_approved_journey": "19",
   "last_approved_version": "v1.1",
   "last_approved_sha256": "c67973e0efc1068d006d57c4d5690b6c49218bd63f24cb62ab587fbf5b9862da",
-  "next_action": "Journey 20 Payment Methods is current at definition stage. Build only after reading its spec, decision history, state inventory, edge cases and adjacent Golden boundaries.",
+  "next_action": "Journey 20 Payment Methods V1 exact candidate is REVIEWABLE. Complete independent direct visual inspection of the exact rendered PNGs; only a clean visual review may advance it to GOLDEN-READY for explicit Devinson approval.",
   "typography_note": "TYPO-01 deferred"
 }
