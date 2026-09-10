@@ -19,9 +19,10 @@
 17. Contribute / Withdraw Savings — v1.4 · Design Approved
 18. Activity & Notifications — v1.1 · Design Approved
 19. Insights — v1.1 · Design Approved
+20. Payment Methods — v1 · Design Approved
 
-Journey 19 — Insights V1.1 is Golden #19. Its reviewed standalone HTML is checksum-locked exactly.
+Journey 20 — Payment Methods V1 is Golden #20. Its exact reviewed artifact is checksum-locked; the HTML was not changed during freeze.
 
-Current journey: Journey 20 — Payment Methods V1. Exact candidate `74082c72cc52935a5eda41b42279b72f2cb0213f` is **REVIEWABLE**, not `GOLDEN-READY`; direct rendered-PNG inspection and explicit Devinson approval are still required before any freeze.
+Current journey: Journey 21 — Wallet & Crypto V1 definition. No review candidate exists yet.
 
-Journey 21 remains not started. TYPO-01 remains deferred.
+TYPO-01 remains deferred.

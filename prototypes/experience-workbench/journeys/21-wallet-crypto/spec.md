@@ -102,7 +102,7 @@ The V1 review should decide whether wallet connection feels like a short context
 
 **Approval / version:** V1 definition — current / not-reviewed. Recorded 2026-09-10 before candidate build. TYPO-01 remains deferred.
 
-**Sources:** [Journey 11 payment compatibility contract](../11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md); [Journey 11 specification](../11-settle-up/spec.md); [current production settlement screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/SettleHome.tsx).
+**Sources:** [Journey 11 payment compatibility contract](../../11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md); [Journey 11 specification](../../11-settle-up/spec.md); [current production settlement screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/SettleHome.tsx).
 
 ### J21-D02 — Exact account and network are revalidated at the signature boundary
 
@@ -118,7 +118,7 @@ The V1 review should decide whether wallet connection feels like a short context
 
 **Approval / version:** V1 definition — current / not-reviewed. Recorded 2026-09-10 before candidate build.
 
-**Sources:** [Journey 20 specification](../20-payment-methods/spec.md); [current production chain test surface](https://github.com/ChopDotHQ/ChopDot/blob/main/src/chain/chain-test-page.tsx); [current production settlement screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/SettleHome.tsx).
+**Sources:** [Journey 20 specification](../../20-payment-methods/spec.md); [current production chain test surface](https://github.com/ChopDotHQ/ChopDot/blob/main/src/chain/chain-test-page.tsx); [current production settlement screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/SettleHome.tsx).
 
 ### J21-D03 — Connected wallet state is not a saved destination or public profile field
 
@@ -134,7 +134,7 @@ The V1 review should decide whether wallet connection feels like a short context
 
 **Approval / version:** V1 definition — current / not-reviewed. Recorded 2026-09-10 before candidate build.
 
-**Sources:** [Journey 20 specification](../20-payment-methods/spec.md); [Journey 14 specification](../14-receive-money/spec.md); [payment compatibility contract](../11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md).
+**Sources:** [Journey 20 specification](../../20-payment-methods/spec.md); [Journey 14 specification](../../14-receive-money/spec.md); [payment compatibility contract](../../11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md).
 
 ### J21-D04 — Signature, submission and finality are separate observable states
 
@@ -150,5 +150,5 @@ The V1 review should decide whether wallet connection feels like a short context
 
 **Approval / version:** V1 definition — current / not-reviewed. Recorded 2026-09-10 before candidate build.
 
-**Sources:** [Journey 11 payment compatibility contract](../11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md); [Journey 12 specification](../12-complete-settlement/spec.md); [current production settlement screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/SettleHome.tsx).
+**Sources:** [Journey 11 payment compatibility contract](../../11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md); [Journey 12 specification](../../12-complete-settlement/spec.md); [current production settlement screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/SettleHome.tsx).
 <!-- JOURNEY_DECISION_HISTORY:END -->

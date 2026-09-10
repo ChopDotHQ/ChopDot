@@ -1,16 +1,25 @@
 {
   "journey": "21",
   "name": "Wallet & Crypto",
-  "version": "v1",
+  "status": "current",
   "approval": "not-reviewed",
+  "version": "v1",
   "stage": "definition",
-  "prototype_built": false,
+  "goal": "Connect or switch wallet and approve chain actions without anxiety.",
+  "entry": "Account, settlement, or receive",
+  "exit": "Connected state or signed action",
+  "next": [
+    "11",
+    "12",
+    "14",
+    "17",
+    "27"
+  ],
   "spec_path": "journeys/21-wallet-crypto/spec.md",
   "decision_history_path": "journeys/21-wallet-crypto/source/decision-history.md",
   "state_inventory_path": "journeys/21-wallet-crypto/STATE_INVENTORY.md",
   "edge_cases_path": "journeys/21-wallet-crypto/EDGE_CASES.md",
+  "prototype_built": false,
   "golden_count_before": 20,
-  "human_approval_required": true,
-  "typography_note": "TYPO-01 deferred",
-  "prototype_only": true
+  "typography_note": "TYPO-01 deferred"
 }

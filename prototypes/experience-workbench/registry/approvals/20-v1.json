@@ -1,0 +1,51 @@
+{
+  "journey": "20",
+  "name": "Payment Methods",
+  "version": "v1",
+  "golden_number": 20,
+  "approval": "design-approved",
+  "approved_on": "2026-09-10",
+  "reviewed_source": "Journey 20 V1 exact review bundle with independent direct rendered-PNG inspection and explicit human approval",
+  "review_bundle_head": "74082c72cc52935a5eda41b42279b72f2cb0213f",
+  "reviewed_source_head": "87acfc3d4bf7ffca0c814d8440915b19893fa4c1",
+  "dedicated_review_run": "34502893911",
+  "review_artifact_id": "10162658173",
+  "prototype_path": "journeys/20-payment-methods/review-v1/v1-candidate.html",
+  "prototype_sha256": "02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab",
+  "qa_summary_path": "journeys/20-payment-methods/review-v1/QA_SUMMARY.json",
+  "visual_qa_path": "journeys/20-payment-methods/review-v1/VISUAL_QA.md",
+  "html_change_authorized": false,
+  "review_evidence": {
+    "states": 59,
+    "browser_layouts": "118/118",
+    "product_clicks": "598/598",
+    "model_assertions": "81/81",
+    "model_scenarios": 12,
+    "page_errors": 0,
+    "console_errors": 0,
+    "external_runtime_network_requests": 0,
+    "direct_visual_review": "118/118 screenshots inspected",
+    "visual_clearance": true,
+    "human_approval": true
+  },
+  "approved_policy": {
+    "saved_destination_not_payment_authority": true,
+    "owner_only_configuration": true,
+    "contextual_visibility_not_directory_disclosure": true,
+    "compatibility_scoped_preference": true,
+    "exact_destination_versioning": true,
+    "removal_not_payment_cancellation": true,
+    "no_wallet_or_provider_secrets": true,
+    "recovery_before_retry": true,
+    "method_specific_validation": true,
+    "no_cross_asset_conversion": true
+  },
+  "next_journey": "21",
+  "deferred_note": {
+    "id": "TYPO-01",
+    "status": "deferred",
+    "change_now": false,
+    "note": "Shared typography/readability remains deferred."
+  },
+  "prototype_only": true
+}

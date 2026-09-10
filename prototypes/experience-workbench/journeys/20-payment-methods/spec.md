@@ -1,6 +1,6 @@
 # Journey 20 — Payment Methods
 
-V1 · Definition stage · Current. Prototype only; candidate not built yet.
+V1 · Design Approved · Golden #20. Prototype only; approved artifact is checksum-locked.
 
 ## Goal and route contract
 
@@ -127,4 +127,20 @@ The V1 review should decide whether the overview feels calm rather than like a s
 **Approval / version:** V1 definition — current / not-reviewed. Recorded 2026-09-10 before candidate build.
 
 **Sources:** [Journey 09 specification](../../09-manage-people/spec.md); [payment compatibility contract](../../11-settle-up/PAYMENT_AND_AGENTIC_COMPATIBILITY_CONTRACT.md); [current production PaymentMethods screen](https://github.com/ChopDotHQ/ChopDot/blob/main/src/components/screens/PaymentMethods.tsx).
+
+### J20-D04 — Approve the exact reviewed V1 artifact as Golden #20
+
+**Decision:** Freeze the exact Journey 20 V1 review artifact as Golden #20 without modifying its HTML, after complete mechanical/semantic evidence, independent direct inspection of all 118 rendered screenshots, and explicit Devinson approval. Advance only to Journey 21 Wallet & Crypto definition.
+
+**Why:** The exact candidate passed 59-state deterministic/model/browser coverage, 118/118 layouts, 598/598 product interactions, privacy/secret checks and direct visual review. No blocking product, hierarchy, clipping, CTA, mobile-order or Golden-consistency defect remained.
+
+**Alternatives:** Freezing before direct visual inspection, mutating the reviewed HTML during freeze, or beginning Journey 21 before explicit human approval were rejected because each would bypass the workbench review/authority contract.
+
+**Tradeoffs:** The approved V1 retains non-blocking shared typography debt under TYPO-01 rather than reopening a reviewed journey. In return, the exact artifact remains reproducible and the next journey can inherit a stable payment-method boundary.
+
+**Revisit when:** New user evidence or an explicitly authorized shared-system pass justifies a separately reviewed J20 version; never edit this Golden in place.
+
+**Approval / version:** v1 — design-approved as Golden #20 on 2026-09-10. HTML SHA-256 `02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab`; HTML changes after approval are not authorized.
+
+**Sources:** [J20 QA summary](../review-v1/QA_SUMMARY.json); [J20 visual QA](../review-v1/VISUAL_QA.md); [J20 human-approval checkpoint](../../../registry/checkpoints/2026-09-10-j20-v1-human-approved.json); [J20 approval record](../../../registry/approvals/20-v1.json).
 <!-- JOURNEY_DECISION_HISTORY:END -->

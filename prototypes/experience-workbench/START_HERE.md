@@ -14,19 +14,15 @@ Before doing journey work, read:
 
 ## Current authority
 
-28 registered journeys; 19 Goldens; 9 remaining.
+28 registered journeys; 20 Goldens; 8 remaining.
 
-Journey 19 — Insights V1.1 is Golden #19 and its approved artifact is checksum-locked exactly.
+Journey 20 — Payment Methods V1 is Golden #20. Exact approved artifact SHA-256: `02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab`. Direct visual review and explicit Devinson approval were recorded before freeze; HTML changes after approval are not authorized.
 
-Journey 20 — Payment Methods V1 exact review bundle is `74082c72cc52935a5eda41b42279b72f2cb0213f`, derived from reviewed source `87acfc3d4bf7ffca0c814d8440915b19893fa4c1`, candidate SHA-256 `02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab`.
-
-J20 is **REVIEWABLE**, not `GOLDEN-READY`: mechanical and semantic review passed, but independent direct inspection of the exact rendered PNGs has not yet cleared visual/brand/accessibility presentation.
-
-Do not freeze Journey 20 and do not advance Journey 21 until this exact candidate is independently `GOLDEN-READY` and Devinson explicitly approves that exact candidate.
+Journey 21 — Wallet & Crypto V1 is **current at definition stage**. Read `journeys/21-wallet-crypto/spec.md`, `source/decision-history.md`, `STATE_INVENTORY.md`, `EDGE_CASES.md`, and relevant adjacent Goldens before building. No J21 review candidate exists yet.
 
 ## Preserve
 
-All 19 Golden artifact checksums must pass. `registry/goldens.manifest.json` is generated from the journey and lock registries and must not become a competing approval authority. TYPO-01 remains deferred.
+All 20 Golden artifact checksums must pass. `registry/goldens.manifest.json` is generated from the journey and lock registries and must not become a competing approval authority. TYPO-01 remains deferred.
 
 <!-- JOURNEY_DECISION_HISTORY:START -->
 ## Decision history

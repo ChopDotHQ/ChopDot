@@ -478,11 +478,16 @@
       "21",
       "27"
     ],
-    "status": "current",
-    "approval": "not-reviewed",
+    "status": "golden",
+    "approval": "design-approved",
     "entry_mode": "feature",
     "version": "v1",
-    "spec_path": "journeys/20-payment-methods/spec.md"
+    "spec_path": "journeys/20-payment-methods/spec.md",
+    "prototype_path": "journeys/20-payment-methods/review-v1/v1-candidate.html",
+    "prototype_sha256": "02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab",
+    "qa_path": "journeys/20-payment-methods/review-v1/VISUAL_QA.md",
+    "golden_number": 20,
+    "approved_on": "2026-09-10"
   },
   {
     "id": "21",
@@ -500,8 +505,10 @@
       "17",
       "27"
     ],
-    "status": "not-started",
-    "approval": "not-reviewed"
+    "status": "current",
+    "approval": "not-reviewed",
+    "version": "v1",
+    "spec_path": "journeys/21-wallet-crypto/spec.md"
   },
   {
     "id": "22",

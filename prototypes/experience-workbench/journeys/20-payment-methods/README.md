@@ -1,6 +1,6 @@
 # Journey 20 — Payment Methods
 
-Status: **current definition stage** after Journey 19 Golden freeze. Prototype not built yet.
+Status: **Design Approved — Golden #20** on 2026-09-10. Exact reviewed V1 artifact is checksum-locked; HTML was unchanged during freeze.
 
 Goal: manage your own saved receiving/payment destinations and their availability without turning a preference into payment authority.
 

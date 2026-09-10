@@ -1,0 +1,25 @@
+{
+  "checkpoint": "2026-09-10-j20-v1-golden-j21-start",
+  "j20": {
+    "status": "golden",
+    "version": "v1",
+    "golden_number": 20,
+    "prototype_path": "journeys/20-payment-methods/review-v1/v1-candidate.html",
+    "prototype_sha256": "02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab",
+    "qa_summary_path": "journeys/20-payment-methods/review-v1/QA_SUMMARY.json",
+    "direct_visual_review": "pass",
+    "human_approval": "approved",
+    "html_change_authorized": false
+  },
+  "j21": {
+    "status": "current",
+    "version": "v1",
+    "stage": "definition",
+    "prototype_built": false,
+    "spec_path": "journeys/21-wallet-crypto/spec.md",
+    "decision_history_path": "journeys/21-wallet-crypto/source/decision-history.md"
+  },
+  "golden_count": 20,
+  "remaining_overall": 8,
+  "typography_note": "TYPO-01 deferred"
+}

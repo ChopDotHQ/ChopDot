@@ -1,8 +1,8 @@
 {
   "ok": true,
   "scope": "documentation structure and artifact preservation",
-  "covered_journeys": 20,
-  "decision_entries": 42,
+  "covered_journeys": 21,
+  "decision_entries": 47,
   "all_golden_locks_pass": true,
   "coverage": [
     {
@@ -217,13 +217,24 @@
     {
       "journey": "20",
       "version": "v1",
+      "approval": "design-approved",
+      "status": "golden",
+      "decisions": 4,
+      "source_path": "journeys/20-payment-methods/source/decision-history.md",
+      "source_sha256": "12849b1f2c9af9dfa43f5cb80862e7973544669f8696819959111af1fda56207",
+      "spec_path": "journeys/20-payment-methods/spec.md",
+      "spec_sha256": "6de557de9699a95d6bdecc05b9afc0b9db84e7fc4bbfc33a0128f02fc1d3116f"
+    },
+    {
+      "journey": "21",
+      "version": "v1",
       "approval": "not-reviewed",
       "status": "current",
-      "decisions": 3,
-      "source_path": "journeys/20-payment-methods/source/decision-history.md",
-      "source_sha256": "6547ff654967245746a5d8d32c03cd80c5f91f664c87d4d06d8cb255f02148d6",
-      "spec_path": "journeys/20-payment-methods/spec.md",
-      "spec_sha256": "304919a503400e0f41fff8108916f5d6a8f94f44a97560e1c85d4a7b366b87db"
+      "decisions": 4,
+      "source_path": "journeys/21-wallet-crypto/source/decision-history.md",
+      "source_sha256": "8111dd71db9459f28e8f7a90c193eb247f3767f59d62c21fa98675ee50301c4e",
+      "spec_path": "journeys/21-wallet-crypto/spec.md",
+      "spec_sha256": "440edde0a4e880e9c1827f0fe5d0881e15fe6676d4caf30e45c5f8833833b753"
     }
   ],
   "complete_conversation_audit": false,
