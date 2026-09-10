@@ -39,6 +39,7 @@ const states = [
   'submission-pending',
   'submission-unknown',
   'finalized',
+  'result-handoff',
   'reverted',
 ];
 const viewports = [
@@ -57,7 +58,8 @@ const expectedSemantics = {
   'signed': ['Signature received', 'not network confirmation', 'Signed ≠ submitted ≠ final'],
   'submission-pending': ['Submitted — waiting for the network', 'waiting for finality', 'Do not start another payment'],
   'submission-unknown': ['network result is not known yet', 'same transaction', 'Retry is blocked'],
-  'finalized': ['Network finality verified', 'hands this verified fact back', 'not a new ChopDot balance calculation'],
+  'finalized': ['Network finality verified', 'hands this verified fact back', 'not a new ChopDot balance calculation', 'Hand result to Complete Settlement'],
+  'result-handoff': ['Complete Settlement', 'Network result received', '12.50 DOT', 'Maya', '0xdemo…21', 'verified network fact only', 'does not itself recalculate'],
   'reverted': ['transaction did not complete', 'verified failure', 'settlement stays open'],
 };
 
@@ -151,7 +153,7 @@ try {
     }
     interactionResults.push({viewport: viewport.name, path: 'connection-to-review', finalHash: await page.evaluate(() => location.hash)});
 
-    const executionPath = ['#action-review', '#signature-pending', '#signed', '#submission-pending', '#finalized'];
+    const executionPath = ['#action-review', '#signature-pending', '#signed', '#submission-pending', '#finalized', '#result-handoff'];
     await page.goto(`${pathToFileURL(candidatePath).href}${executionPath[0]}`, {waitUntil: 'load'});
     for (const next of executionPath.slice(1)) {
       const link = page.locator(`.screen:visible a[href="${next}"]`).first();
@@ -162,7 +164,7 @@ try {
       await link.click();
       await page.waitForFunction(target => location.hash === target, next);
     }
-    interactionResults.push({viewport: viewport.name, path: 'review-to-finality', finalHash: await page.evaluate(() => location.hash)});
+    interactionResults.push({viewport: viewport.name, path: 'review-to-result-handoff', finalHash: await page.evaluate(() => location.hash)});
 
     await context.close();
   }
@@ -184,7 +186,7 @@ const summary = {
     path: path.relative(repoRoot, candidatePath),
     sha256: candidateSha256,
   },
-  scope: 'J21 bounded slice 2: connection handoff plus exact action review, signature, submission, finality and recovery states',
+  scope: 'J21 bounded reviewer-blocker repair: verified finality now hands its exact network fact to an explicit Journey 12 Complete Settlement boundary',
   counts: {
     states: states.length,
     viewports: viewports.length,
@@ -202,14 +204,15 @@ const summary = {
   errors,
   review_status: errors.length ? 'MECHANICAL_QA_FAILED' : 'BOUNDED_SLICE_QA_PASSED',
   limitations: [
-    'This evidence covers only the states currently built in bounded slice 2; it is not a complete Journey 21 review bundle.',
+    'This evidence verifies only the highest-priority result-handoff reviewer repair plus the previously built J21 states; it is not a complete Journey 21 review bundle.',
+    'The independent-review blockers for honest unknown-result reconciliation and the remaining required provider/account/network/balance/offline/error clusters are intentionally still open.',
     'It does not provide independent UX judgment or human approval.',
     'No real wallet, signature, chain submission, funds, or network finality is exercised; all product states are synthetic prototype states.',
   ],
 };
 
 await writeFile(path.join(evidenceRoot, 'QA_SUMMARY.json'), `${JSON.stringify(summary, null, 2)}\n`);
-await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 bounded slice 2 — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
+await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 reviewer-blocker repair — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
 
 console.log(JSON.stringify({head, candidateSha256, states: states.length, screenshots: pages.length, failures: errors.length}, null, 2));
 if (errors.length) {

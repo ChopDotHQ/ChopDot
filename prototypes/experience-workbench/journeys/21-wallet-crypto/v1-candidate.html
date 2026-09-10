@@ -151,7 +151,18 @@
 
 <section class="screen" id="finalized" data-state="finalized" aria-label="Transaction finalized">
 <header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
-<main class="content"><div class="card result"><div class="symbol" aria-hidden="true">✓</div><b>Network finality verified</b><p>Polkadot finalized the exact 12.50 DOT transaction. Journey 21 now hands this verified fact back to the settlement flow.</p></div><div class="notice success">This is a network execution result, not a new ChopDot balance calculation. Complete Settlement owns the customer-facing settlement result and balance refresh.</div><div class="actions"><a class="btn primary" href="#handoff">Return result to Settle Up</a></div></main>
+<main class="content"><div class="card result"><div class="symbol" aria-hidden="true">✓</div><b>Network finality verified</b><p>Polkadot finalized the exact 12.50 DOT transaction. Journey 21 now hands this verified fact back to the settlement flow.</p></div><div class="notice success">This is a network execution result, not a new ChopDot balance calculation. Complete Settlement owns the customer-facing settlement result and balance refresh.</div><div class="actions"><a class="btn primary" href="#result-handoff">Hand result to Complete Settlement</a></div></main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="result-handoff" data-state="result-handoff" aria-label="Complete Settlement result handoff">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div><div class="eyebrow">Complete Settlement</div><h1 class="hero">Network result received</h1><p class="sub">Wallet & Crypto has returned the verified execution fact. Complete Settlement now owns exact payment matching, closure, and the resulting balance refresh.</p></div>
+<div class="card context"><div class="context-head"><b>Verified execution</b><span>From Wallet & Crypto</span></div><div class="context-grid"><span>Pay</span><strong>Maya</strong><span>Amount</span><strong class="fact">12.50 DOT</strong><span>Network</span><strong>Polkadot</strong><span>Transaction</span><strong>0xdemo…21</strong><span>Status</span><strong>Finalized</strong></div></div>
+<div class="notice success">This boundary carries a verified network fact only. It does not itself recalculate a ChopDot balance, create a new payment, or bypass Complete Settlement's exact matching rules.</div>
+<div class="actions"><span class="btn primary" aria-disabled="true">Returned to Complete Settlement</span></div>
+</main>
 <footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
 </section>
 
