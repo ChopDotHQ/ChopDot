@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - '.github/workflows/polkadot-sep26-assurance.yml'
+      - 'package.json'
+      - 'package-lock.json'
       - 'src/environment/**'
       - 'tests/polkadot-host-sim.spec.ts'
       - 'playwright.host-sim.config.ts'
@@ -26,6 +28,34 @@ env:
   EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
+  lockfile-candidate:
+    name: SDK lockfile candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+      - name: Assert exact candidate checkout
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Resolve package-lock from package.json without lifecycle scripts
+        run: npm install --package-lock-only --ignore-scripts
+      - name: Upload generated lockfile candidate
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: polkadot-sdk-lockfile-${{ github.run_id }}
+          path: package-lock.json
+          if-no-files-found: error
+          retention-days: 7
+
   host-simulator:
     name: Products Devnet host simulator
     runs-on: ubuntu-latest
