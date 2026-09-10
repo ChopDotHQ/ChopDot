@@ -1,7 +1,7 @@
 import {expect, test, type Browser, type Page} from '@playwright/test';
 import {
   createTestHostServer,
-  PASEO_ASSET_HUB,
+  type NetworkConfig,
   type TestHostAPI,
   type TestHostServer,
 } from '@parity/host-api-test-sdk';
@@ -9,10 +9,18 @@ import {mkdir, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 
-const productUrl = 'http://127.0.0.1:4177/?developerChecks=1';
+const productUrl = 'http://127.0.0.1:4177/';
 const proofDirectory = releaseEvidencePath('polkadot-host-sim');
 const sessionSecret = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 const groupId = 'friday-crew';
+const productsDevnetAssetHub: NetworkConfig = {
+  id: 'products-devnet-asset-hub',
+  name: 'Polkadot Products Devnet Asset Hub',
+  genesisHash: '0xd6eec26135305a8ad257a20d003357284c8aa03d0bdb2b357ab0a22371e11ef2',
+  rpcUrl: 'wss://asset-hub-paseo-rpc.n.dwellir.com',
+  tokenSymbol: 'PAS',
+  tokenDecimals: 10,
+};
 
 function serializeHostValue(value: unknown): string {
   return JSON.stringify(value, (_key, item: unknown) => typeof item === 'bigint' ? item.toString() : item);
@@ -32,7 +40,7 @@ async function openHostedProduct(
     productUrl,
     accounts: [account],
     productAccounts: {'chopdot-shell-proof.dot/0': account},
-    networks: [PASEO_ASSET_HUB],
+    networks: [productsDevnetAssetHub],
   });
   const page = await browser.newPage();
   await page.goto(server.url);
@@ -126,14 +134,21 @@ test('two hosted people converge through ciphertext and keep host money authorit
       path.join(proofDirectory, 'report.json'),
       JSON.stringify({
         checkedAt: new Date().toISOString(),
-        sdk: '@parity/host-api-test-sdk@0.10.0',
+        sdk: '@parity/host-api-test-sdk@0.10.x',
+        network: {
+          id: productsDevnetAssetHub.id,
+          genesisHash: productsDevnetAssetHub.genesisHash,
+          rpcUrl: productsDevnetAssetHub.rpcUrl,
+          tokenSymbol: productsDevnetAssetHub.tokenSymbol,
+          tokenDecimals: productsDevnetAssetHub.tokenDecimals,
+        },
         passed: true,
         identities: [aliceIdentity.username, bobIdentity.username],
         ciphertextOnly: true,
         bobReceived: event,
         payment: {requestId: paymentId, authority: 'observed_only'},
         receipt: {key: receiptKey, redacted: true, retrieved: true},
-        liveBoundary: 'Host simulation is not a substitute for Polkadot Mobile login or live Statement Store/payment execution.',
+        liveBoundary: 'Host simulation targets Products Devnet network identity but is not a substitute for Polkadot Mobile login or live Statement Store/payment execution.',
       }, null, 2),
     );
   } finally {
