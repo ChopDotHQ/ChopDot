@@ -2,11 +2,11 @@
 
 Status: **review candidate; not Golden**.
 
-- Candidate SHA-256: `818e8117265ad3bc0bf40054a4a0c31188981acb82918642be6509b79a880a26`
-- Screens: 48
+- Candidate SHA-256: `02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab`
+- Screens: 59
 - Viewports: 393×852 and 430×890
-- Browser layout checks: 96/96
-- Internal interactions: 480/480
+- Browser layout checks: 118/118
+- Internal interactions: 598/598
 - Deterministic model assertions: 81 across 12 scenario groups
 - Page errors: 0
 - Console errors: 0

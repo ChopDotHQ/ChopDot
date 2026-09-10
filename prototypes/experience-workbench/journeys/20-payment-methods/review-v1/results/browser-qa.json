@@ -3,8 +3,8 @@
   "journey": "20",
   "version": "v1",
   "review_status": "review-pending",
-  "candidate_sha256": "818e8117265ad3bc0bf40054a4a0c31188981acb82918642be6509b79a880a26",
-  "states": 48,
+  "candidate_sha256": "02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab",
+  "states": 59,
   "viewports": [
     "393x852",
     "430x890"
@@ -64,8 +64,8 @@
       "headerOverlap": false,
       "footerOverlap": false,
       "footerVisible": true,
-      "mainScrollHeight": 685,
-      "mainClientHeight": 685,
+      "mainScrollHeight": 648,
+      "mainClientHeight": 648,
       "missingSvgs": 0,
       "passed": true
     },
@@ -83,8 +83,8 @@
       "headerOverlap": false,
       "footerOverlap": false,
       "footerVisible": true,
-      "mainScrollHeight": 685,
-      "mainClientHeight": 685,
+      "mainScrollHeight": 648,
+      "mainClientHeight": 648,
       "missingSvgs": 0,
       "passed": true
     },
@@ -102,8 +102,8 @@
       "headerOverlap": false,
       "footerOverlap": false,
       "footerVisible": true,
-      "mainScrollHeight": 685,
-      "mainClientHeight": 685,
+      "mainScrollHeight": 648,
+      "mainClientHeight": 648,
       "missingSvgs": 0,
       "passed": true
     },
@@ -121,8 +121,8 @@
       "headerOverlap": false,
       "footerOverlap": false,
       "footerVisible": true,
-      "mainScrollHeight": 685,
-      "mainClientHeight": 685,
+      "mainScrollHeight": 648,
+      "mainClientHeight": 648,
       "missingSvgs": 0,
       "passed": true
     },
@@ -906,6 +906,215 @@
       "passed": true
     },
     {
+      "screen": "review-new-twint",
+      "viewport": "393x852",
+      "visible": [
+        "review-new-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-new-paypal",
+      "viewport": "393x852",
+      "visible": [
+        "review-new-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-new-crypto",
+      "viewport": "393x852",
+      "visible": [
+        "review-new-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "edit-twint",
+      "viewport": "393x852",
+      "visible": [
+        "edit-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-edit-twint",
+      "viewport": "393x852",
+      "visible": [
+        "review-edit-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "edit-paypal",
+      "viewport": "393x852",
+      "visible": [
+        "edit-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-edit-paypal",
+      "viewport": "393x852",
+      "visible": [
+        "review-edit-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-edit-crypto",
+      "viewport": "393x852",
+      "visible": [
+        "review-edit-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-confirm-twint",
+      "viewport": "393x852",
+      "visible": [
+        "remove-confirm-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-confirm-paypal",
+      "viewport": "393x852",
+      "visible": [
+        "remove-confirm-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-confirm-crypto",
+      "viewport": "393x852",
+      "visible": [
+        "remove-confirm-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
       "screen": "demo",
       "viewport": "393x852",
       "visible": [
@@ -919,7 +1128,7 @@
       "headerOverlap": false,
       "footerOverlap": false,
       "footerVisible": true,
-      "mainScrollHeight": 726,
+      "mainScrollHeight": 902,
       "mainClientHeight": 726,
       "missingSvgs": 0,
       "passed": true
@@ -976,8 +1185,8 @@
       "headerOverlap": false,
       "footerOverlap": false,
       "footerVisible": true,
-      "mainScrollHeight": 723,
-      "mainClientHeight": 723,
+      "mainScrollHeight": 686,
+      "mainClientHeight": 686,
       "missingSvgs": 0,
       "passed": true
     },
@@ -995,8 +1204,8 @@
       "headerOverlap": false,
       "footerOverlap": false,
       "footerVisible": true,
-      "mainScrollHeight": 723,
-      "mainClientHeight": 723,
+      "mainScrollHeight": 686,
+      "mainClientHeight": 686,
       "missingSvgs": 0,
       "passed": true
     },
@@ -1014,8 +1223,8 @@
       "headerOverlap": false,
       "footerOverlap": false,
       "footerVisible": true,
-      "mainScrollHeight": 723,
-      "mainClientHeight": 723,
+      "mainScrollHeight": 686,
+      "mainClientHeight": 686,
       "missingSvgs": 0,
       "passed": true
     },
@@ -1033,8 +1242,8 @@
       "headerOverlap": false,
       "footerOverlap": false,
       "footerVisible": true,
-      "mainScrollHeight": 723,
-      "mainClientHeight": 723,
+      "mainScrollHeight": 686,
+      "mainClientHeight": 686,
       "missingSvgs": 0,
       "passed": true
     },
@@ -1818,6 +2027,215 @@
       "passed": true
     },
     {
+      "screen": "review-new-twint",
+      "viewport": "430x890",
+      "visible": [
+        "review-new-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-new-paypal",
+      "viewport": "430x890",
+      "visible": [
+        "review-new-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-new-crypto",
+      "viewport": "430x890",
+      "visible": [
+        "review-new-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "edit-twint",
+      "viewport": "430x890",
+      "visible": [
+        "edit-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-edit-twint",
+      "viewport": "430x890",
+      "visible": [
+        "review-edit-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "edit-paypal",
+      "viewport": "430x890",
+      "visible": [
+        "edit-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-edit-paypal",
+      "viewport": "430x890",
+      "visible": [
+        "review-edit-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-edit-crypto",
+      "viewport": "430x890",
+      "visible": [
+        "review-edit-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-confirm-twint",
+      "viewport": "430x890",
+      "visible": [
+        "remove-confirm-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-confirm-paypal",
+      "viewport": "430x890",
+      "visible": [
+        "remove-confirm-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-confirm-crypto",
+      "viewport": "430x890",
+      "visible": [
+        "remove-confirm-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
       "screen": "demo",
       "viewport": "430x890",
       "visible": [
@@ -1831,7 +2249,7 @@
       "headerOverlap": false,
       "footerOverlap": false,
       "footerVisible": true,
-      "mainScrollHeight": 764,
+      "mainScrollHeight": 902,
       "mainClientHeight": 764,
       "missingSvgs": 0,
       "passed": true
@@ -2204,6 +2622,20 @@
     },
     {
       "viewport": "393x852",
+      "from": "detail-bank",
+      "index": 6,
+      "href": "#remove-confirm",
+      "target": "remove-confirm",
+      "observed": {
+        "hash": "#remove-confirm",
+        "visible": [
+          "remove-confirm"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
       "from": "detail-twint",
       "index": 0,
       "href": "#overview",
@@ -2234,12 +2666,12 @@
       "viewport": "393x852",
       "from": "detail-twint",
       "index": 2,
-      "href": "#edit-bank",
-      "target": "edit-bank",
+      "href": "#edit-twint",
+      "target": "edit-twint",
       "observed": {
-        "hash": "#edit-bank",
+        "hash": "#edit-twint",
         "visible": [
-          "edit-bank"
+          "edit-twint"
         ]
       },
       "passed": true
@@ -2254,6 +2686,20 @@
         "hash": "#overview",
         "visible": [
           "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-twint",
+      "index": 4,
+      "href": "#remove-confirm-twint",
+      "target": "remove-confirm-twint",
+      "observed": {
+        "hash": "#remove-confirm-twint",
+        "visible": [
+          "remove-confirm-twint"
         ]
       },
       "passed": true
@@ -2290,12 +2736,12 @@
       "viewport": "393x852",
       "from": "detail-paypal",
       "index": 2,
-      "href": "#edit-bank",
-      "target": "edit-bank",
+      "href": "#edit-paypal",
+      "target": "edit-paypal",
       "observed": {
-        "hash": "#edit-bank",
+        "hash": "#edit-paypal",
         "visible": [
-          "edit-bank"
+          "edit-paypal"
         ]
       },
       "passed": true
@@ -2310,6 +2756,20 @@
         "hash": "#overview",
         "visible": [
           "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-paypal",
+      "index": 4,
+      "href": "#remove-confirm-paypal",
+      "target": "remove-confirm-paypal",
+      "observed": {
+        "hash": "#remove-confirm-paypal",
+        "visible": [
+          "remove-confirm-paypal"
         ]
       },
       "passed": true
@@ -2366,6 +2826,20 @@
         "hash": "#overview",
         "visible": [
           "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-crypto",
+      "index": 4,
+      "href": "#remove-confirm-crypto",
+      "target": "remove-confirm-crypto",
+      "observed": {
+        "hash": "#remove-confirm-crypto",
+        "visible": [
+          "remove-confirm-crypto"
         ]
       },
       "passed": true
@@ -2556,12 +3030,12 @@
       "viewport": "393x852",
       "from": "add-twint",
       "index": 2,
-      "href": "#review-new-bank",
-      "target": "review-new-bank",
+      "href": "#review-new-twint",
+      "target": "review-new-twint",
       "observed": {
-        "hash": "#review-new-bank",
+        "hash": "#review-new-twint",
         "visible": [
-          "review-new-bank"
+          "review-new-twint"
         ]
       },
       "passed": true
@@ -2612,12 +3086,12 @@
       "viewport": "393x852",
       "from": "add-paypal",
       "index": 2,
-      "href": "#review-new-bank",
-      "target": "review-new-bank",
+      "href": "#review-new-paypal",
+      "target": "review-new-paypal",
       "observed": {
-        "hash": "#review-new-bank",
+        "hash": "#review-new-paypal",
         "visible": [
-          "review-new-bank"
+          "review-new-paypal"
         ]
       },
       "passed": true
@@ -2668,12 +3142,12 @@
       "viewport": "393x852",
       "from": "add-crypto",
       "index": 2,
-      "href": "#review-new-bank",
-      "target": "review-new-bank",
+      "href": "#review-new-crypto",
+      "target": "review-new-crypto",
       "observed": {
-        "hash": "#review-new-bank",
+        "hash": "#review-new-crypto",
         "visible": [
-          "review-new-bank"
+          "review-new-crypto"
         ]
       },
       "passed": true
@@ -2836,12 +3310,12 @@
       "viewport": "393x852",
       "from": "edit-crypto",
       "index": 2,
-      "href": "#review-edit-bank",
-      "target": "review-edit-bank",
+      "href": "#review-edit-crypto",
+      "target": "review-edit-crypto",
       "observed": {
-        "hash": "#review-edit-bank",
+        "hash": "#review-edit-crypto",
         "visible": [
-          "review-edit-bank"
+          "review-edit-crypto"
         ]
       },
       "passed": true
@@ -4626,6 +5100,622 @@
     },
     {
       "viewport": "393x852",
+      "from": "review-new-twint",
+      "index": 0,
+      "href": "#add-twint",
+      "target": "add-twint",
+      "observed": {
+        "hash": "#add-twint",
+        "visible": [
+          "add-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-twint",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-twint",
+      "index": 3,
+      "href": "#add-twint",
+      "target": "add-twint",
+      "observed": {
+        "hash": "#add-twint",
+        "visible": [
+          "add-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-paypal",
+      "index": 0,
+      "href": "#add-paypal",
+      "target": "add-paypal",
+      "observed": {
+        "hash": "#add-paypal",
+        "visible": [
+          "add-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-paypal",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-paypal",
+      "index": 3,
+      "href": "#add-paypal",
+      "target": "add-paypal",
+      "observed": {
+        "hash": "#add-paypal",
+        "visible": [
+          "add-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-crypto",
+      "index": 0,
+      "href": "#add-crypto",
+      "target": "add-crypto",
+      "observed": {
+        "hash": "#add-crypto",
+        "visible": [
+          "add-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-crypto",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-crypto",
+      "index": 3,
+      "href": "#add-crypto",
+      "target": "add-crypto",
+      "observed": {
+        "hash": "#add-crypto",
+        "visible": [
+          "add-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-twint",
+      "index": 0,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-twint",
+      "index": 2,
+      "href": "#review-edit-twint",
+      "target": "review-edit-twint",
+      "observed": {
+        "hash": "#review-edit-twint",
+        "visible": [
+          "review-edit-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-twint",
+      "index": 3,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-twint",
+      "index": 0,
+      "href": "#edit-twint",
+      "target": "edit-twint",
+      "observed": {
+        "hash": "#edit-twint",
+        "visible": [
+          "edit-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-twint",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-twint",
+      "index": 3,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-paypal",
+      "index": 0,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-paypal",
+      "index": 2,
+      "href": "#review-edit-paypal",
+      "target": "review-edit-paypal",
+      "observed": {
+        "hash": "#review-edit-paypal",
+        "visible": [
+          "review-edit-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-paypal",
+      "index": 3,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-paypal",
+      "index": 0,
+      "href": "#edit-paypal",
+      "target": "edit-paypal",
+      "observed": {
+        "hash": "#edit-paypal",
+        "visible": [
+          "edit-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-paypal",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-paypal",
+      "index": 3,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-crypto",
+      "index": 0,
+      "href": "#edit-crypto",
+      "target": "edit-crypto",
+      "observed": {
+        "hash": "#edit-crypto",
+        "visible": [
+          "edit-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-crypto",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-crypto",
+      "index": 3,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-twint",
+      "index": 0,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-twint",
+      "index": 2,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-twint",
+      "index": 3,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-paypal",
+      "index": 0,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-paypal",
+      "index": 2,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-paypal",
+      "index": 3,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-crypto",
+      "index": 0,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-crypto",
+      "index": 2,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm-crypto",
+      "index": 3,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
       "from": "demo",
       "index": 0,
       "href": "#overview",
@@ -5188,6 +6278,160 @@
       "viewport": "393x852",
       "from": "demo",
       "index": 40,
+      "href": "#review-new-twint",
+      "target": "review-new-twint",
+      "observed": {
+        "hash": "#review-new-twint",
+        "visible": [
+          "review-new-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 41,
+      "href": "#review-new-paypal",
+      "target": "review-new-paypal",
+      "observed": {
+        "hash": "#review-new-paypal",
+        "visible": [
+          "review-new-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 42,
+      "href": "#review-new-crypto",
+      "target": "review-new-crypto",
+      "observed": {
+        "hash": "#review-new-crypto",
+        "visible": [
+          "review-new-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 43,
+      "href": "#edit-twint",
+      "target": "edit-twint",
+      "observed": {
+        "hash": "#edit-twint",
+        "visible": [
+          "edit-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 44,
+      "href": "#review-edit-twint",
+      "target": "review-edit-twint",
+      "observed": {
+        "hash": "#review-edit-twint",
+        "visible": [
+          "review-edit-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 45,
+      "href": "#edit-paypal",
+      "target": "edit-paypal",
+      "observed": {
+        "hash": "#edit-paypal",
+        "visible": [
+          "edit-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 46,
+      "href": "#review-edit-paypal",
+      "target": "review-edit-paypal",
+      "observed": {
+        "hash": "#review-edit-paypal",
+        "visible": [
+          "review-edit-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 47,
+      "href": "#review-edit-crypto",
+      "target": "review-edit-crypto",
+      "observed": {
+        "hash": "#review-edit-crypto",
+        "visible": [
+          "review-edit-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 48,
+      "href": "#remove-confirm-twint",
+      "target": "remove-confirm-twint",
+      "observed": {
+        "hash": "#remove-confirm-twint",
+        "visible": [
+          "remove-confirm-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 49,
+      "href": "#remove-confirm-paypal",
+      "target": "remove-confirm-paypal",
+      "observed": {
+        "hash": "#remove-confirm-paypal",
+        "visible": [
+          "remove-confirm-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 50,
+      "href": "#remove-confirm-crypto",
+      "target": "remove-confirm-crypto",
+      "observed": {
+        "hash": "#remove-confirm-crypto",
+        "visible": [
+          "remove-confirm-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 51,
       "href": "#overview",
       "target": "overview",
       "observed": {
@@ -5564,6 +6808,20 @@
     },
     {
       "viewport": "430x890",
+      "from": "detail-bank",
+      "index": 6,
+      "href": "#remove-confirm",
+      "target": "remove-confirm",
+      "observed": {
+        "hash": "#remove-confirm",
+        "visible": [
+          "remove-confirm"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
       "from": "detail-twint",
       "index": 0,
       "href": "#overview",
@@ -5594,12 +6852,12 @@
       "viewport": "430x890",
       "from": "detail-twint",
       "index": 2,
-      "href": "#edit-bank",
-      "target": "edit-bank",
+      "href": "#edit-twint",
+      "target": "edit-twint",
       "observed": {
-        "hash": "#edit-bank",
+        "hash": "#edit-twint",
         "visible": [
-          "edit-bank"
+          "edit-twint"
         ]
       },
       "passed": true
@@ -5614,6 +6872,20 @@
         "hash": "#overview",
         "visible": [
           "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-twint",
+      "index": 4,
+      "href": "#remove-confirm-twint",
+      "target": "remove-confirm-twint",
+      "observed": {
+        "hash": "#remove-confirm-twint",
+        "visible": [
+          "remove-confirm-twint"
         ]
       },
       "passed": true
@@ -5650,12 +6922,12 @@
       "viewport": "430x890",
       "from": "detail-paypal",
       "index": 2,
-      "href": "#edit-bank",
-      "target": "edit-bank",
+      "href": "#edit-paypal",
+      "target": "edit-paypal",
       "observed": {
-        "hash": "#edit-bank",
+        "hash": "#edit-paypal",
         "visible": [
-          "edit-bank"
+          "edit-paypal"
         ]
       },
       "passed": true
@@ -5670,6 +6942,20 @@
         "hash": "#overview",
         "visible": [
           "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-paypal",
+      "index": 4,
+      "href": "#remove-confirm-paypal",
+      "target": "remove-confirm-paypal",
+      "observed": {
+        "hash": "#remove-confirm-paypal",
+        "visible": [
+          "remove-confirm-paypal"
         ]
       },
       "passed": true
@@ -5726,6 +7012,20 @@
         "hash": "#overview",
         "visible": [
           "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-crypto",
+      "index": 4,
+      "href": "#remove-confirm-crypto",
+      "target": "remove-confirm-crypto",
+      "observed": {
+        "hash": "#remove-confirm-crypto",
+        "visible": [
+          "remove-confirm-crypto"
         ]
       },
       "passed": true
@@ -5916,12 +7216,12 @@
       "viewport": "430x890",
       "from": "add-twint",
       "index": 2,
-      "href": "#review-new-bank",
-      "target": "review-new-bank",
+      "href": "#review-new-twint",
+      "target": "review-new-twint",
       "observed": {
-        "hash": "#review-new-bank",
+        "hash": "#review-new-twint",
         "visible": [
-          "review-new-bank"
+          "review-new-twint"
         ]
       },
       "passed": true
@@ -5972,12 +7272,12 @@
       "viewport": "430x890",
       "from": "add-paypal",
       "index": 2,
-      "href": "#review-new-bank",
-      "target": "review-new-bank",
+      "href": "#review-new-paypal",
+      "target": "review-new-paypal",
       "observed": {
-        "hash": "#review-new-bank",
+        "hash": "#review-new-paypal",
         "visible": [
-          "review-new-bank"
+          "review-new-paypal"
         ]
       },
       "passed": true
@@ -6028,12 +7328,12 @@
       "viewport": "430x890",
       "from": "add-crypto",
       "index": 2,
-      "href": "#review-new-bank",
-      "target": "review-new-bank",
+      "href": "#review-new-crypto",
+      "target": "review-new-crypto",
       "observed": {
-        "hash": "#review-new-bank",
+        "hash": "#review-new-crypto",
         "visible": [
-          "review-new-bank"
+          "review-new-crypto"
         ]
       },
       "passed": true
@@ -6196,12 +7496,12 @@
       "viewport": "430x890",
       "from": "edit-crypto",
       "index": 2,
-      "href": "#review-edit-bank",
-      "target": "review-edit-bank",
+      "href": "#review-edit-crypto",
+      "target": "review-edit-crypto",
       "observed": {
-        "hash": "#review-edit-bank",
+        "hash": "#review-edit-crypto",
         "visible": [
-          "review-edit-bank"
+          "review-edit-crypto"
         ]
       },
       "passed": true
@@ -7986,6 +9286,622 @@
     },
     {
       "viewport": "430x890",
+      "from": "review-new-twint",
+      "index": 0,
+      "href": "#add-twint",
+      "target": "add-twint",
+      "observed": {
+        "hash": "#add-twint",
+        "visible": [
+          "add-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-twint",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-twint",
+      "index": 3,
+      "href": "#add-twint",
+      "target": "add-twint",
+      "observed": {
+        "hash": "#add-twint",
+        "visible": [
+          "add-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-paypal",
+      "index": 0,
+      "href": "#add-paypal",
+      "target": "add-paypal",
+      "observed": {
+        "hash": "#add-paypal",
+        "visible": [
+          "add-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-paypal",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-paypal",
+      "index": 3,
+      "href": "#add-paypal",
+      "target": "add-paypal",
+      "observed": {
+        "hash": "#add-paypal",
+        "visible": [
+          "add-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-crypto",
+      "index": 0,
+      "href": "#add-crypto",
+      "target": "add-crypto",
+      "observed": {
+        "hash": "#add-crypto",
+        "visible": [
+          "add-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-crypto",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-crypto",
+      "index": 3,
+      "href": "#add-crypto",
+      "target": "add-crypto",
+      "observed": {
+        "hash": "#add-crypto",
+        "visible": [
+          "add-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-twint",
+      "index": 0,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-twint",
+      "index": 2,
+      "href": "#review-edit-twint",
+      "target": "review-edit-twint",
+      "observed": {
+        "hash": "#review-edit-twint",
+        "visible": [
+          "review-edit-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-twint",
+      "index": 3,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-twint",
+      "index": 0,
+      "href": "#edit-twint",
+      "target": "edit-twint",
+      "observed": {
+        "hash": "#edit-twint",
+        "visible": [
+          "edit-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-twint",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-twint",
+      "index": 3,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-paypal",
+      "index": 0,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-paypal",
+      "index": 2,
+      "href": "#review-edit-paypal",
+      "target": "review-edit-paypal",
+      "observed": {
+        "hash": "#review-edit-paypal",
+        "visible": [
+          "review-edit-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-paypal",
+      "index": 3,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-paypal",
+      "index": 0,
+      "href": "#edit-paypal",
+      "target": "edit-paypal",
+      "observed": {
+        "hash": "#edit-paypal",
+        "visible": [
+          "edit-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-paypal",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-paypal",
+      "index": 3,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-crypto",
+      "index": 0,
+      "href": "#edit-crypto",
+      "target": "edit-crypto",
+      "observed": {
+        "hash": "#edit-crypto",
+        "visible": [
+          "edit-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-crypto",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-crypto",
+      "index": 3,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-twint",
+      "index": 0,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-twint",
+      "index": 2,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-twint",
+      "index": 3,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-paypal",
+      "index": 0,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-paypal",
+      "index": 2,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-paypal",
+      "index": 3,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-crypto",
+      "index": 0,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-crypto",
+      "index": 2,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm-crypto",
+      "index": 3,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
       "from": "demo",
       "index": 0,
       "href": "#overview",
@@ -8548,6 +10464,160 @@
       "viewport": "430x890",
       "from": "demo",
       "index": 40,
+      "href": "#review-new-twint",
+      "target": "review-new-twint",
+      "observed": {
+        "hash": "#review-new-twint",
+        "visible": [
+          "review-new-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 41,
+      "href": "#review-new-paypal",
+      "target": "review-new-paypal",
+      "observed": {
+        "hash": "#review-new-paypal",
+        "visible": [
+          "review-new-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 42,
+      "href": "#review-new-crypto",
+      "target": "review-new-crypto",
+      "observed": {
+        "hash": "#review-new-crypto",
+        "visible": [
+          "review-new-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 43,
+      "href": "#edit-twint",
+      "target": "edit-twint",
+      "observed": {
+        "hash": "#edit-twint",
+        "visible": [
+          "edit-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 44,
+      "href": "#review-edit-twint",
+      "target": "review-edit-twint",
+      "observed": {
+        "hash": "#review-edit-twint",
+        "visible": [
+          "review-edit-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 45,
+      "href": "#edit-paypal",
+      "target": "edit-paypal",
+      "observed": {
+        "hash": "#edit-paypal",
+        "visible": [
+          "edit-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 46,
+      "href": "#review-edit-paypal",
+      "target": "review-edit-paypal",
+      "observed": {
+        "hash": "#review-edit-paypal",
+        "visible": [
+          "review-edit-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 47,
+      "href": "#review-edit-crypto",
+      "target": "review-edit-crypto",
+      "observed": {
+        "hash": "#review-edit-crypto",
+        "visible": [
+          "review-edit-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 48,
+      "href": "#remove-confirm-twint",
+      "target": "remove-confirm-twint",
+      "observed": {
+        "hash": "#remove-confirm-twint",
+        "visible": [
+          "remove-confirm-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 49,
+      "href": "#remove-confirm-paypal",
+      "target": "remove-confirm-paypal",
+      "observed": {
+        "hash": "#remove-confirm-paypal",
+        "visible": [
+          "remove-confirm-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 50,
+      "href": "#remove-confirm-crypto",
+      "target": "remove-confirm-crypto",
+      "observed": {
+        "hash": "#remove-confirm-crypto",
+        "visible": [
+          "remove-confirm-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 51,
       "href": "#overview",
       "target": "overview",
       "observed": {
@@ -8610,10 +10680,10 @@
     "secret_like_terms_in_inputs": false,
     "raw_destinations_on_overview": false
   },
-  "layout_checks": 96,
-  "passed_layouts": 96,
-  "product_clicks": 480,
-  "passed_product_clicks": 480,
+  "layout_checks": 118,
+  "passed_layouts": 118,
+  "product_clicks": 598,
+  "passed_product_clicks": 598,
   "failed_layouts": [],
   "failed_interactions": []
 }

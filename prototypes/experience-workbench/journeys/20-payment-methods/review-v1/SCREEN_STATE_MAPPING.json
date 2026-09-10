@@ -423,6 +423,105 @@
     ]
   },
   {
+    "screen": "review-new-twint",
+    "financial_effect": "none",
+    "authority": "read/navigation",
+    "qa": [
+      "results/screenshots/review-new-twint-393x852.png",
+      "results/screenshots/review-new-twint-430x890.png"
+    ]
+  },
+  {
+    "screen": "review-new-paypal",
+    "financial_effect": "none",
+    "authority": "read/navigation",
+    "qa": [
+      "results/screenshots/review-new-paypal-393x852.png",
+      "results/screenshots/review-new-paypal-430x890.png"
+    ]
+  },
+  {
+    "screen": "review-new-crypto",
+    "financial_effect": "none",
+    "authority": "read/navigation",
+    "qa": [
+      "results/screenshots/review-new-crypto-393x852.png",
+      "results/screenshots/review-new-crypto-430x890.png"
+    ]
+  },
+  {
+    "screen": "edit-twint",
+    "financial_effect": "none",
+    "authority": "read/navigation",
+    "qa": [
+      "results/screenshots/edit-twint-393x852.png",
+      "results/screenshots/edit-twint-430x890.png"
+    ]
+  },
+  {
+    "screen": "review-edit-twint",
+    "financial_effect": "none",
+    "authority": "read/navigation",
+    "qa": [
+      "results/screenshots/review-edit-twint-393x852.png",
+      "results/screenshots/review-edit-twint-430x890.png"
+    ]
+  },
+  {
+    "screen": "edit-paypal",
+    "financial_effect": "none",
+    "authority": "read/navigation",
+    "qa": [
+      "results/screenshots/edit-paypal-393x852.png",
+      "results/screenshots/edit-paypal-430x890.png"
+    ]
+  },
+  {
+    "screen": "review-edit-paypal",
+    "financial_effect": "none",
+    "authority": "read/navigation",
+    "qa": [
+      "results/screenshots/review-edit-paypal-393x852.png",
+      "results/screenshots/review-edit-paypal-430x890.png"
+    ]
+  },
+  {
+    "screen": "review-edit-crypto",
+    "financial_effect": "none",
+    "authority": "read/navigation",
+    "qa": [
+      "results/screenshots/review-edit-crypto-393x852.png",
+      "results/screenshots/review-edit-crypto-430x890.png"
+    ]
+  },
+  {
+    "screen": "remove-confirm-twint",
+    "financial_effect": "none",
+    "authority": "simulated owner write/recovery",
+    "qa": [
+      "results/screenshots/remove-confirm-twint-393x852.png",
+      "results/screenshots/remove-confirm-twint-430x890.png"
+    ]
+  },
+  {
+    "screen": "remove-confirm-paypal",
+    "financial_effect": "none",
+    "authority": "simulated owner write/recovery",
+    "qa": [
+      "results/screenshots/remove-confirm-paypal-393x852.png",
+      "results/screenshots/remove-confirm-paypal-430x890.png"
+    ]
+  },
+  {
+    "screen": "remove-confirm-crypto",
+    "financial_effect": "none",
+    "authority": "simulated owner write/recovery",
+    "qa": [
+      "results/screenshots/remove-confirm-crypto-393x852.png",
+      "results/screenshots/remove-confirm-crypto-430x890.png"
+    ]
+  },
+  {
     "screen": "demo",
     "financial_effect": "none",
     "authority": "read/navigation",
