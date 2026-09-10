@@ -38,9 +38,9 @@ html = html.replace(insertionPoint, `${peoplePreview}${insertionPoint}`);
 html = html.replace('<b>Home preview</b>', '<b>Pots / Home preview</b>');
 html = html.replace('Home remains an approved adjacent surface. This preview only demonstrates the Insights entry/return boundary.', 'Pots / Home remains an approved adjacent surface. This preview only demonstrates the Insights entry/return boundary.');
 
-const validNeedle = "'home-preview','you-preview','activity-preview'";
+const validNeedle = '"home-preview","you-preview","activity-preview"';
 if (!html.includes(validNeedle)) throw new Error('Could not find valid-state list');
-html = html.replace(validNeedle, "'home-preview','people-preview','you-preview','activity-preview'");
+html = html.replace(validNeedle, '"home-preview","people-preview","you-preview","activity-preview"');
 
 html = html.replaceAll('Insights V1', 'Insights V1.1');
 html = html.replace('</head>', '<style id="j19-v1-1-corrections">.j19-row>svg{width:16px;height:16px;color:var(--muted);flex:none}.add-tab svg{width:23px;height:23px}.tabbar .tab svg{width:20px;height:20px}</style></head>');
