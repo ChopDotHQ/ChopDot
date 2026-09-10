@@ -100,7 +100,15 @@ html=html.replace('</head>','<style id="j20-v1-route-repair">.j20-danger{min-hei
 
 const ids=[...html.matchAll(/<section id="([^"]+)" class="screen/g)].map(m=>m[1]);
 if(ids.length!==new Set(ids).size)throw new Error('Duplicate screen ids after J20 route repair');
+
+// The base builder embeds a runtime valid-screen set before refinement. Keep it in lockstep with
+// any refined screens so hash normalization does not immediately bounce a valid new state back
+// to #overview and make its controls unreachable to users or browser QA.
+const runtimeValid=/const valid=new Set\(\[[^\]]*\]\);function normalize\(\)/;
+if(!runtimeValid.test(html))throw new Error('Could not locate runtime valid-screen set after J20 route repair');
+html=html.replace(runtimeValid,`const valid=new Set(${JSON.stringify(ids)});function normalize()`);
+
 for(const target of [...html.matchAll(/href="#([^"]+)"/g)].map(m=>m[1]))if(!ids.includes(target))throw new Error(`Broken target after J20 route repair: ${target}`);
 fs.writeFileSync(candidatePath,html);
 const hash=crypto.createHash('sha256').update(html).digest('hex');
-console.log(JSON.stringify({ok:true,repair:'method-specific review/edit/remove routes',screens:ids.length,sha256:hash},null,2));
+console.log(JSON.stringify({ok:true,repair:'method-specific review/edit/remove routes + runtime route registry',screens:ids.length,sha256:hash},null,2));
