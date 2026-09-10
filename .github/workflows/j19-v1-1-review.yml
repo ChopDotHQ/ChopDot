@@ -39,13 +39,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin ux/experience-workbench
+          git rebase origin/ux/experience-workbench
           git add prototypes/experience-workbench/journeys/19-insights/review-v1.1
           if git diff --cached --quiet; then
             echo "Journey 19 V1.1 review bundle is already current."
             exit 0
           fi
           git commit -m "Materialize Journey 19 V1.1 review bundle"
-          git push
+          git push origin HEAD:ux/experience-workbench
       - name: Upload Journey 19 V1.1 review evidence
         if: always()
         uses: actions/upload-artifact@v4
