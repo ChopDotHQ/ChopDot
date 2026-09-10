@@ -22,6 +22,6 @@
 
 Journey 19 — Insights V1.1 is Golden #19. Its reviewed standalone HTML is checksum-locked exactly.
 
-Current journey: Journey 20 — Payment Methods V1 definition. No review candidate exists yet.
+Current journey: Journey 20 — Payment Methods V1. Exact candidate `74082c72cc52935a5eda41b42279b72f2cb0213f` is **REVIEWABLE**, not `GOLDEN-READY`; direct rendered-PNG inspection and explicit Devinson approval are still required before any freeze.
 
-TYPO-01 remains deferred.
+Journey 21 remains not started. TYPO-01 remains deferred.
