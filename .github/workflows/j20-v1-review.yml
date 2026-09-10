@@ -45,8 +45,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          source_head="$(git rev-parse HEAD)"
           git fetch origin ux/experience-workbench-j20-v1-candidate
-          git rebase origin/ux/experience-workbench-j20-v1-candidate
+          remote_head="$(git rev-parse origin/ux/experience-workbench-j20-v1-candidate)"
+          if [ "$remote_head" != "$source_head" ]; then
+            echo "Journey 20 candidate branch moved during review; refusing to materialize stale evidence."
+            echo "Reviewed source: $source_head"
+            echo "Current remote: $remote_head"
+            exit 1
+          fi
           git add prototypes/experience-workbench/journeys/20-payment-methods/review-v1
           if git diff --cached --quiet; then
             echo "Journey 20 V1 review bundle is already current."
