@@ -4,22 +4,36 @@
 
 1. Define the user goal, entry, exit, and boundaries.
 2. Update the canonical registry before building.
-3. Inherit the Golden frame, tokens, components, copy, and icons.
-4. Build the review artifact and structured source.
-5. Render at 393 × 852 and 430 × 890.
-6. Inspect actual screenshots against Golden references.
-7. Test happy, empty, loading, offline, permission, conflict, and failure states as relevant.
-8. Validate links, overflow, frame overlap, IDs, icons, and semantic variants.
-9. Update feature and edge-case coverage.
-10. Run `npm run gate`.
-11. User reviews.
-12. Freeze as Golden only after approval.
+3. Compose the active context bundle from `DESIGN_CONTRACT.md`, the current journey contract/history, relevant adjacent Goldens, `shared/improvements.md`, and the exact task.
+4. Inherit the Golden frame, tokens, components, copy, and icons.
+5. Build the review artifact and structured source.
+6. Render at 393 × 852 and 430 × 890.
+7. Inspect actual screenshots against Golden references.
+8. Test happy, empty, loading, offline, permission, conflict, and failure states as relevant.
+9. Validate links, overflow, frame overlap, IDs, icons, and semantic variants.
+10. Update feature and edge-case coverage.
+11. Run `npm run gate`.
+12. Run an independent review under `REVIEW_PROTOCOL.md`; green mechanical QA alone cannot produce `GOLDEN-READY`.
+13. User reviews the exact `GOLDEN-READY` candidate.
+14. Freeze as Golden only after explicit approval of that exact candidate.
+
+## Authority and context rule
+
+`registry/progress.json`, `registry/journeys.json`, approval records, and Golden artifact locks are authoritative for current status. Historical prose does not override them.
+
+For active journey work, load only the context bundle defined in `DESIGN_CONTRACT.md`. Do not duplicate the whole design/process contract into journey docs or agent prompts.
+
+## Shared-system debt rule
+
+Journey work may discover cross-cutting issues and record them in `shared/improvements.md`. It may not fix them locally. A shared-system pass must be deliberately opened, separately reviewed, and regression-tested across affected Goldens.
 
 ## Control rule
 
 The visual map may never be shortened manually. It is generated from `registry/journeys.json`.
 
 `feature-coverage.html` and `edge-case-ledger.html` are generated from the same fingerprint.
+
+`registry/goldens.manifest.json` is generated from `registry/journeys.json` plus `registry/golden-artifact-locks.json`; it is a machine-readable projection, not a second approval authority.
 
 ## Freeze gate
 
@@ -37,7 +51,8 @@ The gate rejects:
 - orphan features or edge cases;
 - missing journeys in the visual map;
 - stale generated control surfaces;
-- registry/map fingerprint mismatch.
+- registry/map fingerprint mismatch;
+- Golden manifest count/path/checksum disagreement with the canonical journey and lock registries.
 
 If the gate fails, the journey is not ready to freeze.
 
@@ -49,8 +64,9 @@ Do not hand-edit:
 - `feature-coverage.html`
 - `edge-case-ledger.html`
 - `registry/map-fingerprint.json`
+- `registry/goldens.manifest.json`
 
-Update the registries, then rerun the gate.
+Update the authoritative registries, then rerun the gate.
 
 <!-- JOURNEY_DECISION_HISTORY:START -->
 ## Decision history and future revisits
