@@ -1,6 +1,6 @@
 ## Decision history
 
-**Coverage:** Journey 19 V1 candidate decisions recorded from the current specification and QA during candidate creation, plus the V1.1 continuity correction found during fresh review. This is not an approval record; Journey 19 remains review-pending.
+**Coverage:** Journey 19 V1 candidate decisions recorded from the current specification and QA during candidate creation. This is not an approval record; V1 remains review-pending.
 
 ### J19-D01 — Read-only patterns instead of a second ledger
 
@@ -49,19 +49,3 @@
 **Approval / version:** V1 review candidate; not approved or Golden.
 
 **Sources:** [Journey 19 specification](../spec.md) [Browser QA](../visual-qa/browser-qa.json)
-
-### J19-D04 — Insights inherits the frozen global navigation shell
-
-**Decision:** Journey 19 V1.1 uses the established global navigation vocabulary and hierarchy: Pots, People, raised Add, Activity, You. Insights remains a feature and does not rename global tabs or create a new global destination.
-
-**Why:** Fresh rendered review of V1 found that it had quietly changed the shell to Home, Groups, Add, Activity, You and flattened the center Add action. That contradicted the cross-journey Golden system and made Insights feel like a different app.
-
-**Alternatives:** Keep the V1 Home / Groups footer because the links worked, or promote Insights into its own global tab. Both were rejected because working links are not enough when the shared product shell has already been established, and the Journey 19 specification explicitly keeps Insights out of global navigation.
-
-**Tradeoffs:** The standalone prototype needs lightweight adjacent-surface previews for global navigation destinations it does not own. Those previews are boundaries only and must not redesign the adjacent journeys.
-
-**Revisit when:** The global ChopDot navigation itself is deliberately reopened as a separately scoped cross-product decision.
-
-**Approval / version:** V1.1 review candidate; not approved or Golden. V1 remains preserved. TYPO-01 remains deferred.
-
-**Sources:** [Journey 19 V1.1 builder](./build-v1.1.mjs) [Journey 17 Golden candidate](../../17-savings-contribute-withdraw/v1.4-review-candidate.html) [Journey 18 Golden candidate](../../18-activity-notifications/review-v1.1/j18-v1.1-continuity-candidate.html) [Journey 19 specification](../spec.md)
