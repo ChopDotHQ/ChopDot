@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type {AppState} from '../types';
-import {deriveHomePresentation} from './homePresentation';
+import {deriveHomePresentation, shouldShowHomeReceiptShortcut} from './homePresentation';
 
 test('empty Home selects New group state without inventing a receipt prompt', () => {
   assert.deepEqual(deriveHomePresentation(state(), 'mina'), {
@@ -9,6 +9,16 @@ test('empty Home selects New group state without inventing a receipt prompt', ()
     openGroupIds: [],
     prompt: null,
   });
+});
+
+test('receipt capture shortcut stays hidden on empty Home and becomes available after a group exists', () => {
+  const emptyPresentation = deriveHomePresentation(state(), 'mina');
+  assert.equal(shouldShowHomeReceiptShortcut(emptyPresentation), false);
+
+  const value = state();
+  value.groups.trip = group('trip', 'Trip');
+  const returningPresentation = deriveHomePresentation(value, 'mina');
+  assert.equal(shouldShowHomeReceiptShortcut(returningPresentation), true);
 });
 
 test('returning Home keeps group order stable and has no prompt without a pending participant action', () => {
