@@ -106,7 +106,7 @@
     "contract:check": "node scripts/check-recovery-head-contract.mjs && npm run contract:verify:pvm",
     "test:recovery-contract": "npm run contract:check && npm run contract:hardhat:pvm && npm run test:recovery-contract:behavior && node --import tsx --test src/recovery/recoveryHeadIndex.test.ts",
     "test:node": "node scripts/run-node-tests.mjs",
-    "test:release-browser": "playwright test --config=playwright.release.config.ts --workers=1",
+    "test:release-browser": "playwright test --config=playwright.release.config.ts --workers=1 && npm run test:host-sim",
     "test:capture-truth": "playwright test tests/capture-truth.spec.ts --config=playwright.host-sim.config.ts",
     "test:receipt-draft": "node --import tsx --test src/capture/receiptDraft.test.ts",
     "test:payment-intents": "node --import tsx --test server/payment-intents/*.test.ts",
