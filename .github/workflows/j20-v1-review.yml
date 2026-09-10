@@ -34,7 +34,9 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Build Journey 20 V1 candidate
-        run: node prototypes/experience-workbench/journeys/20-payment-methods/source/build-v1.mjs
+        run: |
+          node prototypes/experience-workbench/journeys/20-payment-methods/source/build-v1.mjs
+          node prototypes/experience-workbench/journeys/20-payment-methods/source/refine-v1.mjs
       - name: Run deterministic Journey 20 model tests
         run: node prototypes/experience-workbench/journeys/20-payment-methods/source/test-model.cjs
       - name: Run fresh Journey 20 browser and interaction QA
