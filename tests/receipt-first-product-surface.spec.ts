@@ -36,21 +36,23 @@ test('explicit Catch action captures a local receipt draft before account or mon
   }, storageKey)).toEqual({users: 0, groups: 0, expenses: 0});
 });
 
-test('a Product Account reviews and signs the captured receipt into one organizer-owned group', async ({browser}) => {
+test('a Product Account reviews and signs a group-scoped receipt into one organizer-owned group', async ({browser}) => {
   const product = await openHostedProduct(browser, {viewport: {width: 390, height: 844}});
   const {frame} = product;
   try {
-    await frame.getByRole('button', {name: 'Scan a receipt'}).click();
-    await frame.getByLabel('Import a receipt').setInputFiles({
+    await frame.getByRole('button', {name: 'New group'}).click();
+    await frame.getByPlaceholder('e.g. Weekend Trip').fill('Zurich Dinner');
+    await expect(frame.getByLabel('Friend name')).toHaveCount(0);
+    await frame.getByRole('button', {name: 'Create my group'}).click();
+
+    await expect(frame.getByRole('heading', {name: 'Zurich Dinner'})).toBeVisible({timeout: 15_000});
+    await frame.getByRole('button', {name: /Scan a receipt — Add spend/u}).click();
+    await frame.getByLabel('Choose receipt').setInputFiles({
       name: 'gusto-receipt.txt',
       mimeType: 'text/plain',
       buffer: Buffer.from('Gusto Zurich\nGrand total CHF 120.00'),
     });
-    await frame.getByRole('button', {name: 'Continue with this draft'}).click();
-    await frame.getByRole('button', {name: 'Add the people'}).click();
-    await frame.getByPlaceholder('e.g. Weekend Trip').fill('Zurich Dinner');
-    await expect(frame.getByLabel('Friend name')).toHaveCount(0);
-    await frame.getByRole('button', {name: 'Create my group'}).click();
+    await frame.getByRole('button', {name: 'Review split'}).click();
 
     await expect(frame.getByRole('heading', {name: 'Review split'})).toBeVisible();
     await expect(frame.getByText(/120\.00/u).first()).toBeVisible();

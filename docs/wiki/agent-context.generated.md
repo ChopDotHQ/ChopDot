@@ -3,14 +3,14 @@
 **Kind:** read-model
 **Status:** generated
 **Owner:** wiki-generator
-**Last reviewed:** 2026-08-26
+**Last reviewed:** 2026-09-10
 **Applies to:** chopdot-v1-launch
 **Authority:** navigation only; it cannot override law, Cockpit source, exact source evidence, release readback, or cited recall
 
 Generated read model. It is navigation, not product authority.
 
 - Product truth SHA-256: `d5ea94b3b89f682d7b7ab76f580102316c25b0366c52b9b5a851a5ab7162bba6`
-- Product cards SHA-256: `63edd5fa9d7234a80b5518e3ce5e67306bde6ad012a57e9fd53ab970a7ba78ed`
+- Product cards SHA-256: `40e3dd66c4d046e9c6f8314e3f3f708fe750fc8d523f3c8d41238c1e3ca3a96c`
 - Product decisions SHA-256: `45fcb3c7ad18036d5aa4f7a325aa1c0f084f2566514b390877d9cc036a92ab7b`
 - Product benchmark baseline SHA-256: `eb0bad42e37a3d6b61ca98414dfc03ff123a0c67c016ee612aab7b6b54c76b50`
 - Current release state SHA-256: `182c423ad21dffd67a6bdc62eaec4c1b1594c59b8b466b2bd37991c9414fd39a`

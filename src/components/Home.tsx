@@ -13,7 +13,7 @@ import {useAppState} from '../state/AppStateContext';
 import {getGroupTotal, getMemberBalance} from '../state/store';
 import type {Group, GroupMode, Split} from '../types';
 import {getCurrencySymbol, getInitials} from '../utils';
-import {deriveHomePresentation, type HomeContextualPrompt} from './homePresentation';
+import {deriveHomePresentation, shouldShowHomeReceiptShortcut, type HomeContextualPrompt} from './homePresentation';
 import {groupMode, modeCopy} from './productModes';
 
 const modeIcons = {
@@ -145,18 +145,20 @@ export function Home({
           </section>
         )}
 
-        <section aria-labelledby="catch-shortcut-title" className="border-t border-gray-200 py-7 dark:border-gray-800">
-          <div className="flex items-start gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#e6007a] shadow-sm dark:bg-gray-900">
-              <Camera className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <h2 id="catch-shortcut-title" className="font-bold tracking-[-0.02em]">Already paid for something?</h2>
-              <p className="mt-1 text-sm leading-5 text-gray-600 dark:text-gray-300">Capture a receipt now and choose the group after you review it.</p>
-              <button type="button" onClick={onScanReceipt} className="mt-3 min-h-11 text-sm font-bold text-[#c40068] hover:text-[#9f0056] dark:text-[#ff65b5] dark:hover:text-[#ff8ac8]">Scan a receipt</button>
+        {shouldShowHomeReceiptShortcut(presentation) && (
+          <section aria-labelledby="catch-shortcut-title" className="border-t border-gray-200 py-7 dark:border-gray-800">
+            <div className="flex items-start gap-3">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#e6007a] shadow-sm dark:bg-gray-900">
+                <Camera className="h-5 w-5" aria-hidden="true" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h2 id="catch-shortcut-title" className="font-bold tracking-[-0.02em]">Already paid for something?</h2>
+                <p className="mt-1 text-sm leading-5 text-gray-600 dark:text-gray-300">Capture a receipt now and choose the group after you review it.</p>
+                <button type="button" onClick={onScanReceipt} className="mt-3 min-h-11 text-sm font-bold text-[#c40068] hover:text-[#9f0056] dark:text-[#ff65b5] dark:hover:text-[#ff8ac8]">Scan a receipt</button>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </div>
     </main>
   );

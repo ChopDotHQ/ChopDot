@@ -2,7 +2,7 @@
   "schema": "chopdot.context-authority.v1",
   "status": "active",
   "owner": "release-integrator",
-  "last_reviewed": "2026-08-27",
+  "last_reviewed": "2026-09-10",
   "exact_root": "/Users/devinsonpena/ChopDot/.worktrees/chopdot-v1-launch",
   "branch": "codex/chopdot-v1-launch",
   "authority_order": [
@@ -52,11 +52,11 @@
       "kind": "decision",
       "status": "active",
       "owner": "product",
-      "last_reviewed": "2026-08-27",
+      "last_reviewed": "2026-09-10",
       "freshness_days": 14,
       "applies_to": "chopdot-v1-launch",
       "authority": "current product jobs, priorities, scope, blockers, and acceptance state",
-      "sha256": "63edd5fa9d7234a80b5518e3ce5e67306bde6ad012a57e9fd53ab970a7ba78ed"
+      "sha256": "40e3dd66c4d046e9c6f8314e3f3f708fe750fc8d523f3c8d41238c1e3ca3a96c"
     },
     {
       "path": "product/benchmark-baseline.md",
@@ -151,11 +151,11 @@
       "kind": "read-model",
       "status": "generated",
       "owner": "wiki-generator",
-      "last_reviewed": "2026-08-26",
+      "last_reviewed": "2026-09-10",
       "freshness_days": 14,
       "applies_to": "chopdot-v1-launch",
       "authority": "navigation only; it cannot override law, Cockpit source, exact source evidence, release readback, or cited recall",
-      "sha256": "7f0bbbe4b46f5836dc8d88df17113ff8e203f209b1c49231b5a5c4189d4e799f"
+      "sha256": "6b07d76e392431ad04003c4f4fa20155631f494e1d02bd38425b4d649e8c31d6"
     }
   ],
   "conditional_routes": [

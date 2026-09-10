@@ -5,12 +5,12 @@ import {releaseEvidencePath} from './support/releaseEvidencePath.ts';
 const appUrl = 'http://127.0.0.1:4177/';
 const screenshotRoot = releaseEvidencePath('contextual-home-first-group', 'first-use');
 
-test('empty Home has one New group action and a secondary receipt path', async ({page}) => {
+test('empty Home has one New group action and no competing receipt shortcut', async ({page}) => {
   await enterAsGuest(page);
 
   await expect(page.getByRole('heading', {name: 'Your groups'})).toBeVisible();
   await expect(page.locator('[data-primary-action="true"]:visible')).toHaveCount(1);
-  await expect(page.getByRole('button', {name: 'Scan a receipt'})).toBeVisible();
+  await expect(page.getByRole('button', {name: 'Scan a receipt'})).toHaveCount(0);
   await expect(page.getByRole('button', {name: 'New group'})).toHaveCount(1);
   await expect(page.getByText('Start something together')).toHaveCount(0);
   await expect(page.getByRole('button', {name: 'Start with a group'})).toHaveCount(0);

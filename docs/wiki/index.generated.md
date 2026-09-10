@@ -3,7 +3,7 @@
 **Kind:** read-model
 **Status:** generated
 **Owner:** wiki-generator
-**Last reviewed:** 2026-08-26
+**Last reviewed:** 2026-09-10
 **Applies to:** chopdot-v1-launch
 **Authority:** navigation only; every source page explains a scoped claim subordinate to Product Truth, current Cockpit decisions and contracts, ADRs, and exact evidence
 

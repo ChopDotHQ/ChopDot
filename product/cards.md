@@ -3,7 +3,7 @@
 **Kind:** decision
 **Status:** active
 **Owner:** product
-**Last reviewed:** 2026-08-27
+**Last reviewed:** 2026-09-10
 **Applies to:** `chopdot-v1-launch`
 **Authority:** current product jobs, priorities, scope, blockers, and acceptance state
 
@@ -58,7 +58,7 @@ status: building
 priority: 60
 blocker: none
 blocked_by: none
-reviewed: 2026-08-24
+reviewed: 2026-09-10
 applies_to: chopdot-v1-launch
 evidence_type: measurement
 evidence: docs/release/2026-08-24-recovery-head-index-live-proof.md
@@ -96,7 +96,7 @@ status: building
 priority: 100
 blocker: P0-live-first-use
 blocked_by: none
-reviewed: 2026-08-24
+reviewed: 2026-09-10
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: docs/release/2026-08-24-p035-p022-local-acceptance.md
@@ -172,7 +172,7 @@ status: building
 priority: 50
 blocker: none
 blocked_by: none
-reviewed: 2026-08-24
+reviewed: 2026-09-10
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/capture-truth.spec.ts
@@ -210,7 +210,7 @@ status: building
 priority: 90
 blocker: P1-live-home-hierarchy
 blocked_by: none
-reviewed: 2026-08-24
+reviewed: 2026-09-10
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: docs/release/2026-08-24-p035-p022-local-acceptance.md
@@ -248,7 +248,7 @@ status: blocked
 priority: 40
 blocker: none
 blocked_by: P-035,P-013,P-022
-reviewed: 2026-08-24
+reviewed: 2026-09-10
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
@@ -286,7 +286,7 @@ status: blocked
 priority: 39
 blocker: none
 blocked_by: P-035,P-013,P-022
-reviewed: 2026-08-24
+reviewed: 2026-09-10
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
@@ -324,7 +324,7 @@ status: blocked
 priority: 38
 blocker: none
 blocked_by: P-035,P-013,P-022
-reviewed: 2026-08-24
+reviewed: 2026-09-10
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
@@ -362,7 +362,7 @@ status: blocked
 priority: 37
 blocker: none
 blocked_by: P-035,P-013,P-022
-reviewed: 2026-08-24
+reviewed: 2026-09-10
 applies_to: chopdot-v1-launch
 evidence_type: test
 evidence: tests/named-mode-multi-account-production-entrypoint.spec.ts
