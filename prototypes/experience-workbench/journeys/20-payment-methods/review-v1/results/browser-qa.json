@@ -1,0 +1,8619 @@
+{
+  "ok": true,
+  "journey": "20",
+  "version": "v1",
+  "review_status": "review-pending",
+  "candidate_sha256": "818e8117265ad3bc0bf40054a4a0c31188981acb82918642be6509b79a880a26",
+  "states": 48,
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "model_assertions": 81,
+  "model_scenarios": 12,
+  "layouts": [
+    {
+      "screen": "overview",
+      "viewport": "393x852",
+      "visible": [
+        "overview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 713,
+      "mainClientHeight": 713,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "empty",
+      "viewport": "393x852",
+      "visible": [
+        "empty"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 713,
+      "mainClientHeight": 713,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "detail-bank",
+      "viewport": "393x852",
+      "visible": [
+        "detail-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "detail-twint",
+      "viewport": "393x852",
+      "visible": [
+        "detail-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "detail-paypal",
+      "viewport": "393x852",
+      "visible": [
+        "detail-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "detail-crypto",
+      "viewport": "393x852",
+      "visible": [
+        "detail-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-chooser",
+      "viewport": "393x852",
+      "visible": [
+        "add-chooser"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-bank",
+      "viewport": "393x852",
+      "visible": [
+        "add-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-twint",
+      "viewport": "393x852",
+      "visible": [
+        "add-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-paypal",
+      "viewport": "393x852",
+      "visible": [
+        "add-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-crypto",
+      "viewport": "393x852",
+      "visible": [
+        "add-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-new-bank",
+      "viewport": "393x852",
+      "visible": [
+        "review-new-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "edit-bank",
+      "viewport": "393x852",
+      "visible": [
+        "edit-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "edit-crypto",
+      "viewport": "393x852",
+      "visible": [
+        "edit-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-edit-bank",
+      "viewport": "393x852",
+      "visible": [
+        "review-edit-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "save-pending",
+      "viewport": "393x852",
+      "visible": [
+        "save-pending"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "save-accepted",
+      "viewport": "393x852",
+      "visible": [
+        "save-accepted"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "save-unknown",
+      "viewport": "393x852",
+      "visible": [
+        "save-unknown"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "save-recovered",
+      "viewport": "393x852",
+      "visible": [
+        "save-recovered"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "save-failed",
+      "viewport": "393x852",
+      "visible": [
+        "save-failed"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "invalid-bank",
+      "viewport": "393x852",
+      "visible": [
+        "invalid-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "duplicate",
+      "viewport": "393x852",
+      "visible": [
+        "duplicate"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "preference",
+      "viewport": "393x852",
+      "visible": [
+        "preference"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "availability",
+      "viewport": "393x852",
+      "visible": [
+        "availability"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-confirm",
+      "viewport": "393x852",
+      "visible": [
+        "remove-confirm"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-pending",
+      "viewport": "393x852",
+      "visible": [
+        "remove-pending"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-accepted",
+      "viewport": "393x852",
+      "visible": [
+        "remove-accepted"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-unknown",
+      "viewport": "393x852",
+      "visible": [
+        "remove-unknown"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-recovered",
+      "viewport": "393x852",
+      "visible": [
+        "remove-recovered"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-failed",
+      "viewport": "393x852",
+      "visible": [
+        "remove-failed"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "share-stale-edit",
+      "viewport": "393x852",
+      "visible": [
+        "share-stale-edit"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "share-stale-remove",
+      "viewport": "393x852",
+      "visible": [
+        "share-stale-remove"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "incompatible-asset",
+      "viewport": "393x852",
+      "visible": [
+        "incompatible-asset"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "network-mismatch",
+      "viewport": "393x852",
+      "visible": [
+        "network-mismatch"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 685,
+      "mainClientHeight": 685,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "offline",
+      "viewport": "393x852",
+      "visible": [
+        "offline"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 713,
+      "mainClientHeight": 713,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "offline-write",
+      "viewport": "393x852",
+      "visible": [
+        "offline-write"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "session-changed",
+      "viewport": "393x852",
+      "visible": [
+        "session-changed"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "loading",
+      "viewport": "393x852",
+      "visible": [
+        "loading"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 713,
+      "mainClientHeight": 713,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "error",
+      "viewport": "393x852",
+      "visible": [
+        "error"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "handoff-settlement",
+      "viewport": "393x852",
+      "visible": [
+        "handoff-settlement"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "handoff-receive",
+      "viewport": "393x852",
+      "visible": [
+        "handoff-receive"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "handoff-wallet",
+      "viewport": "393x852",
+      "visible": [
+        "handoff-wallet"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "pots-preview",
+      "viewport": "393x852",
+      "visible": [
+        "pots-preview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "people-preview",
+      "viewport": "393x852",
+      "visible": [
+        "people-preview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-preview",
+      "viewport": "393x852",
+      "visible": [
+        "add-preview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "activity-preview",
+      "viewport": "393x852",
+      "visible": [
+        "activity-preview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "you-preview",
+      "viewport": "393x852",
+      "visible": [
+        "you-preview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "demo",
+      "viewport": "393x852",
+      "visible": [
+        "demo"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 726,
+      "mainClientHeight": 726,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "overview",
+      "viewport": "430x890",
+      "visible": [
+        "overview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 751,
+      "mainClientHeight": 751,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "empty",
+      "viewport": "430x890",
+      "visible": [
+        "empty"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 751,
+      "mainClientHeight": 751,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "detail-bank",
+      "viewport": "430x890",
+      "visible": [
+        "detail-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "detail-twint",
+      "viewport": "430x890",
+      "visible": [
+        "detail-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "detail-paypal",
+      "viewport": "430x890",
+      "visible": [
+        "detail-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "detail-crypto",
+      "viewport": "430x890",
+      "visible": [
+        "detail-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-chooser",
+      "viewport": "430x890",
+      "visible": [
+        "add-chooser"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-bank",
+      "viewport": "430x890",
+      "visible": [
+        "add-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-twint",
+      "viewport": "430x890",
+      "visible": [
+        "add-twint"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-paypal",
+      "viewport": "430x890",
+      "visible": [
+        "add-paypal"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-crypto",
+      "viewport": "430x890",
+      "visible": [
+        "add-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-new-bank",
+      "viewport": "430x890",
+      "visible": [
+        "review-new-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "edit-bank",
+      "viewport": "430x890",
+      "visible": [
+        "edit-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "edit-crypto",
+      "viewport": "430x890",
+      "visible": [
+        "edit-crypto"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "review-edit-bank",
+      "viewport": "430x890",
+      "visible": [
+        "review-edit-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "save-pending",
+      "viewport": "430x890",
+      "visible": [
+        "save-pending"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "save-accepted",
+      "viewport": "430x890",
+      "visible": [
+        "save-accepted"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "save-unknown",
+      "viewport": "430x890",
+      "visible": [
+        "save-unknown"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "save-recovered",
+      "viewport": "430x890",
+      "visible": [
+        "save-recovered"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "save-failed",
+      "viewport": "430x890",
+      "visible": [
+        "save-failed"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "invalid-bank",
+      "viewport": "430x890",
+      "visible": [
+        "invalid-bank"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "duplicate",
+      "viewport": "430x890",
+      "visible": [
+        "duplicate"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "preference",
+      "viewport": "430x890",
+      "visible": [
+        "preference"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "availability",
+      "viewport": "430x890",
+      "visible": [
+        "availability"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-confirm",
+      "viewport": "430x890",
+      "visible": [
+        "remove-confirm"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-pending",
+      "viewport": "430x890",
+      "visible": [
+        "remove-pending"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-accepted",
+      "viewport": "430x890",
+      "visible": [
+        "remove-accepted"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-unknown",
+      "viewport": "430x890",
+      "visible": [
+        "remove-unknown"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-recovered",
+      "viewport": "430x890",
+      "visible": [
+        "remove-recovered"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "remove-failed",
+      "viewport": "430x890",
+      "visible": [
+        "remove-failed"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "share-stale-edit",
+      "viewport": "430x890",
+      "visible": [
+        "share-stale-edit"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "share-stale-remove",
+      "viewport": "430x890",
+      "visible": [
+        "share-stale-remove"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "incompatible-asset",
+      "viewport": "430x890",
+      "visible": [
+        "incompatible-asset"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "network-mismatch",
+      "viewport": "430x890",
+      "visible": [
+        "network-mismatch"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 723,
+      "mainClientHeight": 723,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "offline",
+      "viewport": "430x890",
+      "visible": [
+        "offline"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 751,
+      "mainClientHeight": 751,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "offline-write",
+      "viewport": "430x890",
+      "visible": [
+        "offline-write"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "session-changed",
+      "viewport": "430x890",
+      "visible": [
+        "session-changed"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "loading",
+      "viewport": "430x890",
+      "visible": [
+        "loading"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 751,
+      "mainClientHeight": 751,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "error",
+      "viewport": "430x890",
+      "visible": [
+        "error"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "handoff-settlement",
+      "viewport": "430x890",
+      "visible": [
+        "handoff-settlement"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "handoff-receive",
+      "viewport": "430x890",
+      "visible": [
+        "handoff-receive"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "handoff-wallet",
+      "viewport": "430x890",
+      "visible": [
+        "handoff-wallet"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "pots-preview",
+      "viewport": "430x890",
+      "visible": [
+        "pots-preview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "people-preview",
+      "viewport": "430x890",
+      "visible": [
+        "people-preview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-preview",
+      "viewport": "430x890",
+      "visible": [
+        "add-preview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "activity-preview",
+      "viewport": "430x890",
+      "visible": [
+        "activity-preview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "you-preview",
+      "viewport": "430x890",
+      "visible": [
+        "you-preview"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    },
+    {
+      "screen": "demo",
+      "viewport": "430x890",
+      "visible": [
+        "demo"
+      ],
+      "display": "grid",
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 764,
+      "mainClientHeight": 764,
+      "missingSvgs": 0,
+      "passed": true
+    }
+  ],
+  "interactions": [
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 0,
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 2,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 4,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 5,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 6,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 7,
+      "href": "#preference",
+      "target": "preference",
+      "observed": {
+        "hash": "#preference",
+        "visible": [
+          "preference"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 8,
+      "href": "#pots-preview",
+      "target": "pots-preview",
+      "observed": {
+        "hash": "#pots-preview",
+        "visible": [
+          "pots-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 9,
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 10,
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 11,
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "index": 12,
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "index": 2,
+      "href": "#pots-preview",
+      "target": "pots-preview",
+      "observed": {
+        "hash": "#pots-preview",
+        "visible": [
+          "pots-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "index": 3,
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "index": 4,
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "index": 5,
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "index": 6,
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-bank",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-bank",
+      "index": 2,
+      "href": "#preference",
+      "target": "preference",
+      "observed": {
+        "hash": "#preference",
+        "visible": [
+          "preference"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-bank",
+      "index": 3,
+      "href": "#availability",
+      "target": "availability",
+      "observed": {
+        "hash": "#availability",
+        "visible": [
+          "availability"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-bank",
+      "index": 4,
+      "href": "#edit-bank",
+      "target": "edit-bank",
+      "observed": {
+        "hash": "#edit-bank",
+        "visible": [
+          "edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-bank",
+      "index": 5,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-twint",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-twint",
+      "index": 2,
+      "href": "#edit-bank",
+      "target": "edit-bank",
+      "observed": {
+        "hash": "#edit-bank",
+        "visible": [
+          "edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-twint",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-paypal",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-paypal",
+      "index": 2,
+      "href": "#edit-bank",
+      "target": "edit-bank",
+      "observed": {
+        "hash": "#edit-bank",
+        "visible": [
+          "edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-paypal",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-crypto",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-crypto",
+      "index": 2,
+      "href": "#edit-crypto",
+      "target": "edit-crypto",
+      "observed": {
+        "hash": "#edit-crypto",
+        "visible": [
+          "edit-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "detail-crypto",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-chooser",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-chooser",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-chooser",
+      "index": 2,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-chooser",
+      "index": 3,
+      "href": "#add-twint",
+      "target": "add-twint",
+      "observed": {
+        "hash": "#add-twint",
+        "visible": [
+          "add-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-chooser",
+      "index": 4,
+      "href": "#add-paypal",
+      "target": "add-paypal",
+      "observed": {
+        "hash": "#add-paypal",
+        "visible": [
+          "add-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-chooser",
+      "index": 5,
+      "href": "#add-crypto",
+      "target": "add-crypto",
+      "observed": {
+        "hash": "#add-crypto",
+        "visible": [
+          "add-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-chooser",
+      "index": 6,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-bank",
+      "index": 0,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-bank",
+      "index": 2,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-bank",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-twint",
+      "index": 0,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-twint",
+      "index": 2,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-twint",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-paypal",
+      "index": 0,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-paypal",
+      "index": 2,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-paypal",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-crypto",
+      "index": 0,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-crypto",
+      "index": 2,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-crypto",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-bank",
+      "index": 0,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-bank",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-new-bank",
+      "index": 3,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-bank",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-bank",
+      "index": 2,
+      "href": "#review-edit-bank",
+      "target": "review-edit-bank",
+      "observed": {
+        "hash": "#review-edit-bank",
+        "visible": [
+          "review-edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-bank",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-crypto",
+      "index": 0,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-crypto",
+      "index": 2,
+      "href": "#review-edit-bank",
+      "target": "review-edit-bank",
+      "observed": {
+        "hash": "#review-edit-bank",
+        "visible": [
+          "review-edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "edit-crypto",
+      "index": 3,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-bank",
+      "index": 0,
+      "href": "#edit-bank",
+      "target": "edit-bank",
+      "observed": {
+        "hash": "#edit-bank",
+        "visible": [
+          "edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-bank",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "review-edit-bank",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-pending",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-pending",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-pending",
+      "index": 2,
+      "href": "#save-accepted",
+      "target": "save-accepted",
+      "observed": {
+        "hash": "#save-accepted",
+        "visible": [
+          "save-accepted"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-pending",
+      "index": 3,
+      "href": "#save-unknown",
+      "target": "save-unknown",
+      "observed": {
+        "hash": "#save-unknown",
+        "visible": [
+          "save-unknown"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-accepted",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-accepted",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-accepted",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-unknown",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-unknown",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-unknown",
+      "index": 2,
+      "href": "#save-recovered",
+      "target": "save-recovered",
+      "observed": {
+        "hash": "#save-recovered",
+        "visible": [
+          "save-recovered"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-unknown",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-recovered",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-recovered",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-recovered",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-recovered",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-failed",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-failed",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-failed",
+      "index": 2,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "save-failed",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "invalid-bank",
+      "index": 0,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "invalid-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "invalid-bank",
+      "index": 2,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "duplicate",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "duplicate",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "duplicate",
+      "index": 2,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "duplicate",
+      "index": 3,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "preference",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "preference",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "preference",
+      "index": 2,
+      "href": "#incompatible-asset",
+      "target": "incompatible-asset",
+      "observed": {
+        "hash": "#incompatible-asset",
+        "visible": [
+          "incompatible-asset"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "preference",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "availability",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "availability",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "availability",
+      "index": 2,
+      "href": "#save-accepted",
+      "target": "save-accepted",
+      "observed": {
+        "hash": "#save-accepted",
+        "visible": [
+          "save-accepted"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "availability",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm",
+      "index": 0,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm",
+      "index": 2,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-confirm",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-pending",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-pending",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-pending",
+      "index": 2,
+      "href": "#remove-accepted",
+      "target": "remove-accepted",
+      "observed": {
+        "hash": "#remove-accepted",
+        "visible": [
+          "remove-accepted"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-pending",
+      "index": 3,
+      "href": "#remove-unknown",
+      "target": "remove-unknown",
+      "observed": {
+        "hash": "#remove-unknown",
+        "visible": [
+          "remove-unknown"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-accepted",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-accepted",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-accepted",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-unknown",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-unknown",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-unknown",
+      "index": 2,
+      "href": "#remove-recovered",
+      "target": "remove-recovered",
+      "observed": {
+        "hash": "#remove-recovered",
+        "visible": [
+          "remove-recovered"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-unknown",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-recovered",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-recovered",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-recovered",
+      "index": 2,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-recovered",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-failed",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-failed",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-failed",
+      "index": 2,
+      "href": "#remove-confirm",
+      "target": "remove-confirm",
+      "observed": {
+        "hash": "#remove-confirm",
+        "visible": [
+          "remove-confirm"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "remove-failed",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "share-stale-edit",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "share-stale-edit",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "share-stale-edit",
+      "index": 2,
+      "href": "#handoff-receive",
+      "target": "handoff-receive",
+      "observed": {
+        "hash": "#handoff-receive",
+        "visible": [
+          "handoff-receive"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "share-stale-edit",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "share-stale-remove",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "share-stale-remove",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "share-stale-remove",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "incompatible-asset",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "incompatible-asset",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "incompatible-asset",
+      "index": 2,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "incompatible-asset",
+      "index": 3,
+      "href": "#preference",
+      "target": "preference",
+      "observed": {
+        "hash": "#preference",
+        "visible": [
+          "preference"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "network-mismatch",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "network-mismatch",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "network-mismatch",
+      "index": 2,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "network-mismatch",
+      "index": 3,
+      "href": "#handoff-wallet",
+      "target": "handoff-wallet",
+      "observed": {
+        "hash": "#handoff-wallet",
+        "visible": [
+          "handoff-wallet"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "index": 2,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "index": 3,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "index": 4,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "index": 5,
+      "href": "#pots-preview",
+      "target": "pots-preview",
+      "observed": {
+        "hash": "#pots-preview",
+        "visible": [
+          "pots-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "index": 6,
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "index": 7,
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "index": 8,
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "index": 9,
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline-write",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline-write",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline-write",
+      "index": 2,
+      "href": "#offline",
+      "target": "offline",
+      "observed": {
+        "hash": "#offline",
+        "visible": [
+          "offline"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "session-changed",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "session-changed",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "session-changed",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "index": 2,
+      "href": "#pots-preview",
+      "target": "pots-preview",
+      "observed": {
+        "hash": "#pots-preview",
+        "visible": [
+          "pots-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "index": 3,
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "index": 4,
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "index": 5,
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "index": 6,
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "error",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "error",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "error",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-settlement",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-settlement",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-settlement",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-receive",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-receive",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-receive",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-wallet",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-wallet",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-wallet",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "pots-preview",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "pots-preview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "pots-preview",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "people-preview",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "people-preview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "people-preview",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-preview",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-preview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-preview",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "activity-preview",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "activity-preview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "activity-preview",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "you-preview",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "you-preview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "you-preview",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 3,
+      "href": "#empty",
+      "target": "empty",
+      "observed": {
+        "hash": "#empty",
+        "visible": [
+          "empty"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 4,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 5,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 6,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 7,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 8,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 9,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 10,
+      "href": "#add-twint",
+      "target": "add-twint",
+      "observed": {
+        "hash": "#add-twint",
+        "visible": [
+          "add-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 11,
+      "href": "#add-paypal",
+      "target": "add-paypal",
+      "observed": {
+        "hash": "#add-paypal",
+        "visible": [
+          "add-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 12,
+      "href": "#add-crypto",
+      "target": "add-crypto",
+      "observed": {
+        "hash": "#add-crypto",
+        "visible": [
+          "add-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 13,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 14,
+      "href": "#edit-bank",
+      "target": "edit-bank",
+      "observed": {
+        "hash": "#edit-bank",
+        "visible": [
+          "edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 15,
+      "href": "#review-edit-bank",
+      "target": "review-edit-bank",
+      "observed": {
+        "hash": "#review-edit-bank",
+        "visible": [
+          "review-edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 16,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 17,
+      "href": "#save-accepted",
+      "target": "save-accepted",
+      "observed": {
+        "hash": "#save-accepted",
+        "visible": [
+          "save-accepted"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 18,
+      "href": "#save-unknown",
+      "target": "save-unknown",
+      "observed": {
+        "hash": "#save-unknown",
+        "visible": [
+          "save-unknown"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 19,
+      "href": "#save-recovered",
+      "target": "save-recovered",
+      "observed": {
+        "hash": "#save-recovered",
+        "visible": [
+          "save-recovered"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 20,
+      "href": "#save-failed",
+      "target": "save-failed",
+      "observed": {
+        "hash": "#save-failed",
+        "visible": [
+          "save-failed"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 21,
+      "href": "#invalid-bank",
+      "target": "invalid-bank",
+      "observed": {
+        "hash": "#invalid-bank",
+        "visible": [
+          "invalid-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 22,
+      "href": "#duplicate",
+      "target": "duplicate",
+      "observed": {
+        "hash": "#duplicate",
+        "visible": [
+          "duplicate"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 23,
+      "href": "#preference",
+      "target": "preference",
+      "observed": {
+        "hash": "#preference",
+        "visible": [
+          "preference"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 24,
+      "href": "#availability",
+      "target": "availability",
+      "observed": {
+        "hash": "#availability",
+        "visible": [
+          "availability"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 25,
+      "href": "#remove-confirm",
+      "target": "remove-confirm",
+      "observed": {
+        "hash": "#remove-confirm",
+        "visible": [
+          "remove-confirm"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 26,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 27,
+      "href": "#remove-accepted",
+      "target": "remove-accepted",
+      "observed": {
+        "hash": "#remove-accepted",
+        "visible": [
+          "remove-accepted"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 28,
+      "href": "#remove-unknown",
+      "target": "remove-unknown",
+      "observed": {
+        "hash": "#remove-unknown",
+        "visible": [
+          "remove-unknown"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 29,
+      "href": "#remove-recovered",
+      "target": "remove-recovered",
+      "observed": {
+        "hash": "#remove-recovered",
+        "visible": [
+          "remove-recovered"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 30,
+      "href": "#remove-failed",
+      "target": "remove-failed",
+      "observed": {
+        "hash": "#remove-failed",
+        "visible": [
+          "remove-failed"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 31,
+      "href": "#share-stale-edit",
+      "target": "share-stale-edit",
+      "observed": {
+        "hash": "#share-stale-edit",
+        "visible": [
+          "share-stale-edit"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 32,
+      "href": "#share-stale-remove",
+      "target": "share-stale-remove",
+      "observed": {
+        "hash": "#share-stale-remove",
+        "visible": [
+          "share-stale-remove"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 33,
+      "href": "#incompatible-asset",
+      "target": "incompatible-asset",
+      "observed": {
+        "hash": "#incompatible-asset",
+        "visible": [
+          "incompatible-asset"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 34,
+      "href": "#network-mismatch",
+      "target": "network-mismatch",
+      "observed": {
+        "hash": "#network-mismatch",
+        "visible": [
+          "network-mismatch"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 35,
+      "href": "#offline",
+      "target": "offline",
+      "observed": {
+        "hash": "#offline",
+        "visible": [
+          "offline"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 36,
+      "href": "#offline-write",
+      "target": "offline-write",
+      "observed": {
+        "hash": "#offline-write",
+        "visible": [
+          "offline-write"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 37,
+      "href": "#session-changed",
+      "target": "session-changed",
+      "observed": {
+        "hash": "#session-changed",
+        "visible": [
+          "session-changed"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 38,
+      "href": "#loading",
+      "target": "loading",
+      "observed": {
+        "hash": "#loading",
+        "visible": [
+          "loading"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 39,
+      "href": "#error",
+      "target": "error",
+      "observed": {
+        "hash": "#error",
+        "visible": [
+          "error"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "index": 40,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 0,
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 2,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 4,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 5,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 6,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 7,
+      "href": "#preference",
+      "target": "preference",
+      "observed": {
+        "hash": "#preference",
+        "visible": [
+          "preference"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 8,
+      "href": "#pots-preview",
+      "target": "pots-preview",
+      "observed": {
+        "hash": "#pots-preview",
+        "visible": [
+          "pots-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 9,
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 10,
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 11,
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "index": 12,
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "index": 2,
+      "href": "#pots-preview",
+      "target": "pots-preview",
+      "observed": {
+        "hash": "#pots-preview",
+        "visible": [
+          "pots-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "index": 3,
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "index": 4,
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "index": 5,
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "index": 6,
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-bank",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-bank",
+      "index": 2,
+      "href": "#preference",
+      "target": "preference",
+      "observed": {
+        "hash": "#preference",
+        "visible": [
+          "preference"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-bank",
+      "index": 3,
+      "href": "#availability",
+      "target": "availability",
+      "observed": {
+        "hash": "#availability",
+        "visible": [
+          "availability"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-bank",
+      "index": 4,
+      "href": "#edit-bank",
+      "target": "edit-bank",
+      "observed": {
+        "hash": "#edit-bank",
+        "visible": [
+          "edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-bank",
+      "index": 5,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-twint",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-twint",
+      "index": 2,
+      "href": "#edit-bank",
+      "target": "edit-bank",
+      "observed": {
+        "hash": "#edit-bank",
+        "visible": [
+          "edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-twint",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-paypal",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-paypal",
+      "index": 2,
+      "href": "#edit-bank",
+      "target": "edit-bank",
+      "observed": {
+        "hash": "#edit-bank",
+        "visible": [
+          "edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-paypal",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-crypto",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-crypto",
+      "index": 2,
+      "href": "#edit-crypto",
+      "target": "edit-crypto",
+      "observed": {
+        "hash": "#edit-crypto",
+        "visible": [
+          "edit-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "detail-crypto",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-chooser",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-chooser",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-chooser",
+      "index": 2,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-chooser",
+      "index": 3,
+      "href": "#add-twint",
+      "target": "add-twint",
+      "observed": {
+        "hash": "#add-twint",
+        "visible": [
+          "add-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-chooser",
+      "index": 4,
+      "href": "#add-paypal",
+      "target": "add-paypal",
+      "observed": {
+        "hash": "#add-paypal",
+        "visible": [
+          "add-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-chooser",
+      "index": 5,
+      "href": "#add-crypto",
+      "target": "add-crypto",
+      "observed": {
+        "hash": "#add-crypto",
+        "visible": [
+          "add-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-chooser",
+      "index": 6,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-bank",
+      "index": 0,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-bank",
+      "index": 2,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-bank",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-twint",
+      "index": 0,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-twint",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-twint",
+      "index": 2,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-twint",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-paypal",
+      "index": 0,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-paypal",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-paypal",
+      "index": 2,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-paypal",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-crypto",
+      "index": 0,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-crypto",
+      "index": 2,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-crypto",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-bank",
+      "index": 0,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-bank",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-new-bank",
+      "index": 3,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-bank",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-bank",
+      "index": 2,
+      "href": "#review-edit-bank",
+      "target": "review-edit-bank",
+      "observed": {
+        "hash": "#review-edit-bank",
+        "visible": [
+          "review-edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-bank",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-crypto",
+      "index": 0,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-crypto",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-crypto",
+      "index": 2,
+      "href": "#review-edit-bank",
+      "target": "review-edit-bank",
+      "observed": {
+        "hash": "#review-edit-bank",
+        "visible": [
+          "review-edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "edit-crypto",
+      "index": 3,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-bank",
+      "index": 0,
+      "href": "#edit-bank",
+      "target": "edit-bank",
+      "observed": {
+        "hash": "#edit-bank",
+        "visible": [
+          "edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-bank",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "review-edit-bank",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-pending",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-pending",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-pending",
+      "index": 2,
+      "href": "#save-accepted",
+      "target": "save-accepted",
+      "observed": {
+        "hash": "#save-accepted",
+        "visible": [
+          "save-accepted"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-pending",
+      "index": 3,
+      "href": "#save-unknown",
+      "target": "save-unknown",
+      "observed": {
+        "hash": "#save-unknown",
+        "visible": [
+          "save-unknown"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-accepted",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-accepted",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-accepted",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-unknown",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-unknown",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-unknown",
+      "index": 2,
+      "href": "#save-recovered",
+      "target": "save-recovered",
+      "observed": {
+        "hash": "#save-recovered",
+        "visible": [
+          "save-recovered"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-unknown",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-recovered",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-recovered",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-recovered",
+      "index": 2,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-recovered",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-failed",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-failed",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-failed",
+      "index": 2,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "save-failed",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "invalid-bank",
+      "index": 0,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "invalid-bank",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "invalid-bank",
+      "index": 2,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "duplicate",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "duplicate",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "duplicate",
+      "index": 2,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "duplicate",
+      "index": 3,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "preference",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "preference",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "preference",
+      "index": 2,
+      "href": "#incompatible-asset",
+      "target": "incompatible-asset",
+      "observed": {
+        "hash": "#incompatible-asset",
+        "visible": [
+          "incompatible-asset"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "preference",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "availability",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "availability",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "availability",
+      "index": 2,
+      "href": "#save-accepted",
+      "target": "save-accepted",
+      "observed": {
+        "hash": "#save-accepted",
+        "visible": [
+          "save-accepted"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "availability",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm",
+      "index": 0,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm",
+      "index": 2,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-confirm",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-pending",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-pending",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-pending",
+      "index": 2,
+      "href": "#remove-accepted",
+      "target": "remove-accepted",
+      "observed": {
+        "hash": "#remove-accepted",
+        "visible": [
+          "remove-accepted"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-pending",
+      "index": 3,
+      "href": "#remove-unknown",
+      "target": "remove-unknown",
+      "observed": {
+        "hash": "#remove-unknown",
+        "visible": [
+          "remove-unknown"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-accepted",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-accepted",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-accepted",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-unknown",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-unknown",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-unknown",
+      "index": 2,
+      "href": "#remove-recovered",
+      "target": "remove-recovered",
+      "observed": {
+        "hash": "#remove-recovered",
+        "visible": [
+          "remove-recovered"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-unknown",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-recovered",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-recovered",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-recovered",
+      "index": 2,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-recovered",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-failed",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-failed",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-failed",
+      "index": 2,
+      "href": "#remove-confirm",
+      "target": "remove-confirm",
+      "observed": {
+        "hash": "#remove-confirm",
+        "visible": [
+          "remove-confirm"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "remove-failed",
+      "index": 3,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "share-stale-edit",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "share-stale-edit",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "share-stale-edit",
+      "index": 2,
+      "href": "#handoff-receive",
+      "target": "handoff-receive",
+      "observed": {
+        "hash": "#handoff-receive",
+        "visible": [
+          "handoff-receive"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "share-stale-edit",
+      "index": 3,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "share-stale-remove",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "share-stale-remove",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "share-stale-remove",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "incompatible-asset",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "incompatible-asset",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "incompatible-asset",
+      "index": 2,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "incompatible-asset",
+      "index": 3,
+      "href": "#preference",
+      "target": "preference",
+      "observed": {
+        "hash": "#preference",
+        "visible": [
+          "preference"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "network-mismatch",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "network-mismatch",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "network-mismatch",
+      "index": 2,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "network-mismatch",
+      "index": 3,
+      "href": "#handoff-wallet",
+      "target": "handoff-wallet",
+      "observed": {
+        "hash": "#handoff-wallet",
+        "visible": [
+          "handoff-wallet"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "index": 2,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "index": 3,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "index": 4,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "index": 5,
+      "href": "#pots-preview",
+      "target": "pots-preview",
+      "observed": {
+        "hash": "#pots-preview",
+        "visible": [
+          "pots-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "index": 6,
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "index": 7,
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "index": 8,
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "index": 9,
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline-write",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline-write",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline-write",
+      "index": 2,
+      "href": "#offline",
+      "target": "offline",
+      "observed": {
+        "hash": "#offline",
+        "visible": [
+          "offline"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "session-changed",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "session-changed",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "session-changed",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "index": 2,
+      "href": "#pots-preview",
+      "target": "pots-preview",
+      "observed": {
+        "hash": "#pots-preview",
+        "visible": [
+          "pots-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "index": 3,
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "index": 4,
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "index": 5,
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "index": 6,
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "error",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "error",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "error",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-settlement",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-settlement",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-settlement",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-receive",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-receive",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-receive",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-wallet",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-wallet",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-wallet",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "pots-preview",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "pots-preview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "pots-preview",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "people-preview",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "people-preview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "people-preview",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-preview",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-preview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-preview",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "activity-preview",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "activity-preview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "activity-preview",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "you-preview",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "you-preview",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "you-preview",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 0,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 1,
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 2,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 3,
+      "href": "#empty",
+      "target": "empty",
+      "observed": {
+        "hash": "#empty",
+        "visible": [
+          "empty"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 4,
+      "href": "#detail-bank",
+      "target": "detail-bank",
+      "observed": {
+        "hash": "#detail-bank",
+        "visible": [
+          "detail-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 5,
+      "href": "#detail-twint",
+      "target": "detail-twint",
+      "observed": {
+        "hash": "#detail-twint",
+        "visible": [
+          "detail-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 6,
+      "href": "#detail-paypal",
+      "target": "detail-paypal",
+      "observed": {
+        "hash": "#detail-paypal",
+        "visible": [
+          "detail-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 7,
+      "href": "#detail-crypto",
+      "target": "detail-crypto",
+      "observed": {
+        "hash": "#detail-crypto",
+        "visible": [
+          "detail-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 8,
+      "href": "#add-chooser",
+      "target": "add-chooser",
+      "observed": {
+        "hash": "#add-chooser",
+        "visible": [
+          "add-chooser"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 9,
+      "href": "#add-bank",
+      "target": "add-bank",
+      "observed": {
+        "hash": "#add-bank",
+        "visible": [
+          "add-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 10,
+      "href": "#add-twint",
+      "target": "add-twint",
+      "observed": {
+        "hash": "#add-twint",
+        "visible": [
+          "add-twint"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 11,
+      "href": "#add-paypal",
+      "target": "add-paypal",
+      "observed": {
+        "hash": "#add-paypal",
+        "visible": [
+          "add-paypal"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 12,
+      "href": "#add-crypto",
+      "target": "add-crypto",
+      "observed": {
+        "hash": "#add-crypto",
+        "visible": [
+          "add-crypto"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 13,
+      "href": "#review-new-bank",
+      "target": "review-new-bank",
+      "observed": {
+        "hash": "#review-new-bank",
+        "visible": [
+          "review-new-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 14,
+      "href": "#edit-bank",
+      "target": "edit-bank",
+      "observed": {
+        "hash": "#edit-bank",
+        "visible": [
+          "edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 15,
+      "href": "#review-edit-bank",
+      "target": "review-edit-bank",
+      "observed": {
+        "hash": "#review-edit-bank",
+        "visible": [
+          "review-edit-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 16,
+      "href": "#save-pending",
+      "target": "save-pending",
+      "observed": {
+        "hash": "#save-pending",
+        "visible": [
+          "save-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 17,
+      "href": "#save-accepted",
+      "target": "save-accepted",
+      "observed": {
+        "hash": "#save-accepted",
+        "visible": [
+          "save-accepted"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 18,
+      "href": "#save-unknown",
+      "target": "save-unknown",
+      "observed": {
+        "hash": "#save-unknown",
+        "visible": [
+          "save-unknown"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 19,
+      "href": "#save-recovered",
+      "target": "save-recovered",
+      "observed": {
+        "hash": "#save-recovered",
+        "visible": [
+          "save-recovered"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 20,
+      "href": "#save-failed",
+      "target": "save-failed",
+      "observed": {
+        "hash": "#save-failed",
+        "visible": [
+          "save-failed"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 21,
+      "href": "#invalid-bank",
+      "target": "invalid-bank",
+      "observed": {
+        "hash": "#invalid-bank",
+        "visible": [
+          "invalid-bank"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 22,
+      "href": "#duplicate",
+      "target": "duplicate",
+      "observed": {
+        "hash": "#duplicate",
+        "visible": [
+          "duplicate"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 23,
+      "href": "#preference",
+      "target": "preference",
+      "observed": {
+        "hash": "#preference",
+        "visible": [
+          "preference"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 24,
+      "href": "#availability",
+      "target": "availability",
+      "observed": {
+        "hash": "#availability",
+        "visible": [
+          "availability"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 25,
+      "href": "#remove-confirm",
+      "target": "remove-confirm",
+      "observed": {
+        "hash": "#remove-confirm",
+        "visible": [
+          "remove-confirm"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 26,
+      "href": "#remove-pending",
+      "target": "remove-pending",
+      "observed": {
+        "hash": "#remove-pending",
+        "visible": [
+          "remove-pending"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 27,
+      "href": "#remove-accepted",
+      "target": "remove-accepted",
+      "observed": {
+        "hash": "#remove-accepted",
+        "visible": [
+          "remove-accepted"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 28,
+      "href": "#remove-unknown",
+      "target": "remove-unknown",
+      "observed": {
+        "hash": "#remove-unknown",
+        "visible": [
+          "remove-unknown"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 29,
+      "href": "#remove-recovered",
+      "target": "remove-recovered",
+      "observed": {
+        "hash": "#remove-recovered",
+        "visible": [
+          "remove-recovered"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 30,
+      "href": "#remove-failed",
+      "target": "remove-failed",
+      "observed": {
+        "hash": "#remove-failed",
+        "visible": [
+          "remove-failed"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 31,
+      "href": "#share-stale-edit",
+      "target": "share-stale-edit",
+      "observed": {
+        "hash": "#share-stale-edit",
+        "visible": [
+          "share-stale-edit"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 32,
+      "href": "#share-stale-remove",
+      "target": "share-stale-remove",
+      "observed": {
+        "hash": "#share-stale-remove",
+        "visible": [
+          "share-stale-remove"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 33,
+      "href": "#incompatible-asset",
+      "target": "incompatible-asset",
+      "observed": {
+        "hash": "#incompatible-asset",
+        "visible": [
+          "incompatible-asset"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 34,
+      "href": "#network-mismatch",
+      "target": "network-mismatch",
+      "observed": {
+        "hash": "#network-mismatch",
+        "visible": [
+          "network-mismatch"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 35,
+      "href": "#offline",
+      "target": "offline",
+      "observed": {
+        "hash": "#offline",
+        "visible": [
+          "offline"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 36,
+      "href": "#offline-write",
+      "target": "offline-write",
+      "observed": {
+        "hash": "#offline-write",
+        "visible": [
+          "offline-write"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 37,
+      "href": "#session-changed",
+      "target": "session-changed",
+      "observed": {
+        "hash": "#session-changed",
+        "visible": [
+          "session-changed"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 38,
+      "href": "#loading",
+      "target": "loading",
+      "observed": {
+        "hash": "#loading",
+        "visible": [
+          "loading"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 39,
+      "href": "#error",
+      "target": "error",
+      "observed": {
+        "hash": "#error",
+        "visible": [
+          "error"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "index": 40,
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "external_network_requests": [],
+  "default_entry": {
+    "hash": "",
+    "visible": [
+      "overview"
+    ]
+  },
+  "invalid_entry": {
+    "hash": "#overview",
+    "visible": [
+      "overview"
+    ]
+  },
+  "shell_checks": [
+    {
+      "labels": [
+        "Pots",
+        "People",
+        "Activity",
+        "You"
+      ],
+      "hasRaisedAdd": true,
+      "addHref": "#add-preview",
+      "active": [
+        "You"
+      ],
+      "viewport": "393x852",
+      "passed": true
+    },
+    {
+      "labels": [
+        "Pots",
+        "People",
+        "Activity",
+        "You"
+      ],
+      "hasRaisedAdd": true,
+      "addHref": "#add-preview",
+      "active": [
+        "You"
+      ],
+      "viewport": "430x890",
+      "passed": true
+    }
+  ],
+  "security_checks": {
+    "secret_like_terms_in_inputs": false,
+    "raw_destinations_on_overview": false
+  },
+  "layout_checks": 96,
+  "passed_layouts": 96,
+  "product_clicks": 480,
+  "passed_product_clicks": 480,
+  "failed_layouts": [],
+  "failed_interactions": []
+}

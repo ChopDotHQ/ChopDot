@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "journey": "20",
+  "version": "v1",
+  "review_status": "review-pending",
+  "candidate_sha256": "818e8117265ad3bc0bf40054a4a0c31188981acb82918642be6509b79a880a26",
+  "states": 48,
+  "mapped_actions": 240,
+  "model_assertions": 81,
+  "model_scenarios": 12,
+  "browser_layouts": 96,
+  "passed_browser_layouts": 96,
+  "product_clicks": 480,
+  "passed_product_clicks": 480,
+  "page_errors": [],
+  "console_errors": [],
+  "external_network_requests": 0,
+  "shell_consistency": true,
+  "overview_raw_destination_leak": false,
+  "secret_like_input_present": false,
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "typography": "TYPO-01 deferred"
+}
