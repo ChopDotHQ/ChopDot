@@ -16,6 +16,6 @@
   "last_approved_journey": "20",
   "last_approved_version": "v1",
   "last_approved_sha256": "02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab",
-  "next_action": "Journey 21 exact candidate 2b0110421c61a69635e9c1ea27f7c23a3d0435e5 remains REVISE after reviewer blocker 1 was cleared. Builder: repair honest unknown-result reconciliation first, then complete only the required provider/connect-timeout/account-network-switch/balance/disconnect/offline/loading/provider-error clusters; regenerate fresh exact-head QA/render evidence and request re-review. Do not request human approval or freeze this head.",
+  "next_action": "Journey 21 exact candidate 6c75db2aba9f7a99ff7d70dcfec4f10b9ead90a4 remains REVISE after the unknown-result recovery blocker was cleared. Builder: complete only the remaining required provider/connect-timeout, account-network-switch, insufficient-balance, disconnect, offline/loading and provider-error clusters; regenerate fresh exact-head QA/render evidence and request independent re-review. Do not request human approval or freeze this head.",
   "typography_note": "TYPO-01 deferred"
 }

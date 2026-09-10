@@ -1,5 +1,5 @@
 {
-  "checkpoint": "2026-09-10-j21-v1-revise",
+  "checkpoint": "2026-09-10-j21-v1-revise-coverage",
   "purpose": "Preserve Golden #20 authority and record the latest exact Journey 21 candidate review state without granting human approval or Golden authority.",
   "canonical_exact_head_verified": false,
   "canonical_exact_head_note": "This governance reconciliation changes canonical authority metadata only. Treat the resulting exact canonical head as unverified until the Prototype workbench gate completes successfully on the resulting tree.",
@@ -25,19 +25,18 @@
     "stage": "independent-review",
     "prototype_built": true,
     "candidate_branch": "ux/experience-workbench-j21-v1-candidate",
-    "reviewed_source_head": "2b0110421c61a69635e9c1ea27f7c23a3d0435e5",
+    "reviewed_source_head": "6c75db2aba9f7a99ff7d70dcfec4f10b9ead90a4",
     "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
-    "prototype_sha256": "87d3a118f19d6ed4d3f2138b61508f6387a72c9af0a58538548d84eb6aa22e0e",
-    "exact_qa_run": "34530194310",
-    "evidence_artifact": "10173208451",
-    "evidence_artifact_sha256": "b37b00b2eb78d6f563c97b62dc46811ae3137181ad55b4b1f19c987a3b13e39d",
+    "prototype_sha256": "72862fd822197d78a92b9141859a08ee10febbc38230b588286494709539dd43",
+    "exact_qa_run": "34535633067",
+    "evidence_artifact": "10175305934",
+    "evidence_artifact_sha256": "a3d26b118eb184d2bd0d6005c95b52d0fdfcd3fae9c7d2284f2ba6d0434646b6",
     "review_status": "REVISE",
     "mechanical_review": "pass",
-    "direct_visual_review": "pass-for-built-states",
+    "direct_visual_review": "pass-for-repaired-slice",
     "human_approval": false,
     "blockers": [
-      "Unknown submission/finality must remain unresolved through explicit same-transaction reconciliation and may not be converted directly to not-sent or assumed pending.",
-      "Required remaining J21 provider/connect-timeout/account-network-switch/balance/disconnect/offline/loading/provider-error clusters must be built and included in fresh exact-head evidence before re-review."
+      "Required remaining J21 provider/connect-timeout, full account/network switching, insufficient fee/asset balance, disconnect, offline/loading and provider-error clusters must be built and included in fresh exact-head evidence before re-review."
     ],
     "spec_path": "journeys/21-wallet-crypto/spec.md"
   },
