@@ -10,6 +10,7 @@ on:
       - 'deployment/recovery-head-index-targets.json'
       - 'deployment/recovery-head-index/devnet.json'
       - 'contracts/recovery-head-index/artifacts/**'
+      - 'scripts/capture-dotns-code-anchors.mjs'
       - 'scripts/recovery-head-deployment.mjs'
       - 'scripts/lib/release-evidence.mjs'
   workflow_dispatch:
@@ -72,6 +73,11 @@ jobs:
           cache: npm
       - name: Install exact lockfile dependencies
         run: npm ci
+      - name: Observe current Products Devnet DOTNS code anchors
+        run: >-
+          node scripts/capture-dotns-code-anchors.mjs
+          --environment=devnet
+          --source-environment-file=deployment/pad-environments-2026-09-10.json
       - name: Read back existing Products Devnet contract and deployment receipt
         run: >-
           node scripts/recovery-head-deployment.mjs
