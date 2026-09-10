@@ -9,6 +9,8 @@
     "golden-consistency:apply": "node tools/apply-j11-final-golden-consistency.mjs",
     "map:build": "node tools/build-journey-map.mjs",
     "map:check": "node tools/validate-workbench.mjs",
+    "golden-manifest:build": "node tools/build-golden-manifest.mjs",
+    "golden-manifest:check": "node tools/build-golden-manifest.mjs --check",
     "contract:check": "node tools/validate-payment-contract.mjs",
     "compat:check": "node tools/validate-j11-compatibility-closeout.mjs",
     "golden-consistency:check": "node tools/validate-j11-final-golden-consistency.mjs",
