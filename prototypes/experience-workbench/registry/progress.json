@@ -16,6 +16,6 @@
   "last_approved_journey": "20",
   "last_approved_version": "v1",
   "last_approved_sha256": "02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab",
-  "next_action": "Journey 21 Wallet & Crypto is current at definition stage. Build only after reading its spec, decision history, state inventory, edge cases and adjacent Golden boundaries.",
+  "next_action": "Journey 21 exact candidate 1a4539418d9fdd4b8cfcee14e5f39cfd18c12ce6 is REVISE. Builder: repair only the three independent-review blockers (verified-result handoff to owning caller; honest unknown-result reconciliation; required remaining wallet/provider/account/network/balance/offline/error clusters), regenerate exact-head QA/render evidence, then request re-review. Do not request human approval or freeze this head.",
   "typography_note": "TYPO-01 deferred"
 }
