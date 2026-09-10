@@ -1,59 +1,69 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 
-const root = path.resolve(import.meta.dirname, '..');
-const read = p => fs.readFileSync(path.join(root, p), 'utf8');
-const load = p => JSON.parse(read(p));
+const root=path.resolve(import.meta.dirname,'..');
+const read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const load=p=>JSON.parse(read(p));
+const digest=p=>createHash('sha256').update(fs.readFileSync(path.join(root,p))).digest('hex');
 
-const progress = load('registry/progress.json');
-const active = load('registry/active-candidate.json');
-const exact = load('registry/exact-head-gate.json');
-const manifest = load('registry/goldens.manifest.json');
+const progress=load('registry/progress.json');
+const journeys=load('registry/journeys.json');
+const locks=load('registry/golden-artifact-locks.json');
+const active=load('registry/active-candidate.json');
+const exact=load('registry/exact-head-gate.json');
+const manifest=load('registry/goldens.manifest.json');
 
-assert.equal(progress.registered_journeys, 28);
-assert.equal(progress.golden_count, 19);
-assert.equal(progress.current_journey, '20');
-assert.equal(progress.remaining_overall, 9);
-assert.match(progress.next_action, /direct visual/i, 'Current next action must reflect the J20 visual-review gate');
+assert.equal(journeys.length,28);
+const golden=journeys.filter(j=>j.status==='golden'&&j.approval==='design-approved');
+assert.equal(progress.registered_journeys,28);
+assert.equal(progress.golden_count,golden.length);
+assert.equal(progress.remaining_overall,28-golden.length);
+assert.equal(locks.length,golden.length);
+assert.equal(manifest.golden_count,golden.length);
+assert.equal(manifest.entries?.length,golden.length);
+for(const lock of locks) assert.equal(digest(lock.path),lock.sha256,`Golden checksum changed: ${lock.path}`);
 
-assert.equal(active.journey, '20');
-assert.equal(active.version, 'v1');
-assert.equal(active.approval, 'reviewable');
-assert.equal(active.review_status, 'REVIEWABLE');
-assert.equal(active.candidate_branch, 'ux/experience-workbench-j20-v1-candidate');
-assert.equal(active.reviewed_source_head, '87acfc3d4bf7ffca0c814d8440915b19893fa4c1');
-assert.equal(active.review_bundle_head, '74082c72cc52935a5eda41b42279b72f2cb0213f');
-assert.equal(active.prototype_sha256, '02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab');
-assert.equal(active.mechanical_review, 'pass');
-assert.equal(active.semantic_review, 'pass');
-assert.equal(active.visual_clearance, false);
-assert.equal(active.human_approval_required, true);
+const current=journeys.filter(j=>j.status==='current');
+assert.equal(current.length,1,'Exactly one current journey required');
+assert.equal(progress.current_journey,current[0].id);
+assert.equal(active.journey,current[0].id,'Active/current authority mismatch');
+assert.equal(exact.current_journey,current[0].id,'Exact-head/current authority mismatch');
+assert.equal(exact.golden_count,golden.length);
+assert.equal(exact.golden_lock_count,golden.length);
 
-assert.equal(exact.golden_count, 19);
-assert.equal(exact.current_journey, '20');
-assert.equal(exact.journey_20?.approval, 'reviewable');
-assert.equal(exact.journey_20?.review_bundle_head, active.review_bundle_head);
-assert.equal(exact.journey_20?.prototype_sha256, active.prototype_sha256);
-assert.equal(exact.journey_20?.visual_clearance, false);
-assert.equal(exact.journey_20?.human_approval, false);
+const lastGolden=[...golden].sort((a,b)=>Number(a.golden_number)-Number(b.golden_number)).at(-1);
+assert(lastGolden,'At least one Golden required');
+assert.equal(Number(lastGolden.golden_number),golden.length,'Golden numbering must be contiguous');
+assert.equal(progress.last_approved_journey,lastGolden.id);
+assert.equal(progress.last_approved_version,lastGolden.version);
+assert.equal(progress.last_approved_sha256,lastGolden.prototype_sha256);
+const approvalPath=`registry/approvals/${lastGolden.id}-${lastGolden.version}.json`;
+assert(fs.existsSync(path.join(root,approvalPath)),`Missing latest approval record ${approvalPath}`);
+const approval=load(approvalPath);
+assert.equal(approval.approval,'design-approved');
+assert.equal(approval.prototype_sha256,lastGolden.prototype_sha256);
+assert.equal(approval.html_change_authorized,false);
 
-assert.equal(manifest.golden_count, 19);
-assert.equal(manifest.entries?.length, 19);
-
-const start = read('START_HERE.md');
-assert(start.includes('Journey 20 — Payment Methods V1'));
-assert(start.includes('REVIEWABLE'));
-assert(start.includes('Do not freeze Journey 20'));
-
-const goldens = read('GOLDEN_SCREENS.md');
-assert(goldens.includes('19. Insights — v1.1 · Design Approved'));
-assert(goldens.includes('Journey 20 — Payment Methods V1'));
-assert(goldens.includes('REVIEWABLE'));
-assert(!goldens.includes('No review candidate exists yet.'));
-
-for (const p of ['DESIGN_CONTRACT.md', 'REVIEW_PROTOCOL.md', 'shared/improvements.md']) {
-  assert(fs.existsSync(path.join(root, p)), `Missing process contract ${p}`);
+if(active.stage==='definition'){
+  assert.equal(active.approval,'not-reviewed');
+  assert.equal(active.prototype_built,false);
+  assert(fs.existsSync(path.join(root,active.spec_path)),'Current definition spec missing');
+  assert(fs.existsSync(path.join(root,active.decision_history_path)),'Current decision history missing');
+  assert(fs.existsSync(path.join(root,active.state_inventory_path)),'Current state inventory missing');
+  assert(fs.existsSync(path.join(root,active.edge_cases_path)),'Current edge cases missing');
+}else if((active.review_status??'').toUpperCase()==='REVIEWABLE'){
+  assert.equal(active.mechanical_review,'pass');
+  assert.equal(active.semantic_review,'pass');
+  assert(active.prototype_path&&active.prototype_sha256,'Reviewable candidate must identify exact artifact');
+  assert.equal(digest(active.prototype_path),active.prototype_sha256);
 }
 
-console.log('CURRENT AUTHORITY GATE PASSED: J19 Golden #19; J20 exact candidate REVIEWABLE; visual + human approval still required.');
+const start=read('START_HERE.md');
+assert(start.includes(`Journey ${current[0].id} — ${current[0].name}`),'START_HERE must name current journey');
+const goldens=read('GOLDEN_SCREENS.md');
+assert(goldens.includes(`${lastGolden.golden_number}. ${lastGolden.name} — ${lastGolden.version} · Design Approved`),'Golden index must name latest approval');
+for(const p of ['DESIGN_CONTRACT.md','REVIEW_PROTOCOL.md','shared/improvements.md']) assert(fs.existsSync(path.join(root,p)),`Missing process contract ${p}`);
+
+console.log(`CURRENT AUTHORITY GATE PASSED: ${golden.length} Goldens; Journey ${current[0].id} ${current[0].name} current; latest approval ${lastGolden.id} ${lastGolden.version}.`);

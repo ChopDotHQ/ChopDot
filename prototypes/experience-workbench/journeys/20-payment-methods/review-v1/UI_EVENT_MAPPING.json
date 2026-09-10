@@ -1,0 +1,2095 @@
+[
+  {
+    "screen": "overview",
+    "href": "#you-preview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#add-chooser",
+    "label": "Add method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#detail-bank",
+    "label": "Main CHF account Suggested CHF · CH93 •••• •••• 2957 Available to receive",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#detail-twint",
+    "label": "TWINT CHF · +4179 ••• •• 00 Available to receive",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#detail-paypal",
+    "label": "PayPal CHF · d•••@example.invalid Not shared for receiving",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#detail-crypto",
+    "label": "DOT receiving destination Suggested DOT · Polkadot · 5DemoD…111111 Available to receive",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#preference",
+    "label": "Payment suggestions Bank for CHF · DOT destination for Polkadot",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#pots-preview",
+    "label": "Pots",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#people-preview",
+    "label": "People",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#add-preview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#activity-preview",
+    "label": "Activity",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "overview",
+    "href": "#you-preview",
+    "label": "You",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "empty",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "empty",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "empty",
+    "href": "#pots-preview",
+    "label": "Pots",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "empty",
+    "href": "#people-preview",
+    "label": "People",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "empty",
+    "href": "#add-preview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "empty",
+    "href": "#activity-preview",
+    "label": "Activity",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "empty",
+    "href": "#you-preview",
+    "label": "You",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-bank",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-bank",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-bank",
+    "href": "#preference",
+    "label": "CHF suggestion Currently suggested when a CHF handoff needs a compatible method.",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-bank",
+    "href": "#availability",
+    "label": "Receiving availability Available only through an authorized payment or share context.",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-bank",
+    "href": "#edit-bank",
+    "label": "Edit method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-bank",
+    "href": "#overview",
+    "label": "Back to methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-bank",
+    "href": "#remove-confirm",
+    "label": "Remove method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-twint",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-twint",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-twint",
+    "href": "#edit-twint",
+    "label": "Edit method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-twint",
+    "href": "#overview",
+    "label": "Back to methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-twint",
+    "href": "#remove-confirm-twint",
+    "label": "Remove method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-paypal",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-paypal",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-paypal",
+    "href": "#edit-paypal",
+    "label": "Edit method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-paypal",
+    "href": "#overview",
+    "label": "Back to methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-paypal",
+    "href": "#remove-confirm-paypal",
+    "label": "Remove method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-crypto",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-crypto",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-crypto",
+    "href": "#edit-crypto",
+    "label": "Edit method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-crypto",
+    "href": "#overview",
+    "label": "Back to methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "detail-crypto",
+    "href": "#remove-confirm-crypto",
+    "label": "Remove method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-chooser",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-chooser",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-chooser",
+    "href": "#add-bank",
+    "label": "Bank transfer CHF · IBAN",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-chooser",
+    "href": "#add-twint",
+    "label": "TWINT CHF · phone or supported handle",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-chooser",
+    "href": "#add-paypal",
+    "label": "PayPal Email or username",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-chooser",
+    "href": "#add-crypto",
+    "label": "Crypto receiving destination Public address + exact network",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-chooser",
+    "href": "#overview",
+    "label": "Back to methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-bank",
+    "href": "#add-chooser",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-bank",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-bank",
+    "href": "#review-new-bank",
+    "label": "Review method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-bank",
+    "href": "#overview",
+    "label": "Cancel",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-twint",
+    "href": "#add-chooser",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-twint",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-twint",
+    "href": "#review-new-twint",
+    "label": "Review method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-twint",
+    "href": "#overview",
+    "label": "Cancel",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-paypal",
+    "href": "#add-chooser",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-paypal",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-paypal",
+    "href": "#review-new-paypal",
+    "label": "Review method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-paypal",
+    "href": "#overview",
+    "label": "Cancel",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-crypto",
+    "href": "#add-chooser",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-crypto",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-crypto",
+    "href": "#review-new-crypto",
+    "label": "Review method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-crypto",
+    "href": "#overview",
+    "label": "Cancel",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-bank",
+    "href": "#add-bank",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-bank",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-bank",
+    "href": "#save-pending",
+    "label": "Save method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-bank",
+    "href": "#add-bank",
+    "label": "Edit details",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-bank",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-bank",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-bank",
+    "href": "#review-edit-bank",
+    "label": "Review changes",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-bank",
+    "href": "#detail-bank",
+    "label": "Cancel",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-crypto",
+    "href": "#detail-crypto",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-crypto",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-crypto",
+    "href": "#review-edit-crypto",
+    "label": "Review changes",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-crypto",
+    "href": "#detail-crypto",
+    "label": "Cancel",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-bank",
+    "href": "#edit-bank",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-bank",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-bank",
+    "href": "#save-pending",
+    "label": "Save update",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-bank",
+    "href": "#detail-bank",
+    "label": "Keep v3",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-pending",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-pending",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-pending",
+    "href": "#save-accepted",
+    "label": "Demo accepted result",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-pending",
+    "href": "#save-unknown",
+    "label": "Demo result unknown",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-accepted",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-accepted",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-accepted",
+    "href": "#overview",
+    "label": "Back to methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-unknown",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-unknown",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-unknown",
+    "href": "#save-recovered",
+    "label": "Check original result",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-unknown",
+    "href": "#overview",
+    "label": "Back to methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-recovered",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-recovered",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-recovered",
+    "href": "#save-pending",
+    "label": "Retry save",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-recovered",
+    "href": "#overview",
+    "label": "Cancel",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-failed",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-failed",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-failed",
+    "href": "#review-new-bank",
+    "label": "Try again",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "save-failed",
+    "href": "#overview",
+    "label": "Back to methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "invalid-bank",
+    "href": "#add-bank",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "invalid-bank",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "invalid-bank",
+    "href": "#add-bank",
+    "label": "Fix IBAN",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "duplicate",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "duplicate",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "duplicate",
+    "href": "#detail-bank",
+    "label": "Open existing method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "duplicate",
+    "href": "#add-bank",
+    "label": "Back",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "preference",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "preference",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "preference",
+    "href": "#incompatible-asset",
+    "label": "Try TWINT for DOT Demo incompatible preference",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "preference",
+    "href": "#overview",
+    "label": "Done",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "availability",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "availability",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "availability",
+    "href": "#save-accepted",
+    "label": "Save availability",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "availability",
+    "href": "#detail-bank",
+    "label": "Cancel",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm",
+    "href": "#detail-bank",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm",
+    "href": "#remove-pending",
+    "label": "Remove method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm",
+    "href": "#detail-bank",
+    "label": "Keep method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-pending",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-pending",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-pending",
+    "href": "#remove-accepted",
+    "label": "Demo accepted",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-pending",
+    "href": "#remove-unknown",
+    "label": "Demo result unknown",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-accepted",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-accepted",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-accepted",
+    "href": "#overview",
+    "label": "Back to methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-unknown",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-unknown",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-unknown",
+    "href": "#remove-recovered",
+    "label": "Check original result",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-unknown",
+    "href": "#detail-bank",
+    "label": "Back",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-recovered",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-recovered",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-recovered",
+    "href": "#remove-pending",
+    "label": "Retry removal",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-recovered",
+    "href": "#detail-bank",
+    "label": "Keep method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-failed",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-failed",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-failed",
+    "href": "#remove-confirm",
+    "label": "Try again",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-failed",
+    "href": "#detail-bank",
+    "label": "Back",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "share-stale-edit",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "share-stale-edit",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "share-stale-edit",
+    "href": "#handoff-receive",
+    "label": "Open Receive / Share",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "share-stale-edit",
+    "href": "#overview",
+    "label": "Back to methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "share-stale-remove",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "share-stale-remove",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "share-stale-remove",
+    "href": "#overview",
+    "label": "Back to methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "incompatible-asset",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "incompatible-asset",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "incompatible-asset",
+    "href": "#detail-crypto",
+    "label": "Choose DOT destination",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "incompatible-asset",
+    "href": "#preference",
+    "label": "Back to suggestions",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "network-mismatch",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "network-mismatch",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "network-mismatch",
+    "href": "#detail-crypto",
+    "label": "Use DOT · Polkadot",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "network-mismatch",
+    "href": "#handoff-wallet",
+    "label": "Open Wallet & Crypto",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "href": "#detail-bank",
+    "label": "Main CHF account Suggested CHF · CH93 •••• •••• 2957 Available to receive",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "href": "#detail-twint",
+    "label": "TWINT CHF · +4179 ••• •• 00 Available to receive",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "href": "#detail-crypto",
+    "label": "DOT receiving destination Suggested DOT · Polkadot · 5DemoD…111111 Available to receive",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "href": "#pots-preview",
+    "label": "Pots",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "href": "#people-preview",
+    "label": "People",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "href": "#add-preview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "href": "#activity-preview",
+    "label": "Activity",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline",
+    "href": "#you-preview",
+    "label": "You",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline-write",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline-write",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "offline-write",
+    "href": "#offline",
+    "label": "Back to saved methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "session-changed",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "session-changed",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "session-changed",
+    "href": "#overview",
+    "label": "Back",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "loading",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "loading",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "loading",
+    "href": "#pots-preview",
+    "label": "Pots",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "loading",
+    "href": "#people-preview",
+    "label": "People",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "loading",
+    "href": "#add-preview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "loading",
+    "href": "#activity-preview",
+    "label": "Activity",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "loading",
+    "href": "#you-preview",
+    "label": "You",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "error",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "error",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "error",
+    "href": "#overview",
+    "label": "Try again",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-settlement",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-settlement",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-settlement",
+    "href": "#overview",
+    "label": "Return to payment methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-receive",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-receive",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-receive",
+    "href": "#overview",
+    "label": "Return to payment methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-wallet",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-wallet",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "handoff-wallet",
+    "href": "#overview",
+    "label": "Return to payment methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "pots-preview",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "pots-preview",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "pots-preview",
+    "href": "#overview",
+    "label": "Return to payment methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "people-preview",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "people-preview",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "people-preview",
+    "href": "#overview",
+    "label": "Return to payment methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-preview",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-preview",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "add-preview",
+    "href": "#overview",
+    "label": "Return to payment methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "activity-preview",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "activity-preview",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "activity-preview",
+    "href": "#overview",
+    "label": "Return to payment methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "you-preview",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "you-preview",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "you-preview",
+    "href": "#overview",
+    "label": "Return to payment methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-twint",
+    "href": "#add-twint",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-twint",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-twint",
+    "href": "#save-pending",
+    "label": "Save method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-twint",
+    "href": "#add-twint",
+    "label": "Edit details",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-paypal",
+    "href": "#add-paypal",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-paypal",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-paypal",
+    "href": "#save-pending",
+    "label": "Save method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-paypal",
+    "href": "#add-paypal",
+    "label": "Edit details",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-crypto",
+    "href": "#add-crypto",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-crypto",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-crypto",
+    "href": "#save-pending",
+    "label": "Save method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-new-crypto",
+    "href": "#add-crypto",
+    "label": "Edit details",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-twint",
+    "href": "#detail-twint",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-twint",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-twint",
+    "href": "#review-edit-twint",
+    "label": "Review changes",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-twint",
+    "href": "#detail-twint",
+    "label": "Cancel",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-twint",
+    "href": "#edit-twint",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-twint",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-twint",
+    "href": "#save-pending",
+    "label": "Save update",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-twint",
+    "href": "#detail-twint",
+    "label": "Keep v2",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-paypal",
+    "href": "#detail-paypal",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-paypal",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-paypal",
+    "href": "#review-edit-paypal",
+    "label": "Review changes",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "edit-paypal",
+    "href": "#detail-paypal",
+    "label": "Cancel",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-paypal",
+    "href": "#edit-paypal",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-paypal",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-paypal",
+    "href": "#save-pending",
+    "label": "Save update",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-paypal",
+    "href": "#detail-paypal",
+    "label": "Keep v1",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-crypto",
+    "href": "#edit-crypto",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-crypto",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-crypto",
+    "href": "#save-pending",
+    "label": "Save update",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "review-edit-crypto",
+    "href": "#detail-crypto",
+    "label": "Keep v4",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-twint",
+    "href": "#detail-twint",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-twint",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-twint",
+    "href": "#remove-pending",
+    "label": "Remove method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-twint",
+    "href": "#detail-twint",
+    "label": "Keep method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-paypal",
+    "href": "#detail-paypal",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-paypal",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-paypal",
+    "href": "#remove-pending",
+    "label": "Remove method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-paypal",
+    "href": "#detail-paypal",
+    "label": "Keep method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-crypto",
+    "href": "#detail-crypto",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-crypto",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-crypto",
+    "href": "#remove-pending",
+    "label": "Remove method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "remove-confirm-crypto",
+    "href": "#detail-crypto",
+    "label": "Keep method",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#overview",
+    "label": "",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#demo",
+    "label": "Demo",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#overview",
+    "label": "overview",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#empty",
+    "label": "empty",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#detail-bank",
+    "label": "detail bank",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#detail-twint",
+    "label": "detail twint",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#detail-paypal",
+    "label": "detail paypal",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#detail-crypto",
+    "label": "detail crypto",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#add-chooser",
+    "label": "add chooser",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#add-bank",
+    "label": "add bank",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#add-twint",
+    "label": "add twint",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#add-paypal",
+    "label": "add paypal",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#add-crypto",
+    "label": "add crypto",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#review-new-bank",
+    "label": "review new bank",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#edit-bank",
+    "label": "edit bank",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#review-edit-bank",
+    "label": "review edit bank",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#save-pending",
+    "label": "save pending",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#save-accepted",
+    "label": "save accepted",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#save-unknown",
+    "label": "save unknown",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#save-recovered",
+    "label": "save recovered",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#save-failed",
+    "label": "save failed",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#invalid-bank",
+    "label": "invalid bank",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#duplicate",
+    "label": "duplicate",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#preference",
+    "label": "preference",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#availability",
+    "label": "availability",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#remove-confirm",
+    "label": "remove confirm",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#remove-pending",
+    "label": "remove pending",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#remove-accepted",
+    "label": "remove accepted",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#remove-unknown",
+    "label": "remove unknown",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#remove-recovered",
+    "label": "remove recovered",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#remove-failed",
+    "label": "remove failed",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#share-stale-edit",
+    "label": "share stale edit",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#share-stale-remove",
+    "label": "share stale remove",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#incompatible-asset",
+    "label": "incompatible asset",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#network-mismatch",
+    "label": "network mismatch",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#offline",
+    "label": "offline",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#offline-write",
+    "label": "offline write",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#session-changed",
+    "label": "session changed",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#loading",
+    "label": "loading",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#error",
+    "label": "error",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#review-new-twint",
+    "label": "review new twint",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#review-new-paypal",
+    "label": "review new paypal",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#review-new-crypto",
+    "label": "review new crypto",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#edit-twint",
+    "label": "edit twint",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#review-edit-twint",
+    "label": "review edit twint",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#edit-paypal",
+    "label": "edit paypal",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#review-edit-paypal",
+    "label": "review edit paypal",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#review-edit-crypto",
+    "label": "review edit crypto",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#remove-confirm-twint",
+    "label": "remove confirm twint",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#remove-confirm-paypal",
+    "label": "remove confirm paypal",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#remove-confirm-crypto",
+    "label": "remove confirm crypto",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  },
+  {
+    "screen": "demo",
+    "href": "#overview",
+    "label": "Back to payment methods",
+    "domain_event": "PaymentMethodNavigationOrSimulatedCommand",
+    "financial_effect": "none"
+  }
+]

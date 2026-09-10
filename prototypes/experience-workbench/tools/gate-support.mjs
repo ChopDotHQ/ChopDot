@@ -41,6 +41,11 @@ for(const [relative,bytes] of authorityOverlay){
   fs.writeFileSync(target,bytes);
 }
 
+// Apply the approved J20→J21 authority transition only after historical replay is
+// complete. The transition is evidence-gated and idempotent, so future J21 work can
+// preserve its own active-candidate overlay while the historical chain is replayed.
+run('apply-j20-golden-j21-current.mjs');
+run('decision-history.mjs');
 run('build-journey-map.mjs');
 run('build-golden-manifest.mjs');
 run('validate-workbench.mjs');
