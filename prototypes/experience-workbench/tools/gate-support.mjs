@@ -6,6 +6,7 @@ const run=(file,args=[])=>execFileSync(process.execPath,[path.join(root,'tools',
 const j18HistoryPath=path.join(root,'journeys/18-activity-notifications/source/decision-history.md');
 const canonicalJ18History=fs.readFileSync(j18HistoryPath,'utf8');
 if(!canonicalJ18History.includes('**Coverage:**')) throw new Error('Canonical J18 decision history snapshot must use current structured format');
+run('reset-post-j17-replay-baseline.mjs');
 run('materialize-current-state.mjs');
 run('materialize-savings-review-candidates.mjs');
 run('apply-savings-golden-freeze.mjs');
