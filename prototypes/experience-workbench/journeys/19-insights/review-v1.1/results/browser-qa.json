@@ -1,0 +1,5812 @@
+{
+  "ok": true,
+  "journey": "19",
+  "version": "v1.1",
+  "candidate_sha256": "c67973e0efc1068d006d57c4d5690b6c49218bd63f24cb62ab587fbf5b9862da",
+  "screens": 27,
+  "screen_ids": [
+    "overview",
+    "range-30",
+    "range-365",
+    "scope-picker",
+    "group-zurich",
+    "group-apartment",
+    "group-ski",
+    "group-geneva",
+    "biggest-group",
+    "settled-pattern",
+    "mixed-assets",
+    "insufficient",
+    "offline",
+    "loading",
+    "error",
+    "empty",
+    "access-changed",
+    "partial-data",
+    "privacy",
+    "handoff-group",
+    "handoff-settings",
+    "home-preview",
+    "people-preview",
+    "you-preview",
+    "activity-preview",
+    "add-preview",
+    "demo"
+  ],
+  "viewports": [
+    "393x852",
+    "430x890"
+  ],
+  "layouts": [
+    {
+      "screen": "overview",
+      "viewport": "393x852",
+      "visible": [
+        "overview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 799,
+      "mainClientHeight": 713,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "range-30",
+      "viewport": "393x852",
+      "visible": [
+        "range-30"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 713,
+      "mainClientHeight": 713,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "range-365",
+      "viewport": "393x852",
+      "visible": [
+        "range-365"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 799,
+      "mainClientHeight": 713,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "scope-picker",
+      "viewport": "393x852",
+      "visible": [
+        "scope-picker"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 737,
+      "mainClientHeight": 737,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "group-zurich",
+      "viewport": "393x852",
+      "visible": [
+        "group-zurich"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 686,
+      "mainClientHeight": 686,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "group-apartment",
+      "viewport": "393x852",
+      "visible": [
+        "group-apartment"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 686,
+      "mainClientHeight": 686,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "group-ski",
+      "viewport": "393x852",
+      "visible": [
+        "group-ski"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 686,
+      "mainClientHeight": 686,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "group-geneva",
+      "viewport": "393x852",
+      "visible": [
+        "group-geneva"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 686,
+      "mainClientHeight": 686,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "biggest-group",
+      "viewport": "393x852",
+      "visible": [
+        "biggest-group"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "settled-pattern",
+      "viewport": "393x852",
+      "visible": [
+        "settled-pattern"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "mixed-assets",
+      "viewport": "393x852",
+      "visible": [
+        "mixed-assets"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "insufficient",
+      "viewport": "393x852",
+      "visible": [
+        "insufficient"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "offline",
+      "viewport": "393x852",
+      "visible": [
+        "offline"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "loading",
+      "viewport": "393x852",
+      "visible": [
+        "loading"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "error",
+      "viewport": "393x852",
+      "visible": [
+        "error"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "empty",
+      "viewport": "393x852",
+      "visible": [
+        "empty"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "access-changed",
+      "viewport": "393x852",
+      "visible": [
+        "access-changed"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "partial-data",
+      "viewport": "393x852",
+      "visible": [
+        "partial-data"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "privacy",
+      "viewport": "393x852",
+      "visible": [
+        "privacy"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "handoff-group",
+      "viewport": "393x852",
+      "visible": [
+        "handoff-group"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "handoff-settings",
+      "viewport": "393x852",
+      "visible": [
+        "handoff-settings"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "home-preview",
+      "viewport": "393x852",
+      "visible": [
+        "home-preview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "people-preview",
+      "viewport": "393x852",
+      "visible": [
+        "people-preview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "you-preview",
+      "viewport": "393x852",
+      "visible": [
+        "you-preview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "activity-preview",
+      "viewport": "393x852",
+      "visible": [
+        "activity-preview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-preview",
+      "viewport": "393x852",
+      "visible": [
+        "add-preview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "demo",
+      "viewport": "393x852",
+      "visible": [
+        "demo"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 727,
+      "mainClientHeight": 727,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "overview",
+      "viewport": "430x890",
+      "visible": [
+        "overview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 784,
+      "mainClientHeight": 751,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "range-30",
+      "viewport": "430x890",
+      "visible": [
+        "range-30"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 751,
+      "mainClientHeight": 751,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "range-365",
+      "viewport": "430x890",
+      "visible": [
+        "range-365"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 784,
+      "mainClientHeight": 751,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "scope-picker",
+      "viewport": "430x890",
+      "visible": [
+        "scope-picker"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 775,
+      "mainClientHeight": 775,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "group-zurich",
+      "viewport": "430x890",
+      "visible": [
+        "group-zurich"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 724,
+      "mainClientHeight": 724,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "group-apartment",
+      "viewport": "430x890",
+      "visible": [
+        "group-apartment"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 724,
+      "mainClientHeight": 724,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "group-ski",
+      "viewport": "430x890",
+      "visible": [
+        "group-ski"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 724,
+      "mainClientHeight": 724,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "group-geneva",
+      "viewport": "430x890",
+      "visible": [
+        "group-geneva"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 724,
+      "mainClientHeight": 724,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "biggest-group",
+      "viewport": "430x890",
+      "visible": [
+        "biggest-group"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "settled-pattern",
+      "viewport": "430x890",
+      "visible": [
+        "settled-pattern"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "mixed-assets",
+      "viewport": "430x890",
+      "visible": [
+        "mixed-assets"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "insufficient",
+      "viewport": "430x890",
+      "visible": [
+        "insufficient"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "offline",
+      "viewport": "430x890",
+      "visible": [
+        "offline"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "loading",
+      "viewport": "430x890",
+      "visible": [
+        "loading"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "error",
+      "viewport": "430x890",
+      "visible": [
+        "error"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "empty",
+      "viewport": "430x890",
+      "visible": [
+        "empty"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "access-changed",
+      "viewport": "430x890",
+      "visible": [
+        "access-changed"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "partial-data",
+      "viewport": "430x890",
+      "visible": [
+        "partial-data"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "privacy",
+      "viewport": "430x890",
+      "visible": [
+        "privacy"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "handoff-group",
+      "viewport": "430x890",
+      "visible": [
+        "handoff-group"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "handoff-settings",
+      "viewport": "430x890",
+      "visible": [
+        "handoff-settings"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "home-preview",
+      "viewport": "430x890",
+      "visible": [
+        "home-preview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "people-preview",
+      "viewport": "430x890",
+      "visible": [
+        "people-preview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "you-preview",
+      "viewport": "430x890",
+      "visible": [
+        "you-preview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "activity-preview",
+      "viewport": "430x890",
+      "visible": [
+        "activity-preview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "add-preview",
+      "viewport": "430x890",
+      "visible": [
+        "add-preview"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    },
+    {
+      "screen": "demo",
+      "viewport": "430x890",
+      "visible": [
+        "demo"
+      ],
+      "bodyOverflowX": false,
+      "bodyOverflowY": false,
+      "screenOverflowX": false,
+      "screenViewportFit": true,
+      "headerOverlap": false,
+      "footerOverlap": false,
+      "footerVisible": true,
+      "mainScrollHeight": 765,
+      "mainClientHeight": 765,
+      "svgMissing": 0,
+      "passed": true
+    }
+  ],
+  "interactions": [
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#range-30",
+      "target": "range-30",
+      "observed": {
+        "hash": "#range-30",
+        "visible": [
+          "range-30"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#range-365",
+      "target": "range-365",
+      "observed": {
+        "hash": "#range-365",
+        "visible": [
+          "range-365"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#scope-picker",
+      "target": "scope-picker",
+      "observed": {
+        "hash": "#scope-picker",
+        "visible": [
+          "scope-picker"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#biggest-group",
+      "target": "biggest-group",
+      "observed": {
+        "hash": "#biggest-group",
+        "visible": [
+          "biggest-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#settled-pattern",
+      "target": "settled-pattern",
+      "observed": {
+        "hash": "#settled-pattern",
+        "visible": [
+          "settled-pattern"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#mixed-assets",
+      "target": "mixed-assets",
+      "observed": {
+        "hash": "#mixed-assets",
+        "visible": [
+          "mixed-assets"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "overview",
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#range-30",
+      "target": "range-30",
+      "observed": {
+        "hash": "#range-30",
+        "visible": [
+          "range-30"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#range-365",
+      "target": "range-365",
+      "observed": {
+        "hash": "#range-365",
+        "visible": [
+          "range-365"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#scope-picker",
+      "target": "scope-picker",
+      "observed": {
+        "hash": "#scope-picker",
+        "visible": [
+          "scope-picker"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#biggest-group",
+      "target": "biggest-group",
+      "observed": {
+        "hash": "#biggest-group",
+        "visible": [
+          "biggest-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#settled-pattern",
+      "target": "settled-pattern",
+      "observed": {
+        "hash": "#settled-pattern",
+        "visible": [
+          "settled-pattern"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-30",
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#range-30",
+      "target": "range-30",
+      "observed": {
+        "hash": "#range-30",
+        "visible": [
+          "range-30"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#range-365",
+      "target": "range-365",
+      "observed": {
+        "hash": "#range-365",
+        "visible": [
+          "range-365"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#scope-picker",
+      "target": "scope-picker",
+      "observed": {
+        "hash": "#scope-picker",
+        "visible": [
+          "scope-picker"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#biggest-group",
+      "target": "biggest-group",
+      "observed": {
+        "hash": "#biggest-group",
+        "visible": [
+          "biggest-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#settled-pattern",
+      "target": "settled-pattern",
+      "observed": {
+        "hash": "#settled-pattern",
+        "visible": [
+          "settled-pattern"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#mixed-assets",
+      "target": "mixed-assets",
+      "observed": {
+        "hash": "#mixed-assets",
+        "visible": [
+          "mixed-assets"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "range-365",
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "href": "#group-zurich",
+      "target": "group-zurich",
+      "observed": {
+        "hash": "#group-zurich",
+        "visible": [
+          "group-zurich"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "href": "#group-apartment",
+      "target": "group-apartment",
+      "observed": {
+        "hash": "#group-apartment",
+        "visible": [
+          "group-apartment"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "href": "#group-ski",
+      "target": "group-ski",
+      "observed": {
+        "hash": "#group-ski",
+        "visible": [
+          "group-ski"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "href": "#group-geneva",
+      "target": "group-geneva",
+      "observed": {
+        "hash": "#group-geneva",
+        "visible": [
+          "group-geneva"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "scope-picker",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-zurich",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-zurich",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-zurich",
+      "href": "#handoff-group",
+      "target": "handoff-group",
+      "observed": {
+        "hash": "#handoff-group",
+        "visible": [
+          "handoff-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-zurich",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-apartment",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-apartment",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-apartment",
+      "href": "#handoff-group",
+      "target": "handoff-group",
+      "observed": {
+        "hash": "#handoff-group",
+        "visible": [
+          "handoff-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-apartment",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-ski",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-ski",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-ski",
+      "href": "#handoff-group",
+      "target": "handoff-group",
+      "observed": {
+        "hash": "#handoff-group",
+        "visible": [
+          "handoff-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-ski",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-geneva",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-geneva",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-geneva",
+      "href": "#handoff-group",
+      "target": "handoff-group",
+      "observed": {
+        "hash": "#handoff-group",
+        "visible": [
+          "handoff-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "group-geneva",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "href": "#group-zurich",
+      "target": "group-zurich",
+      "observed": {
+        "hash": "#group-zurich",
+        "visible": [
+          "group-zurich"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "href": "#group-apartment",
+      "target": "group-apartment",
+      "observed": {
+        "hash": "#group-apartment",
+        "visible": [
+          "group-apartment"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "href": "#group-ski",
+      "target": "group-ski",
+      "observed": {
+        "hash": "#group-ski",
+        "visible": [
+          "group-ski"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "href": "#group-geneva",
+      "target": "group-geneva",
+      "observed": {
+        "hash": "#group-geneva",
+        "visible": [
+          "group-geneva"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "biggest-group",
+      "href": "#handoff-group",
+      "target": "handoff-group",
+      "observed": {
+        "hash": "#handoff-group",
+        "visible": [
+          "handoff-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "settled-pattern",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "settled-pattern",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "settled-pattern",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "mixed-assets",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "mixed-assets",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "mixed-assets",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "insufficient",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "insufficient",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "insufficient",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "offline",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "loading",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "error",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "error",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "error",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "empty",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "access-changed",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "access-changed",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "access-changed",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "partial-data",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "partial-data",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "partial-data",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "privacy",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "privacy",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "privacy",
+      "href": "#handoff-settings",
+      "target": "handoff-settings",
+      "observed": {
+        "hash": "#handoff-settings",
+        "visible": [
+          "handoff-settings"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-group",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-group",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-group",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-settings",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-settings",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "handoff-settings",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "home-preview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "home-preview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "home-preview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "people-preview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "people-preview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "people-preview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "you-preview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "you-preview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "you-preview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "activity-preview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "activity-preview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "activity-preview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-preview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-preview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "add-preview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#range-30",
+      "target": "range-30",
+      "observed": {
+        "hash": "#range-30",
+        "visible": [
+          "range-30"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#range-365",
+      "target": "range-365",
+      "observed": {
+        "hash": "#range-365",
+        "visible": [
+          "range-365"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#scope-picker",
+      "target": "scope-picker",
+      "observed": {
+        "hash": "#scope-picker",
+        "visible": [
+          "scope-picker"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#mixed-assets",
+      "target": "mixed-assets",
+      "observed": {
+        "hash": "#mixed-assets",
+        "visible": [
+          "mixed-assets"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#insufficient",
+      "target": "insufficient",
+      "observed": {
+        "hash": "#insufficient",
+        "visible": [
+          "insufficient"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#partial-data",
+      "target": "partial-data",
+      "observed": {
+        "hash": "#partial-data",
+        "visible": [
+          "partial-data"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#offline",
+      "target": "offline",
+      "observed": {
+        "hash": "#offline",
+        "visible": [
+          "offline"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#loading",
+      "target": "loading",
+      "observed": {
+        "hash": "#loading",
+        "visible": [
+          "loading"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#error",
+      "target": "error",
+      "observed": {
+        "hash": "#error",
+        "visible": [
+          "error"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#empty",
+      "target": "empty",
+      "observed": {
+        "hash": "#empty",
+        "visible": [
+          "empty"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#access-changed",
+      "target": "access-changed",
+      "observed": {
+        "hash": "#access-changed",
+        "visible": [
+          "access-changed"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#privacy",
+      "target": "privacy",
+      "observed": {
+        "hash": "#privacy",
+        "visible": [
+          "privacy"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "393x852",
+      "from": "demo",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#range-30",
+      "target": "range-30",
+      "observed": {
+        "hash": "#range-30",
+        "visible": [
+          "range-30"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#range-365",
+      "target": "range-365",
+      "observed": {
+        "hash": "#range-365",
+        "visible": [
+          "range-365"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#scope-picker",
+      "target": "scope-picker",
+      "observed": {
+        "hash": "#scope-picker",
+        "visible": [
+          "scope-picker"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#biggest-group",
+      "target": "biggest-group",
+      "observed": {
+        "hash": "#biggest-group",
+        "visible": [
+          "biggest-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#settled-pattern",
+      "target": "settled-pattern",
+      "observed": {
+        "hash": "#settled-pattern",
+        "visible": [
+          "settled-pattern"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#mixed-assets",
+      "target": "mixed-assets",
+      "observed": {
+        "hash": "#mixed-assets",
+        "visible": [
+          "mixed-assets"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "overview",
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#range-30",
+      "target": "range-30",
+      "observed": {
+        "hash": "#range-30",
+        "visible": [
+          "range-30"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#range-365",
+      "target": "range-365",
+      "observed": {
+        "hash": "#range-365",
+        "visible": [
+          "range-365"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#scope-picker",
+      "target": "scope-picker",
+      "observed": {
+        "hash": "#scope-picker",
+        "visible": [
+          "scope-picker"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#biggest-group",
+      "target": "biggest-group",
+      "observed": {
+        "hash": "#biggest-group",
+        "visible": [
+          "biggest-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#settled-pattern",
+      "target": "settled-pattern",
+      "observed": {
+        "hash": "#settled-pattern",
+        "visible": [
+          "settled-pattern"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-30",
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#range-30",
+      "target": "range-30",
+      "observed": {
+        "hash": "#range-30",
+        "visible": [
+          "range-30"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#range-365",
+      "target": "range-365",
+      "observed": {
+        "hash": "#range-365",
+        "visible": [
+          "range-365"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#scope-picker",
+      "target": "scope-picker",
+      "observed": {
+        "hash": "#scope-picker",
+        "visible": [
+          "scope-picker"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#biggest-group",
+      "target": "biggest-group",
+      "observed": {
+        "hash": "#biggest-group",
+        "visible": [
+          "biggest-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#settled-pattern",
+      "target": "settled-pattern",
+      "observed": {
+        "hash": "#settled-pattern",
+        "visible": [
+          "settled-pattern"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#mixed-assets",
+      "target": "mixed-assets",
+      "observed": {
+        "hash": "#mixed-assets",
+        "visible": [
+          "mixed-assets"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#people-preview",
+      "target": "people-preview",
+      "observed": {
+        "hash": "#people-preview",
+        "visible": [
+          "people-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#add-preview",
+      "target": "add-preview",
+      "observed": {
+        "hash": "#add-preview",
+        "visible": [
+          "add-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#activity-preview",
+      "target": "activity-preview",
+      "observed": {
+        "hash": "#activity-preview",
+        "visible": [
+          "activity-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "range-365",
+      "href": "#you-preview",
+      "target": "you-preview",
+      "observed": {
+        "hash": "#you-preview",
+        "visible": [
+          "you-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "href": "#group-zurich",
+      "target": "group-zurich",
+      "observed": {
+        "hash": "#group-zurich",
+        "visible": [
+          "group-zurich"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "href": "#group-apartment",
+      "target": "group-apartment",
+      "observed": {
+        "hash": "#group-apartment",
+        "visible": [
+          "group-apartment"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "href": "#group-ski",
+      "target": "group-ski",
+      "observed": {
+        "hash": "#group-ski",
+        "visible": [
+          "group-ski"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "href": "#group-geneva",
+      "target": "group-geneva",
+      "observed": {
+        "hash": "#group-geneva",
+        "visible": [
+          "group-geneva"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "scope-picker",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-zurich",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-zurich",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-zurich",
+      "href": "#handoff-group",
+      "target": "handoff-group",
+      "observed": {
+        "hash": "#handoff-group",
+        "visible": [
+          "handoff-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-zurich",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-apartment",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-apartment",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-apartment",
+      "href": "#handoff-group",
+      "target": "handoff-group",
+      "observed": {
+        "hash": "#handoff-group",
+        "visible": [
+          "handoff-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-apartment",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-ski",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-ski",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-ski",
+      "href": "#handoff-group",
+      "target": "handoff-group",
+      "observed": {
+        "hash": "#handoff-group",
+        "visible": [
+          "handoff-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-ski",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-geneva",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-geneva",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-geneva",
+      "href": "#handoff-group",
+      "target": "handoff-group",
+      "observed": {
+        "hash": "#handoff-group",
+        "visible": [
+          "handoff-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "group-geneva",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "href": "#group-zurich",
+      "target": "group-zurich",
+      "observed": {
+        "hash": "#group-zurich",
+        "visible": [
+          "group-zurich"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "href": "#group-apartment",
+      "target": "group-apartment",
+      "observed": {
+        "hash": "#group-apartment",
+        "visible": [
+          "group-apartment"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "href": "#group-ski",
+      "target": "group-ski",
+      "observed": {
+        "hash": "#group-ski",
+        "visible": [
+          "group-ski"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "href": "#group-geneva",
+      "target": "group-geneva",
+      "observed": {
+        "hash": "#group-geneva",
+        "visible": [
+          "group-geneva"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "biggest-group",
+      "href": "#handoff-group",
+      "target": "handoff-group",
+      "observed": {
+        "hash": "#handoff-group",
+        "visible": [
+          "handoff-group"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "settled-pattern",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "settled-pattern",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "settled-pattern",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "mixed-assets",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "mixed-assets",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "mixed-assets",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "insufficient",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "insufficient",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "insufficient",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "offline",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "loading",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "error",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "error",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "error",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "empty",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "access-changed",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "access-changed",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "access-changed",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "partial-data",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "partial-data",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "partial-data",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "privacy",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "privacy",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "privacy",
+      "href": "#handoff-settings",
+      "target": "handoff-settings",
+      "observed": {
+        "hash": "#handoff-settings",
+        "visible": [
+          "handoff-settings"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-group",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-group",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-group",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-settings",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-settings",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "handoff-settings",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "home-preview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "home-preview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "home-preview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "people-preview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "people-preview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "people-preview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "you-preview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "you-preview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "you-preview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "activity-preview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "activity-preview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "activity-preview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-preview",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-preview",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "add-preview",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#home-preview",
+      "target": "home-preview",
+      "observed": {
+        "hash": "#home-preview",
+        "visible": [
+          "home-preview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#demo",
+      "target": "demo",
+      "observed": {
+        "hash": "#demo",
+        "visible": [
+          "demo"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#range-30",
+      "target": "range-30",
+      "observed": {
+        "hash": "#range-30",
+        "visible": [
+          "range-30"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#range-365",
+      "target": "range-365",
+      "observed": {
+        "hash": "#range-365",
+        "visible": [
+          "range-365"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#scope-picker",
+      "target": "scope-picker",
+      "observed": {
+        "hash": "#scope-picker",
+        "visible": [
+          "scope-picker"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#mixed-assets",
+      "target": "mixed-assets",
+      "observed": {
+        "hash": "#mixed-assets",
+        "visible": [
+          "mixed-assets"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#insufficient",
+      "target": "insufficient",
+      "observed": {
+        "hash": "#insufficient",
+        "visible": [
+          "insufficient"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#partial-data",
+      "target": "partial-data",
+      "observed": {
+        "hash": "#partial-data",
+        "visible": [
+          "partial-data"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#offline",
+      "target": "offline",
+      "observed": {
+        "hash": "#offline",
+        "visible": [
+          "offline"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#loading",
+      "target": "loading",
+      "observed": {
+        "hash": "#loading",
+        "visible": [
+          "loading"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#error",
+      "target": "error",
+      "observed": {
+        "hash": "#error",
+        "visible": [
+          "error"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#empty",
+      "target": "empty",
+      "observed": {
+        "hash": "#empty",
+        "visible": [
+          "empty"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#access-changed",
+      "target": "access-changed",
+      "observed": {
+        "hash": "#access-changed",
+        "visible": [
+          "access-changed"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#privacy",
+      "target": "privacy",
+      "observed": {
+        "hash": "#privacy",
+        "visible": [
+          "privacy"
+        ]
+      },
+      "passed": true
+    },
+    {
+      "viewport": "430x890",
+      "from": "demo",
+      "href": "#overview",
+      "target": "overview",
+      "observed": {
+        "hash": "#overview",
+        "visible": [
+          "overview"
+        ]
+      },
+      "passed": true
+    }
+  ],
+  "mapped_actions": [
+    {
+      "screen": "overview",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "30 days",
+      "href": "#range-30",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "90 days",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "12 months",
+      "href": "#range-365",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "All groups 4 CHF groups · 1 DOT group",
+      "href": "#scope-picker",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "Zurich Weekend was your biggest shared-spend group 42% of your CHF shared spending in this period. CHF 430.00 42% See the group pattern",
+      "href": "#biggest-group",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "3 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 3/4 settled Understand the pattern",
+      "href": "#settled-pattern",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "Hackathon has separate DOT activity Kept outside the CHF comparison so an estimate cannot look payable. DOT 2.400000 separate asset Why currencies stay separate",
+      "href": "#mixed-assets",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "Pots",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "People",
+      "href": "#people-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "Add",
+      "href": "#add-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "Activity",
+      "href": "#activity-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "overview",
+      "label": "You",
+      "href": "#you-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "30 days",
+      "href": "#range-30",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "90 days",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "12 months",
+      "href": "#range-365",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "All groups 3 CHF groups",
+      "href": "#scope-picker",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "Zurich Weekend was your biggest shared-spend group 50% of your CHF shared spending in this period. CHF 180.00 50% See the group pattern",
+      "href": "#biggest-group",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "2 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 2/3 settled Understand the pattern",
+      "href": "#settled-pattern",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "Pots",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "People",
+      "href": "#people-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "Add",
+      "href": "#add-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "Activity",
+      "href": "#activity-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-30",
+      "label": "You",
+      "href": "#you-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "30 days",
+      "href": "#range-30",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "90 days",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "12 months",
+      "href": "#range-365",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "All groups 4 CHF groups · 1 DOT group",
+      "href": "#scope-picker",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "Apartment was your biggest shared-spend group 47% of your CHF shared spending in this period. CHF 1,800.00 47% See the group pattern",
+      "href": "#biggest-group",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "3 groups ended the period settled 1 group still has an open balance. Insights does not settle it for you. 3/4 settled Understand the pattern",
+      "href": "#settled-pattern",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "Hackathon has separate DOT activity Kept outside the CHF comparison so an estimate cannot look payable. DOT 4.800000 separate asset Why currencies stay separate",
+      "href": "#mixed-assets",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "Pots",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "People",
+      "href": "#people-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "Add",
+      "href": "#add-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "Activity",
+      "href": "#activity-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "range-365",
+      "label": "You",
+      "href": "#you-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "scope-picker",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "scope-picker",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "scope-picker",
+      "label": "All groups Combined CHF pattern; DOT remains separate",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "scope-picker",
+      "label": "Zurich Weekend 42% of CHF spending CHF 430.00",
+      "href": "#group-zurich",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "scope-picker",
+      "label": "Apartment 34% of CHF spending CHF 350.00",
+      "href": "#group-apartment",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "scope-picker",
+      "label": "Ski Trip 16% of CHF spending CHF 160.00",
+      "href": "#group-ski",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "scope-picker",
+      "label": "Geneva Day 8% of CHF spending CHF 80.00",
+      "href": "#group-geneva",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "scope-picker",
+      "label": "Cancel",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-zurich",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-zurich",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-zurich",
+      "label": "View Zurich Weekend",
+      "href": "#handoff-group",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-zurich",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-apartment",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-apartment",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-apartment",
+      "label": "View Apartment",
+      "href": "#handoff-group",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-apartment",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-ski",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-ski",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-ski",
+      "label": "View Ski Trip",
+      "href": "#handoff-group",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-ski",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-geneva",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-geneva",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-geneva",
+      "label": "View Geneva Day",
+      "href": "#handoff-group",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "group-geneva",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "biggest-group",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "biggest-group",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "biggest-group",
+      "label": "Zurich Weekend 42% of CHF spending CHF 430.00",
+      "href": "#group-zurich",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "biggest-group",
+      "label": "Apartment 34% of CHF spending CHF 350.00",
+      "href": "#group-apartment",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "biggest-group",
+      "label": "Ski Trip 16% of CHF spending CHF 160.00",
+      "href": "#group-ski",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "biggest-group",
+      "label": "Geneva Day 8% of CHF spending CHF 80.00",
+      "href": "#group-geneva",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "biggest-group",
+      "label": "View Zurich Weekend",
+      "href": "#handoff-group",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "settled-pattern",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "settled-pattern",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "settled-pattern",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "mixed-assets",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "mixed-assets",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "mixed-assets",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "insufficient",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "insufficient",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "insufficient",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "offline",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "offline",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "offline",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "loading",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "loading",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "loading",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "error",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "error",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "error",
+      "label": "Try again",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "empty",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "empty",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "empty",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "access-changed",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "access-changed",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "access-changed",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "partial-data",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "partial-data",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "partial-data",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "privacy",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "privacy",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "privacy",
+      "label": "Review account preferences",
+      "href": "#handoff-settings",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "handoff-group",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "handoff-group",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "handoff-group",
+      "label": "Return to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "handoff-settings",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "handoff-settings",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "handoff-settings",
+      "label": "Return to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "home-preview",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "home-preview",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "home-preview",
+      "label": "Open Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "people-preview",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "people-preview",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "people-preview",
+      "label": "Open Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "you-preview",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "you-preview",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "you-preview",
+      "label": "Open Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "activity-preview",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "activity-preview",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "activity-preview",
+      "label": "Return to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "add-preview",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "add-preview",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "add-preview",
+      "label": "Return to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Back",
+      "href": "#home-preview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Demo",
+      "href": "#demo",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "90 days",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "30 days",
+      "href": "#range-30",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "12 months",
+      "href": "#range-365",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Choose scope",
+      "href": "#scope-picker",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Mixed assets",
+      "href": "#mixed-assets",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Not enough history",
+      "href": "#insufficient",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Partial data",
+      "href": "#partial-data",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Offline",
+      "href": "#offline",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Loading",
+      "href": "#loading",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Error",
+      "href": "#error",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Empty",
+      "href": "#empty",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Access changed",
+      "href": "#access-changed",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "How it works",
+      "href": "#privacy",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    },
+    {
+      "screen": "demo",
+      "label": "Back to Insights",
+      "href": "#overview",
+      "domain_event": "InsightsNavigationOnly",
+      "authority": "viewer/read",
+      "financial_effect": "none"
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "external_network_requests": [],
+  "default_entry": {
+    "hash": "",
+    "visible": [
+      "overview"
+    ]
+  },
+  "invalid_entry": {
+    "hash": "#overview",
+    "visible": [
+      "overview"
+    ]
+  },
+  "shell": {
+    "ariaLabel": "Main navigation",
+    "count": 5,
+    "items": [
+      {
+        "tag": "A",
+        "className": "tab",
+        "text": "Pots",
+        "href": "#home-preview",
+        "ariaLabel": null
+      },
+      {
+        "tag": "A",
+        "className": "tab",
+        "text": "People",
+        "href": "#people-preview",
+        "ariaLabel": null
+      },
+      {
+        "tag": "A",
+        "className": "add-tab",
+        "text": "",
+        "href": "#add-preview",
+        "ariaLabel": "Add"
+      },
+      {
+        "tag": "A",
+        "className": "tab",
+        "text": "Activity",
+        "href": "#activity-preview",
+        "ariaLabel": null
+      },
+      {
+        "tag": "A",
+        "className": "tab",
+        "text": "You",
+        "href": "#you-preview",
+        "ariaLabel": null
+      }
+    ]
+  },
+  "model_qa": {
+    "ok": true,
+    "assertions": 43,
+    "scenarios": 18
+  },
+  "layout_checks": 54,
+  "passed_layouts": 54,
+  "internal_clicks": 278,
+  "passed_clicks": 278,
+  "failed_layouts": [],
+  "failed_interactions": [],
+  "shell_ok": true
+}
