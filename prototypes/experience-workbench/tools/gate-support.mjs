@@ -6,6 +6,19 @@ const run=(file,args=[])=>execFileSync(process.execPath,[path.join(root,'tools',
 const j18HistoryPath=path.join(root,'journeys/18-activity-notifications/source/decision-history.md');
 const canonicalJ18History=fs.readFileSync(j18HistoryPath,'utf8');
 if(!canonicalJ18History.includes('**Coverage:**')) throw new Error('Canonical J18 decision history snapshot must use current structured format');
+
+// Historical replay proves the frozen journey chain, but it must never become the
+// authority for the newer current candidate. Preserve current-authority overlays
+// byte-for-byte, replay/validate the historical checkpoints, then restore them and
+// regenerate the derived map/manifest against the actual current state.
+const authorityOverlayPaths=[
+  'registry/progress.json',
+  'registry/active-candidate.json',
+  'START_HERE.md',
+  'GOLDEN_SCREENS.md'
+];
+const authorityOverlay=new Map(authorityOverlayPaths.map(p=>[p,fs.readFileSync(path.join(root,p))]));
+
 run('reset-post-j17-replay-baseline.mjs');
 run('materialize-current-state.mjs');
 run('materialize-savings-review-candidates.mjs');
@@ -21,5 +34,16 @@ run('build-journey-map.mjs');
 run('build-golden-manifest.mjs');
 run('validate-workbench.mjs');
 run('validate-j19-j20.mjs');
+
+for(const [relative,bytes] of authorityOverlay){
+  const target=path.join(root,relative);
+  fs.mkdirSync(path.dirname(target),{recursive:true});
+  fs.writeFileSync(target,bytes);
+}
+
+run('build-journey-map.mjs');
+run('build-golden-manifest.mjs');
+run('validate-workbench.mjs');
+run('validate-current-authority.mjs');
 run('decision-history.mjs',['--check']);
 run('build-golden-manifest.mjs',['--check']);
