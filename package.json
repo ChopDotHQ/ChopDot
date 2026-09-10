@@ -162,7 +162,7 @@
     "@parity/host-api-test-sdk": "^0.12.1",
     "@parity/resolc": "1.4.0",
     "@playwright/test": "^1.61.1",
-    "@polkad-community-foundation/polkadot-app-deploy": "0.13.1",
+    "@polkadot-community-foundation/polkadot-app-deploy": "0.13.1",
     "@types/node": "^22.14.0",
     "@types/pngjs": "^6.0.5",
     "@types/qrcode": "^1.5.6",
