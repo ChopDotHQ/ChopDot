@@ -1,0 +1,41 @@
+name: Journey 19 review QA
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - ux/experience-workbench
+    paths:
+      - '.github/workflows/j19-review-qa.yml'
+      - 'prototypes/experience-workbench/journeys/19-insights/v1-candidate.html'
+      - 'prototypes/experience-workbench/journeys/19-insights/QA_SUMMARY.json'
+      - 'prototypes/experience-workbench/journeys/19-insights/source/review-qa.cjs'
+  workflow_dispatch:
+
+jobs:
+  review-j19:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Reproduce Journey 19 browser and render QA
+        env:
+          QA_OUT: ${{ runner.temp }}/j19-fresh-review-qa
+        run: node prototypes/experience-workbench/journeys/19-insights/source/review-qa.cjs
+      - name: Upload fresh Journey 19 screenshots and QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: j19-fresh-review-qa
+          path: ${{ runner.temp }}/j19-fresh-review-qa
+          if-no-files-found: error
+          retention-days: 14
