@@ -1,8 +1,8 @@
 {
-  "checkpoint": "2026-09-10-j20-v1-golden-j21-current",
-  "purpose": "Materialize explicitly approved Journey 20 Payment Methods V1 as Golden #20 and advance only to Journey 21 Wallet & Crypto definition.",
+  "checkpoint": "2026-09-10-j21-v1-revise",
+  "purpose": "Preserve Golden #20 authority and record the exact Journey 21 candidate review state without granting human approval or Golden authority.",
   "canonical_exact_head_verified": false,
-  "canonical_exact_head_note": "This transition must pass npm run gate on its resulting tree; workflow/run evidence is recorded externally after the exact transition run completes.",
+  "canonical_exact_head_note": "This governance reconciliation changes canonical authority metadata only. Treat the resulting exact canonical head as unverified until the Prototype workbench gate completes successfully on the resulting tree.",
   "journey_20": {
     "version": "v1",
     "golden_number": 20,
@@ -12,6 +12,9 @@
     "approval_record": "registry/approvals/20-v1.json",
     "review_bundle_head": "74082c72cc52935a5eda41b42279b72f2cb0213f",
     "dedicated_review_run": "34502893911",
+    "freeze_gate_run": "34516615210",
+    "freeze_transition_source": "db4675aba04d3884915b5ec351bb8670822d9f9a",
+    "materialized_canonical_head": "d7ec8b61d5c27d40447f6cefdb843a621d80f1ac",
     "direct_visual_review": "pass",
     "human_approval": true,
     "html_change_authorized": false
@@ -19,8 +22,24 @@
   "journey_21": {
     "version": "v1",
     "approval": "not-reviewed",
-    "stage": "definition",
-    "prototype_built": false,
+    "stage": "independent-review",
+    "prototype_built": true,
+    "candidate_branch": "ux/experience-workbench-j21-v1-candidate",
+    "reviewed_source_head": "1a4539418d9fdd4b8cfcee14e5f39cfd18c12ce6",
+    "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
+    "prototype_sha256": "f747456175d0a7201ebf59e73b297a1cfad70f4dddc6e1e7fad89c9bb150070d",
+    "exact_qa_run": "34524856376",
+    "evidence_artifact": "10171161190",
+    "evidence_artifact_sha256": "63f199fbca4d1a8c9304924a955b5baef0713e82f1c82b2695a644269e356d87",
+    "review_status": "REVISE",
+    "mechanical_review": "pass",
+    "direct_visual_review": "pass-for-built-states",
+    "human_approval": false,
+    "blockers": [
+      "Verified finality must return an execution result to the owning caller rather than restart the wallet-required flow.",
+      "Unknown submission/finality must remain unresolved through reconciliation and may not be converted directly to not-sent or pending.",
+      "Required remaining J21 state clusters must be built and included in fresh exact-head evidence before re-review."
+    ],
     "spec_path": "journeys/21-wallet-crypto/spec.md"
   },
   "golden_count": 20,
@@ -29,6 +48,6 @@
   "current_journey": "21",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "J20 bytes/checksum remain exact; resulting J20 Golden/J21-current tree must pass npm run gate before the transition is treated as fully materialized.",
+  "gate_requirement": "Builder changes only Journey 21 candidate/evidence on its non-protected lane. Re-review must bind to one new exact head/checksum and all required rendered states. GOLDEN-READY still requires all five lenses; only explicit Devinson approval of that exact candidate may authorize freeze.",
   "prototype_only": true
 }
