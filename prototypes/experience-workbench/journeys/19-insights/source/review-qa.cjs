@@ -119,11 +119,11 @@ const viewports = [
       for (const id of uniqueScreenIds) {
         await page.evaluate(screenId => { location.hash = `#${screenId}`; }, id);
         await page.waitForTimeout(8);
-        const hrefs = await page.$$eval(`#${CSS.escape(id)} a[href^="#"]`, els => els.map(el => el.getAttribute('href')));
+        const hrefs = await page.$$eval(`#${id} a[href^="#"]`, els => els.map(el => el.getAttribute('href')));
         for (let i = 0; i < hrefs.length; i++) {
           await page.evaluate(screenId => { location.hash = `#${screenId}`; }, id);
           await page.waitForTimeout(5);
-          const locator = page.locator(`#${CSS.escape(id)} a[href^="#"]`).nth(i);
+          const locator = page.locator(`#${id} a[href^="#"]`).nth(i);
           await locator.click({ force: true });
           await page.waitForTimeout(8);
           const observed = await page.evaluate(() => ({
