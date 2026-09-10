@@ -48,10 +48,11 @@ const result={ok:false,journey:'20',version:'v1',review_status:'review-pending',
    }
    for(const id of ids){
     await page.evaluate(id=>{location.hash=`#${id}`},id);await page.waitForTimeout(5);
-    const hrefs=await page.$$eval(`#${CSS.escape(id)} a[href^="#"]`,els=>els.map(el=>el.getAttribute('href')));
+    const selector=`#${id} a[href^="#"]`;
+    const hrefs=await page.$$eval(selector,els=>els.map(el=>el.getAttribute('href')));
     for(let i=0;i<hrefs.length;i++){
       await page.evaluate(id=>{location.hash=`#${id}`},id);await page.waitForTimeout(4);
-      const locator=page.locator(`#${CSS.escape(id)} a[href^="#"]`).nth(i);
+      const locator=page.locator(selector).nth(i);
       await locator.click({force:true});await page.waitForTimeout(5);
       const observed=await page.evaluate(()=>({hash:location.hash,visible:[...document.querySelectorAll('.screen')].filter(el=>getComputedStyle(el).display!=='none').map(el=>el.id)}));
       const target=hrefs[i].slice(1);const passed=observed.hash===`#${target}`&&observed.visible.length===1&&observed.visible[0]===target;
