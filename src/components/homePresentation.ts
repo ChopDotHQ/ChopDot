@@ -84,6 +84,10 @@ export function deriveHomePresentation(
   };
 }
 
+export function shouldShowHomeReceiptShortcut(presentation: HomePresentation): boolean {
+  return presentation.state === 'returning';
+}
+
 function compareGroups(left: Group, right: Group): number {
   const leftName = left.name.toLocaleLowerCase('en');
   const rightName = right.name.toLocaleLowerCase('en');
