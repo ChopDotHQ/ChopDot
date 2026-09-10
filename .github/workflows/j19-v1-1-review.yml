@@ -1,0 +1,56 @@
+name: Journey 19 V1.1 review
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - ux/experience-workbench
+    paths:
+      - '.github/workflows/j19-v1-1-review.yml'
+      - 'prototypes/experience-workbench/journeys/19-insights/v1-candidate.html'
+      - 'prototypes/experience-workbench/journeys/19-insights/source/build-v1.1.mjs'
+      - 'prototypes/experience-workbench/journeys/19-insights/source/review-qa-v1.1.cjs'
+      - 'prototypes/experience-workbench/journeys/19-insights/source/model.cjs'
+      - 'prototypes/experience-workbench/journeys/19-insights/source/test-model.cjs'
+  workflow_dispatch:
+
+jobs:
+  review-j19-v1-1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ux/experience-workbench
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build V1.1 candidate
+        run: node prototypes/experience-workbench/journeys/19-insights/source/build-v1.1.mjs
+      - name: Run fresh V1.1 browser, interaction and model QA
+        run: node prototypes/experience-workbench/journeys/19-insights/source/review-qa-v1.1.cjs
+      - name: Commit exact review bundle
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prototypes/experience-workbench/journeys/19-insights/review-v1.1
+          if git diff --cached --quiet; then
+            echo "Journey 19 V1.1 review bundle is already current."
+            exit 0
+          fi
+          git commit -m "Materialize Journey 19 V1.1 review bundle"
+          git push
+      - name: Upload Journey 19 V1.1 review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: j19-v1-1-review
+          path: prototypes/experience-workbench/journeys/19-insights/review-v1.1
+          if-no-files-found: error
+          retention-days: 14
