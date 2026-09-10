@@ -1,6 +1,6 @@
 {
   "schema": "chopdot.recovery-head-index-targets.v1",
-  "dotnsCodeAnchors": "deployment/dotns-code-anchors-2026-08-23.json",
+  "dotnsCodeAnchors": "deployment/dotns-code-anchors-2026-09-10.json",
   "environments": {
     "devnet": {
       "label": "Products Devnet on the public Paseo Asset Hub",
@@ -24,5 +24,5 @@
     "https://docs.polkadotcommunity.foundation/reference/addresses/",
     "https://docs.polkadot.com/smart-contracts/connect"
   ],
-  "note": "Both targets deliberately share EVM chain id 420420417, so chain id alone is not an environment identity. The write gate also attests the immutable Substrate Asset Hub genesis over WSS. Products Devnet endpoints are refreshed against the current September 2026 community documentation."
+  "note": "Both targets deliberately share EVM chain id 420420417, so chain id alone is not an environment identity. The write gate also attests the immutable Substrate Asset Hub genesis over WSS. Products Devnet endpoints and Devnet DotNS code anchors were refreshed against the current September 2026 community documentation and the exact current RPC."
 }
