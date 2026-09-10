@@ -4,6 +4,7 @@ import App, {type AppDependencies} from './App.tsx';
 import './index.css';
 import { loadTelegramWebAppScript } from './telegramBootstrap.ts';
 import {bootstrapPolkadotHostDeveloperChecks} from './environment/bootstrapPolkadotHost.ts';
+import {productsDevnetMembershipRegistryStorageKey} from './environment/productsDevnetIdentityEpoch.ts';
 import {appStorage} from './environment/index.ts';
 import {composeHostMembershipCapabilities, type MembershipCapabilityComposition} from './environment/membershipCapabilityComposition.ts';
 import {membershipKey} from './membership/membershipLifecycle.ts';
@@ -55,6 +56,10 @@ const productAccount = {
       participantId: identity.username,
       accountPublicKeyHex,
       storage: appStorage,
+      storageKey: productsDevnetMembershipRegistryStorageKey({
+        productId: identity.productId,
+        accountPublicKeyHex,
+      }),
       entropy: accountBridge,
     });
     const runtimeIdentity = {

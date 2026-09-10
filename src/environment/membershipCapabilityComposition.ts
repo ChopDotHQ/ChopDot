@@ -1,5 +1,6 @@
 import type {KeyValueStorage} from './livePayerSync.ts';
 import {PolkadotHostBridge} from './polkadotHostBridge.ts';
+import {productsDevnetMembershipRegistryStorageKey} from './productsDevnetIdentityEpoch.ts';
 import {IndexedDbPendingAcceptanceVault} from './indexedDbPendingAcceptanceVault.ts';
 import {DurableMembershipKeyEnvelopeRegistry} from '../membership/membershipKeyEnvelopeRegistry.ts';
 import {DurableMembershipProtectedGroupKeySink} from '../membership/durableMembershipProtectedGroupKeySink.ts';
@@ -62,6 +63,10 @@ export async function composeHostMembershipCapabilities(input: {
     participantId: identity.username,
     accountPublicKeyHex,
     storage: input.storage,
+    storageKey: productsDevnetMembershipRegistryStorageKey({
+      productId: identity.productId,
+      accountPublicKeyHex,
+    }),
     entropy: bridge,
   });
   const service = new MembershipBootstrapEntryService({

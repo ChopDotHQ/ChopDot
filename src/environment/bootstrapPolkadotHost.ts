@@ -6,6 +6,10 @@ import {
   type PolkadotHostIdentity,
   type RedactedReceiptPacket,
 } from './polkadotHostBridge.ts';
+import {
+  isLocalPolkadotTestHostFrame,
+  isPolkadotProductHostFrame,
+} from './polkadotHostEnvironment.ts';
 import {runNativeHostReadinessCheck, type NativeHostReadinessReport} from './nativeHostReadiness.ts';
 
 interface HostDeveloperIdentity {
@@ -105,18 +109,25 @@ export async function bootstrapPolkadotHostDeveloperChecks(): Promise<void> {
   } catch {
     referrerHost = '';
   }
-  const isPaseoHostFrame = window.parent !== window && /(?:^|\.)paseo\.li$/u.test(referrerHost);
-  const isLocalTestHostFrame = window.parent !== window
-    && (referrerHost === '127.0.0.1' || referrerHost === 'localhost');
+
+  const hostContext = {embedded: window.parent !== window, referrerHost};
+  const isProductHostFrame = isPolkadotProductHostFrame(hostContext);
+  const isLocalTestHostFrame = isLocalPolkadotTestHostFrame(hostContext);
   const developerChecksEnabled = params.get('developerChecks') === '1' || isLocalTestHostFrame;
-  if (!developerChecksEnabled && !isPaseoHostFrame) return;
+  if (!developerChecksEnabled && !isProductHostFrame) return;
 
   const bridge = new PolkadotHostBridge();
-  const report = await bridge.probe();
-  window.__CHOPDOT_HOST_CAPABILITIES__ = report;
-  window.dispatchEvent(new CustomEvent('chopdot:host-capabilities', {detail: report}));
 
+  // The local/debug seam must not depend on an asynchronous capability probe.
+  // A host SDK may legitimately take several seconds to answer readiness
+  // queries; test controls are still safe to expose immediately because they
+  // perform the real capability checks when invoked. Production hosted users
+  // never receive this seam unless developerChecks=1 was explicitly requested.
   if (developerChecksEnabled) {
     window.__CHOPDOT_HOST_ACTIONS__ = exposeDeveloperActions(bridge);
   }
+
+  const report = await bridge.probe();
+  window.__CHOPDOT_HOST_CAPABILITIES__ = report;
+  window.dispatchEvent(new CustomEvent('chopdot:host-capabilities', {detail: report}));
 }
