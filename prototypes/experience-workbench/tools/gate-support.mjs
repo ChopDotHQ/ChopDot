@@ -1,10 +1,16 @@
 import {execFileSync} from 'node:child_process';
+import fs from 'node:fs';
 import path from 'node:path';
 const root=path.resolve(import.meta.dirname,'..');
 const run=(file,args=[])=>execFileSync(process.execPath,[path.join(root,'tools',file),...args],{cwd:root,stdio:'inherit'});
+const j18HistoryPath=path.join(root,'journeys/18-activity-notifications/source/decision-history.md');
+const canonicalJ18History=fs.readFileSync(j18HistoryPath,'utf8');
+if(!canonicalJ18History.includes('**Coverage:**')) throw new Error('Canonical J18 decision history snapshot must use current structured format');
 run('materialize-current-state.mjs');
 run('materialize-savings-review-candidates.mjs');
 run('apply-savings-golden-freeze.mjs');
+fs.mkdirSync(path.dirname(j18HistoryPath),{recursive:true});
+fs.writeFileSync(j18HistoryPath,canonicalJ18History);
 run('materialize-j18-j19.mjs');
 run('apply-j18-golden-j19-current.mjs');
 run('validate-j18-j19.mjs');
