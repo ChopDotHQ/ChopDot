@@ -1,0 +1,62 @@
+name: Journey 20 V1 review
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - ux/experience-workbench-j20-v1-candidate
+    paths:
+      - '.github/workflows/j20-v1-review.yml'
+      - 'prototypes/experience-workbench/journeys/20-payment-methods/**'
+      - 'prototypes/experience-workbench/journeys/19-insights/source/inherited.css'
+      - 'prototypes/experience-workbench/journeys/19-insights/source/shell.css'
+  workflow_dispatch:
+
+concurrency:
+  group: j20-v1-review
+  cancel-in-progress: true
+
+jobs:
+  review-j20-v1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ux/experience-workbench-j20-v1-candidate
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build Journey 20 V1 candidate
+        run: node prototypes/experience-workbench/journeys/20-payment-methods/source/build-v1.mjs
+      - name: Run deterministic Journey 20 model tests
+        run: node prototypes/experience-workbench/journeys/20-payment-methods/source/test-model.cjs
+      - name: Run fresh Journey 20 browser and interaction QA
+        run: node prototypes/experience-workbench/journeys/20-payment-methods/source/review-qa-v1.cjs
+      - name: Commit exact Journey 20 review bundle
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin ux/experience-workbench-j20-v1-candidate
+          git rebase origin/ux/experience-workbench-j20-v1-candidate
+          git add prototypes/experience-workbench/journeys/20-payment-methods/review-v1
+          if git diff --cached --quiet; then
+            echo "Journey 20 V1 review bundle is already current."
+            exit 0
+          fi
+          git commit -m "Materialize Journey 20 V1 review bundle"
+          git push origin HEAD:ux/experience-workbench-j20-v1-candidate
+      - name: Upload Journey 20 review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: j20-v1-review
+          path: prototypes/experience-workbench/journeys/20-payment-methods/review-v1
+          if-no-files-found: warn
+          retention-days: 14
