@@ -5,7 +5,6 @@ const crypto=require('node:crypto');
 const {execFileSync}=require('node:child_process');
 const {chromium}=require('playwright');
 const journeyDir=path.resolve(__dirname,'..');
-const workbench=path.resolve(journeyDir,'../..');
 const reviewDir=path.join(journeyDir,'review-v1');
 const candidatePath=path.join(reviewDir,'v1-candidate.html');
 const resultsDir=path.join(reviewDir,'results');
@@ -70,7 +69,6 @@ const result={ok:false,journey:'20',version:'v1',review_status:'review-pending',
   }
   result.layout_checks=result.layouts.length;result.passed_layouts=result.layouts.filter(x=>x.passed).length;result.product_clicks=result.interactions.length;result.passed_product_clicks=result.interactions.filter(x=>x.passed).length;
   const overviewText=(html.match(/<section id="overview"[\s\S]*?<\/section>/)||[''])[0];
-  result.security_checks.raw_destinations_on_overview=[bankIban='+','+'].length<0;
   const forbidden=['CH9300762011623852957','+41790000000','demo.user@example.invalid','5DemoDotDestination111111111111111111111111111111'];
   result.security_checks.raw_destinations_on_overview=forbidden.some(v=>overviewText.includes(v));
   result.security_checks.secret_like_terms_in_inputs=/<div class="j20-input">[^<]*(seed phrase|private key|recovery phrase|password|mnemonic)/i.test(html);
