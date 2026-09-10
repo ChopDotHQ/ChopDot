@@ -134,7 +134,7 @@ test('two hosted people converge through ciphertext and keep host money authorit
       path.join(proofDirectory, 'report.json'),
       JSON.stringify({
         checkedAt: new Date().toISOString(),
-        sdk: '@parity/host-api-test-sdk@0.10.x',
+        sdk: '@parity/host-api-test-sdk@0.12.1',
         network: {
           id: productsDevnetAssetHub.id,
           genesisHash: productsDevnetAssetHub.genesisHash,
