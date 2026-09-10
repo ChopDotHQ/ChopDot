@@ -1,5 +1,5 @@
 {
-  "checkpoint": "2026-09-10-j21-v1-revise-coverage",
+  "checkpoint": "2026-09-10-j21-v1-revise-connect-timeout-continuity",
   "purpose": "Preserve Golden #20 authority and record the latest exact Journey 21 candidate review state without granting human approval or Golden authority.",
   "canonical_exact_head_verified": false,
   "canonical_exact_head_note": "This governance reconciliation changes canonical authority metadata only. Treat the resulting exact canonical head as unverified until the Prototype workbench gate completes successfully on the resulting tree.",
@@ -25,18 +25,19 @@
     "stage": "independent-review",
     "prototype_built": true,
     "candidate_branch": "ux/experience-workbench-j21-v1-candidate",
-    "reviewed_source_head": "6c75db2aba9f7a99ff7d70dcfec4f10b9ead90a4",
+    "reviewed_source_head": "abbec4cb8720495e4a6b2ad9e68056ecbdb7c02f",
     "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
-    "prototype_sha256": "72862fd822197d78a92b9141859a08ee10febbc38230b588286494709539dd43",
-    "exact_qa_run": "34535633067",
-    "evidence_artifact": "10175305934",
-    "evidence_artifact_sha256": "a3d26b118eb184d2bd0d6005c95b52d0fdfcd3fae9c7d2284f2ba6d0434646b6",
+    "prototype_sha256": "a9393fb22600fb216d18c4496b652de77c127654864070c5c6751b39bbe5d979",
+    "exact_qa_run": "34540825750",
+    "evidence_artifact": "10177210474",
+    "evidence_artifact_sha256": "145c8625b56ac1be1bbe78c823ae7cfa74b500552971a462eb7025fc229450a1",
     "review_status": "REVISE",
     "mechanical_review": "pass",
-    "direct_visual_review": "pass-for-repaired-slice",
+    "direct_visual_review": "pass-for-unavailable-fail-for-timeout-continuity",
     "human_approval": false,
     "blockers": [
-      "Required remaining J21 provider/connect-timeout, full account/network switching, insufficient fee/asset balance, disconnect, offline/loading and provider-error clusters must be built and included in fresh exact-head evidence before re-review."
+      "Connection-timeout return must preserve unresolved provider/session state and prevent a fresh Connect until reconciliation proves connected or verified not connected; do not route unknown through ordinary cancellation.",
+      "Required account/network-switch review-pending-accepted-rejected-unknown, insufficient fee/asset balance, disconnect, offline/loading and provider-error clusters must be built and included in fresh exact-head evidence before complete re-review."
     ],
     "spec_path": "journeys/21-wallet-crypto/spec.md"
   },
