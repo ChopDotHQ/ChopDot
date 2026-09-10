@@ -40,7 +40,17 @@
 <div><div class="eyebrow">Connect wallet</div><h1 class="hero">Choose how to connect</h1><p class="sub">Your wallet keeps the signing credentials. ChopDot receives only the minimum account and network context needed for this action.</p></div>
 <div class="card"><a class="row" href="#connect-pending" aria-label="Connect browser wallet"><span class="icon">B</span><span><b>Browser wallet</b><span>Use an installed wallet extension</span></span><span class="chev">›</span></a><a class="row" href="#connect-pending" aria-label="Connect mobile wallet"><span class="icon">M</span><span><b>Mobile wallet</b><span>Continue with a supported wallet app</span></span><span class="chev">›</span></a></div>
 <div class="notice neutral">Never enter a seed phrase, private key, wallet password, or signing secret into ChopDot.</div>
-<div class="actions"><a class="btn secondary" href="#handoff">Back</a></div>
+<div class="actions"><a class="btn text" href="#wallet-unavailable">Demo: no supported wallet</a><a class="btn secondary" href="#handoff">Back</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="wallet-unavailable" data-state="wallet-unavailable" aria-label="Wallet unavailable">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div><div class="eyebrow">Wallet unavailable</div><h1 class="hero">No supported wallet is available</h1><p class="sub">ChopDot cannot find a supported wallet for this connection right now. Your settlement is still unchanged.</p></div>
+<div class="notice neutral">No connection, signature, or payment was created. You can check again after making a wallet available, or return to Settle Up.</div>
+<div class="actions"><a class="btn primary" href="#chooser">Check again</a><a class="btn secondary" href="#cancelled">Return to settlement</a></div>
 </main>
 <footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
 </section>
@@ -50,7 +60,28 @@
 <main class="content">
 <div class="card pending" role="status" aria-live="polite"><div class="spinner" aria-hidden="true"></div><b>Approve the connection in your wallet</b><p>We are waiting for the wallet provider. Nothing is being signed or submitted to the network.</p></div>
 <div class="card context"><div class="context-head"><b>Still returning to</b><span>Settle Up</span></div><div class="context-grid"><span>Pay</span><strong>Maya</strong><span>Amount</span><strong class="fact">12.50 DOT</strong><span>Network</span><strong>Polkadot</strong></div></div>
-<div class="actions"><a class="btn primary" href="#connected">Demo approved connection</a><a class="btn secondary" href="#connect-rejected">Demo rejected connection</a><a class="btn text" href="#cancelled">Cancel and return</a></div>
+<div class="actions"><a class="btn primary" href="#connected">Demo approved connection</a><a class="btn secondary" href="#connect-rejected">Demo rejected connection</a><a class="btn text" href="#connect-timeout">Demo timeout / result unknown</a><a class="btn text" href="#cancelled">Cancel and return</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="connect-timeout" data-state="connect-timeout" aria-label="Wallet connection result unknown">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div><div class="eyebrow">Still checking</div><h1 class="hero">The connection result is not known yet</h1><p class="sub">The wallet stopped responding before ChopDot could confirm whether this session connected.</p></div>
+<div class="card context"><div class="context-head"><b>Return context preserved</b><span>Settle Up</span></div><div class="context-grid"><span>Pay</span><strong>Maya</strong><span>Amount</span><strong class="fact">12.50 DOT</strong><span>Network</span><strong>Polkadot</strong></div></div>
+<div class="notice warning">Do not start a second connection prompt yet. Check the existing wallet/session result first so a late approval cannot become a conflicting session.</div>
+<div class="actions"><a class="btn primary" href="#connect-reconciling">Check connection status</a><a class="btn secondary" href="#cancelled">Return to settlement</a></div>
+</main>
+<footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
+</section>
+
+<section class="screen" id="connect-reconciling" data-state="connect-reconciling" aria-label="Checking wallet connection">
+<header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
+<main class="content">
+<div class="card pending" role="status" aria-live="polite"><div class="spinner" aria-hidden="true"></div><b>Checking the existing wallet session</b><p>ChopDot is re-reading the original connection result. This check cannot sign, submit, or move money.</p></div>
+<div class="notice warning">Only a trusted provider/session result can establish a connection or prove that a fresh attempt is safe.</div>
+<div class="actions"><a class="btn primary" href="#connected">Demo result: connected</a><a class="btn secondary" href="#chooser">Demo result: verified not connected</a><a class="btn text" href="#connect-timeout">Demo result: still unknown</a></div>
 </main>
 <footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
 </section>
@@ -185,7 +216,7 @@
 </section>
 
 </div></div>
-<aside class="labpanel"><h2>J21 · Wallet & Crypto</h2><p>V1 candidate · bounded Builder slice 3</p><div class="lablabel">Built now</div><ul><li>Exact action/account/network review</li><li>Stale review invalidation</li><li>Signature pending / rejected / unknown</li><li>Signed ≠ submitted distinction</li><li>Same-transaction reconciliation before retry</li><li>Still-checking settlement handoff</li><li>Finality and verified failure handoff</li></ul><div class="lablabel">Authority preserved</div><p class="pass">Wallet execution consumes exact upstream authority; unknown execution remains unknown until reconciliation proves an outcome. It does not define scope, save/share an address, calculate balances, or infer finality.</p><div class="lablabel">Still to build</div><p>Unavailable provider, connect timeout/unknown, full switch review/accepted/rejected/unknown, insufficient fee/asset, disconnect, offline/loading/provider-error states, plus complete deterministic/browser/render evidence.</p><div class="lablabel">Quick state links</div><p><a href="#action-review">Action review</a> · <a href="#signature-pending">Signature</a> · <a href="#submission-unknown">Unknown submission</a> · <a href="#submission-reconciling">Reconcile</a> · <a href="#settlement-unknown-handoff">Still checking handoff</a> · <a href="#finalized">Finalized</a> · <a href="#reverted">Failed</a></p></aside>
+<aside class="labpanel"><h2>J21 · Wallet & Crypto</h2><p>V1 candidate · bounded Builder slice 4</p><div class="lablabel">Built now</div><ul><li>Exact action/account/network review</li><li>Stale review invalidation</li><li>Signature pending / rejected / unknown</li><li>Signed ≠ submitted distinction</li><li>Same-transaction reconciliation before retry</li><li>Still-checking settlement handoff</li><li>Finality and verified failure handoff</li><li>Provider unavailable safe stop</li><li>Connection timeout / unknown recovery before retry</li></ul><div class="lablabel">Authority preserved</div><p class="pass">Wallet execution consumes exact upstream authority; unknown connection or execution stays unknown until reconciliation proves an outcome. Connection does not define scope, save/share an address, sign, submit, calculate balances, or infer finality.</p><div class="lablabel">Still to build</div><p>Full account/network switch review/pending/accepted/rejected/unknown, insufficient fee/asset, disconnect, offline/loading/provider-error states, plus complete deterministic/browser/render evidence.</p><div class="lablabel">Quick state links</div><p><a href="#wallet-unavailable">Unavailable</a> · <a href="#connect-timeout">Connect unknown</a> · <a href="#connect-reconciling">Connect recovery</a> · <a href="#action-review">Action review</a> · <a href="#signature-pending">Signature</a> · <a href="#submission-unknown">Unknown submission</a> · <a href="#submission-reconciling">Reconcile</a> · <a href="#settlement-unknown-handoff">Still checking handoff</a> · <a href="#finalized">Finalized</a> · <a href="#reverted">Failed</a></p></aside>
 </div>
 </body>
 </html>
