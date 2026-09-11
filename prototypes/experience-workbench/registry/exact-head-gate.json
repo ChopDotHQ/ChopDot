@@ -1,11 +1,11 @@
 {
   "checkpoint": "2026-09-11-j22-v1-revise-complete-candidate",
   "purpose": "Preserve 21-Golden authority and record the latest exact Journey 22 independent review without granting human approval or Golden authority. Full J22 V1 scope and exact-head mechanical workflows are green; one bounded candidate-local invite-avatar visual obstruction remains.",
-  "canonical_exact_head_verified": false,
-  "canonical_exact_head_verified_run": null,
-  "canonical_verified_transition_source": null,
-  "canonical_materialized_head": null,
-  "canonical_exact_head_note": "This authority reconciliation records independently reviewed candidate 7a0cc0c3ec0da62a414c878058a104379697a687 as REVISE. It must pass the resulting-state Prototype workbench gate before this metadata transition is bound as exact-head verified. J21 and all approved Golden HTML/checksums remain immutable.",
+  "canonical_exact_head_verified": true,
+  "canonical_exact_head_verified_run": "34622785153",
+  "canonical_verified_transition_source": "7440f096ae327cdd30994ba1e0eecf8818748b96",
+  "canonical_materialized_head": "e9bdab4847762503d4d62e080d55c0d15152068c",
+  "canonical_exact_head_note": "Prototype workbench gate 34622785153 validated the J22 reviewed-authority reconciliation from 7440f096ae327cdd30994ba1e0eecf8818748b96 and materialized the resulting 21-Golden / Journey-22-current state at e9bdab4847762503d4d62e080d55c0d15152068c. J21 and all approved Golden HTML/checksums remained unchanged; J22 remains REVISE and unapproved with one bounded candidate-local visual blocker.",
   "journey_21": {
     "version": "v1",
     "golden_number": 21,
