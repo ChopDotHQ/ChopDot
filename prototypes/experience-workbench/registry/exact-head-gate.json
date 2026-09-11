@@ -1,8 +1,11 @@
 {
   "checkpoint": "2026-09-11-j21-v1-revise-origin-cleared-four-states-remaining",
   "purpose": "Preserve Golden #20 authority and record the latest exact Journey 21 independent review after deterministic rejected-switch-origin repair, without granting human approval or Golden authority.",
-  "canonical_exact_head_verified": false,
-  "canonical_exact_head_note": "This governance reconciliation changes canonical authority metadata only. Treat the resulting exact canonical head as unverified until the Prototype workbench gate completes successfully on the resulting tree.",
+  "canonical_exact_head_verified": true,
+  "canonical_exact_head_verified_run": "34575180668",
+  "canonical_verified_transition_source": "74773f838017b582a1f19f1b16a78cf9d876cc91",
+  "canonical_materialized_head": "ba7a20783f5053f20f58cc4c8f2411ce28809c61",
+  "canonical_exact_head_note": "Prototype workbench gate 34575180668 completed successfully on the authority-reconciliation tree and materialized ba7a20783f5053f20f58cc4c8f2411ce28809c61. The exact J21 authority package survived materialization unchanged; this metadata-only verification record must itself remain gate-clean.",
   "journey_20": {
     "version": "v1",
     "golden_number": 20,
