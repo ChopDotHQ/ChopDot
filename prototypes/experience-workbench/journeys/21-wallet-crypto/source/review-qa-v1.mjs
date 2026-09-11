@@ -425,11 +425,22 @@ try {
     }
     interactionResults.push({viewport: viewport.name, path: 'switch-accepted-return-preserves-new-session', finalHash: await page.evaluate(() => location.hash)});
 
-    // Reviewer regression: a rejected switch must keep the previously known connected wallet session.
-    await page.goto(`${pathToFileURL(candidatePath).href}#switch-rejected`, {waitUntil: 'load'});
+    // Reviewer regression: an account-switch rejection must keep the previously known connected wallet session.
+    // The dedicated network-origin regression separately proves that a rejected network switch returns to the mismatch boundary.
+    const rejectedAccountPath = ['#connected', '#switch-account-review', '#switch-pending', '#switch-rejected'];
+    await page.goto(`${pathToFileURL(candidatePath).href}${rejectedAccountPath[0]}`, {waitUntil: 'load'});
+    for (const next of rejectedAccountPath.slice(1)) {
+      const link = page.locator(`.screen:visible a[href="${next}"]`).first();
+      if (!(await link.isVisible())) {
+        errors.push(`${viewport.name}: account-switch rejection path cannot reach ${next}`);
+        break;
+      }
+      await link.click();
+      await page.waitForFunction(target => location.hash === target, next);
+    }
     const rejectedReturn = page.locator('.screen:visible a[href="#switch-rejected-handoff"]').first();
     if (!(await rejectedReturn.isVisible())) {
-      errors.push(`${viewport.name}: rejected switch cannot reach its prior-session return handoff`);
+      errors.push(`${viewport.name}: rejected account switch cannot reach its prior-session return handoff`);
     } else {
       await rejectedReturn.click();
       await page.waitForFunction(() => location.hash === '#switch-rejected-handoff');
