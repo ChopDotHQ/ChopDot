@@ -117,7 +117,6 @@
 </main>
 <footer class="footer"><nav class="tabbar" aria-label="Primary"><span class="tab"><span class="navdot">●</span>Pots</span><span class="tab"><span class="navdot">○</span>People</span><span class="add" aria-hidden="true">+</span><span class="tab"><span class="navdot">○</span>Activity</span><span class="tab active"><span class="navdot">●</span>You</span></nav></footer>
 </section>
-
 <section class="screen" id="network-mismatch-handoff" data-state="network-mismatch-handoff" aria-label="Settlement wallet network mismatch">
 <header class="header"><div class="brand"><span class="mark" aria-hidden="true"></span>ChopDot</div><span class="badge">Prototype</span></header>
 <main class="content">
@@ -438,7 +437,7 @@
     if (title) title.textContent = defaults.title;
     if (sub) sub.textContent = defaults.sub;
     if (notice) notice.textContent = defaults.notice;
-    if (accountReview) { accountReview.hidden = defaults.accountHidden; accountReview.className = defaults.accountClass; }
+    if (accountReview) { accountReview.hidden = defaults.accountHidden; accountReview.className = defaults.accountClass; accountReview.style.display = ''; }
     if (networkReview) { networkReview.hidden = defaults.networkHidden; networkReview.className = defaults.networkClass; }
     if (returnLink) returnLink.setAttribute('href', defaults.returnHref);
   }
@@ -449,7 +448,7 @@
     if (title) title.textContent = 'Network switch was not approved';
     if (sub) sub.textContent = 'The provider rejected the requested network change. The prior wallet session is still on Other network, so it is still incompatible with this Polkadot settlement.';
     if (notice) notice.textContent = 'The wallet network remains Other network. No payment was signed or submitted, and a successful switch plus exact-network revalidation is still required before signing.';
-    if (accountReview) accountReview.hidden = true;
+    if (accountReview) { accountReview.hidden = true; accountReview.style.display = 'none'; }
     if (networkReview) {
       networkReview.hidden = false;
       networkReview.className = 'btn primary';

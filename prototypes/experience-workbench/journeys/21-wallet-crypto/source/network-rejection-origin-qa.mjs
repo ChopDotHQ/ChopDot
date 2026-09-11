@@ -44,6 +44,32 @@ async function clickHash(page, target, label) {
   return true;
 }
 
+async function waitForNetworkRejected(page) {
+  await page.waitForFunction(() => {
+    const screen = document.querySelector('#switch-rejected');
+    const title = screen?.querySelector('.hero')?.textContent ?? '';
+    const accountReview = screen?.querySelector('a[href="#switch-account-review"]');
+    const networkReview = screen?.querySelector('a[href="#switch-network-review"]');
+    const returnLink = screen?.querySelector('a[href="#network-mismatch-handoff"]');
+    return title.includes('Network switch was not approved')
+      && accountReview?.getClientRects().length === 0
+      && networkReview?.classList.contains('primary')
+      && !!returnLink;
+  });
+}
+
+async function waitForAccountRejected(page) {
+  await page.waitForFunction(() => {
+    const screen = document.querySelector('#switch-rejected');
+    const title = screen?.querySelector('.hero')?.textContent ?? '';
+    const accountReview = screen?.querySelector('a[href="#switch-account-review"]');
+    const returnLink = screen?.querySelector('a[href="#switch-rejected-handoff"]');
+    return title.includes('Wallet switch was not approved')
+      && accountReview?.getClientRects().length > 0
+      && !!returnLink;
+  });
+}
+
 try {
   for (const viewport of viewports) {
     const context = await browser.newContext({viewport: {width: viewport.width, height: viewport.height}});
@@ -62,6 +88,7 @@ try {
       && await clickHash(page, '#switch-pending', `${viewport.name}/network reject`)
       && await clickHash(page, '#switch-rejected', `${viewport.name}/network reject`);
     if (pathOk) {
+      await waitForNetworkRejected(page);
       const rejected = page.locator('#switch-rejected');
       const text = (await rejected.innerText()).replace(/\s+/gu, ' ');
       if (!text.includes('Network switch was not approved')) errors.push(`${viewport.name}: network rejection did not identify the rejected network switch`);
@@ -90,6 +117,7 @@ try {
       && await clickHash(page, '#switch-reconciling', `${viewport.name}/network reconcile reject`)
       && await clickHash(page, '#switch-rejected', `${viewport.name}/network reconcile reject`);
     if (unknownOk) {
+      await waitForNetworkRejected(page);
       const returnLink = page.locator('.screen:visible a[href="#network-mismatch-handoff"]');
       if (!(await returnLink.isVisible())) errors.push(`${viewport.name}: reconciled rejected network switch lost its origin-specific mismatch return`);
       results.push({viewport: viewport.name, path: 'network-switch-unknown-reconciled-rejected-keeps-origin', finalHash: await page.evaluate(() => location.hash)});
@@ -99,12 +127,15 @@ try {
     await page.goto(`${fileUrl}#connected`, {waitUntil: 'load'});
     const accountOk = await clickHash(page, '#switch-account-review', `${viewport.name}/account reject`)
       && await clickHash(page, '#switch-pending', `${viewport.name}/account reject`)
-      && await clickHash(page, '#switch-rejected', `${viewport.name}/account reject`)
-      && await clickHash(page, '#switch-rejected-handoff', `${viewport.name}/account reject`);
+      && await clickHash(page, '#switch-rejected', `${viewport.name}/account reject`);
     if (accountOk) {
-      const text = (await page.locator('.screen:visible').innerText()).replace(/\s+/gu, ' ');
-      if (!text.includes('5F3sa2…Demo9') || !text.includes('Polkadot') || !text.includes('Connected · unchanged')) errors.push(`${viewport.name}: account rejection no longer preserves the prior trusted Polkadot session`);
-      results.push({viewport: viewport.name, path: 'account-switch-rejected-preserves-valid-session', finalHash: await page.evaluate(() => location.hash)});
+      await waitForAccountRejected(page);
+      const handoffOk = await clickHash(page, '#switch-rejected-handoff', `${viewport.name}/account reject`);
+      if (handoffOk) {
+        const text = (await page.locator('.screen:visible').innerText()).replace(/\s+/gu, ' ');
+        if (!text.includes('5F3sa2…Demo9') || !text.includes('Polkadot') || !text.includes('Connected · unchanged')) errors.push(`${viewport.name}: account rejection no longer preserves the prior trusted Polkadot session`);
+        results.push({viewport: viewport.name, path: 'account-switch-rejected-preserves-valid-session', finalHash: await page.evaluate(() => location.hash)});
+      }
     }
 
     await context.close();
