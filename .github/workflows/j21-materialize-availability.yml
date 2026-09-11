@@ -1,0 +1,44 @@
+name: J21 availability materializer
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - ux/j21-availability-materialize
+    paths:
+      - '.github/workflows/j21-materialize-availability.yml'
+      - 'prototypes/experience-workbench/journeys/21-wallet-crypto/source/materialize-availability.mjs'
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout helper branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Materialize bounded J21 availability cluster
+        run: node prototypes/experience-workbench/journeys/21-wallet-crypto/source/materialize-availability.mjs
+      - name: Verify generated diff
+        run: |
+          git diff --check
+          grep -q 'id="disconnect"' prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html
+          grep -q 'id="offline"' prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html
+          grep -q 'id="loading"' prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html
+          grep -q 'id="load-error"' prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html
+          grep -q "'wallet-state-unavailable-handoff'" prototypes/experience-workbench/journeys/21-wallet-crypto/source/review-qa-v1.mjs
+      - name: Commit generated candidate and QA only
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add prototypes/experience-workbench/journeys/21-wallet-crypto/v1-candidate.html prototypes/experience-workbench/journeys/21-wallet-crypto/source/review-qa-v1.mjs
+          git diff --cached --quiet && exit 0
+          git commit -m 'J21: materialize availability recovery states'
+          git push origin HEAD:ux/j21-availability-materialize
