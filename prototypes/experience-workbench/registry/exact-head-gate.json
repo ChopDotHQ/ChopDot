@@ -1,11 +1,11 @@
 {
-  "checkpoint": "2026-09-11-j22-v1-revise-initial-candidate",
-  "purpose": "Preserve 21-Golden authority and record the latest exact Journey 22 independent review without granting human approval or Golden authority while dedicated QA is red and registered V1 clusters remain incomplete.",
-  "canonical_exact_head_verified": true,
-  "canonical_exact_head_verified_run": "34617551937",
-  "canonical_verified_transition_source": "f854b6497c101df94d1638643bfcf8cb6580df60",
-  "canonical_materialized_head": "a919611ae3897a2320812536b6eac84844026c0c",
-  "canonical_exact_head_note": "Prototype workbench gate 34617551937 cleanly validated the J22 reviewed-authority reconciliation from f854b6497c101df94d1638643bfcf8cb6580df60 and materialized the resulting 21-Golden / Journey-22-current authority state at a919611ae3897a2320812536b6eac84844026c0c. J21 and all approved Golden HTML/checksums remained unchanged; J22 remains REVISE and unapproved.",
+  "checkpoint": "2026-09-11-j22-v1-revise-complete-candidate",
+  "purpose": "Preserve 21-Golden authority and record the latest exact Journey 22 independent review without granting human approval or Golden authority. Full J22 V1 scope and exact-head mechanical workflows are green; one bounded candidate-local invite-avatar visual obstruction remains.",
+  "canonical_exact_head_verified": false,
+  "canonical_exact_head_verified_run": null,
+  "canonical_verified_transition_source": null,
+  "canonical_materialized_head": null,
+  "canonical_exact_head_note": "This authority reconciliation records independently reviewed candidate 7a0cc0c3ec0da62a414c878058a104379697a687 as REVISE. It must pass the resulting-state Prototype workbench gate before this metadata transition is bound as exact-head verified. J21 and all approved Golden HTML/checksums remain immutable.",
   "journey_21": {
     "version": "v1",
     "golden_number": 21,
@@ -30,19 +30,18 @@
     "prototype_built": true,
     "candidate_branch": "ux/experience-workbench-j22-v1-candidate",
     "definition_head": "67452cce10e81d344129730209c69bb1feccf3f1",
-    "reviewed_source_head": "06c5cbc2ce0267580d1c184c544ce8c0f5a62bd2",
+    "reviewed_source_head": "7a0cc0c3ec0da62a414c878058a104379697a687",
     "prototype_path": "journeys/22-qr-flows/v1-candidate.html",
-    "prototype_sha256": "2e221bb44f473df7944051aad843550fd8a708fffdc8d44550bbe7c9f6266f56",
-    "exact_qa_run": "34614453234",
-    "evidence_artifact": "10269592438",
-    "evidence_artifact_sha256": "48128963fdb192e16d01038086aaaa2eaeeaa1760c9b00ac6df4684ed4b0a602",
+    "prototype_sha256": "e85cbdf7f014796e13a2f6430142fb521fb87dab68634a38d63293bac8bc8e83",
+    "exact_qa_run": "34620510488",
+    "evidence_artifact": "10272730672",
+    "evidence_artifact_sha256": "c49f7a55bb8de54151ee78f1c0c091372dc12e1bd463e6d09776c4472fa6eddf",
     "review_status": "REVISE",
-    "mechanical_review": "fail",
-    "direct_visual_review": "partial-pass-rendered-scope",
+    "mechanical_review": "pass",
+    "direct_visual_review": "fail-one-bounded-candidate-local-defect",
     "human_approval": false,
     "blockers": [
-      "Dedicated J22 QA is red because inherited .icon-btn is misclassified by the candidate .btn hit-target checker. Repair only the checker/baseline logic; do not change inherited Golden-derived pixels locally.",
-      "Registered J22 V1 remains materially incomplete: group invite; private receive/share plus settlement match/mismatch; malformed/unsupported/external/sensitive payloads; and My/invite/share QR display with expiry/loading/error still require implementation and exact evidence."
+      "In invite and invite-handoff at both canonical viewports, the group i-people SVG is not constrained inside the existing 50x50 person-avatar and visibly overlaps the Lisbon Weekend title/subcopy. Constrain only that glyph within the established avatar slot, preserve shared Golden geometry and product semantics, regenerate exact-head evidence, and obtain independent visual re-check."
     ],
     "spec_path": "journeys/22-qr-flows/spec.md"
   },
@@ -52,6 +51,6 @@
   "current_journey": "22",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "Builder must keep J21 and all approved Golden bytes unchanged, repair only the J22 QA class/hit-target checker defect, then complete the remaining registered J22 V1 clusters on the candidate branch. Regenerate exact-head evidence and obtain independent review. GOLDEN-READY requires all five lenses clear on one exact candidate; only explicit Devinson approval of those exact bytes may authorize freeze.",
+  "gate_requirement": "Builder must keep J21 and all approved Golden bytes unchanged and repair only the bounded J22 group-preview glyph overflow in invite/invite-handoff. Regenerate exact-head evidence and obtain independent review. GOLDEN-READY requires all five lenses clear on one exact candidate; only explicit Devinson approval of those exact bytes may authorize freeze.",
   "prototype_only": true
 }
