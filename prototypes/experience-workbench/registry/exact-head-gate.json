@@ -1,8 +1,34 @@
 {
   "checkpoint": "2026-09-11-j22-v1-golden-j23-current",
   "purpose": "Materialize explicitly approved Journey 22 QR Flows V1 as Golden #22 without changing approved HTML, then advance only to registered Journey 23 Import Data / Group definition.",
-  "canonical_exact_head_verified": false,
-  "canonical_exact_head_note": "This transition becomes canonical only through the Prototype workbench gate generated-state commit after all resulting-state validations pass.",
+  "canonical_exact_head_verified": true,
+  "canonical_exact_head_verified_run": "34646306049",
+  "canonical_verified_transition_source": "14cf23c72316504d34b703223b4dd0409980e90d",
+  "canonical_materialized_head": "0ef1e3d3e7c2603d45c24d4a83594f1516f1c27a",
+  "canonical_exact_head_checks": {
+    "fast_checks": {
+      "run": "34647340625",
+      "job": "103421167271",
+      "conclusion": "success"
+    },
+    "coverage": {
+      "run": "34647340778",
+      "job": "103421167858",
+      "conclusion": "success"
+    },
+    "smoke_detection": {
+      "run": "34647340711",
+      "job": "103421167529",
+      "conclusion": "success",
+      "required_targeted_jobs": "scope-skipped"
+    },
+    "e2e_cypress": {
+      "run": "34647340825",
+      "job": "103421168109",
+      "conclusion": "success"
+    }
+  },
+  "canonical_exact_head_note": "Prototype workbench gate 34646306049 validated transition source 14cf23c72316504d34b703223b4dd0409980e90d and materialized the approved 22-Golden / Journey-23-current state at 0ef1e3d3e7c2603d45c24d4a83594f1516f1c27a. Exact materialized-head Fast Checks, Coverage, Smoke detection, and E2E Cypress then completed successfully; targeted smoke jobs were correctly scope-skipped. The canonical J22 HTML blob remains byte-identical to approved source a1f60b0255e3f72054e0bf500b5cb559c213679d, so no post-approval product mutation occurred.",
   "journey_22": {
     "version": "v1",
     "golden_number": 22,
