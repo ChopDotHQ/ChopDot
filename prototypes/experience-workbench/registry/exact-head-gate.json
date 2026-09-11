@@ -1,6 +1,6 @@
 {
-  "checkpoint": "2026-09-11-j21-v1-revise-rejected-network-reload-origin",
-  "purpose": "Preserve Golden #20 authority and record the latest exact Journey 21 independent review after rejected-network-origin stabilization, without granting human approval or Golden authority.",
+  "checkpoint": "2026-09-11-j21-v1-revise-origin-cleared-four-states-remaining",
+  "purpose": "Preserve Golden #20 authority and record the latest exact Journey 21 independent review after deterministic rejected-switch-origin repair, without granting human approval or Golden authority.",
   "canonical_exact_head_verified": false,
   "canonical_exact_head_note": "This governance reconciliation changes canonical authority metadata only. Treat the resulting exact canonical head as unverified until the Prototype workbench gate completes successfully on the resulting tree.",
   "journey_20": {
@@ -25,19 +25,18 @@
     "stage": "independent-review",
     "prototype_built": true,
     "candidate_branch": "ux/experience-workbench-j21-v1-candidate",
-    "reviewed_source_head": "5c53ef460b3d4df5cff1d5c51f6c730d96dc8849",
+    "reviewed_source_head": "e75551a76aa6715acca682c49d896c31a8c15391",
     "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
-    "prototype_sha256": "d4192d5b207899e27dc59ec05ab85d07631ac9f595653697a56eba67b784d694",
-    "exact_qa_run": "34569314945",
-    "evidence_artifact": "10187196533",
-    "evidence_artifact_sha256": "5c6863de936ec9b6cb6bfd3a350e0ab6303e17344c013b903414aa139eb44b97",
+    "prototype_sha256": "1607722982125ea4eaf7dcbef02f062f976a19a12e828a689e2e540d43c12687",
+    "exact_qa_run": "34573301991",
+    "evidence_artifact": "10188654135",
+    "evidence_artifact_sha256": "de5bec228d277d24dce50507a482877b334c6bd98a53d08944dda7c145a96c3a",
     "review_status": "REVISE",
     "mechanical_review": "pass",
     "direct_visual_review": "pass-for-reviewed-changed-surfaces-full-journey-incomplete",
     "human_approval": false,
     "blockers": [
-      "Rejected switch origin is still reload-unstable: account and network rejection share #switch-rejected and rely on volatile switchOrigin, so reload/direct restoration can rewrite an unchanged Other network session into the generic compatible Polkadot prior-session handoff. Make origin deterministic in route/state/data and prove restoration cannot reach connected, action review, signature, or submission without successful switch plus exact-network revalidation.",
-      "Required disconnect, offline, loading, and load/provider-error states must be built and included in fresh exact-head evidence before complete re-review."
+      "Required Disconnect, Offline, Loading, and Load/provider-error states remain absent/unproven. Build and exact-head evidence only those four remaining registered V1 state clusters while preserving the deterministic reload-stable switch-origin contract, then obtain independent re-review."
     ],
     "spec_path": "journeys/21-wallet-crypto/spec.md"
   },
@@ -47,6 +46,6 @@
   "current_journey": "21",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "Builder first makes rejected-switch origin deterministic across reload/direct restoration and extends the clicked regression to prove a rejected network switch preserves Other network and cannot regain connected/payment-review/signing/submission without successful switch plus exact-network revalidation. Then complete only disconnect, offline, loading, and load/provider-error states on the non-protected J21 lane. Fresh exact-head deterministic/browser/render evidence and independent review must bind to one new exact head/checksum. GOLDEN-READY still requires all five lenses; only explicit Devinson approval of that exact candidate may authorize freeze.",
+  "gate_requirement": "Builder must complete only Disconnect, Offline, Loading, and Load/provider-error on the non-protected J21 lane while preserving deterministic reload-stable account/network switch-origin truth and the existing wallet-authority boundary. Fresh exact-head deterministic/browser/render evidence and independent review must bind to one new exact head/checksum. GOLDEN-READY still requires all five lenses; only explicit Devinson approval of that exact candidate may authorize freeze.",
   "prototype_only": true
 }
