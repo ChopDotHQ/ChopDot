@@ -1,5 +1,5 @@
 {
-  "schema_version": 19,
+  "schema_version": 20,
   "updated_on": "2026-09-11",
   "registered_journeys": 28,
   "golden_count": 21,
@@ -16,6 +16,6 @@
   "last_approved_journey": "21",
   "last_approved_version": "v1",
   "last_approved_sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6",
-  "next_action": "Journey 22 exact candidate 06c5cbc2ce0267580d1c184c544ce8c0f5a62bd2 is REVISE. Builder must repair only the QA class/hit-target checker without changing inherited Golden-derived pixels, complete the remaining registered J22 V1 clusters, regenerate exact-head evidence, and hand the exact candidate back to Reviewer. No human approval or freeze is authorized.",
+  "next_action": "Journey 22 exact candidate 7a0cc0c3ec0da62a414c878058a104379697a687 is REVISE after independent review. The full registered V1 scope and exact-head QA/CI/Coverage/Smoke/E2E are green; Builder must make only the bounded invite-avatar visual repair by constraining the group i-people glyph inside the existing 50x50 avatar slot in invite and invite-handoff, without changing shared Golden geometry or product semantics, then regenerate exact-head evidence and return the exact candidate to Reviewer. No human approval or freeze is authorized.",
   "typography_note": "TYPO-01 deferred"
 }
