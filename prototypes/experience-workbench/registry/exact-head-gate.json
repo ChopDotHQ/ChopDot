@@ -1,11 +1,11 @@
 {
   "checkpoint": "2026-09-11-j22-v1-revise-initial-candidate",
   "purpose": "Preserve 21-Golden authority and record the latest exact Journey 22 independent review without granting human approval or Golden authority while dedicated QA is red and registered V1 clusters remain incomplete.",
-  "canonical_exact_head_verified": false,
-  "canonical_exact_head_verified_run": null,
-  "canonical_verified_transition_source": null,
-  "canonical_materialized_head": null,
-  "canonical_exact_head_note": "Pending resulting-state Prototype workbench validation for this authority reconciliation. The exact reviewed J22 candidate remains on ux/experience-workbench-j22-v1-candidate; no approved Golden HTML or checksum is changed by this metadata update.",
+  "canonical_exact_head_verified": true,
+  "canonical_exact_head_verified_run": "34617551937",
+  "canonical_verified_transition_source": "f854b6497c101df94d1638643bfcf8cb6580df60",
+  "canonical_materialized_head": "a919611ae3897a2320812536b6eac84844026c0c",
+  "canonical_exact_head_note": "Prototype workbench gate 34617551937 cleanly validated the J22 reviewed-authority reconciliation from f854b6497c101df94d1638643bfcf8cb6580df60 and materialized the resulting 21-Golden / Journey-22-current authority state at a919611ae3897a2320812536b6eac84844026c0c. J21 and all approved Golden HTML/checksums remained unchanged; J22 remains REVISE and unapproved.",
   "journey_21": {
     "version": "v1",
     "golden_number": 21,
