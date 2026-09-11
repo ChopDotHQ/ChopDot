@@ -37,10 +37,13 @@ const states = [
   'switch-network-review',
   'switch-pending',
   'switch-accepted',
+  'switch-accepted-handoff',
   'action-review-switched',
   'signature-pending-switched',
   'switch-rejected',
+  'switch-rejected-handoff',
   'switch-failed',
+  'switch-failed-handoff',
   'switch-unknown',
   'switch-unknown-handoff',
   'switch-reconciling',
@@ -78,10 +81,13 @@ const expectedSemantics = {
   'switch-network-review': ['Switch to the required network?', 'Polkadot', 'Other network', '12.50 DOT', 'will not silently substitute a network'],
   'switch-pending': ['Approve the wallet change', 'Nothing is being signed or submitted', 'settlement amount, recipient, asset, source scope, or payment authority'],
   'switch-accepted': ['Wallet context revalidated', '1Demo…A7', 'Polkadot', 'previous action review is stale', '12.50 DOT', 'Maya'],
+  'switch-accepted-handoff': ['Settle Up', 'Wallet changed — review still required', '12.50 DOT', 'Maya', '1Demo…A7', 'Polkadot', 'Fresh review required'],
   'action-review-switched': ['Check the payment after the wallet change', '12.50 DOT', 'Maya', '1Demo…A7', 'Polkadot', 'Fresh exact review'],
   'signature-pending-switched': ['Approve this exact action in your wallet', '1Demo…A7', 'Nothing has been submitted'],
-  'switch-rejected': ['Wallet switch was not approved', 'No new wallet context was accepted', 'settlement is unchanged'],
-  'switch-failed': ['Wallet could not complete the switch', 'No new wallet context is trusted', 'No payment was sent'],
+  'switch-rejected': ['Wallet switch was not approved', 'No new wallet context was accepted', 'prior connected wallet session remains known and unchanged'],
+  'switch-rejected-handoff': ['Settle Up', 'Current wallet is still connected', '12.50 DOT', 'Maya', '5F3sa2…Demo9', 'Polkadot', 'Connected · unchanged'],
+  'switch-failed': ['Wallet could not complete the switch', 'No current wallet context is trusted', 'No payment was sent'],
+  'switch-failed-handoff': ['Settle Up', 'Wallet context needs a recheck', '12.50 DOT', 'Maya', 'Polkadot', 'Context not trusted', 'Do not connect again, switch again, or request a signature'],
   'switch-unknown': ['switch result is not known yet', 'Do not start another switch or request a signature yet', 'Reconcile the original wallet change first'],
   'switch-unknown-handoff': ['Settle Up', 'Still checking the wallet switch', '12.50 DOT', 'Maya', 'Polkadot', 'Switch unknown', 'No fresh switch, signature, or payment route'],
   'switch-reconciling': ['Checking the original wallet switch', 'cannot sign, submit, or start another switch', 'trusted provider result'],
@@ -220,9 +226,19 @@ try {
         }
       }
       if (state === 'switch-accepted') {
-        if (!metrics.anchors.includes('#action-review-switched')) errors.push(`${viewport.name}/${state}: accepted material wallet change must require a fresh exact action review`);
-        for (const forbidden of ['#signature-pending', '#signature-pending-switched', '#signed', '#submission-pending']) {
-          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: accepted switch must not bypass fresh review into ${forbidden}`);
+        for (const required of ['#action-review-switched', '#switch-accepted-handoff']) {
+          if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: accepted switch must preserve ${required}`);
+        }
+        for (const forbidden of ['#cancelled', '#signature-pending', '#signature-pending-switched', '#signed', '#submission-pending']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: accepted switch must not erase/bypass session truth through ${forbidden}`);
+        }
+      }
+      if (state === 'switch-accepted-handoff') {
+        if (!metrics.anchors.includes('#action-review-switched')) errors.push(`${viewport.name}/${state}: accepted-return session must continue only through fresh exact review`);
+        if (metrics.text.includes('5F3sa2…Demo9')) errors.push(`${viewport.name}/${state}: accepted-return handoff leaked the stale pre-switch account`);
+        if (/Wallet setup was cancelled|Status\s+Not sent/iu.test(metrics.text)) errors.push(`${viewport.name}/${state}: accepted switch was incorrectly converted to generic cancellation`);
+        for (const forbidden of ['#handoff', '#chooser', '#switch-pending', '#signature-pending', '#signature-pending-switched', '#signed', '#submission-pending']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: accepted-return handoff exposes bypass route ${forbidden}`);
         }
       }
       if (state === 'action-review-switched' || state === 'signature-pending-switched') {
@@ -230,16 +246,33 @@ try {
         if (!metrics.text.includes('1Demo…A7')) errors.push(`${viewport.name}/${state}: switched exact review/signature must bind the revalidated switched account`);
       }
       if (state === 'switch-rejected') {
-        if (!metrics.anchors.includes('#switch-account-review') || !metrics.anchors.includes('#switch-network-review')) errors.push(`${viewport.name}/${state}: known rejection must permit a newly reviewed switch attempt without execution`);
-        for (const forbidden of ['#action-review', '#action-review-switched', '#signature-pending', '#signed']) {
-          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: rejected switch must not continue execution through ${forbidden}`);
+        for (const required of ['#switch-account-review', '#switch-network-review', '#switch-rejected-handoff']) {
+          if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: known rejection must preserve ${required}`);
+        }
+        for (const forbidden of ['#cancelled', '#action-review', '#action-review-switched', '#signature-pending', '#signed']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: rejected switch must not erase/continue session truth through ${forbidden}`);
+        }
+      }
+      if (state === 'switch-rejected-handoff') {
+        if (!metrics.anchors.includes('#connected')) errors.push(`${viewport.name}/${state}: rejected-return handoff must preserve the prior known connected session`);
+        if (!metrics.text.includes('5F3sa2…Demo9') || !metrics.text.includes('Polkadot')) errors.push(`${viewport.name}/${state}: rejected-return handoff must show the prior trusted account/network`);
+        if (/Wallet setup was cancelled/iu.test(metrics.text)) errors.push(`${viewport.name}/${state}: rejected switch was incorrectly converted to generic cancellation`);
+        for (const forbidden of ['#handoff', '#chooser', '#switch-pending', '#action-review', '#action-review-switched', '#signature-pending', '#signed']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: rejected-return handoff exposes bypass route ${forbidden}`);
         }
       }
       if (state === 'switch-failed') {
-        if (!metrics.anchors.includes('#switch-reconciling')) errors.push(`${viewport.name}/${state}: provider failure must re-read wallet context before execution or another switch`);
-        for (const forbidden of ['#action-review', '#action-review-switched', '#signature-pending', '#switch-pending']) {
+        for (const required of ['#switch-reconciling', '#switch-failed-handoff']) {
+          if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: provider failure must preserve ${required}`);
+        }
+        for (const forbidden of ['#cancelled', '#action-review', '#action-review-switched', '#signature-pending', '#switch-pending']) {
           if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: failed switch must not bypass recheck into ${forbidden}`);
         }
+      }
+      if (state === 'switch-failed-handoff') {
+        if (metrics.anchors.length !== 1 || !metrics.anchors.includes('#switch-reconciling')) errors.push(`${viewport.name}/${state}: failed-return handoff must expose only trusted wallet-context recheck`);
+        if (metrics.text.includes('5F3sa2…Demo9') || metrics.text.includes('1Demo…A7')) errors.push(`${viewport.name}/${state}: failed-return handoff must not fabricate a trusted account`);
+        if (/Wallet setup was cancelled|Status\s+Not sent/iu.test(metrics.text)) errors.push(`${viewport.name}/${state}: failed switch was incorrectly converted to generic cancellation/not-sent`);
       }
       if (state === 'switch-unknown') {
         for (const required of ['#switch-reconciling', '#switch-unknown-handoff']) {
@@ -360,6 +393,49 @@ try {
     }
     interactionResults.push({viewport: viewport.name, path: 'wrong-network-keep-current-preserves-mismatch', finalHash: await page.evaluate(() => location.hash)});
 
+    // Reviewer regression: an accepted switch must remain the newly revalidated session across return.
+    await page.goto(`${pathToFileURL(candidatePath).href}#switch-accepted`, {waitUntil: 'load'});
+    const acceptedReturn = page.locator('.screen:visible a[href="#switch-accepted-handoff"]').first();
+    if (!(await acceptedReturn.isVisible())) {
+      errors.push(`${viewport.name}: accepted switch cannot reach its session-preserving return handoff`);
+    } else {
+      await acceptedReturn.click();
+      await page.waitForFunction(() => location.hash === '#switch-accepted-handoff');
+      const text = await page.locator('.screen:visible').innerText();
+      if (!text.includes('1Demo…A7') || !text.includes('Polkadot')) errors.push(`${viewport.name}: accepted-return handoff lost the newly revalidated account/network`);
+      if (/Wallet setup was cancelled|Not sent/iu.test(text)) errors.push(`${viewport.name}: accepted-return handoff collapsed into generic cancellation`);
+    }
+    interactionResults.push({viewport: viewport.name, path: 'switch-accepted-return-preserves-new-session', finalHash: await page.evaluate(() => location.hash)});
+
+    // Reviewer regression: a rejected switch must keep the previously known connected wallet session.
+    await page.goto(`${pathToFileURL(candidatePath).href}#switch-rejected`, {waitUntil: 'load'});
+    const rejectedReturn = page.locator('.screen:visible a[href="#switch-rejected-handoff"]').first();
+    if (!(await rejectedReturn.isVisible())) {
+      errors.push(`${viewport.name}: rejected switch cannot reach its prior-session return handoff`);
+    } else {
+      await rejectedReturn.click();
+      await page.waitForFunction(() => location.hash === '#switch-rejected-handoff');
+      const text = await page.locator('.screen:visible').innerText();
+      if (!text.includes('5F3sa2…Demo9') || !text.includes('Polkadot')) errors.push(`${viewport.name}: rejected-return handoff lost the prior known account/network`);
+      if (/Wallet setup was cancelled/iu.test(text)) errors.push(`${viewport.name}: rejected-return handoff collapsed into generic cancellation`);
+    }
+    interactionResults.push({viewport: viewport.name, path: 'switch-rejected-return-preserves-prior-session', finalHash: await page.evaluate(() => location.hash)});
+
+    // Reviewer regression: a provider failure cannot expose fresh connect/switch/sign until the wallet context is re-read.
+    await page.goto(`${pathToFileURL(candidatePath).href}#switch-failed`, {waitUntil: 'load'});
+    const failedReturn = page.locator('.screen:visible a[href="#switch-failed-handoff"]').first();
+    if (!(await failedReturn.isVisible())) {
+      errors.push(`${viewport.name}: failed switch cannot reach its recheck-required return handoff`);
+    } else {
+      await failedReturn.click();
+      await page.waitForFunction(() => location.hash === '#switch-failed-handoff');
+      const bypassCount = await page.locator('.screen:visible a[href="#handoff"], .screen:visible a[href="#chooser"], .screen:visible a[href="#switch-account-review"], .screen:visible a[href="#switch-network-review"], .screen:visible a[href="#switch-pending"], .screen:visible a[href="#action-review"], .screen:visible a[href="#action-review-switched"], .screen:visible a[href="#signature-pending"], .screen:visible a[href="#signature-pending-switched"], .screen:visible a[href="#signed"]').count();
+      if (bypassCount !== 0) errors.push(`${viewport.name}: failed-return handoff exposes ${bypassCount} fresh wallet/execution bypass route(s)`);
+      const recheck = page.locator('.screen:visible a[href="#switch-reconciling"]').first();
+      if (!(await recheck.isVisible())) errors.push(`${viewport.name}: failed-return handoff does not expose the trusted recheck path`);
+    }
+    interactionResults.push({viewport: viewport.name, path: 'switch-failed-return-blocks-until-recheck', finalHash: await page.evaluate(() => location.hash)});
+
     const switchUnknownRecoveryPath = ['#switch-unknown', '#switch-reconciling', '#switch-unknown', '#switch-unknown-handoff'];
     await page.goto(`${pathToFileURL(candidatePath).href}${switchUnknownRecoveryPath[0]}`, {waitUntil: 'load'});
     for (const next of switchUnknownRecoveryPath.slice(1)) {
@@ -421,7 +497,7 @@ const summary = {
     path: path.relative(repoRoot, candidatePath),
     sha256: candidateSha256,
   },
-  scope: 'J21 reviewer repair: wrong-network Keep current now preserves the mismatched wallet/network at an explicit caller boundary and cannot reach action review, signature, or submission without successful provider switching and exact-network revalidation; all previously built J21 states are rechecked',
+  scope: 'J21 reviewer repair: switch accepted/rejected/failed now return with distinct wallet-session truth instead of generic cancellation; accepted preserves the newly revalidated session and requires fresh review, rejected preserves the prior known session, and failed blocks fresh connect/switch/sign until trusted wallet-context recheck; all previously built J21 states are rechecked',
   counts: {
     states: states.length,
     viewports: viewports.length,
@@ -439,8 +515,7 @@ const summary = {
   errors,
   review_status: errors.length ? 'MECHANICAL_QA_FAILED' : 'BOUNDED_SLICE_QA_PASSED',
   limitations: [
-    'This evidence verifies the first reviewer-requested wrong-network bypass repair plus all previously built J21 states; it is not yet a complete Journey 21 review bundle.',
-    'The separate reviewer finding about truthful switch accepted/rejected/failed caller-return boundaries remains intentionally open for the next bounded repair.',
+    'This evidence verifies the reviewer-requested switch accepted/rejected/failed caller-return repair plus all previously built J21 states; it is not yet a complete Journey 21 review bundle.',
     'Insufficient native-fee balance, insufficient transfer-asset balance, disconnect, offline, loading, and load/provider-error states remain intentionally open for later bounded Builder increments.',
     'It does not provide independent UX judgment or human approval.',
     'No real wallet, signature, chain submission, funds, or network finality is exercised; all product states are synthetic prototype states.',
@@ -448,7 +523,7 @@ const summary = {
 };
 
 await writeFile(path.join(evidenceRoot, 'QA_SUMMARY.json'), `${JSON.stringify(summary, null, 2)}\n`);
-await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 wrong-network reviewer repair — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
+await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 switch-return reviewer repair — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
 
 console.log(JSON.stringify({head, candidateSha256, states: states.length, screenshots: pages.length, failures: errors.length}, null, 2));
 if (errors.length) {
