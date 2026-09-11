@@ -1,0 +1,42 @@
+name: Journey 22 V1 candidate QA
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - ux/experience-workbench-j22-v1-candidate
+    paths:
+      - '.github/workflows/j22-v1-review.yml'
+      - 'prototypes/experience-workbench/journeys/22-qr-flows/v1-candidate.html'
+      - 'prototypes/experience-workbench/journeys/22-qr-flows/source/review-qa-v1.mjs'
+  workflow_dispatch:
+
+jobs:
+  j22-v1-candidate-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run exact-head J22 browser, interaction, layout and authority QA
+        run: node prototypes/experience-workbench/journeys/22-qr-flows/source/review-qa-v1.mjs
+      - name: Upload exact-head J22 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: j22-v1-candidate-review-${{ github.sha }}
+          path: artifacts/j22-v1-review
+          if-no-files-found: error
+          retention-days: 14
