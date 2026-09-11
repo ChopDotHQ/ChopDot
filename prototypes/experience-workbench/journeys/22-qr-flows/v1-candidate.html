@@ -55,12 +55,15 @@ body:not(:has(.screen:target)) #entry{display:grid}
 
 .status-hero{padding:19px 16px;text-align:center}.status-icon{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:var(--surface2);margin:0 auto 12px;color:var(--secondary)}.status-icon svg{width:26px;height:26px}.status-icon.pink{background:var(--accent-soft);color:var(--accent)}.status-icon.warn{background:var(--warning-soft);color:var(--warning)}.status-icon.danger{background:var(--danger-soft);color:var(--danger)}.status-icon.success{background:#eaf8f2;color:#117a51}.status-hero h1{font-size:22px;line-height:1.12;letter-spacing:-.035em;margin:0;font-weight:780}.status-hero p{font-size:11px;line-height:1.5;color:var(--secondary);margin:7px auto 0;max-width:300px}
 
+/* J22-only display components. They do not alter inherited header/footer/button geometry. */
+.qr-card{padding:16px;text-align:center}.qr-demo{width:176px;height:176px;margin:2px auto 12px;display:block;background:#fff;border:9px solid #fff;border-radius:12px;box-shadow:0 0 0 1px var(--border)}.qr-demo .module{fill:#111113}.qr-title{font-size:14px;font-weight:760;margin:0}.qr-sub{font-size:10px;line-height:1.45;color:var(--secondary);margin:5px auto 0;max-width:290px}.scope-card{padding:13px}.scope-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:6px 0;font-size:10px}.scope-row+ .scope-row{border-top:1px solid var(--border)}.scope-row span{color:var(--secondary)}.scope-row b{text-align:right;font-weight:720}.empty-code{height:176px;border:1px dashed #c8c8ce;border-radius:16px;background:var(--surface2);display:grid;place-items:center;color:var(--secondary);text-align:center;padding:20px}.empty-code svg{width:34px;height:34px;margin:0 auto 8px}.empty-code b{display:block;font-size:12px}.empty-code span{display:block;font-size:10px;margin-top:4px}
+
 .labpanel{height:100%;overflow:auto;background:#151516;color:white;border-radius:22px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.18)}.labpanel h2{font-size:17px;margin:0 0 5px}.labpanel p{font-size:12px;line-height:1.5;color:#b9b9bf;margin:0}.labsec{margin-top:16px;padding-top:14px;border-top:1px solid #303034}.lablabel{font-size:10px;color:#929299;text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px}.lablinks{display:grid;grid-template-columns:1fr 1fr;gap:6px}.lablinks a{border:1px solid #37373a;background:#222225;color:#fff;border-radius:10px;padding:8px;font-size:10px}.lablinks a:hover{border-color:#67676d}.note{font-size:11px;line-height:1.5;color:#a9a9af}
 
 @media(max-width:860px){
   .lab{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;display:block;padding:0;overflow:hidden}.labpanel{display:none}.stage{position:absolute;inset:0}.device{position:absolute;inset:0;width:100%;height:100%;max-height:none;border:0;border-radius:0;box-shadow:none}
 }
-@media(max-height:760px){.scanner-stage{height:230px}.permission-art{height:135px}.spinner-wrap{height:145px}}
+@media(max-height:760px){.scanner-stage{height:230px}.permission-art{height:135px}.spinner-wrap{height:145px}.qr-demo{width:148px;height:148px}.empty-code{height:148px}}
 </style>
 </head>
 <body>
@@ -78,6 +81,9 @@ body:not(:has(.screen:target)) #entry{display:grid}
   <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="9" r="2.3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 20c.5-4 2.4-6 5.5-6s5 2 5.5 6M14 15c3.3-.3 5.3 1.4 5.8 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-activity" viewBox="0 0 24 24"><path d="M4 14h4l2-6 4 10 2-6h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-demo-qr" viewBox="0 0 21 21">
+    <g class="module"><path d="M1 1h6v6H1zm13 0h6v6h-6zM1 14h6v6H1zM3 3h2v2H3zm13 0h2v2h-2zM3 16h2v2H3zM9 1h2v2H9zm0 4h3v2H9zm3 3h2v2h-2zM8 9h3v3H8zm7 0h2v2h-2zm3 0h2v4h-2zm-5 3h3v2h-3zm4 3h3v2h-3zm-7-1h2v2h-2zm-1 4h3v2H9zm5-2h2v4h-2zm4 3h2v1h-2z"/></g>
+  </symbol>
 </svg>
 
 <div class="lab">
@@ -216,6 +222,197 @@ body:not(:has(.screen:target)) #entry{display:grid}
         <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
       </section>
 
+      <section class="screen" id="invite" data-state-code="J22-S14">
+        <header class="app-header"><a class="icon-btn" href="#rescan" aria-label="Back to scanner"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Invite found</b><span>Group invite</span></div><span></span></header>
+        <div class="content">
+          <div><div class="eyebrow">Recognized safely</div><h1 class="hero">Lisbon Weekend invite.</h1><p class="lead">Maya invited you to a ChopDot group. J22 shows only enough context to choose whether to open the invite.</p></div>
+          <div class="card result-card"><div class="result-top"><div class="person-avatar"><svg><use href="#i-people"/></svg></div><div class="person-copy"><b>Lisbon Weekend</b><span>Invited by Maya</span></div><span class="pill success">Current</span></div><div class="result-meta"><div class="meta-row"><span>People</span><b>4</b></div><div class="meta-row"><span>Currency</span><b>EUR</b></div><div class="meta-row"><span>Next owner</span><b>Invite / Join</b></div></div></div>
+          <div class="notice"><svg><use href="#i-info"/></svg><div>No expense details or balances are shown here. Scanning this QR does not join the group.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#invite-handoff">Continue to invite</a><a class="text-link" href="#rescan">Scan a different code</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="invite-already-joined" data-state-code="J22-S15">
+        <header class="app-header"><a class="icon-btn" href="#rescan" aria-label="Back to scanner"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Invite found</b><span>Already a member</span></div><span></span></header>
+        <div class="content">
+          <div class="card status-hero"><div class="status-icon success"><svg><use href="#i-check"/></svg></div><h1>You are already in Lisbon Weekend.</h1><p>The invite resolved to a group you already belong to. There is no second join action to perform.</p></div>
+          <div class="notice neutral"><svg><use href="#i-info"/></svg><div>Journey 04 owns the current membership path. J22 only hands over the invite reference and does not change membership.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#invite-handoff">Open current group path</a><a class="text-link" href="#rescan">Rescan</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="invite-expired" data-state-code="J22-S16">
+        <header class="app-header"><a class="icon-btn" href="#rescan" aria-label="Back to scanner"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Invite unavailable</b><span>Expired or revoked</span></div><span></span></header>
+        <div class="content">
+          <div class="card status-hero"><div class="status-icon warn"><svg><use href="#i-alert"/></svg></div><h1>This invite is no longer usable.</h1><p>Its current status is expired or revoked. An older screenshot or scan cannot restore the invitation.</p></div>
+          <div class="notice warn"><svg><use href="#i-info"/></svg><div>No Join action is available. Ask for a new invite through the owning group flow if you still need access.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#rescan">Scan another code</a><a class="text-link" href="#you-handoff">Return safely</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="receive-share" data-state-code="J22-S17">
+        <header class="app-header"><a class="icon-btn" href="#rescan" aria-label="Back to scanner"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Receiving share found</b><span>Private reference</span></div><span></span></header>
+        <div class="content">
+          <div><div class="eyebrow">Private receiving share</div><h1 class="hero">Maya shared receiving details.</h1><p class="lead">The QR resolves to a current private share. Exact receiving fields stay hidden until Journey 14 checks the intended audience and destination version.</p></div>
+          <div class="card result-card"><div class="result-top"><div class="person-avatar">MY</div><div class="person-copy"><b>Maya</b><span>Private receiving share</span></div><span class="pill success">Current</span></div><div class="result-meta"><div class="meta-row"><span>Method scope</span><b>Bank transfer · CHF</b></div><div class="meta-row"><span>Next owner</span><b>Receive / Share</b></div></div></div>
+          <div class="notice"><svg><use href="#i-info"/></svg><div>Possessing this QR is not access. No account number, wallet address, or other raw destination is disclosed by J22.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#receive-handoff">Open receiving details</a><a class="text-link" href="#rescan">Scan a different code</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="receive-expired" data-state-code="J22-S18">
+        <header class="app-header"><a class="icon-btn" href="#rescan" aria-label="Back to scanner"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Receiving share</b><span>No longer current</span></div><span></span></header>
+        <div class="content">
+          <div class="card status-hero"><div class="status-icon warn"><svg><use href="#i-alert"/></svg></div><h1>This receiving share cannot be used.</h1><p>It is expired, stopped, or bound to an older destination version. J22 will not revive or redirect it.</p></div>
+          <div class="notice warn"><svg><use href="#i-info"/></svg><div>A new share or fresh review must come from Journey 14. No receiving detail is disclosed here.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#rescan">Scan another code</a><a class="text-link" href="#receive-handoff">Return to Receive / Share</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="receive-wrong-audience" data-state-code="J22-S19">
+        <header class="app-header"><a class="icon-btn" href="#rescan" aria-label="Back to scanner"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Receiving share</b><span>Access does not match</span></div><span></span></header>
+        <div class="content">
+          <div class="card status-hero"><div class="status-icon danger"><svg><use href="#i-alert"/></svg></div><h1>This share is not available to this account.</h1><p>The QR exists, but the current signed-in person is not its intended audience. Possession of the image does not grant access.</p></div>
+          <div class="notice danger"><svg><use href="#i-info"/></svg><div>No owner name beyond the safe preview and no receiving fields are exposed. Sign-in and access policy remain with Journey 14.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#rescan">Scan another code</a><a class="text-link" href="#you-handoff">Return safely</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="settlement-match" data-state-code="J22-S20">
+        <header class="app-header"><a class="icon-btn" href="#settlement-return" aria-label="Back to payment review"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Receiving share found</b><span>Settlement context matches</span></div><span></span></header>
+        <div class="content">
+          <div><div class="eyebrow">Pay Maya · QR handoff</div><h1 class="hero">The receiving share matches this payment context.</h1><p class="lead">J22 can hand the same scoped payment to Receive / Share for current destination checks. It cannot pay or authorize anything.</p></div>
+          <div class="card scope-card"><div class="scope-row"><span>Recipient</span><b>Maya</b></div><div class="scope-row"><span>Amount</span><b>CHF 24.00</b></div><div class="scope-row"><span>Source</span><b>Zurich Weekend</b></div><div class="scope-row"><span>Share scope</span><b>Bank transfer · CHF</b></div></div>
+          <div class="notice success"><svg><use href="#i-check"/></svg><div>Recipient and currency context match. Journey 14 and Journey 11 still revalidate the current destination, exact scope, and final payment review.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#settlement-receive-handoff">Continue with same payment</a><a class="text-link" href="#settlement-return">Back to payment review</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="settlement-mismatch" data-state-code="J22-S21">
+        <header class="app-header"><a class="icon-btn" href="#settlement-return" aria-label="Back to payment review"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>QR does not match</b><span>Payment context preserved</span></div><span></span></header>
+        <div class="content">
+          <div class="card status-hero"><div class="status-icon danger"><svg><use href="#i-alert"/></svg></div><h1>This QR does not match the payment you reviewed.</h1><p>The scanned receiving share is for a different recipient or incompatible destination context. ChopDot will not substitute it.</p></div>
+          <div class="card scope-card"><div class="scope-row"><span>Payment stays</span><b>Maya · CHF 24.00</b></div><div class="scope-row"><span>Source stays</span><b>Zurich Weekend</b></div><div class="scope-row"><span>Scanned shortcut</span><b>Blocked</b></div></div>
+          <div class="notice danger"><svg><use href="#i-info"/></svg><div>No recipient, amount, currency, asset, destination, or network is changed to make the QR fit.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#settlement-return">Return to payment review</a><a class="text-link" href="#rescan">Scan a different code</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="malformed" data-state-code="J22-S22">
+        <header class="app-header"><a class="icon-btn" href="#rescan" aria-label="Back to scanner"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>QR not recognized</b><span>Unreadable or malformed</span></div><span></span></header>
+        <div class="content">
+          <div class="card status-hero"><div class="status-icon warn"><svg><use href="#i-qr"/></svg></div><h1>We could not read this as a supported QR.</h1><p>The code is unreadable or malformed. ChopDot will not guess a target or route from partial data.</p></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#rescan">Rescan</a><a class="text-link" href="#you-handoff">Return safely</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="unsupported-type" data-state-code="J22-S23">
+        <header class="app-header"><a class="icon-btn" href="#rescan" aria-label="Back to scanner"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Unsupported code</b><span>ChopDot type not in V1</span></div><span></span></header>
+        <div class="content">
+          <div class="card status-hero"><div class="status-icon warn"><svg><use href="#i-info"/></svg></div><h1>This ChopDot code type is not supported yet.</h1><p>The reference is structured, but it is not a person, group invite, or private receiving share supported by QR Flows V1.</p></div>
+          <div class="notice neutral"><svg><use href="#i-info"/></svg><div>J22 does not guess another owner from fields inside an unknown type.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#rescan">Scan another code</a><a class="text-link" href="#you-handoff">Return safely</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="unsupported-version" data-state-code="J22-S24">
+        <header class="app-header"><a class="icon-btn" href="#rescan" aria-label="Back to scanner"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Unsupported code</b><span>Version not supported</span></div><span></span></header>
+        <div class="content">
+          <div class="card status-hero"><div class="status-icon warn"><svg><use href="#i-info"/></svg></div><h1>This code version cannot be opened safely.</h1><p>ChopDot recognized the reference family but not the version. It will not downgrade, reinterpret, or route it as another type.</p></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#rescan">Scan another code</a><a class="text-link" href="#you-handoff">Return safely</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="external-payload" data-state-code="J22-S25">
+        <header class="app-header"><a class="icon-btn" href="#rescan" aria-label="Back to scanner"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>External content</b><span>Not opened</span></div><span></span></header>
+        <div class="content">
+          <div class="card status-hero"><div class="status-icon warn"><svg><use href="#i-alert"/></svg></div><h1>This is not a supported ChopDot QR.</h1><p>The code contains external text, a URL, deep link, or app intent. J22 keeps it inert instead of opening or executing it.</p></div>
+          <div class="notice success"><svg><use href="#i-check"/></svg><div>No external page or application was opened. The payload is not promoted into a person, invite, share, or payment action.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#rescan">Scan a ChopDot code</a><a class="text-link" href="#you-handoff">Return safely</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="sensitive-payload" data-state-code="J22-S26">
+        <header class="app-header"><a class="icon-btn" href="#rescan" aria-label="Back to scanner"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Unsupported data</b><span>Sensitive content rejected</span></div><span></span></header>
+        <div class="content">
+          <div class="card status-hero"><div class="status-icon danger"><svg><use href="#i-alert"/></svg></div><h1>ChopDot will not import this QR data.</h1><p>The payload appears to contain unsupported raw payment data or secret-like content. It is rejected rather than turned into an action.</p></div>
+          <div class="notice danger"><svg><use href="#i-info"/></svg><div>The sensitive value is intentionally not echoed on this screen or copied into evidence. Supported ChopDot QRs use opaque references.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#rescan">Discard and rescan</a><a class="text-link" href="#you-handoff">Return safely</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="my-qr" data-state-code="J22-S27">
+        <header class="app-header"><a class="icon-btn" href="#you-handoff" aria-label="Back to You"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>My QR</b><span>Identity code</span></div><span></span></header>
+        <div class="content">
+          <div class="card qr-card" data-demo-reference="https://example.invalid/chopdot/person/demo-self-v1"><svg class="qr-demo" role="img" aria-label="Synthetic demo QR for your ChopDot person reference"><use href="#i-demo-qr"/></svg><h2 class="qr-title">Your ChopDot identity</h2><p class="qr-sub">This opaque demo reference lets another ChopDot session identify you as a person after its own checks.</p></div>
+          <div class="notice"><svg><use href="#i-info"/></svg><div>This is not a receiving destination, payment instruction, saved payment method, wallet connection, or public-profile permission.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#you-handoff">Done</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="invite-qr" data-state-code="J22-S28">
+        <header class="app-header"><a class="icon-btn" href="#invite-handoff" aria-label="Back to invite"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Invite QR</b><span>Existing invite reference</span></div><span></span></header>
+        <div class="content">
+          <div class="card qr-card" data-demo-reference="https://example.invalid/chopdot/invite/demo-lisbon-v1"><svg class="qr-demo" role="img" aria-label="Synthetic demo QR for an existing group invite"><use href="#i-demo-qr"/></svg><h2 class="qr-title">Lisbon Weekend invite</h2><p class="qr-sub">This code represents the existing invite supplied by Invite / Join. J22 did not create or extend it.</p></div>
+          <div class="notice neutral"><svg><use href="#i-info"/></svg><div>Scanning the image still requires current invite status and an explicit Join / Not now decision in Journey 04.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#invite-handoff">Back to invite</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="receive-qr" data-state-code="J22-S29">
+        <header class="app-header"><a class="icon-btn" href="#receive-handoff" aria-label="Back to receiving share"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Receiving QR</b><span>Existing private share</span></div><span></span></header>
+        <div class="content">
+          <div class="card qr-card" data-demo-reference="https://example.invalid/chopdot/receive/demo-private-share-v1"><svg class="qr-demo" role="img" aria-label="Synthetic demo QR for an existing private receiving share"><use href="#i-demo-qr"/></svg><h2 class="qr-title">Private receiving share</h2><p class="qr-sub">The code carries only an opaque reference supplied by Receive / Share. It does not contain raw receiving fields.</p></div>
+          <div class="card scope-card"><div class="scope-row"><span>Audience</span><b>Maya</b></div><div class="scope-row"><span>Method scope</span><b>Bank transfer · CHF</b></div><div class="scope-row"><span>Authority</span><b>Journey 14</b></div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#receive-handoff">Back to Receive / Share</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="display-expired" data-state-code="J22-S30">
+        <header class="app-header"><a class="icon-btn" href="#receive-handoff" aria-label="Back to owner flow"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>QR no longer active</b><span>Current status wins</span></div><span></span></header>
+        <div class="content">
+          <div class="card pad"><div class="empty-code"><div><svg><use href="#i-qr"/></svg><b>Code stopped or expired</b><span>No stale QR is rendered as usable.</span></div></div></div>
+          <div class="card status-hero"><div class="status-icon warn"><svg><use href="#i-alert"/></svg></div><h1>This code is no longer current.</h1><p>The owning invite or private share was expired, revoked, stopped, or replaced. Back navigation cannot revive it.</p></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#receive-handoff">Return to owner flow</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="display-loading" data-state-code="J22-S31">
+        <header class="app-header"><span></span><div class="header-title"><b>Preparing QR</b><span>Checking safe reference</span></div><span></span></header>
+        <div class="content">
+          <div class="card spinner-wrap"><div><div class="spinner"></div><h2 class="h2">Preparing the code.</h2><p class="caption">ChopDot is waiting for the current opaque reference from the owning journey.</p></div></div>
+          <div class="notice neutral"><svg><use href="#i-info"/></svg><div>No placeholder value is shown as a usable QR while the reference is loading.</div></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="display-error" data-state-code="J22-S32">
+        <header class="app-header"><a class="icon-btn" href="#receive-handoff" aria-label="Back to owner flow"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>QR unavailable</b><span>Could not prepare code</span></div><span></span></header>
+        <div class="content">
+          <div class="card pad"><div class="empty-code"><div><svg><use href="#i-alert"/></svg><b>No usable code was created</b><span>The current reference could not be prepared.</span></div></div></div>
+          <div class="notice danger"><svg><use href="#i-info"/></svg><div>Retry asks for the same current reference. It does not create a new invite, share, payment, method, or wallet action.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#display-loading">Retry preparing code</a><a class="text-link" href="#receive-handoff">Return to owner flow</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
       <section class="screen" id="session-changed" data-state-code="J22-S35">
         <header class="app-header"><a class="icon-btn" href="#cancelled-after" aria-label="Back"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Session changed</b><span>Recheck required</span></div><span></span></header>
         <div class="content">
@@ -306,17 +503,62 @@ body:not(:has(.screen:target)) #entry{display:grid}
         <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab active"><svg><use href="#i-user"/></svg>You</span></nav></footer>
       </section>
 
+      <section class="screen" id="invite-handoff" data-boundary="J04">
+        <header class="app-header"><a class="icon-btn" href="#invite" aria-label="Back to QR preview"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Invite / Join</b><span>Preview only · Journey 04</span></div><span></span></header>
+        <div class="content">
+          <div class="card boundary pad"><div class="boundary-head"><svg><use href="#i-people"/></svg><b>Boundary handoff</b></div><p>J22 has resolved an invite reference and stops here. Journey 04 owns current invite status, Join / Not now consent, membership, and the destination group path.</p></div>
+          <div class="card result-card"><div class="result-top"><div class="person-avatar"><svg><use href="#i-people"/></svg></div><div class="person-copy"><b>Lisbon Weekend</b><span>Invite reference handed to J04</span></div><span class="pill">Preview</span></div><div class="result-meta"><div class="meta-row"><span>Pre-join context</span><b>Maya · 4 people · EUR</b></div><div class="meta-row"><span>Expense details</span><b>Not exposed</b></div></div></div>
+          <div class="notice"><svg><use href="#i-info"/></svg><div>This preview does not claim that you joined. Only Journey 04 may show or accept the Join decision.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#rescan">Return to QR scanner</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="receive-handoff" data-boundary="J14">
+        <header class="app-header"><a class="icon-btn" href="#receive-share" aria-label="Back to QR preview"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Receive / Share</b><span>Preview only · Journey 14</span></div><span></span></header>
+        <div class="content">
+          <div class="card boundary pad"><div class="boundary-head"><svg><use href="#i-qr"/></svg><b>Boundary handoff</b></div><p>J22 stops at the opaque private-share reference. Journey 14 owns audience authentication, destination version, expiry/revocation, and deliberate raw-detail disclosure.</p></div>
+          <div class="card result-card"><div class="result-top"><div class="person-avatar">MY</div><div class="person-copy"><b>Maya</b><span>Receiving share handed to J14</span></div><span class="pill">Preview</span></div><div class="result-meta"><div class="meta-row"><span>Transport result</span><b>Share reference identified</b></div><div class="meta-row"><span>Raw destination</span><b>Still hidden</b></div></div></div>
+          <div class="notice"><svg><use href="#i-info"/></svg><div>No share is created, extended, republished, copied, or treated as payment completion by this boundary.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#rescan">Return to QR scanner</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="settlement-receive-handoff" data-boundary="J14/J11">
+        <header class="app-header"><a class="icon-btn" href="#settlement-match" aria-label="Back to QR match"><svg><use href="#i-back"/></svg></a><div class="header-title"><b>Receiving handoff</b><span>J14 + J11 own the next review</span></div><span></span></header>
+        <div class="content">
+          <div class="card boundary pad"><div class="boundary-head"><svg><use href="#i-check"/></svg><b>Same scoped payment preserved</b></div><p>J22 passes the recognized private-share reference alongside Maya / CHF 24.00 / Zurich Weekend. Journey 14 rechecks current destination access; Journey 11 retains exact payment authority and final review.</p></div>
+          <div class="card scope-card"><div class="scope-row"><span>Recipient</span><b>Maya</b></div><div class="scope-row"><span>Amount</span><b>CHF 24.00</b></div><div class="scope-row"><span>Currency</span><b>CHF</b></div><div class="scope-row"><span>Source</span><b>Zurich Weekend</b></div></div>
+          <div class="notice"><svg><use href="#i-info"/></svg><div>No payment was authorized, submitted, finalized, or marked received by scanning or by this handoff.</div></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#settlement-return">Return from owner review</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
+      <section class="screen" id="settlement-return" data-boundary="J11">
+        <header class="app-header"><span></span><div class="header-title"><b>Settle Up</b><span>Exact caller restored</span></div><span></span></header>
+        <div class="content">
+          <div class="card boundary pad"><div class="boundary-head"><svg><use href="#i-back"/></svg><b>Payment context unchanged</b></div><p>QR transport ended or returned. Journey 11 still owns Maya / CHF 24.00 / Zurich Weekend and any method/destination review. J22 has not replaced the scope.</p></div>
+          <div class="card status-hero"><div class="status-icon success"><svg><use href="#i-check"/></svg></div><h1>Back to the same payment review.</h1><p>Returning from QR does not turn a matching, mismatched, cancelled, or owner-journey result into payment success.</p></div>
+          <div class="actions"><a class="btn primary" data-test-primary href="#settlement-match">Review QR match again</a></div>
+        </div>
+        <footer class="app-footer"><nav class="tabbar" aria-label="Main navigation"><span class="tab"><svg><use href="#i-home"/></svg>Pots</span><span class="tab"><svg><use href="#i-people"/></svg>People</span><span class="add-tab"><svg><use href="#i-plus"/></svg></span><span class="tab"><svg><use href="#i-activity"/></svg>Activity</span><span class="tab"><svg><use href="#i-user"/></svg>You</span></nav></footer>
+      </section>
+
     </div>
   </main>
 
   <aside class="labpanel" aria-label="Review controls">
     <h2>J22 · QR Flows V1</h2>
-    <p>First bounded candidate increment: scanner transport + person-reference handoff only.</p>
-    <div class="labsec"><div class="lablabel">Contract</div><p class="note">QR reads and resolves typed references. It never joins, pays, discloses private receiving details, stores a destination, or grants wallet authority.</p></div>
+    <p>Complete registered V1 candidate: typed QR transport, owner-journey handoffs, failure recovery, and safe code display.</p>
+    <div class="labsec"><div class="lablabel">Contract</div><p class="note">QR reads, resolves, or renders typed opaque references. It never joins, pays, discloses private receiving details, stores a destination, or grants wallet authority.</p></div>
     <div class="labsec"><div class="lablabel">Scanner lifecycle</div><div class="lablinks"><a href="#entry">Entry</a><a href="#permission">Permission</a><a href="#permission-denied">Denied</a><a href="#camera-unavailable">Unavailable</a><a href="#scanner-ready">Ready</a><a href="#reading">Reading</a><a href="#resolving">Resolving</a><a href="#resolution-error">Network error</a><a href="#offline">Offline</a><a href="#duplicate">Duplicate</a></div></div>
-    <div class="labsec"><div class="lablabel">Person path</div><div class="lablinks"><a href="#person">Person</a><a href="#own-person">Own code</a><a href="#person-unavailable">Unavailable</a><a href="#session-changed">Session changed</a><a href="#person-handoff">J09 boundary</a><a href="#return-from-person">Return</a></div></div>
-    <div class="labsec"><div class="lablabel">Continuity</div><div class="lablinks"><a href="#cancelled-before">Cancel before</a><a href="#cancelled-after">Cancel after</a><a href="#rescan">Rescan</a><a href="#loading">Loading</a><a href="#load-error">Load error</a><a href="#you-handoff">You boundary</a></div></div>
-    <div class="labsec"><p class="note">Not in this increment: group invite, private receive/share, settlement-context mismatch, malformed/unsupported payloads, and QR display states. Those remain defined but unimplemented.</p></div>
+    <div class="labsec"><div class="lablabel">Recognized targets</div><div class="lablinks"><a href="#person">Person</a><a href="#own-person">Own person</a><a href="#invite">Invite</a><a href="#invite-already-joined">Already joined</a><a href="#invite-expired">Invite expired</a><a href="#receive-share">Private share</a><a href="#receive-expired">Share stale</a><a href="#receive-wrong-audience">Wrong audience</a><a href="#settlement-match">Settlement match</a><a href="#settlement-mismatch">Settlement mismatch</a></div></div>
+    <div class="labsec"><div class="lablabel">Invalid / unsupported</div><div class="lablinks"><a href="#malformed">Malformed</a><a href="#unsupported-type">Type</a><a href="#unsupported-version">Version</a><a href="#external-payload">External</a><a href="#sensitive-payload">Sensitive</a></div></div>
+    <div class="labsec"><div class="lablabel">Display QR</div><div class="lablinks"><a href="#my-qr">My QR</a><a href="#invite-qr">Invite QR</a><a href="#receive-qr">Share QR</a><a href="#display-expired">Expired</a><a href="#display-loading">Loading</a><a href="#display-error">Error</a></div></div>
+    <div class="labsec"><div class="lablabel">Continuity</div><div class="lablinks"><a href="#session-changed">Session changed</a><a href="#cancelled-before">Cancel before</a><a href="#cancelled-after">Cancel after</a><a href="#rescan">Rescan</a><a href="#loading">Loading</a><a href="#load-error">Load error</a><a href="#return-from-person">Owner return</a></div></div>
+    <div class="labsec"><div class="lablabel">Boundaries</div><div class="lablinks"><a href="#person-handoff">J09</a><a href="#invite-handoff">J04</a><a href="#receive-handoff">J14</a><a href="#settlement-receive-handoff">J14 + J11</a><a href="#settlement-return">J11 return</a><a href="#you-handoff">You return</a></div></div>
   </aside>
 </div>
 <script>
