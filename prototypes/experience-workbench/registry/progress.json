@@ -16,6 +16,6 @@
   "last_approved_journey": "21",
   "last_approved_version": "v1",
   "last_approved_sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6",
-  "next_action": "Journey 22 exact candidate 7a0cc0c3ec0da62a414c878058a104379697a687 is REVISE after independent review. The full registered V1 scope and exact-head QA/CI/Coverage/Smoke/E2E are green; Builder must make only the bounded invite-avatar visual repair by constraining the group i-people glyph inside the existing 50x50 avatar slot in invite and invite-handoff, without changing shared Golden geometry or product semantics, then regenerate exact-head evidence and return the exact candidate to Reviewer. No human approval or freeze is authorized.",
+  "next_action": "Journey 22 exact candidate a1f60b0255e3f72054e0bf500b5cb559c213679d is independently GOLDEN-READY at HTML SHA-256 3bbab5328a71d42866006c6f48088c06759fd0a3a922ee4a91e6fcd7bb75fe23 with QA 34625659266 and artifact 10273727742 / digest 787eafecec922b415c417be8fce6a42956b0a6271b760555fb67ed2436ed1760. All five review lenses and exact-head QA/CI/Coverage/Smoke/E2E are green. Present these exact bytes to Devinson for explicit approval; until then keep human approval false and do not freeze or advance Journey 23.",
   "typography_note": "TYPO-01 deferred"
 }
