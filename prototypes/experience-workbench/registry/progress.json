@@ -1,6 +1,6 @@
 {
   "schema_version": 17,
-  "updated_on": "2026-09-10",
+  "updated_on": "2026-09-11",
   "registered_journeys": 28,
   "golden_count": 20,
   "current_journey": "21",
@@ -16,6 +16,6 @@
   "last_approved_journey": "20",
   "last_approved_version": "v1",
   "last_approved_sha256": "02620eb85888d2e7abac3fbd06e82b7e03e42caff2064cc259f59421864406ab",
-  "next_action": "Journey 21 exact candidate abbec4cb8720495e4a6b2ad9e68056ecbdb7c02f remains REVISE. Provider-unavailable is cleared, but connection-timeout return continuity is blocking: preserve unresolved provider/session state and prevent fresh Connect until reconciliation. Then complete only the remaining account/network-switch, insufficient fee/asset balance, disconnect, offline/loading and provider-error clusters; regenerate fresh exact-head QA/render evidence and request independent re-review. Do not request human approval or freeze this head.",
+  "next_action": "Journey 21 exact candidate 0ed3e57400374f4c6ad5418a091d6fcc58ba4390 remains REVISE. Timeout-return continuity is cleared. Builder must complete only the remaining account/network-switch lifecycle review-pending-accepted-rejected-failed-unknown, insufficient native fee balance, insufficient transfer-asset balance, disconnect, offline, loading, and load/provider-error states; then regenerate fresh exact-head deterministic/browser/render evidence and request independent re-review. Do not request human approval or freeze this head.",
   "typography_note": "TYPO-01 deferred"
 }

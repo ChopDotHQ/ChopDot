@@ -1,6 +1,6 @@
 {
-  "checkpoint": "2026-09-10-j21-v1-revise-connect-timeout-continuity",
-  "purpose": "Preserve Golden #20 authority and record the latest exact Journey 21 candidate review state without granting human approval or Golden authority.",
+  "checkpoint": "2026-09-11-j21-v1-revise-timeout-cleared-coverage-only",
+  "purpose": "Preserve Golden #20 authority and record the latest exact Journey 21 independent review after timeout-return continuity was cleared, without granting human approval or Golden authority.",
   "canonical_exact_head_verified": false,
   "canonical_exact_head_note": "This governance reconciliation changes canonical authority metadata only. Treat the resulting exact canonical head as unverified until the Prototype workbench gate completes successfully on the resulting tree.",
   "journey_20": {
@@ -25,19 +25,18 @@
     "stage": "independent-review",
     "prototype_built": true,
     "candidate_branch": "ux/experience-workbench-j21-v1-candidate",
-    "reviewed_source_head": "abbec4cb8720495e4a6b2ad9e68056ecbdb7c02f",
+    "reviewed_source_head": "0ed3e57400374f4c6ad5418a091d6fcc58ba4390",
     "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
-    "prototype_sha256": "a9393fb22600fb216d18c4496b652de77c127654864070c5c6751b39bbe5d979",
-    "exact_qa_run": "34540825750",
-    "evidence_artifact": "10177210474",
-    "evidence_artifact_sha256": "145c8625b56ac1be1bbe78c823ae7cfa74b500552971a462eb7025fc229450a1",
+    "prototype_sha256": "e840554354f335e14e779a4de016f7bdc435f896ac97fb02e02008347924062c",
+    "exact_qa_run": "34545245687",
+    "evidence_artifact": "10178790091",
+    "evidence_artifact_sha256": "53d2a42d31ea60f4eb8484cbb1854bdb9a4c46988e9d81694816de1bc2d7160b",
     "review_status": "REVISE",
     "mechanical_review": "pass",
-    "direct_visual_review": "pass-for-unavailable-fail-for-timeout-continuity",
+    "direct_visual_review": "pass-for-timeout-repair-full-journey-incomplete",
     "human_approval": false,
     "blockers": [
-      "Connection-timeout return must preserve unresolved provider/session state and prevent a fresh Connect until reconciliation proves connected or verified not connected; do not route unknown through ordinary cancellation.",
-      "Required account/network-switch review-pending-accepted-rejected-unknown, insufficient fee/asset balance, disconnect, offline/loading and provider-error clusters must be built and included in fresh exact-head evidence before complete re-review."
+      "Required account/network-switch lifecycle review-pending-accepted-rejected-failed-unknown, insufficient native fee balance, insufficient transfer-asset balance, disconnect, offline, loading, and load/provider-error states must be built and included in fresh exact-head evidence before complete re-review."
     ],
     "spec_path": "journeys/21-wallet-crypto/spec.md"
   },
@@ -47,6 +46,6 @@
   "current_journey": "21",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "Builder changes only Journey 21 candidate/evidence on its non-protected lane. Re-review must bind to one new exact head/checksum and all required rendered states. GOLDEN-READY still requires all five lenses; only explicit Devinson approval of that exact candidate may authorize freeze.",
+  "gate_requirement": "Builder changes only Journey 21 candidate/evidence on its non-protected lane. Re-review must bind to one new exact head/checksum and all remaining required rendered states. GOLDEN-READY still requires all five lenses; only explicit Devinson approval of that exact candidate may authorize freeze.",
   "prototype_only": true
 }
