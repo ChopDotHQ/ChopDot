@@ -413,7 +413,6 @@
 </div>
 <script>
 (() => {
-  let switchOrigin = null;
   const rejected = document.getElementById('switch-rejected');
   if (!rejected) return;
   const title = rejected.querySelector('.hero');
@@ -433,6 +432,16 @@
     returnHref: returnLink?.getAttribute('href') ?? '#switch-rejected-handoff',
   };
 
+  function currentSwitchOrigin() {
+    return new URLSearchParams(location.search).get('switch');
+  }
+
+  function persistSwitchOrigin(origin) {
+    const url = new URL(location.href);
+    url.searchParams.set('switch', origin);
+    history.replaceState(null, '', url);
+  }
+
   function resetRejected() {
     if (title) title.textContent = defaults.title;
     if (sub) sub.textContent = defaults.sub;
@@ -444,7 +453,7 @@
 
   function applyOrigin() {
     resetRejected();
-    if (location.hash !== '#switch-rejected' || switchOrigin !== 'network') return;
+    if (location.hash !== '#switch-rejected' || currentSwitchOrigin() !== 'network') return;
     if (title) title.textContent = 'Network switch was not approved';
     if (sub) sub.textContent = 'The provider rejected the requested network change. The prior wallet session is still on Other network, so it is still incompatible with this Polkadot settlement.';
     if (notice) notice.textContent = 'The wallet network remains Other network. No payment was signed or submitted, and a successful switch plus exact-network revalidation is still required before signing.';
@@ -460,8 +469,8 @@
     const link = event.target.closest?.('a[href]');
     if (!link) return;
     const href = link.getAttribute('href');
-    if (location.hash === '#switch-network-review' && href === '#switch-pending') switchOrigin = 'network';
-    if (location.hash === '#switch-account-review' && href === '#switch-pending') switchOrigin = 'account';
+    if (location.hash === '#switch-network-review' && href === '#switch-pending') persistSwitchOrigin('network');
+    if (location.hash === '#switch-account-review' && href === '#switch-pending') persistSwitchOrigin('account');
   });
   window.addEventListener('hashchange', applyOrigin);
   applyOrigin();
