@@ -1,0 +1,21 @@
+{
+  "checkpoint": "2026-09-11-j21-v1-human-approved",
+  "journey": "21",
+  "version": "v1",
+  "candidate_branch": "ux/experience-workbench-j21-v1-candidate",
+  "reviewed_source_head": "02f578af1924c2ac10c9c914ba7c0e9760a5c9bb",
+  "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
+  "prototype_sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6",
+  "review_status": "GOLDEN-READY",
+  "exact_qa_run": "34582530711",
+  "evidence_artifact": "10192244431",
+  "evidence_artifact_sha256": "b30ac6530fe987a11af13fda3291d6ad1fae9917c4151a2c8e483ebbafb8be2c",
+  "e2e_run": "34582530761",
+  "human_approval": "approved",
+  "approval_surface": "issue #38",
+  "approval_comment_id": "5634082954",
+  "approval_applies_to_exact_bytes_only": true,
+  "html_change_authorized": false,
+  "protected_branch_merge_authorized": false,
+  "deployment_authorized": false
+}

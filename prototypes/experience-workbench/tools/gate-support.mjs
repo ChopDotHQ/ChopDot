@@ -41,10 +41,21 @@ for(const [relative,bytes] of authorityOverlay){
   fs.writeFileSync(target,bytes);
 }
 
-// Apply the approved J20→J21 authority transition only after historical replay is
-// complete. The transition is evidence-gated and idempotent, so future J21 work can
-// preserve its own active-candidate overlay while the historical chain is replayed.
+// J20's historical transition predates J21+. When replaying a newer authority state,
+// temporarily present its expected last-approved marker, then restore the live progress
+// before applying the J21 transition. This keeps historical replay deterministic without
+// downgrading the canonical current journey.
+const liveProgressBytes=authorityOverlay.get('registry/progress.json');
+const liveProgress=JSON.parse(liveProgressBytes.toString('utf8'));
+const newerThanJ20=Number(liveProgress.golden_count)>=21;
+if(newerThanJ20){
+  const compat={...liveProgress,last_approved_journey:'20'};
+  fs.writeFileSync(path.join(root,'registry/progress.json'),JSON.stringify(compat,null,2)+'\n');
+}
 run('apply-j20-golden-j21-current.mjs');
+if(newerThanJ20) fs.writeFileSync(path.join(root,'registry/progress.json'),liveProgressBytes);
+
+run('apply-j21-golden-j22-current.mjs');
 run('decision-history.mjs');
 run('build-journey-map.mjs');
 run('build-golden-manifest.mjs');
