@@ -1,5 +1,5 @@
 {
-  "schema_version": 18,
+  "schema_version": 19,
   "updated_on": "2026-09-11",
   "registered_journeys": 28,
   "golden_count": 21,
@@ -16,6 +16,6 @@
   "last_approved_journey": "21",
   "last_approved_version": "v1",
   "last_approved_sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6",
-  "next_action": "Journey 22 QR Flows V1 is current at definition stage. Builder may define and build only from the canonical J22 bundle; Reviewer remains no-op until exact candidate evidence exists.",
+  "next_action": "Journey 22 exact candidate 06c5cbc2ce0267580d1c184c544ce8c0f5a62bd2 is REVISE. Builder must repair only the QA class/hit-target checker without changing inherited Golden-derived pixels, complete the remaining registered J22 V1 clusters, regenerate exact-head evidence, and hand the exact candidate back to Reviewer. No human approval or freeze is authorized.",
   "typography_note": "TYPO-01 deferred"
 }

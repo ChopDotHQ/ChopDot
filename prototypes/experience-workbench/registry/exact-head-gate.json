@@ -1,11 +1,11 @@
 {
-  "checkpoint": "2026-09-11-j21-v1-golden-j22-current",
-  "purpose": "Materialize explicitly approved Journey 21 Wallet & Crypto V1 as Golden #21 without changing approved HTML, then advance only to registered Journey 22 QR Flows definition.",
-  "canonical_exact_head_verified": true,
-  "canonical_exact_head_verified_run": "34605996122",
-  "canonical_verified_transition_source": "6c7cb3c113b42d45ae9a7283bedf3c69bd0c955b",
-  "canonical_materialized_head": "b6c89e6478525522b9a4091391bb639a4ab0fb1c",
-  "canonical_exact_head_note": "Prototype workbench gate 34605996122 cleanly validated the repaired J21 Golden transition from 6c7cb3c113b42d45ae9a7283bedf3c69bd0c955b and materialized the resulting 21-Golden / Journey-22-current authority state at b6c89e6478525522b9a4091391bb639a4ab0fb1c. Approved Journey 21 HTML remained byte-exact at SHA-256 28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6; all Golden locks and resulting-state validations passed.",
+  "checkpoint": "2026-09-11-j22-v1-revise-initial-candidate",
+  "purpose": "Preserve 21-Golden authority and record the latest exact Journey 22 independent review without granting human approval or Golden authority while dedicated QA is red and registered V1 clusters remain incomplete.",
+  "canonical_exact_head_verified": false,
+  "canonical_exact_head_verified_run": null,
+  "canonical_verified_transition_source": null,
+  "canonical_materialized_head": null,
+  "canonical_exact_head_note": "Pending resulting-state Prototype workbench validation for this authority reconciliation. The exact reviewed J22 candidate remains on ux/experience-workbench-j22-v1-candidate; no approved Golden HTML or checksum is changed by this metadata update.",
   "journey_21": {
     "version": "v1",
     "golden_number": 21,
@@ -26,8 +26,24 @@
   "journey_22": {
     "version": "v1",
     "approval": "not-reviewed",
-    "stage": "definition",
-    "prototype_built": false,
+    "stage": "independent-review",
+    "prototype_built": true,
+    "candidate_branch": "ux/experience-workbench-j22-v1-candidate",
+    "definition_head": "67452cce10e81d344129730209c69bb1feccf3f1",
+    "reviewed_source_head": "06c5cbc2ce0267580d1c184c544ce8c0f5a62bd2",
+    "prototype_path": "journeys/22-qr-flows/v1-candidate.html",
+    "prototype_sha256": "2e221bb44f473df7944051aad843550fd8a708fffdc8d44550bbe7c9f6266f56",
+    "exact_qa_run": "34614453234",
+    "evidence_artifact": "10269592438",
+    "evidence_artifact_sha256": "48128963fdb192e16d01038086aaaa2eaeeaa1760c9b00ac6df4684ed4b0a602",
+    "review_status": "REVISE",
+    "mechanical_review": "fail",
+    "direct_visual_review": "partial-pass-rendered-scope",
+    "human_approval": false,
+    "blockers": [
+      "Dedicated J22 QA is red because inherited .icon-btn is misclassified by the candidate .btn hit-target checker. Repair only the checker/baseline logic; do not change inherited Golden-derived pixels locally.",
+      "Registered J22 V1 remains materially incomplete: group invite; private receive/share plus settlement match/mismatch; malformed/unsupported/external/sensitive payloads; and My/invite/share QR display with expiry/loading/error still require implementation and exact evidence."
+    ],
     "spec_path": "journeys/22-qr-flows/spec.md"
   },
   "golden_count": 21,
@@ -36,6 +52,6 @@
   "current_journey": "22",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "Journey 21 is validated Golden #21 at exact approved SHA-256 28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6. Preserve its HTML and all prior Golden locks. Journey 22 QR Flows V1 is the only canonical current journey until separately reviewed and explicitly approved.",
+  "gate_requirement": "Builder must keep J21 and all approved Golden bytes unchanged, repair only the J22 QA class/hit-target checker defect, then complete the remaining registered J22 V1 clusters on the candidate branch. Regenerate exact-head evidence and obtain independent review. GOLDEN-READY requires all five lenses clear on one exact candidate; only explicit Devinson approval of those exact bytes may authorize freeze.",
   "prototype_only": true
 }
