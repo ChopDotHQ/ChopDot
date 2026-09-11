@@ -32,6 +32,7 @@ const states = [
   'connect-reconciling',
   'connected',
   'wrong-network',
+  'network-mismatch-handoff',
   'switch-account-review',
   'switch-network-review',
   'switch-pending',
@@ -72,6 +73,7 @@ const expectedSemantics = {
   'connect-reconciling': ['Checking the existing wallet session', 'cannot sign, submit, or move money', 'trusted provider/session result'],
   'connected': ['Wallet connected', '5F3sa2…Demo9', 'Polkadot', 'not added to Payment Methods', 'not authorized or sent'],
   'wrong-network': ['This network does not match', 'settlement expects Polkadot', 'will not continue with the old review'],
+  'network-mismatch-handoff': ['Settle Up', 'Wallet stays on a different network', '12.50 DOT', 'Maya', 'Required network', 'Polkadot', 'Wallet network', 'Other network', 'No action review, signature, or payment route'],
   'switch-account-review': ['Switch the signing account?', '5F3sa2…Demo9', 'Polkadot', 'Maya', '12.50 DOT', 'review the exact payment again'],
   'switch-network-review': ['Switch to the required network?', 'Polkadot', 'Other network', '12.50 DOT', 'will not silently substitute a network'],
   'switch-pending': ['Approve the wallet change', 'Nothing is being signed or submitted', 'settlement amount, recipient, asset, source scope, or payment authority'],
@@ -195,8 +197,16 @@ try {
         if (!metrics.anchors.includes('#switch-account-review')) errors.push(`${viewport.name}/${state}: connected wallet must enter explicit account-switch review before a switch prompt`);
       }
       if (state === 'wrong-network') {
-        if (!metrics.anchors.includes('#switch-network-review')) errors.push(`${viewport.name}/${state}: network mismatch must enter explicit network-switch review`);
-        if (metrics.anchors.includes('#connect-pending')) errors.push(`${viewport.name}/${state}: network mismatch must not reuse the initial connection-pending path as a switch`);
+        for (const required of ['#switch-network-review', '#network-mismatch-handoff']) {
+          if (!metrics.anchors.includes(required)) errors.push(`${viewport.name}/${state}: network mismatch must preserve ${required}`);
+        }
+        for (const forbidden of ['#connect-pending', '#connected', '#action-review', '#action-review-switched', '#signature-pending', '#signature-pending-switched', '#signed', '#submission-pending']) {
+          if (metrics.anchors.includes(forbidden)) errors.push(`${viewport.name}/${state}: network mismatch must not bypass exact-network revalidation into ${forbidden}`);
+        }
+      }
+      if (state === 'network-mismatch-handoff') {
+        if (metrics.anchors.length !== 0) errors.push(`${viewport.name}/${state}: returned network mismatch must expose no connection/action/signature/payment route`);
+        if (/Wallet connected/iu.test(metrics.text) || /Account and network revalidated/iu.test(metrics.text)) errors.push(`${viewport.name}/${state}: returned mismatch must not claim compatible/revalidated wallet state`);
       }
       if (state === 'switch-account-review' || state === 'switch-network-review') {
         if (!metrics.anchors.includes('#switch-pending')) errors.push(`${viewport.name}/${state}: reviewed switch must proceed through switch-pending`);
@@ -337,6 +347,19 @@ try {
     }
     interactionResults.push({viewport: viewport.name, path: 'network-switch-rejected-to-new-review', finalHash: await page.evaluate(() => location.hash)});
 
+    // Reviewer regression: keeping a mismatched network must return the mismatch truthfully and expose no execution path.
+    await page.goto(`${pathToFileURL(candidatePath).href}#wrong-network`, {waitUntil: 'load'});
+    const keepMismatched = page.locator('.screen:visible a[href="#network-mismatch-handoff"]').first();
+    if (!(await keepMismatched.isVisible())) {
+      errors.push(`${viewport.name}: wrong-network Keep current connection cannot reach the explicit mismatch handoff`);
+    } else {
+      await keepMismatched.click();
+      await page.waitForFunction(() => location.hash === '#network-mismatch-handoff');
+      const executionBypass = await page.locator('.screen:visible a[href="#connected"], .screen:visible a[href="#action-review"], .screen:visible a[href="#action-review-switched"], .screen:visible a[href="#signature-pending"], .screen:visible a[href="#signature-pending-switched"], .screen:visible a[href="#signed"], .screen:visible a[href="#submission-pending"], .screen:visible a[href="#switch-pending"]').count();
+      if (executionBypass !== 0) errors.push(`${viewport.name}: network mismatch handoff exposes ${executionBypass} execution/revalidation bypass route(s)`);
+    }
+    interactionResults.push({viewport: viewport.name, path: 'wrong-network-keep-current-preserves-mismatch', finalHash: await page.evaluate(() => location.hash)});
+
     const switchUnknownRecoveryPath = ['#switch-unknown', '#switch-reconciling', '#switch-unknown', '#switch-unknown-handoff'];
     await page.goto(`${pathToFileURL(candidatePath).href}${switchUnknownRecoveryPath[0]}`, {waitUntil: 'load'});
     for (const next of switchUnknownRecoveryPath.slice(1)) {
@@ -398,7 +421,7 @@ const summary = {
     path: path.relative(repoRoot, candidatePath),
     sha256: candidateSha256,
   },
-  scope: 'J21 bounded account/network-switch lifecycle: explicit account and exact-network review, provider pending/accepted/rejected/failed/unknown, same-switch reconciliation before retry, and fresh exact action/account/network review after a material wallet-context change',
+  scope: 'J21 reviewer repair: wrong-network Keep current now preserves the mismatched wallet/network at an explicit caller boundary and cannot reach action review, signature, or submission without successful provider switching and exact-network revalidation; all previously built J21 states are rechecked',
   counts: {
     states: states.length,
     viewports: viewports.length,
@@ -416,7 +439,8 @@ const summary = {
   errors,
   review_status: errors.length ? 'MECHANICAL_QA_FAILED' : 'BOUNDED_SLICE_QA_PASSED',
   limitations: [
-    'This evidence verifies the reviewer-requested account/network-switch lifecycle plus all previously built J21 states; it is not yet a complete Journey 21 review bundle.',
+    'This evidence verifies the first reviewer-requested wrong-network bypass repair plus all previously built J21 states; it is not yet a complete Journey 21 review bundle.',
+    'The separate reviewer finding about truthful switch accepted/rejected/failed caller-return boundaries remains intentionally open for the next bounded repair.',
     'Insufficient native-fee balance, insufficient transfer-asset balance, disconnect, offline, loading, and load/provider-error states remain intentionally open for later bounded Builder increments.',
     'It does not provide independent UX judgment or human approval.',
     'No real wallet, signature, chain submission, funds, or network finality is exercised; all product states are synthetic prototype states.',
@@ -424,7 +448,7 @@ const summary = {
 };
 
 await writeFile(path.join(evidenceRoot, 'QA_SUMMARY.json'), `${JSON.stringify(summary, null, 2)}\n`);
-await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 account/network-switch lifecycle — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
+await writeFile(path.join(evidenceRoot, 'VISUAL_QA.md'), `# Journey 21 V1 wrong-network reviewer repair — mechanical evidence\n\n- Exact head: \`${head}\`\n- Candidate SHA-256: \`${candidateSha256}\`\n- States: ${states.length}\n- Viewports: ${viewports.map(v => v.name).join(', ')}\n- Screenshots: ${pages.length}\n- Interaction paths: ${interactionResults.length}\n- Browser errors: ${browserErrors.length}\n- Console errors: ${consoleErrors.length}\n- External runtime requests: ${externalRequests.length}\n- Failures: ${errors.length}\n\nThis is Builder mechanical evidence only. It does not grant visual clearance, REVIEWABLE, GOLDEN-READY, or approval.\n`);
 
 console.log(JSON.stringify({head, candidateSha256, states: states.length, screenshots: pages.length, failures: errors.length}, null, 2));
 if (errors.length) {
