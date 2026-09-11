@@ -1,11 +1,11 @@
 {
-  "checkpoint": "2026-09-11-j21-v1-revise-origin-cleared-four-states-remaining",
-  "purpose": "Preserve Golden #20 authority and record the latest exact Journey 21 independent review after deterministic rejected-switch-origin repair, without granting human approval or Golden authority.",
-  "canonical_exact_head_verified": true,
-  "canonical_exact_head_verified_run": "34575180668",
+  "checkpoint": "2026-09-11-j21-v1-revise-evidence-contract-only",
+  "purpose": "Preserve Golden #20 authority and record the latest exact Journey 21 independent review after all registered V1 product-state clusters cleared, without granting human approval or Golden authority while the exact-head evidence metadata remains self-contradictory.",
+  "canonical_exact_head_verified": false,
+  "canonical_exact_head_verified_run": "34575307455",
   "canonical_verified_transition_source": "74773f838017b582a1f19f1b16a78cf9d876cc91",
-  "canonical_materialized_head": "ba7a20783f5053f20f58cc4c8f2411ce28809c61",
-  "canonical_exact_head_note": "Prototype workbench gate 34575180668 completed successfully on the authority-reconciliation tree and materialized ba7a20783f5053f20f58cc4c8f2411ce28809c61. The exact J21 authority package survived materialization unchanged; this metadata-only verification record must itself remain gate-clean.",
+  "canonical_materialized_head": "dc0f3ce4516edba65e0686c485f7ba6a087a4d7b",
+  "canonical_exact_head_note": "The recorded verification run/head are the last successfully verified prior canonical state, not verification of this newly reconciled J21 authority package. Run the full Prototype workbench resulting-state gate after authority reconciliation before setting canonical_exact_head_verified true.",
   "journey_20": {
     "version": "v1",
     "golden_number": 20,
@@ -28,18 +28,18 @@
     "stage": "independent-review",
     "prototype_built": true,
     "candidate_branch": "ux/experience-workbench-j21-v1-candidate",
-    "reviewed_source_head": "e75551a76aa6715acca682c49d896c31a8c15391",
+    "reviewed_source_head": "33d8bc7be1dd266117623baaf6bc36c76f4bcb6f",
     "prototype_path": "journeys/21-wallet-crypto/v1-candidate.html",
-    "prototype_sha256": "1607722982125ea4eaf7dcbef02f062f976a19a12e828a689e2e540d43c12687",
-    "exact_qa_run": "34573301991",
-    "evidence_artifact": "10188654135",
-    "evidence_artifact_sha256": "de5bec228d277d24dce50507a482877b334c6bd98a53d08944dda7c145a96c3a",
+    "prototype_sha256": "28cd4588c80e982cac72a744175e71dc9b2fd338c902d612b1e16a07c669c3b6",
+    "exact_qa_run": "34578308443",
+    "evidence_artifact": "10190581438",
+    "evidence_artifact_sha256": "d935fca967ba8c35bb7728ca78b3a6648a72ae1d3a1b43f86a974bd1bf962d66",
     "review_status": "REVISE",
     "mechanical_review": "pass",
-    "direct_visual_review": "pass-for-reviewed-changed-surfaces-full-journey-incomplete",
+    "direct_visual_review": "pass",
     "human_approval": false,
     "blockers": [
-      "Required Disconnect, Offline, Loading, and Load/provider-error states remain absent/unproven. Build and exact-head evidence only those four remaining registered V1 state clusters while preserving the deterministic reload-stable switch-origin contract, then obtain independent re-review."
+      "Exact-head evidence metadata is stale and self-contradictory: QA_SUMMARY.json and VISUAL_QA.md still describe the prior balance-block slice and claim Disconnect, Offline, Loading, and Load/provider-error remain open even though this exact 47-state candidate implements and tests them. Repair only the QA evidence metadata/generator text, preserve candidate HTML, regenerate exact-head evidence, then obtain evidence-only independent re-review."
     ],
     "spec_path": "journeys/21-wallet-crypto/spec.md"
   },
@@ -49,6 +49,6 @@
   "current_journey": "21",
   "all_prior_golden_artifacts_preserved": true,
   "typography_note": "TYPO-01 deferred",
-  "gate_requirement": "Builder must complete only Disconnect, Offline, Loading, and Load/provider-error on the non-protected J21 lane while preserving deterministic reload-stable account/network switch-origin truth and the existing wallet-authority boundary. Fresh exact-head deterministic/browser/render evidence and independent review must bind to one new exact head/checksum. GOLDEN-READY still requires all five lenses; only explicit Devinson approval of that exact candidate may authorize freeze.",
+  "gate_requirement": "Builder must change only J21 QA evidence metadata/generator text so the exact bundle truthfully describes the current full 47-state candidate and retains the synthetic/no-real-wallet limitation. Candidate HTML is to remain unchanged. Regenerate exact-head evidence and obtain evidence-only independent re-review. GOLDEN-READY still requires one exact self-consistent evidence package across all five lenses; only explicit Devinson approval of that exact candidate may authorize freeze.",
   "prototype_only": true
 }
